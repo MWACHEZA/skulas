@@ -164,7 +164,7 @@ export default function ManageAwards() {
           <button 
             onClick={() => setShowAddModal(true)}
             className="portal-btn-primary"
-            style={{ background: 'var(--school-primary, #0056b3)', borderColor: 'var(--school-primary, #0056b3)', fontSize: '0.9rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px' }}
+            style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}
           >
             <i className="fas fa-plus-circle"></i> ADD {t('staff').toUpperCase()} AWARD
           </button>
@@ -225,11 +225,11 @@ export default function ManageAwards() {
                       <td>{award.date ? format(new Date(award.date), 'dd/MM/yyyy') : 'N/A'}</td>
                       <td style={{ textAlign: 'center' }}>
                         <div style={{ display: 'flex', justifyContent: 'center', gap: '5px' }}>
-                          <button className="portal-btn-ghost" style={{ color: '#00bcd4', padding: '6px', minWidth: 'auto', display: 'inline-block' }} onClick={() => showToast('This feature is currently under development or disabled.', 'info')}>
+                          <button className="portal-btn-ghost" style={{ padding: '8px', width: '36px', height: '36px', color: '#2563eb', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => showToast('This feature is currently under development or disabled.', 'info')} title="Edit">
                             <i className="fas fa-edit"></i>
                           </button>
-                          <button className="portal-btn-ghost" style={{ color: 'var(--portal-danger)', padding: '6px', minWidth: 'auto', display: 'inline-block' }} onClick={() => showToast('This feature is currently under development or disabled.', 'info')}>
-                            <i className="fas fa-times"></i>
+                          <button className="portal-btn-ghost" style={{ padding: '8px', width: '36px', height: '36px', color: '#dc2626', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => showToast('This feature is currently under development or disabled.', 'info')} title="Delete">
+                            <i className="fas fa-trash"></i>
                           </button>
                         </div>
                       </td>

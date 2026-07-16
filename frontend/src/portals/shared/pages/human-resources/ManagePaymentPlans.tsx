@@ -286,7 +286,7 @@ export default function ManagePaymentPlans() {
             <button
               onClick={openCreateTemplate}
               className="portal-btn-primary"
-              style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#2563eb', borderColor: '#2563eb', padding: '10px 20px', borderRadius: '10px', fontWeight: 800 }}
+              style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}
             >
               <i className="fas fa-plus"></i> Add Offered Plan
             </button>
@@ -325,18 +325,20 @@ export default function ManagePaymentPlans() {
                       <td>
                         <div style={{ display: 'flex', gap: 8 }}>
                           <button
-                            className="portal-btn-secondary"
-                            style={{ padding: '6px 12px', fontSize: '0.8rem', fontWeight: 700 }}
+                            className="portal-btn-ghost"
+                            style={{ padding: '8px', width: '36px', height: '36px', color: '#2563eb', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                            title="Edit"
                             onClick={() => openEditTemplate(tmpl)}
                           >
-                            Edit
+                            <i className="fas fa-edit"></i>
                           </button>
                           <button
-                            className="portal-btn-danger"
-                            style={{ padding: '6px 12px', fontSize: '0.8rem', fontWeight: 700 }}
+                            className="portal-btn-ghost"
+                            style={{ padding: '8px', width: '36px', height: '36px', color: '#dc2626', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                            title="Delete"
                             onClick={() => handleDeleteTemplate(tmpl.id)}
                           >
-                            Delete
+                            <i className="fas fa-trash"></i>
                           </button>
                         </div>
                       </td>

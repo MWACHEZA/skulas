@@ -302,7 +302,7 @@ export default function JobApplications() {
             <button 
               onClick={() => setShowAddModal(true)}
               className="portal-btn-primary"
-              style={{ background: 'var(--school-primary, #0056b3)', borderColor: 'var(--school-primary, #0056b3)', fontSize: '0.9rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px' }}
+              style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}
             >
               <i className="fas fa-plus-circle"></i> ADD {t('applicant').toUpperCase()}
             </button>
@@ -353,27 +353,30 @@ export default function JobApplications() {
                           <span className={`status-badge ${app.status.replace(/\s+/g, '').toLowerCase()}`}>{app.status}</span>
                         </td>
                         <td style={{ textAlign: 'right' }}>
-                          <button 
-                            onClick={() => openDetailModal(app)}
-                            className="portal-btn-ghost" 
-                            style={{ padding: '6px 12px', fontSize: '0.85rem' }}
-                          >
-                            View Details
-                          </button>
-                          {app.status === 'Applied' && (
-                            <button onClick={() => updateStatus(app.id, 'Interviewed')} className="portal-btn-secondary" style={{ padding: '6px 12px', fontSize: '0.85rem' }}>Invite to Interview</button>
-                          )}
-                          {app.status === 'Interviewed' && (
-                            <button onClick={() => updateStatus(app.id, 'Hired')} className="portal-btn-secondary" style={{ padding: '6px 12px', fontSize: '0.85rem', color: '#10b981', borderColor: '#10b981' }}>Hire</button>
-                          )}
-                          <button 
-                            onClick={() => deleteApplication(app.id)}
-                            className="portal-btn-ghost" 
-                            style={{ padding: '6px', color: 'var(--portal-danger)' }}
-                            title="Delete"
-                          >
-                            <i className="fas fa-trash"></i>
-                          </button>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'flex-end' }}>
+                            <button 
+                              onClick={() => openDetailModal(app)}
+                              className="portal-btn-ghost" 
+                              style={{ padding: '8px', width: '36px', height: '36px', color: '#10b981', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                              title="View Details"
+                            >
+                              <i className="fas fa-eye"></i>
+                            </button>
+                            {app.status === 'Applied' && (
+                              <button onClick={() => updateStatus(app.id, 'Interviewed')} className="portal-btn-secondary" style={{ padding: '6px 12px', fontSize: '0.85rem' }}>Invite to Interview</button>
+                            )}
+                            {app.status === 'Interviewed' && (
+                              <button onClick={() => updateStatus(app.id, 'Hired')} className="portal-btn-secondary" style={{ padding: '6px 12px', fontSize: '0.85rem', color: '#10b981', borderColor: '#10b981' }}>Hire</button>
+                            )}
+                            <button 
+                              onClick={() => deleteApplication(app.id)}
+                              className="portal-btn-ghost" 
+                              style={{ padding: '8px', width: '36px', height: '36px', color: '#dc2626', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                              title="Delete"
+                            >
+                              <i className="fas fa-trash"></i>
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))

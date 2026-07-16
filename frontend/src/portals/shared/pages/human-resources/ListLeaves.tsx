@@ -218,7 +218,7 @@ export default function ListLeaves() {
                       <div style={{ display: 'flex', justifyContent: 'center', gap: '5px' }}>
                         <button 
                           className="portal-btn-ghost" 
-                          style={{ color: '#00bcd4', padding: '6px', minWidth: 'auto', display: 'inline-block' }} 
+                          style={{ padding: '8px', width: '36px', height: '36px', color: '#2563eb', display: 'flex', alignItems: 'center', justifyContent: 'center' }} 
                           title="Edit" 
                           onClick={() => {
                             setSelectedLeave(leave);
@@ -230,11 +230,11 @@ export default function ListLeaves() {
                         </button>
                         <button 
                           className="portal-btn-ghost" 
-                          style={{ color: 'var(--portal-danger)', padding: '6px', minWidth: 'auto', display: 'inline-block' }} 
+                          style={{ padding: '8px', width: '36px', height: '36px', color: '#dc2626', display: 'flex', alignItems: 'center', justifyContent: 'center' }} 
                           title="Delete" 
                           onClick={() => handleDelete(leave.id)}
                         >
-                          <i className="fas fa-times"></i>
+                          <i className="fas fa-trash"></i>
                         </button>
                       </div>
                     </td>

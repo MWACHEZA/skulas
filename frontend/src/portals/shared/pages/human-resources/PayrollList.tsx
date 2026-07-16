@@ -173,7 +173,7 @@ export default function PayrollList() {
                     </span>
                   </td>
                   <td style={{ textAlign: 'center' }}>
-                    <button className="portal-btn-ghost" style={{ color: 'var(--portal-primary)', padding: '6px', minWidth: 'auto', display: 'inline-block' }} title="View Payslip" onClick={() => showToast('This feature is currently under development or disabled.', 'warning')}>
+                    <button className="portal-btn-ghost" style={{ padding: '8px', width: '36px', height: '36px', color: '#2563eb', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="View Payslip" onClick={() => showToast('This feature is currently under development or disabled.', 'warning')}>
                       <i className="fas fa-file-invoice"></i>
                     </button>
                   </td>
