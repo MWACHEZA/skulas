@@ -140,7 +140,7 @@ export default function GallerySettings() {
   };
 
   const deleteGallery = async (id: string) => {
-    if (!window.confirm('Are you sure you want to delete this gallery?')) return;
+    if (!(await toastConfirm('Are you sure you want to delete this gallery?'))) return;
     try {
       await api.delete(`/api/website-settings/galleries/${id}`);
       setGalleries(galleries.filter((item) => item.id !== id));

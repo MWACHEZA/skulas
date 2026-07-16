@@ -126,6 +126,34 @@ router.patch('/liabilities/:id/settle', requireAuth, requireRole('BURSAR', 'SCHO
   }
 });
 
+router.patch('/liabilities/:id', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req: AuthRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+    const schoolId = req.user!.schoolId!;
+    const validatedData = LiabilitySchema.partial().parse(req.body);
+
+    const liability = await prisma.liability.updateMany({
+      where: { id: id as string, schoolId },
+      data: validatedData
+    });
+
+    res.json(liability);
+  } catch (error: any) {
+    res.status(400).json({ error: error.message || 'Failed to update liability' });
+  }
+});
+
+router.delete('/liabilities/:id', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req: AuthRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+    const schoolId = req.user!.schoolId!;
+    await prisma.liability.deleteMany({ where: { id: id as string, schoolId } });
+    res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to delete liability' });
+  }
+});
+
 // ═══════════ INCOME ═══════════
 
 router.get('/income', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req: AuthRequest, res: Response) => {
@@ -160,6 +188,34 @@ router.post('/income', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async
   }
 });
 
+router.patch('/income/:id', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req: AuthRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+    const schoolId = req.user!.schoolId!;
+    const validatedData = IncomeSchema.partial().parse(req.body);
+
+    const income = await prisma.income.updateMany({
+      where: { id: id as string, schoolId },
+      data: validatedData
+    });
+
+    res.json(income);
+  } catch (error: any) {
+    res.status(400).json({ error: error.message || 'Failed to update income' });
+  }
+});
+
+router.delete('/income/:id', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req: AuthRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+    const schoolId = req.user!.schoolId!;
+    await prisma.income.deleteMany({ where: { id: id as string, schoolId } });
+    res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to delete income' });
+  }
+});
+
 // ═══════════ EXPENSES ═══════════
 
 router.get('/expenses', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req: AuthRequest, res: Response) => {
@@ -191,6 +247,34 @@ router.post('/expenses', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), asy
     res.status(201).json(expense);
   } catch (error: any) {
     res.status(400).json({ error: error.message || 'Failed to record expense' });
+  }
+});
+
+router.patch('/expenses/:id', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req: AuthRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+    const schoolId = req.user!.schoolId!;
+    const validatedData = ExpenseSchema.partial().parse(req.body);
+
+    const expense = await prisma.expense.updateMany({
+      where: { id: id as string, schoolId },
+      data: validatedData
+    });
+
+    res.json(expense);
+  } catch (error: any) {
+    res.status(400).json({ error: error.message || 'Failed to update expense' });
+  }
+});
+
+router.delete('/expenses/:id', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req: AuthRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+    const schoolId = req.user!.schoolId!;
+    await prisma.expense.deleteMany({ where: { id: id as string, schoolId } });
+    res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to delete expense' });
   }
 });
 

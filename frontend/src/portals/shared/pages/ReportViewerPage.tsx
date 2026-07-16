@@ -16,13 +16,15 @@ export default function ReportViewerPage() {
   const navigate = useNavigate();
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
   const [filters, setFilters] = useState({ 
     from: '', to: '', categoryId: '', paymentMode: '', allocationId: '', classId: '',
     groupName: '2024', studentCategory: 'All', classCategory: 'All', reportMode: 'Detailed List',
     selectedClasses: [] as string[],
     feeGroupId: '', receiptNo: '', year: new Date().getFullYear().toString(), term: 'All Terms', status: 'Active Students',
     selectedFeeGroups: [] as string[],
-    searchName: '', searchSurname: '', searchTerm: '', showBalanceOnly: true,
+    searchName: '', searchSurname: '', searchTerm: '', showBalanceOnly: false,
     logType: 'WhatsApp'
   });
   
@@ -65,6 +67,7 @@ export default function ReportViewerPage() {
   const fetchData = async () => {
     try {
       setLoading(true);
+      setCurrentPage(1);
       let endpoint = '';
       switch (type) {
         case 'payroll-runs': endpoint = '/api/report-data/payroll-runs'; break;
@@ -171,7 +174,7 @@ export default function ReportViewerPage() {
   const handlePrint = () => window.print();
 
   return (
-    <div className="portal-container">
+    <div className="portal-container printable-area" style={{ background: '#f8fafc', minHeight: '100vh', padding: '0 24px 40px', position: 'relative' }}>
       <div className="portal-page-header">
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
           <button onClick={() => navigate(-1)} className="portal-btn-ghost" style={{ padding: '8px', width: '40px', height: '40px', borderRadius: '10px' }}>
@@ -238,15 +241,24 @@ export default function ReportViewerPage() {
             </button>
           </div>
         </div>
-        <div className="portal-card-body" style={{ padding: '24px', display: 'flex', flexWrap: 'wrap', gap: '16px', alignItems: 'flex-end' }}>
+        <div className="portal-card-body" style={{ padding: '24px', display: 'flex', flexWrap: 'wrap', gap: '24px', alignItems: 'flex-end' }}>
           {(['grocery-consumption', 'profit-loss', 'detailed-expenses', 'fees-takings', 'payments-analytics', 'fees-payments', 'audit-logs', 'fee-reminders'].includes(type || '')) && (
-            <>
+            <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
               <div className="form-group" style={{marginBottom: 0}}><label className="portal-label">From</label><input type="date" value={filters.from} onChange={e => setFilters({...filters, from: e.target.value})} className="portal-input" /></div>
               <div className="form-group" style={{marginBottom: 0}}><label className="portal-label">To</label><input type="date" value={filters.to} onChange={e => setFilters({...filters, to: e.target.value})} className="portal-input" /></div>
-            </>
+            </div>
+          )}
+          {(['student-balances', 'single-fee-group', 'balances-summary', 'student-debtors'].includes(type || '')) && (
+            <div className="form-group" style={{marginBottom: 0}}><label className="portal-label">Year</label><input type="number" value={filters.year} onChange={e => setFilters({...filters, year: e.target.value})} className="portal-input" style={{ width: '120px' }} /></div>
           )}
           {type === 'student-balances' && (
-            <div className="form-group" style={{marginBottom: 0, flex: 1}}><label className="portal-label">Search Student</label><input type="text" placeholder="Name or Surname..." value={filters.searchName} onChange={e => setFilters({...filters, searchName: e.target.value})} className="portal-input" /></div>
+            <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap', flex: 1 }}>
+              <div className="form-group" style={{marginBottom: 0, flex: 1, minWidth: '200px'}}><label className="portal-label">Search Student</label><input type="text" placeholder="Name or Surname..." value={filters.searchName} onChange={e => setFilters({...filters, searchName: e.target.value})} className="portal-input" /></div>
+              <div className="form-group" style={{marginBottom: 0, display: 'flex', alignItems: 'center', gap: '8px', height: '48px', marginTop: '24px'}}>
+                <input type="checkbox" id="showBalanceOnly" checked={filters.showBalanceOnly} onChange={e => setFilters({...filters, showBalanceOnly: e.target.checked})} />
+                <label htmlFor="showBalanceOnly" style={{ margin: 0, fontWeight: 600, color: '#475569', cursor: 'pointer' }}>Show Balance Only</label>
+              </div>
+            </div>
           )}
           {type === 'revenue-allocation' && (
             <div className="form-group" style={{marginBottom: 0, flex: 1}}><label className="portal-label">Allocation Config</label>
@@ -288,32 +300,68 @@ export default function ReportViewerPage() {
                 {type === 'fee-reminders' && <tr><th>Timestamp</th><th>Student</th><th>Channel</th><th>Status</th></tr>}
               </thead>
               <tbody>
-                {(Array.isArray(data) ? data : data.records || data.list || []).map((item: any, i: number) => (
-                  <tr key={i}>
-                    {type === 'payroll-runs' && <><td style={{fontWeight: 800}}>{item.id.slice(-8)}</td><td>{new Date(item.runDate).toLocaleDateString()}</td><td>{item.month}/{item.year}</td><td>{item.employeesCount}</td><td style={{textAlign: 'right', fontWeight: 900}}>${item.totalNet?.toLocaleString()}</td></>}
-                    {type === 'employee-payslips' && <><td>{item.employeeName}</td><td>{item.payrollRun?.month}/{item.payrollRun?.year}</td><td style={{textAlign: 'right'}}>${item.grossSalary?.toLocaleString()}</td><td style={{textAlign: 'right'}}>${item.taxAmount?.toLocaleString()}</td><td style={{textAlign: 'right', fontWeight: 800}}>${item.netSalary?.toLocaleString()}</td><td><button className="portal-btn-ghost" style={{padding: '4px 8px', fontSize: '0.7rem'}} onClick={() => alert('This feature is currently under development or disabled.')}>View</button></td></>}
-                    {type === 'tax-contributions' && <><td>{item.period}</td><td>{item.employees}</td><td style={{textAlign: 'right'}}>${item.totalPAYE?.toLocaleString()}</td><td style={{textAlign: 'right'}}>${item.totalAidsLevy?.toLocaleString()}</td><td style={{textAlign: 'right', fontWeight: 800}}>${(item.totalPAYE + item.totalAidsLevy + item.totalOtherDeductions).toLocaleString()}</td><td style={{fontSize: '0.75rem', color: '#64748b'}}>{item.breakdown}</td></>}
-                    {type === 'grocery-consumption' && <><td>{item.product?.name}</td><td>{new Date(item.date).toLocaleDateString()}</td><td style={{fontWeight: 800}}>{item.quantity}</td><td>{item.unit || 'Units'}</td><td>{item.recordedBy || 'System'}</td></>}
-                    {type === 'profit-loss' && <><td>{item.description}</td><td><span className="status-badge" style={{background: '#f1f5f9', color: '#475569'}}>{item.category || 'General'}</span></td><td style={{textAlign: 'right', color: '#10b981', fontWeight: 800}}>{item.income > 0 ? `$${item.income.toLocaleString()}` : '-'}</td><td style={{textAlign: 'right', color: 'var(--portal-danger)', fontWeight: 800}}>{item.expense > 0 ? `$${item.expense.toLocaleString()}` : '-'}</td><td style={{textAlign: 'right', fontWeight: 900}}>${item.balance?.toLocaleString() || '0'}</td></>}
-                    {type === 'detailed-expenses' && <><td>{item.description}</td><td>{item.category?.name}</td><td>{item.paymentMode}</td><td style={{textAlign: 'right', fontWeight: 800}}>${item.amount?.toLocaleString()}</td><td>{new Date(item.date).toLocaleDateString()}</td></>}
-                    {type === 'revenue-allocation' && <><td>{item.label}</td><td style={{textAlign: 'center'}}>{item.percentage}%</td><td style={{textAlign: 'right', fontWeight: 900}}>${item.allocatedAmount?.toLocaleString()}</td></>}
-                    {type === 'enrollment-grouped' && <><td>{item.name}</td><td>{item.surname}</td><td>{item.gender}</td><td>{item.group}</td><td>{item.category}</td><td>{item.className}</td></>}
-                    {type === 'fees-takings' && <><td>{item.studentName}</td><td>{item.id.slice(-6)}</td><td>{item.className}</td><td>{item.mode}</td><td style={{textAlign: 'right', fontWeight: 800}}>${item.amount?.toLocaleString()}</td><td>{item.capturedBy}</td></>}
-                    {type === 'payments-analytics' && <><td>{item.receipt}</td><td>{item.group}</td><td>{new Date(item.date).toLocaleDateString()}</td><td>{item.mode}</td><td style={{textAlign: 'right', fontWeight: 800}}>${item.usd?.toLocaleString()}</td><td style={{textAlign: 'right', color: '#10b981'}}>${item.crSaved?.toLocaleString()}</td></>}
-                    {type === 'student-debtors' && <><td>{item.name}</td><td>{item.className}</td><td>{item.phone}</td><td style={{textAlign: 'right', fontWeight: 900, color: 'var(--portal-danger)'}}>${item.balance?.toLocaleString()}</td></>}
-                    {type === 'balances-summary' && <><td>{item.name}</td><td>{item.students}</td><td style={{textAlign: 'right'}}>${item.allocated?.toLocaleString()}</td><td style={{textAlign: 'right', color: '#10b981'}}>${item.paid?.toLocaleString()}</td><td style={{textAlign: 'right', color: 'var(--portal-danger)', fontWeight: 800}}>${item.collectible?.toLocaleString()}</td></>}
-                    {type === 'single-fee-group' && <><td>{item.name}</td><td>{item.className}</td><td style={{textAlign: 'right'}}>${item.amount?.toLocaleString()}</td><td style={{textAlign: 'right', color: '#10b981'}}>${item.paid?.toLocaleString()}</td><td style={{textAlign: 'right', color: 'var(--portal-danger)', fontWeight: 800}}>${item.balance?.toLocaleString()}</td></>}
-                    {type === 'student-balances' && <><td>{item.name}</td><td>{item.className}</td>{data.columns?.map((c: any) => <td key={c.id} style={{textAlign: 'right'}}>${(item.balances[c.id] || 0).toLocaleString()}</td>)}<td style={{textAlign: 'right', fontWeight: 900}}>${item.totalBalance?.toLocaleString()}</td></>}
-                    {type === 'communication-logs' && <><td>{new Date(item.createdAt).toLocaleString()}</td><td>{item.student?.name}</td><td>{item.type}</td><td><span className={`status-badge ${item.status === 'Sent' ? 'success' : 'warning'}`}>{item.status}</span></td><td>{item.sender?.name}</td></>}
-                    {type === 'payment-history' && <><td>{item.studentId}</td><td>{item.name}</td><td style={{fontSize: '0.8rem'}}>{item.history?.length} Billing Groups Tracked</td><td><button className="portal-btn-ghost" style={{padding: '4px 8px', fontSize: '0.7rem'}} onClick={() => alert('This feature is currently under development or disabled.')}>Open Audit</button></td></>}
-                    {type === 'uniforms-analytics' && <><td>{new Date(item.date).toLocaleDateString()}</td><td>{item.student}</td><td>{item.paymentMode}</td><td>{item.itemsCount} Items</td><td style={{textAlign: 'right', fontWeight: 800}}>${item.total?.toLocaleString()}</td></>}
-                    {type === 'fees-payments' && <><td>{new Date(item.date).toLocaleDateString()}</td><td>{item.studentName}</td><td>{item.className}</td><td>{item.feeGroup}</td><td>{item.mode}</td><td style={{textAlign: 'right', fontWeight: 800}}>${item.amount?.toLocaleString()}</td></>}
-                    {type === 'audit-logs' && <><td>{item.action}</td><td>{item.actor?.name}</td><td>{item.action?.split('_')[0]}</td><td>{new Date(item.createdAt).toLocaleString()}</td></>}
-                    {type === 'fee-reminders' && <><td>{new Date(item.createdAt).toLocaleString()}</td><td>{item.student?.name}</td><td>{item.type}</td><td>{item.status}</td></>}
-                  </tr>
-                ))}
+                {(() => {
+                  const allRecords = Array.isArray(data) ? data : data.records || data.list || data.detailed || data.breakdown || [];
+                  const totalPages = Math.ceil(allRecords.length / itemsPerPage);
+                  const paginatedRecords = allRecords.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+                  
+                  if (loading) return <tr><td colSpan={10} style={{ textAlign: 'center', padding: '20px' }}>Loading...</td></tr>;
+                  if (paginatedRecords.length === 0) return <tr><td colSpan={10} style={{ textAlign: 'center', padding: '20px' }}>No records found.</td></tr>;
+
+                  return paginatedRecords.map((item: any, i: number) => (
+                    <tr key={i}>
+                      {type === 'payroll-runs' && <><td style={{fontWeight: 800}}>{item.id?.slice(-8) || '-'}</td><td>{item.runDate ? new Date(item.runDate).toLocaleDateString() : '-'}</td><td>{item.month}/{item.year}</td><td>{item.employeesCount}</td><td style={{textAlign: 'right', fontWeight: 900}}>${item.totalNet?.toLocaleString()}</td></>}
+                      {type === 'employee-payslips' && <><td>{item.employeeName}</td><td>{item.payrollRun?.month}/{item.payrollRun?.year}</td><td style={{textAlign: 'right'}}>${item.grossSalary?.toLocaleString()}</td><td style={{textAlign: 'right'}}>${item.taxAmount?.toLocaleString()}</td><td style={{textAlign: 'right', fontWeight: 800}}>${item.netSalary?.toLocaleString()}</td><td><button className="portal-btn-ghost" style={{padding: '4px 8px', fontSize: '0.7rem'}} onClick={() => alert('This feature is currently under development or disabled.')}>View</button></td></>}
+                      {type === 'tax-contributions' && <><td>{item.period}</td><td>{item.employees}</td><td style={{textAlign: 'right'}}>${item.totalPAYE?.toLocaleString()}</td><td style={{textAlign: 'right'}}>${item.totalAidsLevy?.toLocaleString()}</td><td style={{textAlign: 'right', fontWeight: 800}}>${((item.totalPAYE || 0) + (item.totalAidsLevy || 0) + (item.totalOtherDeductions || 0)).toLocaleString()}</td><td style={{fontSize: '0.75rem', color: '#64748b'}}>{item.breakdown}</td></>}
+                      {type === 'grocery-consumption' && <><td>{item.product?.name || '-'}</td><td>{item.date ? new Date(item.date).toLocaleDateString() : '-'}</td><td style={{fontWeight: 800}}>{item.quantity}</td><td>{item.unit || 'Units'}</td><td>{item.recordedBy || 'System'}</td></>}
+                      {type === 'profit-loss' && <><td>{item.description}</td><td><span className="status-badge" style={{background: '#f1f5f9', color: '#475569'}}>{item.category || 'General'}</span></td><td style={{textAlign: 'right', color: '#10b981', fontWeight: 800}}>{item.income > 0 ? `$${item.income.toLocaleString()}` : '-'}</td><td style={{textAlign: 'right', color: 'var(--portal-danger)', fontWeight: 800}}>{item.expense > 0 ? `$${item.expense.toLocaleString()}` : '-'}</td><td style={{textAlign: 'right', fontWeight: 900}}>${item.balance?.toLocaleString() || '0'}</td></>}
+                      {type === 'detailed-expenses' && <><td>{item.description}</td><td>{item.category?.name}</td><td>{item.paymentMode}</td><td style={{textAlign: 'right', fontWeight: 800}}>${item.amount?.toLocaleString()}</td><td>{item.date ? new Date(item.date).toLocaleDateString() : '-'}</td></>}
+                      {type === 'revenue-allocation' && <><td>{item.label}</td><td style={{textAlign: 'center'}}>{item.percentage}%</td><td style={{textAlign: 'right', fontWeight: 900}}>${item.allocatedAmount?.toLocaleString()}</td></>}
+                      {type === 'enrollment-grouped' && <><td>{item.name}</td><td>{item.surname}</td><td>{item.gender}</td><td>{item.group}</td><td>{item.category}</td><td>{item.className}</td></>}
+                      {type === 'fees-takings' && <><td>{item.studentName}</td><td>{item.id?.slice(-6) || '-'}</td><td>{item.className}</td><td>{item.mode}</td><td style={{textAlign: 'right', fontWeight: 800}}>${item.amount?.toLocaleString()}</td><td>{item.capturedBy}</td></>}
+                      {type === 'payments-analytics' && <><td>{item.receipt}</td><td>{item.group}</td><td>{item.date ? new Date(item.date).toLocaleDateString() : '-'}</td><td>{item.mode}</td><td style={{textAlign: 'right', fontWeight: 800}}>${item.usd?.toLocaleString()}</td><td style={{textAlign: 'right', color: '#10b981'}}>${item.crSaved?.toLocaleString()}</td></>}
+                      {type === 'student-debtors' && <><td>{item.name}</td><td>{item.className}</td><td>{item.phone}</td><td style={{textAlign: 'right', fontWeight: 900, color: 'var(--portal-danger)'}}>${item.balance?.toLocaleString()}</td></>}
+                      {type === 'balances-summary' && <><td>{item.name}</td><td>{item.students}</td><td style={{textAlign: 'right'}}>${item.allocated?.toLocaleString()}</td><td style={{textAlign: 'right', color: '#10b981'}}>${item.paid?.toLocaleString()}</td><td style={{textAlign: 'right', color: 'var(--portal-danger)', fontWeight: 800}}>${item.collectible?.toLocaleString()}</td></>}
+                      {type === 'single-fee-group' && <><td>{item.name}</td><td>{item.className}</td><td style={{textAlign: 'right'}}>${item.amount?.toLocaleString()}</td><td style={{textAlign: 'right', color: '#10b981'}}>${item.paid?.toLocaleString()}</td><td style={{textAlign: 'right', color: 'var(--portal-danger)', fontWeight: 800}}>${item.balance?.toLocaleString()}</td></>}
+                      {type === 'student-balances' && <><td>{item.name}</td><td>{item.className}</td>{data.columns?.map((c: any) => <td key={c.id} style={{textAlign: 'right'}}>${(item.balances[c.id] || 0).toLocaleString()}</td>)}<td style={{textAlign: 'right', fontWeight: 900}}>${item.totalBalance?.toLocaleString()}</td></>}
+                      {type === 'communication-logs' && <><td>{item.createdAt ? new Date(item.createdAt).toLocaleString() : '-'}</td><td>{item.student?.name}</td><td>{item.type}</td><td><span className={`status-badge ${item.status === 'Sent' ? 'success' : 'warning'}`}>{item.status}</span></td><td>{item.sender?.name}</td></>}
+                      {type === 'payment-history' && <><td>{item.studentId}</td><td>{item.name}</td><td style={{fontSize: '0.8rem'}}>{item.history?.length} Billing Groups Tracked</td><td><button className="portal-btn-ghost" style={{padding: '4px 8px', fontSize: '0.7rem'}} onClick={() => alert('This feature is currently under development or disabled.')}>Open Audit</button></td></>}
+                      {type === 'uniforms-analytics' && <><td>{item.date ? new Date(item.date).toLocaleDateString() : '-'}</td><td>{item.student}</td><td>{item.paymentMode}</td><td>{item.itemsCount} Items</td><td style={{textAlign: 'right', fontWeight: 800}}>${item.total?.toLocaleString()}</td></>}
+                      {type === 'fees-payments' && <><td>{item.date ? new Date(item.date).toLocaleDateString() : '-'}</td><td>{item.studentName}</td><td>{item.className}</td><td>{item.feeGroup}</td><td>{item.mode}</td><td style={{textAlign: 'right', fontWeight: 800}}>${item.amount?.toLocaleString()}</td></>}
+                      {type === 'audit-logs' && <><td>{item.action}</td><td>{item.actor?.name}</td><td>{item.action?.split('_')[0]}</td><td>{item.createdAt ? new Date(item.createdAt).toLocaleString() : '-'}</td></>}
+                      {type === 'fee-reminders' && <><td>{item.createdAt ? new Date(item.createdAt).toLocaleString() : '-'}</td><td>{item.student?.name}</td><td>{item.type}</td><td>{item.status}</td></>}
+                    </tr>
+                  ));
+                })()}
               </tbody>
             </table>
+            {data && (() => {
+              const allRecords = Array.isArray(data) ? data : data.records || data.list || data.detailed || data.breakdown || [];
+              const totalPages = Math.ceil(allRecords.length / itemsPerPage);
+              return (
+                <div style={{ marginTop: 15, display: 'flex', justifyContent: 'space-between', color: '#718096', fontSize: '0.9rem' }}>
+                  <span>Showing {(currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, allRecords.length)} of {allRecords.length} entries</span>
+                  <div>
+                    <button 
+                      className="portal-btn-ghost" 
+                      style={{ padding: '6px 12px', fontSize: '0.85rem', cursor: currentPage === 1 ? 'not-allowed' : 'pointer', opacity: currentPage === 1 ? 0.5 : 1 }} 
+                      disabled={currentPage === 1} 
+                      onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                    >
+                      Previous
+                    </button>
+                    <button 
+                      className="portal-btn-ghost" 
+                      style={{ padding: '6px 12px', fontSize: '0.85rem', cursor: currentPage >= totalPages ? 'not-allowed' : 'pointer', opacity: currentPage >= totalPages ? 0.5 : 1 }} 
+                      disabled={currentPage >= totalPages} 
+                      onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                    >
+                      Next
+                    </button>
+                  </div>
+                </div>
+              );
+            })()}
           </div>
 
           {/* ── Visualizations ── */}

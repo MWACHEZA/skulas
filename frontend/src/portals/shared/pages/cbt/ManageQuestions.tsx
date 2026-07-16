@@ -15,6 +15,8 @@ export default function ManageQuestions() {
   const [questionType, setQuestionType] = useState('Single choice');
   const [mark, setMark] = useState(1);
   const [questionText, setQuestionText] = useState('');
+  const [section, setSection] = useState('');
+  const [page, setPage] = useState(1);
   
   // For options (Single/Multiple choice)
   const [numOptions, setNumOptions] = useState(4);
@@ -96,7 +98,9 @@ export default function ManageQuestions() {
         options: (questionType.includes('choice') || questionType === 'True or false') 
           ? (questionType === 'True or false' ? ['True', 'False'] : options) 
           : [],
-        answer: answerData
+        answer: answerData,
+        section,
+        page
       });
       showToast('Question added successfully', 'success');
       
@@ -111,7 +115,7 @@ export default function ManageQuestions() {
   };
 
   const handleDeleteQuestion = async (qId: string) => {
-    if (!window.confirm('Delete this question?')) return;
+    if (!(await toastConfirm('Delete this question?'))) return;
     try {
       await api.delete(`/api/cbt/${examId}/questions/${qId}`);
       showToast('Question deleted', 'success');
@@ -196,6 +200,30 @@ export default function ManageQuestions() {
                     className="portal-input" 
                     value={mark}
                     onChange={(e) => setMark(Number(e.target.value))}
+                    min="1"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 15, marginBottom: '15px' }}>
+                <div className="portal-form-group">
+                  <label>Section (Optional)</label>
+                  <input 
+                    type="text" 
+                    className="portal-input" 
+                    value={section}
+                    onChange={(e) => setSection(e.target.value)}
+                    placeholder="e.g. Section A"
+                  />
+                </div>
+                <div className="portal-form-group">
+                  <label>Page Number <span style={{ color: 'red' }}>*</span></label>
+                  <input 
+                    type="number" 
+                    className="portal-input" 
+                    value={page}
+                    onChange={(e) => setPage(Number(e.target.value))}
                     min="1"
                     required
                   />
@@ -332,6 +360,8 @@ export default function ManageQuestions() {
                 <thead>
                   <tr>
                     <th style={{ width: 50 }}>#</th>
+                    <th style={{ width: 80 }}>Page</th>
+                    <th style={{ width: 120 }}>Section</th>
                     <th>Type</th>
                     <th>Question</th>
                     <th style={{ width: 100 }}>Mark</th>
@@ -342,6 +372,8 @@ export default function ManageQuestions() {
                   {exam.questions.map((q: any, index: number) => (
                     <tr key={q.id}>
                       <td>{index + 1}</td>
+                      <td>Page {q.page || 1}</td>
+                      <td>{q.section || '-'}</td>
                       <td>
                         <span style={{ padding: '3px 8px', borderRadius: 4, fontSize: '0.8rem', background: '#ebf8ff', color: '#2b6cb0', fontWeight: 600 }}>
                           {q.type}

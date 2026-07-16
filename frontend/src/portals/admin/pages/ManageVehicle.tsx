@@ -12,6 +12,12 @@ export default function ManageVehicle() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);
 
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+  const totalPages = Math.ceil(vehicles.length / itemsPerPage);
+  const paginatedVehicles = vehicles.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
   const [formData, setFormData] = useState({
     name: '',
     number: '',
@@ -110,7 +116,7 @@ export default function ManageVehicle() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!window.confirm('Delete this vehicle registry? This will affect linked transport schedules.')) return;
+    if (!(await toastConfirm('Delete this vehicle registry? This will affect linked transport schedules.'))) return;
     try {
       await api.delete(`/api/vehicles/${id}`);
       showToast('Vehicle deleted successfully', 'success');
@@ -135,12 +141,13 @@ export default function ManageVehicle() {
           <h2><i className="fas fa-list-ul mr-2"></i> Registered Vehicles</h2>
           <button 
             className="portal-btn-primary" 
+            style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}
             onClick={() => {
               handleCancelEdit();
               setShowModal(true);
             }}
           >
-            <i className="fas fa-plus mr-2"></i>Register Vehicle
+            <i className="fas fa-plus"></i>Register Vehicle
           </button>
         </div>
         <div style={{ padding: '20px' }}>
@@ -157,9 +164,9 @@ export default function ManageVehicle() {
             <tbody>
               {loading ? (
                 <tr><td colSpan={5} style={{ textAlign: 'center', padding: '40px' }}>Loading vehicles catalog...</td></tr>
-              ) : vehicles.length === 0 ? (
+              ) : paginatedVehicles.length === 0 ? (
                 <tr><td colSpan={5} style={{ textAlign: 'center', padding: '40px' }}>No vehicles registered.</td></tr>
-              ) : vehicles.map(v => (
+              ) : paginatedVehicles.map(v => (
                 <tr key={v.id}>
                   <td>
                     <div style={{ fontWeight: 800, color: 'var(--portal-primary)' }}>{v.name}</div>
@@ -187,11 +194,11 @@ export default function ManageVehicle() {
                   </td>
                   <td style={{ textAlign: 'right' }}>
                     <div style={{ display: 'flex', gap: '5px', justifyContent: 'flex-end' }}>
-                      <button onClick={() => handleEdit(v)} className="portal-btn-action edit">
+                      <button className="portal-btn-ghost" style={{ padding: '8px', width: '36px', height: '36px', color: '#2563eb', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Edit" onClick={() => handleEdit(v)}>
                         <i className="fas fa-edit"></i>
                       </button>
-                      <button onClick={() => handleDelete(v.id)} className="portal-btn-action delete">
-                        <i className="fas fa-trash"></i>
+                      <button className="portal-btn-ghost" style={{ padding: '8px', width: '36px', height: '36px', color: '#dc2626', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Delete" onClick={() => handleDelete(v.id)}>
+                        <i className="fas fa-trash-alt"></i>
                       </button>
                     </div>
                   </td>
@@ -199,6 +206,32 @@ export default function ManageVehicle() {
               ))}
             </tbody>
           </table>
+          
+          {vehicles.length > 0 && (
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px', borderTop: '1px solid #e2e8f0', marginTop: '10px' }}>
+              <span style={{ fontSize: '0.85rem', color: '#64748b' }}>
+                Showing {(currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, vehicles.length)} of {vehicles.length} entries
+              </span>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <button 
+                  onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                  disabled={currentPage === 1}
+                  className="portal-btn-ghost"
+                  style={{ padding: '6px 12px', fontSize: '0.85rem' }}
+                >
+                  Previous
+                </button>
+                <button 
+                  onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                  disabled={currentPage === totalPages || vehicles.length === 0}
+                  className="portal-btn-ghost"
+                  style={{ padding: '6px 12px', fontSize: '0.85rem' }}
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 

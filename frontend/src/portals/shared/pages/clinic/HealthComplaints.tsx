@@ -80,7 +80,7 @@ export default function HealthComplaints() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!window.confirm('Delete this health complaint?')) return;
+    if (!(await toastConfirm('Delete this health complaint?'))) return;
     try {
       await api.delete(`/api/clinic/complaints/${id}`);
       showToast('Complaint removed.', 'success');

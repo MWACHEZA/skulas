@@ -77,6 +77,8 @@ export default function PaymentHistoryPage() {
   const [students, setStudents] = useState<{ id: string; name: string }[]>([]);
   const [selectedClass, setSelectedClass] = useState('');
   const [selectedStudent, setSelectedStudent] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   useEffect(() => {
     fetchClasses();
@@ -242,27 +244,57 @@ export default function PaymentHistoryPage() {
                   <td colSpan={5} style={{ textAlign: 'center', padding: '40px' }}>No payments found matching criteria</td>
                 </tr>
               ) : (
-                payments.map(payment => (
-                  <tr key={payment.id}>
-                    <td>{new Date(payment.date).toLocaleString()}</td>
-                    <td>
-                      <div style={{ fontWeight: 900 }}>{payment.student?.name}</div>
-                      <div style={{ fontSize: '0.8rem', color: '#64748b' }}>{payment.student?.class?.name}</div>
-                    </td>
-                    <td>{payment.fee?.description || payment.fee?.feeGroup?.name || 'N/A'}</td>
-                    <td>
-                      <span className="status-badge" style={{ background: '#f8fafc', color: '#475569', border: '1px solid #e2e8f0' }}>
-                        {payment.paymentMode.toUpperCase()}
-                      </span>
-                    </td>
-                    <td style={{ textAlign: 'right', fontWeight: 900, color: '#059669', fontSize: '1.1rem' }}>
-                      {formatCurrency(payment.amount)}
-                    </td>
-                  </tr>
-                ))
+                (() => {
+                  const totalPages = Math.ceil(payments.length / itemsPerPage);
+                  const paginatedPayments = payments.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+                  return paginatedPayments.map(payment => (
+                    <tr key={payment.id}>
+                      <td>{new Date(payment.date).toLocaleString()}</td>
+                      <td>
+                        <div style={{ fontWeight: 900 }}>{payment.student?.name}</div>
+                        <div style={{ fontSize: '0.8rem', color: '#64748b' }}>{payment.student?.class?.name}</div>
+                      </td>
+                      <td>{payment.fee?.description || payment.fee?.feeGroup?.name || 'N/A'}</td>
+                      <td>
+                        <span className="status-badge" style={{ background: '#f8fafc', color: '#475569', border: '1px solid #e2e8f0' }}>
+                          {payment.paymentMode.toUpperCase()}
+                        </span>
+                      </td>
+                      <td style={{ textAlign: 'right', fontWeight: 900, color: '#059669', fontSize: '1.1rem' }}>
+                        {formatCurrency(payment.amount)}
+                      </td>
+                    </tr>
+                  ));
+                })()
               )}
             </tbody>
           </table>
+          {payments.length > 0 && (() => {
+            const totalPages = Math.ceil(payments.length / itemsPerPage);
+            return (
+              <div style={{ padding: '16px 24px', display: 'flex', justifyContent: 'space-between', color: '#718096', fontSize: '0.9rem', borderTop: '1px solid #f1f5f9' }}>
+                <span>Showing {(currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, payments.length)} of {payments.length} entries</span>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <button 
+                    className="portal-btn-ghost" 
+                    style={{ padding: '6px 12px', fontSize: '0.85rem', cursor: currentPage === 1 ? 'not-allowed' : 'pointer', opacity: currentPage === 1 ? 0.5 : 1 }} 
+                    disabled={currentPage === 1} 
+                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                  >
+                    Previous
+                  </button>
+                  <button 
+                    className="portal-btn-ghost" 
+                    style={{ padding: '6px 12px', fontSize: '0.85rem', cursor: currentPage >= totalPages ? 'not-allowed' : 'pointer', opacity: currentPage >= totalPages ? 0.5 : 1 }} 
+                    disabled={currentPage >= totalPages} 
+                    onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
+            );
+          })()}
         </div>
       </div>
       <style>{`

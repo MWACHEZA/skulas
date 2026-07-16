@@ -4,8 +4,9 @@ datasource db {
 }
 
 generator client {
-  provider = "prisma-client-js"
-  output   = "../src/generated/client"
+  provider      = "prisma-client-js"
+  output        = "../src/generated/client"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
 }
 
 model Plan {
@@ -1572,6 +1573,7 @@ model AssetMaintenance {
   description   String
   attachments   Json? // [{name, url}] for proof of work
   cost          Float?
+  notes         String? // Maintenance notes/recommendations
 
   schoolId String
 
@@ -2455,6 +2457,7 @@ model CBTExam {
   id             String       @id @default(cuid())
   title          String
   description    String?
+  instructions   String?      @db.Text
   date           DateTime
   time           String
   passingPercent Float        @default(50)
@@ -2489,6 +2492,9 @@ model CBTQuestion {
   question String  @db.Text
   options  Json? // Array of option strings
   answer   Json // Array of correct option strings or true/false
+
+  section String?
+  page    Int     @default(1)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

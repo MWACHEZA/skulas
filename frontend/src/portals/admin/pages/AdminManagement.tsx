@@ -16,6 +16,8 @@ export default function AdminManagement() {
   const [activeUserForEdit, setActiveUserForEdit] = useState<any>(null);
   const [selectedAdmin, setSelectedAdmin] = useState<any>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
   
   const { user: currentUser } = useAuth();
   const { showToast } = useToast();
@@ -37,7 +39,7 @@ export default function AdminManagement() {
   };
 
   const handleResetPassword = async (user: any) => {
-    if (!window.confirm(`Authorize cryptographic reset for ${user.name} to default credentials?`)) return;
+    if (!(await toastConfirm(`Authorize cryptographic reset for ${user.name} to default credentials?`))) return;
     try {
       await api.post(`/api/users/${user.id}/reset-password`);
       showToast('Security credentials reset authorized', 'success');
@@ -87,23 +89,21 @@ export default function AdminManagement() {
         </div>
       </div>
 
-      <div className="portal-card animate-in fade-in slide-in-from-top-4 duration-500" style={{ marginBottom: '40px' }}>
-        <div className="portal-card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 0 }}>
-          <div style={{ position: 'relative', width: '400px' }}>
-            <input 
-              type="text" 
-              placeholder="Search administration roster..." 
-              className="portal-input"
-              value={searchTerm}
-              onChange={e => setSearchTerm(e.target.value)}
-              style={{ paddingLeft: '48px', fontWeight: 700, height: '52px', borderRadius: '16px' }}
-            />
-            <i className="fas fa-search" style={{ position: 'absolute', left: 18, top: 18, color: '#94a3b8' }}></i>
-          </div>
-          <button className="portal-btn-primary" onClick={() => setIsCreateModalOpen(true)} style={{ background: '#dc2626', border: '1px solid #b91c1c', padding: '14px 32px', fontWeight: 900, height: '52px' }}>
-            <i className="fas fa-user-shield mr-3"></i>Authorize Administrator
-          </button>
+      <div className="animate-in fade-in slide-in-from-top-4 duration-500" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
+        <div style={{ position: 'relative', width: '400px' }}>
+          <input 
+            type="text" 
+            placeholder="Search administration roster..." 
+            className="portal-input"
+            value={searchTerm}
+            onChange={e => { setSearchTerm(e.target.value); setCurrentPage(1); }}
+            style={{ paddingLeft: '48px', fontWeight: 700, height: '52px', borderRadius: '16px', background: '#fff', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)' }}
+          />
+          <i className="fas fa-search" style={{ position: 'absolute', left: 18, top: 18, color: '#94a3b8', fontSize: '1rem' }}></i>
         </div>
+        <button className="portal-btn-primary" onClick={() => setIsCreateModalOpen(true)} style={{ background: '#dc2626', border: '1px solid #b91c1c', padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <i className="fas fa-user-shield"></i>Authorize Administrator
+        </button>
       </div>
 
       <div className="management-table-card animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -126,7 +126,12 @@ export default function AdminManagement() {
                 </tr>
               </thead>
               <tbody>
-                {filteredAdmins.length > 0 ? filteredAdmins.map(s => (
+                {(() => {
+                  const indexOfLastItem = currentPage * itemsPerPage;
+                  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+                  const currentItems = filteredAdmins.slice(indexOfFirstItem, indexOfLastItem);
+                  if (currentItems.length === 0 && filteredAdmins.length > 0) setCurrentPage(1);
+                  return filteredAdmins.length > 0 ? currentItems.map(s => (
                   <tr key={s.id}>
                     <td>
                       <div style={{ color: '#4338ca', fontFamily: 'monospace', fontWeight: 900, fontSize: '0.85rem', letterSpacing: '0.5px' }}>
@@ -172,17 +177,17 @@ export default function AdminManagement() {
                     </td>
                     <td style={{ textAlign: 'right' }}>
                       <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
-                        <button className="portal-btn-ghost" style={{ padding: '8px', minWidth: '36px', height: '36px', color: '#2563eb' }} title="Audit Details" onClick={() => openDetail(s)}>
-                          <i className="fas fa-fingerprint"></i>
+                        <button className="portal-btn-ghost" style={{ padding: '8px', width: '36px', height: '36px', color: '#4338ca', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Audit Details" onClick={() => openDetail(s)}>
+                          <i className="fas fa-eye"></i>
                         </button>
-                        <button className="portal-btn-ghost" style={{ padding: '8px', minWidth: '36px', height: '36px', color: '#4338ca' }} title="Modify Account" onClick={() => openEdit(s)}>
+                        <button className="portal-btn-ghost" style={{ padding: '8px', width: '36px', height: '36px', color: '#2563eb', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Modify Account" onClick={() => openEdit(s)}>
                           <i className="fas fa-edit"></i>
                         </button>
-                        <button className="portal-btn-ghost" style={{ padding: '8px', minWidth: '36px', height: '36px', color: s.isLocked ? '#059669' : '#dc2626' }} title={s.isLocked ? "Restore Access" : "Restrict Access"} onClick={() => handleLockToggle(s)}>
+                        <button className="portal-btn-ghost" style={{ padding: '8px', width: '36px', height: '36px', color: s.isLocked ? '#059669' : '#dc2626', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title={s.isLocked ? "Restore Access" : "Restrict Access"} onClick={() => handleLockToggle(s)}>
                           <i className={`fas fa-${s.isLocked ? 'unlock' : 'user-lock'}`}></i>
                         </button>
-                        <button className="portal-btn-ghost" style={{ padding: '8px', minWidth: '36px', height: '36px', color: 'var(--portal-danger)' }} title="Revoke Identity" onClick={() => {
-                          if (window.confirm(`Permanently revoke and delete institutional identity for ${s.name}?`)) {
+                        <button className="portal-btn-ghost" style={{ padding: '8px', width: '36px', height: '36px', color: '#dc2626', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Revoke Identity" onClick={async () => {
+                          if (await toastConfirm(`Permanently revoke and delete institutional identity for ${s.name}?`)) {
                             api.delete(`/api/users/${s.id}`).then(() => {
                                 showToast('Identity revoked permanently', 'success');
                                 fetchAdmins();
@@ -201,9 +206,36 @@ export default function AdminManagement() {
                         <h3 style={{ color: '#94a3b8', fontWeight: 900 }}>No administrators identified in registry</h3>
                     </td>
                   </tr>
-                )}
+                );
+                })()}
               </tbody>
             </table>
+          </div>
+        )}
+        
+        {filteredAdmins.length > 0 && !loading && (
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px', borderTop: '1px solid #e2e8f0' }}>
+            <span style={{ fontSize: '0.85rem', color: '#64748b' }}>
+              Showing {(currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, filteredAdmins.length)} of {filteredAdmins.length} entries
+            </span>
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <button 
+                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+                className="portal-btn-ghost"
+                style={{ padding: '6px 12px', fontSize: '0.85rem' }}
+              >
+                Previous
+              </button>
+              <button 
+                onClick={() => setCurrentPage(prev => Math.min(prev + 1, Math.ceil(filteredAdmins.length / itemsPerPage)))}
+                disabled={currentPage === Math.ceil(filteredAdmins.length / itemsPerPage) || filteredAdmins.length === 0}
+                className="portal-btn-ghost"
+                style={{ padding: '6px 12px', fontSize: '0.85rem' }}
+              >
+                Next
+              </button>
+            </div>
           </div>
         )}
       </div>

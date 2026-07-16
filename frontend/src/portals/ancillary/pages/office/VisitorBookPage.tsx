@@ -131,7 +131,7 @@ export default function VisitorBookPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!window.confirm('Delete this visitor log?')) return;
+    if (!(await toastConfirm('Delete this visitor log?'))) return;
     try {
       await api.delete(`/api/reception/visitors/${id}`);
       showToast('Visitor log deleted successfully', 'success');

@@ -30,6 +30,13 @@ export default function AdminAssetMaintenance() {
     scheduledDate: '',
   });
 
+  const [showCompleteModal, setShowCompleteModal] = useState(false);
+  const [completeForm, setCompleteForm] = useState({
+    taskId: '',
+    notes: '',
+    condition: 'good'
+  });
+
   useEffect(() => {
     fetchAssets();
   }, []);
@@ -71,14 +78,22 @@ export default function AdminAssetMaintenance() {
     }
   };
 
-  const handleComplete = async (maintId: string) => {
-    if (!window.confirm('Mark this maintenance task as completed? This will update the asset next maintenance timeline.')) return;
+  const handleComplete = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSaving(true);
     try {
-      await api.patch(`/api/assets/maintenance/${maintId}/complete`, {});
+      await api.patch(`/api/assets/maintenance/${completeForm.taskId}/complete`, {
+        notes: completeForm.notes,
+        assetStatus: completeForm.condition
+      });
       showToast('Maintenance task marked as completed', 'success');
+      setShowCompleteModal(false);
+      setCompleteForm({ taskId: '', notes: '', condition: 'good' });
       fetchAssets();
     } catch {
       showToast('Failed to complete maintenance task', 'error');
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -156,7 +171,10 @@ export default function AdminAssetMaintenance() {
                         <button 
                           className="portal-btn-secondary" 
                           style={{ padding: '6px 12px', fontSize: '0.8rem' }}
-                          onClick={() => handleComplete(task.id)}
+                          onClick={() => {
+                            setCompleteForm({ ...completeForm, taskId: task.id, condition: 'good' });
+                            setShowCompleteModal(true);
+                          }}
                         >
                           Complete
                         </button>
@@ -238,6 +256,54 @@ export default function AdminAssetMaintenance() {
                 <button type="submit" className="portal-btn-primary" disabled={saving}>
                   {saving ? <i className="fas fa-spinner fa-spin mr-2"></i> : null}
                   Schedule Task
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Complete Task Modal */}
+      {showCompleteModal && (
+        <div className="portal-modal-overlay">
+          <div className="portal-modal-card" style={{ maxWidth: 500 }}>
+            <div className="portal-modal-header">
+              <h2>Complete Maintenance Task</h2>
+              <button className="modal-close" style={{ border: 'none', background: 'none', fontSize: '1.5rem', cursor: 'pointer' }} onClick={() => setShowCompleteModal(false)}>&times;</button>
+            </div>
+            <form onSubmit={handleComplete}>
+              <div className="portal-modal-body">
+                <div style={{ display: 'grid', gap: 16 }}>
+                  <div>
+                    <label className="portal-label">Maintenance Notes / Recommendations</label>
+                    <textarea
+                      className="portal-input"
+                      placeholder="Describe what was done..."
+                      value={completeForm.notes}
+                      onChange={e => setCompleteForm({ ...completeForm, notes: e.target.value })}
+                      rows={4}
+                    />
+                  </div>
+                  <div>
+                    <label className="portal-label">Update Asset Condition</label>
+                    <select
+                      className="portal-input"
+                      value={completeForm.condition}
+                      onChange={e => setCompleteForm({ ...completeForm, condition: e.target.value })}
+                    >
+                      <option value="good">Good (No issues)</option>
+                      <option value="fair">Fair (Minor wear)</option>
+                      <option value="poor">Damaged / Poor (Needs attention)</option>
+                      <option value="condemned">Condemned (Beyond repair)</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div className="portal-modal-footer">
+                <button type="button" className="portal-btn-neutral" onClick={() => setShowCompleteModal(false)}>Cancel</button>
+                <button type="submit" className="portal-btn-primary" disabled={saving}>
+                  {saving ? <i className="fas fa-spinner fa-spin mr-2"></i> : null}
+                  Mark as Completed
                 </button>
               </div>
             </form>

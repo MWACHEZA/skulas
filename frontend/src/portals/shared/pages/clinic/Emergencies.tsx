@@ -64,7 +64,7 @@ export default function Emergencies() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!window.confirm('Delete this emergency record?')) return;
+    if (!(await toastConfirm('Delete this emergency record?'))) return;
     try {
       await api.delete(`/api/clinic/emergencies/${id}`);
       showToast('Record deleted successfully', 'success');

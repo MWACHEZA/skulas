@@ -22,6 +22,10 @@ export default function AdminStudents() {
   const { user: currentUser } = useAuth();
   const { showToast } = useToast();
 
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
   useEffect(() => {
     fetchStudents();
   }, []);
@@ -39,7 +43,7 @@ export default function AdminStudents() {
   };
 
   const handleDelete = async (user: any) => {
-    if (!window.confirm(`Are you sure you want to permanently delete ${user.name}? This action cannot be undone.`)) return;
+    if (!(await toastConfirm(`Are you sure you want to permanently delete ${user.name}? This action cannot be undone.`))) return;
     try {
       await api.delete(`/api/students/${user.id}`);
       showToast('Student record deleted successfully', 'success');
@@ -52,7 +56,7 @@ export default function AdminStudents() {
 
   const handleResetPassword = async (user: any) => {
     const userId = user.userId || user.user?.id || user.id;
-    if (!window.confirm(`Reset password for ${user.name} to default "Password"?`)) return;
+    if (!(await toastConfirm(`Reset password for ${user.name} to default "Password"?`))) return;
     try {
       await api.post(`/api/users/${userId}/reset-password`);
       showToast('Password reset successfully', 'success');
@@ -131,6 +135,7 @@ export default function AdminStudents() {
               <p>Loading students...</p>
             </div>
           ) : (
+            <>
             <table className="management-table">
               <thead>
                 <tr>
@@ -144,71 +149,109 @@ export default function AdminStudents() {
                 </tr>
               </thead>
               <tbody>
-                {(Array.isArray(filteredStudents) ? filteredStudents : []).length > 0 ? (Array.isArray(filteredStudents) ? filteredStudents : []).map(s => {
-                  const name = s.user?.name || s.name;
-                  return (
-                    <tr key={s.id}>
-                      <td style={{ color: '#718096', fontFamily: 'monospace', fontWeight: 600 }}>{s.studentId}</td>
-                      <td>
-                        <div className="user-info-cell">
-                          <div className={`user-avatar student`}>
-                            {s.user?.avatar ? (
-                              <img src={`${BASE_URL}/api/storage/media/${currentUser?.schoolCode}/images/${s.user.avatar}`} alt="" style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} />
-                            ) : (
-                              name.charAt(0)
-                            )}
-                          </div>
-                          <div className="user-name-wrap">
-                            <span className="user-name">{name}</span>
-                            <div className="role-badges-group">
-                              <span className="role-badge role-student">Student</span>
-                              {(Array.isArray(s.user?.secondaryRoles) ? s.user.secondaryRoles : []).map((r: string, idx: number) => (
-                                <span key={idx} className="secondary-role-badge">{r}</span>
-                              ))}
+                {(() => {
+                  const safeFiltered = Array.isArray(filteredStudents) ? filteredStudents : [];
+                  if (safeFiltered.length === 0) {
+                    return (
+                      <tr>
+                        <td colSpan={7} style={{ textAlign: 'center', padding: 40, color: '#718096' }}>No students found.</td>
+                      </tr>
+                    );
+                  }
+                  
+                  const indexOfLastItem = currentPage * itemsPerPage;
+                  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+                  const currentItems = safeFiltered.slice(indexOfFirstItem, indexOfLastItem);
+                  
+                  return currentItems.map(s => {
+                    const name = s.user?.name || s.name;
+                    return (
+                      <tr key={s.id}>
+                        <td style={{ color: '#718096', fontFamily: 'monospace', fontWeight: 600 }}>{s.studentId}</td>
+                        <td>
+                          <div className="user-info-cell">
+                            <div className={`user-avatar student`}>
+                              {s.user?.avatar ? (
+                                <img src={`${BASE_URL}/api/storage/media/${currentUser?.schoolCode}/images/${s.user.avatar}`} alt="" style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} />
+                              ) : (
+                                name.charAt(0)
+                              )}
+                            </div>
+                            <div className="user-name-wrap">
+                              <span className="user-name">{name}</span>
+                              <div className="role-badges-group">
+                                <span className="role-badge role-student">Student</span>
+                                {(Array.isArray(s.user?.secondaryRoles) ? s.user.secondaryRoles : []).map((r: string, idx: number) => (
+                                  <span key={idx} className="secondary-role-badge">{r}</span>
+                                ))}
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      </td>
-                      <td>{s.class?.name || 'Unassigned'}</td>
-                      <td>{s.user?.email || s.email || 'N/A'}</td>
-                      <td>{s.user?.phone || s.phone || 'N/A'}</td>
-                      <td>
-                        <span className={`status-badge ${s.status === 'Enrolled' ? 'status-active' : 'status-inactive'}`}>
-                          {s.status}
-                          {s.user?.isLocked && <span style={{ marginLeft: 5 }}>(Locked)</span>}
-                        </span>
-                      </td>
-                      <td>
-                        <div className="action-buttons">
-                          <button className="btn-icon btn-view" title="View Profile" onClick={() => openDetail(s)}>
-                            <i className="fas fa-eye"></i>
-                          </button>
-                          <button className="btn-icon btn-edit" title="Edit Student" onClick={() => openEdit(s)}>
-                            <i className="fas fa-pencil-alt"></i>
-                          </button>
-                          <button className="btn-icon btn-lock" title={s.user?.isLocked ? "Unlock Access" : "Lock Access"} onClick={() => handleLockToggle(s)}>
-                            <i className={`fas fa-${s.user?.isLocked ? 'unlock' : 'lock'}`}></i>
-                          </button>
-                          <button className="btn-icon btn-view" title="Academic History" style={{ background: 'rgba(111, 66, 193, 0.1)', color: '#6f42c1' }} onClick={() => window.location.href = `/admin/student-history?id=${s.id}`}>
-                            <i className="fas fa-history"></i>
-                          </button>
-                          <button className="btn-icon btn-edit" title="Generate Report Card" style={{ background: 'rgba(235, 68, 90, 0.1)', color: '#eb445a' }} onClick={() => navigate(`/admin/reports?studentId=${s.user?.id || s.id}`)}>
-                            <i className="fas fa-file-pdf"></i>
-                          </button>
-                          <button className="btn-icon btn-delete" title="Delete Permanent" onClick={() => handleDelete(s)}>
-                            <i className="fas fa-trash"></i>
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                }) : (
-                  <tr>
-                    <td colSpan={7} style={{ textAlign: 'center', padding: 40, color: '#718096' }}>No students found.</td>
-                  </tr>
-                )}
+                        </td>
+                        <td>{s.class?.name || 'Unassigned'}</td>
+                        <td>{s.user?.email || s.email || 'N/A'}</td>
+                        <td>{s.user?.phone || s.phone || 'N/A'}</td>
+                        <td>
+                          <span className={`status-badge ${s.status === 'Enrolled' ? 'status-active' : 'status-inactive'}`}>
+                            {s.status}
+                            {s.user?.isLocked && <span style={{ marginLeft: 5 }}>(Locked)</span>}
+                          </span>
+                        </td>
+                        <td>
+                          <div className="action-buttons">
+                            <button className="btn-icon btn-view" title="View Profile" onClick={() => openDetail(s)}>
+                              <i className="fas fa-eye"></i>
+                            </button>
+                            <button className="btn-icon btn-edit" title="Edit Student" onClick={() => openEdit(s)}>
+                              <i className="fas fa-pencil-alt"></i>
+                            </button>
+                            <button className="btn-icon btn-lock" title={s.user?.isLocked ? "Unlock Access" : "Lock Access"} onClick={() => handleLockToggle(s)}>
+                              <i className={`fas fa-${s.user?.isLocked ? 'unlock' : 'lock'}`}></i>
+                            </button>
+                            <button className="btn-icon btn-view" title="Academic History" style={{ background: 'rgba(111, 66, 193, 0.1)', color: '#6f42c1' }} onClick={() => window.location.href = `/admin/student-history?id=${s.id}`}>
+                              <i className="fas fa-history"></i>
+                            </button>
+                            <button className="btn-icon btn-edit" title="Generate Report Card" style={{ background: 'rgba(235, 68, 90, 0.1)', color: '#eb445a' }} onClick={() => navigate(`/admin/reports?studentId=${s.user?.id || s.id}`)}>
+                              <i className="fas fa-file-pdf"></i>
+                            </button>
+                            <button className="btn-icon btn-delete" title="Delete Permanent" onClick={() => handleDelete(s)}>
+                              <i className="fas fa-trash"></i>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  });
+                })()}
               </tbody>
             </table>
+            
+            {filteredStudents.length > 0 && (
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px', borderTop: '1px solid #e2e8f0' }}>
+                <span style={{ fontSize: '0.85rem', color: '#64748b' }}>
+                  Showing {(currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, filteredStudents.length)} of {filteredStudents.length} entries
+                </span>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <button 
+                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                    disabled={currentPage === 1}
+                    className="portal-btn-ghost"
+                    style={{ padding: '6px 12px', fontSize: '0.85rem' }}
+                  >
+                    Previous
+                  </button>
+                  <button 
+                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, Math.ceil(filteredStudents.length / itemsPerPage)))}
+                    disabled={currentPage === Math.ceil(filteredStudents.length / itemsPerPage) || filteredStudents.length === 0}
+                    className="portal-btn-ghost"
+                    style={{ padding: '6px 12px', fontSize: '0.85rem' }}
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
+            )}
+            </>
           )}
         </div>
       </div>

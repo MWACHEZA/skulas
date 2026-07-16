@@ -165,7 +165,7 @@ export default function ManagePaymentPlans() {
   };
 
   const handleDeleteTemplate = async (id: string) => {
-    if (!window.confirm('Are you sure you want to delete this offered plan?')) return;
+    if (!(await toastConfirm('Are you sure you want to delete this offered plan?'))) return;
     try {
       const res = await api.delete(`/api/payment-plans/templates/${id}`);
       showToast('Offered plan template deleted successfully', 'success');

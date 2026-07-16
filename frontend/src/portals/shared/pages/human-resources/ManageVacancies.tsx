@@ -21,6 +21,12 @@ export default function ManageVacancies() {
   const [departments, setDepartments] = useState<{ id: string; name: string }[]>([]);
   const [recruiters, setRecruiters] = useState<{ id: string; firstName: string; lastName: string }[]>([]);
 
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+  const totalPages = Math.ceil(vacancies.length / itemsPerPage);
+  const paginatedVacancies = vacancies.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
   const { register, handleSubmit, reset, control } = useForm();
 
   useEffect(() => {
@@ -82,7 +88,7 @@ export default function ManageVacancies() {
   };
 
   const deleteVacancy = async (id: string) => {
-    if (!window.confirm('Delete this vacancy?')) return;
+    if (!(await toastConfirm('Delete this vacancy?'))) return;
     try {
       await api.delete(`/api/hr/vacancies/${id}`);
       fetchVacancies();
@@ -90,6 +96,85 @@ export default function ManageVacancies() {
       console.error('Failed to delete vacancy', error);
     
     }
+  };
+
+  const handlePrint = () => {
+    window.print();
+  };
+
+  const handleExportExcel = () => {
+    const headers = ['Job Title', 'Recruiter', 'Start Date', 'End Date', 'Status'];
+    const rows = vacancies.map(v => [
+      v.jobTitle || '',
+      v.recruiter ? `${v.recruiter.firstName} ${v.recruiter.lastName}` : 'N/A',
+      v.startDate ? new Date(v.startDate).toLocaleDateString() : '',
+      v.endDate ? new Date(v.endDate).toLocaleDateString() : '',
+      v.status || ''
+    ]);
+    const csvContent = [headers, ...rows]
+      .map(e => e.map(val => `"${String(val).replace(/"/g, '""')}"`).join(","))
+      .join("\n");
+    
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", `vacancies_registry_${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const handleExportWord = () => {
+    const rows = vacancies.map(v => `
+      <tr>
+        <td style="border: 1px solid #cccccc; padding: 8px;">${v.jobTitle || ''}</td>
+        <td style="border: 1px solid #cccccc; padding: 8px;">${v.recruiter ? `${v.recruiter.firstName} ${v.recruiter.lastName}` : 'N/A'}</td>
+        <td style="border: 1px solid #cccccc; padding: 8px;">${v.startDate ? new Date(v.startDate).toLocaleDateString() : ''}</td>
+        <td style="border: 1px solid #cccccc; padding: 8px;">${v.endDate ? new Date(v.endDate).toLocaleDateString() : ''}</td>
+        <td style="border: 1px solid #cccccc; padding: 8px;">${v.status || ''}</td>
+      </tr>
+    `).join('');
+    
+    const html = `
+      <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+        <head>
+          <title>Vacancies Records</title>
+          <style>
+            body { font-family: Arial, sans-serif; padding: 20px; }
+            table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+            th, td { border: 1px solid #cccccc; padding: 8px; text-align: left; }
+            th { background-color: #f2f2f2; font-weight: bold; }
+          </style>
+        </head>
+        <body>
+          <h2>Vacancies Records</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Job Title</th>
+                <th>Recruiter</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${rows}
+            </tbody>
+          </table>
+        </body>
+      </html>
+    `;
+    
+    const blob = new Blob(['\ufeff', html], { type: 'application/msword' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", `vacancies_registry_${new Date().toISOString().slice(0, 10)}.doc`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   return (
@@ -108,11 +193,15 @@ export default function ManageVacancies() {
       <div style={{ marginTop: '20px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '15px', marginBottom: '20px' }}>
           <div style={{ display: 'flex', gap: '10px' }}>
-            <button className="portal-btn-neutral" style={{ padding: '8px 16px', fontSize: '0.85rem' }} onClick={() => alert('This feature is currently under development or disabled.')}>Copy</button>
-            <button className="portal-btn-neutral" style={{ padding: '8px 16px', fontSize: '0.85rem' }} onClick={() => alert('This feature is currently under development or disabled.')}>CSV</button>
-            <button className="portal-btn-neutral" style={{ padding: '8px 16px', fontSize: '0.85rem' }} onClick={() => alert('This feature is currently under development or disabled.')}>Excel</button>
-            <button className="portal-btn-neutral" style={{ padding: '8px 16px', fontSize: '0.85rem' }} onClick={() => alert('This feature is currently under development or disabled.')}>PDF</button>
-            <button className="portal-btn-neutral" style={{ padding: '8px 16px', fontSize: '0.85rem' }} onClick={() => alert('This feature is currently under development or disabled.')}>Print</button>
+            <button onClick={handleExportExcel} className="portal-btn-neutral" style={{ padding: '8px 16px', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <i className="fas fa-file-excel"></i> Excel
+            </button>
+            <button onClick={handleExportWord} className="portal-btn-neutral" style={{ padding: '8px 16px', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <i className="fas fa-file-word"></i> Word
+            </button>
+            <button onClick={handlePrint} className="portal-btn-neutral" style={{ padding: '8px 16px', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <i className="fas fa-print"></i> Print
+            </button>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <span style={{ fontSize: '0.9rem', color: '#64748b', fontWeight: 500 }}>Search:</span>
@@ -137,7 +226,7 @@ export default function ManageVacancies() {
                 <tr>
                   <td colSpan={6} style={{ textAlign: 'center', padding: '30px', color: '#64748b' }}>Loading vacancies...</td>
                 </tr>
-              ) : vacancies.length === 0 ? (
+              ) : paginatedVacancies.length === 0 ? (
                 <tr>
                   <td colSpan={6} style={{ textAlign: 'center', padding: '50px', color: '#94a3b8' }}>
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
@@ -147,7 +236,7 @@ export default function ManageVacancies() {
                   </td>
                 </tr>
               ) : (
-                vacancies.map((vacancy) => (
+                paginatedVacancies.map((vacancy) => (
                   <tr key={vacancy.id}>
                     <td style={{ fontWeight: 600, color: '#1e293b' }}>{vacancy.jobTitle}</td>
                     <td>{vacancy.recruiter?.firstName} {vacancy.recruiter?.lastName}</td>
@@ -182,13 +271,31 @@ export default function ManageVacancies() {
             </tbody>
           </table>
           
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '20px', color: '#64748b', fontSize: '0.9rem' }}>
-            <span>Showing {vacancies.length > 0 ? 1 : 0} to {vacancies.length} of {vacancies.length} entries</span>
-            <div style={{ display: 'flex', gap: '10px' }}>
-              <button className="portal-btn-ghost" style={{ padding: '6px 12px', fontSize: '0.85rem' }} disabled onClick={() => alert('This feature is currently under development or disabled.')}>Previous</button>
-              <button className="portal-btn-ghost" style={{ padding: '6px 12px', fontSize: '0.85rem' }} disabled onClick={() => alert('This feature is currently under development or disabled.')}>Next</button>
+          {vacancies.length > 0 && (
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px', borderTop: '1px solid #e2e8f0', marginTop: '10px' }}>
+              <span style={{ fontSize: '0.85rem', color: '#64748b' }}>
+                Showing {(currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, vacancies.length)} of {vacancies.length} entries
+              </span>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <button 
+                  onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                  disabled={currentPage === 1}
+                  className="portal-btn-ghost"
+                  style={{ padding: '6px 12px', fontSize: '0.85rem' }}
+                >
+                  Previous
+                </button>
+                <button 
+                  onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                  disabled={currentPage === totalPages || vacancies.length === 0}
+                  className="portal-btn-ghost"
+                  style={{ padding: '6px 12px', fontSize: '0.85rem' }}
+                >
+                  Next
+                </button>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
 

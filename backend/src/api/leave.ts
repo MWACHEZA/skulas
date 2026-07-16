@@ -77,4 +77,42 @@ router.post('/', requireAuth, requireRole('SCHOOL_ADMIN', 'TEACHER', 'BURSAR', '
   }
 });
 
+// Update leave status
+router.patch('/:id/status', requireAuth, requireRole('SCHOOL_ADMIN', 'SUPER_ADMIN'), async (req: AuthRequest, res) => {
+  try {
+    const id = req.params.id as string;
+    const { status } = req.body;
+
+    if (!['Approved', 'Rejected', 'Pending'].includes(status)) {
+      return res.status(400).json({ error: 'Invalid status' });
+    }
+
+    const leave = await prisma.staffLeave.update({
+      where: { id, schoolId: req.user!.schoolId! },
+      data: { status }
+    });
+
+    res.json(leave);
+  } catch (error) {
+    console.error('Error updating leave status:', error);
+    res.status(500).json({ error: 'Failed to update leave status' });
+  }
+});
+
+// Delete leave
+router.delete('/:id', requireAuth, requireRole('SCHOOL_ADMIN', 'SUPER_ADMIN'), async (req: AuthRequest, res) => {
+  try {
+    const id = req.params.id as string;
+
+    await prisma.staffLeave.delete({
+      where: { id, schoolId: req.user!.schoolId! }
+    });
+
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Error deleting leave:', error);
+    res.status(500).json({ error: 'Failed to delete leave' });
+  }
+});
+
 export default router;

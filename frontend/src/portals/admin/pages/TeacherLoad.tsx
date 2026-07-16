@@ -67,7 +67,7 @@ export default function TeacherLoad() {
   };
 
   const handleUnassign = async (classId: string, subjectId?: string, isClassTeacher?: boolean) => {
-    if (!window.confirm('Are you sure you want to remove this assignment?')) return;
+    if (!(await toastConfirm('Are you sure you want to remove this assignment?'))) return;
     try {
       await api.post(`/api/teachers/${teacherId}/load/unassign`, { classId, subjectId, isClassTeacher });
       showToast('Removed successfully', 'success');

@@ -8,9 +8,7 @@ export function normalizeSchoolCode(code: string): string {
   if (!code) return '';
   return code
     .toUpperCase()
-    .trim()
-    .replace(/[ILl]/g, '1')
-    .replace(/O/g, '0');
+    .trim();
 }
 
 /**

@@ -13,6 +13,9 @@ export default function AdminDepartments() {
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingDept, setEditingDept] = useState<any>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+  const [searchQuery, setSearchQuery] = useState('');
   const [formData, setFormData] = useState<any>({ 
     name: '', 
     code: '', 
@@ -149,7 +152,7 @@ export default function AdminDepartments() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!window.confirm('Delete this department? This may affect linked subjects and teachers.')) return;
+    if (!(await toastConfirm('Delete this department? This may affect linked subjects and teachers.'))) return;
     try {
       await api.delete(`/api/departments/${id}`);
       showToast('Department deleted', 'success');
@@ -165,6 +168,20 @@ export default function AdminDepartments() {
       <div className="portal-page-header">
         <h1>Department Management</h1>
         <p>Organize your school into departments for better management of subjects and faculty.</p>
+      </div>
+
+      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 20 }}>
+        <div style={{ position: 'relative', width: 400 }}>
+          <i className="fas fa-search" style={{ position: 'absolute', left: 14, top: 14, color: '#94a3b8' }}></i>
+          <input
+            type="text"
+            className="portal-input"
+            placeholder="Search departments..."
+            value={searchQuery}
+            onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
+            style={{ paddingLeft: 40 }}
+          />
+        </div>
       </div>
 
       <div className="portal-card">
@@ -197,7 +214,16 @@ export default function AdminDepartments() {
                 </tr>
               </thead>
               <tbody>
-                {departments.length > 0 ? departments.map(d => (
+                {(() => {
+                  const filtered = departments.filter(d => 
+                    d.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                    d.code.toLowerCase().includes(searchQuery.toLowerCase())
+                  );
+                  const indexOfLastItem = currentPage * itemsPerPage;
+                  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+                  const currentItems = filtered.slice(indexOfFirstItem, indexOfLastItem);
+                  if (currentItems.length === 0 && filtered.length > 0) setCurrentPage(1);
+                  return filtered.length > 0 ? currentItems.map(d => (
                   <tr key={d.id}>
                     <td style={{ fontFamily: 'monospace', color: '#718096' }}>{d.code}</td>
                     {isUniversity && <td style={{ fontWeight: 700, color: 'var(--portal-primary)' }}>{d.deptCode || '---'}</td>}
@@ -243,18 +269,65 @@ export default function AdminDepartments() {
                     <td><span className="portal-badge success">{d._count?.teachers || 0}</span></td>
                     <td><span className="portal-badge" style={{ background: '#fef3c7', color: '#92400e' }}>{d._count?.users || 0}</span></td>
                     <td>
-                      <div style={{ display: 'flex', gap: 10 }}>
-                        <button onClick={() => handleOpenModal(d)} style={{ background: 'none', border: 'none', color: 'var(--portal-primary)', cursor: 'pointer', fontWeight: 600 }}>Edit</button>
-                        <button onClick={() => handleDelete(d.id)} style={{ background: 'none', border: 'none', color: 'var(--portal-danger)', cursor: 'pointer', fontWeight: 600 }}>Delete</button>
+                      <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-start' }}>
+                        <button 
+                          className="portal-btn-ghost" 
+                          title="Edit"
+                          style={{ width: 36, height: 36, padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                          onClick={() => handleOpenModal(d)}
+                        >
+                          <i className="fas fa-edit" style={{ color: '#2563eb' }}></i>
+                        </button>
+                        <button 
+                          className="portal-btn-ghost" 
+                          title="Delete"
+                          style={{ width: 36, height: 36, padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                          onClick={() => handleDelete(d.id)}
+                        >
+                          <i className="fas fa-trash-alt" style={{ color: '#dc2626' }}></i>
+                        </button>
                       </div>
                     </td>
                   </tr>
                 )) : (
-                  <tr><td colSpan={6} style={{ textAlign: 'center', padding: 30, color: '#718096' }}>No departments defined.</td></tr>
-                )}
+                  <tr><td colSpan={10} style={{ textAlign: 'center', padding: 30, color: '#718096' }}>No departments found.</td></tr>
+                );
+                })()}
               </tbody>
             </table>
           )}
+          
+          {(() => {
+            const filtered = departments.filter(d => 
+              d.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+              d.code.toLowerCase().includes(searchQuery.toLowerCase())
+            );
+            return filtered.length > 0 && !loading && (
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px', borderTop: '1px solid #e2e8f0' }}>
+              <span style={{ fontSize: '0.85rem', color: '#64748b' }}>
+                Showing {(currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, filtered.length)} of {filtered.length} entries
+              </span>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <button 
+                  onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                  disabled={currentPage === 1}
+                  className="portal-btn-ghost"
+                  style={{ padding: '6px 12px', fontSize: '0.85rem' }}
+                >
+                  Previous
+                </button>
+                <button 
+                  onClick={() => setCurrentPage(prev => Math.min(prev + 1, Math.ceil(filtered.length / itemsPerPage)))}
+                  disabled={currentPage === Math.ceil(filtered.length / itemsPerPage) || filtered.length === 0}
+                  className="portal-btn-ghost"
+                  style={{ padding: '6px 12px', fontSize: '0.85rem' }}
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          );
+          })()}
         </div>
       </div>
 

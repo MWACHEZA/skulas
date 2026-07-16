@@ -235,7 +235,8 @@ export default function AdminDocumentTemplates() {
       showStudentPhoto: true,
       enableQR: true,
       receiptPrefix: 'REC-',
-      certTitle: 'Certificate of Achievement'
+      certTitle: 'Certificate of Achievement',
+      invoiceDesign: 'modern-clean'
     } 
   });
   const [loading, setLoading] = useState(false);
@@ -299,6 +300,19 @@ export default function AdminDocumentTemplates() {
     { id: 'gold-classic',   name: 'Gold Classic',      color: '#7c5c00', accent: '#fef9c3', icon: 'fa-star' },
   ];
 
+  // ─── Clinic Consultation Notes States ───────────────────────────────────────
+  const [consultationActiveTab, setConsultationActiveTab] = useState<'upload' | 'catalog'>('upload');
+  const [selectedConsultationBuiltin, setSelectedConsultationBuiltin] = useState<string | null>('medical-classic');
+  const [consultationLogoUrl, setConsultationLogoUrl] = useState<string | null>(null);
+  const [uploadingConsultationLogo, setUploadingConsultationLogo] = useState(false);
+  const [generatingConsultations, setGeneratingConsultations] = useState(false);
+
+  const CONSULTATION_BUILTIN = [
+    { id: 'medical-classic', name: 'Medical Classic', color: '#1e40af', accent: '#eff6ff', icon: 'fa-stethoscope' },
+    { id: 'modern-health',   name: 'Modern Health',   color: '#059669', accent: '#ecfdf5', icon: 'fa-heartbeat' },
+    { id: 'clean-clinical',  name: 'Clean Clinical',  color: '#374151', accent: '#f3f4f6', icon: 'fa-notes-medical' },
+  ];
+
   // ─── Receipts States ────────────────────────────────────────────────────────────
   const [receiptActiveTab, setReceiptActiveTab] = useState<'upload' | 'catalog'>('upload');
   const [selectedReceiptBuiltin, setSelectedReceiptBuiltin] = useState<string | null>('clean-white');
@@ -313,6 +327,28 @@ export default function AdminDocumentTemplates() {
     { id: 'dark-premium',   name: 'Dark Premium',      color: '#0f172a', accent: '#fbbf24', icon: 'fa-star' },
     { id: 'maroon-classic', name: 'Maroon Classic',    color: '#7c2d12', accent: '#fef9c3', icon: 'fa-bookmark' },
     { id: 'purple-modern',  name: 'Purple Modern',     color: '#4c1d95', accent: '#ede9fe', icon: 'fa-magic' },
+  ];
+
+  // ─── Invoices States ────────────────────────────────────────────────────────────
+  const [invoiceActiveTab, setInvoiceActiveTab] = useState<'upload' | 'catalog'>('catalog');
+  const [selectedInvoiceBuiltin, setSelectedInvoiceBuiltin] = useState<string | null>('modern-clean');
+  const [invoiceLogoUrl, setInvoiceLogoUrl] = useState<string | null>(null);
+  const [uploadingInvoiceLogo, setUploadingInvoiceLogo] = useState(false);
+  const [generatingInvoices, setGeneratingInvoices] = useState(false);
+
+  const INVOICE_BUILTIN = [
+    { id: 'modern-clean',      name: 'Modern Clean',       color: '#0f172a', accent: '#f8fafc', icon: 'fa-file-invoice' },
+    { id: 'professional-blue', name: 'Professional Blue',  color: '#1e3a8a', accent: '#eff6ff', icon: 'fa-file-invoice-dollar' },
+    { id: 'classic-gray',      name: 'Classic Gray',       color: '#475569', accent: '#f1f5f9', icon: 'fa-file-alt' },
+  ];
+
+  // ─── Question Papers States ──────────────────────────────────────────────────────────
+  const [selectedPaperBuiltin, setSelectedPaperBuiltin] = useState<string | null>('academic-classic');
+
+  const PAPER_BUILTIN = [
+    { id: 'academic-classic',  name: 'Academic Classic',  color: '#1e3a8a', accent: '#eff6ff', icon: 'fa-book-open' },
+    { id: 'modern-assessment', name: 'Modern Assessment', color: '#0f172a', accent: '#f8fafc', icon: 'fa-pen-nib' },
+    { id: 'formal-exam',       name: 'Formal Exam',       color: '#475569', accent: '#f1f5f9', icon: 'fa-file-signature' },
   ];
 
   // ID Cards effects
@@ -330,7 +366,7 @@ export default function AdminDocumentTemplates() {
       fetchReportStudents();
       fetchSchoolBase();
     }
-    if (activeTab === 'receipts') {
+    if (activeTab === 'receipts' || activeTab === 'invoices') {
       fetchSchoolBase();
     }
   }, [activeTab]);
@@ -509,6 +545,23 @@ export default function AdminDocumentTemplates() {
     }
   };
 
+  const uploadConsultationLogo = async (file: File) => {
+    setUploadingConsultationLogo(true);
+    try {
+      const fd = new FormData();
+      fd.append('logo', file);
+      const res = await api.patch('/api/reports/consultation-logo', fd);
+      setConsultationLogoUrl(res.data.consultationLogoUrl || null);
+      setSelectedConsultationBuiltin(null);
+      updateConfig('consultationLogoUrl', res.data.consultationLogoUrl);
+      showToast('Consultation logo uploaded', 'success');
+    } catch {
+      showToast('Failed to upload consultation logo', 'error');
+    } finally {
+      setUploadingConsultationLogo(false);
+    }
+  };
+
   const handleGenerate = async () => {
     if (!templates.front && !selectedBuiltin) {
       showToast('Please select or upload a front template first', 'error');
@@ -540,6 +593,15 @@ export default function AdminDocumentTemplates() {
             ...(res.data.config || {})
           }
         });
+        if (res.data.config?.invoiceDesign) {
+          setSelectedInvoiceBuiltin(res.data.config.invoiceDesign);
+        }
+        if (res.data.config?.consultationDesign) {
+          setSelectedConsultationBuiltin(res.data.config.consultationDesign);
+        }
+        if (res.data.config?.paperDesign) {
+          setSelectedPaperBuiltin(res.data.config.paperDesign);
+        }
       }
     } catch (err) {
       console.error('Failed to fetch template');
@@ -587,29 +649,47 @@ export default function AdminDocumentTemplates() {
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px', marginBottom: 30 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '20px', marginBottom: 30 }}>
+         <div className={`portal-card ${activeTab === 'invoices' ? 'active-border' : ''}`} onClick={() => setActiveTab('invoices')} style={{ cursor: 'pointer', transition: 'all 0.2s' }}>
+            <div className="portal-card-body" style={{ textAlign: 'center' }}>
+               <i className="fas fa-file-invoice" style={{ fontSize: '1.8rem', color: 'var(--portal-info, #0ea5e9)', marginBottom: 10 }}></i>
+               <h3 style={{ fontSize: '1rem' }}>Invoices</h3>
+            </div>
+         </div>
          <div className={`portal-card ${activeTab === 'reports' ? 'active-border' : ''}`} onClick={() => setActiveTab('reports')} style={{ cursor: 'pointer', transition: 'all 0.2s' }}>
             <div className="portal-card-body" style={{ textAlign: 'center' }}>
-               <i className="fas fa-file-contract" style={{ fontSize: '2rem', color: 'var(--school-primary, #3182ce)', marginBottom: 10 }}></i>
-               <h3>Academic Reports</h3>
+               <i className="fas fa-file-contract" style={{ fontSize: '1.8rem', color: 'var(--school-primary, #3182ce)', marginBottom: 10 }}></i>
+               <h3 style={{ fontSize: '1rem' }}>Academic Reports</h3>
             </div>
          </div>
          <div className={`portal-card ${activeTab === 'receipts' ? 'active-border' : ''}`} onClick={() => setActiveTab('receipts')} style={{ cursor: 'pointer', transition: 'all 0.2s' }}>
             <div className="portal-card-body" style={{ textAlign: 'center' }}>
-               <i className="fas fa-file-invoice-dollar" style={{ fontSize: '2rem', color: 'var(--portal-success)', marginBottom: 10 }}></i>
-               <h3>Receipts</h3>
+               <i className="fas fa-file-invoice-dollar" style={{ fontSize: '1.8rem', color: 'var(--portal-success)', marginBottom: 10 }}></i>
+               <h3 style={{ fontSize: '1rem' }}>Receipts</h3>
             </div>
          </div>
          <div className={`portal-card ${activeTab === 'certificates' ? 'active-border' : ''}`} onClick={() => setActiveTab('certificates')} style={{ cursor: 'pointer', transition: 'all 0.2s' }}>
             <div className="portal-card-body" style={{ textAlign: 'center' }}>
-               <i className="fas fa-certificate" style={{ fontSize: '2rem', color: 'var(--portal-warning)', marginBottom: 10 }}></i>
-               <h3>Certificates</h3>
+               <i className="fas fa-certificate" style={{ fontSize: '1.8rem', color: 'var(--portal-warning)', marginBottom: 10 }}></i>
+               <h3 style={{ fontSize: '1rem' }}>Certificates</h3>
             </div>
          </div>
          <div className={`portal-card ${activeTab === 'id-cards' ? 'active-border' : ''}`} onClick={() => setActiveTab('id-cards')} style={{ cursor: 'pointer', transition: 'all 0.2s' }}>
             <div className="portal-card-body" style={{ textAlign: 'center' }}>
-               <i className="fas fa-id-card" style={{ fontSize: '2rem', color: '#805ad5', marginBottom: 10 }}></i>
-               <h3>Student ID Cards</h3>
+               <i className="fas fa-id-card" style={{ fontSize: '1.8rem', color: '#805ad5', marginBottom: 10 }}></i>
+               <h3 style={{ fontSize: '1rem' }}>Student ID Cards</h3>
+            </div>
+         </div>
+         <div className={`portal-card ${activeTab === 'consultation-notes' ? 'active-border' : ''}`} onClick={() => setActiveTab('consultation-notes')} style={{ cursor: 'pointer', transition: 'all 0.2s' }}>
+            <div className="portal-card-body" style={{ textAlign: 'center' }}>
+               <i className="fas fa-notes-medical" style={{ fontSize: '1.8rem', color: '#ef4444', marginBottom: 10 }}></i>
+               <h3 style={{ fontSize: '1rem' }}>Consultation Notes</h3>
+            </div>
+         </div>
+         <div className={`portal-card ${activeTab === 'question-papers' ? 'active-border' : ''}`} onClick={() => setActiveTab('question-papers')} style={{ cursor: 'pointer', transition: 'all 0.2s' }}>
+            <div className="portal-card-body" style={{ textAlign: 'center' }}>
+               <i className="fas fa-file-alt" style={{ fontSize: '1.8rem', color: '#6366f1', marginBottom: 10 }}></i>
+               <h3 style={{ fontSize: '1rem' }}>Question Papers</h3>
             </div>
          </div>
       </div>
@@ -1679,6 +1759,537 @@ export default function AdminDocumentTemplates() {
                   : <><i className="fas fa-file-pdf" style={{ marginRight: 8 }}></i>Generate Receipts PDF</>
                 }
               </button>
+            </div>
+          </div>
+        </div>
+      ) : activeTab === 'invoices' ? (
+        /* ─── Invoices Designer ──────────────────────────────────────────────── */
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 360px', gap: 32, alignItems: 'start', marginTop: 24 }}>
+          {/* LEFT: Live Invoice Preview */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+            <div className="portal-card">
+              <div className="portal-card-header" style={{ paddingBottom: 16 }}>
+                <h3>Preview Configuration</h3>
+                <p>Select a design and adjust settings to preview how group invoices will look.</p>
+              </div>
+              <div className="portal-card-body">
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                  <div>
+                    <label className="portal-label">Primary Color</label>
+                    <div style={{ display: 'flex', gap: 6 }}>
+                      <input type="color" value={template.config.primaryColor} onChange={e => updateConfig('primaryColor', e.target.value)} style={{ height: 40, width: 44, padding: 2, borderRadius: 6, border: '1px solid #e2e8f0' }} />
+                      <input type="text" className="portal-input" value={template.config.primaryColor} onChange={e => updateConfig('primaryColor', e.target.value)} />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="portal-label">School Name Override</label>
+                    <input type="text" className="portal-input" placeholder={school?.name || 'Auto from settings'} />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Live Invoice Preview */}
+            <div style={{ background: '#0f172a', borderRadius: 20, padding: 24 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+                <h3 style={{ margin: 0, color: 'white', fontWeight: 900, display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <span style={{ background: 'rgba(255,255,255,0.1)', borderRadius: 8, padding: '4px 12px', fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.1em' }}>LIVE PREVIEW</span>
+                </h3>
+              </div>
+              {(() => {
+                const iBuiltin = INVOICE_BUILTIN.find(i => i.id === selectedInvoiceBuiltin) || INVOICE_BUILTIN[0];
+                const primaryCol = template.config.primaryColor || iBuiltin.color;
+                const accentCol = iBuiltin.accent;
+                const logoUrl = invoiceLogoUrl ? `/api/storage/file/${invoiceLogoUrl}` :
+                                school?.logo ? `/api/storage/file/${school.logo}` : null;
+                const MOCK_ITEMS = [
+                  { desc: 'Tuition Fee', amount: 500.00 },
+                  { desc: 'Library Fee', amount: 50.00 },
+                  { desc: 'Sports Fee', amount: 30.00 },
+                ];
+                const total = MOCK_ITEMS.reduce((s, i) => s + i.amount, 0);
+
+                return (
+                  <div style={{
+                    width: '100%', maxWidth: 500, margin: '0 auto',
+                    background: '#fff', borderRadius: 10, overflow: 'hidden',
+                    boxShadow: '0 32px 64px -12px rgba(0,0,0,0.55)',
+                    border: '1px solid rgba(255,255,255,0.12)',
+                  }}>
+                    {/* Header */}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', padding: '24px', borderBottom: `2px solid ${accentCol}` }}>
+                      <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
+                        {logoUrl ? (
+                          <img src={logoUrl} alt="Logo" style={{ width: 48, height: 48, objectFit: 'contain' }} />
+                        ) : (
+                          <div style={{ width: 48, height: 48, background: primaryCol, borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <i className="fas fa-university" style={{ color: '#fff', fontSize: 20 }}></i>
+                          </div>
+                        )}
+                        <div>
+                          <div style={{ color: primaryCol, fontWeight: 900, fontSize: '1.2rem' }}>{school?.name || 'Academy Name'}</div>
+                          <div style={{ color: '#64748b', fontSize: '0.75rem' }}>{school?.address || '123 Education Lane'}</div>
+                        </div>
+                      </div>
+                      <div style={{ textAlign: 'right' }}>
+                        <div style={{ color: primaryCol, fontWeight: 900, fontSize: '1.5rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>INVOICE</div>
+                        <div style={{ color: '#64748b', fontSize: '0.75rem', marginTop: 4 }}>INV-2023-001</div>
+                      </div>
+                    </div>
+                    {/* Bill To & Details */}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', padding: '20px 24px', background: accentCol }}>
+                      <div>
+                        <div style={{ fontSize: '0.65rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>Bill To</div>
+                        <div style={{ fontWeight: 800, color: '#1e293b', fontSize: '0.9rem', marginTop: 4 }}>John Doe</div>
+                        <div style={{ fontSize: '0.75rem', color: '#475569' }}>Form 4A • STU-1004</div>
+                      </div>
+                      <div style={{ textAlign: 'right' }}>
+                        <div style={{ display: 'flex', gap: 16, justifyContent: 'flex-end', fontSize: '0.75rem', color: '#475569', marginBottom: 4 }}>
+                          <span style={{ fontWeight: 700 }}>Date:</span> <span>{new Date().toLocaleDateString()}</span>
+                        </div>
+                        <div style={{ display: 'flex', gap: 16, justifyContent: 'flex-end', fontSize: '0.75rem', color: '#475569' }}>
+                          <span style={{ fontWeight: 700 }}>Due Date:</span> <span>{new Date(Date.now() + 14 * 86400000).toLocaleDateString()}</span>
+                        </div>
+                      </div>
+                    </div>
+                    {/* Items */}
+                    <div style={{ padding: '24px' }}>
+                      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem' }}>
+                        <thead>
+                          <tr style={{ borderBottom: `2px solid ${primaryCol}` }}>
+                            <th style={{ textAlign: 'left', padding: '8px 4px', color: primaryCol, fontWeight: 900 }}>Description</th>
+                            <th style={{ textAlign: 'right', padding: '8px 4px', color: primaryCol, fontWeight: 900 }}>Amount</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {MOCK_ITEMS.map((item, i) => (
+                            <tr key={i} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                              <td style={{ padding: '10px 4px', color: '#374151', fontWeight: 600 }}>{item.desc}</td>
+                              <td style={{ textAlign: 'right', fontWeight: 700, color: '#1e293b', padding: '10px 4px' }}>${item.amount.toFixed(2)}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                    {/* Totals */}
+                    <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '0 24px 24px' }}>
+                      <div style={{ width: '200px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 4px', borderBottom: '1px solid #f1f5f9', fontSize: '0.8rem' }}>
+                          <span style={{ color: '#64748b', fontWeight: 600 }}>Subtotal</span>
+                          <span style={{ color: '#1e293b', fontWeight: 700 }}>${total.toFixed(2)}</span>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '12px 4px', background: primaryCol, color: '#fff', borderRadius: '4px', marginTop: 12, alignItems: 'center' }}>
+                          <span style={{ fontWeight: 800, fontSize: '0.8rem', paddingLeft: 8 }}>TOTAL DUE</span>
+                          <span style={{ fontWeight: 900, fontSize: '1.2rem', paddingRight: 8 }}>${total.toFixed(2)}</span>
+                        </div>
+                      </div>
+                    </div>
+                    {/* Footer */}
+                    <div style={{ padding: '16px 24px', background: accentCol, borderTop: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <div style={{ fontSize: '0.7rem', color: '#64748b', fontStyle: 'italic' }}>
+                        {template.config.footerText || 'Thank you for your business.'}
+                      </div>
+                      {template.config.enableQR && (
+                        <div style={{ width: 40, height: 40, background: '#fff', borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <i className="fas fa-qrcode" style={{ color: primaryCol, fontSize: 24 }}></i>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })()}
+            </div>
+          </div>
+
+          {/* RIGHT: Template Controls */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+            {/* Sub-tabs */}
+            <div style={{ display: 'flex', borderBottom: '2px solid #e2e8f0' }}>
+              {(['upload', 'catalog'] as const).map(tab => (
+                <button key={tab} type="button" onClick={() => setInvoiceActiveTab(tab)}
+                  style={{ flex: 1, padding: '10px 8px', fontWeight: 700, fontSize: '0.85rem', background: 'none', border: 'none', cursor: 'pointer',
+                    color: invoiceActiveTab === tab ? '#0ea5e9' : '#64748b',
+                    borderBottom: invoiceActiveTab === tab ? '2px solid #0ea5e9' : '2px solid transparent',
+                    marginBottom: -2, transition: 'all 0.2s' }}>
+                  <i className={`fas ${tab === 'upload' ? 'fa-folder-open' : 'fa-th-large'}`} style={{ marginRight: 6 }}></i>
+                  {tab === 'upload' ? 'Custom Logo' : 'Design Presets'}
+                </button>
+              ))}
+            </div>
+
+            {invoiceActiveTab === 'upload' && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                <div className="portal-card" style={{ padding: 20 }}>
+                  <div style={{ fontWeight: 800, fontSize: '0.85rem', color: '#1e293b', marginBottom: 4 }}>Invoice Logo</div>
+                  <p style={{ fontSize: '0.75rem', color: '#64748b', margin: '0 0 12px' }}>Upload a custom logo specifically for invoices. Leave blank to use the default school branding.</p>
+                  <UploadZone label="Upload Invoice Logo" currentUrl={invoiceLogoUrl} onUpload={async (f) => {
+                    setUploadingInvoiceLogo(true);
+                    try {
+                      const fd = new FormData();
+                      fd.append('logo', f);
+                      const res = await api.patch('/api/reports/invoice-logo', fd);
+                      setInvoiceLogoUrl(res.data.invoiceLogoUrl || null);
+                      showToast('Invoice logo uploaded', 'success');
+                    } catch {
+                      showToast('Failed to upload invoice logo', 'error');
+                    } finally {
+                      setUploadingInvoiceLogo(false);
+                    }
+                  }} uploading={uploadingInvoiceLogo} />
+                </div>
+              </div>
+            )}
+
+            {invoiceActiveTab === 'catalog' && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                <p style={{ margin: 0, fontSize: '0.8rem', color: '#64748b' }}>Select a layout and color theme for system-generated invoices.</p>
+                {INVOICE_BUILTIN.map(inv => (
+                  <div key={inv.id}
+                    onClick={() => { 
+                      setSelectedInvoiceBuiltin(inv.id); 
+                      updateConfig('invoiceDesign', inv.id);
+                      updateConfig('primaryColor', inv.color);
+                    }}
+                    style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '12px 16px', borderRadius: 12,
+                      border: selectedInvoiceBuiltin === inv.id ? `2px solid ${inv.color}` : '2px solid #e2e8f0',
+                      cursor: 'pointer', background: selectedInvoiceBuiltin === inv.id ? '#f8fafc' : '#fff',
+                      transition: 'all 0.2s', boxShadow: selectedInvoiceBuiltin === inv.id ? `0 4px 16px ${inv.color}30` : 'none' }}>
+                    <div style={{ width: 48, height: 30, borderRadius: 6, background: inv.color, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <i className={`fas ${inv.icon}`} style={{ color: '#fff', fontSize: 14 }}></i>
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontWeight: 700, fontSize: '0.85rem', color: '#1e293b' }}>{inv.name}</div>
+                    </div>
+                    {selectedInvoiceBuiltin === inv.id && <i className="fas fa-check-circle" style={{ color: inv.color, fontSize: 18 }}></i>}
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Invoice Options */}
+            <div className="portal-card" style={{ padding: 16 }}>
+              <div style={{ fontWeight: 800, fontSize: '0.8rem', color: '#475569', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                <i className="fas fa-sliders-h" style={{ marginRight: 6, color: '#0ea5e9' }}></i>Invoice Options
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 12 }}>
+                {[
+                  { key: 'showLogo', label: 'School Logo' },
+                  { key: 'enableQR', label: 'Payment QR Code' },
+                ].map(opt => (
+                  <label key={opt.key} style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: '0.82rem', fontWeight: 700, color: '#374151' }}>
+                    <input type="checkbox" checked={template.config[opt.key]} onChange={e => updateConfig(opt.key, e.target.checked)}
+                      style={{ accentColor: '#0ea5e9', width: 16, height: 16 }} />
+                    {opt.label}
+                  </label>
+                ))}
+              </div>
+              <div><label className="portal-label">Footer/Disclaimer</label>
+                <input type="text" className="portal-input" value={template.config.footerText} onChange={e => updateConfig('footerText', e.target.value)} />
+              </div>
+            </div>
+
+            {/* Save Notice */}
+            <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 12, padding: 16 }}>
+              <div style={{ fontSize: '0.75rem', color: '#475569', lineHeight: 1.6 }}>
+                <i className="fas fa-info-circle" style={{ color: '#3b82f6', marginRight: 6 }}></i>
+                Changes made here will apply to all invoices generated from the <strong>Manage Group Invoices</strong> page. Click "Save All Changes" at the top to apply.
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : activeTab === 'consultation-notes' ? (
+        /* ─── Consultation Notes Designer ──────────────────────────────────────────────── */
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 380px', gap: 32, alignItems: 'start', marginTop: 24 }}>
+          {/* LEFT: Live Preview */}
+          <div className="portal-card" style={{ padding: 24, background: '#f8fafc' }}>
+            <div style={{ marginBottom: 20 }}>
+                <h3 style={{ margin: 0, fontWeight: 900, fontSize: '1.2rem', color: '#1e293b' }}>Consultation Note Preview</h3>
+                <p>Adjust settings and see your consultation note design update in real-time below.</p>
+            </div>
+            
+            {(() => {
+                const cBuiltin = CONSULTATION_BUILTIN.find(c => c.id === selectedConsultationBuiltin) || CONSULTATION_BUILTIN[0];
+                const primaryCol = cBuiltin.color;
+                const accentCol = cBuiltin.accent;
+
+                return (
+            <div style={{
+                background: '#fff',
+                borderRadius: 8,
+                padding: 40,
+                boxShadow: '0 10px 25px rgba(0,0,0,0.05)',
+                border: '1px solid #e2e8f0',
+                margin: '0 auto',
+                maxWidth: 700
+            }}>
+                {/* Header */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: `2px solid ${primaryCol}`, paddingBottom: 20, marginBottom: 20 }}>
+                    <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
+                        {consultationLogoUrl ? (
+                            <img src={`/api/storage/file/${consultationLogoUrl}`} style={{ height: 60, objectFit: 'contain' }} alt="Logo" />
+                        ) : (
+                            <div style={{ width: 60, height: 60, background: '#f1f5f9', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <i className="fas fa-hospital" style={{ color: '#94a3b8', fontSize: 24 }}></i>
+                            </div>
+                        )}
+                        <div>
+                            <h2 style={{ margin: 0, fontSize: '1.4rem', color: '#1e293b' }}>{school?.name || 'School Name'}</h2>
+                            <div style={{ color: '#64748b', fontSize: '0.85rem', marginTop: 4 }}>{school?.address || 'School Address'}</div>
+                            <div style={{ color: '#64748b', fontSize: '0.85rem' }}>Phone: {school?.phone || 'N/A'}</div>
+                        </div>
+                    </div>
+                    <div style={{ textAlign: 'right' }}>
+                        <h1 style={{ margin: 0, fontSize: '1.8rem', color: primaryCol }}>CONSULTATION</h1>
+                        <div style={{ fontSize: '0.9rem', color: '#64748b', marginTop: 4 }}>Date: {new Date().toLocaleDateString()}</div>
+                    </div>
+                </div>
+
+                {/* Patient Info */}
+                <div style={{ background: accentCol, padding: 16, borderRadius: 8, marginBottom: 24, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                    <div>
+                        <div style={{ fontSize: '0.75rem', color: primaryCol, fontWeight: 600 }}>PATIENT NAME</div>
+                        <div style={{ fontWeight: 700, color: '#1e293b' }}>John Doe</div>
+                    </div>
+                    <div>
+                        <div style={{ fontSize: '0.75rem', color: primaryCol, fontWeight: 600 }}>CLASS / GRADE</div>
+                        <div style={{ fontWeight: 700, color: '#1e293b' }}>Form 4A</div>
+                    </div>
+                </div>
+
+                {/* Doctor's Notes placeholder */}
+                <div style={{ minHeight: 200 }}>
+                    <div style={{ fontSize: '0.9rem', color: primaryCol, fontWeight: 700, marginBottom: 12 }}>Clinical Observations & Notes</div>
+                    <div style={{ height: 16, background: '#f1f5f9', borderRadius: 4, width: '100%', marginBottom: 10 }}></div>
+                    <div style={{ height: 16, background: '#f1f5f9', borderRadius: 4, width: '90%', marginBottom: 10 }}></div>
+                    <div style={{ height: 16, background: '#f1f5f9', borderRadius: 4, width: '95%', marginBottom: 10 }}></div>
+                    <div style={{ height: 16, background: '#f1f5f9', borderRadius: 4, width: '80%', marginBottom: 30 }}></div>
+
+                    <div style={{ fontSize: '0.9rem', color: primaryCol, fontWeight: 700, marginBottom: 12 }}>Prescription / Recommendations</div>
+                    <div style={{ height: 16, background: '#f1f5f9', borderRadius: 4, width: '85%', marginBottom: 10 }}></div>
+                    <div style={{ height: 16, background: '#f1f5f9', borderRadius: 4, width: '70%' }}></div>
+                </div>
+
+                {/* Footer Signature */}
+                {template.config.showStamp && (
+                    <div style={{ marginTop: 60, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+                        <div>
+                            <div style={{ borderTop: `1px solid ${primaryCol}`, width: 200, paddingTop: 8, fontSize: '0.85rem', color: primaryCol, textAlign: 'center' }}>
+                                Medical Officer Signature
+                            </div>
+                        </div>
+                        <div style={{ width: 100, height: 100, border: `2px dashed ${primaryCol}`, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: primaryCol, fontSize: '0.8rem', transform: 'rotate(-15deg)', opacity: 0.5 }}>
+                            Official Stamp
+                        </div>
+                    </div>
+                )}
+            </div>
+            );
+            })()}
+          </div>
+
+          {/* RIGHT: Customization Options */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+            {/* Tabs */}
+            <div style={{ display: 'flex', borderBottom: '2px solid #e2e8f0' }}>
+              {(['upload', 'catalog'] as const).map(tab => (
+                <button
+                  key={tab} type="button" onClick={() => setConsultationActiveTab(tab)}
+                  style={{
+                    flex: 1, padding: '10px 8px', fontWeight: 700, fontSize: '0.85rem',
+                    background: 'none', border: 'none', cursor: 'pointer',
+                    color: consultationActiveTab === tab ? '#ef4444' : '#64748b',
+                    borderBottom: consultationActiveTab === tab ? '2px solid #ef4444' : '2px solid transparent',
+                    marginBottom: -2, transition: 'all 0.2s'
+                  }}
+                >
+                  {tab === 'upload' ? 'Custom Logo' : 'Template Styles'}
+                </button>
+              ))}
+            </div>
+
+            {consultationActiveTab === 'upload' && (
+              <div className="portal-card" style={{ padding: 20 }}>
+                <UploadZone
+                  label="Consultation Logo"
+                  currentUrl={consultationLogoUrl}
+                  uploading={uploadingConsultationLogo}
+                  onUpload={uploadConsultationLogo} 
+                />
+              </div>
+            )}
+
+            {consultationActiveTab === 'catalog' && (
+              <div className="portal-card" style={{ padding: 20 }}>
+                <div style={{ fontWeight: 800, fontSize: '0.85rem', color: '#1e293b', marginBottom: 12 }}>Select Design</div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 12 }}>
+                  {CONSULTATION_BUILTIN.map(c => (
+                    <div
+                      key={c.id}
+                      onClick={() => {
+                        setSelectedConsultationBuiltin(c.id);
+                        updateConfig('consultationDesign', c.id);
+                        updateConfig('primaryColor', c.color); // If needed, though consultation preview computes it
+                      }}
+                      style={{
+                        padding: 12, borderRadius: 12, border: `2px solid ${selectedConsultationBuiltin === c.id ? c.color : '#e2e8f0'}`,
+                        background: selectedConsultationBuiltin === c.id ? c.accent : '#fff',
+                        cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 12
+                      }}
+                    >
+                      <div style={{ width: 40, height: 40, borderRadius: 8, background: c.color, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <i className={`fas ${c.icon}`} style={{ color: '#fff' }}></i>
+                      </div>
+                      <div style={{ fontWeight: 700, color: '#1e293b' }}>{c.name}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className="portal-card" style={{ padding: 20 }}>
+              <div style={{ fontWeight: 800, fontSize: '0.85rem', color: '#1e293b', marginBottom: 16 }}>Features</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                {[
+                  { key: 'showStamp', label: 'Show Signature & Stamp area' }
+                ].map(opt => (
+                  <label key={opt.key} style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: '0.82rem', fontWeight: 700, color: '#374151' }}>
+                    <input type="checkbox" checked={template.config[opt.key]} onChange={e => updateConfig(opt.key, e.target.checked)}
+                      style={{ accentColor: '#ef4444', width: 16, height: 16 }} />
+                    {opt.label}
+                  </label>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : activeTab === 'question-papers' ? (
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 380px', gap: 32, alignItems: 'start', marginTop: 24 }}>
+          {/* Preview Panel */}
+          <div className="portal-card" style={{ padding: 40, background: '#f8fafc', minHeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            {(() => {
+              const pBuiltin = PAPER_BUILTIN.find(p => p.id === selectedPaperBuiltin) || PAPER_BUILTIN[0];
+              const pColor = pBuiltin.color;
+              const logoUrl = template.config?.paperLogo || template.config?.consultationLogo || school?.logo;
+
+              return (
+                <div style={{ 
+                  background: 'white', width: '100%', maxWidth: 700, padding: 40, 
+                  boxShadow: '0 10px 30px rgba(0,0,0,0.05)', borderRadius: 2,
+                  borderTop: `8px solid ${pColor}`, fontFamily: '"Times New Roman", Times, serif'
+                }}>
+                  <div style={{ textAlign: 'center', marginBottom: 30, borderBottom: `2px solid ${pColor}`, paddingBottom: 20 }}>
+                    {logoUrl && (
+                       <img src={logoUrl.startsWith('/api') || logoUrl.startsWith('http') ? logoUrl : `/api/storage/file/${logoUrl}`} alt="Logo" style={{ height: 80, marginBottom: 15 }} />
+                    )}
+                    <h1 style={{ margin: '0 0 10px', fontSize: '2rem', textTransform: 'uppercase', color: pColor }}>
+                      {school?.name || 'SCHOOL NAME'}
+                    </h1>
+                    <h2 style={{ textTransform: 'uppercase', fontSize: '1.4rem', margin: 0, color: '#333' }}>Term 3 Examination 2026</h2>
+                  </div>
+                  
+                  <div style={{ marginBottom: 20 }}>
+                    <h3 style={{ fontSize: '1.1rem', fontWeight: 800, textDecoration: 'underline', color: pColor }}>INSTRUCTIONS TO CANDIDATES</h3>
+                    <p style={{ marginTop: 10, fontSize: '0.95rem', color: '#2d3748' }}>Answer all questions in the space provided. Write your name clearly.</p>
+                  </div>
+                  
+                  <div style={{ margin: '40px 0', borderBottom: '1px dashed #ccc', position: 'relative' }}>
+                    <span style={{ position: 'absolute', top: -10, left: '50%', transform: 'translateX(-50%)', background: 'white', padding: '0 10px', fontSize: '0.75rem', color: '#94a3b8' }}>PAGE BREAK (PRINT)</span>
+                  </div>
+                  
+                  <div style={{ textAlign: 'center', marginBottom: 20, borderBottom: `2px solid ${pColor}`, paddingBottom: 10, opacity: 0.6 }}>
+                    <h3 style={{ margin: 0, textTransform: 'uppercase', fontSize: '1rem', color: pColor }}>{school?.name || 'SCHOOL NAME'}</h3>
+                    <h4 style={{ margin: '5px 0 0 0', textTransform: 'uppercase', fontSize: '0.85rem' }}>Term 3 Examination 2026</h4>
+                  </div>
+
+                  <div style={{ marginTop: 30 }}>
+                    <div style={{ fontWeight: 800, fontSize: '1.1rem', marginBottom: 15, color: '#1e293b' }}>SECTION A</div>
+                    <div style={{ display: 'flex', gap: 15, marginBottom: 20 }}>
+                      <div style={{ fontWeight: 800, color: pColor }}>1.</div>
+                      <div style={{ flex: 1 }}>
+                        <p style={{ margin: '0 0 10px', fontSize: '1rem', color: '#2d3748' }}>Explain the process of photosynthesis in plants.</p>
+                        <div style={{ borderBottom: '1px dotted #ccc', height: 60 }}></div>
+                        <div style={{ textAlign: 'right', fontWeight: 700, fontStyle: 'italic', marginTop: 10, color: '#718096' }}>[5 marks]</div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div style={{ textAlign: 'center', marginTop: 40, borderTop: '1px solid #ccc', paddingTop: 10, fontSize: '0.85rem', color: '#718096' }}>
+                    --- END OF EXAMINATION ---
+                  </div>
+                  {template.config?.paperSignature && (
+                    <div style={{ textAlign: 'right', marginTop: 30 }}>
+                      <img src={`/api/storage/file/${template.config.paperSignature}`} alt="Signature" style={{ height: 60, objectFit: 'contain' }} />
+                      <div style={{ borderTop: '1px dashed #ccc', width: 200, display: 'inline-block', marginTop: 5, color: '#2d3748', fontSize: '0.9rem', paddingTop: 5, textAlign: 'center' }}>Examiner Signature</div>
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
+          </div>
+
+          {/* Config Panel */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+            <div className="portal-card" style={{ padding: 20 }}>
+              <div style={{ fontWeight: 800, fontSize: '0.85rem', color: '#1e293b', marginBottom: 12 }}>Question Paper Media</div>
+              <div style={{ marginBottom: 24 }}>
+                <UploadZone 
+                  label="Upload Paper Logo" 
+                  currentUrl={template.config?.paperLogo || null} 
+                  onUpload={async (file) => {
+                    const fd = new FormData();
+                    fd.append('file', file);
+                    try {
+                      const res = await api.post('/api/storage/upload', fd);
+                      updateConfig('paperLogo', res.data.filename);
+                    } catch (e) {
+                      showToast('Upload failed', 'error');
+                    }
+                  }} 
+                  uploading={false} 
+                />
+              </div>
+              <div style={{ marginBottom: 12 }}>
+                <UploadZone 
+                  label="Upload Signature" 
+                  currentUrl={template.config?.paperSignature || null} 
+                  onUpload={async (file) => {
+                    const fd = new FormData();
+                    fd.append('file', file);
+                    try {
+                      const res = await api.post('/api/storage/upload', fd);
+                      updateConfig('paperSignature', res.data.filename);
+                    } catch (e) {
+                      showToast('Upload failed', 'error');
+                    }
+                  }} 
+                  uploading={false} 
+                />
+              </div>
+            </div>
+
+            <div className="portal-card" style={{ padding: 20 }}>
+              <div style={{ fontWeight: 800, fontSize: '0.85rem', color: '#1e293b', marginBottom: 12 }}>Select Paper Template</div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 12 }}>
+                {PAPER_BUILTIN.map(p => (
+                  <div
+                    key={p.id}
+                    onClick={() => {
+                      setSelectedPaperBuiltin(p.id);
+                      updateConfig('paperDesign', p.id);
+                    }}
+                    style={{
+                      padding: 12, borderRadius: 12, border: `2px solid ${selectedPaperBuiltin === p.id ? p.color : '#e2e8f0'}`,
+                      background: selectedPaperBuiltin === p.id ? p.accent : '#fff',
+                      cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 12
+                    }}
+                  >
+                    <div style={{ width: 40, height: 40, borderRadius: 8, background: p.color, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <i className={`fas ${p.icon}`} style={{ color: '#fff' }}></i>
+                    </div>
+                    <div style={{ fontWeight: 700, color: '#1e293b' }}>{p.name}</div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>

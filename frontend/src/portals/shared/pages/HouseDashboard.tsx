@@ -128,7 +128,7 @@ export default function HouseDashboard() {
 
   const handleUnassignStudent = async (studentId: string) => {
     if (!selectedHouse) return;
-    if (!window.confirm('Are you sure you want to remove this student from the house?')) return;
+    if (!(await toastConfirm('Are you sure you want to remove this student from the house?'))) return;
     setAssigning(true);
     try {
       await api.post('/api/schools/houses/assign-student', {

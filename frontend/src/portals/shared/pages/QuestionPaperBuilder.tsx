@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
+import { useAuth } from '../../../contexts/AuthContext';
 
 interface Question {
   id: string;
@@ -23,10 +24,12 @@ export default function QuestionPaperBuilder() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { showToast } = useToast();
+  const { user } = useAuth();
   
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [subjects, setSubjects] = useState<{id: string, name: string}[]>([]);
+  const [schoolInfo, setSchoolInfo] = useState<any>(null);
   
   const [paper, setPaper] = useState({
     title: '',
@@ -38,10 +41,34 @@ export default function QuestionPaperBuilder() {
     sections: [] as Section[]
   });
 
+  const [templateConfig, setTemplateConfig] = useState<any>({});
+  
+  const PAPER_BUILTIN = [
+    { id: 'academic-classic',  name: 'Academic Classic',  color: '#1e3a8a', accent: '#eff6ff', icon: 'fa-book-open' },
+    { id: 'modern-assessment', name: 'Modern Assessment', color: '#0f172a', accent: '#f8fafc', icon: 'fa-pen-nib' },
+    { id: 'formal-exam',       name: 'Formal Exam',       color: '#475569', accent: '#f1f5f9', icon: 'fa-file-signature' },
+  ];
+
   useEffect(() => {
     fetchSubjects();
     if (id) fetchPaper();
+    fetchSchoolInfo();
+    fetchTemplate();
   }, [id]);
+
+  const fetchTemplate = async () => {
+    try {
+      const { data } = await api.get('/api/reports/template');
+      if (data && data.config) setTemplateConfig(data.config);
+    } catch (e) { console.error(e); }
+  };
+
+  const fetchSchoolInfo = async () => {
+    try {
+      const res = await api.get('/api/schools/me');
+      setSchoolInfo(res.data);
+    } catch (e) { console.error(e); }
+  };
 
   const fetchSubjects = async () => {
     try {
@@ -139,6 +166,7 @@ export default function QuestionPaperBuilder() {
           <div className="header-actions" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '2rem' }}>
             <h2><i className="fas fa-edit mr-2"></i> Paper Editor</h2>
             <div style={{ display: 'flex', gap: '10px' }}>
+              <button className="btn btn-secondary" onClick={() => window.print()}><i className="fas fa-print mr-2"></i> Print</button>
               <button className="btn btn-ghost" onClick={() => navigate(-1)}>Cancel</button>
               <button className="btn btn-primary" onClick={handleSave} disabled={saving}>
                 {saving ? 'Saving...' : (id ? 'Update Paper' : 'Finalize Paper')}
@@ -262,32 +290,54 @@ export default function QuestionPaperBuilder() {
 
         {/* Preview Side */}
         <div className="preview-side" style={{ background: '#f8fafc', overflowY: 'auto', padding: '3rem' }}>
-          <div className="paper-preview" style={{ 
-            background: 'white', 
-            minHeight: '100%', 
-            width: '100%', 
-            maxWidth: '800px', 
-            margin: '0 auto', 
-            boxShadow: '0 10px 30px rgba(0,0,0,0.1)', 
-            borderRadius: '2px',
-            padding: '4rem',
-            color: 'black',
-            fontFamily: '"Times New Roman", Times, serif'
-          }}>
-            {/* Paper Header */}
-            <div style={{ textAlign: 'center', marginBottom: '3rem', borderBottom: '2px solid black', paddingBottom: '2rem' }}>
-              <h1 style={{ textTransform: 'uppercase', fontSize: '1.8rem', marginBottom: '10px' }}>{paper.title || 'Untitled Examination Paper'}</h1>
-              <div style={{ display: 'flex', justifyContent: 'center', gap: '2rem', fontSize: '1rem', fontWeight: 600 }}>
-                <span>Subject: {subjects.find(s => s.id === paper.subjectId)?.name || '_________'}</span>
-                <span>Time: {Math.floor(paper.duration / 60)}h {paper.duration % 60}m</span>
+          {(() => {
+            const pBuiltin = PAPER_BUILTIN.find(p => p.id === templateConfig?.paperDesign) || PAPER_BUILTIN[0];
+            const pColor = pBuiltin.color;
+            const logoUrl = templateConfig?.paperLogo || templateConfig?.consultationLogo || schoolInfo?.logo || user?.school?.logo;
+            
+            return (
+              <div className="paper-preview" style={{ 
+                background: 'white', 
+                minHeight: '100%', 
+                width: '100%', 
+                maxWidth: '800px', 
+                margin: '0 auto', 
+                boxShadow: '0 10px 30px rgba(0,0,0,0.1)', 
+                borderRadius: '2px',
+                padding: '4rem',
+                color: 'black',
+                fontFamily: '"Times New Roman", Times, serif',
+                borderTop: `8px solid ${pColor}`
+              }}>
+                {/* Paper Header */}
+                <div style={{ textAlign: 'center', marginBottom: '3rem', borderBottom: `2px solid ${pColor}`, paddingBottom: '2rem' }}>
+                  {logoUrl && (
+                    <img src={logoUrl.startsWith('/api') || logoUrl.startsWith('http') ? logoUrl : `/api/storage/file/${logoUrl}`} alt="School Logo" style={{ height: '100px', marginBottom: '15px' }} />
+                  )}
+                  <h1 style={{ margin: '0 0 15px', fontSize: '2.5rem', textTransform: 'uppercase', letterSpacing: '1px', color: pColor }}>
+                {schoolInfo?.name || user?.school?.name || 'SCHOOL NAME'}
+              </h1>
+              
+              <h2 style={{ textTransform: 'uppercase', fontSize: '1.8rem', marginBottom: '20px' }}>{paper.title || 'Untitled Examination Paper'}</h2>
+              
+              <div style={{ display: 'flex', justifyContent: 'center', gap: '3rem', fontSize: '1.1rem', fontWeight: 600 }}>
+                <span>SUBJECT: {subjects.find(s => s.id === paper.subjectId)?.name || '_________'}</span>
+                <span>TIME: {Math.floor(paper.duration / 60)}h {paper.duration % 60}m</span>
               </div>
-              <div style={{ marginTop: '1rem', fontWeight: 800, fontSize: '1.2rem' }}>TOTAL MARKS: {paper.sections.reduce((acc, s) => acc + s.questions.reduce((qa, q) => qa + q.marks, 0), 0)}</div>
+              <div style={{ marginTop: '1.5rem', fontWeight: 800, fontSize: '1.2rem' }}>TOTAL MARKS: {paper.sections.reduce((acc, s) => acc + s.questions.reduce((qa, q) => qa + q.marks, 0), 0)}</div>
             </div>
 
             {/* Instructions */}
             <div style={{ marginBottom: '2rem' }}>
               <h3 style={{ fontSize: '1.1rem', fontWeight: 800, textDecoration: 'underline' }}>INSTRUCTIONS TO CANDIDATES</h3>
               <p style={{ fontSize: '1rem', marginTop: '10px' }}>{paper.instructions}</p>
+            </div>
+            
+            <div className="cover-page-break" style={{ margin: '40px 0', borderBottom: '1px dashed #ccc' }}></div>
+            
+            <div className="subsequent-header" style={{ display: 'none', textAlign: 'center', marginBottom: '2rem', borderBottom: `2px solid ${pColor}`, paddingBottom: '1rem' }}>
+              <h3 style={{ margin: 0, textTransform: 'uppercase', fontSize: '1.2rem', color: pColor }}>{schoolInfo?.name || user?.school?.name || 'SCHOOL NAME'}</h3>
+              <h4 style={{ margin: '5px 0 0 0', textTransform: 'uppercase', fontSize: '1rem' }}>{paper.title || 'Untitled Examination Paper'}</h4>
             </div>
 
             {/* Sections Content */}
@@ -324,7 +374,23 @@ export default function QuestionPaperBuilder() {
             <div style={{ textAlign: 'center', marginTop: '4rem', fontWeight: 800, borderTop: '1px solid black', paddingTop: '1rem' }}>
               --- END OF EXAMINATION ---
             </div>
-          </div>
+            
+            {templateConfig?.paperSignature && (
+              <div style={{ textAlign: 'right', marginTop: '2rem' }}>
+                <img src={`/api/storage/file/${templateConfig.paperSignature}`} alt="Signature" style={{ height: '60px', objectFit: 'contain' }} />
+                <div style={{ borderTop: '1px dashed #ccc', width: '200px', display: 'inline-block', marginTop: '5px', color: '#2d3748', fontSize: '0.9rem', paddingTop: '5px', textAlign: 'center' }}>Examiner Signature</div>
+              </div>
+            )}
+            
+            <div className="print-footer">
+              {schoolInfo?.name || 'School Name'} 
+              {schoolInfo?.address && ` | ${schoolInfo.address}`}
+              {schoolInfo?.phone && ` | ${schoolInfo.phone}`}
+              {schoolInfo?.email && ` | ${schoolInfo.email}`}
+            </div>
+              </div>
+            );
+          })()}
         </div>
       </div>
 
@@ -346,6 +412,56 @@ export default function QuestionPaperBuilder() {
           font-weight: 600;
         }
         .question-item:hover { border-color: var(--blue) !important; }
+
+        @media print {
+          body * {
+            visibility: hidden;
+          }
+          .preview-side, .preview-side * {
+            visibility: visible;
+          }
+          .preview-side {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: auto !important;
+            overflow: visible !important;
+            padding: 0 !important;
+            background: white !important;
+          }
+          .paper-preview {
+            border: none !important;
+            box-shadow: none !important;
+            padding: 20px !important;
+            margin: 0 !important;
+          }
+          .print-footer {
+            display: block !important;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            padding: 10px 0;
+            background: white;
+            border-top: 1px solid #ccc;
+            font-size: 0.85rem;
+            color: #333;
+          }
+          .cover-page-break {
+            border-bottom: none !important;
+            margin: 0 !important;
+          }
+          .subsequent-header {
+            display: block !important;
+          }
+        }
+        @media screen {
+          .print-footer {
+            display: none;
+          }
+        }
       `}</style>
     </div>
   );

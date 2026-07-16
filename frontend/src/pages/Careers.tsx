@@ -557,7 +557,7 @@ export default function Careers() {
                     className="btn-apply mt-4" 
                     onClick={() => {
                       setIsModalOpen(false);
-                      window.location.href = `/school/${schoolCode}/check-status`;
+                      window.location.href = `/check-status?school=${schoolCode}`;
                     }}
                   >
                     <i className="fas fa-search"></i> Track Application Status

@@ -113,7 +113,7 @@ export default function BulkInvoicesPage() {
   };
 
   const deleteInvoice = async (id: string) => {
-    if (!window.confirm('Authorize permanent removal of this invoicing record? Historical financial audit data may be affected.')) return;
+    if (!(await toastConfirm('Authorize permanent removal of this invoicing record? Historical financial audit data may be affected.'))) return;
     try {
       await api.delete(`/api/fees/bulk-invoices/${id}`);
       showToast('Operation record purged from institutional registry', 'success');

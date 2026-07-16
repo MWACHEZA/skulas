@@ -83,11 +83,15 @@ export default function ManageInvoicesPage() {
   const { showToast } = useToast();
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [loading, setLoading] = useState(true);
+  const [templateConfig, setTemplateConfig] = useState<any>({});
+  const [school, setSchool] = useState<any>(null);
   
   // Modals state
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [isPrintModalOpen, setIsPrintModalOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   // Payment form state
   const [paymentAmount, setPaymentAmount] = useState('');
@@ -103,7 +107,23 @@ export default function ManageInvoicesPage() {
 
   useEffect(() => {
     fetchInvoices();
+    fetchTemplate();
+    fetchSchool();
   }, []);
+
+  const fetchTemplate = async () => {
+    try {
+      const { data } = await api.get('/api/reports/template');
+      if (data && data.config) setTemplateConfig(data.config);
+    } catch { /* silent */ }
+  };
+
+  const fetchSchool = async () => {
+    try {
+      const { data } = await api.get('/api/schools/me');
+      setSchool(data);
+    } catch { /* silent */ }
+  };
 
   const fetchInvoices = async () => {
     try {
@@ -212,18 +232,18 @@ export default function ManageInvoicesPage() {
                   exportToWord('Student_Invoices', headers, rows);
                 }}
                 className="portal-btn-secondary"
-                style={{ padding: '8px 16px', fontSize: '0.85rem' }}
+                style={{ padding: '0 16px', height: '40px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem', fontWeight: 700 }}
                 title="Export to Word"
             >
-              <i className="fas fa-file-word mr-1"></i> Word
+              <i className="fas fa-file-word"></i> Word
             </button>
             <button 
                 onClick={() => window.print()}
                 className="portal-btn-secondary"
-                style={{ padding: '8px 16px', fontSize: '0.85rem' }}
+                style={{ padding: '0 16px', height: '40px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem', fontWeight: 700 }}
                 title="Print / PDF"
             >
-              <i className="fas fa-print mr-1"></i> Print/PDF
+              <i className="fas fa-print"></i> Print/PDF
             </button>
           </div>
         </div>
@@ -270,7 +290,12 @@ export default function ManageInvoicesPage() {
                   <td colSpan={7} style={{ textAlign: 'center', padding: '40px' }}>No invoices found</td>
                 </tr>
               ) : (
-                invoices.map(inv => (
+                (() => {
+                  const indexOfLastItem = currentPage * itemsPerPage;
+                  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+                  const currentItems = invoices.slice(indexOfFirstItem, indexOfLastItem);
+                  if (currentItems.length === 0 && invoices.length > 0) setCurrentPage(1);
+                  return currentItems.map(inv => (
                   <tr key={inv.id}>
                     <td>
                       <div style={{ fontWeight: 900 }}>{inv.feeGroup?.name || 'Custom Invoice'}</div>
@@ -295,27 +320,56 @@ export default function ManageInvoicesPage() {
                     <td style={{ textAlign: 'right' }}>
                       <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
                         <button 
-                          className="portal-btn-primary" 
-                          style={{ padding: '6px 12px', fontSize: '0.8rem' }}
+                          className="portal-btn-ghost" 
+                          style={{ padding: '8px', width: '36px', height: '36px', color: '#059669', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                          title="Accept Payment"
                           onClick={() => openPaymentModal(inv)}
                           disabled={balance(inv) <= 0}
                         >
-                          Accept Payment
+                          <i className="fas fa-hand-holding-usd"></i>
                         </button>
                         <button 
-                          className="portal-btn-secondary" 
-                          style={{ padding: '6px 12px', fontSize: '0.8rem' }}
+                          className="portal-btn-ghost" 
+                          style={{ padding: '8px', width: '36px', height: '36px', color: '#4338ca', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                          title="View"
                           onClick={() => openPrintModal(inv)}
                         >
-                          View
+                          <i className="fas fa-eye"></i>
                         </button>
                       </div>
                     </td>
                   </tr>
-                ))
+                  ));
+                })()
               )}
             </tbody>
           </table>
+          
+          {invoices.length > 0 && !loading && (
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px', borderTop: '1px solid #e2e8f0' }}>
+              <span style={{ fontSize: '0.85rem', color: '#64748b' }}>
+                Showing {(currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, invoices.length)} of {invoices.length} entries
+              </span>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <button 
+                  onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                  disabled={currentPage === 1}
+                  className="portal-btn-ghost"
+                  style={{ padding: '6px 12px', fontSize: '0.85rem' }}
+                >
+                  Previous
+                </button>
+                <button 
+                  onClick={() => setCurrentPage(prev => Math.min(prev + 1, Math.ceil(invoices.length / itemsPerPage)))}
+                  disabled={currentPage === Math.ceil(invoices.length / itemsPerPage) || invoices.length === 0}
+                  className="portal-btn-ghost"
+                  style={{ padding: '6px 12px', fontSize: '0.85rem' }}
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -391,86 +445,157 @@ export default function ManageInvoicesPage() {
               <button onClick={() => setIsPrintModalOpen(false)} className="close-btn"><i className="fas fa-times"></i></button>
             </div>
             <div className="modal-body" style={{ maxHeight: '70vh', overflowY: 'auto' }}>
-              <div ref={printRef} style={{ padding: '40px', background: 'white' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '2px solid #e2e8f0', paddingBottom: '24px', marginBottom: '32px' }}>
-                  <div>
-                    <h1 style={{ margin: 0, color: '#1e293b' }}>INVOICE</h1>
-                    <p style={{ margin: '8px 0 0 0', color: '#64748b' }}>Date: {new Date(selectedInvoice.createdAt).toLocaleDateString()}</p>
-                    <p style={{ margin: '4px 0 0 0', color: '#64748b' }}>Due Date: {new Date(selectedInvoice.dueDate).toLocaleDateString()}</p>
-                  </div>
-                  <div style={{ textAlign: 'right' }}>
-                    <h2 style={{ margin: 0 }}>School Administration</h2>
-                    <p style={{ margin: '4px 0 0 0', color: '#64748b' }}>123 Education Lane</p>
-                    <p style={{ margin: '4px 0 0 0', color: '#64748b' }}>contact@school.edu</p>
-                  </div>
-                </div>
+              <div ref={printRef} className="printable-area" style={{ padding: '40px', background: 'white' }}>
+                {(() => {
+                  const INVOICE_BUILTIN = [
+                    { id: 'modern-clean',      color: '#0f172a', accent: '#f8fafc' },
+                    { id: 'professional-blue', color: '#1e3a8a', accent: '#eff6ff' },
+                    { id: 'classic-gray',      color: '#475569', accent: '#f1f5f9' },
+                  ];
+                  const iBuiltin = INVOICE_BUILTIN.find(i => i.id === templateConfig?.invoiceDesign) || INVOICE_BUILTIN[0];
+                  const primaryCol = templateConfig?.primaryColor || iBuiltin.color;
+                  const accentCol = iBuiltin.accent;
+                  // Handle logo: assume school object has branding and customContent
+                  const branding = school?.branding || {};
+                  const schoolLogo = branding.logo;
+                  const logoUrl = schoolLogo ? `/api/storage/file/${schoolLogo}` : null;
+                  
+                  return (
+                    <div style={{
+                      width: '100%', maxWidth: '800px', margin: '0 auto',
+                      background: '#fff', borderRadius: '10px', overflow: 'hidden',
+                      boxShadow: '0 4px 20px rgba(0,0,0,0.05)',
+                      border: '1px solid #e2e8f0',
+                    }}>
+                      {/* Header */}
+                      <div style={{ display: 'flex', justifyContent: 'space-between', padding: '32px', borderBottom: `2px solid ${accentCol}` }}>
+                        <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
+                          {logoUrl && templateConfig?.showLogo !== false ? (
+                            <img src={logoUrl} alt="Logo" style={{ width: '64px', height: '64px', objectFit: 'contain' }} />
+                          ) : (
+                            <div style={{ width: '64px', height: '64px', background: primaryCol, borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                              <i className="fas fa-university" style={{ color: '#fff', fontSize: '28px' }}></i>
+                            </div>
+                          )}
+                          <div>
+                            <div style={{ color: primaryCol, fontWeight: 900, fontSize: '1.5rem' }}>{school?.name || 'Academy Name'}</div>
+                            <div style={{ color: '#64748b', fontSize: '0.9rem', marginTop: '4px' }}>{school?.address || 'School Address'}</div>
+                            <div style={{ color: '#64748b', fontSize: '0.9rem' }}>{school?.email || 'contact@school.edu'}</div>
+                          </div>
+                        </div>
+                        <div style={{ textAlign: 'right' }}>
+                          <div style={{ color: primaryCol, fontWeight: 900, fontSize: '2rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>INVOICE</div>
+                          <div style={{ color: '#64748b', fontSize: '0.9rem', marginTop: '8px' }}>
+                            INV-{new Date(selectedInvoice.createdAt).getFullYear()}-{selectedInvoice.id.slice(-6).toUpperCase()}
+                          </div>
+                        </div>
+                      </div>
 
-                <div style={{ marginBottom: '40px' }}>
-                  <h3 style={{ margin: '0 0 16px 0', color: '#475569' }}>Bill To:</h3>
-                  <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '8px' }}>
-                    <h2 style={{ margin: 0 }}>{selectedInvoice.student.name}</h2>
-                    <p style={{ margin: '8px 0 0 0', color: '#64748b' }}>Class: {selectedInvoice.student.class?.name}</p>
-                  </div>
-                </div>
+                      {/* Bill To & Details */}
+                      <div style={{ display: 'flex', justifyContent: 'space-between', padding: '24px 32px', background: accentCol }}>
+                        <div>
+                          <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>Bill To</div>
+                          <div style={{ fontWeight: 800, color: '#1e293b', fontSize: '1.1rem', marginTop: '6px' }}>{selectedInvoice.student.name}</div>
+                          <div style={{ fontSize: '0.9rem', color: '#475569', marginTop: '4px' }}>
+                            Class: {selectedInvoice.student.class?.name || 'No Class'}
+                          </div>
+                        </div>
+                        <div style={{ textAlign: 'right' }}>
+                          <div style={{ display: 'flex', gap: '24px', justifyContent: 'flex-end', fontSize: '0.9rem', color: '#475569', marginBottom: '8px' }}>
+                            <span style={{ fontWeight: 700 }}>Date:</span> <span>{new Date(selectedInvoice.createdAt).toLocaleDateString()}</span>
+                          </div>
+                          <div style={{ display: 'flex', gap: '24px', justifyContent: 'flex-end', fontSize: '0.9rem', color: '#475569' }}>
+                            <span style={{ fontWeight: 700 }}>Due Date:</span> <span>{new Date(selectedInvoice.dueDate).toLocaleDateString()}</span>
+                          </div>
+                        </div>
+                      </div>
 
-                <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '40px' }}>
-                  <thead>
-                    <tr style={{ background: '#f1f5f9', borderBottom: '2px solid #cbd5e1' }}>
-                      <th style={{ padding: '12px', textAlign: 'left' }}>Description</th>
-                      <th style={{ padding: '12px', textAlign: 'right' }}>Amount</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td style={{ padding: '16px 12px', borderBottom: '1px solid #e2e8f0' }}>{selectedInvoice.description || selectedInvoice.feeGroup?.name}</td>
-                      <td style={{ padding: '16px 12px', borderBottom: '1px solid #e2e8f0', textAlign: 'right' }}>{formatCurrency(selectedInvoice.amount)}</td>
-                    </tr>
-                    {selectedInvoice.discount > 0 && (
-                      <tr>
-                        <td style={{ padding: '16px 12px', borderBottom: '1px solid #e2e8f0', color: '#dc2626' }}>Discount Applied</td>
-                        <td style={{ padding: '16px 12px', borderBottom: '1px solid #e2e8f0', textAlign: 'right', color: '#dc2626' }}>- {formatCurrency(selectedInvoice.discount)}</td>
-                      </tr>
-                    )}
-                  </tbody>
-                  <tfoot>
-                    <tr>
-                      <td style={{ padding: '16px 12px', fontWeight: 900, textAlign: 'right' }}>Net Total:</td>
-                      <td style={{ padding: '16px 12px', fontWeight: 900, textAlign: 'right' }}>{formatCurrency(netAmount(selectedInvoice))}</td>
-                    </tr>
-                    <tr>
-                      <td style={{ padding: '16px 12px', fontWeight: 900, textAlign: 'right', color: '#059669' }}>Amount Paid:</td>
-                      <td style={{ padding: '16px 12px', fontWeight: 900, textAlign: 'right', color: '#059669' }}>{formatCurrency(selectedInvoice.paid)}</td>
-                    </tr>
-                    <tr>
-                      <td style={{ padding: '16px 12px', fontWeight: 900, textAlign: 'right', fontSize: '1.2rem', color: '#dc2626' }}>Balance Due:</td>
-                      <td style={{ padding: '16px 12px', fontWeight: 900, textAlign: 'right', fontSize: '1.2rem', color: '#dc2626' }}>{formatCurrency(balance(selectedInvoice))}</td>
-                    </tr>
-                  </tfoot>
-                </table>
+                      {/* Items */}
+                      <div style={{ padding: '32px' }}>
+                        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.95rem' }}>
+                          <thead>
+                            <tr style={{ borderBottom: `2px solid ${primaryCol}` }}>
+                              <th style={{ textAlign: 'left', padding: '12px 8px', color: primaryCol, fontWeight: 900 }}>Description</th>
+                              <th style={{ textAlign: 'right', padding: '12px 8px', color: primaryCol, fontWeight: 900 }}>Amount</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr style={{ borderBottom: '1px solid #f1f5f9' }}>
+                              <td style={{ padding: '16px 8px', color: '#374151', fontWeight: 600 }}>
+                                {selectedInvoice.description || selectedInvoice.feeGroup?.name || 'Custom Invoice'}
+                              </td>
+                              <td style={{ textAlign: 'right', fontWeight: 700, color: '#1e293b', padding: '16px 8px' }}>
+                                {formatCurrency(selectedInvoice.amount)}
+                              </td>
+                            </tr>
+                            {selectedInvoice.discount > 0 && (
+                              <tr style={{ borderBottom: '1px solid #f1f5f9' }}>
+                                <td style={{ padding: '16px 8px', color: '#dc2626', fontWeight: 600 }}>Discount Applied</td>
+                                <td style={{ textAlign: 'right', fontWeight: 700, color: '#dc2626', padding: '16px 8px' }}>
+                                  - {formatCurrency(selectedInvoice.discount)}
+                                </td>
+                              </tr>
+                            )}
+                          </tbody>
+                        </table>
+                      </div>
 
-                {selectedInvoice.payments.length > 0 && (
-                  <div>
-                    <h3 style={{ margin: '0 0 16px 0', color: '#475569' }}>Payment History</h3>
-                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                      <thead>
-                        <tr style={{ background: '#f8fafc' }}>
-                          <th style={{ padding: '8px', textAlign: 'left', fontSize: '0.9rem' }}>Date</th>
-                          <th style={{ padding: '8px', textAlign: 'left', fontSize: '0.9rem' }}>Method</th>
-                          <th style={{ padding: '8px', textAlign: 'right', fontSize: '0.9rem' }}>Amount</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {selectedInvoice.payments.map(p => (
-                          <tr key={p.id}>
-                            <td style={{ padding: '8px', borderBottom: '1px solid #e2e8f0', fontSize: '0.9rem' }}>{new Date(p.date).toLocaleDateString()}</td>
-                            <td style={{ padding: '8px', borderBottom: '1px solid #e2e8f0', fontSize: '0.9rem' }}>{p.paymentMode}</td>
-                            <td style={{ padding: '8px', borderBottom: '1px solid #e2e8f0', fontSize: '0.9rem', textAlign: 'right' }}>{formatCurrency(p.amount)}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
+                      {/* Totals */}
+                      <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '0 32px 32px' }}>
+                        <div style={{ width: '300px' }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', padding: '12px 8px', borderBottom: '1px solid #f1f5f9', fontSize: '0.95rem' }}>
+                            <span style={{ color: '#64748b', fontWeight: 600 }}>Net Total</span>
+                            <span style={{ color: '#1e293b', fontWeight: 700 }}>{formatCurrency(netAmount(selectedInvoice))}</span>
+                          </div>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', padding: '12px 8px', borderBottom: '1px solid #f1f5f9', fontSize: '0.95rem' }}>
+                            <span style={{ color: '#059669', fontWeight: 600 }}>Amount Paid</span>
+                            <span style={{ color: '#059669', fontWeight: 700 }}>{formatCurrency(selectedInvoice.paid)}</span>
+                          </div>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', padding: '16px 12px', background: primaryCol, color: '#fff', borderRadius: '6px', marginTop: '16px', alignItems: 'center' }}>
+                            <span style={{ fontWeight: 800, fontSize: '1rem' }}>BALANCE DUE</span>
+                            <span style={{ fontWeight: 900, fontSize: '1.4rem' }}>{formatCurrency(balance(selectedInvoice))}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {selectedInvoice.payments.length > 0 && (
+                        <div style={{ padding: '0 32px 32px' }}>
+                          <h3 style={{ margin: '0 0 16px 0', color: primaryCol, fontSize: '1rem', fontWeight: 800 }}>Payment History</h3>
+                          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                            <thead>
+                              <tr style={{ background: '#f8fafc' }}>
+                                <th style={{ padding: '10px 12px', textAlign: 'left', fontSize: '0.85rem', color: '#64748b' }}>Date</th>
+                                <th style={{ padding: '10px 12px', textAlign: 'left', fontSize: '0.85rem', color: '#64748b' }}>Method</th>
+                                <th style={{ padding: '10px 12px', textAlign: 'right', fontSize: '0.85rem', color: '#64748b' }}>Amount</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {selectedInvoice.payments.map(p => (
+                                <tr key={p.id}>
+                                  <td style={{ padding: '10px 12px', borderBottom: '1px solid #e2e8f0', fontSize: '0.9rem', color: '#333' }}>{new Date(p.date).toLocaleDateString()}</td>
+                                  <td style={{ padding: '10px 12px', borderBottom: '1px solid #e2e8f0', fontSize: '0.9rem', color: '#333' }}>{p.paymentMode}</td>
+                                  <td style={{ padding: '10px 12px', borderBottom: '1px solid #e2e8f0', fontSize: '0.9rem', color: '#333', textAlign: 'right', fontWeight: 600 }}>{formatCurrency(p.amount)}</td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      )}
+
+                      {/* Footer */}
+                      <div style={{ padding: '20px 32px', background: accentCol, borderTop: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <div style={{ fontSize: '0.8rem', color: '#64748b', fontStyle: 'italic', maxWidth: '70%' }}>
+                          {templateConfig?.footerText || 'Thank you for your business. Please ensure timely payment of all invoices.'}
+                        </div>
+                        {templateConfig?.enableQR !== false && (
+                          <div style={{ width: '48px', height: '48px', background: '#fff', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <i className="fas fa-qrcode" style={{ color: primaryCol, fontSize: '32px' }}></i>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })()}
               </div>
             </div>
             <div className="modal-footer" style={{ padding: '20px', borderTop: '1px solid #e2e8f0', display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
@@ -480,35 +605,6 @@ export default function ManageInvoicesPage() {
           </div>
         </div>
       )}
-      <style>{`
-        @media print {
-          .no-print, .portal-page-header, .portal-card, .portal-sidebar, .portal-header, .modal-header, .modal-footer {
-            display: none !important;
-          }
-          .portal-container {
-            margin: 0 !important;
-            padding: 0 !important;
-            max-width: 100% !important;
-          }
-          .management-table-card {
-            box-shadow: none !important;
-            border: none !important;
-            width: 100% !important;
-          }
-          .modal-overlay {
-            position: absolute !important;
-            background: white !important;
-            padding: 0 !important;
-          }
-          .modal-content {
-            box-shadow: none !important;
-            border: none !important;
-            max-width: 100% !important;
-            width: 100% !important;
-          }
-          table { width: 100% !important; }
-        }
-      `}</style>
     </div>
   );
 }

@@ -49,7 +49,7 @@ const IncomePage: React.FC = () => {
   };
 
   const handleDeleteCategory = async (id: string) => {
-    if (!window.confirm('Are you sure you want to purge this classification category? Existing records using this category may be impacted.')) return;
+    if (!(await toastConfirm('Are you sure you want to purge this classification category? Existing records using this category may be impacted.'))) return;
     try {
       await api.delete(`/api/accounts/categories/${id}`);
       toast.success('Classification category purged');
@@ -58,6 +58,8 @@ const IncomePage: React.FC = () => {
       toast.error(error.response?.data?.error || 'Failed to purge category');
     }
   };
+
+  const [editingId, setEditingId] = useState<string | null>(null);
 
   const [formData, setFormData] = useState({
     title: '',
@@ -105,18 +107,40 @@ const IncomePage: React.FC = () => {
     fetchCurrencySettings();
   }, []);
 
+  const handleEdit = (item: any) => {
+    setFormData({
+      title: item.title,
+      date: format(new Date(item.date), 'yyyy-MM-dd'),
+      amount: item.amount.toString(),
+      categoryId: item.categoryId || '',
+      paymentMode: item.paymentMode || '',
+      currency: item.currency || baseCurrency
+    });
+    setEditingId(item.id);
+    setShowEntryModal(true);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.title || !formData.amount || !formData.categoryId) {
       return toast.error('Please fill required fields');
     }
     try {
-      await api.post('/api/accounts/income', {
+      const payload = {
         ...formData,
         amount: parseFloat(formData.amount)
-      });
-      toast.success('Secondary institutional revenue recorded');
+      };
+      
+      if (editingId) {
+        await api.patch(`/api/accounts/income/${editingId}`, payload);
+        toast.success('Income record updated');
+      } else {
+        await api.post('/api/accounts/income', payload);
+        toast.success('Secondary institutional revenue recorded');
+      }
+      
       setFormData({ ...formData, title: '', amount: '' });
+      setEditingId(null);
       setShowEntryModal(false);
       fetchData();
     } catch (error: any) {
@@ -125,7 +149,7 @@ const IncomePage: React.FC = () => {
   };
 
   const handleDelete = async (id: string) => {
-    if (!window.confirm('Are you sure you want to delete this income record? This action cannot be undone.')) return;
+    if (!(await toastConfirm('Are you sure you want to delete this income record? This action cannot be undone.'))) return;
     try {
       await api.delete(`/api/accounts/income/${id}`);
       toast.success('Record purged from ledger');
@@ -220,7 +244,7 @@ const IncomePage: React.FC = () => {
                   <td style={{ fontWeight: 900, color: '#94a3b8' }}>{row.currency}</td>
                   <td style={{ textAlign: 'right', paddingRight: '32px' }}>
                     <div className="action-buttons" style={{ justifyContent: 'flex-end' }}>
-                      <button className="portal-btn-ghost" title="Audit / Edit" style={{ color: '#2563eb', padding: '8px' }} onClick={() => alert('This feature is currently under development or disabled.')}><i className="fas fa-pencil-alt"></i></button>
+                      <button className="portal-btn-ghost" title="Audit / Edit" style={{ color: '#2563eb', padding: '8px' }} onClick={() => handleEdit(row)}><i className="fas fa-pencil-alt"></i></button>
                       <button onClick={() => handleDelete(row.id)} className="portal-btn-ghost" title="Purge Record" style={{ color: '#dc2626', padding: '8px' }}><i className="fas fa-trash"></i></button>
                     </div>
                   </td>
@@ -236,10 +260,10 @@ const IncomePage: React.FC = () => {
           <div className="portal-modal-card animate-in zoom-in duration-200" style={{ maxWidth: '640px', padding: 0 }}>
             <div className="portal-modal-header" style={{ padding: '32px 40px', borderBottom: '1px solid #f1f5f9' }}>
               <div>
-                <h3 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 900, color: '#1e293b' }}>Secure Revenue Entry</h3>
-                <p style={{ margin: '4px 0 0 0', color: '#64748b', fontWeight: 700, fontSize: '0.9rem' }}>Record secondary institutional revenue inflows into the credit ledger.</p>
+                <h3 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 900, color: '#1e293b' }}>{editingId ? 'Update Revenue Entry' : 'Secure Revenue Entry'}</h3>
+                <p style={{ margin: '4px 0 0 0', color: '#64748b', fontWeight: 700, fontSize: '0.9rem' }}>{editingId ? 'Modify an existing revenue record in the ledger.' : 'Record secondary institutional revenue inflows into the credit ledger.'}</p>
               </div>
-              <button onClick={() => setShowEntryModal(false)} className="portal-btn-ghost" style={{ padding: '12px' }}><i className="fas fa-times"></i></button>
+              <button onClick={() => { setShowEntryModal(false); setEditingId(null); setFormData({ ...formData, title: '', amount: '' }); }} className="portal-btn-ghost" style={{ padding: '12px' }}><i className="fas fa-times"></i></button>
             </div>
             <form onSubmit={handleSubmit}>
               <div className="portal-modal-body" style={{ padding: '40px' }}>
@@ -328,14 +352,10 @@ const IncomePage: React.FC = () => {
                   </div>
                 </div>
               </div>
-              <div className="portal-modal-footer" style={{ padding: '32px 40px', background: '#f8fafc', borderTop: '1px solid #f1f5f9' }}>
-                <button type="button" onClick={() => setShowEntryModal(false)} className="portal-btn-ghost" style={{ padding: '14px 32px', fontWeight: 800 }}>Abort Entry</button>
-                <button 
-                  type="submit"
-                  className="portal-btn-primary"
-                  style={{ padding: '14px 40px', background: '#059669', fontWeight: 900 }}
-                >
-                  <i className="fas fa-save mr-2"></i> Record Revenue Inflow
+              <div className="portal-modal-footer" style={{ padding: '32px 40px', background: '#f8fafc', borderTop: '1px solid #f1f5f9', display: 'flex', justifyContent: 'flex-end', gap: '16px' }}>
+                <button type="button" onClick={() => { setShowEntryModal(false); setEditingId(null); setFormData({ ...formData, title: '', amount: '' }); }} className="portal-btn-ghost" style={{ padding: '12px 32px', fontWeight: 800 }}>Cancel</button>
+                <button type="submit" className="portal-btn-primary" style={{ padding: '12px 40px', fontWeight: 900 }}>
+                  <i className="fas fa-save mr-2"></i>{editingId ? 'Update Entry' : 'Commit Entry'}
                 </button>
               </div>
             </form>

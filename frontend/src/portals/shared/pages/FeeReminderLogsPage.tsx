@@ -75,6 +75,7 @@ export default function FeeReminderLogsPage() {
   const [statusFilter, setStatusFilter] = useState('ALL');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
+  const [selectedLog, setSelectedLog] = useState<any>(null);
 
   useEffect(() => {
     loadLogs();
@@ -170,7 +171,15 @@ export default function FeeReminderLogsPage() {
             <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 900, color: '#1e293b' }}>Audit History</h3>
             <p style={{ margin: '4px 0 0 0', color: '#64748b', fontWeight: 700, fontSize: '0.9rem' }}>Detailed history of sent and failed notifications.</p>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+          <span className="status-badge" style={{ fontWeight: 900, background: '#f8fafc', color: '#64748b', border: '1px solid #f1f5f9', padding: '8px 16px' }}>
+            {(Array.isArray(logs) ? logs : []).length} LOG ENTRIES IDENTIFIED
+          </span>
+        </div>
+        
+        {/* ── Parameters ── */}
+        <div className="portal-card" style={{ margin: '0 24px 24px 24px', border: '1px solid #e2e8f0', boxShadow: 'none' }}>
+          <div className="portal-card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px' }}>
+            <h4 style={{ margin: 0, color: '#475569', fontSize: '1rem', fontWeight: 800 }}>Audit Parameters</h4>
             <div style={{ display: 'flex', gap: '8px' }} className="no-print">
               <button 
                 onClick={() => {
@@ -184,11 +193,11 @@ export default function FeeReminderLogsPage() {
                   ]);
                   exportToCSV('Fee_Reminder_Logs', headers, rows);
                 }}
-                className="portal-btn-secondary"
-                style={{ padding: '8px 16px', fontSize: '0.85rem' }}
+                className="portal-btn-ghost"
+                style={{ padding: '8px 16px', fontWeight: 900, fontSize: '0.8rem', border: '1px solid #e2e8f0' }}
                 title="Export to CSV"
               >
-                <i className="fas fa-file-csv mr-1"></i> CSV
+                <i className="fas fa-file-csv mr-2" style={{ color: '#059669' }}></i> CSV
               </button>
               <button 
                 onClick={() => {
@@ -202,24 +211,21 @@ export default function FeeReminderLogsPage() {
                   ]);
                   exportToWord('Fee_Reminder_Logs', headers, rows);
                 }}
-                className="portal-btn-secondary"
-                style={{ padding: '8px 16px', fontSize: '0.85rem' }}
+                className="portal-btn-ghost"
+                style={{ padding: '8px 16px', fontWeight: 900, fontSize: '0.8rem', border: '1px solid #e2e8f0' }}
                 title="Export to Word"
               >
-                <i className="fas fa-file-word mr-1"></i> Word
+                <i className="fas fa-file-word mr-2" style={{ color: '#2563eb' }}></i> Word
               </button>
               <button 
                 onClick={() => window.print()}
-                className="portal-btn-secondary"
-                style={{ padding: '8px 16px', fontSize: '0.85rem' }}
+                className="portal-btn-ghost"
+                style={{ padding: '8px 16px', fontWeight: 900, fontSize: '0.8rem', border: '1px solid #e2e8f0' }}
                 title="Print / PDF"
               >
-                <i className="fas fa-print mr-1"></i> Print/PDF
+                <i className="fas fa-print mr-2" style={{ color: '#64748b' }}></i> Print/PDF
               </button>
             </div>
-            <span className="status-badge" style={{ fontWeight: 900, background: '#f8fafc', color: '#64748b', border: '1px solid #f1f5f9', padding: '8px 16px' }}>
-              {(Array.isArray(logs) ? logs : []).length} LOG ENTRIES IDENTIFIED
-            </span>
           </div>
         </div>
         <div className="table-responsive">
@@ -295,7 +301,7 @@ export default function FeeReminderLogsPage() {
                           <i className="fas fa-redo mr-1"></i> Authorize Retry
                         </button>
                       )}
-                      <button className="portal-btn-ghost" style={{ padding: '8px', color: '#2563eb' }} title="View Detailed Trace" onClick={() => alert('This feature is currently under development or disabled.')}><i className="fas fa-eye"></i></button>
+                      <button className="portal-btn-ghost" style={{ padding: '8px', color: '#2563eb' }} title="View Detailed Trace" onClick={() => setSelectedLog(log)}><i className="fas fa-eye"></i></button>
                     </div>
                   </td>
                 </tr>
@@ -304,6 +310,45 @@ export default function FeeReminderLogsPage() {
           </table>
         </div>
       </div>
+      {/* Log Details Modal */}
+      {selectedLog && (
+        <div className="portal-modal-overlay" onClick={() => setSelectedLog(null)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 1000 }}>
+          <div className="portal-modal-content animate-in zoom-in-95 duration-200" onClick={e => e.stopPropagation()} style={{ background: '#fff', borderRadius: '12px', padding: '32px', width: '500px', maxWidth: '90%', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)' }}>
+            <h2 style={{ margin: '0 0 16px 0', fontSize: '1.5rem', fontWeight: 900, color: '#1e293b' }}>Audit Log Details</h2>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div>
+                <label className="portal-label">Recipient</label>
+                <div style={{ fontWeight: 800 }}>{selectedLog.student?.name || 'Undefined Identity'}</div>
+              </div>
+              <div>
+                <label className="portal-label">Channel</label>
+                <div style={{ fontWeight: 800 }}>{selectedLog.source?.replace('_', ' ')?.toUpperCase() || 'GENERAL'}</div>
+              </div>
+              <div>
+                <label className="portal-label">Status</label>
+                <div style={{ fontWeight: 800 }}>{selectedLog.status}</div>
+              </div>
+              <div>
+                <label className="portal-label">Attempts</label>
+                <div style={{ fontWeight: 800 }}>{selectedLog.retries}</div>
+              </div>
+              <div>
+                <label className="portal-label">Last Timestamp</label>
+                <div style={{ fontWeight: 800 }}>{new Date(selectedLog.lastAttempt).toLocaleString()}</div>
+              </div>
+              {selectedLog.error && (
+                <div>
+                  <label className="portal-label">Error Trace</label>
+                  <pre style={{ background: '#fef2f2', color: '#b91c1c', padding: '12px', borderRadius: '8px', fontSize: '0.8rem', whiteSpace: 'pre-wrap', border: '1px solid #fecaca' }}>{selectedLog.error}</pre>
+                </div>
+              )}
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '32px' }}>
+              <button onClick={() => setSelectedLog(null)} className="portal-btn-secondary" style={{ padding: '8px 24px' }}>Close</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -119,7 +119,7 @@ export default function ClassMigration() {
       return;
     }
 
-    if (!window.confirm(`Are you sure you want to execute bulk class mapping for ${mappingsToSend.length} classes? All students in these classes will be updated.`)) {
+    if (!(await toastConfirm(`Are you sure you want to execute bulk class mapping for ${mappingsToSend.length} classes? All students in these classes will be updated.`))) {
       return;
     }
 

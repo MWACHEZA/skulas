@@ -285,7 +285,7 @@ export default function SportsManagement() {
   };
 
   const handleSportDelete = async (id: string) => {
-    if (!window.confirm('Are you sure you want to delete this sport?')) return;
+    if (!(await toastConfirm('Are you sure you want to delete this sport?'))) return;
     try {
       await api.delete(`/api/schools/sports-list/${id}`);
       showToast('Sport deleted', 'success');
@@ -381,7 +381,7 @@ export default function SportsManagement() {
   };
 
   const handleHouseDelete = async (id: string) => {
-    if (!window.confirm(`Are you sure you want to delete this ${t('house').toLowerCase()}?`)) return;
+    if (!(await toastConfirm(`Are you sure you want to delete this ${t('house').toLowerCase()}?`))) return;
     try {
       await api.delete(`/api/schools/houses/${id}`);
       showToast(`${t('house')} deleted`, 'success');
@@ -457,7 +457,7 @@ export default function SportsManagement() {
   };
 
   const handleEquipmentDelete = async (id: string) => {
-    if (!window.confirm('Are you sure you want to delete this equipment?')) return;
+    if (!(await toastConfirm('Are you sure you want to delete this equipment?'))) return;
     try {
       await api.delete(`/api/schools/sports-equipment/${id}`);
       showToast('Equipment deleted', 'success');

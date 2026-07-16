@@ -1,7 +1,7 @@
 import axios from 'axios';
 import axiosRetry from 'axios-retry';
 
-export const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+export const BASE_URL = import.meta.env.PROD ? '' : (import.meta.env.VITE_API_URL || 'http://localhost:5000');
 
 const api = axios.create({
   baseURL: BASE_URL,
@@ -17,6 +17,10 @@ axiosRetry(api, {
 
 // Attach JWT token to every request
 api.interceptors.request.use((config) => {
+  if (config.data instanceof FormData) {
+    delete config.headers['Content-Type'];
+  }
+
   const token = localStorage.getItem('acadex_token');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;

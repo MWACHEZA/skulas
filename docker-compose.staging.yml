@@ -50,6 +50,7 @@ services:
       JWT_SECRET: staging_jwt_secret_do_not_use_in_prod_12345678
       GEMINI_API_KEY: ""           # Disable AI features in staging
       PORT: 5000
+      FRONTEND_URL: "http://localhost:8080"
       MOCK_WHATSAPP: "true"        # *** Safe: all WhatsApp calls are intercepted ***
     ports:
       - "5001:5000"                 # Exposed on 5001 to avoid clash with local backend

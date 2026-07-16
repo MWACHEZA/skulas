@@ -88,6 +88,8 @@ export default function FeesBillingPage() {
   const [processing, setProcessing] = useState(false);
   const [activeFeeYear, setActiveFeeYear] = useState(new Date().getFullYear());
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 10;
 
   // Standard Invoicing State
   const [selectedFeeGroupIds, setSelectedFeeGroupIds] = useState<string[]>([]);
@@ -112,6 +114,7 @@ export default function FeesBillingPage() {
 
   useEffect(() => {
     if (activeTab === 'standard') {
+      setCurrentPage(1);
       fetchStudents();
     }
   }, [selectedClassIds, selectedCategory, activeTab]);
@@ -223,6 +226,9 @@ export default function FeesBillingPage() {
       setSelectedStudentIds(studentList.map(s => s.id));
     }
   };
+
+  const totalPages = Math.ceil((Array.isArray(students) ? students.length : 0) / pageSize);
+  const paginatedStudents = (Array.isArray(students) ? students : []).slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
   return (
     <div className="portal-container">
@@ -554,7 +560,7 @@ export default function FeesBillingPage() {
                 </tr>
               </thead>
               <tbody>
-                {(Array.isArray(students) ? students : []).map(student => (
+                {paginatedStudents.map(student => (
                   <tr 
                     key={student.id} 
                     onClick={() => toggleStudent(student.id)}
@@ -601,6 +607,30 @@ export default function FeesBillingPage() {
               </tbody>
             </table>
           </div>
+
+          {totalPages > 1 && (
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', padding: '20px', borderTop: '1px solid #f1f5f9' }}>
+              <button
+                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+                className="portal-btn-ghost"
+                style={{ padding: '8px 16px', fontWeight: 800, borderRadius: '8px' }}
+              >
+                Previous
+              </button>
+              <div style={{ display: 'flex', alignItems: 'center', fontWeight: 800, color: '#475569', padding: '0 12px' }}>
+                Page {currentPage} of {totalPages}
+              </div>
+              <button
+                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                disabled={currentPage === totalPages}
+                className="portal-btn-ghost"
+                style={{ padding: '8px 16px', fontWeight: 800, borderRadius: '8px' }}
+              >
+                Next
+              </button>
+            </div>
+          )}
           
           <div style={{ padding: '32px 40px', background: '#f8fafc', borderTop: '1px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderRadius: '0 0 24px 24px' }}>
              <div style={{ fontWeight: 900, color: '#64748b', display: 'flex', alignItems: 'center', gap: '12px' }}>

@@ -265,7 +265,7 @@ export default function AdminClasses() {
                       <button className="btn-icon" style={{ color: '#10b981', background: 'rgba(16, 185, 129, 0.1)', marginRight: '4px' }} onClick={() => handleOpenMigrateModal(c)} title="Migrate Cohort"><i className="fas fa-random"></i></button>
                       <button className="btn-icon btn-edit" onClick={() => handleOpenModal(c)} title="Edit Class"><i className="fas fa-edit"></i></button>
                       <button className="btn-icon btn-delete" title="Delete Class" onClick={async () => {
-                          if (window.confirm(`Delete class ${c.name}?`)) {
+                          if (await toastConfirm(`Delete class ${c.name}?`)) {
                             try {
                               await api.delete(`/api/classes/${c.id}`);
                               showToast('Class deleted successfully', 'success');
@@ -545,7 +545,7 @@ export default function AdminClasses() {
                             className="btn-icon btn-delete" 
                             style={{ padding: '6px', fontSize: '0.7rem' }}
                             onClick={async () => {
-                              if (window.confirm('Remove this assignment?')) {
+                              if (await toastConfirm('Remove this assignment?')) {
                                 try {
                                   await api.delete(`/api/classes/${editingClass.id}/subject-teachers/${st.id}`);
                                   showToast('Assignment removed', 'success');
@@ -650,7 +650,7 @@ export default function AdminClasses() {
                     <button 
                       style={{ background: 'none', border: 'none', color: 'var(--portal-danger)', cursor: 'pointer' }}
                       onClick={async () => {
-                        if (window.confirm(`Delete section ${s.name}?`)) {
+                        if (await toastConfirm(`Delete section ${s.name}?`)) {
                           try {
                             // Assuming a delete endpoint exists or adding it
                             await api.delete(`/api/classes/sections/${s.id}`);

@@ -115,7 +115,7 @@ export default function StudyMaterial() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!window.confirm('Are you sure you want to delete this material?')) return;
+    if (!(await toastConfirm('Are you sure you want to delete this material?'))) return;
     try {
       await api.delete(`/api/study-materials/${id}`);
       showToast('Deleted successfully', 'success');

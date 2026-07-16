@@ -98,7 +98,7 @@ export default function AdminSubjects() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!window.confirm('Are you sure? This will remove the subject from all curriculums.')) return;
+    if (!(await toastConfirm('Are you sure? This will remove the subject from all curriculums.'))) return;
     try {
       await api.delete(`/api/subjects/${id}`);
       showToast('Subject removed', 'success');

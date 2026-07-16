@@ -11,6 +11,12 @@ export default function TransportRoute() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);
   
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+  const totalPages = Math.ceil(routes.length / itemsPerPage);
+  const paginatedRoutes = routes.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+  
   const [formData, setFormData] = useState({ 
     name: '', 
     description: ''
@@ -72,7 +78,7 @@ export default function TransportRoute() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!window.confirm('Delete this transport route? This may affect linked assignments.')) return;
+    if (!(await toastConfirm('Delete this transport route? This may affect linked assignments.'))) return;
     try {
       await api.delete(`/api/transport-routes/${id}`);
       showToast('Route deleted successfully', 'success');
@@ -97,12 +103,13 @@ export default function TransportRoute() {
           <h2><i className="fas fa-list mr-2"></i> Available Routes</h2>
           <button 
             className="portal-btn-primary" 
+            style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}
             onClick={() => {
               handleCancelEdit();
               setShowModal(true);
             }}
           >
-            <i className="fas fa-plus mr-2"></i>Add Route
+            <i className="fas fa-plus"></i>Add Route
           </button>
         </div>
         <div style={{ padding: '20px' }}>
@@ -118,20 +125,20 @@ export default function TransportRoute() {
             <tbody>
               {loading ? (
                 <tr><td colSpan={4} style={{ textAlign: 'center', padding: '40px' }}>Loading routes...</td></tr>
-              ) : routes.length === 0 ? (
+              ) : paginatedRoutes.length === 0 ? (
                 <tr><td colSpan={4} style={{ textAlign: 'center', padding: '40px' }}>No routes configured.</td></tr>
-              ) : routes.map(r => (
+              ) : paginatedRoutes.map(r => (
                 <tr key={r.id}>
                   <td style={{ fontWeight: 800, color: 'var(--portal-primary)' }}>{r.name}</td>
                   <td style={{ color: '#64748b' }}>{r.description || 'No description provided'}</td>
                   <td>{new Date(r.createdAt).toLocaleDateString()}</td>
                   <td style={{ textAlign: 'right' }}>
                     <div style={{ display: 'flex', gap: '5px', justifyContent: 'flex-end' }}>
-                      <button onClick={() => handleEdit(r)} className="portal-btn-action edit">
+                      <button className="portal-btn-ghost" style={{ padding: '8px', width: '36px', height: '36px', color: '#2563eb', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Edit" onClick={() => handleEdit(r)}>
                         <i className="fas fa-edit"></i>
                       </button>
-                      <button onClick={() => handleDelete(r.id)} className="portal-btn-action delete">
-                        <i className="fas fa-trash"></i>
+                      <button className="portal-btn-ghost" style={{ padding: '8px', width: '36px', height: '36px', color: '#dc2626', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Delete" onClick={() => handleDelete(r.id)}>
+                        <i className="fas fa-trash-alt"></i>
                       </button>
                     </div>
                   </td>
@@ -139,6 +146,32 @@ export default function TransportRoute() {
               ))}
             </tbody>
           </table>
+          
+          {routes.length > 0 && (
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px', borderTop: '1px solid #e2e8f0', marginTop: '10px' }}>
+              <span style={{ fontSize: '0.85rem', color: '#64748b' }}>
+                Showing {(currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, routes.length)} of {routes.length} entries
+              </span>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <button 
+                  onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                  disabled={currentPage === 1}
+                  className="portal-btn-ghost"
+                  style={{ padding: '6px 12px', fontSize: '0.85rem' }}
+                >
+                  Previous
+                </button>
+                <button 
+                  onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                  disabled={currentPage === totalPages || routes.length === 0}
+                  className="portal-btn-ghost"
+                  style={{ padding: '6px 12px', fontSize: '0.85rem' }}
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 

@@ -89,7 +89,7 @@ export default function Referrals() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!window.confirm('Delete this referral record?')) return;
+    if (!(await toastConfirm('Delete this referral record?'))) return;
     try {
       await api.delete(`/api/clinic/referrals/${id}`);
       showToast('Referral deleted.', 'success');

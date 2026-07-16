@@ -84,7 +84,7 @@ export default function InquirySettings() {
   };
 
   const deleteInquiry = async (id: string) => {
-    if (!window.confirm('Are you sure you want to delete this inquiry?')) return;
+    if (!(await toastConfirm('Are you sure you want to delete this inquiry?'))) return;
     try {
       await api.delete(`/api/website-settings/inquiries/${id}`);
       setInquiries(inquiries.filter((inq) => inq.id !== id));

@@ -43,6 +43,12 @@ export default function PrefectCouncil() {
   const [reports, setReports] = useState<ConductReport[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // Pagination state for Duties
+  const [dutiesPage, setDutiesPage] = useState(1);
+  const itemsPerPage = 10;
+  const totalDutyPages = Math.ceil(duties.length / itemsPerPage);
+  const paginatedDuties = duties.slice((dutiesPage - 1) * itemsPerPage, dutiesPage * itemsPerPage);
+
   // Modals
   const [showDutyModal, setShowDutyModal] = useState(false);
   const [showMeetingModal, setShowMeetingModal] = useState(false);
@@ -110,8 +116,8 @@ export default function PrefectCouncil() {
                          user?.secondaryRoles?.includes('Student Librarian');
 
   // Styles & Branding
-  const primaryColor = user?.schoolBranding?.primaryColor || '#1e3a8a'; // Blue fallback
-  const accentColor = user?.schoolBranding?.accentColor || '#f59e0b'; // Gold fallback
+  const primaryColor = 'var(--portal-primary, #1e3a8a)'; // System Standard
+  const accentColor = 'var(--portal-accent, #f59e0b)'; // System Standard
 
   useEffect(() => {
     fetchData();
@@ -269,12 +275,12 @@ export default function PrefectCouncil() {
                         </tr>
                       </thead>
                       <tbody>
-                        {duties.length === 0 ? (
+                        {paginatedDuties.length === 0 ? (
                           <tr>
                             <td colSpan={4} style={{ textAlign: 'center', padding: '30px', color: '#64748b' }}>No duty assignments scheduled yet.</td>
                           </tr>
                         ) : (
-                          duties.map(duty => (
+                          paginatedDuties.map(duty => (
                             <tr key={duty.id} style={{ background: 'white' }}>
                               <td style={{ fontWeight: 800, color: '#1e293b' }}>{duty.prefectName}</td>
                               <td><span className="status-badge" style={{ background: `${primaryColor}15`, color: primaryColor }}>{duty.zone}</span></td>
@@ -285,6 +291,32 @@ export default function PrefectCouncil() {
                         )}
                       </tbody>
                     </table>
+                    
+                    {duties.length > 0 && (
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px', borderTop: '1px solid #e2e8f0', marginTop: '10px' }}>
+                        <span style={{ fontSize: '0.85rem', color: '#64748b' }}>
+                          Showing {(dutiesPage - 1) * itemsPerPage + 1} to {Math.min(dutiesPage * itemsPerPage, duties.length)} of {duties.length} entries
+                        </span>
+                        <div style={{ display: 'flex', gap: '8px' }}>
+                          <button 
+                            onClick={() => setDutiesPage(prev => Math.max(prev - 1, 1))}
+                            disabled={dutiesPage === 1}
+                            className="portal-btn-ghost"
+                            style={{ padding: '6px 12px', fontSize: '0.85rem' }}
+                          >
+                            Previous
+                          </button>
+                          <button 
+                            onClick={() => setDutiesPage(prev => Math.min(prev + 1, totalDutyPages))}
+                            disabled={dutiesPage === totalDutyPages || duties.length === 0}
+                            className="portal-btn-ghost"
+                            style={{ padding: '6px 12px', fontSize: '0.85rem' }}
+                          >
+                            Next
+                          </button>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>

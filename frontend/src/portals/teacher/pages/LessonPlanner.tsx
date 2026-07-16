@@ -6,6 +6,9 @@ export default function TeacherLessonPlanner() {
     { id: 2, subject: 'Mathematics', class: 'Form 3A', topic: 'Quadratic Functions', week: 5, status: 'Draft' },
   ]);
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
   return (
     <>
       <div className="portal-page-header">
@@ -31,7 +34,12 @@ export default function TeacherLessonPlanner() {
               </tr>
             </thead>
             <tbody>
-              {plans.map((plan) => (
+              {(() => {
+                const indexOfLastItem = currentPage * itemsPerPage;
+                const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+                const currentItems = plans.slice(indexOfFirstItem, indexOfLastItem);
+                if (currentItems.length === 0 && plans.length > 0) setCurrentPage(1);
+                return currentItems.map((plan) => (
                 <tr key={plan.id}>
                   <td style={{ fontWeight: 600 }}>Week {plan.week}</td>
                   <td>{plan.subject}</td>
@@ -43,12 +51,41 @@ export default function TeacherLessonPlanner() {
                     </span>
                   </td>
                   <td>
-                    <button className="portal-btn-secondary" style={{ padding: '6px 12px' }} onClick={() => alert('This feature is currently under development or disabled.')}>Edit</button>
+                    <button className="portal-btn-ghost" style={{ padding: '8px', width: '36px', height: '36px', color: '#2563eb', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Edit Plan" onClick={() => alert('This feature is currently under development or disabled.')}>
+                      <i className="fas fa-edit"></i>
+                    </button>
                   </td>
                 </tr>
-              ))}
-            </tbody>
+              ));
+                })()}
+              </tbody>
           </table>
+          
+          {plans.length > 0 && (
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px', borderTop: '1px solid #e2e8f0' }}>
+              <span style={{ fontSize: '0.85rem', color: '#64748b' }}>
+                Showing {(currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, plans.length)} of {plans.length} entries
+              </span>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <button 
+                  onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                  disabled={currentPage === 1}
+                  className="portal-btn-ghost"
+                  style={{ padding: '6px 12px', fontSize: '0.85rem' }}
+                >
+                  Previous
+                </button>
+                <button 
+                  onClick={() => setCurrentPage(prev => Math.min(prev + 1, Math.ceil(plans.length / itemsPerPage)))}
+                  disabled={currentPage === Math.ceil(plans.length / itemsPerPage) || plans.length === 0}
+                  className="portal-btn-ghost"
+                  style={{ padding: '6px 12px', fontSize: '0.85rem' }}
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </>

@@ -58,7 +58,7 @@ export default function AcadexSchools() {
   };
 
   const handleDelete = async (code: string) => {
-    if (!window.confirm(`Are you sure you want to permanently delete school ${code}? All data will be lost.`)) return;
+    if (!(await toastConfirm(`Are you sure you want to permanently delete school ${code}? All data will be lost.`))) return;
     try {
       await api.delete(`/api/schools/${code}`);
       fetchSchools();

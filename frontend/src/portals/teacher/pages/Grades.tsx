@@ -81,7 +81,7 @@ export default function TeacherGrades() {
       const draftKey = `draft_grades_${selectedClassId}_${selectedSubjectId}_${term}_${year}`;
       const draftData = localStorage.getItem(draftKey);
       if (draftData) {
-        if (window.confirm('You have unsaved draft grades. Do you want to restore them?')) {
+        if (await toastConfirm('You have unsaved draft grades. Do you want to restore them?')) {
           setStudents(JSON.parse(draftData));
           setHasUnsavedChanges(true);
           return;

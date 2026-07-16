@@ -36,7 +36,7 @@ export default function QuestionPapersPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!window.confirm('Are you sure you want to delete this question paper?')) return;
+    if (!(await toastConfirm('Are you sure you want to delete this question paper?'))) return;
     try {
       await api.delete(`/api/academic-tools/question-papers/${id}`);
       setPapers(p => p.filter(item => item.id !== id));

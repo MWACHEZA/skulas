@@ -55,7 +55,7 @@ export default function SupplierManagement() {
   };
 
   const handleResetPassword = async (user: any) => {
-    if (!window.confirm(`Reset password for ${user.name} to default "Password"?`)) return;
+    if (!(await toastConfirm(`Reset password for ${user.name} to default "Password"?`))) return;
     try {
       await api.post(`/api/users/${user.id}/reset-password`);
       showToast('Password reset successfully', 'success');
@@ -218,8 +218,8 @@ export default function SupplierManagement() {
                             </button>
                           </>
                         )}
-                        <button className="btn-icon btn-delete" title={activeTab === 'PENDING' ? "Reject" : "Delete Permanent"} onClick={() => {
-                          if (window.confirm(activeTab === 'PENDING' ? `Reject connection request from ${s.name}?` : `Permanently delete ${s.name}?`)) {
+                        <button className="btn-icon btn-delete" title={activeTab === 'PENDING' ? "Reject" : "Delete Permanent"} onClick={async () => {
+                          if (await toastConfirm(activeTab === 'PENDING' ? `Reject connection request from ${s.name}?` : `Permanently delete ${s.name}?`)) {
                             // Can call reject api here later
                             api.delete(`/api/users/${s.id}`).then(() => fetchSuppliers());
                           }

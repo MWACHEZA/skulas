@@ -40,6 +40,8 @@ const LiabilitiesPage: React.FC = () => {
     date: format(new Date(), 'yyyy-MM-dd')
   });
 
+  const [editingId, setEditingId] = useState<string | null>(null);
+
   const handleCreateCategory = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newCategoryName.trim()) return;
@@ -57,7 +59,7 @@ const LiabilitiesPage: React.FC = () => {
   };
 
   const handleDeleteCategory = async (id: string) => {
-    if (!window.confirm('Are you sure you want to purge this classification category? Existing records using this category may be impacted.')) return;
+    if (!(await toastConfirm('Are you sure you want to purge this classification category? Existing records using this category may be impacted.'))) return;
     try {
       await api.delete(`/api/accounts/categories/${id}`);
       toast.success('Classification category purged');
@@ -100,15 +102,35 @@ const LiabilitiesPage: React.FC = () => {
     fetchCurrencySettings();
   }, []);
 
+  const handleEdit = (item: any) => {
+    setFormData({
+      name: item.name,
+      categoryId: item.categoryId || '',
+      amount: item.amount.toString(),
+      date: format(new Date(item.date), 'yyyy-MM-dd')
+    });
+    setEditingId(item.id);
+    setShowAddModal(true);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await api.post('/api/accounts/liabilities', {
+      const payload = {
         ...formData,
         amount: parseFloat(formData.amount)
-      });
-      toast.success('Institutional liability cataloged');
+      };
+
+      if (editingId) {
+        await api.patch(`/api/accounts/liabilities/${editingId}`, payload);
+        toast.success('Liability updated successfully');
+      } else {
+        await api.post('/api/accounts/liabilities', payload);
+        toast.success('Institutional liability cataloged');
+      }
+      
       setShowAddModal(false);
+      setEditingId(null);
       setFormData({
         name: '',
         categoryId: '',
@@ -137,7 +159,7 @@ const LiabilitiesPage: React.FC = () => {
   };
 
   const handleDelete = async (id: string) => {
-    if (!window.confirm('Are you sure you want to purge this liability record? This action is irreversible.')) return;
+    if (!(await toastConfirm('Are you sure you want to purge this liability record? This action is irreversible.'))) return;
     try {
       await api.delete(`/api/accounts/liabilities/${id}`);
       toast.success('Record purged from ledger');
@@ -248,7 +270,7 @@ const LiabilitiesPage: React.FC = () => {
                             <i className="fas fa-hand-holding-usd"></i>
                           </button>
                         )}
-                        <button className="portal-btn-ghost" style={{ color: '#2563eb', padding: '8px' }} title="Audit / Edit" onClick={() => alert('This feature is currently under development or disabled.')}>
+                        <button className="portal-btn-ghost" style={{ color: '#2563eb', padding: '8px' }} title="Audit / Edit" onClick={() => handleEdit(row)}>
                           <i className="fas fa-pencil-alt"></i>
                         </button>
                         <button 
@@ -274,8 +296,8 @@ const LiabilitiesPage: React.FC = () => {
         <div className="portal-modal-overlay">
           <div className="portal-modal-card animate-in zoom-in duration-200" style={{ maxWidth: '560px' }}>
             <div className="portal-modal-header" style={{ padding: '24px 32px' }}>
-              <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 900 }}>Catalog New Institutional Liability</h2>
-              <button className="portal-btn-ghost" onClick={() => setShowAddModal(false)}><i className="fas fa-times"></i></button>
+              <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 900 }}>{editingId ? 'Update Institutional Liability' : 'Catalog New Institutional Liability'}</h2>
+              <button className="portal-btn-ghost" onClick={() => { setShowAddModal(false); setEditingId(null); setFormData({ name: '', categoryId: '', amount: '', date: format(new Date(), 'yyyy-MM-dd') }); }}><i className="fas fa-times"></i></button>
             </div>
             <form onSubmit={handleSubmit}>
               <div className="portal-modal-body" style={{ padding: '32px' }}>
@@ -333,9 +355,9 @@ const LiabilitiesPage: React.FC = () => {
                   </div>
                 </div>
               </div>
-              <div className="portal-modal-footer" style={{ padding: '24px 32px', background: '#f8fafc' }}>
-                <button type="button" onClick={() => setShowAddModal(false)} className="portal-btn-ghost" style={{ fontWeight: 800 }}>Abort Process</button>
-                <button type="submit" className="portal-btn-primary" style={{ padding: '12px 32px', fontWeight: 900 }}>Finalize Registry</button>
+              <div className="portal-modal-footer" style={{ padding: '24px 32px', background: '#f8fafc', display: 'flex', justifyContent: 'flex-end', gap: '16px' }}>
+                <button type="button" onClick={() => { setShowAddModal(false); setEditingId(null); setFormData({ name: '', categoryId: '', amount: '', date: format(new Date(), 'yyyy-MM-dd') }); }} className="portal-btn-ghost" style={{ fontWeight: 800 }}>Cancel</button>
+                <button type="submit" className="portal-btn-primary" style={{ padding: '12px 32px', fontWeight: 900 }}>{editingId ? 'Update Liability' : 'Finalize Registry'}</button>
               </div>
             </form>
           </div>

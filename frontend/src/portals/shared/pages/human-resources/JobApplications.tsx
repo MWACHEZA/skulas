@@ -32,6 +32,9 @@ export default function JobApplications() {
   const [vacancies, setVacancies] = useState<any[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [searchTerm, setSearchTerm] = useState('');
   
   // Detail Modal States
   const [selectedAppForView, setSelectedAppForView] = useState<JobApplication | null>(null);
@@ -64,6 +67,7 @@ export default function JobApplications() {
   useEffect(() => {
     fetchApplications(activeTab);
     fetchVacancies();
+    setCurrentPage(1); // Reset to page 1 on tab change
   }, [activeTab]);
 
   useEffect(() => {
@@ -191,7 +195,7 @@ export default function JobApplications() {
   };
 
   const deleteApplication = async (id: string) => {
-    if (!window.confirm('Delete this application?')) return;
+    if (!(await toastConfirm('Delete this application?'))) return;
     try {
       await api.delete(`/api/hr/applications/${id}`);
       setApplications(applications.filter(a => a.id !== id));
@@ -247,46 +251,45 @@ export default function JobApplications() {
   const selectedVacancy = vacancies.find(v => v.id === addFormData.vacancyId);
   const reqFields = selectedVacancy?.requiredFields || '';
 
+  const filteredApplications = applications.filter(app => 
+    app.applicantName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    app.vacancy?.jobTitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    app.email.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const totalPages = Math.ceil(filteredApplications.length / itemsPerPage);
+  const paginatedApplications = filteredApplications.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
   return (
     <div style={{ display: 'flex', gap: '24px', flexDirection: 'column' }}>
       
       <div style={{ display: 'flex', gap: '24px', flexDirection: 'row', flexWrap: 'wrap', alignItems: 'flex-start' }}>
         
-        {/* Left Sidebar Tabs */}
-        <div className="portal-card" style={{ width: '260px', padding: '20px', flexShrink: 0 }}>
-          <div className="portal-card-header" style={{ padding: '0 0 16px 0', marginBottom: '16px' }}>
-            <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#1e293b' }}>
-              <i className="fas fa-filter text-gray-500" style={{ marginRight: '8px' }}></i> STATUS FILTER
-            </h3>
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-            {STATUS_TABS.map(tab => (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className="portal-tab-item"
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  width: '100%',
-                  textAlign: 'left',
-                  padding: '12px 16px',
-                  borderRadius: '10px',
-                  fontWeight: 700,
-                  fontSize: '0.85rem',
-                  border: 'none',
-                  background: activeTab === tab ? 'rgba(0, 86, 179, 0.1)' : 'transparent',
-                  color: activeTab === tab ? 'var(--portal-primary)' : '#64748b',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s'
-                }}
-              >
-                {tab}
-                {activeTab === tab && <i className="fas fa-check text-xs"></i>}
-              </button>
-            ))}
-          </div>
+        {/* Top Status Tabs */}
+        <div style={{ width: '100%', display: 'flex', gap: '10px', overflowX: 'auto', paddingBottom: '10px' }}>
+          {STATUS_TABS.map(tab => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              style={{
+                padding: '8px 16px',
+                borderRadius: '20px',
+                fontWeight: 600,
+                fontSize: '0.85rem',
+                border: 'none',
+                background: activeTab === tab ? 'var(--school-primary, #0056b3)' : '#f1f5f9',
+                color: activeTab === tab ? 'white' : '#64748b',
+                cursor: 'pointer',
+                whiteSpace: 'nowrap',
+                transition: 'all 0.2s'
+              }}
+            >
+              {tab}
+            </button>
+          ))}
         </div>
 
         {/* Main Table Area */}
@@ -305,18 +308,18 @@ export default function JobApplications() {
             </button>
           </div>
           
-          <div style={{ marginTop: '10px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '15px', marginBottom: '20px' }}>
-              <div style={{ display: 'flex', gap: '10px' }}>
-                <button className="portal-btn-neutral" style={{ padding: '8px 16px', fontSize: '0.85rem' }} onClick={() => alert('This feature is currently under development or disabled.')}>Copy</button>
-                <button className="portal-btn-neutral" style={{ padding: '8px 16px', fontSize: '0.85rem' }} onClick={() => alert('This feature is currently under development or disabled.')}>CSV</button>
-                <button className="portal-btn-neutral" style={{ padding: '8px 16px', fontSize: '0.85rem' }} onClick={() => alert('This feature is currently under development or disabled.')}>Excel</button>
-                <button className="portal-btn-neutral" style={{ padding: '8px 16px', fontSize: '0.85rem' }} onClick={() => alert('This feature is currently under development or disabled.')}>PDF</button>
-                <button className="portal-btn-neutral" style={{ padding: '8px 16px', fontSize: '0.85rem' }} onClick={() => alert('This feature is currently under development or disabled.')}>Print</button>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <span style={{ fontSize: '0.9rem', color: '#64748b', fontWeight: 500 }}>Search:</span>
-                <input type="text" className="portal-input" style={{ width: '200px', padding: '8px 12px' }} />
+          <div className="portal-card-body" style={{ padding: '20px' }}>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '20px' }}>
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                <span style={{ marginRight: 10 }}>Search:</span>
+                <input 
+                  type="text" 
+                  className="portal-input" 
+                  style={{ width: 200, padding: '5px 10px' }} 
+                  value={searchTerm}
+                  onChange={e => setSearchTerm(e.target.value)}
+                  placeholder="Name, email, position..."
+                />
               </div>
             </div>
 
@@ -324,90 +327,84 @@ export default function JobApplications() {
               <table className="management-table">
                 <thead>
                   <tr>
-                    <th>NAME</th>
-                    <th>GENDER</th>
-                    <th>EMAIL</th>
-                    <th>PHONE</th>
-                    <th>QUALIFICATION</th>
-                    <th>STATUS</th>
-                    <th>SKILLS</th>
-                    <th>WORK EXP.</th>
-                    <th>JOB POSITION</th>
-                    <th>ADDRESS</th>
-                    <th style={{ textAlign: 'center' }}>ACTIONS</th>
+                    <th>Date</th>
+                    <th>Applicant Name</th>
+                    <th>Position</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th style={{ textAlign: 'center' }}>Status</th>
+                    <th style={{ textAlign: 'right' }}>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {loading ? (
-                    <tr>
-                      <td colSpan={11} style={{ textAlign: 'center', padding: '30px', color: '#64748b' }}>Loading applications...</td>
-                    </tr>
-                  ) : applications.length === 0 ? (
-                    <tr>
-                      <td colSpan={11} style={{ textAlign: 'center', padding: '50px', color: '#94a3b8' }}>
-                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
-                          <i className="fas fa-folder-open fa-3x" style={{ color: '#ecc94b' }}></i>
-                          <span>No data available in table</span>
-                        </div>
-                      </td>
-                    </tr>
+                    <tr><td colSpan={7} style={{ textAlign: 'center', padding: '20px' }}>Loading...</td></tr>
+                  ) : paginatedApplications.length === 0 ? (
+                    <tr><td colSpan={7} style={{ textAlign: 'center', padding: '20px' }}>No applicants found.</td></tr>
                   ) : (
-                    applications.map((app) => (
+                    paginatedApplications.map(app => (
                       <tr key={app.id}>
-                        <td style={{ fontWeight: 600, color: '#1e293b' }}>{app.applicantName}</td>
-                        <td>{app.gender}</td>
-                        <td style={{ color: 'var(--portal-primary)' }}>{app.email}</td>
-                        <td>{app.phone}</td>
-                        <td>{app.qualification}</td>
-                        <td>
-                          <select 
-                            value={app.status} 
-                            onChange={(e) => updateStatus(app.id, e.target.value)}
-                            className="portal-input"
-                            style={{ padding: '4px 8px', fontSize: '0.8rem', width: 'auto', borderRadius: '6px' }}
-                          >
-                            {STATUS_TABS.map(tab => (
-                              <option key={tab} value={tab}>{tab}</option>
-                            ))}
-                          </select>
-                        </td>
-                        <td className="truncate max-w-[120px]" title={app.skills}>{app.skills}</td>
-                        <td className="truncate max-w-[120px]" title={app.workExperience}>{app.workExperience}</td>
-                        <td style={{ fontWeight: 500 }}>{app.vacancy?.jobTitle}</td>
-                        <td className="truncate max-w-[120px]" title={app.address}>{app.address}</td>
+                        <td>{new Date(app.createdAt).toLocaleDateString()}</td>
+                        <td style={{ fontWeight: 600 }}>{app.applicantName}</td>
+                        <td>{app.vacancy?.jobTitle || app.vacancyId}</td>
+                        <td>{app.email || '-'}</td>
+                        <td>{app.phone || '-'}</td>
                         <td style={{ textAlign: 'center' }}>
-                          <div style={{ display: 'flex', gap: '4px', justifyContent: 'center' }}>
-                            <button
-                              onClick={() => openDetailModal(app)}
-                              className="portal-btn-ghost"
-                              style={{ color: 'var(--school-primary, #3182ce)', padding: '6px', minWidth: 'auto' }}
-                              title="View Profile Details"
-                            >
-                              <i className="fas fa-eye"></i>
-                            </button>
-                            <button
-                              onClick={() => deleteApplication(app.id)}
-                              className="portal-btn-ghost"
-                              style={{ color: 'var(--portal-danger)', padding: '6px', minWidth: 'auto' }}
-                              title="Delete"
-                            >
-                              <i className="fas fa-trash"></i>
-                            </button>
-                          </div>
+                          <span className={`status-badge ${app.status.replace(/\s+/g, '').toLowerCase()}`}>{app.status}</span>
+                        </td>
+                        <td style={{ textAlign: 'right' }}>
+                          <button 
+                            onClick={() => openDetailModal(app)}
+                            className="portal-btn-ghost" 
+                            style={{ padding: '6px 12px', fontSize: '0.85rem' }}
+                          >
+                            View Details
+                          </button>
+                          {app.status === 'Applied' && (
+                            <button onClick={() => updateStatus(app.id, 'Interviewed')} className="portal-btn-secondary" style={{ padding: '6px 12px', fontSize: '0.85rem' }}>Invite to Interview</button>
+                          )}
+                          {app.status === 'Interviewed' && (
+                            <button onClick={() => updateStatus(app.id, 'Hired')} className="portal-btn-secondary" style={{ padding: '6px 12px', fontSize: '0.85rem', color: '#10b981', borderColor: '#10b981' }}>Hire</button>
+                          )}
+                          <button 
+                            onClick={() => deleteApplication(app.id)}
+                            className="portal-btn-ghost" 
+                            style={{ padding: '6px', color: 'var(--portal-danger)' }}
+                            title="Delete"
+                          >
+                            <i className="fas fa-trash"></i>
+                          </button>
                         </td>
                       </tr>
                     ))
                   )}
                 </tbody>
               </table>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '20px', color: '#64748b', fontSize: '0.9rem' }}>
-                <span>Showing {applications.length > 0 ? 1 : 0} to {applications.length} of {applications.length} entries</span>
-                <div style={{ display: 'flex', gap: '10px' }}>
-                  <button className="portal-btn-ghost" style={{ padding: '6px 12px', fontSize: '0.85rem' }} disabled onClick={() => alert('This feature is currently under development or disabled.')}>Previous</button>
-                  <button className="portal-btn-ghost" style={{ padding: '6px 12px', fontSize: '0.85rem' }} disabled onClick={() => alert('This feature is currently under development or disabled.')}>Next</button>
+            </div>
+            
+            {!loading && (
+              <div style={{ marginTop: 15, display: 'flex', justifyContent: 'space-between', color: '#718096', fontSize: '0.9rem' }}>
+                <span>Showing {(currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, filteredApplications.length)} of {filteredApplications.length} entries</span>
+                <div>
+                  <button 
+                    className="portal-btn-ghost" 
+                    style={{ padding: '6px 12px', fontSize: '0.85rem', cursor: currentPage === 1 ? 'not-allowed' : 'pointer', opacity: currentPage === 1 ? 0.5 : 1 }} 
+                    disabled={currentPage === 1} 
+                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                  >
+                    Previous
+                  </button>
+                  <button 
+                    className="portal-btn-ghost" 
+                    style={{ padding: '6px 12px', fontSize: '0.85rem', cursor: currentPage >= totalPages ? 'not-allowed' : 'pointer', opacity: currentPage >= totalPages ? 0.5 : 1 }} 
+                    disabled={currentPage >= totalPages} 
+                    onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                  >
+                    Next
+                  </button>
                 </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
       </div>

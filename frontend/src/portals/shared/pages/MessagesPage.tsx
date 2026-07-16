@@ -45,7 +45,7 @@ export default function MessagesPage() {
     setLoading(true);
     try {
       const res = await api.get('/api/messages');
-      setMessages(res.data);
+      setMessages(res.data.data);
     } catch (error) {
       console.error('Error fetching messages:', error);
     } finally {

@@ -107,9 +107,14 @@ router.patch('/settings', requireAuth, requireRole('SCHOOL_ADMIN'), validate(Sys
     // Safely parse date fields
     if (filteredData.nextTermBegin) {
       filteredData.nextTermBegin = new Date(filteredData.nextTermBegin).toISOString();
+    } else if (filteredData.nextTermBegin === '') {
+      filteredData.nextTermBegin = null;
     }
+
     if (filteredData.scoreClosingDate) {
       filteredData.scoreClosingDate = new Date(filteredData.scoreClosingDate).toISOString();
+    } else if (filteredData.scoreClosingDate === '') {
+      filteredData.scoreClosingDate = null;
     }
 
     const settings = await prisma.schoolSetting.upsert({

@@ -84,8 +84,8 @@ export default function FarmManagement() {
                     user?.secondaryRoles?.includes('Farm Manager Assistant');
 
   // Styles & Colors from School Branding
-  const primaryColor = user?.schoolBranding?.primaryColor || '#059669'; // Emerald fallback
-  const accentColor = user?.schoolBranding?.accentColor || '#ea580c'; // Orange fallback
+  const primaryColor = user?.schoolBranding?.primaryColor || '#0056b3'; // System default primary
+  const accentColor = user?.schoolBranding?.accentColor || '#1e293b'; // System default accent
 
   // Respect School Type
   let title = 'School Farm & Agriculture Hub';

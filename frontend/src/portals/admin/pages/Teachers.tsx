@@ -20,6 +20,10 @@ export default function AdminTeachers() {
   const { user: currentUser } = useAuth();
   const { showToast } = useToast();
 
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
   useEffect(() => {
     fetchTeachers();
   }, []);
@@ -39,7 +43,7 @@ export default function AdminTeachers() {
   const handleResetPassword = async (teacher: any) => {
     const userId = teacher.userId || teacher.user?.id;
     if (!userId) return showToast('User account not found', 'error');
-    if (!window.confirm(`Reset password for ${teacher.user?.name || teacher.name} to default "Password"?`)) return;
+    if (!(await toastConfirm(`Reset password for ${teacher.user?.name || teacher.name} to default "Password"?`))) return;
     try {
       await api.post(`/api/users/${userId}/reset-password`);
       showToast('Password reset successfully', 'success');
@@ -117,7 +121,8 @@ export default function AdminTeachers() {
               <p>Loading faculty roster...</p>
             </div>
           ) : (
-            <table className="management-table">
+            <>
+              <table className="management-table">
               <thead>
                 <tr>
                   <th>Employee ID</th>
@@ -130,73 +135,111 @@ export default function AdminTeachers() {
                 </tr>
               </thead>
               <tbody>
-                {(Array.isArray(filteredTeachers) ? filteredTeachers : []).length > 0 ? (Array.isArray(filteredTeachers) ? filteredTeachers : []).map(t => {
-                  const name = t.user?.name || t.name;
-                  const email = t.user?.email || t.email;
-                  const phone = t.user?.phone || t.phone;
-                  return (
-                    <tr key={t.id}>
-                      <td style={{ color: '#718096', fontFamily: 'monospace', fontWeight: 600 }}>{t.staffId}</td>
-                      <td>
-                        <div className="user-info-cell">
-                          <div className={`user-avatar teacher`}>
-                            {t.user?.avatar ? (
-                              <img src={`${BASE_URL}/api/storage/media/${currentUser?.schoolCode}/images/${t.user.avatar}`} alt="" style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} />
-                            ) : (
-                              name.charAt(0)
-                            )}
-                          </div>
-                          <div className="user-name-wrap">
-                            <span className="user-name">{name}</span>
-                            <div className="role-badges-group">
-                              <span className="role-badge role-teacher">Teacher</span>
-                              {(Array.isArray(t.user?.secondaryRoles) ? t.user.secondaryRoles : []).slice(0, 2).map((r: string, idx: number) => (
-                                <span key={idx} className="secondary-role-badge">{r}</span>
-                              ))}
+                {(() => {
+                  const safeFiltered = Array.isArray(filteredTeachers) ? filteredTeachers : [];
+                  if (safeFiltered.length === 0) {
+                    return (
+                      <tr>
+                        <td colSpan={7} style={{ textAlign: 'center', padding: 40, color: '#718096' }}>No faculty records found.</td>
+                      </tr>
+                    );
+                  }
+                  
+                  const indexOfLastItem = currentPage * itemsPerPage;
+                  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+                  const currentItems = safeFiltered.slice(indexOfFirstItem, indexOfLastItem);
+                  
+                  return currentItems.map(t => {
+                    const name = t.user?.name || t.name;
+                    const email = t.user?.email || t.email;
+                    const phone = t.user?.phone || t.phone;
+                    return (
+                      <tr key={t.id}>
+                        <td style={{ color: '#718096', fontFamily: 'monospace', fontWeight: 600 }}>{t.staffId}</td>
+                        <td>
+                          <div className="user-info-cell">
+                            <div className={`user-avatar teacher`}>
+                              {t.user?.avatar ? (
+                                <img src={`${BASE_URL}/api/storage/media/${currentUser?.schoolCode}/images/${t.user.avatar}`} alt="" style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} />
+                              ) : (
+                                name.charAt(0)
+                              )}
+                            </div>
+                            <div className="user-name-wrap">
+                              <span className="user-name">{name}</span>
+                              <div className="role-badges-group">
+                                <span className="role-badge role-teacher">Teacher</span>
+                                {(Array.isArray(t.user?.secondaryRoles) ? t.user.secondaryRoles : []).slice(0, 2).map((r: string, idx: number) => (
+                                  <span key={idx} className="secondary-role-badge">{r}</span>
+                                ))}
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      </td>
-                      <td>{t.department || 'General'}</td>
-                      <td>{email || 'N/A'}</td>
-                      <td>{phone || 'N/A'}</td>
-                      <td>
-                        <span className={`status-badge ${t.user?.isLocked ? 'status-inactive' : 'status-active'}`}>
-                          {t.user?.isLocked ? 'Locked' : 'Active'}
-                        </span>
-                      </td>
-                      <td>
-                        <div className="action-buttons">
-                          <button className="btn-icon btn-view" title="View Profile" onClick={() => openDetail(t)}>
-                            <i className="fas fa-eye"></i>
-                          </button>
-                          <button className="btn-icon btn-edit" title="Edit Teacher" onClick={() => openEdit(t)}>
-                            <i className="fas fa-pencil-alt"></i>
-                          </button>
-                          <button className="btn-icon btn-lock" title={t.user?.isLocked ? "Unlock Account" : "Lock Account"} onClick={() => handleLockToggle(t)}>
-                            <i className={`fas fa-${t.user?.isLocked ? 'unlock' : 'lock'}`}></i>
-                          </button>
-                          <button className="btn-icon btn-view" title="Teaching Load" style={{ background: 'rgba(56, 161, 105, 0.1)', color: 'var(--portal-success)' }} onClick={() => window.location.href = `/admin/teacher-load?id=${t.id}`}>
-                            <i className="fas fa-book"></i>
-                          </button>
-                          <button className="btn-icon btn-delete" title="Delete Permanent" onClick={() => {
-                            if (window.confirm('Delete this teacher and their user account?')) {
-                              api.delete(`/api/teachers/${t.id}`).then(() => fetchTeachers());
-                            }
-                          }}>
-                            <i className="fas fa-trash"></i>
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                }) : (
-                  <tr>
-                    <td colSpan={7} style={{ textAlign: 'center', padding: 40, color: '#718096' }}>No faculty records found.</td>
-                  </tr>
-                )}
+                        </td>
+                        <td>{t.dept?.name || t.department || 'General'}</td>
+                        <td>{email || 'N/A'}</td>
+                        <td>{phone || 'N/A'}</td>
+                        <td>
+                          <span className={`status-badge ${t.user?.isLocked ? 'status-inactive' : 'status-active'}`}>
+                            {t.user?.isLocked ? 'Locked' : 'Active'}
+                          </span>
+                        </td>
+                        <td>
+                          <div className="action-buttons">
+                            <button className="btn-icon btn-view" title="View Profile" onClick={() => openDetail(t)}>
+                              <i className="fas fa-eye"></i>
+                            </button>
+                            <button className="btn-icon btn-edit" title="Edit Teacher" onClick={() => openEdit(t)}>
+                              <i className="fas fa-pencil-alt"></i>
+                            </button>
+                            <button className="btn-icon btn-lock" title={t.user?.isLocked ? "Unlock Account" : "Lock Account"} onClick={() => handleLockToggle(t)}>
+                              <i className={`fas fa-${t.user?.isLocked ? 'unlock' : 'lock'}`}></i>
+                            </button>
+                            <button className="btn-icon btn-view" title="Teaching Load" style={{ background: 'rgba(56, 161, 105, 0.1)', color: 'var(--portal-success)' }} onClick={() => window.location.href = `/admin/teacher-load?id=${t.id}`}>
+                              <i className="fas fa-book"></i>
+                            </button>
+                            <button className="btn-icon btn-delete" title="Delete Permanent" onClick={async () => {
+                              if (await toastConfirm('Delete this teacher and their user account?')) {
+                                api.delete(`/api/teachers/${t.id}`).then(() => fetchTeachers());
+                              }
+                            }}>
+                              <i className="fas fa-trash"></i>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  });
+                })()}
               </tbody>
             </table>
+            
+            {filteredTeachers.length > 0 && (
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px', borderTop: '1px solid #e2e8f0' }}>
+                <span style={{ fontSize: '0.85rem', color: '#64748b' }}>
+                  Showing {(currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, filteredTeachers.length)} of {filteredTeachers.length} entries
+                </span>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <button 
+                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                    disabled={currentPage === 1}
+                    className="portal-btn-ghost"
+                    style={{ padding: '6px 12px', fontSize: '0.85rem' }}
+                  >
+                    Previous
+                  </button>
+                  <button 
+                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, Math.ceil(filteredTeachers.length / itemsPerPage)))}
+                    disabled={currentPage === Math.ceil(filteredTeachers.length / itemsPerPage) || filteredTeachers.length === 0}
+                    className="portal-btn-ghost"
+                    style={{ padding: '6px 12px', fontSize: '0.85rem' }}
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
+            )}
+            </>
           )}
         </div>
       </div>

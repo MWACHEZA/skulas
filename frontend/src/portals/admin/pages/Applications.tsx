@@ -12,6 +12,9 @@ export default function AdminApplications() {
   const [updating, setUpdating] = useState(false);
   const [classes, setClasses] = useState<any[]>([]);
   const [selectedClassId, setSelectedClassId] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+  const [searchQuery, setSearchQuery] = useState('');
   
   // Interview Fields
   const [showInterviewForm, setShowInterviewForm] = useState(false);
@@ -69,7 +72,7 @@ export default function AdminApplications() {
     }
 
     const confirmMsg = newStatus === 'accepted' ? 'approve this application and enroll the student' : `mark this application as ${newStatus}`;
-    if (!window.confirm(`Are you sure you want to ${confirmMsg}?`)) return;
+    if (!(await toastConfirm(`Are you sure you want to ${confirmMsg}?`))) return;
 
     setUpdating(true);
     try {
@@ -229,7 +232,7 @@ export default function AdminApplications() {
         {['all', 'pending', 'review', 'interview', 'accepted', 'rejected'].map(tab => (
           <button 
             key={tab}
-            onClick={() => setActiveTab(tab)} 
+            onClick={() => { setActiveTab(tab); setCurrentPage(1); }} 
             style={{ 
               padding: '8px 20px', 
               background: activeTab === tab ? 'var(--portal-primary)' : 'white', 
@@ -247,17 +250,41 @@ export default function AdminApplications() {
         ))}
       </div>
 
+      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 20 }}>
+        <div style={{ position: 'relative', width: 400 }}>
+          <i className="fas fa-search" style={{ position: 'absolute', left: 14, top: 14, color: '#94a3b8' }}></i>
+          <input
+            type="text"
+            className="portal-input"
+            placeholder="Search applications..."
+            value={searchQuery}
+            onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
+            style={{ paddingLeft: 40 }}
+          />
+        </div>
+      </div>
+
       <div className="portal-card">
         <div className="portal-card-body" style={{ padding: 0 }}>
           {loading ? (
              <div style={{ padding: 40, textAlign: 'center' }}><i className="fas fa-spinner fa-spin"></i> Loading...</div>
           ) : (
+            <>
             <table className="portal-table">
               <thead>
                 <tr><th>App ID</th><th>{t('applicant')} Name</th><th>Type</th><th>Submitted</th><th>Status</th><th>Actions</th></tr>
               </thead>
               <tbody>
-                {(Array.isArray(applications) ? applications : []).length > 0 ? (Array.isArray(applications) ? applications : []).map(a => (
+                {(() => {
+                  const apps = (Array.isArray(applications) ? applications : []).filter(a => 
+                    a.applicantName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    a.applicationNumber?.toLowerCase().includes(searchQuery.toLowerCase())
+                  );
+                  const indexOfLastItem = currentPage * itemsPerPage;
+                  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+                  const currentItems = apps.slice(indexOfFirstItem, indexOfLastItem);
+                  if (currentItems.length === 0 && apps.length > 0) setCurrentPage(1);
+                  return apps.length > 0 ? currentItems.map(a => (
                   <tr key={a.id}>
                     <td style={{ color: '#2d3748', fontWeight: 600, fontSize: '0.85rem' }}>{a.applicationNumber || a.id.substring(0, 8)}</td>
                     <td style={{ fontWeight: 600 }}>{a.applicantName}</td>
@@ -280,23 +307,59 @@ export default function AdminApplications() {
                       </div>
                     </td>
                     <td>
-                      <button 
-                        className="portal-btn-secondary" 
-                        style={{ padding: '6px 12px', fontSize: '0.8rem' }}
-                        onClick={() => {
-                          setSelectedApp(a);
-                          setSelectedClassId(a.assignedClassId || '');
-                        }}
-                      >
-                        Review
-                      </button>
+                      <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-start' }}>
+                        <button 
+                          className="portal-btn-ghost" 
+                          title="Review Application"
+                          style={{ width: 36, height: 36, padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                          onClick={() => {
+                            setSelectedApp(a);
+                            setSelectedClassId(a.assignedClassId || '');
+                          }}
+                        >
+                          <i className="fas fa-eye" style={{ color: '#4338ca' }}></i>
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 )) : (
                   <tr><td colSpan={6} style={{ textAlign: 'center', padding: 30, color: '#a0aec0' }}>No applications found.</td></tr>
-                )}
+                );
+                })()}
               </tbody>
             </table>
+            {(() => {
+              const apps = (Array.isArray(applications) ? applications : []).filter(a => 
+                a.applicantName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                a.applicationNumber?.toLowerCase().includes(searchQuery.toLowerCase())
+              );
+              return apps.length > 0 && !loading && (
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px', borderTop: '1px solid #e2e8f0' }}>
+                <span style={{ fontSize: '0.85rem', color: '#64748b' }}>
+                  Showing {(currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, apps.length)} of {apps.length} entries
+                </span>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <button 
+                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                    disabled={currentPage === 1}
+                    className="portal-btn-ghost"
+                    style={{ padding: '6px 12px', fontSize: '0.85rem' }}
+                  >
+                    Previous
+                  </button>
+                  <button 
+                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, Math.ceil(apps.length / itemsPerPage)))}
+                    disabled={currentPage === Math.ceil(apps.length / itemsPerPage) || apps.length === 0}
+                    className="portal-btn-ghost"
+                    style={{ padding: '6px 12px', fontSize: '0.85rem' }}
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
+            );
+            })()}
+            </>
           )}
         </div>
       </div>

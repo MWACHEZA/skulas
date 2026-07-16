@@ -7,6 +7,9 @@ export default function TeacherSyllabusManager() {
     { id: 3, name: 'Trigonometry Fundamentals', progress: 0, status: 'Planned', deadline: 'Nov 10, 2024' },
   ]);
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
   return (
     <>
       <div className="portal-page-header">
@@ -36,7 +39,12 @@ export default function TeacherSyllabusManager() {
               </tr>
             </thead>
             <tbody>
-              {topics.map((t) => (
+              {(() => {
+                const indexOfLastItem = currentPage * itemsPerPage;
+                const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+                const currentItems = topics.slice(indexOfFirstItem, indexOfLastItem);
+                if (currentItems.length === 0 && topics.length > 0) setCurrentPage(1);
+                return currentItems.map((t) => (
                 <tr key={t.id}>
                   <td style={{ fontWeight: 600 }}>{t.name}</td>
                   <td>{t.deadline}</td>
@@ -57,12 +65,41 @@ export default function TeacherSyllabusManager() {
                     </span>
                   </td>
                   <td>
-                    <button className="portal-btn-secondary" style={{ padding: '6px 12px' }} onClick={() => alert('This feature is currently under development or disabled.')}>Update</button>
+                    <button className="portal-btn-ghost" style={{ padding: '8px', width: '36px', height: '36px', color: '#2563eb', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Update Progress" onClick={() => alert('This feature is currently under development or disabled.')}>
+                      <i className="fas fa-edit"></i>
+                    </button>
                   </td>
                 </tr>
-              ))}
-            </tbody>
+              ));
+                })()}
+              </tbody>
           </table>
+          
+          {topics.length > 0 && (
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px', borderTop: '1px solid #e2e8f0' }}>
+              <span style={{ fontSize: '0.85rem', color: '#64748b' }}>
+                Showing {(currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, topics.length)} of {topics.length} entries
+              </span>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <button 
+                  onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                  disabled={currentPage === 1}
+                  className="portal-btn-ghost"
+                  style={{ padding: '6px 12px', fontSize: '0.85rem' }}
+                >
+                  Previous
+                </button>
+                <button 
+                  onClick={() => setCurrentPage(prev => Math.min(prev + 1, Math.ceil(topics.length / itemsPerPage)))}
+                  disabled={currentPage === Math.ceil(topics.length / itemsPerPage) || topics.length === 0}
+                  className="portal-btn-ghost"
+                  style={{ padding: '6px 12px', fontSize: '0.85rem' }}
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </>

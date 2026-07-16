@@ -1076,6 +1076,7 @@ exports.Prisma.AssetMaintenanceScalarFieldEnum = {
   description: 'description',
   attachments: 'attachments',
   cost: 'cost',
+  notes: 'notes',
   schoolId: 'schoolId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -1651,6 +1652,7 @@ exports.Prisma.CBTExamScalarFieldEnum = {
   id: 'id',
   title: 'title',
   description: 'description',
+  instructions: 'instructions',
   date: 'date',
   time: 'time',
   passingPercent: 'passingPercent',
@@ -1673,6 +1675,8 @@ exports.Prisma.CBTQuestionScalarFieldEnum = {
   question: 'question',
   options: 'options',
   answer: 'answer',
+  section: 'section',
+  page: 'page',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };

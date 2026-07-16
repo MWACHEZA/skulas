@@ -30,6 +30,10 @@ export default function StudentHouse() {
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
 
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
   useEffect(() => {
     fetchHouses();
     fetchRosters();
@@ -135,7 +139,7 @@ export default function StudentHouse() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!window.confirm(`Are you sure you want to delete this ${t('house').toLowerCase()}?`)) return;
+    if (!(await toastConfirm(`Are you sure you want to delete this ${t('house').toLowerCase()}?`))) return;
     try {
       await api.delete(`/api/schools/houses/${id}`);
       showToast(`${t('house')} deleted`, 'success');
@@ -187,45 +191,77 @@ export default function StudentHouse() {
                   <tr><td colSpan={6} style={{ textAlign: 'center', padding: '40px' }}>Loading {t('houses').toLowerCase()}...</td></tr>
                 ) : houses.length === 0 ? (
                   <tr><td colSpan={6} style={{ textAlign: 'center', padding: '40px' }}>No {t('houses').toLowerCase()} found.</td></tr>
-                ) : houses.map(house => {
-                  const logoUrl = house.logo ? `${api.defaults.baseURL}/api/storage/media/${user?.schoolCode}/${house.logo}` : null;
-                  return (
-                    <tr key={house.id}>
-                      <td>
-                        <div style={{ 
-                          width: '40px', height: '40px', borderRadius: '50%', background: '#f1f5f9', overflow: 'hidden', 
-                          display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #e2e8f0'
-                        }}>
-                          {logoUrl ? (
-                            <img src={logoUrl} alt={house.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                          ) : (
-                            <i className="fas fa-home" style={{ color: '#94a3b8' }}></i>
-                          )}
-                        </div>
-                      </td>
-                      <td style={{ fontWeight: 800, color: 'var(--portal-primary)' }}>{house.name}</td>
-                      <td style={{ color: '#64748b' }}>{house.description || 'No description'}</td>
-                      <td style={{ fontWeight: 700, color: '#334155' }}>
-                        {house.houseMaster ? `${house.houseMaster.title || 'Mr/Mrs.'} ${house.houseMaster.user?.name}` : 'Not Assigned'}
-                      </td>
-                      <td style={{ fontWeight: 700, color: '#334155' }}>
-                        {house.houseCaptain ? `${house.houseCaptain.name} (${house.houseCaptain.studentId})` : 'Not Assigned'}
-                      </td>
-                      <td style={{ textAlign: 'right' }}>
-                        <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
-                          <button onClick={() => handleOpenEditModal(house)} className="portal-btn-action edit" title={`Edit ${t('house')}`}>
-                            <i className="fas fa-pencil-alt"></i>
-                          </button>
-                          <button onClick={() => handleDelete(house.id)} className="portal-btn-action delete" title={`Delete ${t('house')}`}>
-                            <i className="fas fa-trash"></i>
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
+                ) : (() => {
+                  const indexOfLastItem = currentPage * itemsPerPage;
+                  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+                  const currentItems = houses.slice(indexOfFirstItem, indexOfLastItem);
+                  
+                  return currentItems.map(house => {
+                    const logoUrl = house.logo ? `${api.defaults.baseURL}/api/storage/media/${user?.schoolCode}/${house.logo}` : null;
+                    return (
+                      <tr key={house.id}>
+                        <td>
+                          <div style={{ 
+                            width: '40px', height: '40px', borderRadius: '50%', background: '#f1f5f9', overflow: 'hidden', 
+                            display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #e2e8f0'
+                          }}>
+                            {logoUrl ? (
+                              <img src={logoUrl} alt={house.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                            ) : (
+                              <i className="fas fa-home" style={{ color: '#94a3b8' }}></i>
+                            )}
+                          </div>
+                        </td>
+                        <td style={{ fontWeight: 800, color: 'var(--portal-primary)' }}>{house.name}</td>
+                        <td style={{ color: '#64748b' }}>{house.description || 'No description'}</td>
+                        <td style={{ fontWeight: 700, color: '#334155' }}>
+                          {house.houseMaster ? `${house.houseMaster.title || 'Mr/Mrs.'} ${house.houseMaster.user?.name}` : 'Not Assigned'}
+                        </td>
+                        <td style={{ fontWeight: 700, color: '#334155' }}>
+                          {house.houseCaptain ? `${house.houseCaptain.name} (${house.houseCaptain.studentId})` : 'Not Assigned'}
+                        </td>
+                        <td style={{ textAlign: 'right' }}>
+                          <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+                            <button onClick={() => handleOpenEditModal(house)} className="portal-btn-action edit" title={`Edit ${t('house')}`}>
+                              <i className="fas fa-pencil-alt"></i>
+                            </button>
+                            <button onClick={() => handleDelete(house.id)} className="portal-btn-action delete" title={`Delete ${t('house')}`}>
+                              <i className="fas fa-trash"></i>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  });
+                })()}
               </tbody>
             </table>
+            
+            {!loading && houses.length > 0 && (
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px', borderTop: '1px solid #e2e8f0' }}>
+                <span style={{ fontSize: '0.85rem', color: '#64748b' }}>
+                  Showing {(currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, houses.length)} of {houses.length} entries
+                </span>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <button 
+                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                    disabled={currentPage === 1}
+                    className="portal-btn-ghost"
+                    style={{ padding: '6px 12px', fontSize: '0.85rem' }}
+                  >
+                    Previous
+                  </button>
+                  <button 
+                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, Math.ceil(houses.length / itemsPerPage)))}
+                    disabled={currentPage === Math.ceil(houses.length / itemsPerPage) || houses.length === 0}
+                    className="portal-btn-ghost"
+                    style={{ padding: '6px 12px', fontSize: '0.85rem' }}
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

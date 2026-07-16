@@ -14,11 +14,19 @@ export default function ManageCBT() {
   const [exams, setExams] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'Active' | 'Expired' | 'Pending'>('Pending');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   // Creation Modal States
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [previewExamId, setPreviewExamId] = useState<string | null>(null);
+  const [previewData, setPreviewData] = useState<any>(null);
+  const [loadingPreview, setLoadingPreview] = useState(false);
+  const [previewPage, setPreviewPage] = useState(0);
   const [createFormData, setCreateFormData] = useState({
     title: '',
+    description: '',
+    instructions: '',
     classId: '',
     sectionId: '',
     subjectId: '',
@@ -60,9 +68,25 @@ export default function ManageCBT() {
     }
   };
 
+  const [templateConfig, setTemplateConfig] = useState<any>({});
+  
+  const PAPER_BUILTIN = [
+    { id: 'academic-classic',  name: 'Academic Classic',  color: '#1e3a8a', accent: '#eff6ff', icon: 'fa-book-open' },
+    { id: 'modern-assessment', name: 'Modern Assessment', color: '#0f172a', accent: '#f8fafc', icon: 'fa-pen-nib' },
+    { id: 'formal-exam',       name: 'Formal Exam',       color: '#475569', accent: '#f1f5f9', icon: 'fa-file-signature' },
+  ];
+
+  const fetchTemplate = async () => {
+    try {
+      const { data } = await api.get('/api/reports/template');
+      if (data && data.config) setTemplateConfig(data.config);
+    } catch (e) { console.error(e); }
+  };
+
   useEffect(() => {
     fetchExams();
     fetchInitialData();
+    fetchTemplate();
   }, []);
 
   const handleCreateSubmit = async (e: React.FormEvent) => {
@@ -85,6 +109,8 @@ export default function ManageCBT() {
         showToast('CBT Exam created successfully!', 'success');
         setCreateFormData({
           title: '',
+          description: '',
+          instructions: '',
           classId: '',
           sectionId: '',
           subjectId: '',
@@ -105,7 +131,7 @@ export default function ManageCBT() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!window.confirm('Are you sure you want to delete this exam?')) return;
+    if (!(await toastConfirm('Are you sure you want to delete this exam?'))) return;
     try {
       await api.delete(`/api/cbt/${id}`);
       showToast('Exam deleted successfully', 'success');
@@ -124,6 +150,20 @@ export default function ManageCBT() {
     } catch (err: any) {
       showToast(err.response?.data?.error || 'Failed to publish exam', 'error');
     
+    }
+  };
+
+  const handlePreview = async (id: string) => {
+    setPreviewExamId(id);
+    setLoadingPreview(true);
+    try {
+      const res = await api.get(`/api/cbt/${id}`);
+      setPreviewData(res.data);
+    } catch (err: any) {
+      showToast(err.response?.data?.error || 'Failed to load exam preview', 'error');
+      setPreviewExamId(null);
+    } finally {
+      setLoadingPreview(false);
     }
   };
 
@@ -146,19 +186,19 @@ export default function ManageCBT() {
           <div style={{ display: 'flex', borderBottom: '1px solid #e2e8f0' }}>
             <button 
               style={{ padding: '15px 20px', background: 'none', border: 'none', borderBottom: activeTab === 'Pending' ? '2px solid var(--school-primary, #3182ce)' : 'none', color: activeTab === 'Pending' ? 'var(--school-primary, #3182ce)' : '#4a5568', fontWeight: activeTab === 'Pending' ? 'bold' : 'normal', cursor: 'pointer' }}
-              onClick={() => setActiveTab('Pending')}
+              onClick={() => { setActiveTab('Pending'); setCurrentPage(1); }}
             >
               Pending Exams
             </button>
             <button 
               style={{ padding: '15px 20px', background: 'none', border: 'none', borderBottom: activeTab === 'Active' ? '2px solid var(--school-primary, #3182ce)' : 'none', color: activeTab === 'Active' ? 'var(--school-primary, #3182ce)' : '#4a5568', fontWeight: activeTab === 'Active' ? 'bold' : 'normal', cursor: 'pointer' }}
-              onClick={() => setActiveTab('Active')}
+              onClick={() => { setActiveTab('Active'); setCurrentPage(1); }}
             >
               Active Exams
             </button>
             <button 
               style={{ padding: '15px 20px', background: 'none', border: 'none', borderBottom: activeTab === 'Expired' ? '2px solid var(--school-primary, #3182ce)' : 'none', color: activeTab === 'Expired' ? 'var(--school-primary, #3182ce)' : '#4a5568', fontWeight: activeTab === 'Expired' ? 'bold' : 'normal', cursor: 'pointer' }}
-              onClick={() => setActiveTab('Expired')}
+              onClick={() => { setActiveTab('Expired'); setCurrentPage(1); }}
             >
               Expired Exams
             </button>
@@ -187,7 +227,12 @@ export default function ManageCBT() {
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredExams.map(exam => (
+                  {(() => {
+                    const indexOfLastItem = currentPage * itemsPerPage;
+                    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+                    const currentItems = filteredExams.slice(indexOfFirstItem, indexOfLastItem);
+                    if (currentItems.length === 0 && filteredExams.length > 0) setCurrentPage(1);
+                    return currentItems.map(exam => (
                     <tr key={exam.id}>
                       <td style={{ fontWeight: 600 }}>{exam.title}</td>
                       <td>{exam.class?.name || 'Any Class'}</td>
@@ -206,24 +251,54 @@ export default function ManageCBT() {
                       </td>
                       <td>{exam._count?.questions || 0}</td>
                       <td>
-                        <div style={{ display: 'flex', gap: 5 }}>
-                          <button className="portal-btn-secondary" style={{ padding: '6px 10px', fontSize: '0.8rem' }} onClick={() => navigate(`${basePath}/cbt/manage/${exam.id}/questions`)}>
-                            <i className="fas fa-plus"></i> Questions
+                        <div style={{ display: 'flex', gap: '8px' }}>
+                          <button className="portal-btn-ghost" style={{ padding: '8px', width: '36px', height: '36px', color: '#059669', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Add Questions" onClick={() => navigate(`${basePath}/cbt/manage/${exam.id}/questions`)}>
+                            <i className="fas fa-plus"></i>
+                          </button>
+                          <button className="portal-btn-ghost" style={{ padding: '8px', width: '36px', height: '36px', color: '#4338ca', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Preview Exam" onClick={() => handlePreview(exam.id)}>
+                            <i className="fas fa-eye"></i>
                           </button>
                           {exam.status === 'Pending' && (
-                            <button className="portal-btn-primary" style={{ padding: '6px 10px', fontSize: '0.8rem', background: 'var(--portal-success)', borderColor: 'var(--portal-success)' }} onClick={() => handlePublish(exam.id)}>
-                              <i className="fas fa-upload"></i> Publish
+                            <button className="portal-btn-ghost" style={{ padding: '8px', width: '36px', height: '36px', color: '#10b981', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Publish Exam" onClick={() => handlePublish(exam.id)}>
+                              <i className="fas fa-upload"></i>
                             </button>
                           )}
-                          <button className="portal-btn-secondary" style={{ padding: '6px 10px', fontSize: '0.8rem' }} onClick={() => handleDelete(exam.id)}>
-                            <i className="fas fa-trash" style={{ color: 'var(--portal-danger)' }}></i>
+                          <button className="portal-btn-ghost" style={{ padding: '8px', width: '36px', height: '36px', color: '#dc2626', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Delete Exam" onClick={() => handleDelete(exam.id)}>
+                            <i className="fas fa-trash-alt"></i>
                           </button>
                         </div>
                       </td>
                     </tr>
-                  ))}
-                </tbody>
+                  ));
+                })()}
+              </tbody>
               </table>
+              
+              {filteredExams.length > 0 && (
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px', borderTop: '1px solid #e2e8f0' }}>
+                  <span style={{ fontSize: '0.85rem', color: '#64748b' }}>
+                    Showing {(currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, filteredExams.length)} of {filteredExams.length} entries
+                  </span>
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <button 
+                      onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                      disabled={currentPage === 1}
+                      className="portal-btn-ghost"
+                      style={{ padding: '6px 12px', fontSize: '0.85rem' }}
+                    >
+                      Previous
+                    </button>
+                    <button 
+                      onClick={() => setCurrentPage(prev => Math.min(prev + 1, Math.ceil(filteredExams.length / itemsPerPage)))}
+                      disabled={currentPage === Math.ceil(filteredExams.length / itemsPerPage) || filteredExams.length === 0}
+                      className="portal-btn-ghost"
+                      style={{ padding: '6px 12px', fontSize: '0.85rem' }}
+                    >
+                      Next
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -281,6 +356,28 @@ export default function ManageCBT() {
                     {sections.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
                   </select>
                 </div>
+              </div>
+
+              <div className="portal-form-group" style={{ marginBottom: '16px' }}>
+                <label className="portal-label">Description (Optional)</label>
+                <input 
+                  type="text" 
+                  className="portal-input" 
+                  value={createFormData.description}
+                  onChange={e => setCreateFormData({...createFormData, description: e.target.value})}
+                  placeholder="e.g. Mid-term examination for Science"
+                />
+              </div>
+
+              <div className="portal-form-group" style={{ marginBottom: '16px' }}>
+                <label className="portal-label">Cover Page Instructions (Optional)</label>
+                <textarea 
+                  className="portal-input" 
+                  value={createFormData.instructions}
+                  onChange={e => setCreateFormData({...createFormData, instructions: e.target.value})}
+                  placeholder="Enter instructions to be shown on the exam cover page..."
+                  rows={4}
+                />
               </div>
 
               <div className="portal-form-group" style={{ marginBottom: '16px' }}>
@@ -342,6 +439,407 @@ export default function ManageCBT() {
           </div>
         </div>
       )}
+
+      {/* Exam Preview Modal */}
+      {previewExamId && (
+        <div className="portal-modal-overlay" onClick={() => setPreviewExamId(null)} style={{ padding: '40px 20px', overflowY: 'auto', alignItems: 'flex-start' }}>
+          <div 
+            className="portal-modal-card animate-in zoom-in duration-200" 
+            style={{ maxWidth: 900, width: '100%', margin: '0 auto', background: 'white', color: '#1e293b', boxShadow: '0 10px 25px rgba(0,0,0,0.1)' }}
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="no-print" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 24px', borderBottom: '1px solid #e2e8f0', background: '#f8fafc', borderTopLeftRadius: '12px', borderTopRightRadius: '12px' }}>
+              <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 900, color: '#1e293b' }}>
+                <i className="fas fa-eye mr-2"></i> Exam Preview
+              </h2>
+              <div style={{ display: 'flex', gap: '12px' }}>
+                <button onClick={() => window.print()} className="portal-btn-secondary" style={{ padding: '8px 16px', fontSize: '0.9rem' }}>
+                  <i className="fas fa-print mr-2"></i> Print
+                </button>
+                <button onClick={() => setPreviewExamId(null)} className="portal-btn-ghost" style={{ padding: '8px', fontSize: '1.2rem', color: '#64748b' }}>
+                  <i className="fas fa-times"></i>
+                </button>
+              </div>
+            </div>
+
+            <div className="preview-content" style={{ padding: '40px', background: 'white', maxHeight: 'calc(100vh - 120px)', overflowY: 'auto' }}>
+              {loadingPreview ? (
+                <div style={{ textAlign: 'center', padding: '40px', color: '#64748b' }}>
+                  <i className="fas fa-spinner fa-spin fa-2x mb-3"></i>
+                  <p>Loading exam content...</p>
+                </div>
+              ) : previewData ? (
+                <div>
+                  {previewPage === 0 ? (
+                    // COVER PAGE
+                    <div className="animate-in zoom-in duration-300" style={{ padding: '20px', textAlign: 'center' }}>
+                      <h1 style={{ fontSize: '2rem', margin: '0 0 10px', color: '#1e293b' }}>{previewData.school?.name || 'School Name'}</h1>
+                      <h2 style={{ fontSize: '1.5rem', color: '#334155', marginBottom: '30px' }}>{previewData.title}</h2>
+                      
+                      <div style={{ display: 'flex', justifyContent: 'center', gap: '40px', marginBottom: '40px', fontSize: '1.1rem', fontWeight: 600 }}>
+                        <div>Subject: {previewData.subject?.name || 'General'}</div>
+                        <div>Date: {new Date(previewData.date).toLocaleDateString()}</div>
+                        <div>Time: {previewData.time}</div>
+                      </div>
+
+                      <div style={{ textAlign: 'left', background: '#f8fafc', padding: '30px', borderRadius: '8px', border: '1px solid #e2e8f0', marginBottom: '40px' }}>
+                        <h3 style={{ marginTop: 0 }}>Instructions to Candidates</h3>
+                        {previewData.instructions ? (
+                          <div style={{ whiteSpace: 'pre-wrap', lineHeight: '1.6', fontSize: '1.1rem' }}>
+                            {previewData.instructions}
+                          </div>
+                        ) : (
+                          <ul style={{ paddingLeft: '20px', lineHeight: '1.6', fontSize: '1.1rem' }}>
+                            <li>Read each question carefully before answering.</li>
+                            <li>For multiple-choice questions, select the best possible option.</li>
+                            <li>Total questions: {previewData.questions?.length || 0}</li>
+                            <li>Passing percentage: {previewData.passingPercent}%</li>
+                          </ul>
+                        )}
+                      </div>
+
+                      <button 
+                        className="portal-btn-primary" 
+                        style={{ padding: '15px 40px', fontSize: '1.2rem', fontWeight: 'bold' }}
+                        onClick={() => setPreviewPage(1)}
+                      >
+                        Start Exam Preview
+                      </button>
+                    </div>
+                  ) : (
+                    // EXAM PAGES
+                    <div className="animate-in fade-in duration-300">
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', paddingBottom: '10px', borderBottom: '1px solid #e2e8f0' }}>
+                        <h2 style={{ margin: 0, fontSize: '1.25rem' }}>{previewData.title}</h2>
+                        <div style={{ fontWeight: 600, color: '#64748b' }}>
+                          Page {previewPage} of {Math.max(1, ...((previewData.questions || []).map((q: any) => q.page || 1)))}
+                        </div>
+                      </div>
+                      
+                      {(() => {
+                        const totalPages = Math.max(1, ...((previewData.questions || []).map((q: any) => q.page || 1)));
+                        const currentQuestions = (previewData.questions || []).filter((q: any) => (q.page || 1) === previewPage);
+                        const sections = currentQuestions.reduce((acc: any, q: any) => {
+                          const sectionName = q.section || 'General';
+                          if (!acc[sectionName]) acc[sectionName] = [];
+                          acc[sectionName].push(q);
+                          return acc;
+                        }, {});
+
+                        return (
+                          <div>
+                            {Object.keys(sections).map((sectionName) => (
+                              <div key={sectionName} style={{ marginBottom: '40px' }}>
+                                {sectionName !== 'General' && (
+                                  <h3 style={{ borderBottom: '2px solid #e2e8f0', paddingBottom: '10px', marginBottom: '20px', color: '#1e293b' }}>
+                                    {sectionName}
+                                  </h3>
+                                )}
+                                
+                                {sections[sectionName].map((q: any) => {
+                                  const globalIdx = previewData.questions.findIndex((gq: any) => gq.id === q.id) + 1;
+                                  return (
+                                    <div key={q.id} style={{ marginBottom: '30px', padding: '20px', background: '#fff', border: '1px solid #e2e8f0', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}>
+                                      <div style={{ display: 'flex', gap: '15px', alignItems: 'flex-start', marginBottom: '15px' }}>
+                                        <div style={{ fontWeight: 800, fontSize: '1.1rem', color: '#334155' }}>{globalIdx}.</div>
+                                        <div style={{ flex: 1, fontSize: '1.1rem', lineHeight: '1.6' }}>{q.question}</div>
+                                        <div style={{ fontWeight: 600, color: '#64748b', fontSize: '0.9rem' }}>[{q.mark} mark{q.mark > 1 ? 's' : ''}]</div>
+                                      </div>
+
+                                      {q.imageUrl && (
+                                        <div style={{ marginBottom: '15px', paddingLeft: '35px' }}>
+                                          <img src={q.imageUrl} alt="Question figure" style={{ maxWidth: '100%', maxHeight: '300px', borderRadius: '8px', border: '1px solid #e2e8f0' }} />
+                                        </div>
+                                      )}
+
+                                      <div style={{ paddingLeft: '35px' }}>
+                                        {q.options && q.options.length > 0 && (
+                                          <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '10px' }}>
+                                            {q.options.map((opt: string, optIdx: number) => (
+                                              <div key={optIdx} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                                <div style={{ width: '20px', height: '20px', borderRadius: q.type === 'Multiple choice' ? '4px' : '50%', border: '2px solid #cbd5e0' }}></div>
+                                                <span style={{ fontSize: '1.05rem' }}>{opt}</span>
+                                              </div>
+                                            ))}
+                                          </div>
+                                        )}
+                                        
+                                        {(!q.options || q.options.length === 0) && q.type !== 'True or false' && (
+                                          <div style={{ marginTop: '15px' }}>
+                                            <div style={{ borderBottom: '1px dashed #cbd5e0', height: '30px', maxWidth: '400px' }}></div>
+                                          </div>
+                                        )}
+                                      </div>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            ))}
+
+                            {currentQuestions.length === 0 && (
+                              <div style={{ textAlign: 'center', padding: '40px', color: '#64748b' }}>
+                                No questions found on this page.
+                              </div>
+                            )}
+
+                            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '30px', paddingTop: '20px', borderTop: '1px solid #e2e8f0' }}>
+                              <button 
+                                className="portal-btn-ghost" 
+                                onClick={() => setPreviewPage(prev => Math.max(0, prev - 1))}
+                              >
+                                <i className="fas fa-chevron-left mr-2"></i> Previous
+                              </button>
+                              
+                              {previewPage < totalPages ? (
+                                <button 
+                                  className="portal-btn-primary" 
+                                  onClick={() => setPreviewPage(prev => Math.min(totalPages, prev + 1))}
+                                >
+                                  Next <i className="fas fa-chevron-right ml-2"></i>
+                                </button>
+                              ) : (
+                                <button 
+                                  className="portal-btn-secondary"
+                                  onClick={() => setPreviewPage(0)}
+                                >
+                                  Restart Preview
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })()}
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <p style={{ textAlign: 'center', color: '#ef4444' }}>Could not load preview data.</p>
+              )}
+            </div>
+
+            {/* Print Only Container */}
+            {previewData && (
+              <div className="printable-preview" style={{ background: 'white', padding: '20px' }}>
+                {(() => {
+                  const pBuiltin = PAPER_BUILTIN.find(p => p.id === templateConfig?.paperDesign) || PAPER_BUILTIN[0];
+                  const pColor = pBuiltin.color;
+                  const logoUrl = templateConfig?.paperLogo || templateConfig?.consultationLogo || previewData.school?.logo;
+                  
+                  return (
+                    <div style={{ 
+                      width: '100%', 
+                      maxWidth: '800px', 
+                      margin: '0 auto', 
+                      color: 'black',
+                      fontFamily: '"Times New Roman", Times, serif',
+                      borderTop: `8px solid ${pColor}`
+                    }}>
+                      {/* Paper Header */}
+                      <div style={{ textAlign: 'center', marginBottom: '3rem', borderBottom: `2px solid ${pColor}`, paddingBottom: '2rem' }}>
+                        {logoUrl && (
+                          <img src={logoUrl.startsWith('/api') || logoUrl.startsWith('http') ? logoUrl : `/api/storage/file/${logoUrl}`} alt="School Logo" style={{ height: '100px', marginBottom: '15px' }} />
+                        )}
+                        <h1 style={{ margin: '0 0 15px', fontSize: '2.5rem', textTransform: 'uppercase', letterSpacing: '1px', color: pColor }}>
+                          {previewData.school?.name || 'SCHOOL NAME'}
+                        </h1>
+                        
+                        <h2 style={{ textTransform: 'uppercase', fontSize: '1.8rem', marginBottom: '20px' }}>{previewData.title || 'Untitled CBT Exam'}</h2>
+                        
+                        <div style={{ display: 'flex', justifyContent: 'center', gap: '3rem', fontSize: '1.1rem', fontWeight: 600 }}>
+                          <span>SUBJECT: {previewData.subject?.name || '_________'}</span>
+                          <span>DATE: {new Date(previewData.date).toLocaleDateString()}</span>
+                          <span>TIME: {previewData.time}</span>
+                        </div>
+                        <div style={{ marginTop: '1.5rem', fontWeight: 800, fontSize: '1.2rem' }}>PASSING PERCENT: {previewData.passingPercent}%</div>
+                      </div>
+
+                      {/* Instructions */}
+                      <div style={{ marginBottom: '2rem' }}>
+                        <h3 style={{ fontSize: '1.1rem', fontWeight: 800, textDecoration: 'underline' }}>INSTRUCTIONS TO CANDIDATES</h3>
+                        {previewData.instructions ? (
+                          <p style={{ fontSize: '1rem', marginTop: '10px', whiteSpace: 'pre-wrap' }}>{previewData.instructions}</p>
+                        ) : (
+                          <ul style={{ paddingLeft: '20px', lineHeight: '1.6', fontSize: '1rem', marginTop: '10px' }}>
+                            <li>Read each question carefully before answering.</li>
+                            <li>For multiple-choice questions, select the best possible option.</li>
+                            <li>Total questions: {previewData.questions?.length || 0}</li>
+                          </ul>
+                        )}
+                      </div>
+
+                      <div className="cover-page-break" style={{ margin: '40px 0', borderBottom: '1px dashed #ccc' }}></div>
+              
+                      <div className="subsequent-header" style={{ display: 'none', textAlign: 'center', marginBottom: '2rem', borderBottom: `2px solid ${pColor}`, paddingBottom: '1rem' }}>
+                        <h3 style={{ margin: 0, textTransform: 'uppercase', fontSize: '1.2rem', color: pColor }}>{previewData.school?.name || 'SCHOOL NAME'}</h3>
+                        <h4 style={{ margin: '5px 0 0 0', textTransform: 'uppercase', fontSize: '1rem' }}>{previewData.title}</h4>
+                      </div>
+
+                      {/* All Questions rendered sequentially for print */}
+                      {(() => {
+                          const pages = (previewData.questions || []).reduce((acc: any, q: any) => {
+                            const pageNum = q.page || 1;
+                            if (!acc[pageNum]) acc[pageNum] = [];
+                            acc[pageNum].push(q);
+                            return acc;
+                          }, {});
+                          
+                          const pageNumbers = Object.keys(pages).map(Number).sort((a, b) => a - b);
+
+                          return (
+                            <div>
+                              {pageNumbers.map((pageNum, pageIndex) => {
+                                const pageQuestions = pages[pageNum];
+                                const sections = pageQuestions.reduce((acc: any, q: any) => {
+                                  const sectionName = q.section || 'General';
+                                  if (!acc[sectionName]) acc[sectionName] = [];
+                                  acc[sectionName].push(q);
+                                  return acc;
+                                }, {});
+
+                                return (
+                                  <div key={pageNum} style={{ pageBreakAfter: pageIndex < pageNumbers.length - 1 ? 'always' : 'auto' }}>
+                                    {Object.keys(sections).map((sectionName) => (
+                                      <div key={sectionName} style={{ marginBottom: '40px' }}>
+                                        {sectionName !== 'General' && (
+                                          <div style={{ textAlign: 'center', fontWeight: 800, fontSize: '1.2rem', textDecoration: 'underline', marginBottom: '1.5rem', color: '#1e293b' }}>
+                                            {sectionName.toUpperCase()}
+                                          </div>
+                                        )}
+                                        
+                                        {sections[sectionName].map((q: any) => {
+                                          const globalIdx = previewData.questions.findIndex((gq: any) => gq.id === q.id) + 1;
+                                          return (
+                                            <div key={q.id} style={{ marginBottom: '2rem', display: 'flex', gap: '15px' }}>
+                                              <div style={{ fontWeight: 800 }}>{globalIdx}.</div>
+                                              <div style={{ flex: 1 }}>
+                                                <p style={{ whiteSpace: 'pre-wrap', marginBottom: '10px', fontSize: '1.1rem' }}>{q.question || '____________________________________________________?'}</p>
+                                                
+                                                {q.imageUrl && (
+                                                  <div style={{ marginBottom: '15px' }}>
+                                                    <img src={q.imageUrl} alt="Question figure" style={{ maxWidth: '100%', maxHeight: '300px' }} />
+                                                  </div>
+                                                )}
+
+                                                {q.options && q.options.length > 0 && (
+                                                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginLeft: '1rem' }}>
+                                                    {q.options.map((opt: string, i: number) => (
+                                                      <div key={i}>{String.fromCharCode(65 + i)}) {opt || '_________'}</div>
+                                                    ))}
+                                                  </div>
+                                                )}
+                                                
+                                                {(!q.options || q.options.length === 0) && q.type !== 'True or false' && (
+                                                  <div style={{ borderBottom: '1px dotted #ccc', height: '100px', margin: '10px 0' }}></div>
+                                                )}
+
+                                                <div style={{ textAlign: 'right', fontWeight: 700, fontStyle: 'italic' }}>[{q.mark} mark{q.mark > 1 ? 's' : ''}]</div>
+                                              </div>
+                                            </div>
+                                          );
+                                        })}
+                                      </div>
+                                    ))}
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          );
+                      })()}
+
+                      <div style={{ textAlign: 'center', marginTop: '4rem', fontWeight: 800, borderTop: '1px solid black', paddingTop: '1rem' }}>
+                        --- END OF EXAMINATION ---
+                      </div>
+                      {templateConfig?.paperSignature && (
+                        <div style={{ textAlign: 'right', marginTop: '2rem' }}>
+                          <img src={`/api/storage/file/${templateConfig.paperSignature}`} alt="Signature" style={{ height: '60px', objectFit: 'contain' }} />
+                          <div style={{ borderTop: '1px dashed #ccc', width: '200px', display: 'inline-block', marginTop: '5px', color: '#2d3748', fontSize: '0.9rem', paddingTop: '5px', textAlign: 'center' }}>Examiner Signature</div>
+                        </div>
+                      )}
+                      
+                      <div className="print-footer">
+                        {previewData.school?.name || 'School Name'} 
+                        {previewData.school?.address && ` | ${previewData.school.address}`}
+                        {previewData.school?.phone && ` | ${previewData.school.phone}`}
+                        {previewData.school?.email && ` | ${previewData.school.email}`}
+                      </div>
+                    </div>
+                  );
+                })()}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      <style>{`
+        @media screen {
+          .print-footer { display: none; }
+          .printable-preview { display: none !important; }
+        }
+        @media print {
+          /* Hide all text/elements by default */
+          body * {
+            visibility: hidden;
+          }
+          
+          /* Flatten the entire DOM tree's layout constraints to prevent clipping/1-page bugs */
+          * {
+            position: static !important;
+            overflow: visible !important;
+            transform: none !important;
+            height: auto !important;
+            max-height: none !important;
+          }
+
+          /* Make sure the preview and its children are visible */
+          .printable-preview, .printable-preview * {
+            visibility: visible !important;
+          }
+          
+          /* Position the preview at the top left of the document */
+          .printable-preview {
+            display: block !important;
+            position: absolute !important;
+            left: 0 !important;
+            top: 0 !important;
+            width: 100% !important;
+            background: white !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            box-shadow: none !important;
+            border: none !important;
+          }
+          
+          /* Completely hide unwanted siblings to prevent them from taking up space */
+          .no-print, .preview-content, .portal-sidebar, .portal-header, .portal-page-header {
+            display: none !important;
+          }
+          
+          .print-footer {
+            display: block !important;
+            position: fixed !important;
+            bottom: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            text-align: center !important;
+            padding: 10px 0 !important;
+            background: white !important;
+            border-top: 1px solid #ccc !important;
+            font-size: 0.85rem !important;
+            color: #333 !important;
+          }
+          .cover-page-break {
+            border-bottom: none !important;
+            margin: 0 !important;
+          }
+          .subsequent-header {
+            display: block !important;
+          }
+          @page {
+            margin: 2cm;
+          }
+        }
+      `}</style>
     </>
   );
 }

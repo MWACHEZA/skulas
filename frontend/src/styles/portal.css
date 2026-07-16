@@ -823,10 +823,43 @@
   .portal-btn-primary,
   .portal-btn-ghost,
   .portal-btn-secondary,
-  .portal-modal-overlay,
   .action-buttons,
   .portal-card-header div:last-child {
     display: none !important;
+  }
+  
+  /* Hide modal overlay normally, unless it contains a printable-area */
+  body:not(:has(.printable-area)) .portal-modal-overlay {
+    display: none !important;
+  }
+
+  /* Isolate printing if a printable-area exists */
+  body:has(.printable-area) * {
+    visibility: hidden;
+  }
+  
+  body:has(.printable-area) .portal-modal-overlay {
+    position: absolute !important;
+    background: transparent !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    display: block !important;
+  }
+  
+  body:has(.printable-area) .printable-area,
+  body:has(.printable-area) .printable-area * {
+    visibility: visible;
+  }
+  
+  body:has(.printable-area) .printable-area {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
   }
   .portal-main {
     margin-left: 0 !important;

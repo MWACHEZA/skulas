@@ -44,6 +44,34 @@ router.get('/question-papers', requireAuth, async (req: AuthRequest, res: Respon
 });
 
 /**
+ * @route   GET /api/academic-tools/question-papers/:id
+ * @desc    Get a single question paper by ID
+ */
+router.get('/question-papers/:id', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+    const schoolId = req.user!.schoolId!;
+    
+    const paper = await prisma.questionPaper.findUnique({
+      where: { id: id as string, schoolId },
+      include: {
+        subject: { select: { id: true, name: true, code: true } },
+        teacher: { select: { id: true, user: { select: { name: true } } } },
+        school: { include: { websiteSettings: true } }
+      }
+    });
+
+    if (!paper) {
+      return res.status(404).json({ error: 'Question paper not found' });
+    }
+
+    res.json(paper);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch question paper' });
+  }
+});
+
+/**
  * @route   POST /api/academic-tools/question-papers
  * @desc    Create a new question paper
  */

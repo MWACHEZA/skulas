@@ -131,7 +131,7 @@ export default function ComplaintsPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!window.confirm('Are you sure you want to delete this complaint?')) return;
+    if (!(await toastConfirm('Are you sure you want to delete this complaint?'))) return;
     try {
       await api.delete(`/api/reception/complaints/${id}`);
       showToast('Complaint deleted successfully', 'success');

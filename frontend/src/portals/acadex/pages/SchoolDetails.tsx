@@ -40,7 +40,7 @@ export default function AcadexSchoolDetails() {
   };
 
   const handleDelete = async () => {
-    if (!window.confirm(`PERMANENTLY DELETE ${school.name}? This cannot be undone.`)) return;
+    if (!(await toastConfirm(`PERMANENTLY DELETE ${school.name}? This cannot be undone.`))) return;
     setUpdating(true);
     try {
       await api.delete(`/api/schools/${code}`);

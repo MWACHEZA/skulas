@@ -183,7 +183,7 @@ export default function FeeGroupsPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!window.confirm('Authorize permanent removal of this fee group? This action will impact historical audit trails.')) return;
+    if (!(await toastConfirm('Authorize permanent removal of this fee group? This action will impact historical audit trails.'))) return;
     try {
       await api.delete(`/api/fees/groups/${id}`);
       setGroups(groups.filter(g => g.id !== id));

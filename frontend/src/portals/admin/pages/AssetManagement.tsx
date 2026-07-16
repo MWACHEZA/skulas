@@ -11,6 +11,10 @@ export default function AssetManagement() {
   const [selectedIncident, setSelectedIncident] = useState<any>(null);
   const [resolveForm, setResolveForm] = useState({ fixDetails: '', newStatus: 'good' });
 
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
   useEffect(() => {
     fetchAssets();
   }, []);
@@ -103,6 +107,7 @@ export default function AssetManagement() {
             {loading ? (
                 <div style={{ textAlign: 'center', padding: 40 }}><i className="fas fa-spinner fa-spin"></i> Loading...</div>
             ) : (
+              <>
                 <table className="portal-table">
                     <thead>
                         <tr>
@@ -114,7 +119,12 @@ export default function AssetManagement() {
                         </tr>
                     </thead>
                     <tbody>
-                        {assets.map(a => (
+                        {(() => {
+                          const indexOfLastItem = currentPage * itemsPerPage;
+                          const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+                          const currentItems = assets.slice(indexOfFirstItem, indexOfLastItem);
+                          
+                          return currentItems.map(a => (
                             <tr key={a.id}>
                                 <td>
                                     <div style={{ fontWeight: 600 }}>{a.name}</div>
@@ -139,9 +149,36 @@ export default function AssetManagement() {
                                     ) : 'Not Set'}
                                 </td>
                             </tr>
-                        ))}
+                          ));
+                        })()}
                     </tbody>
                 </table>
+                {assets.length > 0 && (
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px', borderTop: '1px solid #e2e8f0' }}>
+                    <span style={{ fontSize: '0.85rem', color: '#64748b' }}>
+                      Showing {(currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, assets.length)} of {assets.length} entries
+                    </span>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      <button 
+                        onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                        disabled={currentPage === 1}
+                        className="portal-btn-ghost"
+                        style={{ padding: '6px 12px', fontSize: '0.85rem' }}
+                      >
+                        Previous
+                      </button>
+                      <button 
+                        onClick={() => setCurrentPage(prev => Math.min(prev + 1, Math.ceil(assets.length / itemsPerPage)))}
+                        disabled={currentPage === Math.ceil(assets.length / itemsPerPage) || assets.length === 0}
+                        className="portal-btn-ghost"
+                        style={{ padding: '6px 12px', fontSize: '0.85rem' }}
+                      >
+                        Next
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>

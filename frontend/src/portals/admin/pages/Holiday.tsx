@@ -54,7 +54,7 @@ export default function Holiday() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!window.confirm('Remove this holiday record?')) return;
+    if (!(await toastConfirm('Remove this holiday record?'))) return;
     try {
       await api.delete(`/api/schools/holidays/${id}`);
       showToast('Holiday removed', 'success');

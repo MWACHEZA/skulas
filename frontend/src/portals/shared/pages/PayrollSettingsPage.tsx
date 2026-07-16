@@ -77,7 +77,7 @@ export default function PayrollSettingsPage({ isEmbedded = false }: { isEmbedded
   };
 
   const handleDeleteModifier = async (type: 'allowances' | 'deductions' | 'tax-tables', id: string) => {
-    if (!window.confirm('Are you sure you want to purge this payroll configuration? This may impact future salary calculations.')) return;
+    if (!(await toastConfirm('Are you sure you want to purge this payroll configuration? This may impact future salary calculations.'))) return;
     try {
       await api.delete(`/api/payroll/${type}/${id}`);
       if (type === 'allowances') setAllowances(allowances.filter(a => a.id !== id));

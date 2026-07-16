@@ -179,6 +179,11 @@ app.use('/api/wallets', walletRoutes);
 app.use('/public', publicRoutes);
 app.use('/api/public', publicRoutes);
 
+// Health check endpoint
+app.get('/api/health', (req, res) => {
+  res.status(200).send('OK');
+});
+
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });

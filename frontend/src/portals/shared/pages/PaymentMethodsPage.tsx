@@ -86,7 +86,7 @@ export default function PaymentMethodsPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!window.confirm('Are you sure you want to purge this institutional account? Incoming payment reconciliation may be impacted.')) return;
+    if (!(await toastConfirm('Are you sure you want to purge this institutional account? Incoming payment reconciliation may be impacted.'))) return;
 
     try {
       await api.delete(`/api/finance/payment-methods/${id}`);

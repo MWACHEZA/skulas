@@ -106,7 +106,7 @@ export default function TeacherLessonPlan() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!window.confirm('Delete this lesson breakdown?')) return;
+    if (!(await toastConfirm('Delete this lesson breakdown?'))) return;
     try {
       await api.delete(`/api/lesson-plan/${id}`);
       showToast('Lesson breakdown deleted', 'success');

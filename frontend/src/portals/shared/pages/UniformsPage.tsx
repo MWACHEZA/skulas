@@ -198,24 +198,48 @@ const UniformsPage: React.FC = () => {
 
 const ItemsTab = ({ items, onUpdate, canManage, showModal, setShowModal }: any) => {
   const [formData, setFormData] = useState({ name: '', orderPrice: '', sellingPrice: '' });
+  const [editingId, setEditingId] = useState<string | null>(null);
   const { showToast } = useToast();
+
+  const handleEdit = (item: any) => {
+    setFormData({ name: item.name, orderPrice: item.orderPrice.toString(), sellingPrice: item.sellingPrice.toString() });
+    setEditingId(item.id);
+    setShowModal(true);
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!(await toastConfirm("Are you sure you want to delete this item?"))) return;
+    try {
+      await api.delete(`/api/uniforms/items/${id}`);
+      showToast("Item deleted successfully", "success");
+      onUpdate();
+    } catch (error) {
+      showToast("Failed to delete item", "error");
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!canManage) return;
     try {
-      await api.post("/api/uniforms/items", {
+      const payload = {
         ...formData,
         orderPrice: parseFloat(formData.orderPrice) || 0,
         sellingPrice: parseFloat(formData.sellingPrice) || 0
-      });
-      showToast("Inventory item cataloged and archived", "success");
+      };
+      if (editingId) {
+        await api.patch(`/api/uniforms/items/${editingId}`, payload);
+        showToast("Inventory item updated successfully", "success");
+      } else {
+        await api.post("/api/uniforms/items", payload);
+        showToast("Inventory item cataloged and archived", "success");
+      }
       setFormData({ name: '', orderPrice: '', sellingPrice: '' });
+      setEditingId(null);
       setShowModal(false);
       onUpdate();
     } catch (error) {
       showToast("Failed to authorize inventory cataloging", "error");
-    
     }
   };
 
@@ -263,8 +287,8 @@ const ItemsTab = ({ items, onUpdate, canManage, showModal, setShowModal }: any) 
                   {canManage && (
                     <td style={{ textAlign: 'right', paddingRight: '32px' }}>
                       <div className="action-buttons" style={{ justifyContent: 'flex-end' }}>
-                        <button className="portal-btn-ghost" style={{ padding: '8px', color: '#2563eb' }} onClick={() => alert('This feature is currently under development or disabled.')}><i className="fas fa-pencil-alt"></i></button>
-                        <button className="portal-btn-ghost" style={{ padding: '8px', color: '#dc2626' }} onClick={() => alert('This feature is currently under development or disabled.')}><i className="fas fa-trash"></i></button>
+                        <button className="portal-btn-ghost" style={{ padding: '8px', color: '#2563eb' }} onClick={() => handleEdit(item)}><i className="fas fa-pencil-alt"></i></button>
+                        <button className="portal-btn-ghost" style={{ padding: '8px', color: '#dc2626' }} onClick={() => handleDelete(item.id)}><i className="fas fa-trash"></i></button>
                       </div>
                     </td>
                   )}
@@ -285,10 +309,10 @@ const ItemsTab = ({ items, onUpdate, canManage, showModal, setShowModal }: any) 
           <div className="portal-modal-card animate-in zoom-in duration-200" style={{ maxWidth: '560px', padding: 0 }}>
             <div className="portal-modal-header" style={{ padding: '32px 40px', borderBottom: '1px solid #f1f5f9' }}>
                <div>
-                  <h3 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 900 }}>Catalog New Item</h3>
-                  <p style={{ margin: '4px 0 0 0', color: '#64748b', fontWeight: 700, fontSize: '0.9rem' }}>Register a new apparel article into the institutional registry.</p>
+                  <h3 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 900 }}>{editingId ? 'Update Item' : 'Catalog New Item'}</h3>
+                  <p style={{ margin: '4px 0 0 0', color: '#64748b', fontWeight: 700, fontSize: '0.9rem' }}>{editingId ? 'Modify an existing apparel article.' : 'Register a new apparel article into the institutional registry.'}</p>
                </div>
-               <button onClick={() => setShowModal(false)} className="portal-btn-ghost" style={{ padding: '12px' }}><i className="fas fa-times"></i></button>
+               <button onClick={() => { setShowModal(false); setEditingId(null); setFormData({ name: '', orderPrice: '', sellingPrice: '' }); }} className="portal-btn-ghost" style={{ padding: '12px' }}><i className="fas fa-times"></i></button>
             </div>
             <form onSubmit={handleSubmit}>
               <div className="portal-modal-body" style={{ padding: '40px' }}>
@@ -327,12 +351,12 @@ const ItemsTab = ({ items, onUpdate, canManage, showModal, setShowModal }: any) 
                     />
                   </div>
                 </div>
-              </div>
-              <div className="portal-modal-footer" style={{ padding: '32px 40px', background: '#f8fafc', borderTop: '1px solid #f1f5f9' }}>
-                <button type="button" onClick={() => setShowModal(false)} className="portal-btn-ghost" style={{ padding: '14px 32px', fontWeight: 800 }}>Abort Process</button>
-                <button type="submit" className="portal-btn-primary" style={{ padding: '14px 40px', fontWeight: 900 }}>
-                  <i className="fas fa-save mr-2"></i>Catalog Item
-                </button>
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '16px', marginTop: '32px' }}>
+                  <button type="button" onClick={() => { setShowModal(false); setEditingId(null); setFormData({ name: '', orderPrice: '', sellingPrice: '' }); }} className="portal-btn-ghost">Cancel</button>
+                  <button type="submit" className="portal-btn-primary" style={{ padding: '12px 32px' }}>
+                    <i className="fas fa-save mr-2"></i> {editingId ? 'Update Item' : 'Commit Catalog Registration'}
+                  </button>
+                </div>
               </div>
             </form>
           </div>

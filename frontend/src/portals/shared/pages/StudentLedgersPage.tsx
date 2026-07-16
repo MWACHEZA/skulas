@@ -344,7 +344,7 @@ export default function StudentLedgersPage() {
       {isModalOpen && selectedLedger && (
         <div className="portal-modal-overlay no-print" onClick={() => setIsModalOpen(false)}>
           <div 
-            className="portal-modal-card animate-in zoom-in duration-200 printable-ledger-modal" 
+            className="portal-modal-card animate-in zoom-in duration-200 printable-area" 
             style={{ maxWidth: '800px', width: '90%', padding: '32px', position: 'relative', background: 'white', color: '#1e293b' }}
             onClick={e => e.stopPropagation()}
           >
@@ -561,32 +561,6 @@ export default function StudentLedgersPage() {
           </div>
         </div>
       )}
-
-      <style>{`
-        @media print {
-          body * {
-            visibility: hidden;
-          }
-          .printable-ledger-modal, .printable-ledger-modal * {
-            visibility: visible;
-          }
-          .printable-ledger-modal {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
-            background: white !important;
-            color: black !important;
-            padding: 0 !important;
-            margin: 0 !important;
-            box-shadow: none !important;
-            border: none !important;
-          }
-          .no-print {
-            display: none !important;
-          }
-        }
-      `}</style>
     </div>
   );
 }

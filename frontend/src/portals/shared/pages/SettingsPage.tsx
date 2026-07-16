@@ -189,8 +189,10 @@ export default function SettingsPage({ defaultTab }: SettingsPageProps) {
       // 2. Save settings to DB if admin/bursar/HR
       if (isAdmin || isBursar || isHR) {
         const payload = { ...settings };
-        if (payload.nextTermBegin) payload.nextTermBegin = new Date(payload.nextTermBegin).toISOString();
-        if (payload.scoreClosingDate) payload.scoreClosingDate = new Date(payload.scoreClosingDate).toISOString();
+        if (payload.nextTermBegin && payload.nextTermBegin.trim() !== '') payload.nextTermBegin = new Date(payload.nextTermBegin).toISOString();
+        else delete payload.nextTermBegin;
+        if (payload.scoreClosingDate && payload.scoreClosingDate.trim() !== '') payload.scoreClosingDate = new Date(payload.scoreClosingDate).toISOString();
+        else delete payload.scoreClosingDate;
         
         await api.patch('/api/schools/settings', payload);
       }

@@ -136,7 +136,7 @@ export default function StudentClub() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!window.confirm(`Are you sure you want to delete this ${t('club').toLowerCase()}?`)) return;
+    if (!(await toastConfirm(`Are you sure you want to delete this ${t('club').toLowerCase()}?`))) return;
     try {
       await api.delete(`/api/schools/clubs-list/${id}`);
       showToast(`${t('club')} deleted`, 'success');

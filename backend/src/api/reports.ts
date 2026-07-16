@@ -382,6 +382,96 @@ router.patch('/cert-template', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR'
 });
 
 /**
+ * @route   PATCH /api/reports/report-template
+ * @desc    [ADMIN] Upload report background template
+ */
+router.patch('/report-template', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR'), brandingUpload.single('template'), async (req: AuthRequest, res: Response) => {
+  try {
+    const templatePath = (req as any).uploadCategoryPath && req.file 
+      ? `${(req as any).uploadCategoryPath}/${req.file.filename}` 
+      : undefined;
+
+    if (!templatePath) return res.status(400).json({ error: 'No template file uploaded' });
+
+    const schoolId = String(req.user!.schoolId!);
+    const existing = await prisma.reportTemplate.findFirst({ where: { schoolId } });
+    const config = existing ? (existing.config as any) || {} : {};
+    config.reportTemplateUrl = templatePath;
+
+    const updated = await prisma.reportTemplate.upsert({
+      where: { schoolId },
+      update: { config },
+      create: { schoolId, config }
+    });
+
+    res.json({ success: true, reportTemplateUrl: templatePath, config: updated.config });
+  } catch (error) {
+    console.error('Report Template upload error:', error);
+    res.status(500).json({ error: 'Failed to update report template' });
+  }
+});
+
+/**
+ * @route   PATCH /api/reports/receipt-logo
+ * @desc    [ADMIN] Upload receipt logo
+ */
+router.patch('/receipt-logo', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR'), brandingUpload.single('logo'), async (req: AuthRequest, res: Response) => {
+  try {
+    const logoPath = (req as any).uploadCategoryPath && req.file 
+      ? `${(req as any).uploadCategoryPath}/${req.file.filename}` 
+      : undefined;
+
+    if (!logoPath) return res.status(400).json({ error: 'No logo file uploaded' });
+
+    const schoolId = String(req.user!.schoolId!);
+    const existing = await prisma.reportTemplate.findFirst({ where: { schoolId } });
+    const config = existing ? (existing.config as any) || {} : {};
+    config.receiptLogoUrl = logoPath;
+
+    const updated = await prisma.reportTemplate.upsert({
+      where: { schoolId },
+      update: { config },
+      create: { schoolId, config }
+    });
+
+    res.json({ success: true, receiptLogoUrl: logoPath, config: updated.config });
+  } catch (error) {
+    console.error('Receipt Logo upload error:', error);
+    res.status(500).json({ error: 'Failed to update receipt logo' });
+  }
+});
+
+/**
+ * @route   PATCH /api/reports/consultation-logo
+ * @desc    [ADMIN] Upload consultation logo
+ */
+router.patch('/consultation-logo', requireAuth, requireRole('SCHOOL_ADMIN', 'CLINIC'), brandingUpload.single('logo'), async (req: AuthRequest, res: Response) => {
+  try {
+    const logoPath = (req as any).uploadCategoryPath && req.file 
+      ? `${(req as any).uploadCategoryPath}/${req.file.filename}` 
+      : undefined;
+
+    if (!logoPath) return res.status(400).json({ error: 'No logo file uploaded' });
+
+    const schoolId = String(req.user!.schoolId!);
+    const existing = await prisma.reportTemplate.findFirst({ where: { schoolId } });
+    const config = existing ? (existing.config as any) || {} : {};
+    config.consultationLogoUrl = logoPath;
+
+    const updated = await prisma.reportTemplate.upsert({
+      where: { schoolId },
+      update: { config },
+      create: { schoolId, config }
+    });
+
+    res.json({ success: true, consultationLogoUrl: logoPath, config: updated.config });
+  } catch (error) {
+    console.error('Consultation Logo upload error:', error);
+    res.status(500).json({ error: 'Failed to update consultation logo' });
+  }
+});
+
+/**
  * @route   GET /api/reports/download/:id
  * @desc    Generate and download PDF report
  */

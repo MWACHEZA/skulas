@@ -127,7 +127,7 @@ export default function PhoneCallLogPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!window.confirm('Delete this call log?')) return;
+    if (!(await toastConfirm('Delete this call log?'))) return;
     try {
       await api.delete(`/api/reception/calls/${id}`);
       showToast('Call log deleted successfully', 'success');

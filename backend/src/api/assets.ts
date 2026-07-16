@@ -325,7 +325,7 @@ router.post('/maintenance/schedule', requireAuth, requireRole('SCHOOL_ADMIN'), a
  */
 router.patch('/maintenance/:id/complete', requireAuth, requireRole('SCHOOL_ADMIN'), async (req: AuthRequest, res: Response) => {
   const { id } = req.params;
-  const { cost, performedDate } = req.body;
+  const { cost, performedDate, notes, assetStatus } = req.body;
   const pDate = performedDate ? new Date(performedDate) : new Date();
   try {
     const maint = await prisma.assetMaintenance.findFirst({ where: { id: id as string } });
@@ -337,17 +337,23 @@ router.patch('/maintenance/:id/complete', requireAuth, requireRole('SCHOOL_ADMIN
       nextMaintenance = new Date(pDate.getTime() + asset.maintenanceInterval * 24 * 60 * 60 * 1000);
     }
 
+    const assetUpdateData: any = { nextMaintenance };
+    if (assetStatus && ['good', 'fair', 'poor', 'condemned'].includes(assetStatus)) {
+      assetUpdateData.condition = assetStatus;
+    }
+
     await prisma.$transaction([
       prisma.assetMaintenance.update({
         where: { id: id as string },
         data: {
           performedDate: pDate,
-          cost: cost ? parseFloat(cost) : maint.cost
+          cost: cost ? parseFloat(cost) : maint.cost,
+          notes: notes || null
         }
       }),
       prisma.asset.update({
         where: { id: maint.assetId },
-        data: { nextMaintenance }
+        data: assetUpdateData
       })
     ]);
     res.json({ success: true });

@@ -93,8 +93,8 @@ export default function DHRepresentative() {
                         user?.secondaryRoles?.includes('Cook');
 
   // Styles & Branding
-  const primaryColor = user?.schoolBranding?.primaryColor || '#dd6b20'; // Default Orange
-  const accentColor = user?.schoolBranding?.accentColor || '#7b341e'; // Default Rust
+  const primaryColor = user?.schoolBranding?.primaryColor || 'var(--portal-primary)';
+  const accentColor = user?.schoolBranding?.accentColor || 'var(--portal-accent)';
 
   useEffect(() => {
     fetchDiningData();

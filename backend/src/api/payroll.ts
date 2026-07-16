@@ -379,62 +379,103 @@ router.get('/entries', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async
   }
 });
 
-router.post('/entry', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req: AuthRequest, res: Response) => {
+router.post('/generate', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req: AuthRequest, res: Response) => {
   try {
     const schoolId = req.user!.schoolId!;
-    const { userId, employeeName, jobTitle, month, year, basicSalary, totalAllowances, totalDeductions, netSalary, isPaid, status } = req.body;
+    const { month, year } = req.body;
 
-    const entry = await prisma.$transaction(async (tx) => {
-      // Atomically ensure a PayrollRun exists for this month/year — safe under concurrent requests
-      const payrollRun = await tx.payrollRun.upsert({
-        where: { schoolId_month_year: { schoolId, month, year } },
-        create: {
-          schoolId,
-          month,
-          year,
-          status: 'Completed',
-          employeesCount: 0,
-          totalGross: 0,
-          totalDeductions: 0,
-          totalNet: 0
-        },
-        update: {} // no-op on the run itself; totals are updated below
-      });
+    if (!month || !year) {
+      return res.status(400).json({ error: 'Month and year are required' });
+    }
 
-      const newEntry = await tx.payrollEntry.create({
-        data: {
-          payrollRunId: payrollRun.id,
-          schoolId,
-          userId,
-          employeeName,
-          jobTitle: jobTitle || 'Employee',
-          grossSalary: parseFloat(basicSalary),
-          totalAllowances: parseFloat(totalAllowances),
-          totalDeductions: parseFloat(totalDeductions),
-          taxAmount: 0,
-          netSalary: parseFloat(netSalary),
-          isPaid: isPaid || status === 'Paid'
-        }
-      });
-
-      // Update run totals atomically with increments
-      await tx.payrollRun.update({
-        where: { id: payrollRun.id },
-        data: {
-          employeesCount: { increment: 1 },
-          totalGross: { increment: parseFloat(basicSalary) + parseFloat(totalAllowances) },
-          totalDeductions: { increment: parseFloat(totalDeductions) },
-          totalNet: { increment: parseFloat(netSalary) }
-        }
-      });
-
-      return newEntry;
+    // Check if payroll run already exists
+    const existingRun = await prisma.payrollRun.findUnique({
+      where: { schoolId_month_year: { schoolId, month, year } }
     });
 
-    res.status(201).json(entry);
+    if (existingRun) {
+      return res.status(400).json({ error: 'Payroll has already been generated for this period' });
+    }
+
+    const staffRoles = ['TEACHER', 'BURSAR', 'LIBRARIAN', 'ANCILLARY', 'SCHOOL_ADMIN'];
+    const employees = await prisma.user.findMany({
+      where: {
+        schoolId,
+        role: { in: staffRoles },
+        isLocked: false
+      },
+      include: {
+        employeeProfile: true
+      }
+    });
+
+    if (employees.length === 0) {
+      return res.status(404).json({ error: 'No active employees found to generate payroll for' });
+    }
+
+    const payrollRun = await prisma.payrollRun.create({
+      data: {
+        schoolId,
+        month,
+        year,
+        status: 'Completed',
+        employeesCount: 0,
+        totalGross: 0,
+        totalDeductions: 0,
+        totalNet: 0
+      }
+    });
+
+    let totalGross = 0;
+    let totalDeductions = 0;
+    let totalNet = 0;
+
+    const entries = [];
+
+    for (const emp of employees) {
+      const basicSalary = (emp as any).employeeProfile?.basePay || 0;
+      // In a real application, we would calculate specific allowances and deductions
+      const allowances = 0; 
+      const deductions = 0;
+      const netSalary = basicSalary + allowances - deductions;
+
+      entries.push({
+        payrollRunId: payrollRun.id,
+        schoolId,
+        userId: emp.id,
+        employeeName: emp.name,
+        jobTitle: (emp as any).employeeProfile?.jobTitle || emp.role,
+        grossSalary: basicSalary,
+        totalAllowances: allowances,
+        totalDeductions: deductions,
+        taxAmount: 0,
+        netSalary: netSalary,
+        isPaid: false
+      });
+
+      totalGross += basicSalary + allowances;
+      totalDeductions += deductions;
+      totalNet += netSalary;
+    }
+
+    await prisma.payrollEntry.createMany({
+      data: entries
+    });
+
+    await prisma.payrollRun.update({
+      where: { id: payrollRun.id },
+      data: {
+        employeesCount: entries.length,
+        totalGross,
+        totalDeductions,
+        totalNet
+      }
+    });
+
+    res.status(201).json({ message: 'Payroll generated successfully', count: entries.length });
   } catch (error) {
-    console.error('Error creating payroll entry', error);
-    res.status(500).json({ error: 'Failed to create payroll entry' });
+    console.error('Error generating payroll', error);
+    res.status(500).json({ error: 'Failed to generate payroll' });
   }
 });
 

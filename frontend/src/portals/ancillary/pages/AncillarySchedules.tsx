@@ -33,6 +33,12 @@ export default function AncillarySchedules() {
   const [loading, setLoading] = useState(true);
   const [isManager, setIsManager] = useState(false); // Admin or HOD
 
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+  const totalPages = Math.ceil(shifts.length / itemsPerPage);
+  const paginatedShifts = shifts.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
   // Modal State
   const [showAssignModal, setShowAssignModal] = useState(false);
   const [formData, setFormData] = useState({
@@ -111,7 +117,7 @@ export default function AncillarySchedules() {
   };
 
   const handleDeleteShift = async (id: string) => {
-    if (!window.confirm('Delete this shift assignment?')) return;
+    if (!(await toastConfirm('Delete this shift assignment?'))) return;
     try {
       await api.delete(`/api/schedules/${id}`);
       showToast('Shift assignment removed', 'success');
@@ -196,12 +202,12 @@ export default function AncillarySchedules() {
                     </tr>
                   </thead>
                   <tbody>
-                    {shifts.length === 0 ? (
+                    {paginatedShifts.length === 0 ? (
                       <tr>
                         <td colSpan={7} style={{ textAlign: 'center', padding: '30px', color: '#64748b' }}>No work schedules assigned yet.</td>
                       </tr>
                     ) : (
-                      shifts.map(shift => (
+                      paginatedShifts.map(shift => (
                         <tr key={shift.id}>
                           <td style={{ fontWeight: 800, color: '#1e293b' }}>{shift.user?.name}</td>
                           <td>
@@ -227,6 +233,32 @@ export default function AncillarySchedules() {
                     )}
                   </tbody>
                 </table>
+                
+                {shifts.length > 0 && (
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px', borderTop: '1px solid #e2e8f0', marginTop: '10px' }}>
+                    <span style={{ fontSize: '0.85rem', color: '#64748b' }}>
+                      Showing {(currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, shifts.length)} of {shifts.length} entries
+                    </span>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      <button 
+                        onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                        disabled={currentPage === 1}
+                        className="portal-btn-ghost"
+                        style={{ padding: '6px 12px', fontSize: '0.85rem' }}
+                      >
+                        Previous
+                      </button>
+                      <button 
+                        onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                        disabled={currentPage === totalPages || shifts.length === 0}
+                        className="portal-btn-ghost"
+                        style={{ padding: '6px 12px', fontSize: '0.85rem' }}
+                      >
+                        Next
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             ) : (
               /* INDIVIDUAL VIEW */
@@ -241,12 +273,12 @@ export default function AncillarySchedules() {
                     </tr>
                   </thead>
                   <tbody>
-                    {shifts.length === 0 ? (
+                    {paginatedShifts.length === 0 ? (
                       <tr>
                         <td colSpan={4} style={{ textAlign: 'center', padding: '30px', color: '#64748b' }}>You have no shifts assigned for this cycle.</td>
                       </tr>
                     ) : (
-                      shifts.map(shift => (
+                      paginatedShifts.map(shift => (
                         <tr key={shift.id}>
                           <td style={{ fontWeight: 800, color: '#1e293b' }}>{daysOfWeek[shift.dayOfWeek]}</td>
                           <td style={{ fontFamily: 'monospace', fontWeight: 600, color: primaryColor }}>{shift.startTime} - {shift.endTime}</td>
@@ -257,6 +289,32 @@ export default function AncillarySchedules() {
                     )}
                   </tbody>
                 </table>
+                
+                {shifts.length > 0 && (
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px', borderTop: '1px solid #e2e8f0', marginTop: '10px' }}>
+                    <span style={{ fontSize: '0.85rem', color: '#64748b' }}>
+                      Showing {(currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, shifts.length)} of {shifts.length} entries
+                    </span>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      <button 
+                        onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                        disabled={currentPage === 1}
+                        className="portal-btn-ghost"
+                        style={{ padding: '6px 12px', fontSize: '0.85rem' }}
+                      >
+                        Previous
+                      </button>
+                      <button 
+                        onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                        disabled={currentPage === totalPages || shifts.length === 0}
+                        className="portal-btn-ghost"
+                        style={{ padding: '6px 12px', fontSize: '0.85rem' }}
+                      >
+                        Next
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </div>

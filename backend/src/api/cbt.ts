@@ -29,11 +29,12 @@ router.get('/', requireAuth, async (req: AuthRequest, res) => {
 // Create a new CBT exam
 router.post('/', requireAuth, requireRole('TEACHER', 'SCHOOL_ADMIN', 'SUPER_ADMIN'), async (req: AuthRequest, res) => {
   try {
-    const { title, description, date, time, passingPercent, classId, sectionId, subjectId } = req.body;
+    const { title, description, instructions, date, time, passingPercent, classId, sectionId, subjectId } = req.body;
     const exam = await prisma.cBTExam.create({
       data: {
         title,
         description,
+        instructions,
         date: new Date(date),
         time,
         passingPercent: Number(passingPercent),
@@ -60,7 +61,14 @@ router.get('/:id', requireAuth, async (req: AuthRequest, res) => {
         class: true,
         section: true,
         subject: true,
-        questions: true
+        school: true,
+        questions: {
+          orderBy: [
+            { page: 'asc' },
+            { section: 'asc' },
+            { createdAt: 'asc' }
+          ]
+        }
       }
     });
     if (!exam || exam.schoolId !== req.user!.schoolId) {
@@ -76,7 +84,7 @@ router.get('/:id', requireAuth, async (req: AuthRequest, res) => {
 // Update exam status (Publish)
 router.put('/:id', requireAuth, requireRole('TEACHER', 'SCHOOL_ADMIN', 'SUPER_ADMIN'), async (req: AuthRequest, res) => {
   try {
-    const { status, title, date, time, passingPercent, classId, sectionId, subjectId } = req.body;
+    const { status, title, description, instructions, date, time, passingPercent, classId, sectionId, subjectId } = req.body;
     
     // First verify ownership or admin
     const existing = await prisma.cBTExam.findFirst({ where: { id: req.params.id as string } });
@@ -87,6 +95,8 @@ router.put('/:id', requireAuth, requireRole('TEACHER', 'SCHOOL_ADMIN', 'SUPER_AD
     const data: any = {};
     if (status !== undefined) data.status = status;
     if (title !== undefined) data.title = title;
+    if (description !== undefined) data.description = description;
+    if (instructions !== undefined) data.instructions = instructions;
     if (date !== undefined) data.date = new Date(date);
     if (time !== undefined) data.time = time;
     if (passingPercent !== undefined) data.passingPercent = Number(passingPercent);
@@ -124,7 +134,7 @@ router.delete('/:id', requireAuth, requireRole('TEACHER', 'SCHOOL_ADMIN', 'SUPER
 router.post('/:id/questions', requireAuth, requireRole('TEACHER', 'SCHOOL_ADMIN', 'SUPER_ADMIN'), async (req: AuthRequest, res) => {
   try {
     const examId = req.params.id as string;
-    const { type, mark, question, options, answer } = req.body;
+    const { type, mark, question, options, answer, section, page } = req.body;
     
     const exam = await prisma.cBTExam.findFirst({ where: { id: examId } });
     if (!exam || exam.schoolId !== req.user!.schoolId) {
@@ -138,7 +148,9 @@ router.post('/:id/questions', requireAuth, requireRole('TEACHER', 'SCHOOL_ADMIN'
         mark: Number(mark),
         question,
         options: options || [],
-        answer
+        answer,
+        section: section || null,
+        page: page ? Number(page) : 1
       }
     });
     

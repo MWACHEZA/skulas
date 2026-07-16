@@ -52,7 +52,7 @@ export default function ParentManagement() {
   };
 
   const handleResetPassword = async (user: any) => {
-    if (!window.confirm(`Reset password for ${user.name} to default "Password"?`)) return;
+    if (!(await toastConfirm(`Reset password for ${user.name} to default "Password"?`))) return;
     try {
       await api.post(`/api/users/${user.id}/reset-password`);
       showToast('Password reset successfully', 'success');
@@ -213,8 +213,8 @@ export default function ParentManagement() {
                             </button>
                           </>
                         )}
-                        <button className="btn-icon btn-delete" title={activeTab === 'PENDING' ? "Reject Request" : "Delete Permanent"} onClick={() => {
-                          if (window.confirm(activeTab === 'PENDING' ? `Reject connection request from ${s.name}?` : `Delete ${s.name}?`)) {
+                        <button className="btn-icon btn-delete" title={activeTab === 'PENDING' ? "Reject Request" : "Delete Permanent"} onClick={async () => {
+                          if (await toastConfirm(activeTab === 'PENDING' ? `Reject connection request from ${s.name}?` : `Delete ${s.name}?`)) {
                             api.delete(`/api/users/${s.id}`).then(() => fetchParents());
                           }
                         }}>

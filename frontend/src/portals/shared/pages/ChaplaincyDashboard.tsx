@@ -35,6 +35,10 @@ export default function ChaplaincyDashboard() {
   const [religionStats, setReligionStats] = useState<ReligionStats>({ students: {}, staff: {} });
   const [loading, setLoading] = useState(true);
 
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
+
   // Modals state
   const [showServiceModal, setShowServiceModal] = useState(false);
   const [showReflectionModal, setShowReflectionModal] = useState(false);
@@ -140,7 +144,7 @@ export default function ChaplaincyDashboard() {
   const staffReligions = calculateStatsDetails(religionStats.staff);
 
   // Dynamic school styles derived from school theme colors
-  const primaryColor = 'var(--school-primary, #0056b3)';
+  const primaryColor = 'var(--portal-primary, #0056b3)';
 
   if (loading) {
     return (
@@ -152,7 +156,7 @@ export default function ChaplaincyDashboard() {
   }
 
   return (
-    <div className="chaplaincy-portal-wrapper" style={{ padding: '30px', minHeight: '100vh', background: '#f8fafc' }}>
+    <div className="chaplaincy-portal-wrapper" style={{ padding: '30px', minHeight: '100vh', background: 'var(--portal-bg)' }}>
       <div className="portal-page-header" style={{ marginBottom: 40, borderLeft: `5px solid ${primaryColor}`, paddingLeft: 25 }}>
         <h1 style={{ color: '#1e293b', fontSize: '2.5rem', fontWeight: 800, margin: 0 }}>Chaplaincy & Assembly Hub</h1>
         <p style={{ color: '#64748b', fontSize: '1.2rem', marginTop: 4 }}>Guiding the spiritual journey and collective wisdom of the community.</p>
@@ -195,37 +199,69 @@ export default function ChaplaincyDashboard() {
                       </td>
                     </tr>
                   ) : (
-                    events.map(event => (
-                      <tr key={event.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
-                        <td style={{ padding: '20px 15px' }}>
-                          <div style={{ fontWeight: 700, color: '#1e293b', fontSize: '1.05rem' }}>{event.title}</div>
-                          <div style={{ fontSize: '0.88rem', color: '#64748b', marginTop: 4 }}>
-                            <i className="fas fa-quote-left mr-2 opacity-50"></i> {event.theme}
-                          </div>
-                        </td>
-                        <td>
-                          <span style={{ 
-                            fontSize: '0.75rem', 
-                            fontWeight: 800, 
-                            background: event.type === 'ASSEMBLY' ? '#e0f2fe' : event.type === 'SUNDAY_SERVICE' ? '#fef3c7' : '#f3e8ff', 
-                            color: event.type === 'ASSEMBLY' ? '#0369a1' : event.type === 'SUNDAY_SERVICE' ? '#b45309' : '#6b21a8', 
-                            padding: '4px 10px', 
-                            borderRadius: '8px' 
-                          }}>{event.type.replace('_', ' ')}</span>
-                        </td>
-                        <td style={{ fontWeight: 600, color: '#334155' }}>
-                          {new Date(event.date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
-                        </td>
-                        <td>
-                          <span className={`portal-badge ${event.status === 'CONFIRMED' ? 'success' : event.status === 'PLANNED' ? 'warning' : 'neutral'}`} style={{ borderRadius: '8px' }}>
-                            {event.status}
-                          </span>
-                        </td>
-                      </tr>
-                    ))
+                    (() => {
+                      const indexOfLastItem = currentPage * itemsPerPage;
+                      const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+                      const currentItems = events.slice(indexOfFirstItem, indexOfLastItem);
+
+                      return currentItems.map(event => (
+                        <tr key={event.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                          <td style={{ padding: '20px 15px' }}>
+                            <div style={{ fontWeight: 700, color: '#1e293b', fontSize: '1.05rem' }}>{event.title}</div>
+                            <div style={{ fontSize: '0.88rem', color: '#64748b', marginTop: 4 }}>
+                              <i className="fas fa-quote-left mr-2 opacity-50"></i> {event.theme}
+                            </div>
+                          </td>
+                          <td>
+                            <span style={{ 
+                              fontSize: '0.75rem', 
+                              fontWeight: 800, 
+                              background: event.type === 'ASSEMBLY' ? '#e0f2fe' : event.type === 'SUNDAY_SERVICE' ? '#fef3c7' : '#f3e8ff', 
+                              color: event.type === 'ASSEMBLY' ? '#0369a1' : event.type === 'SUNDAY_SERVICE' ? '#b45309' : '#6b21a8', 
+                              padding: '4px 10px', 
+                              borderRadius: '8px' 
+                            }}>{event.type.replace('_', ' ')}</span>
+                          </td>
+                          <td style={{ fontWeight: 600, color: '#334155' }}>
+                            {new Date(event.date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                          </td>
+                          <td>
+                            <span className={`portal-badge ${event.status === 'CONFIRMED' ? 'success' : event.status === 'PLANNED' ? 'warning' : 'neutral'}`} style={{ borderRadius: '8px' }}>
+                              {event.status}
+                            </span>
+                          </td>
+                        </tr>
+                      ));
+                    })()
                   )}
                 </tbody>
               </table>
+              
+              {events.length > 0 && (
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px', borderTop: '1px solid #e2e8f0' }}>
+                  <span style={{ fontSize: '0.85rem', color: '#64748b' }}>
+                    Showing {(currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, events.length)} of {events.length} entries
+                  </span>
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <button 
+                      onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                      disabled={currentPage === 1}
+                      className="portal-btn-ghost"
+                      style={{ padding: '6px 12px', fontSize: '0.85rem' }}
+                    >
+                      Previous
+                    </button>
+                    <button 
+                      onClick={() => setCurrentPage(prev => Math.min(prev + 1, Math.ceil(events.length / itemsPerPage)))}
+                      disabled={currentPage === Math.ceil(events.length / itemsPerPage) || events.length === 0}
+                      className="portal-btn-ghost"
+                      style={{ padding: '6px 12px', fontSize: '0.85rem' }}
+                    >
+                      Next
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 

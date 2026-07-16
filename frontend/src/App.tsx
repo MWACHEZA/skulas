@@ -44,6 +44,7 @@ import AcadexLayout from './portals/acadex/AcadexLayout';
 // CBT Pages
 import ManageCBT from './portals/shared/pages/cbt/ManageCBT';
 import ManageQuestions from './portals/shared/pages/cbt/ManageQuestions';
+import TakeExam from './portals/shared/pages/cbt/TakeExam';
 
 // Portal login
 import PortalLoginPage from './components/portals/PortalLoginPage';
@@ -408,8 +409,6 @@ export default function App() {
             <Route path="/register/parent" element={<ParentRegister />} />
             <Route path="/register/supplier" element={<SupplierRegister />} />
             <Route path="/register/clinic" element={<ClinicRegister />} />
-            <Route path="/register/clinic" element={<StaffRegister role="CLINIC" label="Clinic Staff" icon="fa-user-md" />} />
-            <Route path="/register/clinic" element={<StaffRegister role="CLINIC" label="Clinic Staff" icon="fa-user-md" />} />
             <Route path="/register/bursar" element={<StaffRegister role="BURSAR" label="Bursar" icon="fa-money-bill-wave" />} />
             <Route path="/register/librarian" element={<StaffRegister role="LIBRARIAN" label="Librarian" icon="fa-book" />} />
             <Route path="/register/ancillary" element={<StaffRegister role="ANCILLARY" label="Ancillary Staff" icon="fa-tools" />} />
@@ -457,6 +456,7 @@ export default function App() {
               <Route path="portfolio" element={<AcademicPortfolio />} />
               <Route path="settings" element={<SettingsPage />} />
               <Route path="profile" element={<ProfilePage />} />
+              <Route path="cbt/take/:id" element={<TakeExam />} />
             </Route>
 
             {/* TEACHER PORTAL  */}

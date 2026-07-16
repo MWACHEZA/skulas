@@ -140,7 +140,7 @@ export default function NewsSettings() {
   };
 
   const deleteNews = async (id: string) => {
-    if (!window.confirm('Are you sure you want to delete this news item?')) return;
+    if (!(await toastConfirm('Are you sure you want to delete this news item?'))) return;
     try {
       await api.delete(`/api/website-settings/news/${id}`);
       setNews(news.filter((item) => item.id !== id));

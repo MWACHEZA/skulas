@@ -78,7 +78,7 @@ export default function Immunization() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!window.confirm('Delete this immunization record?')) return;
+    if (!(await toastConfirm('Delete this immunization record?'))) return;
     try {
       await api.delete(`/api/clinic/immunizations/${id}`);
       showToast('Record deleted.', 'success');

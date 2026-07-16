@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { format } from 'date-fns';
 import api from '../../../../lib/api';
 import { useTerminology } from '../../../../hooks/useTerminology';
+import { useToast } from '../../../../context/ToastContext';
 
 interface AwardEntry {
   id: string;
@@ -14,6 +15,7 @@ interface AwardEntry {
 }
 
 export default function ManageAwards() {
+  const { showToast } = useToast();
   const { t } = useTerminology();
   const [awards, setAwards] = useState<AwardEntry[]>([]);
   const [employees, setEmployees] = useState<{ id: string; name: string }[]>([]);
@@ -58,16 +60,95 @@ export default function ManageAwards() {
         amount: parseFloat(data.amount)
       };
       await api.post('/api/awards', payload);
-      alert('Award saved successfully!');
+      showToast('Award saved successfully!', 'success');
       reset();
       fetchAwards();
       setShowAddModal(false);
     } catch (error) {
       console.error('Failed to save award', error);
-      alert('Failed to save award.');
+      showToast('Failed to save award.', 'error');
     } finally {
       setSubmitting(false);
     }
+  };
+
+  const handlePrint = () => {
+    window.print();
+  };
+
+  const handleExportExcel = () => {
+    const headers = ['Award Name', 'Gift', 'Amount', 'Awarded Staff', 'Date'];
+    const rows = awards.map(a => [
+      a.awardName || '',
+      a.gift || '',
+      a.amount?.toString() || '',
+      a.user?.name || 'N/A',
+      new Date(a.date).toLocaleDateString()
+    ]);
+    const csvContent = [headers, ...rows]
+      .map(e => e.map(val => `"${String(val).replace(/"/g, '""')}"`).join(","))
+      .join("\n");
+    
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", `awards_registry_${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const handleExportWord = () => {
+    const rows = awards.map(a => `
+      <tr>
+        <td style="border: 1px solid #cccccc; padding: 8px;">${a.awardName || ''}</td>
+        <td style="border: 1px solid #cccccc; padding: 8px;">${a.gift || ''}</td>
+        <td style="border: 1px solid #cccccc; padding: 8px;">${a.amount?.toString() || ''}</td>
+        <td style="border: 1px solid #cccccc; padding: 8px;">${a.user?.name || 'N/A'}</td>
+        <td style="border: 1px solid #cccccc; padding: 8px;">${new Date(a.date).toLocaleDateString()}</td>
+      </tr>
+    `).join('');
+    
+    const html = `
+      <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+        <head>
+          <title>Awards Records</title>
+          <style>
+            body { font-family: Arial, sans-serif; padding: 20px; }
+            table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+            th, td { border: 1px solid #cccccc; padding: 8px; text-align: left; }
+            th { background-color: #f2f2f2; font-weight: bold; }
+          </style>
+        </head>
+        <body>
+          <h2>Awards Records</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Award Name</th>
+                <th>Gift</th>
+                <th>Amount</th>
+                <th>Awarded Staff</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${rows}
+            </tbody>
+          </table>
+        </body>
+      </html>
+    `;
+    
+    const blob = new Blob(['\ufeff', html], { type: 'application/msword' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", `awards_registry_${new Date().toISOString().slice(0, 10)}.doc`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   return (
@@ -92,11 +173,15 @@ export default function ManageAwards() {
         <div style={{ marginTop: '20px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '15px', marginBottom: '20px' }}>
             <div style={{ display: 'flex', gap: '10px' }}>
-              <button className="portal-btn-neutral" style={{ padding: '8px 16px', fontSize: '0.85rem' }} onClick={() => alert('This feature is currently under development or disabled.')}>Copy</button>
-              <button className="portal-btn-neutral" style={{ padding: '8px 16px', fontSize: '0.85rem' }} onClick={() => alert('This feature is currently under development or disabled.')}>CSV</button>
-              <button className="portal-btn-neutral" style={{ padding: '8px 16px', fontSize: '0.85rem' }} onClick={() => alert('This feature is currently under development or disabled.')}>Excel</button>
-              <button className="portal-btn-neutral" style={{ padding: '8px 16px', fontSize: '0.85rem' }} onClick={() => alert('This feature is currently under development or disabled.')}>PDF</button>
-              <button className="portal-btn-neutral" style={{ padding: '8px 16px', fontSize: '0.85rem' }} onClick={() => alert('This feature is currently under development or disabled.')}>Print</button>
+              <button onClick={handleExportExcel} className="portal-btn-neutral" style={{ padding: '8px 16px', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <i className="fas fa-file-excel"></i> Excel
+              </button>
+              <button onClick={handleExportWord} className="portal-btn-neutral" style={{ padding: '8px 16px', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <i className="fas fa-file-word"></i> Word
+              </button>
+              <button onClick={handlePrint} className="portal-btn-neutral" style={{ padding: '8px 16px', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <i className="fas fa-print"></i> Print
+              </button>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
               <span style={{ fontSize: '0.9rem', color: '#64748b', fontWeight: 500 }}>Search:</span>
@@ -140,10 +225,10 @@ export default function ManageAwards() {
                       <td>{award.date ? format(new Date(award.date), 'dd/MM/yyyy') : 'N/A'}</td>
                       <td style={{ textAlign: 'center' }}>
                         <div style={{ display: 'flex', justifyContent: 'center', gap: '5px' }}>
-                          <button className="portal-btn-ghost" style={{ color: '#00bcd4', padding: '6px', minWidth: 'auto', display: 'inline-block' }} onClick={() => alert('This feature is currently under development or disabled.')}>
+                          <button className="portal-btn-ghost" style={{ color: '#00bcd4', padding: '6px', minWidth: 'auto', display: 'inline-block' }} onClick={() => showToast('This feature is currently under development or disabled.', 'info')}>
                             <i className="fas fa-edit"></i>
                           </button>
-                          <button className="portal-btn-ghost" style={{ color: 'var(--portal-danger)', padding: '6px', minWidth: 'auto', display: 'inline-block' }} onClick={() => alert('This feature is currently under development or disabled.')}>
+                          <button className="portal-btn-ghost" style={{ color: 'var(--portal-danger)', padding: '6px', minWidth: 'auto', display: 'inline-block' }} onClick={() => showToast('This feature is currently under development or disabled.', 'info')}>
                             <i className="fas fa-times"></i>
                           </button>
                         </div>
@@ -157,8 +242,8 @@ export default function ManageAwards() {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '20px', color: '#64748b', fontSize: '0.9rem' }}>
               <span>Showing {awards.length > 0 ? 1 : 0} to {awards.length} of {awards.length} entries</span>
               <div style={{ display: 'flex', gap: '10px' }}>
-                <button className="portal-btn-ghost" style={{ padding: '6px 12px', fontSize: '0.85rem' }} disabled onClick={() => alert('This feature is currently under development or disabled.')}>Previous</button>
-                <button className="portal-btn-ghost" style={{ padding: '6px 12px', fontSize: '0.85rem' }} disabled onClick={() => alert('This feature is currently under development or disabled.')}>Next</button>
+                <button className="portal-btn-ghost" style={{ padding: '6px 12px', fontSize: '0.85rem' }} disabled onClick={() => showToast('This feature is currently under development or disabled.', 'info')}>Previous</button>
+                <button className="portal-btn-ghost" style={{ padding: '6px 12px', fontSize: '0.85rem' }} disabled onClick={() => showToast('This feature is currently under development or disabled.', 'info')}>Next</button>
               </div>
             </div>
           </div>

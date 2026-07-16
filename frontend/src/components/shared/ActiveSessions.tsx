@@ -32,7 +32,7 @@ export default function ActiveSessions() {
   }, []);
 
   const handleRevoke = async (id: string) => {
-    if (!window.confirm('Are you sure you want to log out this device?')) return;
+    if (!(await toastConfirm('Are you sure you want to log out this device?'))) return;
     
     try {
       setRevoking(id);

@@ -14,6 +14,14 @@ export default function Appointments() {
   const [printNoteAppointment, setPrintNoteAppointment] = useState<any | null>(null);
   const [saving, setSaving] = useState(false);
   const [users, setUsers] = useState<any[]>([]); // For staff to select patients
+  const [schoolInfo, setSchoolInfo] = useState<any>(null);
+  const [templateConfig, setTemplateConfig] = useState<any>({});
+
+  const CONSULTATION_BUILTIN = [
+    { id: 'medical-classic', name: 'Medical Classic', color: '#1e40af', accent: '#eff6ff', icon: 'fa-stethoscope' },
+    { id: 'modern-health',   name: 'Modern Health',   color: '#059669', accent: '#ecfdf5', icon: 'fa-heartbeat' },
+    { id: 'clean-clinical',  name: 'Clean Clinical',  color: '#374151', accent: '#f3f4f6', icon: 'fa-notes-medical' },
+  ];
 
   const [formData, setFormData] = useState({
     appointment: 'General Checkup',
@@ -30,7 +38,27 @@ export default function Appointments() {
     if (isStaff) {
       fetchUsers();
     }
+    fetchSchoolInfo();
+    fetchTemplate();
   }, [isStaff]);
+
+  const fetchTemplate = async () => {
+    try {
+      const { data } = await api.get('/api/reports/template');
+      if (data && data.config) setTemplateConfig(data.config);
+    } catch (err) {
+      console.error('Failed to load template info:', err);
+    }
+  };
+
+  const fetchSchoolInfo = async () => {
+    try {
+      const res = await api.get('/api/schools/me');
+      setSchoolInfo(res.data);
+    } catch (err) {
+      console.error('Failed to load school info:', err);
+    }
+  };
 
   const fetchAppointments = async () => {
     try {
@@ -82,7 +110,7 @@ export default function Appointments() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!window.confirm('Delete this appointment record?')) return;
+    if (!(await toastConfirm('Delete this appointment record?'))) return;
     try {
       await api.delete(`/api/clinic/appointments/${id}`);
       showToast('Record deleted.', 'success');
@@ -163,7 +191,7 @@ export default function Appointments() {
                   </tr>
                 </thead>
                 <tbody>
-                  {appointments.map(a => (
+                  {appointments.map((a: any) => (
                     <tr key={a.id}>
                       {isStaff && <td style={{ fontWeight: 600 }}>{a.user?.name || 'Unknown'} ({a.user?.role})</td>}
                       <td>{a.appointment}</td>
@@ -307,55 +335,78 @@ export default function Appointments() {
             </div>
 
             {/* Printable Area Starts */}
-            <div style={{ border: '2px solid #2b6cb0', padding: '24px', borderRadius: '4px', position: 'relative' }}>
+            <div className="printable-area" style={{ border: '2px solid #e2e8f0', padding: '24px', borderRadius: '4px', position: 'relative', background: 'white' }}>
+              {(() => {
+                const cBuiltin = CONSULTATION_BUILTIN.find(c => c.id === templateConfig?.consultationDesign) || CONSULTATION_BUILTIN[0];
+                const primaryCol = cBuiltin.color;
+                const accentCol = cBuiltin.accent;
+                const logoUrl = templateConfig?.consultationLogo || schoolInfo?.logo;
+
+                return (
+                  <>
               {/* Letterhead Header */}
-              <div style={{ textAlign: 'center', borderBottom: '2px double #cbd5e0', paddingBottom: '16px', marginBottom: '20px' }}>
-                <h2 style={{ margin: '0 0 4px 0', fontSize: '1.6rem', color: '#2b6cb0', fontWeight: 'bold' }}>SKULAS ACADEMY CLINIC</h2>
+              <div style={{ textAlign: 'center', borderBottom: `2px solid ${primaryCol}`, paddingBottom: '16px', marginBottom: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                {logoUrl && (
+                  <img src={`/api/storage/file/${logoUrl}`} alt="School Logo" style={{ width: '80px', height: '80px', objectFit: 'contain', marginBottom: '10px' }} />
+                )}
+                <h2 style={{ margin: '0 0 4px 0', fontSize: '1.6rem', color: primaryCol, fontWeight: 'bold' }}>{schoolInfo?.name ? `${schoolInfo.name.toUpperCase()} CLINIC` : 'SKULAS ACADEMY CLINIC'}</h2>
                 <p style={{ margin: 0, color: '#4a5568', fontSize: '0.9rem' }}>School Infirmary & Student Health Services</p>
                 <p style={{ margin: '4px 0 0 0', color: '#718096', fontSize: '0.8rem', fontStyle: 'italic' }}>Official Medical Consultation Report</p>
+                {(schoolInfo?.address || schoolInfo?.phone) && (
+                  <div style={{ marginTop: '8px', fontSize: '0.8rem', color: '#718096' }}>
+                    {schoolInfo.address && <span>{schoolInfo.address}</span>}
+                    {schoolInfo.address && schoolInfo.phone && <span style={{ margin: '0 8px' }}>|</span>}
+                    {schoolInfo.phone && <span>{schoolInfo.phone}</span>}
+                  </div>
+                )}
               </div>
 
               {/* Consultation Details */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', fontSize: '0.95rem', marginBottom: '20px', background: '#f7fafc', padding: '12px', borderRadius: '4px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', fontSize: '0.95rem', marginBottom: '20px', background: accentCol, padding: '12px', borderRadius: '4px' }}>
                 <div>
-                  <strong>Patient Name:</strong> {printNoteAppointment.user?.name || 'Self'}
+                  <strong style={{ color: primaryCol }}>Patient Name:</strong> {printNoteAppointment.user?.name || 'Self'}
                 </div>
                 <div>
-                  <strong>Role:</strong> {printNoteAppointment.user?.role || user?.role}
+                  <strong style={{ color: primaryCol }}>Role:</strong> {printNoteAppointment.user?.role || user?.role}
                 </div>
                 <div>
-                  <strong>Date of Visit:</strong> {new Date(printNoteAppointment.date).toLocaleDateString()}
+                  <strong style={{ color: primaryCol }}>Date of Visit:</strong> {new Date(printNoteAppointment.date).toLocaleDateString()}
                 </div>
                 <div>
-                  <strong>Consultation Type:</strong> {printNoteAppointment.appointment}
+                  <strong style={{ color: primaryCol }}>Consultation Type:</strong> {printNoteAppointment.appointment}
                 </div>
               </div>
 
               <div style={{ marginBottom: '20px' }}>
-                <h4 style={{ margin: '0 0 6px 0', color: '#2b6cb0', borderBottom: '1px solid #e2e8f0', paddingBottom: '4px' }}>PRESENTING SYMPTOMS & CLINICAL FINDINGS</h4>
+                <h4 style={{ margin: '0 0 6px 0', color: primaryCol, borderBottom: '1px solid #e2e8f0', paddingBottom: '4px' }}>PRESENTING SYMPTOMS & CLINICAL FINDINGS</h4>
                 <p style={{ margin: 0, fontSize: '0.95rem', lineHeight: '1.5', color: '#2d3748', minHeight: '60px' }}>
                   {printNoteAppointment.symptoms}
                 </p>
               </div>
 
               <div style={{ marginBottom: '30px' }}>
-                <h4 style={{ margin: '0 0 6px 0', color: '#2b6cb0', borderBottom: '1px solid #e2e8f0', paddingBottom: '4px' }}>TREATMENT & MEDICINE PRESCRIBED</h4>
+                <h4 style={{ margin: '0 0 6px 0', color: primaryCol, borderBottom: '1px solid #e2e8f0', paddingBottom: '4px' }}>TREATMENT & MEDICINE PRESCRIBED</h4>
                 <p style={{ margin: 0, fontSize: '0.95rem', lineHeight: '1.5', color: '#2d3748', minHeight: '40px', fontWeight: printNoteAppointment.medicine ? 'bold' : 'normal' }}>
                   {printNoteAppointment.medicine || 'No prescription specified / Observational monitoring only.'}
                 </p>
               </div>
 
               {/* Signatures */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '40px', paddingTop: '20px', borderTop: '1px dashed #cbd5e0' }}>
+              {templateConfig?.showStamp !== false && (
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '40px', paddingTop: '20px', borderTop: `1px solid ${primaryCol}` }}>
                 <div>
                   <div style={{ width: '150px', borderBottom: '1px solid #718096', height: '30px' }}></div>
-                  <p style={{ margin: '4px 0 0 0', fontSize: '0.8rem', color: '#4a5568' }}>Patient Signature</p>
+                  <p style={{ margin: '4px 0 0 0', fontSize: '0.8rem', color: primaryCol }}>Patient Signature</p>
                 </div>
                 <div style={{ textAlign: 'right' }}>
                   <div style={{ width: '180px', borderBottom: '1px solid #718096', height: '30px', display: 'inline-block' }}></div>
-                  <p style={{ margin: '4px 0 0 0', fontSize: '0.8rem', color: '#4a5568' }}>Attending Nurse / Officer Stamp</p>
+                  <p style={{ margin: '4px 0 0 0', fontSize: '0.8rem', color: primaryCol }}>Attending Nurse / Officer Stamp</p>
                 </div>
               </div>
+              )}
+                  </>
+                );
+              })()}
             </div>
             {/* Printable Area Ends */}
           </div>

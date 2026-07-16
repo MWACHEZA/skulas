@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import api from '../../../../lib/api';
-
+import { useToast } from '../../../../context/ToastContext';
 interface PayrollEntry {
   id: string;
   employeeName: string;
@@ -28,6 +28,13 @@ export default function PayrollList() {
   const [entries, setEntries] = useState<PayrollEntry[]>([]);
   const [searched, setSearched] = useState(false);
   const [loading, setLoading] = useState(false);
+  const { showToast } = useToast();
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+  const totalPages = Math.ceil(entries.length / itemsPerPage);
+  const paginatedEntries = entries.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
@@ -75,14 +82,36 @@ export default function PayrollList() {
             ))}
           </select>
         </div>
-        <div>
+        <div style={{ display: 'flex', gap: '10px' }}>
           <button 
             onClick={getInfo}
             disabled={loading}
             className="portal-btn-primary" 
-            style={{ background: 'var(--portal-success)', borderColor: 'var(--portal-success)', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+            style={{ flex: 1, background: 'var(--portal-success)', borderColor: 'var(--portal-success)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
           >
             {loading ? <i className="fas fa-spinner fa-spin"></i> : <i className="fas fa-search"></i>} Get Info
+          </button>
+          
+          <button 
+            onClick={async () => {
+              if (await toastConfirm(`Generate payroll for ${months[month-1]} ${year}?`)) {
+                setLoading(true);
+                try {
+                  await api.post('/api/payroll/generate', { month, year });
+                  showToast('Payroll generated successfully!', 'success');
+                  getInfo();
+                } catch (err: any) {
+                  showToast(err.response?.data?.error || 'Failed to generate payroll', 'error');
+                } finally {
+                  setLoading(false);
+                }
+              }
+            }}
+            disabled={loading}
+            className="portal-btn-primary" 
+            style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+          >
+            <i className="fas fa-cog"></i> Generate
           </button>
         </div>
       </div>
@@ -110,7 +139,7 @@ export default function PayrollList() {
               </tr>
             </thead>
             <tbody>
-              {entries.map(entry => (
+              {paginatedEntries.map(entry => (
                 <tr key={entry.id}>
                   <td style={{ fontWeight: 600, color: '#1e293b' }}>{entry.employeeName}</td>
                   <td>{entry.jobTitle}</td>
@@ -144,7 +173,7 @@ export default function PayrollList() {
                     </span>
                   </td>
                   <td style={{ textAlign: 'center' }}>
-                    <button className="portal-btn-ghost" style={{ color: 'var(--portal-primary)', padding: '6px', minWidth: 'auto', display: 'inline-block' }} title="View Payslip" onClick={() => alert('This feature is currently under development or disabled.')}>
+                    <button className="portal-btn-ghost" style={{ color: 'var(--portal-primary)', padding: '6px', minWidth: 'auto', display: 'inline-block' }} title="View Payslip" onClick={() => showToast('This feature is currently under development or disabled.', 'warning')}>
                       <i className="fas fa-file-invoice"></i>
                     </button>
                   </td>
@@ -152,6 +181,32 @@ export default function PayrollList() {
               ))}
             </tbody>
           </table>
+          
+          {entries.length > 0 && (
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px', borderTop: '1px solid #e2e8f0', marginTop: '10px' }}>
+              <span style={{ fontSize: '0.85rem', color: '#64748b' }}>
+                Showing {(currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, entries.length)} of {entries.length} entries
+              </span>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <button 
+                  onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                  disabled={currentPage === 1}
+                  className="portal-btn-ghost"
+                  style={{ padding: '6px 12px', fontSize: '0.85rem' }}
+                >
+                  Previous
+                </button>
+                <button 
+                  onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                  disabled={currentPage === totalPages || entries.length === 0}
+                  className="portal-btn-ghost"
+                  style={{ padding: '6px 12px', fontSize: '0.85rem' }}
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       )}
 

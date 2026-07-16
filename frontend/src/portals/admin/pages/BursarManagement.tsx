@@ -16,6 +16,8 @@ export default function BursarManagement() {
   const [selectedBursar, setSelectedBursar] = useState<any>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
   
   const { user: currentUser } = useAuth();
   const { showToast } = useToast();
@@ -37,7 +39,7 @@ export default function BursarManagement() {
   };
 
   const handleResetPassword = async (user: any) => {
-    if (!window.confirm(`Reset password for ${user.name} to default "Password"?`)) return;
+    if (!(await toastConfirm(`Reset password for ${user.name} to default "Password"?`))) return;
     try {
       await api.post(`/api/users/${user.id}/reset-password`);
       showToast('Password reset successfully', 'success');
@@ -81,25 +83,24 @@ export default function BursarManagement() {
         <p>Manage financial staff, accounting permissions, and treasury oversight</p>
       </div>
 
-      <div className="portal-card">
-        <div className="portal-card-header">
-          <div style={{ position: 'relative', width: '300px' }}>
-            <input 
-              type="text" 
-              placeholder="Search financial staff..." 
-              className="portal-input"
-              value={searchTerm}
-              onChange={e => setSearchTerm(e.target.value)}
-              style={{ paddingLeft: '40px' }}
-            />
-            <i className="fas fa-search" style={{ position: 'absolute', left: 14, top: 14, color: '#a0aec0' }}></i>
-          </div>
-          <button className="portal-btn-primary" onClick={() => setIsCreateModalOpen(true)}>
-            <i className="fas fa-user-plus" style={{ marginRight: 8 }}></i>New Bursar
-          </button>
+      <div className="animate-in fade-in slide-in-from-top-4 duration-500" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
+        <div style={{ position: 'relative', width: '300px' }}>
+          <input 
+            type="text" 
+            placeholder="Search financial staff..." 
+            className="portal-input"
+            value={searchTerm}
+            onChange={e => { setSearchTerm(e.target.value); setCurrentPage(1); }}
+            style={{ paddingLeft: '48px', fontWeight: 700, height: '52px', borderRadius: '16px', background: '#fff', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)' }}
+          />
+          <i className="fas fa-search" style={{ position: 'absolute', left: 18, top: 18, color: '#94a3b8', fontSize: '1rem' }}></i>
         </div>
+        <button className="portal-btn-primary" onClick={() => setIsCreateModalOpen(true)} style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <i className="fas fa-user-plus"></i>New Bursar
+        </button>
+      </div>
 
-        <div className="management-table-card">
+      <div className="management-table-card">
           {loading ? (
             <div style={{ textAlign: 'center', padding: 40 }}>
               <i className="fas fa-spinner fa-spin" style={{ fontSize: '2rem', color: 'var(--portal-primary)' }}></i>
@@ -119,7 +120,12 @@ export default function BursarManagement() {
                 </tr>
               </thead>
               <tbody>
-                {filteredBursars.length > 0 ? filteredBursars.map(s => (
+                {(() => {
+                  const indexOfLastItem = currentPage * itemsPerPage;
+                  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+                  const currentItems = filteredBursars.slice(indexOfFirstItem, indexOfLastItem);
+                  if (currentItems.length === 0 && filteredBursars.length > 0) setCurrentPage(1);
+                  return filteredBursars.length > 0 ? currentItems.map(s => (
                   <tr key={s.id}>
                     <td style={{ color: '#718096', fontFamily: 'monospace', fontWeight: 600 }}>{s.staffId || 'N/A'}</td>
                     <td>
@@ -151,22 +157,22 @@ export default function BursarManagement() {
                       </span>
                     </td>
                     <td>
-                      <div className="action-buttons">
-                        <button className="btn-icon btn-view" title="View Profile" onClick={() => openDetail(s)}>
+                      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
+                        <button className="portal-btn-ghost" style={{ padding: '8px', width: '36px', height: '36px', color: '#4338ca', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="View Profile" onClick={() => openDetail(s)}>
                           <i className="fas fa-eye"></i>
                         </button>
-                        <button className="btn-icon btn-edit" title="Edit Staff" onClick={() => openEdit(s)}>
-                          <i className="fas fa-pencil-alt"></i>
+                        <button className="portal-btn-ghost" style={{ padding: '8px', width: '36px', height: '36px', color: '#2563eb', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Edit Staff" onClick={() => openEdit(s)}>
+                          <i className="fas fa-edit"></i>
                         </button>
-                        <button className="btn-icon btn-lock" title={s.isLocked ? "Unlock Account" : "Lock Account"} onClick={() => handleLockToggle(s)}>
-                          <i className={`fas fa-${s.isLocked ? 'unlock' : 'lock'}`}></i>
+                        <button className="portal-btn-ghost" style={{ padding: '8px', width: '36px', height: '36px', color: s.isLocked ? '#059669' : '#dc2626', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title={s.isLocked ? "Unlock Account" : "Lock Account"} onClick={() => handleLockToggle(s)}>
+                          <i className={`fas fa-${s.isLocked ? 'unlock' : 'user-lock'}`}></i>
                         </button>
-                        <button className="btn-icon btn-delete" title="Delete Permanent" onClick={() => {
-                          if (window.confirm(`Delete ${s.name}?`)) {
+                        <button className="portal-btn-ghost" style={{ padding: '8px', width: '36px', height: '36px', color: '#dc2626', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Delete Permanent" onClick={async () => {
+                          if (await toastConfirm(`Delete ${s.name}?`)) {
                             api.delete(`/api/users/${s.id}`).then(() => fetchBursars());
                           }
                         }}>
-                          <i className="fas fa-trash"></i>
+                          <i className="fas fa-trash-alt"></i>
                         </button>
                       </div>
                     </td>
@@ -175,12 +181,38 @@ export default function BursarManagement() {
                   <tr>
                     <td colSpan={7} style={{ textAlign: 'center', padding: 40, color: '#718096' }}>No financial staff records found.</td>
                   </tr>
-                )}
+                );
+                })()}
               </tbody>
             </table>
           )}
+          
+          {filteredBursars.length > 0 && !loading && (
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px', borderTop: '1px solid #e2e8f0' }}>
+              <span style={{ fontSize: '0.85rem', color: '#64748b' }}>
+                Showing {(currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, filteredBursars.length)} of {filteredBursars.length} entries
+              </span>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <button 
+                  onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                  disabled={currentPage === 1}
+                  className="portal-btn-ghost"
+                  style={{ padding: '6px 12px', fontSize: '0.85rem' }}
+                >
+                  Previous
+                </button>
+                <button 
+                  onClick={() => setCurrentPage(prev => Math.min(prev + 1, Math.ceil(filteredBursars.length / itemsPerPage)))}
+                  disabled={currentPage === Math.ceil(filteredBursars.length / itemsPerPage) || filteredBursars.length === 0}
+                  className="portal-btn-ghost"
+                  style={{ padding: '6px 12px', fontSize: '0.85rem' }}
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          )}
         </div>
-      </div>
 
       {/* Detail Panel */}
       {selectedBursar && (

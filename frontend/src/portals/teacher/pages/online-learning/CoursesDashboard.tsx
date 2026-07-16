@@ -9,6 +9,9 @@ export default function CoursesDashboard() {
   const [courses, setCourses] = useState<any[]>([]);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showEnrolModal, setShowEnrolModal] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     fetchCourses();
@@ -104,6 +107,21 @@ export default function CoursesDashboard() {
             </div>
           </div>
 
+          {/* Search */}
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 20 }}>
+            <div style={{ position: 'relative', width: 400 }}>
+              <i className="fas fa-search" style={{ position: 'absolute', left: 14, top: 14, color: '#94a3b8' }}></i>
+              <input
+                type="text"
+                className="portal-input"
+                placeholder="Search courses..."
+                value={searchQuery}
+                onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
+                style={{ paddingLeft: 40 }}
+              />
+            </div>
+          </div>
+
           {/* Empty State */}
           {courses.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '50px 0', color: '#718096' }}>
@@ -123,21 +141,83 @@ export default function CoursesDashboard() {
                   <th>CATEGORY</th>
                   <th>STATUS</th>
                   <th>STUDENTS</th>
+                  <th>ACTIONS</th>
                 </tr>
               </thead>
               <tbody>
-                {courses.map(c => (
+                {(() => {
+                  const filtered = courses.filter(c => c.title.toLowerCase().includes(searchQuery.toLowerCase()));
+                  const indexOfLastItem = currentPage * itemsPerPage;
+                  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+                  const currentItems = filtered.slice(indexOfFirstItem, indexOfLastItem);
+                  if (currentItems.length === 0 && filtered.length > 0) setCurrentPage(1);
+                  return currentItems.map(c => (
                   <tr key={c.id}>
                     <td>{c.title}</td>
                     <td>{c.class?.name}</td>
                     <td>{c.category}</td>
                     <td>{c.status}</td>
                     <td>{c._count?.enrollments}</td>
+                    <td>
+                      <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-start' }}>
+                        <button 
+                          className="portal-btn-ghost" 
+                          title="View"
+                          style={{ width: 36, height: 36, padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                        >
+                          <i className="fas fa-eye" style={{ color: '#4338ca' }}></i>
+                        </button>
+                        <button 
+                          className="portal-btn-ghost" 
+                          title="Edit"
+                          style={{ width: 36, height: 36, padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                        >
+                          <i className="fas fa-edit" style={{ color: '#2563eb' }}></i>
+                        </button>
+                        <button 
+                          className="portal-btn-ghost" 
+                          title="Delete"
+                          style={{ width: 36, height: 36, padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                        >
+                          <i className="fas fa-trash-alt" style={{ color: '#dc2626' }}></i>
+                        </button>
+                      </div>
+                    </td>
                   </tr>
-                ))}
+                ));
+                })()}
               </tbody>
             </table>
           )}
+          
+          {(() => {
+            const filtered = courses.filter(c => c.title.toLowerCase().includes(searchQuery.toLowerCase()));
+            return filtered.length > 0 && (
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px', borderTop: '1px solid #e2e8f0' }}>
+              <span style={{ fontSize: '0.85rem', color: '#64748b' }}>
+                Showing {(currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, filtered.length)} of {filtered.length} entries
+              </span>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <button 
+                  onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                  disabled={currentPage === 1}
+                  className="portal-btn-ghost"
+                  style={{ padding: '6px 12px', fontSize: '0.85rem' }}
+                >
+                  Previous
+                </button>
+                <button 
+                  onClick={() => setCurrentPage(prev => Math.min(prev + 1, Math.ceil(filtered.length / itemsPerPage)))}
+                  disabled={currentPage === Math.ceil(filtered.length / itemsPerPage) || filtered.length === 0}
+                  className="portal-btn-ghost"
+                  style={{ padding: '6px 12px', fontSize: '0.85rem' }}
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          );
+          })()}
         </div>
       </div>
 

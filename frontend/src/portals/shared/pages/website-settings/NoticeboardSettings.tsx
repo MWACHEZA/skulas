@@ -77,7 +77,7 @@ export default function NoticeboardSettings() {
 
   const deleteEvent = async (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    if (!window.confirm('Delete this event?')) return;
+    if (!(await toastConfirm('Delete this event?'))) return;
     try {
       await api.delete(`/api/website-settings/noticeboard/${id}`);
       fetchEvents();
