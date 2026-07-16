@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asset Management - Bursar Portal</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/ancillary-portal.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        /* ASSET SPECIFIC STYLES */
+        .asset-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .astat-box {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+            text-align: center;
+        }
+
+        .astat-box .val {
+            display: block;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--school-primary-dark, #1e293b);
+        }
+
+        .astat-box .lab {
+            display: block;
+            font-size: 0.8rem;
+            color: #64748b;
+            margin-top: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .asset-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .asset-table th {
+            text-align: left;
+            background-color: var(--school-primary-dark, var(--school-primary-dark, #1a1a2e));
+            padding: 15px;
+            font-size: 0.85rem;
+            color: #64748b;
+            border-bottom: 2px solid #f1f5f9;
+        }
+
+        .asset-table td {
+            padding: 15px;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 0.9rem;
+        }
+
+        .asset-id {
+            font-family: monospace;
+            font-weight: 600;
+            color: var(--school-primary, var(--school-primary, #0056b3));
+            background: #f0f9ff;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .asset-status {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.75rem;
+        }
+
+        .status-active {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-maint {
+            background: #fef9c3;
+            color: #854d0e;
+        }
+
+        .status-lost {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .filter-bar {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            align-items: center;
+            background: white;
+            padding: 15px 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+        }
+
+        .filter-bar input,
+        .filter-bar select {
+            padding: 10px 15px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.9rem;
+        }
+
+        .search-input {
+            flex: 1;
+        }
+
+        .report-form {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .form-full {
+            grid-column: span 2;
+        }
+
+        .report-form input,
+        .report-form textarea,
+        .report-form select {
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            font-family: inherit;
+        }
+
+        .btn-action {
+            width: 100%;
+            background: var(--school-primary, var(--school-primary, #0056b3));
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 10px;
+        }
+
+        .btn-action:hover {
+            background: var(--school-primary-dark, var(--school-primary-dark, #003d82));
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            margin-bottom: 25px;
+        }
+
+        .card-header {
+            padding: 20px 25px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-header h3 {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--school-primary-dark, var(--school-primary-dark, #003d82));
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-body {
+            padding: 25px;
+        }
+
+        .content-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 25px;
+        }
+
+        @media (max-width: 1024px) {
+            .content-row {
+                grid-template-columns: 1fr;
+            }
+
+            .asset-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 500px;
+            position: relative;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .close-modal {
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #64748b;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Mobile Toggle Button -->
+    <button class="mobile-toggle" id="mobile-toggle">
+        <i class="fas fa-bars"></i>
+    </button>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-menu">
+                <div class="sidebar-section-title">Bursar System</div>
+                <ul>
+                    <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i>
+                            <span>Dashboard</span></a></li>
+                    <li><a href="fees-management.html"><i class="fas fa-money-bill-wave"></i> <span>Fees
+                                Management</span></a></li>
+                    <li><a href="payments.html"><i class="fas fa-credit-card"></i> <span>Payments</span></a></li>
+                    <li><a href="expenses.html"><i class="fas fa-file-invoice-dollar"></i> <span>Expenses</span></a>
+                    </li>
+                    <li><a href="payroll.html"><i class="fas fa-users-cog"></i> <span>Payroll</span></a></li>
+                    <li><a href="tuckshop.html"><i class="fas fa-store"></i> <span>Tuckshop</span></a></li>
+                    <li><a href="reports.html"><i class="fas fa-chart-pie"></i> <span>Reports</span></a></li>
+                </ul>
+
+                <div class="sidebar-section-title">Operations</div>
+                <ul>
+                    <li><a href="staff-directory.html"><i class="fas fa-users"></i> <span>Staff Directory</span></a>
+                    </li>
+                    <li><a href="procurement.html"><i class="fas fa-shopping-cart"></i> <span>Procurement Oversight</span></a>
+                    </li>
+                    <li><a href="supplier-management.html"><i class="fas fa-truck"></i> <span>Supplier Management</span></a></li>
+                    <li><a href="assets.html" class="active"><i class="fas fa-boxes"></i> <span>Asset
+                                Management</span></a></li>
+                    <li><a href="schedules.html"><i class="fas fa-calendar-check"></i> <span>Schedules &
+                                Shifts</span></a></li>
+                </ul>
+
+                <div class="sidebar-section-title">Staff HR & Support</div>
+                <ul>
+                    <li><a href="sdc-portal.html"><i class="fas fa-file-invoice-dollar"></i> <span>SDC Staff
+                                Portal</span></a></li>
+                    <li><a href="hr-services.html"><i class="fas fa-user-shield"></i> <span>HR Services</span></a></li>
+                    <li><a href="profile-settings.html"><i class="fas fa-id-card"></i> <span>My Profile</span></a></li>
+                    <li><a href="resources.html"><i class="fas fa-folder-open"></i> <span>Resources & Docs</span></a>
+                    </li>
+                    <li><a href="it-support.html"><i class="fas fa-headset"></i> <span>IT Support</span></a></li>
+                </ul>
+
+                <div class="sidebar-section-title">Communication</div>
+                <ul>
+                    <li><a href="news.html"><i class="fas fa-newspaper"></i> <span>News & Updates</span></a></li>
+                    <li><a href="contact.html"><i class="fas fa-address-book"></i> <span>Contact Us</span></a></li>
+                    <li><a href="settings.html"><i class="fas fa-cog"></i> <span>Settings</span></a></li>
+                </ul>
+            </div>
+            <div class="sidebar-footer">
+                <a href="login.html"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <header class="mobile-header">
+                <button class="mobile-toggle" id="mobile-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </header>
+
+            <h1 style="margin-bottom: 10px; color: var(--school-primary-dark, #1e293b);">My Assigned Assets</h1>
+            <p style="margin-bottom: 30px; color: #64748b;">Manage and track assets assigned specifically to you
+                (Bursar).</p>
+
+            <div class="asset-stats">
+                <div class="astat-box">
+                    <span class="val" id="myTotalAssets">0</span>
+                    <span class="lab">My Assets</span>
+                </div>
+                <div class="astat-box">
+                    <span class="val" id="totalQtyVal">0</span>
+                    <span class="lab">Total Items (Qty)</span>
+                </div>
+                <!-- Other stats can be hidden or adapted if not relevant to personal view -->
+            </div>
+
+            <div class="filter-bar">
+                <input type="text" id="assetSearch" placeholder="Search my assets..." class="search-input">
+                <select id="categoryFilter">
+                    <option value="all">All Categories</option>
+                    <option value="ict equipment">ICT Equipment</option>
+                    <option value="furniture">Furniture</option>
+                    <option value="office supplies">Office Supplies</option>
+                </select>
+                <select id="statusFilter">
+                    <option value="all">All Statuses</option>
+                    <option value="excellent">Excellent</option>
+                    <option value="good">Good</option>
+                    <option value="fair">Fair</option>
+                    <option value="damaged">Damaged</option>
+                </select>
+            </div>
+
+            <div class="content-row" style="display: grid; grid-template-columns: 2fr 1fr; gap: 25px;">
+                <div class="content-left">
+                    <!-- Asset Register -->
+                    <section class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-list"></i> My Assets</h3>
+                            <div style="display:flex; gap:10px;">
+                                <button class="btn-action" id="newAssetBtn"
+                                    style="width: auto; padding: 8px 15px; margin-top:0; background: var(--school-primary, var(--school-primary, #0056b3));"><i
+                                        class="fas fa-plus"></i> Add New</button>
+                                <button class="btn-action" id="exportBtn"
+                                    style="width: auto; padding: 8px 15px; margin-top:0; background: #10b981;"><i
+                                        class="fas fa-file-export"></i> Export</button>
+                            </div>
+                        </div>
+                        <div class="card-body" style="padding: 0;">
+                            <table class="asset-table">
+                                <thead>
+                                    <tr>
+                                        <th>Asset ID</th>
+                                        <th>Asset Name</th>
+                                        <th>Qty</th>
+                                        <th>Location</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="assetTableBody">
+                                    <!-- Assets will be populated here via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+                </div>
+
+                <div class="content-right">
+                    <!-- Report Lost/Damaged -->
+                    <section class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-exclamation-circle"></i> Report Issue</h3>
+                        </div>
+                        <div class="card-body">
+                            <p style="font-size: 0.85rem; color: #666; margin-bottom: 20px;">Report a problem with any
+                                of your assigned assets.</p>
+                            <form class="report-form" id="incidentForm">
+                                <div class="form-full" style="display: flex; flex-direction: column; gap: 5px;">
+                                    <label style="font-size: 0.85rem; font-weight: 500;">Asset</label>
+                                    <select id="reportAssetSelect" required
+                                        style="padding: 10px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                                        <option value="">Select Asset</option>
+                                    </select>
+                                </div>
+                                <div class="form-full" style="display: flex; flex-direction: column; gap: 5px;">
+                                    <label style="font-size: 0.85rem; font-weight: 500;">Issue Type</label>
+                                    <select id="incidentType" required>
+                                        <option value="">Select Issue</option>
+                                        <option>Accidental Damage</option>
+                                        <option>Malfunction</option>
+                                        <option>Lost/Stolen</option>
+                                    </select>
+                                </div>
+                                <div class="form-full" style="display: flex; flex-direction: column; gap: 5px;">
+                                    <label style="font-size: 0.85rem; font-weight: 500;">Details</label>
+                                    <textarea id="incidentDetails" rows="4"
+                                        placeholder="Describe the issue..."></textarea>
+                                </div>
+                                <button type="submit" class="btn-action">Submit Report</button>
+                            </form>
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+            <!-- Add Asset Modal -->
+            <div id="addAssetModal" class="modal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3><i class="fas fa-plus-circle"></i> Add New Asset</h3>
+                        <span class="close-modal" id="closeAddModal">&times;</span>
+                    </div>
+                    <form id="addAssetForm">
+                        <div class="form-group">
+                            <label>Asset Name</label>
+                            <input type="text" id="newAssetName" required placeholder="e.g. Office Desk">
+                        </div>
+                        <div class="form-group">
+                            <label>Category</label>
+                            <select id="newAssetCat" required>
+                                <option value="ict equipment">ICT Equipment</option>
+                                <option value="furniture">Furniture</option>
+                                <option value="office supplies">Office Supplies</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Quantity</label>
+                            <input type="number" id="newAssetQty" min="1" value="1" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Location</label>
+                            <input type="text" id="newAssetLoc" required placeholder="e.g. Bursar Office">
+                        </div>
+                        <button type="submit" class="btn-action" style="background: var(--school-primary, var(--school-primary, #0056b3));">Register Asset</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Transfer Modal -->
+            <div id="transferModal" class="modal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3><i class="fas fa-exchange-alt"></i> Transfer Asset</h3>
+                        <span class="close-modal" id="closeTransferModal">&times;</span>
+                    </div>
+                    <p style="color:#64748b; font-size:0.9rem;">Transfer ownership of <strong
+                            id="transferAssetName">Asset</strong>.</p>
+                    <form id="transferForm">
+                        <input type="hidden" id="transferAssetId">
+                        <div class="form-group">
+                            <label>New Custodian</label>
+                            <input type="text" id="transferCustodian" required placeholder="e.g. Mr. S. Dube">
+                        </div>
+                        <div class="form-group">
+                            <label>New Location</label>
+                            <input type="text" id="transferLocation" required placeholder="e.g. Room 101">
+                        </div>
+                        <button type="submit" class="btn-action" style="background:#10b981;">Confirm Transfer</button>
+                    </form>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script src="../js/ancillary-common.js"></script>
+    <script>
+        // Mock Data for Assets - seeded if not present
+        const MY_NAME = 'Bursar';
+        const defaultAssets = [
+            { id: 'EHS-OFF-012', name: 'Executive Desk', custodian: 'Bursar', location: 'Bursar Office', category: 'furniture', status: 'good', quantity: 1 },
+            { id: 'EHS-ICT-055', name: 'HP EliteBook', custodian: 'Bursar', location: 'Bursar Office', category: 'ict equipment', status: 'excellent', quantity: 1 },
+            { id: 'EHS-OFF-101', name: 'Ergonomic Chair', custodian: 'Bursar', location: 'Bursar Office', category: 'furniture', status: 'good', quantity: 2 },
+            { id: 'EHS-VEH-001', name: 'Toyota Hilux', custodian: 'Mr. S. Dube', location: 'Transport', category: 'vehicles', status: 'good', quantity: 1 },
+            { id: 'EHS-ICT-242', name: 'Dell Latitude', custodian: 'Miss T. Sibanda', location: 'Admin', category: 'ict equipment', status: 'excellent', quantity: 1 },
+            { id: 'EHS-PRT-003', name: 'Canon Printer', custodian: 'Bursar', location: 'Bursar Office', category: 'ict equipment', status: 'fair', quantity: 1 }
+        ];
+
+        // Load or Initialize Assets
+        let allAssets = JSON.parse(getTenantData('schoolAssets', 'null')) || defaultAssets;
+
+        // Data Migration: Ensure quantity exists if old data loaded
+        allAssets.forEach(a => { if (!a.quantity) a.quantity = 1; });
+        saveTenantData('schoolAssets', allAssets);
+
+        // State variables
+        let myAssets = [];
+
+        // DOM Elements
+        const tbody = document.getElementById('assetTableBody');
+        const assetSelect = document.getElementById('reportAssetSelect');
+        const countSpan = document.getElementById('myTotalAssets');
+        const qtySpan = document.getElementById('totalQtyVal');
+
+        function reloadData() {
+            allAssets = JSON.parse(getTenantData('schoolAssets', 'null')) || [];
+            myAssets = allAssets.filter(a => a.custodian === MY_NAME);
+            renderAssets();
+        }
+
+        function renderAssets() {
+            tbody.innerHTML = '';
+            assetSelect.innerHTML = '<option value="">Select Asset</option>';
+            let count = 0;
+            let totalQty = 0;
+
+            const searchQuery = document.getElementById('assetSearch').value.toLowerCase();
+            const catFilter = document.getElementById('categoryFilter').value;
+            const statFilter = document.getElementById('statusFilter').value;
+
+            myAssets.forEach(asset => {
+                const matchesSearch = asset.name.toLowerCase().includes(searchQuery) || asset.id.toLowerCase().includes(searchQuery);
+                const matchesCat = catFilter === 'all' || asset.category === catFilter;
+                const matchesStat = statFilter === 'all' || asset.status === statFilter;
+
+                if (matchesSearch && matchesCat && matchesStat) {
+                    count++;
+                    totalQty += parseInt(asset.quantity);
+
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td><span class="asset-id">${asset.id}</span></td>
+                        <td>${asset.name}</td>
+                        <td><strong>${asset.quantity}</strong></td>
+                        <td>${asset.location}</td>
+                        <td><span class="asset-status status-${asset.status === 'excellent' || asset.status === 'good' ? 'active' : 'maint'}">${asset.status}</span></td>
+                        <td style="display:flex; gap:5px;">
+                            <button class="btn-sm" style="background: var(--school-primary, var(--school-primary, #0056b3)); border:none; color:white; padding:5px 10px; border-radius:5px; cursor:pointer;" onclick="fillReport('${asset.id}')">Report</button>
+                            <button class="btn-sm" style="background:#f59e0b; border:none; color:white; padding:5px 10px; border-radius:5px; cursor:pointer;" onclick="initTransfer('${asset.id}')">Transfer</button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+
+                    const opt = document.createElement('option');
+                    opt.value = asset.id;
+                    opt.textContent = `${asset.name} (${asset.id})`;
+                    assetSelect.appendChild(opt);
+                }
+            });
+            countSpan.textContent = count;
+            qtySpan.textContent = totalQty;
+        }
+
+        // Search & Filter Events
+        document.getElementById('assetSearch').addEventListener('input', renderAssets);
+        document.getElementById('categoryFilter').addEventListener('change', renderAssets);
+        document.getElementById('statusFilter').addEventListener('change', renderAssets);
+
+        // --- ADD ASSET LOGIC ---
+        const addModal = document.getElementById('addAssetModal');
+        document.getElementById('newAssetBtn').onclick = () => addModal.style.display = 'flex';
+        document.getElementById('closeAddModal').onclick = () => addModal.style.display = 'none';
+
+        document.getElementById('addAssetForm').onsubmit = (e) => {
+            e.preventDefault();
+            const name = document.getElementById('newAssetName').value;
+            // Simple random ID gen
+            const id = 'EHS-' + Math.random().toString(36).substr(2, 3).toUpperCase() + '-' + Math.floor(Math.random() * 1000);
+
+            const newAsset = {
+                id: id,
+                name: name,
+                custodian: MY_NAME,
+                location: document.getElementById('newAssetLoc').value,
+                category: document.getElementById('newAssetCat').value,
+                quantity: parseInt(document.getElementById('newAssetQty').value),
+                status: 'good'
+            };
+
+            allAssets.push(newAsset);
+            saveTenantData('schoolAssets', allAssets);
+
+            reloadData();
+            addModal.style.display = 'none';
+            e.target.reset();
+            showNotification(`Asset "${name}" added successfully.`, 'success');
+        };
+
+        // --- TRANSFER LOGIC ---
+        const transferModal = document.getElementById('transferModal');
+        document.getElementById('closeTransferModal').onclick = () => transferModal.style.display = 'none';
+
+        window.initTransfer = function (id) {
+            const asset = myAssets.find(a => a.id === id);
+            if (asset) {
+                document.getElementById('transferAssetName').textContent = asset.name;
+                document.getElementById('transferAssetId').value = asset.id;
+                transferModal.style.display = 'flex';
+            }
+        };
+
+        document.getElementById('transferForm').onsubmit = (e) => {
+            e.preventDefault();
+            const id = document.getElementById('transferAssetId').value;
+            const newCustodian = document.getElementById('transferCustodian').value;
+            const newLoc = document.getElementById('transferLocation').value;
+
+            const idx = allAssets.findIndex(a => a.id === id);
+            if (idx > -1) {
+                allAssets[idx].custodian = newCustodian;
+                allAssets[idx].location = newLoc;
+                saveTenantData('schoolAssets', allAssets);
+
+                reloadData(); // Item will vanish from my list as custodian != MY_NAME
+                transferModal.style.display = 'none';
+                e.target.reset();
+                showNotification(`Asset transferred to ${newCustodian}.`, 'success');
+            }
+        };
+
+        // --- REPORT LOGIC ---
+        window.fillReport = function (id) {
+            assetSelect.value = id;
+            document.getElementById('incidentForm').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        document.getElementById('incidentForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const id = assetSelect.value;
+            const type = document.getElementById('incidentType').value;
+            showNotification(`Issue reported for ${id}: ${type}`, 'success');
+            this.reset();
+        });
+
+        // Utils
+        window.onclick = (e) => {
+            if (e.target == addModal) addModal.style.display = 'none';
+            if (e.target == transferModal) transferModal.style.display = 'none';
+        }
+
+        document.getElementById('exportBtn').onclick = () => showNotification('Exporting to CSV...', 'info');
+
+        // Init
+        reloadData();
+
+    </script>
+    <!-- ACADEX: Powered-by footer and school branding -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+
+</body>
+
+</html>
+

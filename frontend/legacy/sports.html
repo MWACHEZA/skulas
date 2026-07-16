@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sports - Embakwe High School</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        /* Sports Page Specific Styles */
+        .page-banner {
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('images/sports-banner.jpg');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            text-align: center;
+            padding: 100px 0;
+            margin-bottom: 50px;
+        }
+
+        .page-banner h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+
+        .page-banner p {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .sports-section {
+            padding: 80px 0;
+        }
+
+        .sports-tabs {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+
+        .tab-btn {
+            background-color: #f5f5f5;
+            border: none;
+            padding: 12px 20px;
+            margin: 0 5px 10px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn:hover {
+            background-color: #e0e0e0;
+        }
+
+        .tab-btn.active {
+            background-color: #0056b3;
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Age Groups Styles */
+        .age-groups {
+            margin-bottom: 30px;
+        }
+
+        .age-groups h3 {
+            text-align: center;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .age-group-tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .age-btn {
+            background-color: #e9ecef;
+            border: none;
+            padding: 8px 15px;
+            margin: 0 5px;
+            cursor: pointer;
+            border-radius: 20px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .age-btn:hover {
+            background-color: #dee2e6;
+        }
+
+        .age-btn.active {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .team-card {
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .team-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .team-img {
+            height: 250px;
+            overflow: hidden;
+        }
+
+        .team-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .team-card:hover .team-img img {
+            transform: scale(1.1);
+        }
+
+        .team-info {
+            padding: 20px;
+        }
+
+        .team-info h3 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .team-info p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .achievements {
+            background-color: #f9f9f9;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 40px;
+        }
+
+        .achievements h3 {
+            margin-bottom: 20px;
+            text-align: center;
+            color: #333;
+        }
+
+        .achievement-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .achievement-item {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+        }
+
+        .achievement-item h4 {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            color: #0056b3;
+        }
+
+        .trophy-icon,
+        .medal-icon {
+            margin-right: 10px;
+            color: gold;
+        }
+
+        .coach-section {
+            margin-bottom: 40px;
+        }
+
+        .coach-section h3 {
+            margin-bottom: 20px;
+            text-align: center;
+            color: #333;
+        }
+
+        .coach-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .coach-card {
+            display: flex;
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .coach-img {
+            width: 120px;
+            height: 120px;
+            overflow: hidden;
+        }
+
+        .coach-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .coach-info {
+            padding: 15px;
+            flex: 1;
+        }
+
+        .coach-info h4 {
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .coach-info p {
+            color: #666;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+
+        .upcoming-matches {
+            margin-bottom: 40px;
+        }
+
+        .upcoming-matches h3 {
+            margin-bottom: 20px;
+            text-align: center;
+            color: #333;
+        }
+
+        .schedule-table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .schedule-table th,
+        .schedule-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .schedule-table th {
+            background-color: #0056b3;
+            color: white;
+            font-weight: 600;
+        }
+
+        .schedule-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .schedule-table tr:hover {
+            background-color: #f9f9f9;
+        }
+
+        /* Responsive styles for sports page */
+        @media (max-width: 768px) {
+            .sports-tabs {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .tab-btn {
+                width: 80%;
+                margin-bottom: 8px;
+            }
+
+            .age-group-tabs {
+                flex-wrap: wrap;
+            }
+
+            .age-btn {
+                margin-bottom: 8px;
+            }
+
+            .team-grid,
+            .achievement-list,
+            .coach-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .schedule-table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <div class="container">
+            <div class="contact-info">
+                <span><i class="fas fa-phone"></i> +263 123 456 789</span>
+                <span><i class="fas fa-envelope"></i> info@embakwe.ac.zw</span>
+            </div>
+            <div class="portal-links">
+                <a href="student/login.html"><i class="fas fa-user-graduate"></i> Student Portal</a>
+                <a href="teacher/login.html"><i class="fas fa-chalkboard-teacher"></i> Teacher Portal</a>
+                <a href="alumni/login.html"><i class="fas fa-user-tie"></i> Alumni Portal</a>
+                <a href="admin/login.html"><i class="fas fa-lock"></i> Admin</a>
+            
+                <a href="library/login.html"><i class="fas fa-book"></i> Librarian</a>
+                <a href="bursar/login.html"><i class="fas fa-money-check-alt"></i> Bursar</a>
+                <a href="student/login.html"><i class="fas fa-user-graduate"></i> Student Portal</a>
+                <a href="teacher/login.html"><i class="fas fa-chalkboard-teacher"></i> Teacher Portal</a>
+                <a href="alumni/login.html"><i class="fas fa-user-tie"></i> Alumni Portal</a>
+                <a href="admin/login.html"><i class="fas fa-lock"></i> Admin</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header Section -->
+    <header>
+        <div class="container">
+            <div class="logo">
+                <h1 class="acadex-school-name">Embakwe High School</h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="departments.html">Departments</a></li>
+                    <li><a href="apply.html">Applications</a></li>
+                    <li><a href="check-status.html">Track Application</a></li>
+                    <li><a href="gallery.html">Gallery</a></li>
+                    <li><a href="news.html">News</a></li>
+                    <li><a href="sports.html" class="active">Sports</a></li>
+                    <li><a href="clubs.html">Clubs</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+            </nav>
+            <div class="menu-toggle">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </header>
+
+    <!-- Page Banner -->
+    <section class="page-banner">
+        <div class="container">
+            <h1 id="hero-title">Sports Programs</h1>
+            <p id="hero-subtitle">Excellence in athletics and sportsmanship</p>
+        </div>
+    </section>
+
+    <!-- Sports Section -->
+    <section class="sports-section">
+        <div class="container">
+            <div class="section-title">
+                <h2>Our Sports Programs</h2>
+                <p>At Embakwe High School, we believe in the holistic development of our students. Our sports programs
+                    are designed to instill discipline, teamwork, and leadership skills.</p>
+            </div>
+
+            <div class="sports-tabs">
+                <button class="tab-btn active" data-tab="soccer">Soccer</button>
+                <button class="tab-btn" data-tab="basketball">Basketball</button>
+                <button class="tab-btn" data-tab="netball">Netball</button>
+                <button class="tab-btn" data-tab="volleyball">Volleyball</button>
+                <button class="tab-btn" data-tab="rugby">Rugby</button>
+                <button class="tab-btn" data-tab="handball">Handball</button>
+                <button class="tab-btn" data-tab="tennis">Tennis</button>
+                <button class="tab-btn" data-tab="chess">Chess</button>
+                <button class="tab-btn" data-tab="athletics">Athletics</button>
+            </div>
+
+            <div id="sports-container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin-bottom: 50px;">
+                <!-- Dynamic content injected by acadex-tenant.js -->
+            </div>
+
+            <!-- Soccer Tab -->
+            <div class="tab-content active" id="soccer">
+                <div class="age-groups">
+                    <h3>Age Groups</h3>
+                    <div class="age-group-tabs">
+                        <button class="age-btn active" data-age="u15">U15</button>
+                        <button class="age-btn" data-age="u17">U17</button>
+                        <button class="age-btn" data-age="u20">U20</button>
+                    </div>
+                </div>
+
+                <div class="team-grid">
+                    <div class="team-card">
+                        <div class="team-img">
+                            <img src="images/soccer-boys.jpg" alt="Boys Soccer Team">
+                        </div>
+                        <div class="team-info">
+                            <h3>Boys Soccer Team</h3>
+                            <p>Our boys soccer team has consistently ranked among the top teams in the region. They
+                                train three times a week under the guidance of Coach Michael Thompson.</p>
+                        </div>
+                    </div>
+
+                    <div class="team-card">
+                        <div class="team-img">
+                            <img src="images/soccer-girls.jpg" alt="Girls Soccer Team">
+                        </div>
+                        <div class="team-info">
+                            <h3>Girls Soccer Team</h3>
+                            <p>The girls soccer team has shown remarkable improvement over the past few years. They have
+                                qualified for the national championships twice in the last three years.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="achievements">
+                    <h3>Recent Achievements</h3>
+                    <div class="achievement-list">
+                        <div class="achievement-item">
+                            <h4><i class="fas fa-trophy trophy-icon"></i> Regional Champions 2023</h4>
+                            <p>Boys team won the regional championship for the third consecutive year.</p>
+                        </div>
+                        <div class="achievement-item">
+                            <h4><i class="fas fa-medal medal-icon"></i> National Runners-up 2022</h4>
+                            <p>Girls team finished second in the national school championships.</p>
+                        </div>
+                        <div class="achievement-item">
+                            <h4><i class="fas fa-award trophy-icon"></i> Best Goalkeeper Award</h4>
+                            <p>David Moyo won the best goalkeeper award at the inter-school tournament.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="coach-section">
+                    <h3>Our Coaches</h3>
+                    <div class="coach-grid">
+                        <div class="coach-card">
+                            <div class="coach-img">
+                                <img src="images/coach1.jpg" alt="Coach Michael">
+                            </div>
+                            <div class="coach-info">
+                                <h4>Michael Thompson</h4>
+                                <p>Boys Soccer Coach</p>
+                                <p>Former professional player with 15 years of coaching experience.</p>
+                            </div>
+                        </div>
+                        <div class="coach-card">
+                            <div class="coach-img">
+                                <img src="images/coach2.jpg" alt="Coach Sarah">
+                            </div>
+                            <div class="coach-info">
+                                <h4>Sarah Johnson</h4>
+                                <p>Girls Soccer Coach</p>
+                                <p>National team player and certified FIFA coach.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="upcoming-matches">
+                    <h3>Upcoming Matches</h3>
+                    <table class="schedule-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Team</th>
+                                <th>Opponent</th>
+                                <th>Venue</th>
+                                <th>Time</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>July 15, 2023</td>
+                                <td>Boys</td>
+                                <td>St. Patrick's High</td>
+                                <td>Home</td>
+                                <td>2:00 PM</td>
+                            </tr>
+                            <tr>
+                                <td>July 22, 2023</td>
+                                <td>Girls</td>
+                                <td>Mzilikazi High</td>
+                                <td>Away</td>
+                                <td>10:00 AM</td>
+                            </tr>
+                            <tr>
+                                <td>August 5, 2023</td>
+                                <td>Boys</td>
+                                <td>Founders High</td>
+                                <td>Away</td>
+                                <td>1:30 PM</td>
+                            </tr>
+                            <tr>
+                                <td>August 12, 2023</td>
+                                <td>Girls</td>
+                                <td>Eveline High</td>
+                                <td>Home</td>
+                                <td>3:00 PM</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Basketball Tab -->
+            <div class="tab-content" id="basketball">
+                <div class="age-groups">
+                    <h3>Age Groups</h3>
+                    <div class="age-group-tabs">
+                        <button class="age-btn active" data-age="u15">U15</button>
+                        <button class="age-btn" data-age="u17">U17</button>
+                        <button class="age-btn" data-age="u20">U20</button>
+                    </div>
+                </div>
+
+                <div class="team-grid">
+                    <div class="team-card">
+                        <div class="team-img">
+                            <img src="images/basketball-boys.jpg" alt="Boys Basketball Team">
+                        </div>
+                        <div class="team-info">
+                            <h3>Boys Basketball Team</h3>
+                            <p>Our boys basketball team is known for their fast-paced play and strong defense. They have
+                                won multiple championships at the district level.</p>
+                        </div>
+                    </div>
+
+                    <div class="team-card">
+                        <div class="team-img">
+                            <img src="images/basketball-girls.jpg" alt="Girls Basketball Team">
+                        </div>
+                        <div class="team-info">
+                            <h3>Girls Basketball Team</h3>
+                            <p>The girls basketball team has been making significant strides in recent years. They
+                                reached the semifinals of the regional tournament last season.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="achievements">
+                    <h3>Recent Achievements</h3>
+                    <div class="achievement-list">
+                        <div class="achievement-item">
+                            <h4><i class="fas fa-trophy trophy-icon"></i> District Champions 2023</h4>
+                            <p>Boys team won the district championship for the second year in a row.</p>
+                        </div>
+                        <div class="achievement-item">
+                            <h4><i class="fas fa-medal medal-icon"></i> Regional Semi-finalists 2022</h4>
+                            <p>Girls team reached the semifinals of the regional tournament.</p>
+                        </div>
+                        <div class="achievement-item">
+                            <h4><i class="fas fa-award trophy-icon"></i> MVP Award</h4>
+                            <p>James Ndlovu was named Most Valuable Player in the district tournament.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Netball Tab -->
+            <div class="tab-content" id="netball">
+                <div class="age-groups">
+                    <h3>Age Groups</h3>
+                    <div class="age-group-tabs">
+                        <button class="age-btn active" data-age="u15">U15</button>
+                        <button class="age-btn" data-age="u17">U17</button>
+                        <button class="age-btn" data-age="u20">U20</button>
+                    </div>
+                </div>
+
+                <div class="team-grid">
+                    <div class="team-card">
+                        <div class="team-img">
+                            <img src="images/netball-girls.jpg" alt="Girls Netball Team">
+                        </div>
+                        <div class="team-info">
+                            <h3>Girls Netball Team</h3>
+                            <p>Our netball team has established itself as one of the strongest in the region, with
+                                excellent coordination and strategic gameplay.</p>
+                        </div>
+                    </div>
+
+                    <div class="team-card">
+                        <div class="team-img">
+                            <img src="images/netball-boys.jpg" alt="Boys Netball Team">
+                        </div>
+                        <div class="team-info">
+                            <h3>Boys Netball Team</h3>
+                            <p>The boys netball team is growing in strength and skill, showing great promise in recent
+                                tournaments.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="achievements">
+                    <h3>Recent Achievements</h3>
+                    <div class="achievement-list">
+                        <div class="achievement-item">
+                            <h4><i class="fas fa-trophy trophy-icon"></i> Regional Champions 2023</h4>
+                            <p>Girls team secured the regional championship title.</p>
+                        </div>
+                        <div class="achievement-item">
+                            <h4><i class="fas fa-medal medal-icon"></i> District Runners-up 2022</h4>
+                            <p>Boys team finished second in the district tournament.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Volleyball Tab -->
+            <div class="tab-content" id="volleyball">
+                <div class="team-grid">
+                    <div class="team-card">
+                        <div class="team-img">
+                            <img src="images/volleyball-boys.jpg" alt="Boys Volleyball Team">
+                        </div>
+                        <div class="team-info">
+                            <h3>Boys Volleyball Team</h3>
+                            <p>Our volleyball team combines height, agility, and teamwork to dominate the court in
+                                competitions.</p>
+                        </div>
+                    </div>
+
+                    <div class="team-card">
+                        <div class="team-img">
+                            <img src="images/volleyball-girls.jpg" alt="Girls Volleyball Team">
+                        </div>
+                        <div class="team-info">
+                            <h3>Girls Volleyball Team</h3>
+                            <p>The girls volleyball team is known for their exceptional serving and defensive skills.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rugby Tab -->
+            <div class="tab-content" id="rugby">
+                <div class="age-groups">
+                    <h3>Age Groups</h3>
+                    <div class="age-group-tabs">
+                        <button class="age-btn active" data-age="u15">U15</button>
+                        <button class="age-btn" data-age="u17">U17</button>
+                        <button class="age-btn" data-age="u20">U20</button>
+                    </div>
+                </div>
+
+                <div class="team-grid">
+                    <div class="team-card">
+                        <div class="team-img">
+                            <img src="images/rugby-boys.jpg" alt="Boys Rugby Team">
+                        </div>
+                        <div class="team-info">
+                            <h3>Boys Rugby Team</h3>
+                            <p>Our rugby team is known for their physical strength, discipline, and tactical awareness
+                                on the field.</p>
+                        </div>
+                    </div>
+
+                    <div class="team-card">
+                        <div class="team-img">
+                            <img src="images/rugby-girls.jpg" alt="Girls Rugby Team">
+                        </div>
+                        <div class="team-info">
+                            <h3>Girls Rugby Team</h3>
+                            <p>The girls rugby team has been breaking barriers and showing impressive skill development
+                                in recent years.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Handball Tab -->
+            <div class="tab-content" id="handball">
+                <div class="age-groups">
+                    <h3>Age Groups</h3>
+                    <div class="age-group-tabs">
+                        <button class="age-btn active" data-age="u15">U15</button>
+                        <button class="age-btn" data-age="u17">U17</button>
+                        <button class="age-btn" data-age="u20">U20</button>
+                    </div>
+                </div>
+
+                <div class="team-grid">
+                    <div class="team-card">
+                        <div class="team-img">
+                            <img src="images/handball-boys.jpg" alt="Boys Handball Team">
+                        </div>
+                        <div class="team-info">
+                            <h3>Boys Handball Team</h3>
+                            <p>Our handball team combines speed, agility, and precision to excel in competitions at all
+                                levels.</p>
+                        </div>
+                    </div>
+
+                    <div class="team-card">
+                        <div class="team-img">
+                            <img src="images/handball-girls.jpg" alt="Girls Handball Team">
+                        </div>
+                        <div class="team-info">
+                            <h3>Girls Handball Team</h3>
+                            <p>The girls handball team has shown remarkable progress and competitive spirit in recent
+                                tournaments.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tennis Tab -->
+            <div class="tab-content" id="tennis">
+                <div class="team-grid">
+                    <div class="team-card">
+                        <div class="team-img">
+                            <img src="images/tennis-boys.jpg" alt="Boys Tennis Team">
+                        </div>
+                        <div class="team-info">
+                            <h3>Boys Tennis Team</h3>
+                            <p>Our tennis players demonstrate excellent technique, mental strength, and sportsmanship on
+                                the court.</p>
+                        </div>
+                    </div>
+
+                    <div class="team-card">
+                        <div class="team-img">
+                            <img src="images/tennis-girls.jpg" alt="Girls Tennis Team">
+                        </div>
+                        <div class="team-info">
+                            <h3>Girls Tennis Team</h3>
+                            <p>The girls tennis team has produced several regional champions and continues to excel in
+                                individual and team competitions.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chess Tab -->
+            <div class="tab-content" id="chess">
+                <div class="team-grid">
+                    <div class="team-card">
+                        <div class="team-img">
+                            <img src="images/chess-boys.jpg" alt="Boys Chess Team">
+                        </div>
+                        <div class="team-info">
+                            <h3>Boys Chess Team</h3>
+                            <p>Our chess team has a reputation for strategic thinking and has won numerous interschool
+                                competitions.</p>
+                        </div>
+                    </div>
+
+                    <div class="team-card">
+                        <div class="team-img">
+                            <img src="images/chess-girls.jpg" alt="Girls Chess Team">
+                        </div>
+                        <div class="team-info">
+                            <h3>Girls Chess Team</h3>
+                            <p>The girls chess team has been making impressive progress, with several members achieving
+                                national recognition.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Athletics Tab -->
+            <div class="tab-content" id="athletics">
+                <div class="team-grid">
+                    <div class="team-card">
+                        <div class="team-img">
+                            <img src="images/athletics-boys.jpg" alt="Boys Athletics Team">
+                        </div>
+                        <div class="team-info">
+                            <h3>Boys Athletics Team</h3>
+                            <p>Our athletics team excels in track and field events, with particular strength in
+                                middle-distance running and jumps.</p>
+                        </div>
+                    </div>
+
+                    <div class="team-card">
+                        <div class="team-img">
+                            <img src="images/athletics-girls.jpg" alt="Girls Athletics Team">
+                        </div>
+                        <div class="team-info">
+                            <h3>Girls Athletics Team</h3>
+                            <p>The girls athletics team has produced several national champions in sprinting and
+                                throwing events.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>Embakwe High School</h3>
+                    <p>Nurturing Excellence, Building Character, Shaping Futures</p>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                <div class="footer-column">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="news.html">News</a></li>
+                        <li><a href="sports.html">Sports</a></li>
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Contact Info</h3>
+                    <p><i class="fas fa-map-marker-alt"></i> 123 School Road, Embakwe</p>
+                    <p><i class="fas fa-phone"></i> +123 456 7890</p>
+                    <p><i class="fas fa-envelope"></i> info@embakwehigh.edu</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2023 Embakwe High School. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="acadex/js/acadex-core.js"></script>
+    <script src="acadex/js/acadex-tenant.js"></script>
+    <script src="js/script.js"></script>
+    <script>
+        // Sports Tab Functionality
+        document.addEventListener('DOMContentLoaded', function () {
+            const tabBtns = document.querySelectorAll('.tab-btn');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', function () {
+                    // Remove active class from all buttons and contents
+                    tabBtns.forEach(btn => btn.classList.remove('active'));
+                    tabContents.forEach(content => content.classList.remove('active'));
+
+                    // Add active class to clicked button
+                    this.classList.add('active');
+
+                    // Show corresponding content
+                    const tabId = this.getAttribute('data-tab');
+                    document.getElementById(tabId).classList.add('active');
+                });
+            });
+
+            // Age Group Tab Functionality
+            const ageBtns = document.querySelectorAll('.age-btn');
+
+            ageBtns.forEach(btn => {
+                btn.addEventListener('click', function () {
+                    // Find parent age-group-tabs container
+                    const parentContainer = this.closest('.age-group-tabs');
+
+                    // Remove active class from all buttons in this container
+                    parentContainer.querySelectorAll('.age-btn').forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+
+                    // Add active class to clicked button
+                    this.classList.add('active');
+
+                    // You can add code here to show/hide content based on age group
+                    const ageGroup = this.getAttribute('data-age');
+                    console.log('Selected age group:', ageGroup);
+
+                    // For now, we'll just log the selected age group
+                    // In a real implementation, you would show/hide or filter content based on this
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>
+
+
+

@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feedback & Suggestions - ACADEX</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/library-portal.css">
+    <link rel="stylesheet" href="../css/ancillary-portal.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        .feedback-tabs {
+            display: flex;
+            border-bottom: 2px solid rgba(var(--school-primary-rgb), 0.1);
+            margin-bottom: 24px;
+        }
+
+        .feedback-tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: var(--school-primary);
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .feedback-tab.active {
+            color: var(--school-primary);
+            border-bottom-color: var(--school-primary);
+        }
+
+        .feedback-tab .tab-count {
+            background: rgba(var(--school-primary-rgb), 0.1);
+            color: var(--school-primary);
+            border-radius: 20px;
+            padding: 1px 8px;
+            font-size: 0.72rem;
+        }
+
+        .feedback-tab.active .tab-count {
+            background: var(--school-primary);
+            color: white;
+        }
+
+        .tab-panel {
+            display: none;
+        }
+
+        .tab-panel.active {
+            display: block;
+        }
+
+        .idea-card {
+            background: white;
+            border: 1px solid rgba(var(--school-primary-rgb), 0.1);
+            border-radius: 12px;
+            padding: 18px 20px;
+            margin-bottom: 14px;
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+        }
+
+        .idea-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .icon-submitted {
+            background: #e0f2fe;
+            color: #0369a1;
+        }
+
+        .icon-implemented {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .icon-review {
+            background: #fef3c7;
+            color: #b45309;
+        }
+
+        .icon-rejected {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .idea-content {
+            flex: 1;
+        }
+
+        .idea-content h4 {
+            margin: 0 0 5px;
+            font-size: 0.95rem;
+            color: #1a1a2e;
+        }
+
+        .idea-content p {
+            margin: 0;
+            font-size: 0.85rem;
+            color: #555;
+            line-height: 1.5;
+        }
+
+        .idea-meta {
+            font-size: 0.75rem;
+            color: #aaa;
+            margin-top: 8px;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .badge-submitted {
+            background: #e0f2fe;
+            color: #0369a1;
+        }
+
+        .badge-implemented {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .badge-review {
+            background: #fef3c7;
+            color: #b45309;
+        }
+
+        .badge-rejected {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .form-section {
+            background: #f8faff;
+            border-radius: 12px;
+            padding: 24px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+            margin-bottom: 24px;
+        }
+
+        .stat-mini {
+            background: white;
+            border-radius: 10px;
+            padding: 16px;
+            text-align: center;
+            border: 1px solid rgba(var(--school-primary-rgb), 0.1);
+        }
+
+        .stat-mini .num {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--school-primary);
+        }
+
+        .stat-mini .label {
+            font-size: 0.75rem;
+            color: #888;
+            font-weight: 600;
+            margin-top: 3px;
+        }
+
+        .empty-ideas {
+            text-align: center;
+            color: #bbb;
+            padding: 40px 20px;
+        }
+
+        .empty-ideas i {
+            font-size: 2.5rem;
+            margin-bottom: 12px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <img src="../images/logo.png" alt="Logo" class="acadex-school-logo">
+                <h3>ANCILLARY PORTAL</h3>
+            </div>
+            <div class="sidebar-menu">
+                <ul>
+                    <li><a href="dashboard.html"><i class="fas fa-th-large"></i><span>Dashboard</span></a></li>
+                </ul>
+
+                <div id="tuckshop-sidebar-section" style="display: none;">
+                    <div class="sidebar-section-title">Tuckshop System</div>
+                    <ul>
+                        <li><a href="tuckshop-dashboard.html"><i class="fas fa-tachometer-alt"></i><span>TS
+                                    Dashboard</span></a></li>
+                        <li><a href="tuckshop-sales.html"><i class="fas fa-cash-register"></i> <span>Point of
+                                    Sale</span></a></li>
+                        <li><a href="tuckshop-inventory.html"><i class="fas fa-boxes"></i> <span>Inventory</span></a>
+                        </li>
+                        <li><a href="tuckshop-orders.html"><i class="fas fa-truck"></i> <span>Supplier Orders</span></a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="sidebar-section-title">Operations</div>
+                <ul>
+                    <li><a href="staff-directory.html"><i class="fas fa-users"></i> <span>Staff Directory</span></a>
+                    </li>
+                    <li><a href="procurement.html"><i class="fas fa-shopping-cart"></i><span>Procurement</span></a></li>
+                    <li><a href="assets.html"><i class="fas fa-boxes"></i> <span>Asset Management</span></a></li>
+                    <li><a href="schedules.html"><i class="fas fa-calendar-alt"></i> <span>Schedules &amp;
+                                Shifts</span></a></li>
+                </ul>
+
+                <div class="sidebar-section-title">Support &amp; HR</div>
+                <ul>
+                    <li><a href="sdc-portal.html"><i class="fas fa-file-invoice-dollar"></i> <span>SDC Staff
+                                Portal</span></a></li>
+                    <li><a href="hr-services.html"><i class="fas fa-user-shield"></i> <span>HR Services</span></a></li>
+                    <li><a href="profile.html"><i class="fas fa-id-card"></i> <span>My Profile</span></a></li>
+                    <li><a href="resources.html"><i class="fas fa-folder-open"></i> <span>Resources &amp;
+                                Docs</span></a></li>
+                    <li><a href="it-support.html"><i class="fas fa-headset"></i> <span>IT Support</span></a></li>
+                </ul>
+
+                <div class="sidebar-section-title">Communication</div>
+                <ul>
+                    <li><a href="news.html"><i class="fas fa-newspaper"></i> <span>News &amp; Updates</span></a></li>
+                    <li><a href="feedback.html" class="active"><i
+                                class="fas fa-comment-dots"></i><span>Feedback</span></a></li>
+                    <li><a href="contact.html"><i class="fas fa-address-book"></i> <span>Contact Us</span></a></li>
+                </ul>
+            </div>
+            <div class="sidebar-footer">
+                <a href="login.html"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="top-header">
+                <h2>Feedback &amp; Suggestions</h2>
+                <div class="user-profile">
+                    <div style="text-align: right; margin-right: 10px;">
+                        <div style="font-weight: 600; font-size: 0.9rem;" id="headerName">Staff Member</div>
+                        <div style="font-size: 0.75rem; color: #888;">Ancillary Staff</div>
+                    </div>
+                    <img src="../images/admin-avatar.png" alt="Admin">
+                </div>
+            </div>
+
+            <div class="content-area">
+                <div style="display:grid; grid-template-columns:1fr 360px; gap:25px;">
+                    <!-- Left: Ideas List -->
+                    <div>
+                        <!-- Stats -->
+                        <div class="stats-grid" id="statsGrid">
+                            <div class="stat-mini">
+                                <div class="num" id="statSubmitted">0</div>
+                                <div class="label">Ideas Submitted</div>
+                            </div>
+                            <div class="stat-mini">
+                                <div class="num" id="statImplemented" style="color:#10b981;">0</div>
+                                <div class="label">Implemented</div>
+                            </div>
+                            <div class="stat-mini">
+                                <div class="num" id="statReview" style="color:#f59e0b;">0</div>
+                                <div class="label">Under Review</div>
+                            </div>
+                            <div class="stat-mini">
+                                <div class="num" id="statRejected" style="color:#ef4444;">0</div>
+                                <div class="label">Rejected</div>
+                            </div>
+                        </div>
+
+                        <!-- Tabs -->
+                        <div class="feedback-tabs">
+                            <div class="feedback-tab active" data-tab="submitted">
+                                <i class="fas fa-lightbulb"></i> All Ideas <span class="tab-count"
+                                    id="tc-submitted">0</span>
+                            </div>
+                            <div class="feedback-tab" data-tab="implemented">
+                                <i class="fas fa-check-circle"></i> Implemented <span class="tab-count"
+                                    id="tc-implemented">0</span>
+                            </div>
+                            <div class="feedback-tab" data-tab="review">
+                                <i class="fas fa-eye"></i> Under Review <span class="tab-count" id="tc-review">0</span>
+                            </div>
+                            <div class="feedback-tab" data-tab="rejected">
+                                <i class="fas fa-times-circle"></i> Rejected <span class="tab-count"
+                                    id="tc-rejected">0</span>
+                            </div>
+                        </div>
+
+                        <div id="tab-submitted" class="tab-panel active">
+                            <div id="ideas-submitted"></div>
+                        </div>
+                        <div id="tab-implemented" class="tab-panel">
+                            <div id="ideas-implemented"></div>
+                        </div>
+                        <div id="tab-review" class="tab-panel">
+                            <div id="ideas-review"></div>
+                        </div>
+                        <div id="tab-rejected" class="tab-panel">
+                            <div id="ideas-rejected"></div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Submit Form -->
+                    <div>
+                        <div class="glass-card" style="padding:25px;">
+                            <h3 style="margin:0 0 18px;font-size:1rem;color:var(--school-primary);"><i class="fas fa-paper-plane"></i>
+                                Share Your Idea</h3>
+                            <form id="feedbackForm">
+                                <div style="margin-bottom:14px;">
+                                    <label
+                                        style="font-weight:600;display:block;margin-bottom:6px;font-size:0.85rem;">Category
+                                        *</label>
+                                    <select id="fbCategory" required
+                                        style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-family:inherit;">
+                                        <option value="" disabled selected>Select category</option>
+                                        <option>Facilities Improvement</option>
+                                        <option>Food & Catering</option>
+                                        <option>Safety & Security</option>
+                                        <option>Technology</option>
+                                        <option>Staff Welfare</option>
+                                        <option>Student Services</option>
+                                        <option>Other</option>
+                                    </select>
+                                </div>
+                                <div style="margin-bottom:14px;">
+                                    <label
+                                        style="font-weight:600;display:block;margin-bottom:6px;font-size:0.85rem;">Title
+                                        *</label>
+                                    <input type="text" id="fbTitle" placeholder="Brief title for your idea" required
+                                        style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-family:inherit;">
+                                </div>
+                                <div style="margin-bottom:14px;">
+                                    <label
+                                        style="font-weight:600;display:block;margin-bottom:6px;font-size:0.85rem;">Description
+                                        *</label>
+                                    <textarea id="fbDesc" rows="4"
+                                        placeholder="Describe your idea or suggestion in detail..." required
+                                        style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-family:inherit;resize:vertical;"></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary" style="width:100%;"><i
+                                        class="fas fa-paper-plane"></i> Submit Idea</button>
+                            </form>
+                        </div>
+
+                        <div class="glass-card" style="padding:20px;margin-top:20px;">
+                            <h4 style="margin:0 0 12px;font-size:0.9rem;"><i class="fas fa-info-circle"
+                                    style="color:var(--school-primary);"></i> How It Works</h4>
+                            <div style="font-size:0.82rem;color:#555;line-height:1.7;">
+                                <p style="margin:0 0 8px;"><strong>1. Submit</strong> — Share your idea or suggestion.
+                                </p>
+                                <p style="margin:0 0 8px;"><strong>2. Review</strong> — Management reviews and evaluates
+                                    your idea.</p>
+                                <p style="margin:0 0 8px;"><strong>3. Response</strong> — You'll see your idea status
+                                    updated here.</p>
+                                <p style="margin:0;color:var(--school-primary);font-weight:600;">All feedback is valued and
+                                    considered!</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/ancillary-common.js"></script>
+    <script>
+        const FB_KEY = 'ancillaryFeedback';
+
+        function getCurrentUser() {
+            try { return JSON.parse(sessionStorage.getItem('ancillaryUser') || '{}'); }
+            catch (e) { return {}; }
+        }
+
+        function getFeedback() {
+            return getTenantData(FB_KEY, '[]');
+        }
+
+        function saveFeedback(list) {
+            saveTenantData(FB_KEY, list);
+        }
+
+        function renderIdea(idea) {
+            const icons = { submitted: 'fa-lightbulb icon-submitted', implemented: 'fa-check-circle icon-implemented', review: 'fa-eye icon-review', rejected: 'fa-times-circle icon-rejected' };
+            const statusKey = idea.status === 'Under Review' ? 'review' : (idea.status || 'submitted').toLowerCase();
+            const badgeClass = { submitted: 'badge-submitted', implemented: 'badge-implemented', review: 'badge-review', rejected: 'badge-rejected' }[statusKey] || 'badge-submitted';
+            const iconClass = icons[statusKey] || icons.submitted;
+            const date = new Date(idea.date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+
+            return `
+                <div class="idea-card">
+                    <div class="idea-icon ${iconClass}"><i class="fas ${iconClass.split(' ')[0].replace('fa-', 'fa-')}"></i></div>
+                    <div class="idea-content">
+                        <h4>${idea.title}</h4>
+                        <p>${idea.description}</p>
+                        <div class="idea-meta">
+                            <span class="status-badge ${badgeClass}"><i class="fas fa-circle" style="font-size:0.5rem;"></i> ${idea.status || 'Submitted'}</span>
+                            &nbsp; ${idea.category} &nbsp;&bull;&nbsp; ${date}
+                            ${idea.adminComment ? `<div style="margin-top:8px;background:#f8faff;border-left:3px solid var(--school-primary);padding:6px 10px;border-radius:4px;"><strong>Admin:</strong> ${idea.adminComment}</div>` : ''}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderFeedbackTabs() {
+            const user = getCurrentUser();
+            const all = getFeedback();
+
+            // Show all ideas if admin, or current user's ideas
+            const isAdmin = user.primaryRole === 'Admin' || (user.secondaryRoles || []).includes('Admin');
+            const myIdeas = isAdmin ? all : all.filter(f => f.userId === user.id || f.userEmail === user.email);
+
+            const groups = {
+                submitted: myIdeas,
+                implemented: myIdeas.filter(f => f.status === 'Implemented'),
+                review: myIdeas.filter(f => f.status === 'Under Review'),
+                rejected: myIdeas.filter(f => f.status === 'Rejected')
+            };
+
+            // Update counts
+            document.getElementById('statSubmitted').textContent = myIdeas.length;
+            document.getElementById('statImplemented').textContent = groups.implemented.length;
+            document.getElementById('statReview').textContent = groups.review.length;
+            document.getElementById('statRejected').textContent = groups.rejected.length;
+            document.getElementById('tc-submitted').textContent = myIdeas.length;
+            document.getElementById('tc-implemented').textContent = groups.implemented.length;
+            document.getElementById('tc-review').textContent = groups.review.length;
+            document.getElementById('tc-rejected').textContent = groups.rejected.length;
+
+            // Render each panel
+            Object.entries(groups).forEach(([key, list]) => {
+                const el = document.getElementById(`ideas-${key}`);
+                if (!el) return;
+                if (list.length === 0) {
+                    el.innerHTML = `<div class="empty-ideas"><i class="fas fa-inbox"></i><br><span>No ideas in this category yet.</span></div>`;
+                } else {
+                    el.innerHTML = list.slice().reverse().map(renderIdea).join('');
+                }
+            });
+        }
+
+        // Tab switching
+        document.querySelectorAll('.feedback-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.feedback-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+                tab.classList.add('active');
+                document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+            });
+        });
+
+        // Submit form
+        document.getElementById('feedbackForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const user = getCurrentUser();
+            const idea = {
+                id: 'FB-' + Date.now(),
+                title: document.getElementById('fbTitle').value.trim(),
+                description: document.getElementById('fbDesc').value.trim(),
+                category: document.getElementById('fbCategory').value,
+                status: 'Submitted',
+                date: new Date().toISOString(),
+                userId: user.id || '',
+                userEmail: user.email || '',
+                userName: user.name || 'Staff Member'
+            };
+
+            const list = getFeedback();
+            list.push(idea);
+            saveFeedback(list);
+            renderFeedbackTabs();
+            this.reset();
+
+            if (typeof showNotification === 'function') {
+                showNotification('Your idea has been submitted! Thank you for your feedback.', 'success');
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', renderFeedbackTabs);
+    </script>
+    <!-- ACADEX: Powered-by footer and school branding -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+
+</body>
+
+</html>

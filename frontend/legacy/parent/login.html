@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parent Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/parent-portal.css">
+    <link rel="stylesheet" href="../css/toast.css">
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--school-primary-dark, #0f172a) 0%, var(--school-primary, var(--school-primary-dark, #1e293b)) 100%);
+            padding: 20px;
+        }
+
+        .auth-card {
+            width: 100%;
+            max-width: 440px;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .auth-header {
+            background: #f8fafc;
+            padding: 40px 30px 30px;
+            text-align: center;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .auth-header img {
+            width: 70px;
+            margin-bottom: 15px;
+        }
+
+        .auth-header h2 {
+            color: #0f172a;
+            font-size: 1.6rem;
+            margin: 0;
+            font-weight: 700;
+        }
+
+        .auth-header p {
+            color: #64748b;
+            margin: 5px 0 0;
+            font-size: 0.9rem;
+        }
+
+        .auth-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(var(--school-accent-rgb, 245, 158, 11), 0.15);
+            color: var(--school-accent, #854d0e);
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-top: 15px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .auth-body {
+            padding: 40px 30px;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--school-primary-dark, #1e293b);
+        }
+
+        .input-wrap {
+            position: relative;
+        }
+
+        .input-wrap input {
+            width: 100%;
+            padding: 12px 14px 12px 42px;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+            background: #fcfdfe;
+        }
+
+        .input-wrap input:focus {
+            outline: none;
+            border-color: var(--school-primary, #0f172a);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(var(--school-primary-rgb, 15, 23, 42), 0.05);
+        }
+
+        .input-wrap i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            font-size: 1rem;
+        }
+
+        .btn-auth {
+            width: 100%;
+            padding: 14px;
+            background: var(--school-primary, #0f172a);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .btn-auth:hover {
+            background: var(--school-primary-dark, var(--school-primary-dark, #1e293b));
+            transform: translateY(-1px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .auth-footer {
+            padding: 20px 30px 40px;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #64748b;
+        }
+
+        .auth-footer a {
+            color: var(--school-primary, #0f172a);
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .auth-footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="auth-card">
+        <div class="auth-header">
+            <img src="../images/logo.png" alt="School Logo" class="acadex-school-logo">
+            <h2 class="acadex-school-name">Parent Portal</h2>
+            <p>Welcome back</p>
+            <span class="auth-badge"><i class="fas fa-user-shield"></i> Secure Access</span>
+        </div>
+
+        <div class="auth-body">
+            <form id="loginForm">
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <div class="input-wrap">
+                        <input type="email" id="parentEmail" placeholder="Enter your email" required>
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Portal Password</label>
+                    <div class="input-wrap">
+                        <input type="password" id="password" placeholder="••••••••" required>
+                        <i class="fas fa-lock"></i>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-auth">
+                    Sign In to Portal <i class="fas fa-arrow-right"></i>
+                </button>
+            </form>
+        </div>
+
+        <div class="auth-footer">
+            Don't have an account? <a href="register.html">Create Account</a><br><br>
+            <a href="../index.html"><i class="fas fa-home"></i> Back to Homepage</a>
+        </div>
+    </div>
+
+    <script src="../js/toast.js"></script>
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = document.getElementById('parentEmail').value.trim().toLowerCase();
+            const pw = document.getElementById('password').value;
+
+            // Fetch parents from localStorage (Unified Accounts)
+            const parents = getTenantData('acadex_parents', '[]');
+            
+            const parent = parents.find(p => p.email === email && p.password === pw);
+
+            if (parent) {
+                // Set unified parent session
+                sessionStorage.setItem('parentLoggedIn', 'true');
+                sessionStorage.setItem('parentId', parent.id);
+                sessionStorage.setItem('parentName', parent.name);
+                
+                // Set an active child if they have any linked
+                if (parent.linkedStudents && parent.linkedStudents.length > 0) {
+                    const firstChild = parent.linkedStudents[0];
+                    sessionStorage.setItem('childId', firstChild.studentId);
+                    sessionStorage.setItem('childName', firstChild.studentName);
+                    sessionStorage.setItem('activeSchoolCode', firstChild.schoolCode);
+                } else {
+                    // Force them to link a child if they have none
+                    sessionStorage.removeItem('childId');
+                    sessionStorage.removeItem('childName');
+                    sessionStorage.removeItem('activeSchoolCode');
+                }
+                
+                Toast.success('Login Successful! Redirecting...');
+                setTimeout(() => window.location.href = 'dashboard.html', 1500);
+            } else {
+                Toast.error('Invalid Email or Password');
+            }
+        });
+    </script>
+    <!-- ACADEX: Powered-by footer and school branding -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+
+</body>
+
+</html>
+
+

@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Register Your School — ACADEX</title>
+  <meta name="description" content="Register your school on ACADEX and get a 30-day free trial. Set up in minutes. All school types welcome." />
+  <link rel="stylesheet" href="css/acadex.css" />
+  <style>
+    body { padding-top: 72px; min-height: 100vh; display: flex; flex-direction: column; }
+    .onboard-layout { flex: 1; display: grid; grid-template-columns: 1fr 1fr; min-height: calc(100vh - 72px); }
+    @media (max-width: 850px) { .onboard-layout { grid-template-columns: 1fr; } .onboard-left { display: none; } }
+    .onboard-left {
+      background: linear-gradient(160deg, #0f172a 0%, #1e3a5f 60%, #0f172a 100%);
+      padding: 3rem 2.5rem; display: flex; flex-direction: column; justify-content: center;
+      border-right: 1px solid rgba(255,255,255,0.07); position: sticky; top: 72px; align-self: start;
+      min-height: calc(100vh - 72px);
+    }
+    .onboard-left::before {
+      content: '';
+      position: absolute; top: -80px; right: -80px;
+      width: 300px; height: 300px;
+      background: radial-gradient(ellipse, rgba(37,99,235,0.2), transparent);
+      pointer-events: none;
+    }
+    .onboard-right { padding: 3rem 2.5rem; overflow-y: auto; }
+    @media (max-width: 500px) { .onboard-right { padding: 2rem 1.25rem; } }
+    .progress-bar-wrap { background: rgba(255,255,255,0.08); border-radius: 999px; height: 5px; margin-bottom: 2rem; overflow: hidden; }
+    .progress-bar { height: 100%; border-radius: 999px; background: var(--grad-blue); transition: width 0.4s ease; }
+    /* Branding step extras */
+    .color-picker-group { display: flex; align-items: center; gap: 12px; }
+    .color-swatch { width: 44px; height: 44px; border-radius: 10px; border: 2px solid rgba(255,255,255,0.15); cursor: pointer; flex-shrink: 0; overflow: hidden; padding: 0; }
+    .color-swatch input[type=color] { width: 100%; height: 100%; border: none; cursor: pointer; background: none; padding: 0; }
+    .logo-drop { border: 2px dashed rgba(255,255,255,0.15); border-radius: 14px; padding: 2rem; text-align: center; cursor: pointer; transition: var(--transition); position: relative; }
+    .logo-drop:hover { border-color: rgba(37,99,235,0.5); background: rgba(37,99,235,0.05); }
+    .logo-drop input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+    .logo-preview-img { max-height: 80px; max-width: 200px; border-radius: 8px; margin: 0.75rem auto 0; display: none; }
+    .branding-preview { border-radius: 12px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); margin-top: 1.5rem; }
+    .bp-header { padding: 10px 16px; display: flex; align-items: center; gap: 10px; font-size: 11px; font-weight: 700; }
+    .bp-body { background: #f8fafc; padding: 16px; display: flex; gap: 12px; }
+    .bp-sidebar { width: 130px; border-radius: 8px; padding: 10px; font-size: 10px; flex-shrink: 0; }
+    .bp-sidebar-item { padding: 5px 8px; border-radius: 5px; margin-bottom: 3px; color: rgba(255,255,255,0.7); }
+    .bp-sidebar-item.active { color: white; font-weight: 700; }
+    .bp-content { flex: 1; }
+    .bp-card { background: white; border-radius: 8px; padding: 10px 12px; margin-bottom: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); font-size: 10px; color: #333; }
+    .bp-btn { border: none; border-radius: 6px; padding: 5px 12px; font-size: 10px; font-weight: 700; color: white; cursor: default; }
+    .bp-footer { padding: 6px 16px; font-size: 10px; display: flex; justify-content: space-between; }
+    .step { display: none; }
+    .step.active { display: block; }
+    .step-title { font-family: var(--font-display); font-size: 1.5rem; font-weight: 700; margin-bottom: 0.4rem; }
+    .step-sub { font-size: 0.9rem; color: var(--acadex-gray-400); margin-bottom: 1.75rem; }
+    .plan-selector { display: grid; grid-template-columns: repeat(3,1fr); gap: 0.75rem; margin-bottom: 1.5rem; }
+    .plan-opt { border: 2px solid rgba(255,255,255,0.1); border-radius: 14px; padding: 1rem; text-align: center; cursor: pointer; transition: var(--transition); }
+    .plan-opt:hover { border-color: rgba(37,99,235,0.4); }
+    .plan-opt.selected { border-color: var(--acadex-blue-light); background: rgba(37,99,235,0.1); }
+    .plan-opt.selected-gold { border-color: var(--acadex-gold); background: rgba(245,158,11,0.08); }
+    .plan-opt-name { font-weight: 700; font-size: 0.9rem; margin-bottom: 3px; }
+    .plan-opt-price { font-size: 0.75rem; color: var(--acadex-gray-400); }
+    .plan-opt-tag { font-size: 0.65rem; font-weight: 700; margin-top: 4px; border-radius: 999px; padding: 2px 8px; }
+    .school-type-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+    .type-opt { border: 1.5px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 10px 12px; cursor: pointer; font-size: 0.85rem; display: flex; align-items: center; gap: 8px; transition: var(--transition); font-weight: 500; }
+    .type-opt:hover { border-color: rgba(37,99,235,0.4); background: rgba(37,99,235,0.05); }
+    .type-opt.selected { border-color: var(--acadex-blue-light); background: rgba(37,99,235,0.1); color: white; }
+    .type-opt input { display: none; }
+    .step-btns { display: flex; gap: 0.75rem; margin-top: 1.75rem; }
+    .success-screen { text-align: center; padding: 2rem 0; }
+    .success-icon { font-size: 4rem; margin-bottom: 1rem; }
+    .code-display { background: rgba(37,99,235,0.1); border: 1px solid rgba(37,99,235,0.3); border-radius: 12px; padding: 1.5rem; margin: 1.5rem 0; text-align: center; }
+    .code-value { font-family: monospace; font-size: 2rem; font-weight: 900; color: var(--acadex-blue-light); letter-spacing: 0.1em; }
+    .code-label { font-size: 0.8rem; color: var(--acadex-gray-400); margin-bottom: 0.5rem; }
+    .benefit-item { display: flex; gap: 12px; align-items: flex-start; padding: 0.85rem 0; border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .benefit-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="acadex-nav" id="mainNav">
+  <a class="nav-logo" href="index.html">
+    <div class="nav-logo-icon">A</div>
+    <div class="nav-logo-text">ACAD<span>EX</span></div>
+  </a>
+  <div style="flex:1;"></div>
+  <div class="nav-cta">
+    <span style="font-size:0.85rem;color:var(--acadex-gray-400);">Already registered?</span>
+    <a href="login.html" class="btn btn-ghost btn-sm">Login</a>
+  </div>
+</nav>
+
+<div class="onboard-layout">
+  <!-- LEFT PANEL -->
+  <div class="onboard-left" style="position:relative;">
+    <div style="position:relative;z-index:1;">
+      <div class="section-label" style="margin-bottom:1.25rem;">30-Day Free Trial</div>
+      <h2 class="display-md" style="margin-bottom:1rem;">Your school, ready in minutes.</h2>
+      <p style="color:var(--acadex-gray-400);font-size:0.9rem;margin-bottom:2.5rem;line-height:1.7;">
+        Fill in your school details, choose a plan, and you'll receive a unique School Code to log in. Your staff and students get access immediately.
+      </p>
+
+      <div class="benefit-item">
+        <div class="benefit-icon icon-green">✅</div>
+        <div>
+          <div style="font-weight:700;font-size:0.9rem;">No credit card required</div>
+          <div style="font-size:0.8rem;color:var(--acadex-gray-400);margin-top:2px;">Start your 30-day trial completely free.</div>
+        </div>
+      </div>
+      <div class="benefit-item">
+        <div class="benefit-icon icon-blue">🔐</div>
+        <div>
+          <div style="font-weight:700;font-size:0.9rem;">Data isolation guaranteed</div>
+          <div style="font-size:0.8rem;color:var(--acadex-gray-400);margin-top:2px;">Your school's data is 100% private.</div>
+        </div>
+      </div>
+      <div class="benefit-item">
+        <div class="benefit-icon icon-gold">⚡</div>
+        <div>
+          <div style="font-weight:700;font-size:0.9rem;">Instant setup</div>
+          <div style="font-size:0.8rem;color:var(--acadex-gray-400);margin-top:2px;">All portals are live the moment you register.</div>
+        </div>
+      </div>
+      <div class="benefit-item" style="border:none;">
+        <div class="benefit-icon icon-purple">🆓</div>
+        <div>
+          <div style="font-weight:700;font-size:0.9rem;">Cancel anytime</div>
+          <div style="font-size:0.8rem;color:var(--acadex-gray-400);margin-top:2px;">No lock-in. No long-term contracts.</div>
+        </div>
+      </div>
+
+      <div style="margin-top:2rem;padding:1rem;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:12px;">
+        <div style="font-size:0.75rem;color:var(--acadex-gray-500);margin-bottom:6px;">SUPPORTED SCHOOL TYPES</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;">
+          <span class="badge badge-blue">Primary</span>
+          <span class="badge badge-blue">Secondary</span>
+          <span class="badge badge-gold">College</span>
+          <span class="badge badge-blue">Boarding</span>
+          <span class="badge badge-blue">Day School</span>
+          <span class="badge badge-green">Private</span>
+          <span class="badge badge-green">Public</span>
+          <span class="badge badge-purple">Combined</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL: FORM -->
+  <div class="onboard-right">
+    <div id="progressWrap" class="progress-bar-wrap"><div class="progress-bar" id="progressBar" style="width:25%"></div></div>
+    <div id="stepIndicator" style="font-size:0.75rem;color:var(--acadex-gray-500);margin-bottom:1.5rem;">Step 1 of 4</div>
+
+    <!-- STEP 1: School Info -->
+    <div class="step active" id="step1">
+      <div class="step-title">School Information</div>
+      <div class="step-sub">Tell us about your school.</div>
+
+      <div class="form-group">
+        <label class="form-label">School Name *</label>
+        <input type="text" class="form-control" id="schoolName" placeholder="e.g. Sunrise Secondary School" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">School Type *</label>
+        <div class="school-type-grid" id="schoolTypeGrid">
+          <div class="type-opt" onclick="selectType(this,'primary')"><span>🏫</span> Primary School</div>
+          <div class="type-opt" onclick="selectType(this,'secondary')"><span>🎓</span> Secondary School</div>
+          <div class="type-opt" onclick="selectType(this,'college')"><span>🏛️</span> College / Tertiary</div>
+          <div class="type-opt" onclick="selectType(this,'private-day')"><span>⭐</span> Private Day School</div>
+          <div class="type-opt" onclick="selectType(this,'private-boarding')"><span>🔒</span> Private Boarding</div>
+          <div class="type-opt" onclick="selectType(this,'public-day')"><span>🌍</span> Public Day School</div>
+          <div class="type-opt" onclick="selectType(this,'public-boarding')"><span>🌿</span> Public Boarding</div>
+          <div class="type-opt" onclick="selectType(this,'combined')"><span>📚</span> Combined School</div>
+        </div>
+        <input type="hidden" id="schoolType" />
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Country *</label>
+          <select class="form-control" id="country">
+            <option value="">Select country</option>
+            <option>Zimbabwe</option><option>South Africa</option><option>Zambia</option>
+            <option>Botswana</option><option>Mozambique</option><option>Malawi</option>
+            <option>Tanzania</option><option>Kenya</option><option>Uganda</option>
+            <option>Ghana</option><option>Nigeria</option><option>Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Number of Students *</label>
+          <input type="number" class="form-control" id="students" placeholder="e.g. 350" min="1" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">School Address</label>
+        <input type="text" class="form-control" id="address" placeholder="Street, City" />
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">School Email *</label>
+          <input type="email" class="form-control" id="schoolEmail" placeholder="admin@school.ac.zw" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Phone Number</label>
+          <input type="tel" class="form-control" id="phone" placeholder="+263 77 000 0000" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">School Website (optional)</label>
+        <input type="url" class="form-control" id="website" placeholder="https://yourschool.ac.zw" />
+      </div>
+      <div class="step-btns">
+        <button class="btn btn-primary" onclick="nextStep(1)" style="flex:1;">Continue →</button>
+      </div>
+    </div>
+
+    <!-- STEP 2: Admin & Plan -->
+    <div class="step" id="step2">
+      <div class="step-title">Administrator & Plan</div>
+      <div class="step-sub">Create your admin account and choose a subscription plan.</div>
+
+      <div style="background:rgba(255,255,255,0.03);border-radius:12px;padding:1rem;margin-bottom:1.25rem;border:1px solid rgba(255,255,255,0.07);">
+        <div style="font-size:0.72rem;color:var(--acadex-gray-500);margin-bottom:0.4rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;">School Administrator</div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Admin Full Name *</label>
+          <input type="text" class="form-control" id="adminName" placeholder="Mr. John Doe" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Admin Email *</label>
+          <input type="email" class="form-control" id="adminEmail" placeholder="admin@school.ac.zw" />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Password *</label>
+          <input type="password" class="form-control" id="adminPass" placeholder="Min 8 characters" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Confirm Password *</label>
+          <input type="password" class="form-control" id="adminPassConfirm" placeholder="Repeat password" />
+        </div>
+      </div>
+
+      <div style="margin:1.5rem 0 0.75rem;font-size:0.72rem;color:var(--acadex-gray-500);font-weight:700;text-transform:uppercase;letter-spacing:0.06em;">Choose Your Plan</div>
+      <div class="plan-selector" id="planSelector">
+        <div class="plan-opt" onclick="selectPlan(this,'starter')">
+          <div class="plan-opt-name">Starter</div>
+          <div class="plan-opt-price">$29/mo</div>
+          <div class="plan-opt-tag badge-blue" style="background:rgba(100,116,139,0.15);color:#94a3b8;border:1px solid rgba(100,116,139,0.25);">≤200 students</div>
+        </div>
+        <div class="plan-opt selected" onclick="selectPlan(this,'professional')">
+          <div class="plan-opt-name" style="color:#60a5fa;">Professional</div>
+          <div class="plan-opt-price">$79/mo</div>
+          <div class="plan-opt-tag" style="background:rgba(37,99,235,0.15);color:#60a5fa;border:1px solid rgba(37,99,235,0.25);">⭐ Popular</div>
+        </div>
+        <div class="plan-opt" onclick="selectPlan(this,'enterprise')">
+          <div class="plan-opt-name" style="color:#fcd34d;">Enterprise</div>
+          <div class="plan-opt-price">$199/mo</div>
+          <div class="plan-opt-tag" style="background:rgba(245,158,11,0.15);color:#fcd34d;border:1px solid rgba(245,158,11,0.25);">Unlimited</div>
+        </div>
+      </div>
+      <input type="hidden" id="selectedPlan" value="professional" />
+      <p style="font-size:0.78rem;color:var(--acadex-gray-500);">All plans include a 30-day free trial. <a href="pricing.html" target="_blank" style="color:var(--acadex-blue-light);">Compare plans →</a></p>
+
+      <div class="step-btns">
+        <button class="btn btn-ghost" onclick="prevStep(2)">← Back</button>
+        <button class="btn btn-primary" onclick="nextStep(2)" style="flex:1;">Continue →</button>
+      </div>
+    </div>
+
+    <!-- STEP 3: School Branding -->
+    <div class="step" id="step3">
+      <div class="step-title">School Branding <span style="font-size:0.75rem;font-weight:500;color:var(--acadex-gray-400);">(optional)</span></div>
+      <div class="step-sub">Add your school logo and choose your colours. These will appear on every portal page.</div>
+
+      <!-- Logo Upload -->
+      <div class="form-group">
+        <label class="form-label">School Logo</label>
+        <div class="logo-drop" id="logoDrop">
+          <input type="file" id="logoFile" accept="image/*" onchange="handleLogoUpload(event)" />
+          <div id="logoDropContent">
+            <div style="font-size:2rem;margin-bottom:0.5rem;">🏫</div>
+            <div style="font-weight:700;font-size:0.9rem;">Click to upload your school logo</div>
+            <div style="font-size:0.78rem;color:var(--acadex-gray-500);margin-top:4px;">PNG, JPG or SVG · Max 2MB</div>
+          </div>
+          <img id="logoPreviewImg" class="logo-preview-img" alt="Logo preview" />
+        </div>
+        <input type="hidden" id="logoData" />
+      </div>
+
+      <!-- Colour Pickers -->
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Primary Colour</label>
+          <div style="font-size:0.75rem;color:var(--acadex-gray-500);margin-bottom:8px;">Sidebar, header & banner background</div>
+          <div class="color-picker-group">
+            <div class="color-swatch">
+              <input type="color" id="primaryColor" value="#1a1a2e" oninput="updateBrandingPreview()" />
+            </div>
+            <input type="text" class="form-control" id="primaryColorHex" value="#1a1a2e" placeholder="#1a1a2e" oninput="syncColorFromHex('primary')" style="font-family:monospace;flex:1;" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Accent Colour</label>
+          <div style="font-size:0.75rem;color:var(--acadex-gray-500);margin-bottom:8px;">Buttons, highlights & active links</div>
+          <div class="color-picker-group">
+            <div class="color-swatch">
+              <input type="color" id="accentColor" value="#2563eb" oninput="updateBrandingPreview()" />
+            </div>
+            <input type="text" class="form-control" id="accentColorHex" value="#2563eb" placeholder="#2563eb" oninput="syncColorFromHex('accent')" style="font-family:monospace;flex:1;" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Preset Palettes -->
+      <div style="margin-bottom:1.5rem;">
+        <div style="font-size:0.72rem;color:var(--acadex-gray-500);font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px;">Quick Palettes</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <div onclick="applyPalette('#1a1a2e','#2563eb')" title="Navy & Blue" style="width:36px;height:36px;border-radius:8px;cursor:pointer;border:2px solid rgba(255,255,255,0.1);overflow:hidden;display:flex;">
+            <div style="flex:1;background:#1a1a2e;"></div><div style="flex:1;background:#2563eb;"></div></div>
+          <div onclick="applyPalette('#064e3b','#10b981')" title="Forest Green" style="width:36px;height:36px;border-radius:8px;cursor:pointer;border:2px solid rgba(255,255,255,0.1);overflow:hidden;display:flex;">
+            <div style="flex:1;background:#064e3b;"></div><div style="flex:1;background:#10b981;"></div></div>
+          <div onclick="applyPalette('#4a1942','#a855f7')" title="Royal Purple" style="width:36px;height:36px;border-radius:8px;cursor:pointer;border:2px solid rgba(255,255,255,0.1);overflow:hidden;display:flex;">
+            <div style="flex:1;background:#4a1942;"></div><div style="flex:1;background:#a855f7;"></div></div>
+          <div onclick="applyPalette('#7c1a1a','#ef4444')" title="School Red" style="width:36px;height:36px;border-radius:8px;cursor:pointer;border:2px solid rgba(255,255,255,0.1);overflow:hidden;display:flex;">
+            <div style="flex:1;background:#7c1a1a;"></div><div style="flex:1;background:#ef4444;"></div></div>
+          <div onclick="applyPalette('#78350f','#f59e0b')" title="Gold & Amber" style="width:36px;height:36px;border-radius:8px;cursor:pointer;border:2px solid rgba(255,255,255,0.1);overflow:hidden;display:flex;">
+            <div style="flex:1;background:#78350f;"></div><div style="flex:1;background:#f59e0b;"></div></div>
+          <div onclick="applyPalette('#0c4a6e','#0ea5e9')" title="Ocean Blue" style="width:36px;height:36px;border-radius:8px;cursor:pointer;border:2px solid rgba(255,255,255,0.1);overflow:hidden;display:flex;">
+            <div style="flex:1;background:#0c4a6e;"></div><div style="flex:1;background:#0ea5e9;"></div></div>
+          <div onclick="applyPalette('#1c1917','#f97316')" title="Dark & Orange" style="width:36px;height:36px;border-radius:8px;cursor:pointer;border:2px solid rgba(255,255,255,0.1);overflow:hidden;display:flex;">
+            <div style="flex:1;background:#1c1917;"></div><div style="flex:1;background:#f97316;"></div></div>
+        </div>
+      </div>
+
+      <!-- LIVE PREVIEW -->
+      <div style="font-size:0.72rem;color:var(--acadex-gray-500);font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px;">Live Preview</div>
+      <div class="branding-preview" id="brandingPreview">
+        <!-- Top banner -->
+        <div class="bp-header" id="bpHeader" style="background:#1a1a2e;color:white;">
+          <span id="bpLogoIcon" style="width:22px;height:22px;border-radius:5px;background:#2563eb;display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;">S</span>
+          <span id="bpSchoolName" style="font-weight:700;">Your School Name</span>
+          <span style="flex:1;"></span>
+          <span style="opacity:0.6;font-size:10px;">Powered by <strong>ACADEX</strong></span>
+        </div>
+        <!-- Portal body -->
+        <div class="bp-body">
+          <div class="bp-sidebar" id="bpSidebar" style="background:#1a1a2e;">
+            <div style="color:rgba(255,255,255,0.5);font-size:9px;text-transform:uppercase;padding:4px 8px 2px;letter-spacing:0.08em;">Menu</div>
+            <div class="bp-sidebar-item active" id="bpActiveSidebar" style="background:rgba(37,99,235,0.25);">📊 Dashboard</div>
+            <div class="bp-sidebar-item">🎒 Students</div>
+            <div class="bp-sidebar-item">👩‍🏫 Teachers</div>
+            <div class="bp-sidebar-item">💰 Fees</div>
+          </div>
+          <div class="bp-content">
+            <div class="bp-card"><strong>Total Students</strong><br/><span style="font-size:16px;font-weight:800;">1,245</span></div>
+            <div class="bp-card" style="display:flex;align-items:center;justify-content:space-between;"><span>Quick Action</span><div class="bp-btn" id="bpBtn" style="background:#2563eb;">Go →</div></div>
+          </div>
+        </div>
+        <!-- Footer -->
+        <div class="bp-footer" id="bpFooter" style="background:#1a1a2e;color:rgba(255,255,255,0.7);">
+          <span id="bpFooterSchool">🏫 Your School Name</span>
+          <span>Powered by <strong style="color:white;">ACADEX</strong> &bull; © Santana 2025</span>
+        </div>
+      </div>
+
+      <div class="step-btns">
+        <button class="btn btn-ghost" onclick="prevStep(3)">← Back</button>
+        <button class="btn btn-primary" onclick="nextStep(3)" style="flex:1;">Continue →</button>
+      </div>
+    </div>
+
+    <!-- STEP 4: Review & Submit -->
+    <div class="step" id="step4">
+      <div class="step-title">Review & Register</div>
+      <div class="step-sub">Confirm your details, then click Register to go live.</div>
+
+      <div id="reviewBox" style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:1.25rem;margin-bottom:1.5rem;font-size:0.875rem;">
+        <!-- filled by JS -->
+      </div>
+
+      <div class="form-group">
+        <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:0.875rem;color:var(--acadex-gray-300);">
+          <input type="checkbox" id="termsCheck" style="margin-top:3px;accent-color:var(--acadex-blue-light);" />
+          I agree to the ACADEX <a href="#" style="color:var(--acadex-blue-light);">Terms of Service</a> and <a href="#" style="color:var(--acadex-blue-light);">Privacy Policy</a>.
+        </label>
+      </div>
+
+      <div class="step-btns">
+        <button class="btn btn-ghost" onclick="prevStep(3)">← Back</button>
+        <button class="btn btn-primary" onclick="submitRegistration()" style="flex:1;" id="submitBtn">🚀 Register My School</button>
+      </div>
+    </div>
+
+    <!-- SUCCESS -->
+    <div class="step" id="stepSuccess">
+      <div class="success-screen">
+        <div class="success-icon">🎉</div>
+        <h2 class="display-md">Welcome to ACADEX!</h2>
+        <p style="color:var(--acadex-gray-400);margin-top:0.75rem;margin-bottom:0.5rem;">Your registration is complete. Save these login details:</p>
+        <div class="code-display" id="codeDisplayArea">
+          <div class="code-label">Your Unique School Code</div>
+          <div class="code-value" id="schoolCode">AX-XXXXXX</div>
+          <p style="font-size:0.75rem;color:var(--acadex-gray-500);margin-top:0.75rem;">Save this code — share it with your staff and students.</p>
+        </div>
+        <p style="font-size:0.875rem;color:var(--acadex-gray-400);margin-bottom:1.5rem;">Your 30-day free trial has started. Your admin account is ready.</p>
+        <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
+          <a href="login.html" class="btn btn-primary btn-lg">Go to School Login →</a>
+          <a href="super-admin/dashboard.html" class="btn btn-ghost">ACADEX Super Admin</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="js/acadex-core.js"></script>
+<script src="js/acadex-subscription.js"></script>
+<script>
+  let currentStep = 1;
+  let selectedSchoolType = '';
+  let selectedPlan = 'professional';
+  let logoDataUrl = '';
+
+  // Pre-select plan from URL param
+  const urlParams = new URLSearchParams(window.location.search);
+  const planParam = urlParams.get('plan');
+  if (planParam && ['starter','professional','enterprise'].includes(planParam)) {
+    selectedPlan = planParam;
+    document.getElementById('selectedPlan').value = planParam;
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('.plan-opt').forEach(el => el.classList.remove('selected'));
+      const planEls = document.querySelectorAll('.plan-opt');
+      const planNames = ['starter','professional','enterprise'];
+      const idx = planNames.indexOf(planParam);
+      if (idx >= 0) planEls[idx].classList.add('selected');
+    });
+  }
+
+  function selectType(el, type) {
+    document.querySelectorAll('.type-opt').forEach(e => e.classList.remove('selected'));
+    el.classList.add('selected');
+    selectedSchoolType = type;
+    document.getElementById('schoolType').value = type;
+    const suggested = (window.AcadexSubscription || { getSuggestedPlan: () => 'professional' }).getSuggestedPlan(type);
+    selectPlanByName(suggested);
+  }
+
+  function selectPlan(el, plan) {
+    document.querySelectorAll('.plan-opt').forEach(e => e.classList.remove('selected'));
+    el.classList.add('selected');
+    selectedPlan = plan;
+    document.getElementById('selectedPlan').value = plan;
+  }
+
+  function selectPlanByName(plan) {
+    const planEls = document.querySelectorAll('.plan-opt');
+    const planNames = ['starter','professional','enterprise'];
+    document.querySelectorAll('.plan-opt').forEach(e => e.classList.remove('selected'));
+    const idx = planNames.indexOf(plan);
+    if (idx >= 0) { planEls[idx].classList.add('selected'); selectedPlan = plan; }
+  }
+
+  // ── Branding step ──
+  function handleLogoUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024) { alert('Logo file must be under 2MB.'); return; }
+    const reader = new FileReader();
+    reader.onload = e => {
+      logoDataUrl = e.target.result;
+      document.getElementById('logoData').value = logoDataUrl;
+      const img = document.getElementById('logoPreviewImg');
+      img.src = logoDataUrl;
+      img.style.display = 'block';
+      document.getElementById('logoDropContent').style.display = 'none';
+      // Update preview banner
+      document.getElementById('bpLogoIcon').innerHTML = `<img src="${logoDataUrl}" style="width:100%;height:100%;object-fit:contain;" />`;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function syncColorFromHex(type) {
+    const hexEl = document.getElementById(type + 'ColorHex');
+    const pickerEl = document.getElementById(type + 'Color');
+    const val = hexEl.value.trim();
+    if (/^#[0-9a-fA-F]{6}$/.test(val)) { pickerEl.value = val; updateBrandingPreview(); }
+  }
+
+  function updateBrandingPreview() {
+    const primary = document.getElementById('primaryColor').value;
+    const accent  = document.getElementById('accentColor').value;
+    document.getElementById('primaryColorHex').value = primary;
+    document.getElementById('accentColorHex').value  = accent;
+    // Apply to preview elements
+    document.getElementById('bpHeader').style.background   = primary;
+    document.getElementById('bpSidebar').style.background  = primary;
+    document.getElementById('bpFooter').style.background   = primary;
+    document.getElementById('bpBtn').style.background      = accent;
+    document.getElementById('bpActiveSidebar').style.background = hexToRgba(accent, 0.25);
+    // Update school name in preview from step 1
+    const name = document.getElementById('schoolName')?.value || 'Your School Name';
+    document.getElementById('bpSchoolName').textContent    = name;
+    document.getElementById('bpFooterSchool').textContent  = '🏫 ' + name;
+    const initial = name.charAt(0).toUpperCase() || 'S';
+    if (!logoDataUrl) document.getElementById('bpLogoIcon').textContent = initial;
+  }
+
+  function applyPalette(primary, accent) {
+    document.getElementById('primaryColor').value    = primary;
+    document.getElementById('accentColor').value     = accent;
+    document.getElementById('primaryColorHex').value = primary;
+    document.getElementById('accentColorHex').value  = accent;
+    updateBrandingPreview();
+  }
+
+  function hexToRgba(hex, alpha) {
+    const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
+    return `rgba(${r},${g},${b},${alpha})`;
+  }
+
+  // ──────────────────
+
+  function showStep(n) {
+    document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+    const el = document.getElementById('step' + (n === 'success' ? 'Success' : n));
+    if (el) el.classList.add('active');
+    if (n !== 'success') {
+      document.getElementById('progressBar').style.width = (n / 4 * 100) + '%';
+      document.getElementById('stepIndicator').textContent = `Step ${n} of 4`;
+    } else {
+      document.getElementById('progressWrap').style.display = 'none';
+      document.getElementById('stepIndicator').style.display = 'none';
+    }
+    currentStep = n;
+    // When entering branding step, populate school name in preview
+    if (n === 3) updateBrandingPreview();
+  }
+
+  function nextStep(from) {
+    if (from === 1) {
+      if (!document.getElementById('schoolName').value.trim()) return alert('Please enter the school name.');
+      if (!document.getElementById('schoolType').value) return alert('Please select a school type.');
+      if (!document.getElementById('country').value) return alert('Please select a country.');
+      if (!document.getElementById('students').value) return alert('Please enter number of students.');
+      if (!document.getElementById('schoolEmail').value.trim()) return alert('Please enter school email.');
+    }
+    if (from === 2) {
+      if (!document.getElementById('adminName').value.trim()) return alert('Please enter admin name.');
+      if (!document.getElementById('adminEmail').value.trim()) return alert('Please enter admin email.');
+      const p = document.getElementById('adminPass').value;
+      if (p.length < 8) return alert('Password must be at least 8 characters.');
+      if (p !== document.getElementById('adminPassConfirm').value) return alert('Passwords do not match.');
+    }
+    if (from === 3) { buildReview(); }
+    showStep(from + 1);
+  }
+
+  function prevStep(from) { showStep(from - 1); }
+
+  function buildReview() {
+    const plan = ACADEX_PLANS[selectedPlan] || {};
+    const primary = document.getElementById('primaryColor').value;
+    const accent  = document.getElementById('accentColor').value;
+    document.getElementById('reviewBox').innerHTML = `
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem 1.5rem;">
+        <div><div style="font-size:0.72rem;color:var(--acadex-gray-500);text-transform:uppercase;">School</div><div style="font-weight:600;margin-top:2px;">${document.getElementById('schoolName').value}</div></div>
+        <div><div style="font-size:0.72rem;color:var(--acadex-gray-500);text-transform:uppercase;">Type</div><div style="font-weight:600;margin-top:2px;">${selectedSchoolType || '—'}</div></div>
+        <div><div style="font-size:0.72rem;color:var(--acadex-gray-500);text-transform:uppercase;">Country</div><div style="font-weight:600;margin-top:2px;">${document.getElementById('country').value}</div></div>
+        <div><div style="font-size:0.72rem;color:var(--acadex-gray-500);text-transform:uppercase;">Students</div><div style="font-weight:600;margin-top:2px;">${document.getElementById('students').value}</div></div>
+        <div><div style="font-size:0.72rem;color:var(--acadex-gray-500);text-transform:uppercase;">Admin</div><div style="font-weight:600;margin-top:2px;">${document.getElementById('adminName').value}</div></div>
+        <div><div style="font-size:0.72rem;color:var(--acadex-gray-500);text-transform:uppercase;">Plan</div><div style="font-weight:600;margin-top:2px;color:${plan.color || '#60a5fa'};">${plan.name} — $${plan.price}/mo</div></div>
+        <div><div style="font-size:0.72rem;color:var(--acadex-gray-500);text-transform:uppercase;">Colours</div>
+          <div style="display:flex;gap:6px;margin-top:4px;">
+            <div style="width:20px;height:20px;border-radius:5px;background:${primary};border:1px solid rgba(255,255,255,0.2);" title="Primary"></div>
+            <div style="width:20px;height:20px;border-radius:5px;background:${accent};border:1px solid rgba(255,255,255,0.2);" title="Accent"></div>
+            <span style="font-size:0.78rem;color:var(--acadex-gray-400);">${primary} / ${accent}</span>
+          </div>
+        </div>
+        <div><div style="font-size:0.72rem;color:var(--acadex-gray-500);text-transform:uppercase;">Logo</div><div style="font-weight:600;margin-top:2px;">${logoDataUrl ? '✅ Uploaded' : 'Default (none)'}</div></div>
+      </div>`;
+  }
+
+  function submitRegistration() {
+    if (!document.getElementById('termsCheck').checked) return alert('Please agree to the Terms of Service.');
+    const btn = document.getElementById('submitBtn');
+    btn.textContent = '⏳ Registering…'; btn.disabled = true;
+
+    setTimeout(() => {
+      const result = AcadexCore.registerSchool({
+        name: document.getElementById('schoolName').value.trim(),
+        type: selectedSchoolType,
+        address: document.getElementById('address').value.trim(),
+        country: document.getElementById('country').value,
+        email: document.getElementById('schoolEmail').value.trim(),
+        phone: document.getElementById('phone').value.trim(),
+        website: document.getElementById('website').value.trim(),
+        adminName: document.getElementById('adminName').value.trim(),
+        adminEmail: document.getElementById('adminEmail').value.trim(),
+        adminPassword: document.getElementById('adminPass').value,
+        students: document.getElementById('students').value,
+        plan: selectedPlan,
+        primaryColor: document.getElementById('primaryColor').value,
+        accentColor: document.getElementById('accentColor').value,
+        logo: logoDataUrl
+      });
+      if (!result.success) {
+        btn.textContent = '🚀 Register My School'; btn.disabled = false;
+        return alert(result.error);
+      }
+      
+      const area = document.getElementById('codeDisplayArea');
+      if (result.children && result.children.length > 0) {
+        // Combined School: Show multiple codes
+        area.innerHTML = `
+          <div class="code-label" style="color:white;font-weight:700;margin-bottom:15px;font-size:1rem;">Your Portals are Ready</div>
+          <div style="display:flex;gap:15px;justify-content:center;margin-bottom:10px;">
+            <div style="background:rgba(255,255,255,0.05);padding:1rem;border-radius:10px;border:1px solid rgba(255,255,255,0.1);flex:1;">
+              <div style="font-size:0.75rem;color:var(--acadex-gray-400);margin-bottom:5px;text-transform:uppercase;">Primary Portal Code</div>
+              <div class="code-value" style="font-size:1.6rem;color:#10b981;">${result.children[0].code}</div>
+            </div>
+            <div style="background:rgba(255,255,255,0.05);padding:1rem;border-radius:10px;border:1px solid rgba(255,255,255,0.1);flex:1;">
+              <div style="font-size:0.75rem;color:var(--acadex-gray-400);margin-bottom:5px;text-transform:uppercase;">Secondary Portal Code</div>
+              <div class="code-value" style="font-size:1.6rem;color:#3b82f6;">${result.children[1].code}</div>
+            </div>
+          </div>
+          <p style="font-size:0.75rem;color:var(--acadex-gray-500);margin-top:0.75rem;">Give the primary code to primary staff/students, and secondary code to secondary staff/students.</p>
+        `;
+        area.style.background = 'transparent';
+        area.style.border = 'none';
+        area.style.padding = '0';
+      } else {
+        // Single School
+        document.getElementById('schoolCode').textContent = result.school.code;
+      }
+      
+      showStep('success');
+    }, 1200);
+  }
+</script>
+</body>
+</html>
+

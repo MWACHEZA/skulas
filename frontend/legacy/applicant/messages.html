@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messages - Applicant Portal</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/ancillary-portal.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+
+
+        .message-list {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+
+        .message-item {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: flex;
+            gap: 15px;
+        }
+
+        .message-item:last-child {
+            border-bottom: none;
+        }
+
+        .message-item:hover {
+            background: #f9f9f9;
+        }
+
+        .message-item.unread {
+            background: #f0f7ff;
+            border-left: 4px solid var(--school-primary, #0056b3);
+        }
+
+        .msg-icon {
+            width: 40px;
+            height: 40px;
+            background: #e9ecef;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #555;
+            flex-shrink: 0;
+        }
+
+        .message-item.unread .msg-icon {
+            background: #cfe2ff;
+            color: var(--school-primary, #0056b3);
+        }
+
+        .msg-content {
+            flex-grow: 1;
+        }
+
+        .msg-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+
+        .msg-sender {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .msg-date {
+            font-size: 0.85rem;
+            color: #999;
+        }
+
+        .msg-preview {
+            color: #666;
+            font-size: 0.95rem;
+            margin: 0;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Mobile Toggle -->
+    <button class="mobile-toggle" id="mobileToggle">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <img src="../images/logo.png" alt="School Logo" id="sidebarLogo">
+            <h3>Applicant Portal</h3>
+        </div>
+        
+        <div class="sidebar-menu">
+            <div class="sidebar-section-title">Application Journey</div>
+            <ul>
+                <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a></li>
+                <li><a href="timeline.html"><i class="fas fa-stream"></i> <span>Timeline</span></a></li>
+                <li><a href="documents.html"><i class="fas fa-folder-open"></i> <span>Documents</span></a></li>
+                <li><a href="interview.html"><i class="fas fa-calendar-check"></i> <span>Interview</span></a></li>
+            </ul>
+
+            <div class="sidebar-section-title">Financials & Info</div>
+            <ul>
+                <li><a href="payments.html"><i class="fas fa-credit-card"></i> <span>Payments</span></a></li>
+                <li><a href="fees.html"><i class="fas fa-file-invoice-dollar"></i> <span>Fee Structure</span></a></li>
+                <li><a href="faq.html"><i class="fas fa-question-circle"></i> <span>FAQs</span></a></li>
+            </ul>
+
+            <div class="sidebar-section-title">Communication</div>
+            <ul>
+                <li><a href="messages.html" class="active"><i class="fas fa-envelope"></i> <span>Messages</span></a></li>
+                <li><a href="profile.html"><i class="fas fa-user"></i> <span>My Profile</span></a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-footer">
+            <a href="#" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <h2 style="margin-bottom: 30px; color: #333;">Inbox</h2>
+
+        <div class="message-list">
+            <!-- Message 1 -->
+            <div class="message-item unread">
+                <div class="msg-icon"><i class="fas fa-check-circle"></i></div>
+                <div class="msg-content">
+                    <div class="msg-header">
+                        <span class="msg-sender">Admissions Office</span>
+                        <span class="msg-date">Today, 10:30 AM</span>
+                    </div>
+                    <p class="msg-preview"><strong>Application Received:</strong> Thank you for your application to
+                        the school. Your status is now 'Pending Review'.</p>
+                </div>
+            </div>
+
+            <!-- Message 2 -->
+            <div class="message-item">
+                <div class="msg-icon"><i class="fas fa-info-circle"></i></div>
+                <div class="msg-content">
+                    <div class="msg-header">
+                        <span class="msg-sender">System Administrator</span>
+                        <span class="msg-date">Yesterday</span>
+                    </div>
+                    <p class="msg-preview">Welcome to the new Applicant Portal. Please complete your profile details.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function logout() {
+            sessionStorage.removeItem('currentApplicant');
+            window.location.href = 'login.html';
+        }
+
+        // Mobile Toggle logic
+        const mobileToggle = document.getElementById('mobileToggle');
+        const sidebar = document.getElementById('sidebar');
+        if (mobileToggle && sidebar) {
+            mobileToggle.addEventListener('click', () => {
+                sidebar.classList.toggle('active');
+            });
+        }
+    </script>
+    <!-- ACADEX: Powered-by footer and school branding -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+
+</body>
+
+</html>
+

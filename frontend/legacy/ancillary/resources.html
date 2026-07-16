@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resources & Documents - ACADEX</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/ancillary-portal.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        /* RESOURCE SPECIFIC STYLES */
+        .resource-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .document-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid #f1f5f9;
+            transition: all 0.3s;
+            margin-bottom: 12px;
+        }
+
+        .document-item:hover {
+            transform: translateX(5px);
+            background: #f8fafc;
+            border-color: var(--school-primary);
+        }
+
+        .doc-icon {
+            font-size: 1.5rem;
+            width: 40px;
+        }
+
+        .icon-pdf {
+            color: #ef4444;
+        }
+
+        .icon-doc {
+            color: #3b82f6;
+        }
+
+        .icon-xls {
+            color: #10b981;
+        }
+
+        .doc-details {
+            flex: 1;
+        }
+
+        .doc-name {
+            display: block;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .doc-meta {
+            display: block;
+            font-size: 0.75rem;
+            color: #888;
+        }
+
+        .btn-download {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #64748b;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+
+        .btn-download:hover {
+            background: var(--school-primary);
+            color: white;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            margin-bottom: 25px;
+        }
+
+        .card-header {
+            padding: 20px 25px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-header h3 {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--school-primary-dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-body {
+            padding: 25px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Mobile Toggle Button -->
+    <button class="mobile-toggle" id="mobile-toggle">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <div class="dashboard-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <img src="../images/logo.png" alt="Logo" class="acadex-school-logo">
+                <h3>ANCILLARY PORTAL</h3>
+            </div>
+            <div class="sidebar-menu">
+                <ul>
+                    <li><a href="dashboard.html"><i class="fas fa-th-large"></i> <span>Dashboard</span></a></li>
+                </ul>
+
+                <div id="tuckshop-sidebar-section" style="display: none;">
+                    <div class="sidebar-section-title">Tuckshop System</div>
+                    <ul>
+                        <li><a href="tuckshop-dashboard.html"><i class="fas fa-tachometer-alt"></i> <span>TS
+                                    Dashboard</span></a></li>
+                        <li><a href="tuckshop-sales.html"><i class="fas fa-cash-register"></i> <span>Point of
+                                    Sale</span></a></li>
+                        <li><a href="tuckshop-inventory.html"><i class="fas fa-boxes"></i> <span>Inventory</span></a>
+                        </li>
+                        <li><a href="tuckshop-orders.html"><i class="fas fa-truck"></i> <span>Supplier
+                                    Orders</span></a></li>
+                    </ul>
+                </div>
+
+                <div class="sidebar-section-title">Operations</div>
+                <ul>
+                    <li><a href="staff-directory.html"><i class="fas fa-users"></i> <span>Staff Directory</span></a>
+                    </li>
+                    <li><a href="procurement.html"><i class="fas fa-shopping-cart"></i> <span>Procurement</span></a>
+                    </li>
+                    <li><a href="assets.html"><i class="fas fa-boxes"></i> <span>Asset Management</span></a></li>
+                    <li><a href="schedules.html"><i class="fas fa-calendar-alt"></i> <span>Schedules & Shifts</span></a>
+                    </li>
+                </ul>
+
+                <div class="sidebar-section-title">Support & HR</div>
+                <ul>
+                    <li><a href="sdc-portal.html"><i class="fas fa-file-invoice-dollar"></i> <span>SDC Staff
+                                Portal</span></a></li>
+                    <li><a href="hr-services.html"><i class="fas fa-user-shield"></i> <span>HR Services</span></a></li>
+                    <li><a href="profile.html"><i class="fas fa-id-card"></i> <span>My Profile</span></a></li>
+                    <li><a href="resources.html" class="active"><i class="fas fa-folder-open"></i> <span>Resources &
+                                Docs</span></a></li>
+                    <li><a href="it-support.html"><i class="fas fa-headset"></i> <span>IT Support</span></a></li>
+                </ul>
+
+                <div class="sidebar-section-title">Communication</div>
+                <ul>
+                    <li><a href="news.html"><i class="fas fa-newspaper"></i> <span>News & Updates</span></a></li>
+                    <li><a href="feedback.html"><i class="fas fa-comment-dots"></i> <span>Feedback</span></a></li>
+                    <li><a href="contact.html"><i class="fas fa-address-book"></i> <span>Contact Us</span></a></li>
+                </ul>
+            </div>
+            <div class="sidebar-footer">
+                <a href="login.html"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <h1 style="margin-bottom: 10px; color: #1e293b;">Resources & Documents</h1>
+            <p style="margin-bottom: 30px; color: #64748b;">Download important forms, policy documents, and training
+                manuals.</p>
+
+            <div class="resource-grid">
+                <!-- HR Forms & Policies -->
+                <section class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-user-tie"></i> HR Forms & Policies</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="document-item">
+                            <i class="fas fa-file-pdf doc-icon icon-pdf"></i>
+                            <div class="doc-details">
+                                <span class="doc-name">Leave Application Form</span>
+                                <span class="doc-meta">PDF • 450 KB</span>
+                            </div>
+                            <a href="#" class="btn-download"><i class="fas fa-download"></i></a>
+                        </div>
+                        <div class="document-item">
+                            <i class="fas fa-file-pdf doc-icon icon-pdf"></i>
+                            <div class="doc-details">
+                                <span class="doc-name">Staff Code of Conduct</span>
+                                <span class="doc-meta">PDF • 1.2 MB</span>
+                            </div>
+                            <a href="#" class="btn-download"><i class="fas fa-download"></i></a>
+                        </div>
+                        <div class="document-item">
+                            <i class="fas fa-file-word doc-icon icon-doc"></i>
+                            <div class="doc-details">
+                                <span class="doc-name">Benefit Claim Template</span>
+                                <span class="doc-meta">DOCX • 180 KB</span>
+                            </div>
+                            <a href="#" class="btn-download"><i class="fas fa-download"></i></a>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Financial Documents -->
+                <section class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-money-bill-wave"></i> Finance & Procurement</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="document-item">
+                            <i class="fas fa-file-excel doc-icon icon-xls"></i>
+                            <div class="doc-details">
+                                <span class="doc-name">Local Purchase Order (LPO)</span>
+                                <span class="doc-meta">XLSX • 320 KB</span>
+                            </div>
+                            <a href="#" class="btn-download"><i class="fas fa-download"></i></a>
+                        </div>
+                        <div class="document-item">
+                            <i class="fas fa-file-pdf doc-icon icon-pdf"></i>
+                            <div class="doc-details">
+                                <span class="doc-name">Expense Reimbursement Policy</span>
+                                <span class="doc-meta">PDF • 890 KB</span>
+                            </div>
+                            <a href="#" class="btn-download"><i class="fas fa-download"></i></a>
+                        </div>
+                        <div class="document-item">
+                            <i class="fas fa-file-pdf doc-icon icon-pdf"></i>
+                            <div class="doc-details">
+                                <span class="doc-name">Petty Cash Voucher</span>
+                                <span class="doc-meta">PDF • 150 KB</span>
+                            </div>
+                            <a href="#" class="btn-download"><i class="fas fa-download"></i></a>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- IT & Technical Support -->
+                <section class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-laptop-code"></i> IT & Technical Manuals</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="document-item">
+                            <i class="fas fa-file-pdf doc-icon icon-pdf"></i>
+                            <div class="doc-details">
+                                <span class="doc-name">Smartboard Setup Guide</span>
+                                <span class="doc-meta">PDF • 2.5 MB</span>
+                            </div>
+                            <a href="#" class="btn-download"><i class="fas fa-download"></i></a>
+                        </div>
+                        <div class="document-item">
+                            <i class="fas fa-file-pdf doc-icon icon-pdf"></i>
+                            <div class="doc-details">
+                                <span class="doc-name">Staff Email Setup (Mobile)</span>
+                                <span class="doc-meta">PDF • 600 KB</span>
+                            </div>
+                            <a href="#" class="btn-download"><i class="fas fa-download"></i></a>
+                        </div>
+                        <div class="document-item">
+                            <i class="fas fa-file-word doc-icon icon-doc"></i>
+                            <div class="doc-details">
+                                <span class="doc-name">System Access Request Form</span>
+                                <span class="doc-meta">DOCX • 210 KB</span>
+                            </div>
+                            <a href="#" class="btn-download"><i class="fas fa-download"></i></a>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Health & Safety -->
+                <section class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-first-aid"></i> Health & Safety</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="document-item">
+                            <i class="fas fa-file-pdf doc-icon icon-pdf"></i>
+                            <div class="doc-details">
+                                <span class="doc-name">Emergency Response Plan</span>
+                                <span class="doc-meta">PDF • 3.1 MB</span>
+                            </div>
+                            <a href="#" class="btn-download"><i class="fas fa-download"></i></a>
+                        </div>
+                        <div class="document-item">
+                            <i class="fas fa-file-pdf doc-icon icon-pdf"></i>
+                            <div class="doc-details">
+                                <span class="doc-name">First Aid Protocol</span>
+                                <span class="doc-meta">PDF • 1.1 MB</span>
+                            </div>
+                            <a href="#" class="btn-download"><i class="fas fa-download"></i></a>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <script src="../js/ancillary-common.js"></script>
+    <script>
+        document.querySelectorAll('.btn-download').forEach(btn => {
+            btn.addEventListener('click', function (e) {
+                e.preventDefault();
+                const docName = this.closest('.document-item').querySelector('.doc-name').textContent;
+                showNotification(`Downloading: ${docName}`, 'info');
+                const ext = docName.toLowerCase().includes('form') || docName.toLowerCase().includes('policy') ? 'pdf' : 'docx';
+                simulateDownload(`${docName.replace(/\s+/g, '_')}.${ext}`, `Content for ${docName}`);
+            });
+        });
+    </script>
+    <!-- ACADEX: Powered-by footer and school branding -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+
+</body>
+
+</html>

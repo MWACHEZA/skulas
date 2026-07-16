@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transport Tracker - Acadex Parent Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/parent-portal.css">
+    <style>
+        .tracker-layout {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 24px;
+            height: calc(100vh - 160px);
+        }
+
+        .map-viewport {
+            background: #eef2ff;
+            border-radius: 20px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.05);
+            border: 2px solid #fff;
+        }
+
+        /* Simulated Map Texture */
+        .map-bg {
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background-image: 
+                linear-gradient(rgba(0,86,179,0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,86,179,0.05) 1px, transparent 1px);
+            background-size: 40px 40px;
+            top: -50%;
+            left: -50%;
+            z-index: 1;
+        }
+
+        .road {
+            position: absolute;
+            background: #fff;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+            z-index: 2;
+        }
+
+        .bus-marker {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            background: var(--gold-primary);
+            color: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            z-index: 10;
+            box-shadow: 0 0 20px var(--gold-primary);
+            border: 4px solid #fff;
+            transition: all 1s linear;
+        }
+
+        .bus-marker::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: var(--gold-primary);
+            opacity: 0.3;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.3; }
+            100% { transform: scale(3); opacity: 0; }
+        }
+
+        .school-marker {
+            position: absolute;
+            bottom: 40px;
+            right: 40px;
+            background: var(--primary-navy);
+            color: #fff;
+            padding: 15px 25px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            z-index: 5;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .tracker-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .status-card {
+            background: #fff;
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        .progress-line {
+            height: 8px;
+            background: #f1f5f9;
+            border-radius: 4px;
+            margin: 20px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            position: absolute;
+            height: 100%;
+            width: 65%;
+            background: var(--gold-gradient);
+            border-radius: 4px;
+        }
+
+        .route-stop {
+            display: flex;
+            gap: 15px;
+            padding: 15px 0;
+            border-left: 2px dashed #e2e8f0;
+            margin-left: 10px;
+            padding-left: 25px;
+            position: relative;
+        }
+
+        .route-stop::before {
+            content: '';
+            position: absolute;
+            left: -7px;
+            top: 20px;
+            width: 12px;
+            height: 12px;
+            background: #fff;
+            border: 2px solid var(--gold-primary);
+            border-radius: 50%;
+        }
+
+        .route-stop.passed::before {
+            background: var(--gold-primary);
+        }
+
+        .route-stop.current::before {
+            background: #fff;
+            border-color: var(--school-primary, #0056b3);
+            box-shadow: 0 0 10px var(--school-primary, #0056b3);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <div class="brand-icon"><i class="fas fa-graduation-cap"></i></div>
+            <h3>Acadex Portal</h3>
+            <p id="currentSchoolName">Loading school...</p>
+            <!-- SaaS School Switcher -->
+            <div style="margin-top: 15px; padding: 8px; background: rgba(255,255,255,0.05); border-radius: 8px; display: flex; align-items: center; justify-content: space-between; cursor: pointer;" onclick="ParentPortal.toggleSchoolSwitcher()">
+                <span style="font-size: 0.7rem; opacity: 0.8; font-weight: 600;">Switch School</span>
+                <i class="fas fa-chevron-down" style="font-size: 0.6rem; opacity: 0.5;"></i>
+            </div>
+            <div id="schoolSwitcher" style="display: none; margin-top: 10px; background: var(--navy-light); border-radius: 8px; overflow: hidden; text-align: left; box-shadow: var(--shadow-premium);">
+                <!-- Populated dynamically -->
+            </div>
+        </div>
+        <div class="sidebar-menu">
+            <div class="sidebar-section-label">Academic & Life</div>
+            <ul>
+                <li><a href="dashboard.html"><i class="fas fa-th-large"></i> Dashboard</a></li>
+                <li><a href="student-profile.html"><i class="fas fa-user-graduate"></i> Student Profile</a></li>
+                <li><a href="academics.html"><i class="fas fa-chart-line"></i> Academics & Trends</a></li>
+                <li><a href="academic-history.html"><i class="fas fa-history"></i> Academic History</a></li>
+                <li><a href="wellbeing.html"><i class="fas fa-heartbeat"></i> Health & Conduct</a></li>
+                <li><a href="calendar.html"><i class="fas fa-calendar-alt"></i> School Calendar</a></li>
+            </ul>
+            <div class="sidebar-section-label">Communication</div>
+            <ul>
+                <li><a href="messages.html"><i class="fas fa-envelope"></i> Messages</a></li>
+                <li><a href="notices.html"><i class="fas fa-bullhorn"></i> Noticeboard</a></li>
+                <li><a href="approvals.html"><i class="fas fa-file-signature"></i> Approvals</a></li>
+                <li><a href="contact.html"><i class="fas fa-phone-alt"></i> Contact Us</a></li>
+            </ul>
+            <div class="sidebar-section-label">Finance & Logistics</div>
+            <ul>
+                <li><a href="fees.html"><i class="fas fa-file-invoice-dollar"></i> Fees & Payments</a></li>
+                <li><a href="wallet.html"><i class="fas fa-wallet"></i> Tuckshop Wallet</a></li>
+                <li><a href="transport.html" class="active"><i class="fas fa-bus"></i> Transport Tracker</a></li>
+            </ul>
+        </div>
+        <div class="sidebar-footer">
+            <a href="#" onclick="ParentPortal.logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </div>
+    </aside>
+
+    <div class="main-content">
+        <header class="top-header">
+            <div class="header-left">
+                <button class="mobile-toggle" id="mobileToggle"><i class="fas fa-bars"></i></button>
+                <h2>Real-Time Transport Tracker</h2>
+            </div>
+            <div class="header-right" id="userInfo">
+                <!-- Populated by JS -->
+            </div>
+        </header>
+
+        <main class="content-area">
+            <div class="tracker-layout">
+                <div class="map-viewport">
+                    <div class="map-bg"></div>
+                    <!-- Central Road Simulation -->
+                    <div class="road" style="width: 100%; height: 40px; top: 40%;"></div>
+                    <div class="road" style="width: 40px; height: 100%; left: 60%;"></div>
+                    
+                    <div class="bus-marker" id="busMarker" style="top: 38%; left: 10%;">
+                        <i class="fas fa-bus"></i>
+                    </div>
+
+                    <div class="school-marker">
+                        <i class="fas fa-school" style="font-size: 1.5rem;"></i>
+                        <div>
+                            <div style="font-weight: 800; font-size: 0.9rem;" class="acadex-school-name">School Name</div>
+                            <div style="font-size: 0.75rem; opacity: 0.8;">Final Destination</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tracker-sidebar">
+                    <div class="status-card">
+                        <h3 style="margin-top:0; color:var(--primary-navy); font-size: 1.1rem;">Route Status</h3>
+                        <div style="display:flex; justify-content: space-between; align-items: center; margin-top:15px;">
+                            <span style="font-size: 0.85rem; color:#64748b; font-weight:600;">Bus #42 (South Route)</span>
+                            <span class="status-badge status-approved" style="padding:4px 10px;">ON TIME</span>
+                        </div>
+                        
+                        <div class="progress-line">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                        
+                        <div style="font-size: 0.85rem; color:var(--school-primary-dark, #1e293b); font-weight:800; text-align: center;">
+                            ETA: 12 Minutes
+                        </div>
+                    </div>
+
+                    <div class="status-card" style="flex:1; overflow-y:auto;">
+                        <h4 style="margin-top:0; font-size:0.9rem; color:#94a3b8; text-transform: uppercase;">Upcoming Stops</h4>
+                        <div class="route-stop passed">
+                            <div>
+                                <div style="font-weight:700; font-size:0.9rem;">Central Station</div>
+                                <div style="font-size:0.75rem; color:#94a3b8;">Departed 07:15 AM</div>
+                            </div>
+                        </div>
+                        <div class="route-stop passed">
+                            <div>
+                                <div style="font-weight:700; font-size:0.9rem;">Westgate Hub</div>
+                                <div style="font-size:0.75rem; color:#94a3b8;">Departed 07:45 AM</div>
+                            </div>
+                        </div>
+                        <div class="route-stop current">
+                            <div>
+                                <div style="font-weight:700; font-size:0.9rem; color:var(--school-primary, #0056b3);">Main Street Junction</div>
+                                <div style="font-size:0.75rem; color:#94a3b8;">Current Location</div>
+                            </div>
+                        </div>
+                        <div class="route-stop">
+                            <div>
+                                <div style="font-weight:700; font-size:0.9rem;">East Wing Stop</div>
+                                <div style="font-size:0.75rem; color:#94a3b8;">ETA 08:20 AM</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../js/parent-portal.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            ParentPortal.init();
+            startBusSimulation();
+        });
+
+        function startBusSimulation() {
+            const bus = document.getElementById('busMarker');
+            const fill = document.getElementById('progressFill');
+            let pos = 10;
+            let progress = 65;
+
+            setInterval(() => {
+                pos += 2;
+                progress += 0.5;
+                if (pos > 80) pos = 10;
+                if (progress > 100) progress = 65;
+                
+                bus.style.left = pos + '%';
+                fill.style.width = progress + '%';
+            }, 3000);
+        }
+    </script>
+    <!-- ACADEX: Powered-by footer and school branding -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+
+</body>
+
+</html>
+
+

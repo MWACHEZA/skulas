@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Announcements — Super Admin</title>
+  <link rel="stylesheet" href="../css/acadex.css" />
+  <style>
+    body { background: var(--acadex-navy); padding: 0; }
+    .sa-layout { display: flex; min-height: 100vh; }
+    .page-title { font-family: var(--font-display); font-size: 1.5rem; font-weight: 700; }
+    .page-sub { font-size: 0.875rem; color: var(--acadex-gray-400); margin-top: 2px; }
+    .stats-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.25rem; margin-bottom: 2rem; }
+    .sc { padding: 1.5rem; border-radius: 16px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); }
+    .sc-icon { font-size: 1.5rem; margin-bottom: 0.75rem; }
+    .sc-num { font-family: var(--font-display); font-size: 2rem; font-weight: 800; line-height: 1; margin-bottom: 4px; }
+    .sc-label { font-size: 0.8rem; color: var(--acadex-gray-400); }
+    .content-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 16px; padding: 1.5rem; margin-bottom: 1.5rem; }
+    .content-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; }
+    .content-card-title { font-weight: 700; font-size: 1rem; }
+    .status-pill { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 999px; font-size: 0.72rem; font-weight: 700; }
+    .s-global { background: rgba(37,99,235,0.12); color: #60a5fa; }
+    .s-urgent { background: rgba(239,68,68,0.12); color: #f87171; }
+    .action-btn { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; padding: 5px 10px; font-size: 0.75rem; font-weight: 600; color: var(--acadex-gray-300); cursor: pointer; transition: var(--transition); }
+    .action-btn:hover { background: rgba(255,255,255,0.12); color: white; }
+    
+    /* Announcement Specifics */
+    .ann-item { display: flex; gap: 1rem; padding: 1rem; border-radius: 12px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); margin-bottom: 1rem; transition: var(--transition); }
+    .ann-item:hover { border-color: rgba(37,99,235,0.2); background: rgba(255,255,255,0.04); }
+    .ann-date { font-size: 0.7rem; color: var(--acadex-gray-500); margin-bottom: 4px; }
+    .ann-title { font-weight: 700; font-size: 1rem; margin-bottom: 6px; color: white; }
+    .ann-body { font-size: 0.85rem; color: var(--acadex-gray-400); line-height: 1.5; }
+    .ann-meta { margin-top: 10px; display: flex; gap: 15px; font-size: 0.75rem; }
+    .ann-tag { color: var(--acadex-blue-light); display: flex; align-items: center; gap: 4px; }
+
+    /* Modal Styling */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 1000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+    .modal-box { background: var(--acadex-navy-800); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 2rem; width: 100%; max-width: 550px; }
+  </style>
+</head>
+<body>
+<div class="sa-layout">
+  <!-- SIDEBAR (mirrored from dashboard) -->
+  <div class="sa-sidebar">
+    <div class="sa-sidebar-logo">
+      <a href="../index.html" style="display:flex;align-items:center;gap:8px;">
+        <div class="nav-logo-icon" style="width:32px;height:32px;font-size:0.9rem;">A</div>
+        <div style="font-family:var(--font-display);font-size:1.1rem;font-weight:800;">ACAD<span style="color:var(--acadex-gold);">EX</span></div>
+      </a>
+      <div style="font-size:0.65rem;color:var(--acadex-gray-600);margin-top:4px;letter-spacing:0.08em;text-transform:uppercase;">Super Admin</div>
+    </div>
+    <div class="sa-nav-section">Platform</div>
+    <a href="dashboard.html" class="sa-nav-item">📊 Dashboard</a>
+    <a href="schools.html" class="sa-nav-item">🏫 Schools</a>
+    <a href="subscriptions.html" class="sa-nav-item">💳 Subscriptions</a>
+    <div class="sa-nav-section">System</div>
+    <a href="announcements.html" class="sa-nav-item active">📢 Announcements</a>
+    <a href="security.html" class="sa-nav-item">🔒 Security</a>
+    <a href="audit-logs.html" class="sa-nav-item">📋 Audit Logs</a>
+  </div>
+
+  <main class="sa-main">
+    <div class="sa-header">
+      <div>
+        <div class="page-title">Platform Announcements</div>
+        <div class="page-sub">Broadcast updates and system news to all schools.</div>
+      </div>
+      <button class="btn btn-primary" onclick="showModal()">+ New Broadcast</button>
+    </div>
+
+    <div class="stats-grid">
+      <div class="sc">
+        <div class="sc-icon">📢</div>
+        <div class="sc-num" id="stat-active">0</div>
+        <div class="sc-label">Active Announcements</div>
+      </div>
+      <div class="sc">
+        <div class="sc-icon">📊</div>
+        <div class="sc-num" id="stat-views">0</div>
+        <div class="sc-label">Total Impressions</div>
+      </div>
+      <div class="sc">
+        <div class="sc-icon">🛡️</div>
+        <div class="sc-num" id="stat-urgent">0</div>
+        <div class="sc-label">Urgent Alerts</div>
+      </div>
+    </div>
+
+    <div class="content-card">
+      <div class="content-card-header">
+        <div class="content-card-title">Broadcast History</div>
+        <div style="display:flex;gap:8px;">
+          <select id="filterTag" class="form-control" style="width:140px;padding:6px;font-size:0.8rem;" onchange="renderAnnouncements()">
+            <option value="all">All Types</option>
+            <option value="Update">System Update</option>
+            <option value="Maintenance">Maintenance</option>
+            <option value="Success">News</option>
+          </select>
+        </div>
+      </div>
+      <div id="annList">
+        <!-- List will be populated by JS -->
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- NEW ANNOUNCEMENT MODAL -->
+<div class="modal-overlay" id="annModal">
+  <div class="modal-box">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;">
+      <div style="font-family:var(--font-display);font-size:1.25rem;font-weight:700;">New Platform Broadcast</div>
+      <button class="btn btn-ghost" onclick="hideModal()">✕</button>
+    </div>
+    <form id="annForm">
+      <div class="form-group">
+        <label>Announcement Title</label>
+        <input type="text" id="annTitle" class="form-control" placeholder="e.g. Scheduled Maintenance for Mar 28" required />
+      </div>
+      <div class="form-row" style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1rem;">
+        <div class="form-group">
+          <label>Type / Category</label>
+          <select id="annTag" class="form-control">
+            <option>Update</option>
+            <option>Maintenance</option>
+            <option>Service Alert</option>
+            <option>General News</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Priority</label>
+          <select id="annPriority" class="form-control">
+            <option value="normal">Normal</option>
+            <option value="high">High (Urgent)</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group" style="margin-top:1rem;">
+        <label>Message Content (supports basic HTML)</label>
+        <textarea id="annMessage" class="form-control" rows="5" placeholder="Details about this broadcast..." required></textarea>
+      </div>
+      <div class="form-group" style="margin-top:1rem;">
+        <label>Target Audience</label>
+        <select id="annTarget" class="form-control">
+          <option value="all">All School Tenants</option>
+          <option value="admins">Admin Portals Only</option>
+          <option value="pro">Pro/Enterprise Plans Only</option>
+        </select>
+      </div>
+      <div style="margin-top:2rem;display:flex;gap:1rem;">
+        <button type="submit" class="btn btn-primary" style="flex:1;">Broadcast Now</button>
+        <button type="button" class="btn btn-ghost" onclick="hideModal()">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="../js/acadex-core.js"></script>
+<script>
+  const STORAGE_KEY = 'acadex_public_announcements';
+  let announcements = [];
+
+  function loadAnnouncements() {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    announcements = raw ? JSON.parse(raw) : [];
+    updateStats();
+    renderAnnouncements();
+  }
+
+  function updateStats() {
+    document.getElementById('stat-active').textContent = announcements.length;
+    document.getElementById('stat-urgent').textContent = announcements.filter(a => a.priority === 'high').length;
+    document.getElementById('stat-views').textContent = announcements.reduce((acc, a) => acc + (a.views || 0), 0);
+  }
+
+  function renderAnnouncements() {
+    const filter = document.getElementById('filterTag').value;
+    const list = document.getElementById('annList');
+    
+    let filtered = announcements.sort((a,b) => b.id - a.id);
+    if (filter !== 'all') {
+      filtered = filtered.filter(a => a.tag === filter);
+    }
+
+    if (filtered.length === 0) {
+      list.innerHTML = '<div style="text-align:center;padding:3rem;color:var(--acadex-gray-600);">No platform announcements found.</div>';
+      return;
+    }
+
+    list.innerHTML = filtered.map(a => {
+      const date = new Date(a.date).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' });
+      return `
+        <div class="ann-item">
+          <div style="font-size:1.5rem;">${a.priority === 'high' ? '🚨' : '📢'}</div>
+          <div style="flex:1;">
+            <div class="ann-date">${date}</div>
+            <div class="ann-title">${a.title}</div>
+            <div class="ann-body">${a.message}</div>
+            <div class="ann-meta">
+              <span class="ann-tag"><i class="fas fa-tag"></i> ${a.tag}</span>
+              <span style="color:var(--acadex-gray-500);"><i class="fas fa-eye"></i> ${a.views || 0} views</span>
+              <span style="color:var(--acadex-gray-500);"><i class="fas fa-bullseye"></i> Target: ${a.target}</span>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:5px;">
+             <button class="action-btn" onclick="deleteAnn(${a.id})" style="color:#f87171;">🗑 Delete</button>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function showModal() { document.getElementById('annModal').style.display = 'flex'; }
+  function hideModal() { document.getElementById('annModal').style.display = 'none'; }
+
+  document.getElementById('annForm').onsubmit = function(e) {
+    e.preventDefault();
+    const newAnn = {
+      id: Date.now(),
+      title: document.getElementById('annTitle').value,
+      message: document.getElementById('annMessage').value,
+      tag: document.getElementById('annTag').value,
+      priority: document.getElementById('annPriority').value,
+      target: document.getElementById('annTarget').value,
+      date: new Date().toISOString(),
+      views: 0
+    };
+
+    announcements.push(newAnn);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(announcements));
+    
+    // Log to platform audit
+    if(window.AcadexCore) {
+      AcadexCore.logPlatformEvent('ANNOUNCEMENT_CREATE', `Created platform broadcast: ${newAnn.title}`);
+    }
+
+    hideModal();
+    this.reset();
+    loadAnnouncements();
+  };
+
+  function deleteAnn(id) {
+    if(!confirm('Delete this broadcast?')) return;
+    announcements = announcements.filter(a => a.id !== id);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(announcements));
+    loadAnnouncements();
+  }
+
+  document.addEventListener('DOMContentLoaded', loadAnnouncements);
+</script>
+</body>
+</html>

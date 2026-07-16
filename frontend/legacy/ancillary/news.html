@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>News & Updates - ACADEX</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/ancillary-portal.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        .news-feed {
+            max-width: 760px;
+        }
+
+        .news-card {
+            background: white;
+            border-radius: 14px;
+            border: 1px solid #e8f0fe;
+            padding: 20px;
+            margin-bottom: 20px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .news-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .news-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .news-category {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 4px 10px;
+            border-radius: 20px;
+            background: rgba(var(--school-primary-rgb), 0.1);
+            color: var(--school-primary);
+        }
+
+        .news-date {
+            font-size: 0.8rem;
+            color: #888;
+        }
+
+        .news-card h3 {
+            margin: 0 0 10px;
+            font-size: 1.15rem;
+            color: #1a202c;
+        }
+
+        .news-card p {
+            font-size: 0.9rem;
+            color: #4a5568;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+
+        .news-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid #f1f5f9;
+            padding-top: 15px;
+        }
+
+        .news-author {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.85rem;
+            color: #718096;
+        }
+
+        .author-avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            color: white;
+            font-weight: 700;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Mobile Toggle Button -->
+    <button class="mobile-toggle" id="mobile-toggle">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <div class="dashboard-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <img src="../images/logo.png" alt="Logo" class="acadex-school-logo">
+                <h3>ANCILLARY PORTAL</h3>
+            </div>
+            <div class="sidebar-menu">
+                <ul>
+                    <li><a href="dashboard.html"><i class="fas fa-th-large"></i> <span>Dashboard</span></a></li>
+                </ul>
+
+                <div id="tuckshop-sidebar-section" style="display: none;">
+                    <div class="sidebar-section-title">Tuckshop System</div>
+                    <ul>
+                        <li><a href="tuckshop-dashboard.html"><i class="fas fa-tachometer-alt"></i> <span>TS Dashboard</span></a></li>
+                        <li><a href="tuckshop-sales.html"><i class="fas fa-cash-register"></i> <span>Point of Sale</span></a></li>
+                        <li><a href="tuckshop-inventory.html"><i class="fas fa-boxes"></i> <span>Inventory</span></a></li>
+                        <li><a href="tuckshop-orders.html"><i class="fas fa-truck"></i> <span>Supplier Orders</span></a></li>
+                    </ul>
+                </div>
+
+                <div class="sidebar-section-title">Operations</div>
+                <ul>
+                    <li><a href="staff-directory.html"><i class="fas fa-users"></i> <span>Staff Directory</span></a></li>
+                    <li><a href="procurement.html"><i class="fas fa-shopping-cart"></i> <span>Procurement</span></a></li>
+                    <li><a href="assets.html"><i class="fas fa-boxes"></i> <span>Asset Management</span></a></li>
+                    <li><a href="schedules.html"><i class="fas fa-calendar-alt"></i> <span>Schedules & Shifts</span></a></li>
+                </ul>
+
+                <div class="sidebar-section-title">Support & HR</div>
+                <ul>
+                    <li><a href="sdc-portal.html"><i class="fas fa-file-invoice-dollar"></i> <span>SDC Staff Portal</span></a></li>
+                    <li><a href="hr-services.html"><i class="fas fa-user-shield"></i> <span>HR Services</span></a></li>
+                    <li><a href="profile.html"><i class="fas fa-id-card"></i> <span>My Profile</span></a></li>
+                    <li><a href="resources.html"><i class="fas fa-folder-open"></i> <span>Resources & Docs</span></a></li>
+                    <li><a href="it-support.html"><i class="fas fa-headset"></i> <span>IT Support</span></a></li>
+                </ul>
+
+                <div class="sidebar-section-title">Communication</div>
+                <ul>
+                    <li><a href="news.html" class="active"><i class="fas fa-newspaper"></i> <span>News & Updates</span></a></li>
+                    <li><a href="feedback.html"><i class="fas fa-comment-dots"></i> <span>Feedback</span></a></li>
+                    <li><a href="contact.html"><i class="fas fa-address-book"></i> <span>Contact Us</span></a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <header class="content-header">
+                <div>
+                    <h1>News & Updates</h1>
+                    <p>Stay informed about the latest school news and ancillary department updates.</p>
+                </div>
+                <button class="btn-action" onclick="togglePostForm()">
+                    <i class="fas fa-plus"></i> Post Update
+                </button>
+            </header>
+
+            <div class="news-feed" id="newsFeed">
+                <!-- Content loaded via JavaScript -->
+            </div>
+        </main>
+    </div>
+
+    <!-- News Detail Modal -->
+    <div id="newsDetailModal" class="modal">
+        <div class="modal-content" style="max-width: 700px;">
+            <div class="modal-header">
+                <div id="newsModalCat"></div>
+                <span class="close-modal" onclick="closeModal('newsDetailModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <h2 id="newsModalTitle" style="margin-bottom: 5px;"></h2>
+                <p id="newsModalMeta" style="font-size: 0.85rem; color: #718096; margin-bottom: 20px;"></p>
+                <div id="newsModalContent" style="line-height: 1.6; color: #4a5568;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/ancillary-common.js"></script>
+    <script>
+        const NEWS_KEY = 'ancillary_news';
+
+        function getInitials(name) {
+            return (name || '?').split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase();
+        }
+
+        function colorFor(name) {
+            const colors = ['#3182ce', '#38a169', '#d69e2e', '#e53e3e', '#805ad5', '#d53f8c'];
+            let hash = 0;
+            for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
+            return colors[Math.abs(hash) % colors.length];
+        }
+
+        function openModal(id) { const m = document.getElementById(id); if (m) m.style.display = 'flex'; }
+        function closeModal(id) { const m = document.getElementById(id); if (m) m.style.display = 'none'; }
+
+        function loadNews() {
+            const stored = getTenantData(NEWS_KEY, '[]');
+            const adminAnn = getTenantData('schoolAnnouncements', '[]').map(a => ({
+                id: 'sys-' + (a.id || Math.random()),
+                title: a.title || a.subject || 'School Announcement',
+                content: a.content || a.message || '',
+                category: a.category || 'Announcement',
+                author: a.author || 'Administration',
+                role: 'Admin',
+                date: a.date || new Date().toISOString()
+            }));
+
+            const systemNews = [
+                {
+                    id: 'sys-welcome',
+                    title: 'Welcome to the Ancillary Staff Portal',
+                    content: 'This portal is your central hub for department management and communication.',
+                    category: 'System',
+                    author: 'System',
+                    role: 'System',
+                    date: new Date('2026-01-01').toISOString()
+                }
+            ];
+
+            return [...systemNews, ...adminAnn, ...stored].sort((a, b) => new Date(b.date) - new Date(a.date));
+        }
+
+        function renderFeed() {
+            const news = loadNews();
+            const feed = document.getElementById('newsFeed');
+            
+            if (news.length === 0) {
+                feed.innerHTML = '<p>No news items found.</p>';
+                return;
+            }
+
+            feed.innerHTML = news.map(n => {
+                const date = new Date(n.date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+                return `
+                    <div class="news-card" onclick="openNewsDetail('${n.id}')">
+                        <div class="news-card-header">
+                            <span class="news-category">${n.category}</span>
+                            <span class="news-date">${date}</span>
+                        </div>
+                        <h3>${n.title}</h3>
+                        <p>${n.content.substring(0, 150)}${n.content.length > 150 ? '...' : ''}</p>
+                        <div class="news-footer">
+                            <div class="news-author">
+                                <div class="author-avatar" style="background:${colorFor(n.author)};">${getInitials(n.author)}</div>
+                                <span>${n.author}</span>
+                            </div>
+                            <span style="color:var(--school-primary); font-size:0.8rem;">Read More <i class="fas fa-arrow-right"></i></span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function openNewsDetail(id) {
+            const news = loadNews();
+            const n = news.find(x => x.id === id);
+            if (!n) return;
+
+            document.getElementById('newsModalTitle').textContent = n.title;
+            document.getElementById('newsModalMeta').textContent = `Posted by ${n.author} on ${new Date(n.date).toLocaleDateString()}`;
+            document.getElementById('newsModalContent').textContent = n.content;
+            document.getElementById('newsModalCat').innerHTML = `<span class="news-category">${n.category}</span>`;
+            openModal('newsDetailModal');
+        }
+
+        function togglePostForm() {
+            showNotification('Department posting is currently restricted to leads.', 'info');
+        }
+
+        document.addEventListener('DOMContentLoaded', renderFeed);
+    </script>
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+</body>
+
+</html>

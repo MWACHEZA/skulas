@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subjects Management - Admin Portal</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+
+        .admin-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 260px;
+            background-color: var(--school-primary-dark, #1a1a2e);
+            color: white;
+            position: fixed;
+            height: 100%;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+
+        .sidebar-header img {
+            width: 50px;
+            margin-bottom: 10px;
+        }
+
+        .sidebar-header h3 {
+            margin: 0;
+            font-size: 1.1rem;
+        }
+
+        .sidebar-menu {
+            padding: 20px 0;
+        }
+
+        .menu-section {
+            margin-bottom: 20px;
+        }
+
+        .menu-section-title {
+            padding: 10px 20px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: #888;
+            font-weight: 600;
+        }
+
+        .sidebar-menu ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 2px;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            background-color: rgba(var(--school-primary-rgb, 0, 86, 179), 0.2);
+            color: white;
+            border-left: 3px solid var(--school-primary, #0056b3);
+        }
+
+        .sidebar-menu i {
+            margin-right: 12px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: 250px;
+            width: calc(100% - 250px);
+        }
+
+        .top-header {
+            background-color: white;
+            padding: 15px 30px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-left h2 {
+            margin: 0;
+            color: #333;
+            font-size: 1.5rem;
+        }
+
+        .content-area {
+            padding: 30px;
+        }
+
+        .page-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background-color: var(--school-primary, #0056b3);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--school-primary-dark, #003d82);
+        }
+
+        .subjects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .subject-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .subject-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .subject-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .subject-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .subject-icon.math {
+            background-color: rgba(var(--school-primary-rgb, 0, 86, 179), 0.1);
+            color: var(--school-primary, #0056b3);
+        }
+
+        .subject-icon.science {
+            background-color: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+        }
+
+        .subject-icon.language {
+            background-color: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+        }
+
+        .subject-icon.humanities {
+            background-color: rgba(255, 193, 7, 0.1);
+            color: #ffc107;
+        }
+
+        .subject-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .subject-code {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .subject-info {
+            margin-bottom: 15px;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .info-item:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .info-value {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .subject-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-small {
+            padding: 8px 15px;
+            font-size: 0.85rem;
+            flex: 1;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar"></aside>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Top Header -->
+            <div class="top-header">
+                <div class="header-left">
+                    <h2>Subjects Management</h2>
+                </div>
+            </div>
+
+            <!-- Content Area -->
+            <div class="content-area">
+                <!-- Page Actions -->
+                <div class="page-actions" style="margin-bottom: 25px;">
+                    <div>
+                        <h3 style="margin: 0; color: #333;">Current Subjects</h3>
+                        <p style="margin: 5px 0 0; color: #666; font-size: 0.9rem;">Manage subjects for Junior, O-Level,
+                            and A-Level curricula.</p>
+                    </div>
+                    <button class="btn btn-primary" onclick="openSubjectEditor()">
+                        <i class="fas fa-edit"></i> Edit Subject Lists
+                    </button>
+                </div>
+
+                <div style="margin-bottom: 30px;">
+                    <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                        <button class="btn active-tab" id="tabJunior" onclick="switchSubjectTab('junior')"
+                            style="width: auto; padding: 10px 30px; border-radius: 25px; background: var(--school-primary, #0056b3); color: white;">Junior
+                            / O-Level</button>
+                        <button class="btn" id="tabALevel" onclick="switchSubjectTab('alevel')"
+                            style="width: auto; padding: 10px 30px; border-radius: 25px; background: white; color: #333; border: 1px solid #ccc;">A-Level</button>
+                    </div>
+                </div>
+
+                <!-- Subjects Grid -->
+                <div class="subjects-grid" id="subjectsGrid">
+                    <!-- Dynamic Content -->
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <!-- Subject Editor Modal -->
+    <div id="subjectEditorModal"
+        style="display: none; position: fixed; z-index: 1001; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.6);">
+        <div
+            style="background-color: white; margin: 2% auto; padding: 0; border: none; width: 90%; max-width: 800px; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
+            <div
+                style="background: var(--school-primary-dark, #1a1a2e); color: white; padding: 20px 25px; display: flex; justify-content: space-between; align-items: center;">
+                <h3 style="margin: 0; font-size: 1.25rem;">Manage Official Subjects</h3>
+                <span style="font-size: 24px; cursor: pointer; opacity: 0.8;"
+                    onclick="closeSubjectEditor()">&times;</span>
+            </div>
+
+            <div style="padding: 25px;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 25px;">
+                    <!-- Junior/O-Level Column -->
+                    <div>
+                        <h4 style="margin: 0 0 15px; border-bottom: 2px solid var(--school-primary, #0056b3); padding-bottom: 5px;">Junior /
+                            O-Level Subjects</h4>
+                        <div id="juniorSubjectList"
+                            style="max-height: 400px; overflow-y: auto; border: 1px solid #eee; border-radius: 8px; padding: 10px;">
+                            <!-- Rows injected -->
+                        </div>
+                        <button class="btn btn-primary" onclick="addNewSubject('junior')"
+                            style="margin-top: 10px; font-size: 0.8rem; width: auto;">
+                            <i class="fas fa-plus"></i> Add Junior Subject
+                        </button>
+                    </div>
+
+                    <!-- A-Level Column -->
+                    <div>
+                        <h4 style="margin: 0 0 15px; border-bottom: 2px solid #28a745; padding-bottom: 5px;">A-Level
+                            Subjects</h4>
+                        <div id="alevelSubjectList"
+                            style="max-height: 400px; overflow-y: auto; border: 1px solid #eee; border-radius: 8px; padding: 10px;">
+                            <!-- Rows injected -->
+                        </div>
+                        <button class="btn btn-success" onclick="addNewSubject('alevel')"
+                            style="margin-top: 10px; font-size: 0.8rem; width: auto; background: #28a745; color: white;">
+                            <i class="fas fa-plus"></i> Add A-Level Subject
+                        </button>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 12px; margin-top: 30px;">
+                    <button class="btn" onclick="closeSubjectEditor()"
+                        style="flex: 1; margin: 0; background: #e9ecef; color: #333; border: 1px solid #ddd;">Cancel</button>
+                    <button class="btn btn-primary" onclick="saveSubjects()" style="flex: 2; margin: 0;">Save All
+                        Subjects</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    </div>
+    </div>
+    </div>
+    </div>
+
+    <script>
+        const menuToggle = document.getElementById('menuToggle');
+        const sidebar = document.getElementById('sidebar');
+
+        if (menuToggle) {
+            menuToggle.addEventListener('click', function () {
+                sidebar.classList.toggle('active');
+            });
+        }
+
+        // --- Subject Management Logic ---
+        const defaultJuniorSubjects = [
+            "English Language", "Literature in English", "Ndebele Language", "Literature in Ndebele",
+            "Mathematics", "Combined Science", "Geography", "Heritage Studies", "Commerce", "Agriculture",
+            "Building Tech & Design", "Wood Tech & Design", "Computer Science", "Computer Operations",
+            "Biology", "Physics", "Brick + Block Laying", "Orn Horticulture", "Chemistry",
+            "P.E & Mass Display", "Principles of Accounts", "Fam & Rel Studies", "Art"
+        ];
+
+        const defaultALevelSubjects = [
+            "Literature in English", "Ndebele Language", "Literature in Ndebele", "Building Tech & Design",
+            "Family & Religious Studies", "History", "Geography", "Biology", "Chemistry", "Mathematics",
+            "Accounting", "Economics", "Business Studies", "Computer Studies", "Physics",
+            "Animal Science", "Crop Science", "Agri Engineering"
+        ];
+
+        let currentSubjects = {
+            junior: [],
+            alevel: []
+        };
+
+        let currentViewTab = 'junior';
+
+        function loadSubjects() {
+            currentSubjects = getTenantData('officialSubjects', {
+                junior: [...defaultJuniorSubjects],
+                alevel: [...defaultALevelSubjects]
+            });
+            renderSubjectsGrid();
+        }
+
+        function renderSubjectsGrid() {
+            const grid = document.getElementById('subjectsGrid');
+            grid.innerHTML = '';
+
+            const list = currentSubjects[currentViewTab];
+            const typeClass = currentViewTab === 'junior' ? 'language' : 'science';
+            const typeIcon = currentViewTab === 'junior' ? 'fa-book' : 'fa-flask';
+
+            list.forEach(subject => {
+                const card = document.createElement('div');
+                card.className = 'subject-card';
+                card.innerHTML = `
+                    <div class="subject-header">
+                        <div class="subject-icon ${typeClass}">
+                            <i class="fas ${typeIcon}"></i>
+                        </div>
+                    </div>
+                    <div class="subject-name">${subject}</div>
+                    <div class="subject-info">
+                        <div class="info-item">
+                            <span class="info-label">Curriculum</span>
+                            <span class="info-value">${currentViewTab === 'junior' ? 'Junior/O-Level' : 'A-Level'}</span>
+                        </div>
+                    </div>
+                    <div class="subject-actions">
+                        <button class="btn btn-secondary btn-small" onclick="openSubjectEditor()">Manage</button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function switchSubjectTab(tab) {
+            currentViewTab = tab;
+            document.getElementById('tabJunior').style.background = tab === 'junior' ? '#0056b3' : 'white';
+            document.getElementById('tabJunior').style.color = tab === 'junior' ? 'white' : '#333';
+            document.getElementById('tabALevel').style.background = tab === 'alevel' ? '#28a745' : 'white';
+            document.getElementById('tabALevel').style.color = tab === 'alevel' ? 'white' : '#333';
+            renderSubjectsGrid();
+        }
+
+        function openSubjectEditor() {
+            renderEditorLists();
+            document.getElementById('subjectEditorModal').style.display = 'block';
+        }
+
+        function closeSubjectEditor() {
+            document.getElementById('subjectEditorModal').style.display = 'none';
+        }
+
+        function renderEditorLists() {
+            const juniorList = document.getElementById('juniorSubjectList');
+            const alevelList = document.getElementById('alevelSubjectList');
+
+            juniorList.innerHTML = '';
+            alevelList.innerHTML = '';
+
+            currentSubjects.junior.forEach((s, i) => juniorList.appendChild(createEditorRow('junior', s, i)));
+            currentSubjects.alevel.forEach((s, i) => alevelList.appendChild(createEditorRow('alevel', s, i)));
+        }
+
+        function createEditorRow(type, name, index) {
+            const div = document.createElement('div');
+            div.style = "display: flex; gap: 8px; margin-bottom: 8px; align-items: center;";
+            div.innerHTML = `
+                <input type="text" value="${name}" onchange="updateSubjectName('${type}', ${index}, this.value)" 
+                    style="flex: 1; padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px;">
+                <button onclick="removeSubject('${type}', ${index})" style="background: none; border: none; color: #dc3545; cursor: pointer;">
+                    <i class="fas fa-trash-alt"></i>
+                </button>
+            `;
+            return div;
+        }
+
+        function updateSubjectName(type, index, value) {
+            currentSubjects[type][index] = value;
+        }
+
+        function addNewSubject(type) {
+            currentSubjects[type].push("New Subject");
+            renderEditorLists();
+        }
+
+        function removeSubject(type, index) {
+            currentSubjects[type].splice(index, 1);
+            renderEditorLists();
+        }
+
+        function saveSubjects() {
+            saveTenantData('officialSubjects', currentSubjects);
+            loadSubjects();
+            closeSubjectEditor();
+            if (typeof showToast === 'function') showToast('Subjects updated successfully!', 'success');
+        }
+
+        window.addEventListener('load', loadSubjects);
+    </script>
+    <script src="../js/admin-common.js"></script>
+    <script src="../js/page-enhancer.js"></script>
+
+<script src="../js/admin-sidebar.js"></script>
+    <!-- ACADEX: Powered-by footer and school branding -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+
+</body>
+
+</html>
+

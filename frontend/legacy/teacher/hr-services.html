@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HR Services - Teacher Portal</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/ancillary-portal.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        .hr-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .service-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid #f1f5f9;
+        }
+
+        .service-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+            border-color: var(--school-primary, var(--school-primary, #0056b3));
+        }
+
+        .service-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+        }
+
+        .service-card.green .service-icon {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+
+        .service-card.orange .service-icon {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+
+        .service-card.red .service-icon {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+
+        .service-card h3 {
+            margin: 0 0 10px 0;
+            font-size: 1.2rem;
+            color: var(--school-primary-dark, #1e293b);
+        }
+
+        .service-card p {
+            margin: 0;
+            font-size: 0.9rem;
+            color: #64748b;
+            line-height: 1.5;
+        }
+
+        .leave-balance {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .balance-box {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            border-left: 4px solid var(--school-primary, var(--school-primary, #0056b3));
+        }
+
+        .balance-box .days {
+            display: block;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--school-primary, var(--school-primary, #0056b3));
+        }
+
+        .balance-box .label {
+            display: block;
+            font-size: 0.8rem;
+            color: #64748b;
+            margin-top: 5px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            margin-bottom: 25px;
+        }
+
+        .card-header {
+            padding: 20px 25px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-header h3 {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--school-primary, var(--school-primary-dark, #003d82));
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-body {
+            padding: 25px;
+        }
+
+        .btn-primary {
+            background: var(--school-primary, var(--school-primary, #0056b3));
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .btn-primary:hover {
+            background: var(--school-primary-dark, var(--school-primary-dark, #003d82));
+        }
+
+        .timeline-item {
+            padding: 15px;
+            border-left: 3px solid #e2e8f0;
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -7px;
+            top: 20px;
+            width: 12px;
+            height: 12px;
+            background: var(--school-primary, var(--school-primary, #0056b3));
+            border-radius: 50%;
+        }
+
+        .timeline-item h4 {
+            margin: 0 0 5px 0;
+            font-size: 0.95rem;
+            color: var(--school-primary-dark, #1e293b);
+        }
+
+        .timeline-item p {
+            margin: 0;
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+    </style>
+</head>
+
+<body>
+    <button class="mobile-toggle" id="mobile-toggle">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <div class="dashboard-container">
+                <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <img src="../images/logo.png" alt="School Logo" class="acadex-school-logo">
+                <h3>Teacher Portal</h3>
+            </div>
+            <div class="sidebar-menu">
+                <div class="sidebar-section-title">Teacher System</div>
+                <ul>
+                    <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a></li>
+                    <li><a href="classes.html"><i class="fas fa-chalkboard"></i> <span>Classes</span></a></li>
+                    <li><a href="assignments.html"><i class="fas fa-tasks"></i> <span>Assignments</span></a></li>
+                    <li><a href="attendance.html"><i class="fas fa-clipboard-check"></i> <span>Attendance</span></a></li>
+                    <li><a href="grades.html"><i class="fas fa-chart-line"></i> <span>Grades</span></a></li>
+                    <li><a href="timetable.html"><i class="fas fa-calendar-alt"></i> <span>Timetable</span></a></li>
+                    <li><a href="students.html"><i class="fas fa-users"></i> <span>Students</span></a></li>
+                    <li><a href="textbooks.html"><i class="fas fa-book"></i> <span>Textbooks</span></a></li>
+                    <li><a href="library.html"><i class="fas fa-book-open"></i> <span>Library Catalog</span></a></li>
+                    <li><a href="digital-resources.html"><i class="fas fa-laptop-code"></i> <span>Digital Resources</span></a></li>
+                    <li><a href="reports.html"><i class="fas fa-file-alt"></i> <span>System Reports</span></a></li>
+                    <li><a href="messages.html"><i class="fas fa-envelope"></i> <span>Messages</span></a></li>
+                </ul>
+
+                <div class="sidebar-section-title">Operations</div>
+                <ul>
+                    <li><a href="staff-directory.html"><i class="fas fa-users"></i> <span>Staff Directory</span></a></li>
+                    <li><a href="procurement.html"><i class="fas fa-shopping-cart"></i> <span>Procurement</span></a></li>
+                    <li><a href="assets.html"><i class="fas fa-boxes"></i> <span>Asset Management</span></a></li>
+                    <li><a href="schedules.html"><i class="fas fa-calendar-check"></i> <span>Schedules & Shifts</span></a></li>
+                </ul>
+
+                <div class="sidebar-section-title">Staff HR & Support</div>
+                <ul>
+                    <li><a href="sdc-portal.html"><i class="fas fa-file-invoice-dollar"></i> <span>SDC Staff Portal</span></a></li>
+                    <li><a href="hr-services.html" class="active"><i class="fas fa-user-shield"></i> <span>HR Services</span></a></li>
+                    <li><a href="profile.html"><i class="fas fa-id-card"></i> <span>My Profile</span></a></li>
+                    <li><a href="resources.html"><i class="fas fa-folder-open"></i> <span>Resources & Docs</span></a></li>
+                    <li><a href="it-support.html"><i class="fas fa-headset"></i> <span>IT Support</span></a></li>
+                </ul>
+
+                <div class="sidebar-section-title">Communication</div>
+                <ul>
+                    <li><a href="news.html"><i class="fas fa-newspaper"></i> <span>News & Updates</span></a></li>                    <li><a href="announcements.html"><i class="fas fa-bullhorn"></i> <span>General Notices</span></a></li>                    <li><a href="contact.html"><i class="fas fa-address-book"></i> <span>Contact Us</span></a></li>
+                    <li><a href="settings.html"><i class="fas fa-cog"></i> <span>Settings</span></a></li>
+                </ul>
+            </div>
+            <div class="sidebar-footer">
+                <a href="login.html"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <h1 style="margin-bottom: 10px; color: var(--school-primary-dark, #1e293b);">HR Services</h1>
+            <p style="margin-bottom: 30px; color: #64748b;">Manage leave, view payslips, access benefits, and handle
+                HR-related tasks.</p>
+
+            <!-- Leave Balance -->
+            <section class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-calendar-check"></i> Leave Balance</h3>
+                </div>
+                <div class="card-body">
+                    <div class="leave-balance">
+                        <div class="balance-box">
+                            <span class="days">18</span>
+                            <span class="label">Annual Leave Days</span>
+                        </div>
+                        <div class="balance-box" style="border-left-color: #10b981;">
+                            <span class="days" style="color: #10b981;">10</span>
+                            <span class="label">Sick Leave Days</span>
+                        </div>
+                        <div class="balance-box" style="border-left-color: #f59e0b;">
+                            <span class="days" style="color: #f59e0b;">3</span>
+                            <span class="label">Personal Days</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- HR Services Grid -->
+            <div class="hr-grid">
+                <div class="service-card" onclick="showNotification('Opening leave request form...', 'info')">
+                    <div class="service-icon">
+                        <i class="fas fa-calendar-plus"></i>
+                    </div>
+                    <h3>Apply for Leave</h3>
+                    <p>Submit annual, sick, or personal leave requests for approval</p>
+                </div>
+
+                <div class="service-card green" onclick="simulateDownload('Payslip_Jan_2026.pdf')">
+                    <div class="service-icon">
+                        <i class="fas fa-file-invoice-dollar"></i>
+                    </div>
+                    <h3>View Payslips</h3>
+                    <p>Download your monthly salary advice and payment history</p>
+                </div>
+
+                <div class="service-card orange" onclick="showNotification('Opening benefits information...', 'info')">
+                    <div class="service-icon">
+                        <i class="fas fa-heartbeat"></i>
+                    </div>
+                    <h3>Staff Benefits</h3>
+                    <p>Medical aid, pension, and other employee welfare benefits</p>
+                </div>
+
+                <div class="service-card red" onclick="showNotification('Opening performance review...', 'info')">
+                    <div class="service-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3>Performance Reviews</h3>
+                    <p>View your performance evaluations and development plans</p>
+                </div>
+            </div>
+
+            <!-- Recent Leave Requests -->
+            <section class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-history"></i> Recent Leave Requests</h3>
+                    <button class="btn-primary" onclick="showNotification('Opening new leave request...', 'info')">
+                        <i class="fas fa-plus"></i> New Request
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="timeline-item">
+                        <h4>Annual Leave - 5 Days</h4>
+                        <p>Dec 20-24, 2025 • <span style="color: #10b981; font-weight: 600;">Approved</span></p>
+                    </div>
+                    <div class="timeline-item">
+                        <h4>Sick Leave - 2 Days</h4>
+                        <p>Nov 15-16, 2025 • <span style="color: #10b981; font-weight: 600;">Approved</span></p>
+                    </div>
+                    <div class="timeline-item">
+                        <h4>Personal Day - 1 Day</h4>
+                        <p>Oct 10, 2025 • <span style="color: #10b981; font-weight: 600;">Approved</span></p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Quick Links -->
+            <section class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-link"></i> Quick Links</h3>
+                </div>
+                <div class="card-body">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                        <button class="btn-primary" onclick="showNotification('Opening employment contract...', 'info')"
+                            style="width: 100%;">
+                            <i class="fas fa-file-contract"></i> My Contract
+                        </button>
+                        <button class="btn-primary" onclick="showNotification('Opening tax documents...', 'info')"
+                            style="width: 100%; background: #10b981;">
+                            <i class="fas fa-file-alt"></i> Tax Documents
+                        </button>
+                        <button class="btn-primary" onclick="showNotification('Opening training records...', 'info')"
+                            style="width: 100%; background: #f59e0b;">
+                            <i class="fas fa-graduation-cap"></i> Training Records
+                        </button>
+                        <button class="btn-primary" onclick="showNotification('Contacting HR...', 'info')"
+                            style="width: 100%; background: #8b5cf6;">
+                            <i class="fas fa-envelope"></i> Contact HR
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="../js/ancillary-common.js"></script>
+    <!-- ACADEX: Powered-by footer and school branding -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+
+</body>
+
+</html>
+

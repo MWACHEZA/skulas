@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications - Admin Portal</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+
+        .admin-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 260px;
+            background-color: var(--school-primary-dark, #1a1a2e);
+            color: white;
+            position: fixed;
+            height: 100%;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: 250px;
+            width: calc(100% - 250px);
+        }
+
+        .top-header {
+            background-color: white;
+            padding: 15px 30px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-left h2 {
+            margin: 0;
+            color: #333;
+            font-size: 1.5rem;
+        }
+
+        .content-area {
+            padding: 30px;
+        }
+
+        .page-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background-color: var(--school-primary, #0056b3);
+            color: white;
+        }
+
+        .notifications-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .notification-item {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            display: flex;
+            gap: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .notification-item.unread {
+            border-left: 4px solid var(--school-primary, #0056b3);
+            background-color: #f0f8ff;
+        }
+
+        .notification-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            flex-shrink: 0;
+        }
+
+        .notification-icon.info { background-color: rgba(0, 86, 179, 0.1); color: #0056b3; }
+        .notification-icon.success { background-color: rgba(40, 167, 69, 0.1); color: #28a745; }
+        .notification-icon.warning { background-color: rgba(255, 193, 7, 0.1); color: #ffc107; }
+        .notification-icon.error { background-color: rgba(220, 53, 69, 0.1); color: #dc3545; }
+
+        .notification-content { flex: 1; }
+        .notification-title { font-weight: 600; color: #333; margin-bottom: 5px; }
+        .notification-message { color: #666; font-size: 0.9rem; margin-bottom: 10px; }
+        .notification-time { font-size: 0.8rem; color: #999; }
+
+        .notification-actions { display: flex; gap: 10px; align-items: center; }
+        .btn-icon {
+            width: 35px;
+            height: 35px;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .btn-mark-read { background-color: rgba(0, 86, 179, 0.1); color: #0056b3; }
+        .btn-delete { background-color: rgba(220, 53, 69, 0.1); color: #dc3545; }
+    </style>
+</head>
+
+<body>
+    <div class="admin-container">
+        <aside class="sidebar" id="sidebar"></aside>
+
+        <div class="main-content">
+            <div class="top-header">
+                <div class="header-left">
+                    <h2>Notifications</h2>
+                </div>
+            </div>
+
+            <div class="content-area">
+                <div class="page-actions">
+                    <h3>All Notifications</h3>
+                    <button class="btn btn-primary" onclick="markAllRead()">
+                        <i class="fas fa-check-double"></i> Mark All as Read
+                    </button>
+                </div>
+
+                <div class="notifications-container" id="notificationsList">
+                    <!-- Loaded dynamically -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/admin-common.js"></script>
+    <script src="../js/admin-sidebar.js"></script>
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            loadNotifications();
+        });
+
+        function loadNotifications() {
+            const container = document.getElementById('notificationsList');
+            const notifications = getTenantData('systemNotifications', '[]');
+            
+            if (notifications.length === 0) {
+                const mocks = [
+                    { id: 1, title: 'Welcome to Acadex', message: 'Your multi-tenant portal is ready.', time: 'Just now', type: 'info', unread: true },
+                    { id: 2, title: 'Branding Applied', message: 'School theme successfully loaded.', time: '1 hour ago', type: 'success', unread: false }
+                ];
+                saveTenantData('systemNotifications', mocks);
+                renderNotifications(mocks);
+            } else {
+                renderNotifications(notifications);
+            }
+        }
+
+        function renderNotifications(notifications) {
+            const container = document.getElementById('notificationsList');
+            if (notifications.length === 0) {
+                container.innerHTML = '<p style="text-align:center; color:#666; padding:20px;">No notifications yet.</p>';
+                return;
+            }
+            container.innerHTML = notifications.map(n => `
+                <div class="notification-item ${n.unread ? 'unread' : ''}">
+                    <div class="notification-icon ${n.type}">
+                        <i class="fas ${getIcon(n.type)}"></i>
+                    </div>
+                    <div class="notification-content">
+                        <div class="notification-title">${n.title}</div>
+                        <div class="notification-message">${n.message}</div>
+                        <div class="notification-time">${n.time}</div>
+                    </div>
+                    <div class="notification-actions">
+                        ${n.unread ? `<button class="btn-icon btn-mark-read" title="Mark as Read" onclick="markRead(${n.id})"><i class="fas fa-check"></i></button>` : ''}
+                        <button class="btn-icon btn-delete" title="Delete" onclick="deleteNotification(${n.id})"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function getIcon(type) {
+            switch(type) {
+                case 'info': return 'fa-info-circle';
+                case 'success': return 'fa-check-circle';
+                case 'warning': return 'fa-exclamation-triangle';
+                case 'error': return 'fa-times-circle';
+                default: return 'fa-bell';
+            }
+        }
+
+        function markRead(id) {
+            const notifications = getTenantData('systemNotifications', '[]');
+            const n = notifications.find(n => n.id === id);
+            if (n) n.unread = false;
+            saveTenantData('systemNotifications', notifications);
+            loadNotifications();
+        }
+
+        function markAllRead() {
+            const notifications = getTenantData('systemNotifications', '[]');
+            notifications.forEach(n => n.unread = false);
+            saveTenantData('systemNotifications', notifications);
+            loadNotifications();
+        }
+
+        function deleteNotification(id) {
+            let notifications = getTenantData('systemNotifications', '[]');
+            notifications = notifications.filter(n => n.id !== id);
+            saveTenantData('systemNotifications', notifications);
+            loadNotifications();
+        }
+    </script>
+</body>
+</html>
+

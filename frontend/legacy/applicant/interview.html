@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interview Schedule - Your School</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/ancillary-portal.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+
+
+        .page-header {
+            margin-bottom: 30px;
+        }
+
+        .page-header h2 {
+            margin: 0 0 10px;
+            color: #333;
+        }
+
+        .page-header p {
+            color: #666;
+            margin: 0;
+        }
+
+        .interview-card {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+        }
+
+        .no-interview {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .no-interview i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            color: #ddd;
+        }
+
+        .interview-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .detail-box {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid var(--school-primary, #0056b3);
+        }
+
+        .detail-box h4 {
+            margin: 0 0 10px;
+            color: var(--school-primary, #0056b3);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .detail-box p {
+            margin: 0;
+            color: #333;
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        .detail-box .icon {
+            margin-right: 10px;
+            color: var(--school-primary, #0056b3);
+        }
+
+        .requirements-section {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .requirements-section h4 {
+            margin: 0 0 15px;
+            color: #856404;
+        }
+
+        .requirements-section ul {
+            margin: 0;
+            padding-left: 20px;
+            color: #856404;
+        }
+
+        .requirements-section li {
+            margin-bottom: 8px;
+        }
+
+        .panel-info {
+            background: #e7f1ff;
+            border-left: 4px solid var(--school-primary, #0056b3);
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .panel-info h4 {
+            margin: 0 0 15px;
+            color: var(--school-primary, #0056b3);
+        }
+
+        .panel-member {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background: white;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        .panel-member i {
+            font-size: 2rem;
+            color: var(--school-primary, #0056b3);
+            margin-right: 15px;
+        }
+
+        .panel-member-info h5 {
+            margin: 0;
+            color: #333;
+            font-size: 1rem;
+        }
+
+        .panel-member-info p {
+            margin: 0;
+            color: #666;
+            font-size: 0.85rem;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: var(--school-primary, #0056b3);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--school-primary-dark, #003d82);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 70px;
+            }
+
+            .sidebar-header h3,
+            .nav-link span {
+                display: none;
+            }
+
+            .nav-link {
+                justify-content: center;
+                padding: 15px;
+            }
+
+            .nav-link i {
+                margin: 0;
+            }
+
+            .main-content {
+                margin-left: 70px;
+                width: calc(100% - 70px);
+            }
+
+            .interview-details {
+                grid-template-columns: 1fr;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Mobile Toggle -->
+    <button class="mobile-toggle" id="mobileToggle">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <img src="../images/logo.png" alt="School Logo" id="sidebarLogo">
+            <h3>Applicant Portal</h3>
+        </div>
+        
+        <div class="sidebar-menu">
+            <div class="sidebar-section-title">Application Journey</div>
+            <ul>
+                <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a></li>
+                <li><a href="timeline.html"><i class="fas fa-stream"></i> <span>Timeline</span></a></li>
+                <li><a href="documents.html"><i class="fas fa-folder-open"></i> <span>Documents</span></a></li>
+                <li><a href="interview.html" class="active"><i class="fas fa-calendar-check"></i> <span>Interview</span></a></li>
+            </ul>
+
+            <div class="sidebar-section-title">Financials & Info</div>
+            <ul>
+                <li><a href="payments.html"><i class="fas fa-credit-card"></i> <span>Payments</span></a></li>
+                <li><a href="fees.html"><i class="fas fa-file-invoice-dollar"></i> <span>Fee Structure</span></a></li>
+                <li><a href="faq.html"><i class="fas fa-question-circle"></i> <span>FAQs</span></a></li>
+            </ul>
+
+            <div class="sidebar-section-title">Communication</div>
+            <ul>
+                <li><a href="messages.html"><i class="fas fa-envelope"></i> <span>Messages</span></a></li>
+                <li><a href="profile.html"><i class="fas fa-user"></i> <span>My Profile</span></a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-footer">
+            <a href="#" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="page-header">
+            <h2>Interview Schedule</h2>
+            <p>View your interview details and prepare for your admission interview.</p>
+        </div>
+
+        <div id="interviewContent">
+            <!-- Populated by JavaScript -->
+        </div>
+    </div>
+
+    <script src="js/interview.js"></script>
+    <script>
+        function logout() {
+            sessionStorage.removeItem('currentApplicant');
+            window.location.href = 'login.html';
+        }
+
+        // Mobile Toggle logic
+        const mobileToggle = document.getElementById('mobileToggle');
+        const sidebar = document.getElementById('sidebar');
+        if (mobileToggle && sidebar) {
+            mobileToggle.addEventListener('click', () => {
+                sidebar.classList.toggle('active');
+            });
+        }
+    </script>
+    <!-- ACADEX: Powered-by footer and school branding -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+
+</html>
+

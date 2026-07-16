@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Settings - Bursar Portal</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/library-portal.css">
+    <link rel="stylesheet" href="../css/ancillary-portal.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        .settings-section {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 25px;
+        }
+
+        .section-header {
+            margin-bottom: 20px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        .section-header h3 {
+            margin: 0;
+            color: var(--school-primary-dark, var(--school-primary-dark, #1a1a2e));
+            font-size: 1.1rem;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+
+        .toggle-switch {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding: 10px 0;
+            border-bottom: 1px solid #f8f9fc;
+        }
+
+        .toggle-switch:last-child {
+            border-bottom: none;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked+.slider {
+            background-color: var(--school-primary, var(--school-primary, #4e73df));
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(26px);
+        }
+
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            background-color: rgba(var(--school-primary-rgb, 0, 86, 179), 0.2);
+            color: white;
+            border-left: 3px solid var(--school-primary, var(--school-primary, #0056b3));
+        }
+
+        .btn-primary {
+            background: var(--school-primary, var(--school-primary, #0056b3));
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .btn-primary:hover {
+            background: var(--school-primary-dark, var(--school-primary-dark, #003d82));
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <img src="../images/logo.png" alt="Logo" class="acadex-school-logo">
+                <h3>Library Portal</h3>
+            </div>
+            <div class="sidebar-menu">
+                <div class="sidebar-section-title">Library System</div>
+                <ul>
+                    <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
+                    <li><a href="books.html"><i class="fas fa-book"></i><span>Catalog Management</span></a></li>
+                    <li><a href="issue.html"><i class="fas fa-exchange-alt"></i><span>Circulation Desk</span></a></li>
+                    <li><a href="digital.html"><i class="fas fa-laptop-code"></i><span>Digital Resources</span></a></li>
+                    <li><a href="reports.html"><i class="fas fa-file-invoice"></i><span>Reports & Inventory</span></a>
+                    </li>
+                </ul>
+                <div class="sidebar-section-title">Operations</div>
+                <ul>
+                    <li><a href="staff-directory.html"><i class="fas fa-users"></i><span>Staff Directory</span></a></li>
+                    <li><a href="procurement.html"><i class="fas fa-shopping-cart"></i><span>Procurement</span></a></li>
+                    <li><a href="assets.html"><i class="fas fa-boxes"></i><span>Asset Management</span></a></li>
+                    <li><a href="schedules.html"><i class="fas fa-calendar-check"></i><span>Schedules &
+                                Shifts</span></a></li>
+                </ul>
+                <div class="sidebar-section-title">Staff HR & Support</div>
+                <ul>
+                    <li><a href="hr-services.html"><i class="fas fa-user-shield"></i><span>HR Services</span></a></li>
+                    <li><a href="profile.html"><i class="fas fa-id-card"></i><span>My Profile</span></a></li>
+                    <li><a href="resources.html"><i class="fas fa-folder-open"></i><span>Resources & Docs</span></a>
+                    </li>
+                    <li><a href="it-support.html"><i class="fas fa-headset"></i><span>IT Support</span></a></li>
+                </ul>
+                <div class="sidebar-section-title">Communication</div>
+                <ul>
+                    <li><a href="news.html"><i class="fas fa-newspaper"></i><span>News & Updates</span></a></li>
+                    <li><a href="announcements.html"><i class="fas fa-bullhorn"></i><span>General Notices</span></a>
+                    </li>
+                    <li><a href="contact.html"><i class="fas fa-address-book"></i><span>Contact Us</span></a></li>
+                    <li><a href="settings.html" class="active"><i class="fas fa-cog"></i><span>System
+                                Settings</span></a></li>
+                </ul>
+            </div>
+            <div class="sidebar-footer">
+                <a href="login.html"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="top-header">
+                <h2>System Settings</h2>
+                <div class="user-profile">
+                    <div style="text-align: right; margin-right: 10px;">
+                        <div style="font-weight: 600; font-size: 0.9rem;">Librarian Admin</div>
+                        <div style="font-size: 0.75rem; color: #888;">System Administrator</div>
+                    </div>
+                    <img src="../images/admin-avatar.png" alt="Admin">
+                </div>
+            </div>
+
+            <div class="content-area">
+                <div class="settings-section">
+                    <div class="section-header">
+                        <h3>General Configuration</h3>
+                    </div>
+                    <div class="form-group">
+                        <label>Library Name</label>
+                        <input type="text" class="form-control" value="Library Management Hub">
+                    </div>
+                    <div class="row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <div class="form-group">
+                            <label>Max Lending Period (Days)</label>
+                            <input type="number" class="form-control" value="14">
+                        </div>
+                        <div class="form-group">
+                            <label>Default Fine Per Day ($)</label>
+                            <input type="number" class="form-control" value="0.50">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <div class="section-header">
+                        <h3>Notifications & Alerts</h3>
+                    </div>
+                    <div class="toggle-switch">
+                        <div>
+                            <div style="font-weight: 500;">Email Notifications</div>
+                            <div style="font-size: 0.85rem; color: #888;">Receive emails for overdue books</div>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="toggle-switch">
+                        <div>
+                            <div style="font-weight: 500;">SMS Alerts</div>
+                            <div style="font-size: 0.85rem; color: #888;">Send SMS for urgent system notices</div>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="toggle-switch">
+                        <div>
+                            <div style="font-weight: 500;">Auto-Generate Reports</div>
+                            <div style="font-size: 0.85rem; color: #888;">Create weekly PDF summaries</div>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div style="text-align: right;">
+                    <button class="btn btn-secondary" style="margin-right: 10px;">Reset to Defaults</button>
+                    <button class="btn-primary" onclick="alert('Settings saved successfully!')">Save
+                        Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="../js/library-auth.js"></script>
+    <script src="../js/library-admin.js"></script>
+    <!-- ACADEX: Powered-by footer and school branding -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+
+</body>
+
+</html>
+

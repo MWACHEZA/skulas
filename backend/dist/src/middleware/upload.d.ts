@@ -1,0 +1,14 @@
+import multer from 'multer';
+export declare const upload: multer.Multer;
+export declare const assignmentUpload: multer.Multer;
+export declare const submissionUpload: multer.Multer;
+export declare const signatureUpload: multer.Multer;
+export declare const libraryUpload: multer.Multer;
+export declare const assetUpload: multer.Multer;
+export declare const receiptUpload: multer.Multer;
+export declare const reportUpload: multer.Multer;
+export declare const brandingUpload: multer.Multer;
+export declare const staffDocumentUpload: multer.Multer;
+export declare const studentDocumentUpload: multer.Multer;
+export declare const clubsUpload: multer.Multer;
+export declare const sportsUpload: multer.Multer;

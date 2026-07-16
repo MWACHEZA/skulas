@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Settings - Your School Alumni</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f0f4ff;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+
+        .alumni-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* --- Sidebar: Black --- */
+        .sidebar {
+            width: 250px;
+            background: #1a1a1a;
+            color: white;
+            position: fixed;
+            height: 100%;
+            overflow-y: auto;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            padding: 20px 16px 14px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            text-align: center;
+        }
+
+        .sidebar-header img {
+            width: 52px;
+            margin-bottom: 8px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .sidebar-header h3 {
+            margin: 0;
+            font-size: 0.8rem;
+            color: white;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .user-info {
+            text-align: center;
+            padding: 16px 12px 14px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .user-avatar {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+            font-size: 1.6rem;
+            color: white;
+            overflow: hidden;
+        }
+
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .user-name {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 2px;
+        }
+
+        .user-email {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.55);
+        }
+
+        .sidebar-menu {
+            flex: 1;
+            padding: 10px 0;
+        }
+
+        .sidebar-menu ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 1px;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            padding: 10px 16px;
+            color: rgba(255, 255, 255, 0.65);
+            text-decoration: none;
+            transition: all 0.2s;
+            font-size: 0.84rem;
+            gap: 10px;
+        }
+
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            background: rgba(255, 255, 255, 0.08);
+            color: white;
+            border-left: 3px solid #fff;
+        }
+
+        .sidebar-menu a i {
+            width: 18px;
+            text-align: center;
+            font-size: 0.88rem;
+        }
+
+        .sidebar-footer {
+            padding: 10px 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .sidebar-footer a {
+            display: flex;
+            align-items: center;
+            padding: 10px 16px;
+            color: rgba(255, 80, 80, 0.85);
+            text-decoration: none;
+            gap: 10px;
+            font-size: 0.84rem;
+            transition: all 0.2s;
+        }
+
+        .sidebar-footer a:hover {
+            color: #ff5050;
+            background: rgba(255, 80, 80, 0.08);
+        }
+
+        .sidebar-footer a i {
+            width: 18px;
+            text-align: center;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: 250px;
+            background: #f0f4ff;
+            min-height: 100vh;
+        }
+
+        .top-header {
+            background: white;
+            padding: 14px 28px;
+            border-bottom: 1px solid #eee;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .top-header h2 {
+            margin: 0;
+            font-size: 1.25rem;
+            color: #1a2035;
+        }
+
+        .content-area {
+            padding: 24px;
+        }
+
+        /* Profile card */
+        .profile-hero {
+            background: linear-gradient(135deg, #111, #333);
+            height: 110px;
+            border-radius: 16px 16px 0 0;
+        }
+
+        .profile-card-wrap {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            text-align: center;
+        }
+
+        .profile-card-body {
+            padding: 0 20px 22px;
+        }
+
+        .profile-avatar-wrap {
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            border: 5px solid white;
+            margin: -55px auto 12px;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #eef4ff;
+        }
+
+        .profile-avatar-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .initials-avatar {
+            width: 100%;
+            height: 100%;
+            background: var(--school-primary, #0056b3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        .profile-name {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #1a2035;
+            margin-bottom: 3px;
+        }
+
+        .profile-role {
+            color: var(--school-primary, #0056b3);
+            font-size: 0.82rem;
+            font-weight: 600;
+            margin-bottom: 14px;
+        }
+
+        .profile-meta {
+            text-align: left;
+            padding: 12px;
+            background: #f8faff;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .profile-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.8rem;
+            color: #555;
+        }
+
+        .profile-meta-item i {
+            width: 16px;
+            color: var(--school-primary, #0056b3);
+        }
+
+        .edit-btn {
+            margin-top: 14px;
+            width: 100%;
+            background: var(--school-primary, #0056b3);
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-family: inherit;
+            font-size: 0.87rem;
+            transition: background 0.2s;
+        }
+
+        .edit-btn:hover {
+            background: var(--school-primary-dark, #003d7a);
+        }
+
+        /* Info cards */
+        .info-card {
+            background: white;
+            border-radius: 14px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+            padding: 22px;
+            margin-bottom: 16px;
+        }
+
+        .info-card h3 {
+            margin: 0 0 16px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #1a2035;
+            border-bottom: 2px solid #eef4ff;
+            padding-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 13px;
+        }
+
+        .info-row {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .info-label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #9aacca;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-value {
+            font-size: 0.86rem;
+            font-weight: 500;
+            color: #2d3748;
+            word-break: break-word;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 14px;
+            width: 90%;
+            max-width: 640px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            font-size: 1rem;
+        }
+
+        .modal-header button {
+            background: none;
+            border: none;
+            font-size: 1.4rem;
+            cursor: pointer;
+            color: #888;
+        }
+
+        .modal-body {
+            padding: 18px 20px;
+        }
+
+        .modal-body .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 11px;
+        }
+
+        .modal-body .full {
+            grid-column: 1 / -1;
+        }
+
+        .modal-body .form-group {
+            margin-bottom: 10px;
+        }
+
+        .modal-body label {
+            display: block;
+            font-size: 0.77rem;
+            font-weight: 600;
+            color: #444;
+            margin-bottom: 4px;
+        }
+
+        .modal-body input,
+        .modal-body select,
+        .modal-body textarea {
+            width: 100%;
+            padding: 8px 11px;
+            border: 1.5px solid #dce4f5;
+            border-radius: 7px;
+            font-size: 0.85rem;
+            font-family: inherit;
+        }
+
+        .modal-body input:focus,
+        .modal-body select:focus,
+        .modal-body textarea:focus {
+            border-color: var(--school-primary, #0056b3);
+            outline: none;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 14px;
+        }
+
+        .modal-actions button {
+            flex: 1;
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-family: inherit;
+            font-size: 0.87rem;
+        }
+
+        .btn-cancel {
+            background: #f0f4ff;
+            color: #555;
+            border: 1.5px solid #ddd;
+        }
+
+        .btn-save {
+            background: var(--school-primary, #0056b3);
+            color: white;
+            border: none;
+        }
+
+        .btn-save:hover {
+            background: var(--school-primary-dark, #003d7a);
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="alumni-container">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <img src="../images/logo.png" alt="Acadex Logo">
+                <h3>ALUMNI PORTAL</h3>
+            </div>
+            <div class="user-info">
+                <div class="user-avatar" id="sidebarAvatar"><i class="fas fa-user"></i></div>
+                <div class="user-name" id="sidebarName">Alumni User</div>
+                <div class="user-email" id="sidebarEmail">—</div>
+            </div>
+            <div class="sidebar-menu">
+                <ul>
+                    <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                    <li><a href="school-updates.html"><i class="fas fa-newspaper"></i> School Updates</a></li>
+                    <li><a href="fee-information.html"><i class="fas fa-money-bill-wave"></i> Fee Information</a></li>
+                    <li><a href="fee-history.html"><i class="fas fa-history"></i> Fee History</a></li>
+                    <li><a href="payment.html"><i class="fas fa-credit-card"></i> Payment</a></li>
+                    <li><a href="network.html"><i class="fas fa-users"></i> Alumni Network</a></li>
+                    <li><a href="events.html"><i class="fas fa-calendar-alt"></i> Events</a></li>
+                    <li><a href="profile-settings.html" class="active"><i class="fas fa-user-cog"></i> My Profile</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="sidebar-footer">
+                <a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <div class="top-header">
+                <h2>My Profile</h2>
+                <div style="font-size:0.82rem;color:#888;" id="topUserName"></div>
+            </div>
+
+            <div class="content-area">
+                <div style="display:grid;grid-template-columns:260px 1fr;gap:20px;align-items:start;">
+
+                    <!-- Sidebar Profile Card -->
+                    <div class="profile-card-wrap">
+                        <div class="profile-hero"></div>
+                        <div class="profile-card-body">
+                            <div class="profile-avatar-wrap" id="profileAvatarWrap">
+                                <div class="initials-avatar" id="initialsAvatar">AL</div>
+                            </div>
+                            <div class="profile-name" id="profileName">Alumni User</div>
+                            <div class="profile-role" id="profileRole">Class of —</div>
+                            <div class="profile-meta">
+                                <div class="profile-meta-item"><i class="fas fa-envelope"></i><span
+                                        id="profileEmailMeta">—</span></div>
+                                <div class="profile-meta-item"><i class="fas fa-phone"></i><span
+                                        id="profilePhoneMeta">—</span></div>
+                                <div class="profile-meta-item"><i class="fas fa-map-marker-alt"></i><span
+                                        id="profileLocMeta">—</span></div>
+                            </div>
+                            <button class="edit-btn" id="editBtn"><i class="fas fa-edit"></i> Edit Profile</button>
+                        </div>
+                    </div>
+
+                    <!-- Info Cards -->
+                    <div>
+                        <div class="info-card">
+                            <h3><i class="fas fa-user" style="color:var(--school-primary, #0056b3)"></i> Personal Information</h3>
+                            <div class="info-grid">
+                                <div class="info-row"><span class="info-label">Full Name</span><span class="info-value"
+                                        id="dispName">—</span></div>
+                                <div class="info-row"><span class="info-label">Date of Birth</span><span
+                                        class="info-value" id="dispDob">—</span></div>
+                                <div class="info-row"><span class="info-label">Gender</span><span class="info-value"
+                                        id="dispGender">—</span></div>
+                                <div class="info-row"><span class="info-label">Phone</span><span class="info-value"
+                                        id="dispPhone">—</span></div>
+                                <div class="info-row"><span class="info-label">Email</span><span class="info-value"
+                                        id="dispEmail">—</span></div>
+                                <div class="info-row"><span class="info-label">Current Location</span><span
+                                        class="info-value" id="dispLocation">—</span></div>
+                                <div class="info-row" style="grid-column:1/-1"><span class="info-label">Home
+                                        Address</span><span class="info-value" id="dispAddress">—</span></div>
+                            </div>
+                        </div>
+
+                        <div class="info-card">
+                            <h3><i class="fas fa-graduation-cap" style="color:var(--school-primary, #0056b3)"></i> School Information</h3>
+                            <div class="info-grid">
+                                <div class="info-row"><span class="info-label">Graduation Year</span><span
+                                        class="info-value" id="dispYear">—</span></div>
+                                <div class="info-row"><span class="info-label">Form Completed</span><span
+                                        class="info-value" id="dispForm">—</span></div>
+                                <div class="info-row"><span class="info-label">House / Stream</span><span
+                                        class="info-value" id="dispHouse">—</span></div>
+                                <div class="info-row"><span class="info-label">Favourite Subject</span><span
+                                        class="info-value" id="dispSubject">—</span></div>
+                                <div class="info-row"><span class="info-label">Memorable Teacher</span><span
+                                        class="info-value" id="dispTeacher">—</span></div>
+                                <div class="info-row"><span class="info-label">Joined Network</span><span
+                                        class="info-value" id="dispJoined">—</span></div>
+                            </div>
+                        </div>
+
+                        <div class="info-card">
+                            <h3><i class="fas fa-briefcase" style="color:var(--school-primary, #0056b3)"></i> Professional Information</h3>
+                            <div class="info-grid">
+                                <div class="info-row"><span class="info-label">Occupation</span><span class="info-value"
+                                        id="dispOccupation">—</span></div>
+                                <div class="info-row"><span class="info-label">Company</span><span class="info-value"
+                                        id="dispCompany">—</span></div>
+                                <div class="info-row"><span class="info-label">Industry</span><span class="info-value"
+                                        id="dispIndustry">—</span></div>
+                                <div class="info-row" style="grid-column:1/-1"><span class="info-label">Bio</span><span
+                                        class="info-value" id="dispBio">—</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Edit Modal -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-user-edit"></i> Edit Profile</h3>
+                <button id="closeModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="editForm">
+                    <div class="form-row">
+                        <div class="form-group"><label>First Name</label><input type="text" id="eFirstName"></div>
+                        <div class="form-group"><label>Last Name</label><input type="text" id="eLastName"></div>
+                        <div class="form-group"><label>Date of Birth</label><input type="date" id="eDob"></div>
+                        <div class="form-group">
+                            <label>Gender</label>
+                            <select id="eGender">
+                                <option>Male</option>
+                                <option>Female</option>
+                                <option>Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group"><label>Phone</label><input type="tel" id="ePhone"></div>
+                        <div class="form-group"><label>Current Location</label><input type="text" id="eLocation"></div>
+                        <div class="form-group full"><label>Home Address</label><textarea id="eAddress"
+                                rows="2"></textarea></div>
+                        <div class="form-group"><label>Occupation</label><input type="text" id="eOccupation"></div>
+                        <div class="form-group"><label>Company</label><input type="text" id="eCompany"></div>
+                        <div class="form-group">
+                            <label>Industry</label>
+                            <select id="eIndustry">
+                                <option>Education</option>
+                                <option>Healthcare</option>
+                                <option>Technology</option>
+                                <option>Finance</option>
+                                <option>Engineering</option>
+                                <option>Law</option>
+                                <option>Agriculture</option>
+                                <option>Government</option>
+                                <option>Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group full"><label>Bio</label><textarea id="eBio" rows="2"></textarea></div>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn-cancel" id="cancelEdit">Cancel</button>
+                        <button type="submit" class="btn-save">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const loggedIn = sessionStorage.getItem('loggedIn');
+            if (!loggedIn) { window.location.href = 'login.html'; return; }
+
+            const email = sessionStorage.getItem('userEmail');
+            const alumni = getTenantData('school_alumni', '[]');
+            let user = alumni.find(a => a.email === email);
+
+            if (!user) {
+                // Fallback: create minimal user from session
+                user = { email, name: sessionStorage.getItem('userName') || 'Alumni', id: sessionStorage.getItem('userId') };
+            }
+
+            const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val || '—'; };
+
+            function renderPage() {
+                const initials = ((user.firstName || user.name || 'A').charAt(0) + (user.lastName || '').charAt(0)).toUpperCase() || 'AL';
+
+                // Sidebar
+                set('sidebarName', user.name);
+                set('sidebarEmail', user.email);
+                const sidebarAvatar = document.getElementById('sidebarAvatar');
+                if (user.photo) sidebarAvatar.innerHTML = `<img src="${user.photo}" alt="">`;
+                else sidebarAvatar.innerHTML = `<span style="font-size:1.4rem;font-weight:700;">${initials}</span>`;
+
+                set('topUserName', user.name);
+
+                // Hero card
+                const wrap = document.getElementById('profileAvatarWrap');
+                if (user.photo) wrap.innerHTML = `<img src="${user.photo}" alt="Profile">`;
+                else { document.getElementById('initialsAvatar').textContent = initials; }
+
+                set('profileName', user.name);
+                set('profileRole', 'Class of ' + (user.year || '—'));
+                set('profileEmailMeta', user.email);
+                set('profilePhoneMeta', user.phone);
+                set('profileLocMeta', user.currentLocation);
+
+                // Personal
+                set('dispName', user.name);
+                set('dispDob', user.dob ? new Date(user.dob).toLocaleDateString() : null);
+                set('dispGender', user.gender);
+                set('dispPhone', user.phone);
+                set('dispEmail', user.email);
+                set('dispLocation', user.currentLocation);
+                set('dispAddress', user.address);
+
+                // School
+                set('dispYear', user.year);
+                set('dispForm', user.form);
+                set('dispHouse', user.houseStream);
+                set('dispSubject', user.favoriteSubject);
+                set('dispTeacher', user.memorableTeacher);
+                set('dispJoined', user.joined);
+
+                // Professional
+                set('dispOccupation', user.profession);
+                set('dispCompany', user.company);
+                set('dispIndustry', user.industry);
+                set('dispBio', user.bio);
+
+                // Populate modal
+                document.getElementById('eFirstName').value = user.firstName || (user.name || '').split(' ')[0] || '';
+                document.getElementById('eLastName').value = user.lastName || (user.name || '').split(' ')[1] || '';
+                document.getElementById('eDob').value = user.dob || '';
+                document.getElementById('eGender').value = user.gender || 'Male';
+                document.getElementById('ePhone').value = user.phone || '';
+                document.getElementById('eLocation').value = user.currentLocation || '';
+                document.getElementById('eAddress').value = user.address || '';
+                document.getElementById('eOccupation').value = user.profession || '';
+                document.getElementById('eCompany').value = user.company || '';
+                document.getElementById('eIndustry').value = user.industry || 'Other';
+                document.getElementById('eBio').value = user.bio || '';
+            }
+
+            renderPage();
+
+            const modal = document.getElementById('editModal');
+            document.getElementById('editBtn').onclick = () => modal.style.display = 'flex';
+            document.getElementById('closeModal').onclick = () => modal.style.display = 'none';
+            document.getElementById('cancelEdit').onclick = () => modal.style.display = 'none';
+            window.onclick = e => { if (e.target === modal) modal.style.display = 'none'; };
+
+            document.getElementById('editForm').onsubmit = function (e) {
+                e.preventDefault();
+                const fn = document.getElementById('eFirstName').value;
+                const ln = document.getElementById('eLastName').value;
+                user.firstName = fn;
+                user.lastName = ln;
+                user.name = (fn + ' ' + ln).trim();
+                user.dob = document.getElementById('eDob').value;
+                user.gender = document.getElementById('eGender').value;
+                user.phone = document.getElementById('ePhone').value;
+                user.currentLocation = document.getElementById('eLocation').value;
+                user.address = document.getElementById('eAddress').value;
+                user.profession = document.getElementById('eOccupation').value;
+                user.company = document.getElementById('eCompany').value;
+                user.industry = document.getElementById('eIndustry').value;
+                user.bio = document.getElementById('eBio').value;
+
+                const idx = alumni.findIndex(a => a.email === email);
+                if (idx !== -1) {
+                    alumni[idx] = user;
+                    saveTenantData('school_alumni', alumni);
+                }
+                sessionStorage.setItem('alumniUser', JSON.stringify(user));
+                sessionStorage.setItem('userName', user.name);
+                modal.style.display = 'none';
+                renderPage();
+                alert('Profile updated successfully!');
+            };
+
+            document.getElementById('logoutBtn').onclick = function (e) {
+                e.preventDefault();
+                sessionStorage.removeItem('loggedIn');
+                sessionStorage.removeItem('userEmail');
+                sessionStorage.removeItem('userName');
+                sessionStorage.removeItem('userId');
+                sessionStorage.removeItem('alumniUser');
+                window.location.href = 'login.html';
+            };
+        });
+    </script>
+    <!-- ACADEX: Powered-by footer and school branding -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+
+</body>
+
+</html>
+

@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Procurement - ACADEX</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/library-portal.css">
+    <link rel="stylesheet" href="../css/ancillary-portal.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            background-color: rgba(var(--school-primary-rgb), 0.2);
+            color: white;
+            border-left: 3px solid var(--school-primary);
+        }
+
+        .top-header h2 {
+            color: var(--school-primary-dark);
+        }
+
+        .proc-nav-item.active {
+            background: var(--school-primary) !important;
+            color: white !important;
+            border-color: var(--school-primary) !important;
+            box-shadow: 0 4px 10px rgba(var(--school-primary-rgb), 0.3) !important;
+        }
+
+        .btn-primary {
+            background: var(--school-primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .btn-primary:hover {
+            background: var(--school-primary-dark);
+        }
+
+        .icon-budget {
+            background: rgba(var(--school-primary-rgb), 0.1) !important;
+            color: var(--school-primary) !important;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <img src="../images/logo.png" alt="Logo" class="acadex-school-logo">
+                <h3>Library Portal</h3>
+            </div>
+            <div class="sidebar-menu">
+                <div class="sidebar-section-title">Library System</div>
+                <ul>
+                    <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
+                    <li><a href="books.html"><i class="fas fa-book"></i><span>Catalog Management</span></a></li>
+                    <li><a href="issue.html"><i class="fas fa-exchange-alt"></i><span>Circulation Desk</span></a></li>
+                    <li><a href="digital.html"><i class="fas fa-laptop-code"></i><span>Digital Resources</span></a></li>
+                    <li><a href="reports.html"><i class="fas fa-file-invoice"></i><span>Reports & Inventory</span></a>
+                    </li>
+                </ul>
+                <div class="sidebar-section-title">Operations</div>
+                <ul>
+                    <li><a href="staff-directory.html"><i class="fas fa-users"></i><span>Staff Directory</span></a></li>
+                    <li><a href="procurement.html" class="active"><i
+                                class="fas fa-shopping-cart"></i><span>Procurement</span></a></li>
+                    <li><a href="assets.html"><i class="fas fa-boxes"></i><span>Asset Management</span></a></li>
+                    <li><a href="schedules.html"><i class="fas fa-calendar-check"></i><span>Schedules &
+                                Shifts</span></a></li>
+                </ul>
+                <div class="sidebar-section-title">Staff HR & Support</div>
+                <ul>
+                    <li><a href="hr-services.html"><i class="fas fa-user-shield"></i><span>HR Services</span></a></li>
+                    <li><a href="profile.html"><i class="fas fa-id-card"></i><span>My Profile</span></a></li>
+                    <li><a href="resources.html"><i class="fas fa-folder-open"></i><span>Resources & Docs</span></a>
+                    </li>
+                    <li><a href="it-support.html"><i class="fas fa-headset"></i><span>IT Support</span></a></li>
+                </ul>
+                <div class="sidebar-section-title">Communication</div>
+                <ul>
+                    <li><a href="news.html"><i class="fas fa-newspaper"></i><span>News & Updates</span></a></li>
+                    <li><a href="announcements.html"><i class="fas fa-bullhorn"></i><span>General Notices</span></a>
+                    </li>
+                    <li><a href="contact.html"><i class="fas fa-address-book"></i><span>Contact Us</span></a></li>
+                    <li><a href="settings.html"><i class="fas fa-cog"></i><span>System Settings</span></a></li>
+                </ul>
+            </div>
+            <div class="sidebar-footer">
+                <a href="login.html"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="top-header">
+                <h2>Procurement Hub</h2>
+                <div class="user-profile">
+                    <div style="text-align: right; margin-right: 10px;">
+                        <div style="font-weight: 600; font-size: 0.9rem;">Librarian Admin</div>
+                        <div style="font-size: 0.75rem; color: #888;">System Administrator</div>
+                    </div>
+                    <img src="../images/admin-avatar.png" alt="Admin">
+                </div>
+            </div>
+
+            <div class="contentArea">
+                <nav class="proc-nav">
+                    <div class="proc-nav-item active" onclick="switchProcTab('overview', this)">Overview & Stats</div>
+                    <div class="proc-nav-item" onclick="switchProcTab('requests', this)">My Requisitions</div>
+                    <div class="proc-nav-item" onclick="switchProcTab('suppliers', this)">Suppliers</div>
+                </nav>
+
+                <div id="overview" class="proc-tab">
+                    <div class="procurement-stats">
+                        <div class="stat-card">
+                            <div class="stat-icon icon-pending"><i class="fas fa-clock"></i></div>
+                            <div class="stat-info">
+                                <h3 id="pendingCount">0</h3>
+                                <p>Pending Approval</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon icon-approved"><i class="fas fa-check-circle"></i></div>
+                            <div class="stat-info">
+                                <h3 id="approvedCount">0</h3>
+                                <p>Approved Orders</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon icon-budget"><i class="fas fa-wallet"></i></div>
+                            <div class="stat-info">
+                                <h3 id="budgetRemaining">$4,250</h3>
+                                <p>Budget Remaining</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-card" style="padding: 25px;">
+                        <div
+                            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 15px;">
+                            <h3 style="margin: 0; color: var(--school-primary-dark, #1a1a2e);">Recent Requisitions</h3>
+                            <button class="btn-primary" onclick="openNewRequisition()"><i
+                                     class="fas fa-plus"></i> New Request</button>
+                        </div>
+                        <div class="requisition-cards" id="recentRequisitionsCards">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <div id="requests" class="proc-tab" style="display: none;">
+                    <div class="glass-card" style="padding: 25px;">
+                        <div
+                            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <h3 style="margin: 0; color: var(--school-primary-dark, #1a1a2e);">Full Requisition History</h3>
+                            <button class="btn-primary btn-sm" onclick="openNewRequisition()"><i
+                                    class="fas fa-plus"></i> New</button>
+                        </div>
+                        <div class="requisition-cards" id="fullRequisitionsCards">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <div id="suppliers" class="proc-tab" style="display: none;">
+                    <div class="glass-card" style="padding: 25px;">
+                        <h3 style="margin-bottom: 15px;">Approved Suppliers</h3>
+                        <div class="table-container">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Supplier Name</th>
+                                        <th>Category</th>
+                                        <th>Contact Person</th>
+                                        <th>Email</th>
+                                        <th>Rating</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>ABC Stationery</td>
+                                        <td>Office Supplies</td>
+                                        <td>Mr. J. Doe</td>
+                                        <td>sales@abcstat.co.zw</td>
+                                        <td><span style="color: #f6c23e;"><i class="fas fa-star"></i> 4.5</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>TechWorld Solutions</td>
+                                        <td>IT Equipment</td>
+                                        <td>Mrs. S. Moyo</td>
+                                        <td>support@techworld.com</td>
+                                        <td><span style="color: #f6c23e;"><i class="fas fa-star"></i> 4.8</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- New Requisition Modal -->
+    <div id="addReqModal" class="modal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h3><i class="fas fa-file-signature"></i> Create Requisition</h3>
+                <span class="close-modal" onclick="closeModal('addReqModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="requisitionForm" class="requisition-form">
+                    <input type="hidden" id="editReqId">
+                    <div class="form-group">
+                        <label>Department</label>
+                        <select id="requestDept" required>
+                            <option value="Library">Library</option>
+                            <option value="Academics">Academics</option>
+                            <option value="ICT">ICT</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Priority</label>
+                        <select id="priority" required>
+                            <option value="Normal">Normal</option>
+                            <option value="Urgent">Urgent</option>
+                            <option value="Emergency">Emergency</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Item Description *</label>
+                        <input type="text" id="itemDesc" placeholder="e.g. 50x A4 Books" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Estimated Cost (USD) *</label>
+                        <input type="number" id="cost" step="0.01" required>
+                    </div>
+                    <div class="form-group form-full">
+                        <label>Reason / Justification</label>
+                        <textarea id="reason" rows="3" placeholder="Why is this needed?"></textarea>
+                    </div>
+                    <button type="submit" class="btn-primary" style="width: 100%;">Submit Requisition</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Review/Details Modal -->
+    <div id="reviewReqModal" class="modal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h3><i class="fas fa-clipboard-check"></i> Requisition Details</h3>
+                <span class="close-modal" onclick="closeModal('reviewReqModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div id="reviewDetails" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; font-size: 0.9rem;">
+                        <div><span style="color: #64748b;">Requested By:</span> <strong id="revRequester">User</strong></div>
+                        <div><span style="color: #64748b;">Date:</span> <strong id="revDate">Date</strong></div>
+                        <div style="grid-column: span 2;"><span style="color: #64748b;">Reason:</span> <p id="revReason" style="margin:5px 0 0; font-weight:600;"></p></div>
+                    </div>
+                </div>
+                <div id="rejectionSection" style="display:none; margin-bottom:20px; padding:15px; background:#fef2f2; border-left:4px solid #ef4444; border-radius:8px;">
+                    <h5 style="margin:0 0 5px; color:#b91c1c;">Rejection Reason:</h5>
+                    <p id="revRejectionReason" style="margin:0; font-size:0.9rem; color:#b91c1c;"></p>
+                </div>
+                <div id="approvalActions" style="display:none;">
+                    <div class="form-group form-full">
+                        <label>Reviewer Notes / Feedback</label>
+                        <textarea id="revNotes" rows="3" style="width:100%; margin-bottom:15px; padding:10px; border-radius:8px; border:1px solid #ddd;"></textarea>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <button onclick="updateReqStatus('Rejected')" class="btn btn-danger" style="flex:1;">Reject</button>
+                        <button id="approveBtn" class="btn btn-success" style="flex:2;">Approve</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/ancillary-common.js"></script>
+    <script src="../js/library-auth.js"></script>
+    <script src="../js/library-admin.js"></script>
+    <!-- ACADEX: Powered-by footer and school branding -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+
+</body>
+
+</html>
+

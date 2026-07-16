@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supplier Management - Admin Portal</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+
+        .admin-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 260px;
+            background-color: var(--school-primary-dark, #1a1a2e);
+            color: white;
+            position: fixed;
+            height: 100%;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: 250px;
+            width: calc(100% - 250px);
+        }
+
+        .top-header {
+            background-color: white;
+            padding: 15px 30px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-left h2 {
+            margin: 0;
+            color: #333;
+            font-size: 1.5rem;
+        }
+
+        .content-area {
+            padding: 30px;
+        }
+
+        .page-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .search-filter {
+            display: flex;
+            gap: 10px;
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-box input {
+            padding: 10px 15px 10px 40px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            width: 300px;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+        }
+
+        select {
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background-color: var(--school-primary, #0056b3);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--school-primary-dark, #003d82);
+        }
+
+        .data-table {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background-color: #f8f9fa;
+        }
+
+        th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .supplier-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .supplier-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--school-primary, #0056b3);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            flex-shrink: 0;
+        }
+
+        .status-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .status-approved,
+        .status-active {
+            background-color: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+        }
+
+        .status-pending,
+        .status-pendingverification {
+            background-color: rgba(255, 193, 7, 0.1);
+            color: #856404;
+        }
+
+        .status-rejected,
+        .status-inactive {
+            background-color: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-icon {
+            width: 35px;
+            height: 35px;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-view {
+            background-color: rgba(var(--school-primary-rgb, 0, 86, 179), 0.1);
+            color: var(--school-primary, #0056b3);
+        }
+
+        .btn-edit {
+            background-color: rgba(255, 193, 7, 0.1);
+            color: #ffc107;
+        }
+
+        .btn-delete {
+            background-color: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+        }
+
+        .btn-approve-icon {
+            background-color: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+        }
+
+        .compliance-badge {
+            font-size: 0.75rem;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-weight: 600;
+        }
+
+        .compliance-ok {
+            background: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+        }
+
+        .compliance-warn {
+            background: rgba(255, 193, 7, 0.1);
+            color: #856404;
+        }
+
+        .compliance-bad {
+            background: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+        }
+
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .summary-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .summary-card-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+        }
+
+        .icon-blue { background: rgba(0,86,179,0.1); color: var(--school-primary, #0056b3); }
+        .icon-green { background: rgba(40,167,69,0.1); color: #28a745; }
+        .icon-yellow { background: rgba(255,193,7,0.1); color: #856404; }
+        .icon-red { background: rgba(220,53,69,0.1); color: #dc3545; }
+
+        .summary-card-info h3 {
+            margin: 0;
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--school-primary-dark, #1a1a2e);
+        }
+
+        .summary-card-info p {
+            margin: 2px 0 0;
+            font-size: 0.8rem;
+            color: #888;
+        }
+
+        @media (max-width: 1100px) {
+            .summary-cards { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.active { transform: translateX(0); }
+            .main-content { margin-left: 0; width: 100%; }
+            .summary-cards { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar"></aside>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Top Header -->
+            <div class="top-header">
+                <div class="header-left">
+                    <h2>Supplier Management</h2>
+                </div>
+            </div>
+
+            <!-- Content Area -->
+            <div class="content-area">
+
+                <!-- Summary Cards -->
+                <div class="summary-cards">
+                    <div class="summary-card">
+                        <div class="summary-card-icon icon-blue"><i class="fas fa-truck"></i></div>
+                        <div class="summary-card-info">
+                            <h3 id="totalSuppliers">0</h3>
+                            <p>Total Suppliers</p>
+                        </div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-card-icon icon-green"><i class="fas fa-check-circle"></i></div>
+                        <div class="summary-card-info">
+                            <h3 id="approvedSuppliers">0</h3>
+                            <p>Approved</p>
+                        </div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-card-icon icon-yellow"><i class="fas fa-clock"></i></div>
+                        <div class="summary-card-info">
+                            <h3 id="pendingSuppliers">0</h3>
+                            <p>Pending Verification</p>
+                        </div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-card-icon icon-red"><i class="fas fa-exclamation-triangle"></i></div>
+                        <div class="summary-card-info">
+                            <h3 id="expiringSuppliers">0</h3>
+                            <p>Expiring Compliance</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Page Actions -->
+                <div class="page-actions">
+                    <div class="search-filter">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="supplierSearch" placeholder="Search suppliers...">
+                        </div>
+                        <select id="statusFilter">
+                            <option value="">All Status</option>
+                            <option value="Approved">Approved</option>
+                            <option value="Pending Verification">Pending Verification</option>
+                            <option value="Rejected">Rejected</option>
+                        </select>
+                        <select id="complianceFilter">
+                            <option value="">All Compliance</option>
+                            <option value="ok">Compliant</option>
+                            <option value="warn">Expiring Soon</option>
+                            <option value="bad">Expired</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" onclick="openModal('addSupplierModal')">
+                        <i class="fas fa-plus"></i> Add New Supplier
+                    </button>
+                </div>
+
+                <!-- Data Table -->
+                <div class="data-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Supplier ID</th>
+                                <th>Company Name</th>
+                                <th>Contact Person</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Compliance</th>
+                                <th>Category</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="suppliersTableBody">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <div class="pagination" id="supplierPagination" style="margin-top: 20px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/admin-common.js"></script>
+    <script src="../js/page-enhancer.js"></script>
+    <script>
+        const menuToggle = document.getElementById('menuToggle');
+        const sidebar = document.getElementById('sidebar');
+        if (menuToggle) {
+            menuToggle.addEventListener('click', function () {
+                sidebar.classList.toggle('active');
+            });
+        }
+    </script>
+
+    <!-- Add Supplier Modal -->
+    <div id="addSupplierModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add New Supplier</h3>
+                <span class="close-modal" onclick="closeModal('addSupplierModal')">&times;</span>
+            </div>
+            <form id="addSupplierForm">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Legal Company Name *</label>
+                        <input type="text" id="newCompanyName" placeholder="e.g. ABC Holdings Ltd" required>
+                    </div>
+                    <div class="form-group">
+                        <label>BP / Registration No *</label>
+                        <input type="text" id="newRegNo" placeholder="e.g. 1234/2024" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Year of Incorporation *</label>
+                        <input type="number" id="newIncorpYear" placeholder="YYYY" min="1900" max="2030" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Physical Address *</label>
+                        <textarea id="newAddress" rows="2" placeholder="123 Samora Machel Ave, Harare" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Contact Person *</label>
+                        <input type="text" id="newContactPerson" placeholder="Full Name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Designation *</label>
+                        <input type="text" id="newDesignation" placeholder="e.g. Sales Manager" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Supplier Email *</label>
+                        <input type="email" id="newEmail" placeholder="sales@company.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Phone Number *</label>
+                        <input type="tel" id="newPhone" placeholder="+263 XXX XXX XXX" required>
+                    </div>
+                    <div class="form-group">
+                        <label>PRAZ Registration No *</label>
+                        <input type="text" id="newPrazNo" placeholder="e.g. PRAZ-2024-X" required>
+                    </div>
+                    <div class="form-group">
+                        <label>PRAZ Expiry Date *</label>
+                        <input type="date" id="newPrazExpiry" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Tax Clearance Expiry Date *</label>
+                        <input type="date" id="newTaxExpiry" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Portal Password *</label>
+                        <input type="password" id="newPassword" placeholder="Create a secure password" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Status *</label>
+                        <select id="newStatus" required>
+                            <option value="Approved">Approved</option>
+                            <option value="Pending Verification">Pending Verification</option>
+                            <option value="Rejected">Rejected</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-cancel" onclick="closeModal('addSupplierModal')">Cancel</button>
+                    <button type="submit" class="btn-submit">Add Supplier</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- View Supplier Modal -->
+    <div id="viewSupplierModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Supplier Details</h3>
+                <span class="close-modal" onclick="closeModal('viewSupplierModal')">&times;</span>
+            </div>
+            <div class="modal-body" id="viewSupplierContent">
+                <!-- Populated by JS -->
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn-primary" onclick="closeModal('viewSupplierModal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Supplier Modal -->
+    <div id="editSupplierModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit Supplier</h3>
+                <span class="close-modal" onclick="closeModal('editSupplierModal')">&times;</span>
+            </div>
+            <form id="editSupplierForm">
+                <input type="hidden" id="editSupplierId">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Legal Company Name</label>
+                        <input type="text" id="editCompanyName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>BP / Registration No</label>
+                        <input type="text" id="editRegNo" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Year of Incorporation</label>
+                        <input type="number" id="editIncorpYear" min="1900" max="2030">
+                    </div>
+                    <div class="form-group">
+                        <label>Physical Address</label>
+                        <textarea id="editAddress" rows="2" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Contact Person</label>
+                        <input type="text" id="editContactPerson" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Designation</label>
+                        <input type="text" id="editDesignation" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="editEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Phone</label>
+                        <input type="tel" id="editPhone" required>
+                    </div>
+                    <div class="form-group">
+                        <label>PRAZ Registration No</label>
+                        <input type="text" id="editPrazNo">
+                    </div>
+                    <div class="form-group">
+                        <label>PRAZ Expiry Date</label>
+                        <input type="date" id="editPrazExpiry">
+                    </div>
+                    <div class="form-group">
+                        <label>Tax Clearance Expiry Date</label>
+                        <input type="date" id="editTaxExpiry">
+                    </div>
+                    <div class="form-group">
+                        <label>Status</label>
+                        <select id="editStatus" required>
+                            <option value="Approved">Approved</option>
+                            <option value="Pending Verification">Pending Verification</option>
+                            <option value="Rejected">Rejected</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-cancel" onclick="closeModal('editSupplierModal')">Cancel</button>
+                    <button type="submit" class="btn-submit">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Document Viewer Modal -->
+    <div id="documentViewerModal" class="modal" style="z-index: 9999 !important;">
+        <div class="modal-content" style="max-width: 800px; height: 90vh; display: flex; flex-direction: column; z-index: 10000 !important; position: relative;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 15px;">
+                <h3 id="docViewerTitle">Document View</h3>
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn-sm" style="background: #3b82f6; color: white;" onclick="window.print()"><i class="fas fa-print"></i> Print</button>
+                    <button id="docDownloadBtn" class="btn-sm" style="background: #10b981; color: white;"><i class="fas fa-download"></i> Download</button>
+                    <span class="close-modal" onclick="closeDocumentViewer()" style="position: static;">&times;</span>
+                </div>
+            </div>
+            <div id="docViewerBody" style="flex: 1; overflow-y: auto; padding: 20px; background: #f8fafc; display: flex; justify-content: center; align-items: center;"></div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteSupplierModal" class="modal">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header">
+                <h3>Confirm Delete</h3>
+                <span class="close-modal" onclick="closeModal('deleteSupplierModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this supplier? This action cannot be undone.</p>
+                <div class="form-actions" style="margin-top: 20px;">
+                    <button type="button" class="btn-cancel" onclick="closeModal('deleteSupplierModal')">Cancel</button>
+                    <button type="button" class="btn-delete" id="confirmDeleteSupplierBtn"
+                        style="padding: 12px 25px; border-radius: 5px; border:none; cursor:pointer; background:#dc3545; color:white;">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/admin-suppliers.js"></script>
+    <script src="../js/admin-sidebar.js"></script>
+    <!-- ACADEX: Powered-by footer and school branding -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+
+</body>
+
+</html>
+

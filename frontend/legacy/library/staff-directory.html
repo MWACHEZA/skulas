@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staff Directory - ACADEX</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/library-portal.css">
+    <link rel="stylesheet" href="../css/ancillary-portal.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            background-color: rgba(var(--school-primary-rgb), 0.2);
+            color: white;
+            border-left: 3px solid var(--school-primary);
+        }
+
+        .top-header h2 {
+            color: var(--school-primary-dark);
+        }
+
+        .filter-tab.active {
+            background: var(--school-primary) !important;
+            color: white !important;
+            border-color: var(--school-primary) !important;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <img src="../images/logo.png" alt="Logo" class="acadex-school-logo">
+                <h3>Library Portal</h3>
+            </div>
+            <div class="sidebar-menu">
+                <div class="sidebar-section-title">Library System</div>
+                <ul>
+                    <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
+                    <li><a href="books.html"><i class="fas fa-book"></i><span>Catalog Management</span></a></li>
+                    <li><a href="issue.html"><i class="fas fa-exchange-alt"></i><span>Circulation Desk</span></a></li>
+                    <li><a href="digital.html"><i class="fas fa-laptop-code"></i><span>Digital Resources</span></a></li>
+                    <li><a href="reports.html"><i class="fas fa-file-invoice"></i><span>Reports & Inventory</span></a>
+                    </li>
+                </ul>
+                <div class="sidebar-section-title">Operations</div>
+                <ul>
+                    <li><a href="staff-directory.html" class="active"><i class="fas fa-users"></i><span>Staff
+                                Directory</span></a></li>
+                    <li><a href="procurement.html"><i class="fas fa-shopping-cart"></i><span>Procurement</span></a></li>
+                    <li><a href="assets.html"><i class="fas fa-boxes"></i><span>Asset Management</span></a></li>
+                    <li><a href="schedules.html"><i class="fas fa-calendar-check"></i><span>Schedules &
+                                Shifts</span></a></li>
+                </ul>
+                <div class="sidebar-section-title">Staff HR & Support</div>
+                <ul>
+                    <li><a href="hr-services.html"><i class="fas fa-user-shield"></i><span>HR Services</span></a></li>
+                    <li><a href="profile.html"><i class="fas fa-id-card"></i><span>My Profile</span></a></li>
+                    <li><a href="resources.html"><i class="fas fa-folder-open"></i><span>Resources & Docs</span></a>
+                    </li>
+                    <li><a href="it-support.html"><i class="fas fa-headset"></i><span>IT Support</span></a></li>
+                </ul>
+                <div class="sidebar-section-title">Communication</div>
+                <ul>
+                    <li><a href="news.html"><i class="fas fa-newspaper"></i><span>News & Updates</span></a></li>
+                    <li><a href="announcements.html"><i class="fas fa-bullhorn"></i><span>General Notices</span></a>
+                    </li>
+                    <li><a href="contact.html"><i class="fas fa-address-book"></i><span>Contact Us</span></a></li>
+                    <li><a href="settings.html"><i class="fas fa-cog"></i><span>System Settings</span></a></li>
+                </ul>
+            </div>
+            <div class="sidebar-footer">
+                <a href="login.html"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="top-header">
+                <h2>Staff Directory</h2>
+                <div class="user-profile">
+                    <div style="text-align: right; margin-right: 10px;">
+                        <div style="font-weight: 600; font-size: 0.9rem;">Librarian Admin</div>
+                        <div style="font-size: 0.75rem; color: #888;">System Administrator</div>
+                    </div>
+                    <img src="../images/admin-avatar.png" alt="Admin">
+                </div>
+            </div>
+
+            <div class="contentArea">
+                <div style="margin-bottom: 25px;">
+                    <div class="filter-tabs" style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px;">
+                        <div class="filter-tab active"
+                            style="padding: 8px 15px; background: white; border-radius: 20px; cursor: pointer; border: 1px solid #ddd; font-size: 0.85rem;">
+                            All Staff</div>
+                        <div class="filter-tab"
+                            style="padding: 8px 15px; background: white; border-radius: 20px; cursor: pointer; border: 1px solid #ddd; font-size: 0.85rem;">
+                            Administration</div>
+                        <div class="filter-tab"
+                            style="padding: 8px 15px; background: white; border-radius: 20px; cursor: pointer; border: 1px solid #ddd; font-size: 0.85rem;">
+                            Teaching Staff</div>
+                        <div class="filter-tab"
+                            style="padding: 8px 15px; background: white; border-radius: 20px; cursor: pointer; border: 1px solid #ddd; font-size: 0.85rem;">
+                            Library Staff</div>
+                        <div class="filter-tab"
+                            style="padding: 8px 15px; background: white; border-radius: 20px; cursor: pointer; border: 1px solid #ddd; font-size: 0.85rem;">
+                            Finance Staff</div>
+                        <div class="filter-tab"
+                            style="padding: 8px 15px; background: white; border-radius: 20px; cursor: pointer; border: 1px solid #ddd; font-size: 0.85rem;">
+                            Support Staff</div>
+                    </div>
+                    <div class="search-box" style="max-width: 400px; flex: 1;">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="staffSearchInput" placeholder="Search staff by name or role...">
+                    </div>
+                </div>
+
+                <div id="staffGrid" class="staff-grid"
+                    style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px;">
+                    <!-- Content populated by JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/common-staff.js"></script>
+    <script src="../js/ancillary-common.js"></script>
+    <script src="../js/library-auth.js"></script>
+    <script src="../js/library-admin.js"></script>
+    <script src="../js/staff-directory-loader.js"></script>
+    <!-- ACADEX: Powered-by footer and school branding -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+
+</body>
+
+</html>
+

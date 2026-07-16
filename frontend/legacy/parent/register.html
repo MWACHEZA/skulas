@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parent Registration - ACADEX</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/parent-portal.css">
+    <link rel="stylesheet" href="../css/toast.css">
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--school-primary-dark, #0f172a) 0%, var(--school-primary, var(--school-primary-dark, #1e293b)) 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .auth-card {
+            width: 100%;
+            max-width: 440px;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .auth-header {
+            background: #f8fafc;
+            padding: 40px 30px 30px;
+            text-align: center;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .auth-header h2 {
+            color: #0f172a;
+            font-size: 1.6rem;
+            margin: 0;
+            font-weight: 700;
+        }
+
+        .auth-header p {
+            color: #64748b;
+            margin: 5px 0 0;
+            font-size: 0.9rem;
+        }
+
+        .auth-body {
+            padding: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--school-primary-dark, #1e293b);
+        }
+
+        .input-wrap {
+            position: relative;
+        }
+
+        .input-wrap input {
+            width: 100%;
+            padding: 12px 14px 12px 42px;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+            background: #fcfdfe;
+        }
+
+        .input-wrap input:focus {
+            outline: none;
+            border-color: var(--school-primary, #0f172a);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(var(--school-primary-rgb, 15, 23, 42), 0.05);
+        }
+
+        .input-wrap i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            font-size: 1rem;
+        }
+
+        .btn-auth {
+            width: 100%;
+            padding: 14px;
+            background: var(--school-primary, #0f172a);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .btn-auth:hover {
+            background: var(--school-primary-dark, var(--school-primary-dark, #1e293b));
+            transform: translateY(-1px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .auth-footer {
+            padding: 20px 30px 40px;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #64748b;
+        }
+
+        .auth-footer a {
+            color: var(--school-primary, #0f172a);
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .auth-footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="auth-card">
+        <div class="auth-header">
+            <img src="../images/logo.png" alt="School Logo" class="acadex-school-logo" style="width: 70px; margin-bottom: 15px;">
+            <h2 class="acadex-school-name">Create Parent Account</h2>
+            <p>One account to manage all your children</p>
+        </div>
+
+        <div class="auth-body">
+            <form id="registerForm">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <div class="input-wrap">
+                        <input type="text" id="parentName" placeholder="e.g. John Doe" required>
+                        <i class="fas fa-user"></i>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <div class="input-wrap">
+                        <input type="email" id="parentEmail" placeholder="your@email.com" required>
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Phone Number</label>
+                    <div class="input-wrap">
+                        <input type="tel" id="parentPhone" placeholder="+263 77 123 4567" required>
+                        <i class="fas fa-phone"></i>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Create Password</label>
+                    <div class="input-wrap">
+                        <input type="password" id="parentPassword" placeholder="••••••••" required>
+                        <i class="fas fa-lock"></i>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-auth">
+                    Create Account <i class="fas fa-arrow-right"></i>
+                </button>
+            </form>
+        </div>
+
+        <div class="auth-footer">
+            Already have an account? <a href="login.html">Sign In</a><br><br>
+            <a href="../index.html"><i class="fas fa-home"></i> Back to Homepage</a>
+        </div>
+    </div>
+
+    <script src="../js/toast.js"></script>
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+    <script>
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('parentName').value.trim();
+            const email = document.getElementById('parentEmail').value.trim().toLowerCase();
+            const phone = document.getElementById('parentPhone').value.trim();
+            const password = document.getElementById('parentPassword').value;
+
+            let parents = getTenantData('acadex_parents', '[]');
+            
+            // Basic validation
+            if (parents.some(p => p.email === email)) {
+                Toast.error('An account with this email already exists.');
+                return;
+            }
+
+            const newParent = {
+                id: 'PAR-' + Date.now(),
+                name,
+                email,
+                phone,
+                password,
+                linkedStudents: [] // Array of { schoolCode, studentId, studentName }
+            };
+
+            parents.push(newParent);
+            saveTenantData('acadex_parents', parents);
+
+            Toast.success('Account created successfully!');
+            setTimeout(() => {
+                window.location.href = 'login.html';
+            }, 1500);
+        });
+    </script>
+</body>
+</html>
+
+

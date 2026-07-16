@@ -1,0 +1,41 @@
+/* Payment Methods Styles */
+.pm-settings-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.pm-settings-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  transition: background 0.2s;
+}
+.pm-settings-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+.pm-item-info {
+  display: flex;
+  flex-direction: column;
+}
+.pm-item-name {
+  font-weight: 600;
+  color: var(--text-color);
+}
+.pm-item-meta {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+.pm-btn-icon.danger {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  border: none;
+  padding: 0.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.pm-btn-icon.danger:hover {
+  background: #ef4444;
+  color: white;
+}

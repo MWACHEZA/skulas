@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clubs & Religious Activities - Embakwe High School</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        /* Clubs Page Specific Styles */
+        .clubs-banner {
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('images/clubs-banner.jpg');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            text-align: center;
+            padding: 100px 0;
+            margin-bottom: 50px;
+        }
+
+        .clubs-banner h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+
+        .clubs-banner p {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .clubs-filter {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+
+        .filter-btn {
+            background-color: #f5f5f5;
+            border: none;
+            padding: 12px 20px;
+            margin: 0 5px 10px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn:hover {
+            background-color: #e0e0e0;
+        }
+
+        .filter-btn.active {
+            background-color: #0056b3;
+            color: white;
+        }
+
+        .clubs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+
+        .club-card {
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .club-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .club-img {
+            height: 200px;
+            overflow: hidden;
+        }
+
+        .club-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .club-card:hover .club-img img {
+            transform: scale(1.1);
+        }
+
+        .club-info {
+            padding: 20px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .club-info h3 {
+            margin-bottom: 10px;
+            color: #0056b3;
+        }
+
+        .club-info p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 15px;
+            flex-grow: 1;
+        }
+
+        .club-details {
+            margin-top: auto;
+        }
+
+        .club-details p {
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .club-details i {
+            margin-right: 10px;
+            color: #0056b3;
+            width: 20px;
+            text-align: center;
+        }
+
+        .join-btn {
+            display: inline-block;
+            background-color: #0056b3;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: 500;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .join-btn:hover {
+            background-color: #003d7a;
+        }
+
+        /* Religious Activities Section */
+        .religious-section {
+            background-color: #f9f9f9;
+            padding: 80px 0;
+            margin-top: 50px;
+        }
+
+        .religious-section h2 {
+            text-align: center;
+            margin-bottom: 50px;
+            color: #333;
+            font-size: 2.5rem;
+        }
+
+        .religious-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .religious-card {
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            text-align: center;
+        }
+
+        .religious-icon {
+            font-size: 3rem;
+            color: #0056b3;
+            margin-bottom: 20px;
+        }
+
+        .religious-card h3 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .religious-card p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .mass-schedule {
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .mass-schedule h4 {
+            margin-bottom: 10px;
+            color: #0056b3;
+            text-align: center;
+        }
+
+        .mass-schedule ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .mass-schedule li {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+        }
+
+        .mass-schedule li:last-child {
+            border-bottom: none;
+        }
+
+        .mass-schedule i {
+            margin-right: 10px;
+            color: #0056b3;
+        }
+
+        /* Responsive styles */
+        @media (max-width: 992px) {
+
+            .clubs-grid,
+            .religious-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .clubs-banner h1 {
+                font-size: 2.5rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .clubs-filter {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .filter-btn {
+                width: 80%;
+                margin-bottom: 8px;
+            }
+
+            .clubs-grid,
+            .religious-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .clubs-banner {
+                padding: 60px 0;
+            }
+
+            .clubs-banner h1 {
+                font-size: 2rem;
+            }
+
+            .clubs-banner p {
+                font-size: 1rem;
+            }
+
+            .religious-section h2 {
+                font-size: 2rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .club-card {
+                margin: 0 15px;
+            }
+
+            .club-img {
+                height: 180px;
+            }
+
+            .club-info h3 {
+                font-size: 1.2rem;
+            }
+
+            .religious-card {
+                padding: 20px;
+            }
+
+            .religious-icon {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <div class="container">
+            <div class="contact-info">
+                <span><i class="fas fa-phone"></i> +263 123 456 789</span>
+                <span><i class="fas fa-envelope"></i> info@embakwe.ac.zw</span>
+            </div>
+            <div class="portal-links">
+                <a href="library/login.html"><i class="fas fa-book"></i> Librarian</a>
+                <a href="bursar/login.html"><i class="fas fa-money-check-alt"></i> Bursar</a>
+                <a href="student/login.html"><i class="fas fa-user-graduate"></i> Student Portal</a>
+                <a href="teacher/login.html"><i class="fas fa-chalkboard-teacher"></i> Teacher Portal</a>
+                <a href="alumni/login.html"><i class="fas fa-user-tie"></i> Alumni Portal</a>
+                <a href="ancillary/login.html"><i class="fas fa-tools"></i> Ancillary Portal</a>
+                <a href="admin/login.html"><i class="fas fa-lock"></i> Admin</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="logo">
+                <h1 class="acadex-school-name">Embakwe High School</h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="departments.html">Departments</a></li>
+                    <li><a href="apply.html">Applications</a></li>
+                    <li><a href="check-status.html">Track Application</a></li>
+                    <li><a href="gallery.html">Gallery</a></li>
+                    <li><a href="news.html">News</a></li>
+                    <li><a href="sports.html">Sports</a></li>
+                    <li><a href="clubs.html" class="active">Clubs</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+            </nav>
+            <div class="menu-toggle">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </header>
+
+    <!-- Clubs Banner -->
+    <section class="clubs-banner">
+        <div class="container">
+            <h1 id="hero-title">Clubs & Activities</h1>
+            <p id="hero-subtitle">Discover the diverse range of clubs and activities at Embakwe High School that help our students develop
+                leadership skills, pursue their passions, and build lasting friendships.</p>
+        </div>
+    </section>
+
+    <!-- Clubs Section -->
+    <section class="clubs-section">
+        <div class="container">
+            <div class="clubs-filter">
+                <button class="filter-btn active" data-filter="all">All Clubs</button>
+                <button class="filter-btn" data-filter="academic">Academic</button>
+                <button class="filter-btn" data-filter="arts">Arts & Culture</button>
+                <button class="filter-btn" data-filter="service">Community Service</button>
+            </div>
+
+            <div class="clubs-grid" id="clubs-container">
+                <!-- Static Fallback Content -->
+                <!-- CLC Club -->
+                <div class="club-card" data-category="academic">
+                    <div class="club-img">
+                        <img src="images/clc-club.jpg" alt="Christian Life Community Club">
+                    </div>
+                    <div class="club-info">
+                        <h3>Christian Life Community (CLC)</h3>
+                        <p>The Christian Life Community club focuses on spiritual growth, community service, and living
+                            out Christian values in everyday life. Members engage in prayer, reflection, and service
+                            projects.</p>
+                        <div class="club-details">
+                            <p><i class="fas fa-calendar-alt"></i> Meets every Tuesday</p>
+                            <p><i class="fas fa-user"></i> Advisor: Mr. James Moyo</p>
+                            <p><i class="fas fa-users"></i> Open to all students</p>
+                            <a href="#" class="join-btn">Join Club</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Public Speaking Club -->
+                <div class="club-card" data-category="academic">
+                    <div class="club-img">
+                        <img src="images/public-speaking.jpg" alt="Public Speaking Club">
+                    </div>
+                    <div class="club-info">
+                        <h3>Public Speaking Club</h3>
+                        <p>Our Public Speaking Club helps students develop confidence and effective communication
+                            skills. Members practice speeches, debates, and presentations in a supportive environment.
+                        </p>
+                        <div class="club-details">
+                            <p><i class="fas fa-calendar-alt"></i> Meets every Wednesday</p>
+                            <p><i class="fas fa-user"></i> Advisor: Mrs. Sarah Ndlovu</p>
+                            <p><i class="fas fa-users"></i> Open to all students</p>
+                            <a href="#" class="join-btn">Join Club</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Debate Club -->
+                <div class="club-card" data-category="academic">
+                    <div class="club-img">
+                        <img src="images/debate-club.jpg" alt="Debate Club">
+                    </div>
+                    <div class="club-info">
+                        <h3>Debate Club</h3>
+                        <p>The Debate Club challenges students to think critically and argue persuasively on various
+                            topics. Members participate in interschool competitions and develop research and analytical
+                            skills.</p>
+                        <div class="club-details">
+                            <p><i class="fas fa-calendar-alt"></i> Meets every Monday</p>
+                            <p><i class="fas fa-user"></i> Advisor: Mr. Thomas Sibanda</p>
+                            <p><i class="fas fa-users"></i> Open to all students</p>
+                            <a href="#" class="join-btn">Join Club</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Spelling Bee Club -->
+                <div class="club-card" data-category="academic">
+                    <div class="club-img">
+                        <img src="images/spelling-bee.jpg" alt="Spelling Bee Club">
+                    </div>
+                    <div class="club-info">
+                        <h3>Spelling Bee Club</h3>
+                        <p>Our Spelling Bee Club helps students improve their vocabulary, spelling skills, and language
+                            proficiency. Members prepare for local and national spelling competitions.</p>
+                        <div class="club-details">
+                            <p><i class="fas fa-calendar-alt"></i> Meets every Thursday</p>
+                            <p><i class="fas fa-user"></i> Advisor: Ms. Elizabeth Dube</p>
+                            <p><i class="fas fa-users"></i> Open to all students</p>
+                            <a href="#" class="join-btn">Join Club</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Drama Club -->
+                <div class="club-card" data-category="arts">
+                    <div class="club-img">
+                        <img src="images/drama-club.jpg" alt="Drama Club">
+                    </div>
+                    <div class="club-info">
+                        <h3>Drama Club</h3>
+                        <p>The Drama Club provides opportunities for students to explore acting, directing, and
+                            stagecraft. Members produce plays and performances throughout the school year.</p>
+                        <div class="club-details">
+                            <p><i class="fas fa-calendar-alt"></i> Meets twice weekly</p>
+                            <p><i class="fas fa-user"></i> Advisor: Mrs. Patricia Ncube</p>
+                            <p><i class="fas fa-users"></i> Open to all students</p>
+                            <a href="#" class="join-btn">Join Club</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Interact Club -->
+                <div class="club-card" data-category="service">
+                    <div class="club-img">
+                        <img src="images/interact-club.jpg" alt="Interact Club">
+                    </div>
+                    <div class="club-info">
+                        <h3>Interact Club</h3>
+                        <p>The Interact Club is a Rotary-sponsored service club that engages students in community
+                            service projects. Members develop leadership skills while making a positive impact in the
+                            community.</p>
+                        <div class="club-details">
+                            <p><i class="fas fa-calendar-alt"></i> Meets every Friday</p>
+                            <p><i class="fas fa-user"></i> Advisor: Mr. Robert Moyo</p>
+                            <p><i class="fas fa-users"></i> Open to all students</p>
+                            <a href="#" class="join-btn">Join Club</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Edmund Rice Society -->
+                <div class="club-card" data-category="service">
+                    <div class="club-img">
+                        <img src="images/edmund-rice.jpg" alt="Edmund Rice Society">
+                    </div>
+                    <div class="club-info">
+                        <h3>Edmund Rice Society</h3>
+                        <p>The Edmund Rice Society promotes the values and vision of Blessed Edmund Rice through
+                            service, advocacy, and social justice initiatives. Members work on projects that address
+                            local and global issues.</p>
+                        <div class="club-details">
+                            <p><i class="fas fa-calendar-alt"></i> Meets every Wednesday</p>
+                            <p><i class="fas fa-user"></i> Advisor: Brother Michael Chuma</p>
+                            <p><i class="fas fa-users"></i> Open to all students</p>
+                            <a href="#" class="join-btn">Join Club</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Choir -->
+                <div class="club-card" data-category="arts">
+                    <div class="club-img">
+                        <img src="images/choir.jpg" alt="School Choir">
+                    </div>
+                    <div class="club-info">
+                        <h3>School Choir</h3>
+                        <p>Our School Choir brings together students with a passion for music and singing. The choir
+                            performs at school events, competitions, and community functions.</p>
+                        <div class="club-details">
+                            <p><i class="fas fa-calendar-alt"></i> Meets three times weekly</p>
+                            <p><i class="fas fa-user"></i> Advisor: Ms. Grace Nyoni</p>
+                            <p><i class="fas fa-users"></i> Open to all students</p>
+                            <a href="#" class="join-btn">Join Club</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Religious Activities Section -->
+    <section class="religious-section">
+        <div class="container">
+            <h2>Religious Activities</h2>
+
+            <div class="religious-grid">
+                <div class="religious-card" id="religious-dynamic-container">
+                    <div class="religious-icon">
+                        <i class="fas fa-church"></i>
+                    </div>
+                    <h3>Daily Masses</h3>
+                    <p>Embakwe High School offers daily masses for students and staff to nurture spiritual growth and
+                        provide moments of reflection during busy school days.</p>
+                    <div class="mass-schedule">
+                        <h4>Schedule</h4>
+                        <ul>
+                            <li><i class="fas fa-clock"></i> Monday-Friday: 6:30 AM</li>
+                            <li><i class="fas fa-clock"></i> Location: School Chapel</li>
+                            <li><i class="fas fa-user"></i> Celebrant: School Chaplain</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="religious-card">
+                    <div class="religious-icon">
+                        <i class="fas fa-cross"></i>
+                    </div>
+                    <h3>Sunday Mass</h3>
+                    <p>Our Sunday masses are a cornerstone of our school's spiritual life, bringing together the entire
+                        school community for worship and fellowship.</p>
+                    <div class="mass-schedule">
+                        <h4>Schedule</h4>
+                        <ul>
+                            <li><i class="fas fa-clock"></i> Sunday: 8:00 AM</li>
+                            <li><i class="fas fa-clock"></i> Location: Main School Chapel</li>
+                            <li><i class="fas fa-user"></i> Celebrant: Visiting Priests</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="religious-card">
+                    <div class="religious-icon">
+                        <i class="fas fa-pray"></i>
+                    </div>
+                    <h3>Wednesday High School Mass</h3>
+                    <p>Wednesday masses are specifically designed for high school students, addressing topics and
+                        challenges relevant to teenage spiritual development.</p>
+                    <div class="mass-schedule">
+                        <h4>Schedule</h4>
+                        <ul>
+                            <li><i class="fas fa-clock"></i> Wednesday: 2:30 PM</li>
+                            <li><i class="fas fa-clock"></i> Location: High School Chapel</li>
+                            <li><i class="fas fa-user"></i> Celebrant: School Chaplain</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <h2 class="acadex-school-name">Embakwe High School</h2>
+                    <p id="footer-tagline">Excellence in Education</p>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-column">
+                        <h3>Quick Links</h3>
+                        <ul>
+                            <li><a href="index.html">Home</a></li>
+                            <li><a href="news.html">News</a></li>
+                            <li><a href="sports.html">Sports</a></li>
+                            <li><a href="about.html">About Us</a></li>
+                            <li><a href="contact.html">Contact</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h3>Resources</h3>
+                        <ul>
+                            <li><a href="#">Academic Calendar</a></li>
+                            <li><a href="#">Student Handbook</a></li>
+                            <li><a href="#">Library</a></li>
+                            <li><a href="#">Careers</a></li>
+                            <li><a href="alumni/login.html">Alumni Portal</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h3>Contact</h3>
+                        <ul>
+                            <li><i class="fas fa-map-marker-alt"></i> <span class="acadex-school-address">Embakwe, Plumtree, Zimbabwe</span></li>
+                            <li><i class="fas fa-phone"></i> <span class="acadex-school-phone">+263 123 456 789</span></li>
+                            <li><i class="fas fa-envelope"></i> <span class="acadex-school-email">info@embakwehigh.edu.zw</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; <span id="current-year">2023</span> <span class="acadex-school-name">Embakwe High School</span>. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="acadex/js/acadex-core.js"></script>
+    <script src="acadex/js/acadex-tenant.js"></script>
+    <script src="js/script.js"></script>
+    <script>
+        // Club Filter Functionality
+        document.addEventListener('DOMContentLoaded', function () {
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            const clubCards = document.querySelectorAll('.club-card');
+
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', function () {
+                    // Remove active class from all buttons
+                    filterBtns.forEach(btn => btn.classList.remove('active'));
+
+                    // Add active class to clicked button
+                    this.classList.add('active');
+
+                    // Get filter value
+                    const filterValue = this.getAttribute('data-filter');
+
+                    // Show/hide club cards based on filter
+                    clubCards.forEach(card => {
+                        if (filterValue === 'all') {
+                            card.style.display = 'block';
+                        } else {
+                            if (card.getAttribute('data-category') === filterValue) {
+                                card.style.display = 'block';
+                            } else {
+                                card.style.display = 'none';
+                            }
+                        }
+                    });
+                });
+            });
+            document.getElementById('current-year').textContent = new Date().getFullYear();
+        });
+    </script>
+</body>
+
+</html>

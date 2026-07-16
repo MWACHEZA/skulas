@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Profile - Parent Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/parent-portal.css">
+    <style>
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            margin-bottom: 30px;
+            padding: 40px;
+            background: linear-gradient(135deg, #ffffff, #f8f9ff);
+            border-radius: 24px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+        }
+
+        .profile-avatar {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            background: var(--primary-navy);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3.5rem;
+            font-weight: 800;
+            overflow: hidden;
+            border: 5px solid white;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .profile-header-info h2 {
+            font-size: 2.2rem;
+            margin: 0;
+            color: var(--primary-navy);
+            font-weight: 800;
+        }
+
+        .profile-header-info p {
+            font-size: 1.1rem;
+            color: #64748b;
+            margin: 8px 0 15px;
+            font-weight: 500;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 24px;
+        }
+
+        .detail-card {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+            border: 1px solid #f1f5f9;
+            transition: transform 0.2s;
+        }
+
+        .detail-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #f8fafc;
+        }
+
+        .card-header i {
+            font-size: 1.2rem;
+            color: var(--gold-primary);
+        }
+
+        .card-header h3 {
+            margin: 0;
+            font-size: 1.1rem;
+            color: var(--primary-navy);
+            font-weight: 700;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px dashed #f1f5f9;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            color: #94a3b8;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-value {
+            font-weight: 700;
+            color: #334155;
+            font-size: 0.95rem;
+        }
+
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            background: #f0fdf4;
+            color: #16a34a;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <div class="brand-icon"><i class="fas fa-graduation-cap"></i></div>
+            <h3>Acadex Portal</h3>
+            <p id="currentSchoolName">Loading school...</p>
+            <!-- SaaS School Switcher -->
+            <div style="margin-top: 15px; padding: 8px; background: rgba(255,255,255,0.05); border-radius: 8px; display: flex; align-items: center; justify-content: space-between; cursor: pointer;" onclick="ParentPortal.toggleSchoolSwitcher()">
+                <span style="font-size: 0.7rem; opacity: 0.8; font-weight: 600;">Switch School</span>
+                <i class="fas fa-chevron-down" style="font-size: 0.6rem; opacity: 0.5;"></i>
+            </div>
+            <div id="schoolSwitcher" style="display: none; margin-top: 10px; background: var(--navy-light); border-radius: 8px; overflow: hidden; text-align: left; box-shadow: var(--shadow-premium);">
+                <!-- Populated dynamically -->
+            </div>
+        </div>
+        <div class="sidebar-menu">
+            <div class="sidebar-section-label">Academic & Life</div>
+            <ul>
+                <li><a href="dashboard.html"><i class="fas fa-th-large"></i> Dashboard</a></li>
+                <li><a href="student-profile.html" class="active"><i class="fas fa-user-graduate"></i> Student Profile</a></li>
+                <li><a href="academics.html"><i class="fas fa-chart-line"></i> Academics & Trends</a></li>
+                <li><a href="academic-history.html"><i class="fas fa-history"></i> Academic History</a></li>
+                <li><a href="wellbeing.html"><i class="fas fa-heartbeat"></i> Health & Conduct</a></li>
+                <li><a href="calendar.html"><i class="fas fa-calendar-alt"></i> School Calendar</a></li>
+            </ul>
+            <div class="sidebar-section-label">Communication</div>
+            <ul>
+                <li><a href="messages.html"><i class="fas fa-envelope"></i> Messages</a></li>
+                <li><a href="notices.html"><i class="fas fa-bullhorn"></i> Noticeboard</a></li>
+                <li><a href="approvals.html"><i class="fas fa-file-signature"></i> Approvals</a></li>
+                <li><a href="contact.html"><i class="fas fa-phone-alt"></i> Contact Us</a></li>
+            </ul>
+            <div class="sidebar-section-label">Finance & Logistics</div>
+            <ul>
+                <li><a href="fees.html"><i class="fas fa-file-invoice-dollar"></i> Fees & Payments</a></li>
+                <li><a href="wallet.html"><i class="fas fa-wallet"></i> Tuckshop Wallet</a></li>
+                <li><a href="transport.html"><i class="fas fa-bus"></i> Transport Tracker</a></li>
+            </ul>
+        </div>
+        <div class="sidebar-footer">
+            <a href="#" onclick="ParentPortal.logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </div>
+    </aside>
+
+    <div class="main-content">
+        <div class="top-header">
+            <div style="display:flex;align-items:center;gap:14px;">
+                <button class="mobile-menu-btn" id="menuBtn" style="background:none; border:none; font-size:1.2rem; cursor:pointer;"><i class="fas fa-bars"></i></button>
+                <h2>Student Record</h2>
+            </div>
+            <div class="header-user">
+                <div class="user-avatar" id="initialsDisplay">G</div>
+                <div class="user-details" style="text-align: right;">
+                    <div class="name" id="userDisplay">Guardian Name</div>
+                    <div class="sub" id="idDisplay">Student: XXXX</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-area">
+            <div class="profile-header">
+                <div class="profile-avatar" id="childAvatar">S</div>
+                <div class="profile-header-info">
+                    <h2 id="childNameTitle">Student Full Name</h2>
+                    <p id="childClassTitle">Form X Class</p>
+                    <div style="display: flex; gap: 15px; align-items: center;">
+                        <span class="status-pill"><i class="fas fa-check-circle"></i> Currently Enrolled</span>
+                        <span style="font-size: 0.85rem; color: #64748b; font-weight: 600;" id="childIdBadge">ID: XXXX</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-grid">
+                <!-- Identity & Personal -->
+                <div class="detail-card">
+                    <div class="card-header">
+                        <i class="fas fa-id-card"></i>
+                        <h3>Identity & Personal</h3>
+                    </div>
+                    <div class="info-row"><span class="info-label">Date of Birth</span><span class="info-value" id="valDob">-</span></div>
+                    <div class="info-row"><span class="info-label">Gender</span><span class="info-value" id="valGender">-</span></div>
+                    <div class="info-row"><span class="info-label">National ID</span><span class="info-value" id="valNatId">-</span></div>
+                    <div class="info-row"><span class="info-label">Religion</span><span class="info-value" id="valReligion">-</span></div>
+                    <div class="info-row"><span class="info-label">Home Address</span><span class="info-value" id="valAddress">-</span></div>
+                </div>
+
+                <!-- Guardian & Family -->
+                <div class="detail-card">
+                    <div class="card-header">
+                        <i class="fas fa-users-cog"></i>
+                        <h3>Guardian Details</h3>
+                    </div>
+                    <div class="info-row"><span class="info-label">Primary Guardian</span><span class="info-value" id="valGuardianName">-</span></div>
+                    <div class="info-row"><span class="info-label">Relationship</span><span class="info-value" id="valGuardianRel">-</span></div>
+                    <div class="info-row"><span class="info-label">Phone Number</span><span class="info-value" id="valGuardianPhone">-</span></div>
+                    <div class="info-row"><span class="info-label">Email Address</span><span class="info-value" id="valGuardianEmail">-</span></div>
+                    <div class="info-row"><span class="info-label">Occupation</span><span class="info-value" id="valGuardianWork">-</span></div>
+                </div>
+
+                <!-- Academic Info -->
+                <div class="detail-card">
+                    <div class="card-header">
+                        <i class="fas fa-user-graduate"></i>
+                        <h3>Academic Record</h3>
+                    </div>
+                    <div class="info-row"><span class="info-label">Current Class</span><span class="info-value" id="valClass">-</span></div>
+                    <div class="info-row"><span class="info-label">Enrollment Date</span><span class="info-value" id="valJoined">-</span></div>
+                    <div class="info-row"><span class="info-label">House</span><span class="info-value" id="valHouse">St. Peters</span></div>
+                    <div class="info-row"><span class="info-label">Subjects Enrolled</span><span class="info-value" id="valSubjectsCount">12</span></div>
+                    <div class="info-row"><span class="info-label">Scholarship Status</span><span class="info-value">None</span></div>
+                </div>
+
+                <!-- Health & Wellness -->
+                <div class="detail-card">
+                    <div class="card-header">
+                        <i class="fas fa-heartbeat"></i>
+                        <h3>Medical & Health</h3>
+                    </div>
+                    <div class="info-row"><span class="info-label">Blood Group</span><span class="info-value" id="valBlood">O+</span></div>
+                    <div class="info-row"><span class="info-label">Allergies</span><span class="info-value" id="valAllergies">None</span></div>
+                    <div class="info-row"><span class="info-label">Chronic Conditions</span><span class="info-value">None</span></div>
+                    <div class="info-row"><span class="info-label">Medication</span><span class="info-value">None</span></div>
+                    <div class="info-row"><span class="info-label">Weight/Height</span><span class="info-value">55kg / 1.6m</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/parent-portal.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const student = ParentPortal.getStudentData();
+            if (student) {
+                const fullName = student.name || (student.firstName + ' ' + student.lastName);
+                document.getElementById('childNameTitle').textContent = fullName;
+                document.getElementById('childClassTitle').textContent = student.class || 'Form Not Assigned';
+                document.getElementById('childIdBadge').textContent = 'ID: ' + (student.id || student.studentId || 'XXXX');
+                
+                if (student.photo || student.profilePic) {
+                    document.getElementById('childAvatar').innerHTML = `<img src="${student.photo || student.profilePic}" style="width:100%;height:100%;object-fit:cover;">`;
+                } else {
+                    document.getElementById('childAvatar').textContent = fullName.charAt(0);
+                }
+                
+                // Identity
+                document.getElementById('valDob').textContent = student.dob || '—';
+                document.getElementById('valGender').textContent = student.gender || '—';
+                document.getElementById('valNatId').textContent = student.nationalId || '—';
+                document.getElementById('valReligion').textContent = student.religion || '—';
+                document.getElementById('valAddress').textContent = student.address || 'Plumtree Residence';
+
+                // Guardian
+                document.getElementById('valGuardianName').textContent = student.guardianName || student.nokName || 'Guardian Attached';
+                document.getElementById('valGuardianRel').textContent = student.guardianRelationship || student.nokRelationship || 'Parent';
+                document.getElementById('valGuardianPhone').textContent = student.guardianPhone || student.nokPhone || '—';
+                document.getElementById('valGuardianEmail').textContent = student.guardianEmail || student.nokEmail || '—';
+                document.getElementById('valGuardianWork').textContent = student.guardianOccupation || student.nokOccupation || '—';
+
+                // Academic
+                document.getElementById('valClass').textContent = student.class || '—';
+                document.getElementById('valJoined').textContent = student.enrollmentDate || student.joined || 'Jan 2024';
+                if (student.subjects) document.getElementById('valSubjectsCount').textContent = student.subjects.length;
+            }
+        });
+    </script>
+    <!-- ACADEX: Powered-by footer and school branding -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+
+</body>
+
+</html>
+
+

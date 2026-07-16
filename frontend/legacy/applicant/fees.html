@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Fee Structure - Applicant Portal</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/ancillary-portal.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+
+
+        .fee-card {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .bank-details {
+            background: #e9ecef;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border-left: 5px solid var(--school-primary, #0056b3);
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Mobile Toggle -->
+    <button class="mobile-toggle" id="mobileToggle">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <img src="../images/logo.png" alt="School Logo" id="sidebarLogo">
+            <h3>Applicant Portal</h3>
+        </div>
+        
+        <div class="sidebar-menu">
+            <div class="sidebar-section-title">Application Journey</div>
+            <ul>
+                <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a></li>
+                <li><a href="timeline.html"><i class="fas fa-stream"></i> <span>Timeline</span></a></li>
+                <li><a href="documents.html"><i class="fas fa-folder-open"></i> <span>Documents</span></a></li>
+                <li><a href="interview.html"><i class="fas fa-calendar-check"></i> <span>Interview</span></a></li>
+            </ul>
+
+            <div class="sidebar-section-title">Financials & Info</div>
+            <ul>
+                <li><a href="payments.html"><i class="fas fa-credit-card"></i> <span>Payments</span></a></li>
+                <li><a href="fees.html" class="active"><i class="fas fa-file-invoice-dollar"></i> <span>Fee Structure</span></a></li>
+                <li><a href="faq.html"><i class="fas fa-question-circle"></i> <span>FAQs</span></a></li>
+            </ul>
+
+            <div class="sidebar-section-title">Communication</div>
+            <ul>
+                <li><a href="messages.html"><i class="fas fa-envelope"></i> <span>Messages</span></a></li>
+                <li><a href="profile.html"><i class="fas fa-user"></i> <span>My Profile</span></a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-footer">
+            <a href="#" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </a>
+        </div>
+    </aside>
+
+    <div class="main-content">
+        <h2 style="margin-bottom: 20px; color: #333;">Fee Structure & Banking Details</h2>
+
+        <div class="fee-card">
+            <h3 style="color: var(--school-primary, #0056b3); margin-bottom: 20px;" id="feeTitle">2026 Admissions Fee Breakdown</h3>
+            <table class="fee-table" style="width: 100%; border-collapse: collapse;">
+                <thead id="feeTableHeader">
+                    <tr style="background: var(--school-primary, #0056b3); color: white;">
+                        <th style="padding: 15px; text-align: left;">Item</th>
+                        <th style="padding: 15px; text-align: right;">Amount ($USD)</th>
+                    </tr>
+                </thead>
+                <tbody id="feeTableBody">
+                    <!-- Populated by JS -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="fee-card">
+            <h3>Payment Methods</h3>
+            <p>Please use **Bank Reference: Student Name + Surname** for all payments.</p>
+
+            <div class="bank-details" id="bankDetails">
+                <h4 style="margin: 0 0 10px;"><i class="fas fa-university"></i> CABS Bank</h4>
+                <p><strong>Account Name:</strong> <span id="accountName">Loading...</span></p>
+                <p><strong>Account Number:</strong> <span id="accountNumber">123-456-7890</span></p>
+                <p><strong>Branch:</strong> <span id="branch">Plumtree</span></p>
+                <p><strong>Swift Code:</strong> CABSZWHX</p>
+            </div>
+
+            <div class="bank-details" style="border-left-color: #28a745;">
+                <h4 style="margin: 0 0 10px;"><i class="fas fa-mobile-alt"></i> EcoCash Merchant</h4>
+                <p><strong>Merchant Code:</strong> *151*2*2*12345#</p>
+                <p><strong>Name:</strong> <span id="merchantName">School Fees</span></p>
+            </div>
+        </div>
+    </div>
+    <script src="../js/fees-manager.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const applicant = JSON.parse(sessionStorage.getItem('currentApplicant'));
+            if (!applicant) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            const appType = applicant.type || 'Form 1';
+            document.getElementById('feeTitle').textContent = `2026 ${appType} Admissions Fee Breakdown`;
+
+            const tableBody = document.getElementById('feeTableBody');
+            const fees = FeesManager.getFeeForClass(appType);
+            const total = FeesManager.calculateTotal(fees);
+
+            let html = '';
+            fees.forEach(fee => {
+                html += `
+                    <tr>
+                        <td style="padding: 15px; border-bottom: 1px solid #eee;">${fee.desc}</td>
+                        <td style="padding: 15px; border-bottom: 1px solid #eee; text-align: right;">${fee.amount.toFixed(2)}</td>
+                    </tr>
+                `;
+            });
+
+            html += `
+                <tr style="font-weight: bold; background: #f8f9fa;">
+                    <td style="padding: 15px;">Total Initial Payment</td>
+                    <td style="padding: 15px; text-align: right;">${total.toFixed(2)}</td>
+                </tr>
+            `;
+
+            tableBody.innerHTML = html;
+        });
+
+        function logout() { sessionStorage.removeItem('currentApplicant'); window.location.href = 'login.html'; }
+
+        // Mobile Toggle logic
+        const mobileToggle = document.getElementById('mobileToggle');
+        const sidebar = document.getElementById('sidebar');
+        if (mobileToggle && sidebar) {
+            mobileToggle.addEventListener('click', () => {
+                sidebar.classList.toggle('active');
+            });
+        }
+    </script>
+    <!-- ACADEX: Powered-by footer and school branding -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+
+</body>
+
+</html>
+

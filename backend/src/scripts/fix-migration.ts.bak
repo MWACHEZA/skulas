@@ -1,0 +1,100 @@
+import { PrismaClient } from '../generated/client';
+import fs from 'fs';
+import path from 'path';
+
+const prisma = new PrismaClient();
+const UPLOADS_ROOT = path.join(process.cwd(), 'storage');
+
+async function migrate() {
+  console.log('🚀 Starting Robust Storage Migration...');
+
+  // 1. Migrate User Avatars (Staff & Students)
+  const users = await prisma.user.findMany({
+    where: { avatar: { not: null } },
+    include: { school: true, student: true }
+  });
+
+  for (const user of users) {
+    if (!user.school || !user.avatar) continue;
+    
+    // Check if already in new structure (e.g. starts with school code)
+    if (user.avatar.startsWith(user.school.code)) continue;
+
+    const oldFilename = path.basename(user.avatar);
+    // Find where the file actually is
+    let oldAbsPath = '';
+    const possibleDirs = ['storage/images', 'storage/profiles', 'storage'];
+    for (const dir of possibleDirs) {
+        const p = path.join(process.cwd(), dir, oldFilename);
+        if (fs.existsSync(p)) {
+            oldAbsPath = p;
+            break;
+        }
+    }
+
+    if (!oldAbsPath) {
+        console.warn(`⚠️  Source file not found for user ${user.email}: ${oldFilename}`);
+        continue;
+    }
+
+    const entityType = user.role.toLowerCase().includes('student') ? 'students' : 'staff';
+    const humanId = user.staffId || user.student?.studentId || 'unassigned';
+    
+    // Target: storage/[CODE]/[ENTITY]/[ID]/profile/[FILE]
+    const newRelativeDir = path.join(user.school.code, entityType, humanId, 'profile');
+    const newRelativePath = path.join(newRelativeDir, oldFilename).replace(/\\/g, '/');
+    
+    await moveFile(oldAbsPath, newRelativePath);
+    await prisma.user.update({ where: { id: user.id }, data: { avatar: newRelativePath } });
+  }
+
+  // 2. Migrate School Logos
+  const schools = await prisma.school.findMany();
+
+  for (const school of schools) {
+      const branding = school.branding as any;
+      if (branding?.logo && !branding.logo.startsWith(school.code)) {
+          const oldFilename = path.basename(branding.logo);
+          let oldAbsPath = '';
+          const possibleDirs = ['storage/images', 'storage'];
+          for (const dir of possibleDirs) {
+              const p = path.join(process.cwd(), dir, oldFilename);
+              if (fs.existsSync(p)) {
+                  oldAbsPath = p;
+                  break;
+              }
+          }
+
+          if (oldAbsPath) {
+              const newRelativeDir = path.join(school.code, 'global', 'branding');
+              const newRelativePath = path.join(newRelativeDir, oldFilename).replace(/\\/g, '/');
+              await moveFile(oldAbsPath, newRelativePath);
+              await prisma.school.update({ 
+                  where: { id: school.id }, 
+                  data: { branding: { ...branding, logo: newRelativePath } } as any
+              });
+          }
+      }
+  }
+
+  console.log('✅ Migration Finished.');
+}
+
+async function moveFile(oldAbsPath: string, newRelPath: string) {
+    const newAbsPath = path.join(UPLOADS_ROOT, newRelPath);
+
+    const newDir = path.dirname(newAbsPath);
+    if (!fs.existsSync(newDir)) {
+        fs.mkdirSync(newDir, { recursive: true });
+    }
+
+    try {
+        if (oldAbsPath === newAbsPath) return;
+        fs.renameSync(oldAbsPath, newAbsPath);
+        console.log(`➡️  Moved: ${path.basename(oldAbsPath)} -> ${newRelPath}`);
+    } catch (err) {
+        console.error(`❌ Failed to move ${oldAbsPath}:`, err);
+    }
+}
+
+migrate().finally(() => prisma.$disconnect());

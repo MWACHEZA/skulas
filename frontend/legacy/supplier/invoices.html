@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoices & Payments - Your School</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/supplier-portal.css">
+    <link rel="stylesheet" href="../css/toast.css">
+</head>
+
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <div class="brand-icon"><i class="fas fa-truck-loading"></i></div>
+            <h3>Supplier Portal</h3>
+            <p>Your School</p>
+        </div>
+        <div class="sidebar-menu">
+            <div class="sidebar-section-label">Procurement</div>
+            <ul>
+                <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                <li><a href="tenders.html"><i class="fas fa-file-contract"></i> Available Tenders</a></li>
+                <li><a href="quotations.html"><i class="fas fa-file-invoice-dollar"></i> My Quotations</a></li>
+                <li><a href="orders.html"><i class="fas fa-shopping-cart"></i> Purchase Orders</a></li>
+            </ul>
+            <div class="sidebar-section-label">Finance</div>
+            <ul>
+                <li><a href="invoices.html" class="active"><i class="fas fa-receipt"></i> Invoices & Payments</a></li>
+            </ul>
+            <div class="sidebar-section-label">Compliance</div>
+            <ul>
+                <li><a href="compliance.html"><i class="fas fa-shield-alt"></i> Compliance Status</a></li>
+                <li><a href="policies.html"><i class="fas fa-book"></i> Policies & Processes</a></li>
+            </ul>
+            <div class="sidebar-section-label">Account</div>
+            <ul>
+                <li><a href="messages.html"><i class="fas fa-bell"></i> Messages</a></li>
+                <li><a href="profile.html"><i class="fas fa-user-circle"></i> Profile Settings</a></li>
+                <li><a href="contact.html"><i class="fas fa-headset"></i> Contact Us</a></li>
+            </ul>
+        </div>
+        <div class="sidebar-footer">
+            <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="top-header">
+            <div style="display:flex;align-items:center;gap:14px;">
+                <button class="mobile-menu-btn" id="menuBtn"><i class="fas fa-bars"></i></button>
+                <h2>Invoices & Payment Status</h2>
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="openInvoiceModal()">
+                <i class="fas fa-plus"></i> Submit Invoice
+            </button>
+        </div>
+
+        <div class="content-area">
+            <div class="stats-grid">
+                <div class="stat-card blue">
+                    <div class="stat-icon"><i class="fas fa-file-invoice"></i></div>
+                    <div class="stat-info"><h4>Total Invoiced</h4><div class="value" id="totalInvoiced">$0</div></div>
+                </div>
+                <div class="stat-card orange">
+                    <div class="stat-icon"><i class="fas fa-clock"></i></div>
+                    <div class="stat-info"><h4>Pending Payment</h4><div class="value" id="pendingPayment">$0</div></div>
+                </div>
+                <div class="stat-card green">
+                    <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+                    <div class="stat-info"><h4>Paid to Date</h4><div class="value" id="paidTotal">$0</div></div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-header">
+                    <h3><i class="fas fa-history" style="color:var(--school-primary, #0056b3);margin-right:8px;"></i> Invoicing History</h3>
+                </div>
+                <div class="table-wrapper">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Invoice #</th>
+                                <th>Order Ref</th>
+                                <th>Date Submitted</th>
+                                <th>Amount (USD)</th>
+                                <th>Status</th>
+                                <th>Payment Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="invoiceTableBody">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Invoice Modal -->
+    <div class="sp-modal-overlay" id="invoiceModal">
+        <div class="sp-modal">
+            <div class="sp-modal-header">
+                <h3>Submit New Invoice</h3>
+                <button class="close-btn" onclick="closeModal()"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="sp-modal-body">
+                <form id="invoiceForm">
+                    <div class="form-group">
+                        <label>Select Purchase Order <span class="required">*</span></label>
+                        <select id="orderSelect" class="form-control" required>
+                            <option value="">-- Choose PO --</option>
+                        </select>
+                        <small style="color:#888;">Only fulfilled orders can be invoiced.</small>
+                    </div>
+                    <div class="form-group">
+                        <label>Invoice Number <span class="required">*</span></label>
+                        <input type="text" id="invoiceNo" class="form-control" placeholder="e.g. INV-2026-001" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Invoice Amount (USD) <span class="required">*</span></label>
+                        <input type="number" id="invoiceAmount" class="form-control" placeholder="0.00" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Invoice Document (PDF) <span class="required">*</span></label>
+                        <input type="file" class="form-control" accept=".pdf" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Supporting Documents (Delivery Note, etc.)</label>
+                        <input type="file" class="form-control" accept=".pdf" multiple>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">
+                        <i class="fas fa-paper-plane"></i> Submit Invoice
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/toast.js"></script>
+    <script>
+        let currentInvoices = [];
+
+        document.getElementById('menuBtn').addEventListener('click', function () {
+            document.getElementById('sidebar').classList.toggle('open');
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            if (!sessionStorage.getItem('supplierLoggedIn')) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            loadInvoices();
+        });
+
+        function loadInvoices() {
+            const supplierId = sessionStorage.getItem('supplierId');
+            let invoices = getTenantData('school_invoices', '[]');
+            
+            // Seed sample invoices
+            if (invoices.length === 0) {
+                invoices = [
+                    { id: 'INV-1029', orderId: 'PO-2026-095', date: '2026-03-05', amount: 450.50, status: 'Paid', paidDate: '2026-03-12' },
+                    { id: 'INV-1035', orderId: 'PO-2026-082', date: '2026-03-01', amount: 890.00, status: 'Processing', paidDate: '-' }
+                ];
+                saveTenantData('school_invoices', invoices);
+            }
+
+            currentInvoices = invoices.filter(inv => inv.supplierId === supplierId || (inv.id && !inv.supplierId)); // Filter logic adjust
+            
+            let totalVal = 0;
+            let pendingVal = 0;
+            let paidVal = 0;
+
+            currentInvoices.forEach(inv => {
+                totalVal += parseFloat(inv.amount);
+                if (inv.status === 'Paid') paidVal += parseFloat(inv.amount);
+                else pendingVal += parseFloat(inv.amount);
+            });
+
+            document.getElementById('totalInvoiced').textContent = '$' + totalVal.toLocaleString();
+            document.getElementById('pendingPayment').textContent = '$' + pendingVal.toLocaleString();
+            document.getElementById('paidTotal').textContent = '$' + paidVal.toLocaleString();
+
+            renderTable();
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('invoiceTableBody');
+            tbody.innerHTML = '';
+
+            if (currentInvoices.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="empty-state">No invoices submitted yet.</td></tr>';
+                return;
+            }
+
+            currentInvoices.forEach(inv => {
+                const tr = document.createElement('tr');
+                const statusClass = inv.status === 'Paid' ? 'badge-success' : 'badge-warning';
+                
+                tr.innerHTML = `
+                    <td style="font-weight:600;color:var(--school-primary, #0056b3);">${inv.id}</td>
+                    <td>${inv.orderId}</td>
+                    <td>${inv.date}</td>
+                    <td style="font-weight:600;">$${parseFloat(inv.amount).toLocaleString()}</td>
+                    <td><span class="badge ${statusClass}">${inv.status}</span></td>
+                    <td>${inv.paidDate}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function openInvoiceModal() {
+            const supplierId = sessionStorage.getItem('supplierId');
+            const orders = getTenantData('school_orders', '[]');
+            const fulfilledOrders = orders.filter(o => o.supplierId === supplierId && o.status === 'Fulfilled');
+
+            const select = document.getElementById('orderSelect');
+            select.innerHTML = '<option value="">-- Choose PO --</option>';
+            fulfilledOrders.forEach(o => {
+                select.innerHTML += `<option value="${o.id}" data-amount="${o.amount}">${o.id} - ${o.items}</option>`;
+            });
+
+            select.onchange = function() {
+                const selected = select.options[select.selectedIndex];
+                if (selected.value) {
+                    document.getElementById('invoiceAmount').value = selected.getAttribute('data-amount');
+                }
+            };
+
+            document.getElementById('invoiceModal').classList.add('open');
+        }
+
+        function closeModal() {
+            document.getElementById('invoiceModal').classList.remove('open');
+        }
+
+        document.getElementById('invoiceForm').onsubmit = function(e) {
+            e.preventDefault();
+            const supplierId = sessionStorage.getItem('supplierId');
+            
+            const newInvoice = {
+                id: document.getElementById('invoiceNo').value,
+                orderId: document.getElementById('orderSelect').value,
+                supplierId: supplierId,
+                date: new Date().toISOString().split('T')[0],
+                amount: document.getElementById('invoiceAmount').value,
+                status: 'Processing',
+                paidDate: '-'
+            };
+
+            const invoices = getTenantData('school_invoices', '[]');
+            invoices.push(newInvoice);
+            saveTenantData('school_invoices', invoices);
+
+            showToast('Invoice submitted successfully!', 'success');
+            closeModal();
+            loadInvoices();
+        };
+
+        function logout() {
+            sessionStorage.clear();
+            window.location.href = 'login.html';
+        }
+    </script>
+    <!-- ACADEX: Powered-by footer and school branding -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+
+</body>
+</html>
+
+

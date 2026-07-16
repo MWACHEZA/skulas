@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>School Contacts Management - Admin Portal</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/ancillary-portal.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        .management-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .contact-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .contact-table th,
+        .contact-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .contact-table th {
+            background: #f8fafc;
+            color: #64748b;
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+        }
+
+        .btn-action {
+            padding: 8px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            margin-right: 5px;
+            transition: all 0.2s;
+        }
+
+        .btn-edit {
+            background: #eef2ff;
+            color: var(--school-primary, #4e73df);
+        }
+
+        .btn-delete {
+            background: #fff1f2;
+            color: #e11d48;
+        }
+
+        .btn-action:hover {
+            opacity: 0.8;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--school-primary-dark, #1e293b);
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-family: inherit;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: var(--school-primary, #4e73df);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #f1f5f9;
+            color: #64748b;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin-container">
+        <!-- Sidebar placeholder (Common logic handles this) -->
+        <aside class="sidebar" id="sidebar"></aside>
+
+        <main class="main-content">
+            <div class="top-header">
+                <div class="header-left">
+                    <h2>School Contacts Management</h2>
+                    <p style="color: #64748b; font-size: 0.9rem;">Manage school-wide contact information and emergency
+                        lines.</p>
+                </div>
+                <div class="header-right">
+                    <button class="btn btn-primary" onclick="openModal()">
+                        <i class="fas fa-plus"></i> Add New Contact
+                    </button>
+                </div>
+            </div>
+
+            <div class="content-area">
+                <div class="management-card">
+                    <table class="contact-table">
+                        <thead>
+                            <tr>
+                                <th>Category</th>
+                                <th>Title</th>
+                                <th>Contact Info</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="contactsTableBody">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="management-card">
+                    <h3 style="margin-bottom: 15px;"><i class="fas fa-lightbulb" style="color: #f59e0b;"></i> Management
+                        Tips</h3>
+                    <ul style="color: #64748b; font-size: 0.9rem; line-height: 1.6;">
+                        <li>Ensure all emergency lines are accurate and active.</li>
+                        <li>Update office hours to reflect seasonal changes or holidays.</li>
+                        <li>Categories help organize contacts on the user-facing pages.</li>
+                        <li>"Emergency Line" items will appear in the top banner for all users.</li>
+                    </ul>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Contact Modal -->
+    <div id="contactModal" class="modal">
+        <div class="modal-content">
+            <h3 id="modalTitle" style="margin-bottom: 20px;">Add New Contact</h3>
+            <form id="contactForm">
+                <input type="hidden" id="contactId">
+                <div class="form-group">
+                    <label>Category</label>
+                    <select id="contactCategory" required>
+                        <option>Administration</option>
+                        <option>Departments</option>
+                        <option>Emergency Line</option>
+                        <option>General Inquiries</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Title / Department Name</label>
+                    <input type="text" id="contactTitle" required placeholder="e.g. School Security">
+                </div>
+                <div class="form-group">
+                    <label>Phone / Extension</label>
+                    <input type="text" id="contactPhone" required placeholder="+263 ...">
+                </div>
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" id="contactEmail" placeholder="admin@school.com">
+                </div>
+                <div class="form-group">
+                    <label>Additional Details (Hours, Location)</label>
+                    <input type="text" id="contactDetails" placeholder="e.g. Main Block, 24 Hours">
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Contact</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="../js/ancillary-common.js"></script>
+    <script src="../js/contact-manager.js"></script>
+    <script src="../js/admin-sidebar.js"></script>
+    <script>
+        const AdminContactManager = {
+            contacts: [],
+
+            init() {
+                this.load();
+                this.bindEvents();
+            },
+
+            load() {
+                this.contacts = ContactManager.getContacts();
+                this.render();
+            },
+
+            render() {
+                const tbody = document.getElementById('contactsTableBody');
+                tbody.innerHTML = '';
+
+                this.contacts.forEach((contact, index) => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td><span style="padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; background: ${this.getCategoryColor(contact.category)}">${contact.category}</span></td>
+                        <td><strong>${contact.title}</strong></td>
+                        <td style="font-size: 0.85rem; color: #64748b;">
+                            <div><i class="fas fa-phone"></i> ${contact.phone}</div>
+                            ${contact.email ? `<div><i class="fas fa-envelope"></i> ${contact.email}</div>` : ''}
+                        </td>
+                        <td>
+                            <button class="btn-action btn-edit" onclick="AdminContactManager.edit(${index})"><i class="fas fa-edit"></i></button>
+                            <button class="btn-action btn-delete" onclick="AdminContactManager.delete(${index})"><i class="fas fa-trash"></i></button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            },
+
+            getCategoryColor(cat) {
+                switch (cat) {
+                    case 'Emergency Line': return '#fff1f2; color: #e11d48;';
+                    case 'Administration': return '#eef2ff; color: var(--school-primary, #4e73df);';
+                    case 'Departments': return '#f0fdf4; color: #16a34a;';
+                    default: return '#f8fafc; color: #64748b;';
+                }
+            },
+
+            bindEvents() {
+                document.getElementById('contactForm').onsubmit = (e) => {
+                    e.preventDefault();
+                    this.save();
+                };
+            },
+
+            save() {
+                const id = document.getElementById('contactId').value;
+                const newContact = {
+                    category: document.getElementById('contactCategory').value,
+                    title: document.getElementById('contactTitle').value,
+                    phone: document.getElementById('contactPhone').value,
+                    email: document.getElementById('contactEmail').value,
+                    details: document.getElementById('contactDetails').value
+                };
+
+                if (id === "") {
+                    this.contacts.push(newContact);
+                } else {
+                    this.contacts[parseInt(id)] = newContact;
+                }
+
+                ContactManager.saveContacts(this.contacts);
+                closeModal();
+                this.load();
+                showNotification('Contact information updated successfully!', 'success');
+            },
+
+            edit(index) {
+                const contact = this.contacts[index];
+                document.getElementById('contactId').value = index;
+                document.getElementById('contactCategory').value = contact.category;
+                document.getElementById('contactTitle').value = contact.title;
+                document.getElementById('contactPhone').value = contact.phone;
+                document.getElementById('contactEmail').value = contact.email || '';
+                document.getElementById('contactDetails').value = contact.details || '';
+
+                document.getElementById('modalTitle').textContent = 'Edit Contact';
+                document.getElementById('contactModal').classList.add('active');
+            },
+
+            delete(index) {
+                if (confirm('Are you sure you want to delete this contact?')) {
+                    this.contacts.splice(index, 1);
+                    ContactManager.saveContacts(this.contacts);
+                    this.load();
+                    showNotification('Contact removed.', 'info');
+                }
+            }
+        };
+
+        function openModal() {
+            document.getElementById('contactForm').reset();
+            document.getElementById('contactId').value = "";
+            document.getElementById('modalTitle').textContent = 'Add New Contact';
+            document.getElementById('contactModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('contactModal').classList.remove('active');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => AdminContactManager.init());
+    </script>
+    <!-- ACADEX: Powered-by footer and school branding -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+
+</body>
+
+</html>

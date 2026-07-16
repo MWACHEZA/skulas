@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Management - Admin Portal</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+
+        .admin-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 260px;
+            background-color: var(--school-primary-dark, #1a1a2e);
+            color: white;
+            position: fixed;
+            height: 100%;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+
+        .sidebar-header img {
+            width: 50px;
+            margin-bottom: 10px;
+        }
+
+        .sidebar-header h3 {
+            margin: 0;
+            font-size: 1.1rem;
+        }
+
+        .sidebar-menu {
+            padding: 20px 0;
+        }
+
+        .menu-section {
+            margin-bottom: 20px;
+        }
+
+        .menu-section-title {
+            padding: 10px 20px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: #888;
+            font-weight: 600;
+        }
+
+        .sidebar-menu ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 2px;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            background-color: rgba(var(--school-primary-rgb, 0, 86, 179), 0.2);
+            color: white;
+            border-left: 3px solid var(--school-primary, #0056b3);
+        }
+
+        .sidebar-menu i {
+            margin-right: 12px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: 250px;
+            width: calc(100% - 250px);
+        }
+
+        .top-header {
+            background-color: white;
+            padding: 15px 30px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-left h2 {
+            margin: 0;
+            color: #333;
+            font-size: 1.5rem;
+        }
+
+        .content-area {
+            padding: 30px;
+        }
+
+        .page-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .search-filter {
+            display: flex;
+            gap: 10px;
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-box input {
+            padding: 10px 15px 10px 40px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            width: 300px;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+        }
+
+        select {
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background-color: var(--school-primary, #0056b3);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--school-primary-dark, #003d82);
+        }
+
+        .data-table {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background-color: #f8f9fa;
+        }
+
+        th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .student-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .student-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--school-primary, #0056b3);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-weight: 600;
+        }
+
+        .status-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .status-active {
+            background-color: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+        }
+
+        .status-inactive {
+            background-color: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-icon {
+            width: 35px;
+            height: 35px;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-view {
+            background-color: rgba(0, 123, 255, 0.1);
+            color: #007bff;
+        }
+
+        .btn-edit {
+            background-color: rgba(255, 193, 7, 0.1);
+            color: #ffc107;
+        }
+
+        .btn-delete {
+            background-color: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .pagination button {
+            padding: 8px 15px;
+            border: 1px solid #ddd;
+            background-color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .pagination button.active {
+            background-color: var(--school-primary, #0056b3);
+            color: white;
+            border-color: var(--school-primary, #0056b3);
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+            }
+
+            .page-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-filter {
+                flex-direction: column;
+            }
+
+            .search-box input {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin-container">
+        <!-- Sidebar (same as dashboard) -->
+        <aside class="sidebar" id="sidebar"></aside>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Top Header -->
+            <div class="top-header">
+                <div class="header-left">
+                    <h2>Student Management</h2>
+                </div>
+            </div>
+
+            <!-- Content Area -->
+            <div class="content-area">
+                <!-- Page Actions -->
+                <div class="page-actions">
+                    <div class="search-filter">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="searchInput" placeholder="Search students...">
+                        </div>
+                        <select id="classFilter">
+                            <option value="">All Classes</option>
+                            <option value="Form 1">Form 1</option>
+                            <option value="Form 2">Form 2</option>
+                            <option value="Form 3">Form 3</option>
+                            <option value="Form 4">Form 4</option>
+                        </select>
+                        <select id="statusFilter">
+                            <option value="">All Status</option>
+                            <option value="Active">Active</option>
+                            <option value="Inactive">Inactive</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" onclick="openModal('addStudentModal')">
+                        <i class="fas fa-plus"></i> Add New Student
+                    </button>
+                </div>
+
+                <!-- Data Table -->
+                <div class="data-table">
+                    <table id="studentsTable">
+                        <thead>
+                            <tr>
+                                <th>Student ID</th>
+                                <th>Name</th>
+                                <th>Class</th>
+                                <th>Primary Role</th>
+                                <th>Secondary Role</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="studentsTableBody">
+                            <tr>
+                                <td colspan="9" style="text-align:center;color:#999;padding:30px;">Loading students…
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <div class="pagination" id="studentPagination">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Student Modal -->
+    <div id="addStudentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add New Student</h3>
+                <button class="close-modal" onclick="closeModal('addStudentModal')">&times;</button>
+            </div>
+            <form id="addStudentForm" onsubmit="handleAddStudent(event)">
+                <div class="form-group">
+                    <label for="studentId">Student ID *</label>
+                    <input type="text" id="studentId" required>
+                </div>
+                <div class="form-group">
+                    <label for="studentName">Full Name *</label>
+                    <input type="text" id="studentName" required>
+                </div>
+                <div class="form-group">
+                    <label for="studentClass">Class *</label>
+                    <select id="studentClass" required>
+                        <option value="">Select Class</option>
+                        <option value="Form 1A">Form 1A</option>
+                        <option value="Form 2A">Form 2A</option>
+                        <option value="Form 3A">Form 3A</option>
+                        <option value="Form 3B">Form 3B</option>
+                        <option value="Form 4A">Form 4A</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="studentEmail">Email *</label>
+                    <input type="email" id="studentEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="studentPhone">Phone Number *</label>
+                    <input type="tel" id="studentPhone" required>
+                </div>
+                <div class="form-group">
+                    <label for="studentPrimaryRole">Primary Role *</label>
+                    <input type="text" id="studentPrimaryRole" value="Student" readonly required>
+                </div>
+                <div class="form-group" style="margin-top: 20px;">
+                    <label>Secondary Roles</label>
+                    <div id="secondaryRolesContainer" style="display: flex; flex-direction: column; gap: 10px;">
+                        <!-- Dynamic rows -->
+                    </div>
+                    <button type="button" class="btn-outline" id="addRoleBtn"
+                        style="margin-top: 10px; padding: 8px 15px; font-size: 0.85rem; border: 1px dashed #0056b3; border-radius: 5px; color: #0056b3; background: none; cursor: pointer; width: 100%;">
+                        <i class="fas fa-plus"></i> Add Another Role
+                    </button>
+                </div>
+                <div class="form-group">
+                    <label for="studentStatus">Status *</label>
+                    <select id="studentStatus" required>
+                        <option value="Active">Active</option>
+                        <option value="Inactive">Inactive</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-cancel" onclick="closeModal('addStudentModal')">Cancel</button>
+                    <button type="submit" class="btn-submit">Add Student</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Student Modal -->
+    <div id="editStudentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit Student</h3>
+                <button class="close-modal" onclick="closeModal('editStudentModal')">&times;</button>
+            </div>
+            <form id="editStudentForm" onsubmit="handleEditStudent(event)">
+                <input type="hidden" id="editStudentIndex">
+                <div class="form-group">
+                    <label for="editStudentId">Student ID *</label>
+                    <input type="text" id="editStudentId" required readonly>
+                </div>
+                <div class="form-group">
+                    <label for="editStudentName">Full Name *</label>
+                    <input type="text" id="editStudentName" required>
+                </div>
+                <div class="form-group">
+                    <label for="editStudentClass">Class *</label>
+                    <select id="editStudentClass" required>
+                        <option value="">Select Class</option>
+                        <option value="Form 1A">Form 1A</option>
+                        <option value="Form 2A">Form 2A</option>
+                        <option value="Form 3A">Form 3A</option>
+                        <option value="Form 3B">Form 3B</option>
+                        <option value="Form 4A">Form 4A</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="editStudentEmail">Email *</label>
+                    <input type="email" id="editStudentEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="editStudentPhone">Phone Number *</label>
+                    <input type="tel" id="editStudentPhone" required>
+                </div>
+                <div class="form-group">
+                    <label for="editStudentPrimaryRole">Primary Role *</label>
+                    <input type="text" id="editStudentPrimaryRole" value="Student" readonly required>
+                </div>
+                <div class="form-group" style="margin-top: 20px;">
+                    <label>Secondary Roles</label>
+                    <div id="editSecondaryRolesContainer" style="display: flex; flex-direction: column; gap: 10px;">
+                        <!-- Dynamic rows -->
+                    </div>
+                    <button type="button" class="btn-outline" id="editAddRoleBtn"
+                        style="margin-top: 10px; padding: 8px 15px; font-size: 0.85rem; border: 1px dashed #0056b3; border-radius: 5px; color: #0056b3; background: none; cursor: pointer; width: 100%;">
+                        <i class="fas fa-plus"></i> Add Another Role
+                    </button>
+                </div>
+                <div class="form-group">
+                    <label for="editStudentStatus">Status *</label>
+                    <select id="editStudentStatus" required>
+                        <option value="Active">Active</option>
+                        <option value="Inactive">Inactive</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-cancel" onclick="closeModal('editStudentModal')">Cancel</button>
+                    <button type="submit" class="btn-submit">Update Student</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Detail Panel (Slide-in) -->
+    <div class="detail-panel" id="detailPanel"
+        style="display: none; position: fixed; right: 0; top: 0; bottom: 0; width: 380px; background: white; box-shadow: -4px 0 30px rgba(0,0,0,.12); z-index: 1500; overflow-y: auto;">
+        <button class="detail-close" onclick="closeDetail()"
+            style="position: absolute; top: 14px; right: 14px; background: none; border: none; color: #1a1a1a; font-size: 1.3rem; cursor: pointer; opacity: .7;"><i
+                class="fas fa-times"></i></button>
+        <div class="detail-header" id="dpHeader"
+            style="background: var(--school-primary-dark, #1a1a1a); color: white; padding: 20px; display: flex; align-items: center; gap: 14px; margin-top: 0;">
+            <div class="detail-avatar" id="dpAvatar"
+                style="width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, var(--school-primary, #0056b3), var(--school-primary-dark, #003d82)); display: flex; align-items: center; justify-content: center; font-size: 1.4rem; font-weight: 700; flex-shrink: 0; overflow: hidden; color:white;">
+                AD</div>
+            <div>
+                <div class="detail-title" id="dpName" style="font-size: 1.05rem; font-weight: 700;">—</div>
+                <div class="detail-sub" id="dpRole" style="font-size: 0.8rem; opacity: .9; margin-top: 2px;">—</div>
+            </div>
+        </div>
+        <div id="dpBody"></div>
+    </div>
+
+    <script src="../js/admin-common.js"></script>
+    <script>
+        // Load students from tenant-aware storage
+        let students = getTenantData('school_students', '[]');
+
+        // Pagination State
+        let currentPage = 1;
+        const itemsPerPage = 10;
+        let filteredStudents = [...students];
+
+        // Render students table
+        function renderStudents(studentsToRender = filteredStudents) {
+            const tbody = document.getElementById('studentsTableBody');
+            if (!tbody) return;
+
+            tbody.innerHTML = '';
+
+            // Update filtered list for pagination
+            filteredStudents = studentsToRender;
+
+            // Calculate slice
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const paginatedData = filteredStudents.slice(startIndex, endIndex);
+
+            if (paginatedData.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="9" style="text-align:center; padding: 20px;">No students found</td></tr>';
+                renderPagination(0);
+                return;
+            }
+
+            paginatedData.forEach((student) => {
+                const studentIdForLookup = student.id || student.studentId;
+                const index = students.findIndex(s => (s.id === studentIdForLookup || s.studentId === studentIdForLookup));
+                const studentName = student.name || (student.firstName && student.lastName ? `${student.firstName} ${student.lastName}` : (student.fullName || '—'));
+                const initials = studentName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+                const statusClass = student.status === 'Active' ? 'status-active' : 'status-inactive';
+                const photoToUse = student.photo || student.profilePic;
+
+                const secondaryRoles = Array.isArray(student.secondaryRoles)
+                    ? student.secondaryRoles
+                    : (student.secondaryRole ? [student.secondaryRole] : []);
+
+                const rolesHtml = secondaryRoles.length > 0
+                    ? secondaryRoles.map(role => `<span class="secondary-role-badge">${role}</span>`).join('')
+                    : '<span style="color: #999;">—</span>';
+
+                const row = `
+                    <tr>
+                        <td>${student.id || student.studentId}</td>
+                        <td>
+                            <div class="student-info">
+                                <div class="student-avatar" style="overflow: hidden;">
+                                    ${photoToUse ? `<img src="${photoToUse}" style="width:100%; height:100%; object-fit:cover;">` : initials}
+                                </div>
+                                <span>${studentName}</span>
+                            </div>
+                        </td>
+                        <td>${student.class}</td>
+                        <td><span class="role-badge role-student">${student.primaryRole || 'Student'}</span></td>
+                        <td><div class="secondary-roles-container">${rolesHtml}</div></td>
+                        <td>${student.email}</td>
+                        <td>${student.phone}</td>
+                        <td><span class="status-badge ${statusClass}">${student.status}</span></td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn-icon btn-view" onclick="viewStudent(${index})" title="View Details">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="btn-icon btn-edit" onclick="editStudent(${index})" title="Edit Student">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn-icon btn-delete" onclick="deleteStudent(${index})" title="Delete Student">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+
+            renderPagination(filteredStudents.length);
+        }
+
+        function renderPagination(totalItems) {
+            const container = document.getElementById('studentPagination');
+            if (!container) return;
+
+            const totalPages = Math.ceil(totalItems / itemsPerPage);
+            container.innerHTML = '';
+
+            if (totalPages <= 1) return;
+
+            // Previous Button
+            const prevBtn = document.createElement('button');
+            prevBtn.innerHTML = '<i class="fas fa-chevron-left"></i>';
+            prevBtn.disabled = currentPage === 1;
+            prevBtn.onclick = () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    renderStudents();
+                }
+            };
+            container.appendChild(prevBtn);
+
+            // Page Numbers
+            for (let i = 1; i <= totalPages; i++) {
+                const pageBtn = document.createElement('button');
+                pageBtn.innerText = i;
+                if (i === currentPage) pageBtn.className = 'active';
+                pageBtn.onclick = () => {
+                    currentPage = i;
+                    renderStudents();
+                };
+                container.appendChild(pageBtn);
+            }
+
+            // Next Button
+            const nextBtn = document.createElement('button');
+            nextBtn.innerHTML = '<i class="fas fa-chevron-right"></i>';
+            nextBtn.disabled = currentPage === totalPages;
+            nextBtn.onclick = () => {
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    renderStudents();
+                }
+            };
+            container.appendChild(nextBtn);
+        }
+
+        // Add student
+        function handleAddStudent(event) {
+            event.preventDefault();
+
+            const roleInputs = document.querySelectorAll('#secondaryRolesContainer input');
+            const secondaryRoles = Array.from(roleInputs)
+                .map(input => input.value.trim())
+                .filter(val => val !== '');
+
+            const activeSchool = window.AcadexCore ? AcadexCore.getActiveSchool() : null;
+            const newStudent = {
+                id: document.getElementById('studentId').value,
+                name: document.getElementById('studentName').value,
+                class: document.getElementById('studentClass').value,
+                email: document.getElementById('studentEmail').value,
+                phone: document.getElementById('studentPhone').value,
+                status: document.getElementById('studentStatus').value,
+                primaryRole: document.getElementById('studentPrimaryRole').value || 'Student',
+                secondaryRoles: secondaryRoles,
+                schoolCode: activeSchool ? activeSchool.code : (sessionStorage.getItem('activeSchoolCode') || '')
+            };
+
+            students.push(newStudent);
+            saveTenantData('school_students', students);
+            renderStudents();
+            closeModal('addStudentModal');
+            document.getElementById('addStudentForm').reset();
+            document.getElementById('secondaryRolesContainer').innerHTML = '';
+            Toast.success('Student added successfully!');
+        }
+
+        window.addRoleRow = function (containerId, value = '', disabled = false) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+
+            const row = document.createElement('div');
+            row.className = 'role-row';
+            row.style.cssText = 'display: flex; gap: 10px; align-items: center;';
+            row.innerHTML = `
+                <input type="text" class="form-control" placeholder="Enter role" value="${value}" ${disabled ? 'disabled' : ''} style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                <button type="button" class="btn-icon" ${disabled ? 'style="display:none;"' : 'style="color: #dc3545; background: none; border: none; cursor: pointer;"'} onclick="this.parentElement.remove()">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            container.appendChild(row);
+        };
+
+        document.getElementById('addRoleBtn').addEventListener('click', () => addRoleRow('secondaryRolesContainer'));
+        document.getElementById('editAddRoleBtn').addEventListener('click', () => addRoleRow('editSecondaryRolesContainer'));
+
+        // View student (now details panel)
+        function viewStudent(index) {
+            const student = students[index];
+            const panel = document.getElementById('detailPanel');
+            panel.style.display = 'block';
+
+            const studentName = student.name || (student.firstName && student.lastName ? `${student.firstName} ${student.lastName}` : (student.fullName || '—'));
+            const initials = studentName.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+            const avatarEl = document.getElementById('dpAvatar');
+            const photoToUse = student.photo || student.profilePic;
+            
+            if (photoToUse) {
+                avatarEl.innerHTML = `<img src="${photoToUse}" style="width:100%;height:100%;object-fit:cover;">`;
+            } else {
+                avatarEl.innerHTML = initials;
+            }
+
+            const activeSchool = window.AcadexCore ? AcadexCore.getActiveSchool() : null;
+            const schoolContextHtml = activeSchool 
+                ? `<div style="font-size: 0.75rem; opacity: 0.8; margin-top: 4px;"><i class="fas fa-school"></i> ${activeSchool.name}</div>`
+                : '';
+
+            document.getElementById('dpName').innerText = studentName;
+            document.getElementById('dpRole').innerHTML = `${(student.primaryRole || 'Student') + (student.class ? ` (${student.class})` : '')}${schoolContextHtml}`;
+
+            const secondaryRoles = Array.isArray(student.secondaryRoles)
+                ? student.secondaryRoles
+                : (student.secondaryRole ? [student.secondaryRole] : []);
+            const rolesDisplay = secondaryRoles.length > 0 ? secondaryRoles.map(r => `<span style="background:#eee;padding:2px 8px;border-radius:10px;font-size:0.75rem;margin-right:5px;">${r}</span>`).join('') : 'None';
+
+            document.getElementById('dpBody').innerHTML = `
+                <div style="padding: 20px;">
+                    <div style="margin-bottom: 15px; border-bottom: 1px solid #f0f0f0; padding-bottom: 10px;">
+                        <span style="font-size: 0.75rem; color: #888; text-transform: uppercase; letter-spacing: 1px;">Identity</span>
+                        <div style="margin-top: 8px; display: flex; justify-content: space-between;">
+                            <span style="color: #666;">Student ID</span>
+                            <span style="font-weight: 500;">${student.id || student.studentId}</span>
+                        </div>
+                        <div style="margin-top: 8px; display: flex; justify-content: space-between;">
+                            <span style="color: #666;">Status</span>
+                            <span class="status-badge ${student.status === 'Active' ? 'status-active' : 'status-inactive'}">${student.status}</span>
+                        </div>
+                    </div>
+                    <div style="margin-bottom: 15px; border-bottom: 1px solid #f0f0f0; padding-bottom: 10px;">
+                        <span style="font-size: 0.75rem; color: #888; text-transform: uppercase; letter-spacing: 1px;">Contact</span>
+                        <div style="margin-top: 8px; display: flex; justify-content: space-between;">
+                            <span style="color: #666;">Email</span>
+                            <span style="font-weight: 500;">${student.email}</span>
+                        </div>
+                        <div style="margin-top: 8px; display: flex; justify-content: space-between;">
+                            <span style="color: #666;">Phone</span>
+                            <span style="font-weight: 500;">${student.phone}</span>
+                        </div>
+                    </div>
+                    <div style="margin-bottom: 15px; border-bottom: 1px solid #f0f0f0; padding-bottom: 10px;">
+                        <span style="font-size: 0.75rem; color: #888; text-transform: uppercase; letter-spacing: 1px;">Academic</span>
+                        <div style="margin-top: 8px; display: flex; justify-content: space-between;">
+                            <span style="color: #666;">Class</span>
+                            <span style="font-weight: 500;">${student.class}</span>
+                        </div>
+                        <div style="margin-top: 8px; display: flex; justify-content: space-between;">
+                            <span style="color: #666;">Secondary Roles</span>
+                            <div style="text-align: right;">${rolesDisplay}</div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 20px;">
+                        <button class="btn btn-primary" style="width: 100%;" onclick="editStudent(${index}); closeDetail();">
+                            <i class="fas fa-edit"></i> Edit Student Profile
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function closeDetail() {
+            document.getElementById('detailPanel').style.display = 'none';
+        }
+
+        // Edit student
+        function editStudent(index) {
+            const student = students[index];
+            const currentUser = JSON.parse(sessionStorage.getItem('adminUser') || '{}');
+            const isSuper = currentUser.adminRole === 'Super Administrator';
+
+            document.getElementById('editStudentIndex').value = index;
+            document.getElementById('editStudentId').value = student.id || student.studentId;
+            document.getElementById('editStudentName').value = student.name || '';
+            document.getElementById('editStudentClass').value = student.class || '';
+            document.getElementById('editStudentEmail').value = student.email || '';
+            document.getElementById('editStudentPhone').value = student.phone || '';
+            document.getElementById('editStudentStatus').value = student.status || 'Active';
+            document.getElementById('editStudentPrimaryRole').value = student.primaryRole || 'Student';
+
+            // Role Restriction Logic
+            document.getElementById('editStudentPrimaryRole').disabled = !isSuper;
+            document.getElementById('editAddRoleBtn').disabled = !isSuper;
+            if (!isSuper) document.getElementById('editAddRoleBtn').style.opacity = '0.5';
+            else document.getElementById('editAddRoleBtn').style.opacity = '1';
+
+            // Clear and populate secondary roles
+            const container = document.getElementById('editSecondaryRolesContainer');
+            container.innerHTML = '';
+            const secondaryRoles = Array.isArray(student.secondaryRoles)
+                ? student.secondaryRoles
+                : (student.secondaryRole ? [student.secondaryRole] : []);
+
+            secondaryRoles.forEach(role => addRoleRow('editSecondaryRolesContainer', role, !isSuper));
+
+            openModal('editStudentModal');
+        }
+
+        // Handle edit student
+        function handleEditStudent(event) {
+            event.preventDefault();
+
+            const index = document.getElementById('editStudentIndex').value;
+            const roleInputs = document.querySelectorAll('#editSecondaryRolesContainer input');
+            const secondaryRoles = Array.from(roleInputs)
+                .map(input => input.value.trim())
+                .filter(val => val !== '');
+
+            const activeSchool = window.AcadexCore ? AcadexCore.getActiveSchool() : null;
+            students[index] = {
+                ...students[index],
+                id: document.getElementById('editStudentId').value,
+                name: document.getElementById('editStudentName').value,
+                class: document.getElementById('editStudentClass').value,
+                email: document.getElementById('editStudentEmail').value,
+                phone: document.getElementById('editStudentPhone').value,
+                status: document.getElementById('editStudentStatus').value,
+                primaryRole: document.getElementById('editStudentPrimaryRole').value || 'Student',
+                secondaryRoles: secondaryRoles,
+                schoolCode: activeSchool ? activeSchool.code : (students[index].schoolCode || sessionStorage.getItem('activeSchoolCode') || '')
+            };
+
+            saveTenantData('school_students', students);
+            renderStudents();
+            closeModal('editStudentModal');
+            Toast.success('Student updated successfully!');
+        }
+
+        // Delete student
+        function deleteStudent(index) {
+            const student = students[index];
+            if (confirm(`Are you sure you want to delete ${student.name}? This action cannot be undone.`)) {
+                students.splice(index, 1);
+                saveTenantData('school_students', students);
+                renderStudents();
+                Toast.error('Student deleted successfully!');
+            }
+        }
+
+        // Search and Filter functionality (standardized)
+        function filterStudents() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const classFilter = document.getElementById('classFilter').value;
+            const statusFilter = document.getElementById('statusFilter').value;
+
+            const filtered = students.filter(student => {
+                const name = student.name || (student.firstName && student.lastName ? `${student.firstName} ${student.lastName}` : '');
+                const matchesSearch = name.toLowerCase().includes(searchTerm) ||
+                    (student.id || student.studentId || '').toLowerCase().includes(searchTerm) ||
+                    (student.email || '').toLowerCase().includes(searchTerm);
+                const matchesClass = !classFilter || (student.class || '').includes(classFilter);
+                const matchesStatus = !statusFilter || student.status === statusFilter;
+
+                return matchesSearch && matchesClass && matchesStatus;
+            });
+
+            currentPage = 1;
+            renderStudents(filtered);
+        }
+
+        document.getElementById('searchInput').addEventListener('keyup', filterStudents);
+        document.getElementById('classFilter').addEventListener('change', filterStudents);
+        document.getElementById('statusFilter').addEventListener('change', filterStudents);
+
+        // Initial render
+        renderStudents();
+    </script>
+    <!-- ACADEX: Core and Tenant scripts must load first -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+    <script src="../js/toast.js"></script>
+    <script src="../js/admin-sidebar.js"></script>
+</body>
+
+</html>

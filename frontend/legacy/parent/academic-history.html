@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Academic History - Acadex Parent Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/parent-portal.css">
+    <style>
+        .history-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            background: var(--glass-bg);
+            padding: 15px 25px;
+            border-radius: 15px;
+            border: 1px solid var(--glass-border);
+        }
+
+        .year-selector {
+            padding: 10px 20px;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            font-weight: 600;
+            outline: none;
+        }
+
+        .transcript-container {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .term-block {
+            background: #fff;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: var(--shadow-premium);
+        }
+
+        .term-header {
+            background: var(--primary-navy);
+            color: #fff;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .term-header h3 {
+            margin: 0;
+            font-size: 1.1rem;
+        }
+
+        .report-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            padding: 25px;
+        }
+
+        .report-card {
+            background: #f8fafc;
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid #e2e8f0;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+        }
+
+        .report-card:hover {
+            border-color: var(--gold-primary);
+            background: #fff;
+            transform: translateY(-2px);
+        }
+
+        .report-icon {
+            width: 48px;
+            height: 48px;
+            background: #ffe;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: #ef4444;
+        }
+
+        .report-info h4 {
+            margin: 0;
+            font-size: 0.9rem;
+            color: var(--primary-navy);
+        }
+
+        .report-info p {
+            margin: 0;
+            font-size: 0.75rem;
+            color: #64748b;
+        }
+
+        .overall-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-v-card {
+            background: var(--navy-dark);
+            color: #fff;
+            padding: 25px;
+            border-radius: 20px;
+            text-align: center;
+        }
+
+        .stat-v-card .val {
+            font-size: 2rem;
+            font-weight: 800;
+            display: block;
+            color: var(--gold-primary);
+        }
+
+        .stat-v-card .lbl {
+            font-size: 0.75rem;
+            color: rgba(255,255,255,0.6);
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <div class="brand-icon"><i class="fas fa-graduation-cap"></i></div>
+            <h3>Parent Portal</h3>
+            <p>Your School</p>
+        </div>
+        <div class="sidebar-menu">
+            <div class="sidebar-section-label">Academic & Life</div>
+            <ul>
+                <li><a href="dashboard.html"><i class="fas fa-th-large"></i> Dashboard</a></li>
+                <li><a href="student-profile.html"><i class="fas fa-user-graduate"></i> Student Profile</a></li>
+                <li><a href="academics.html"><i class="fas fa-chart-line"></i> Academics & Trends</a></li>
+                <li><a href="academic-history.html" class="active"><i class="fas fa-history"></i> Academic History</a></li>
+                <li><a href="wellbeing.html"><i class="fas fa-heartbeat"></i> Health & Conduct</a></li>
+                <li><a href="calendar.html"><i class="fas fa-calendar-alt"></i> School Calendar</a></li>
+            </ul>
+            <div class="sidebar-section-label">Communication</div>
+            <ul>
+                <li><a href="messages.html"><i class="fas fa-envelope"></i> Messages</a></li>
+                <li><a href="notices.html"><i class="fas fa-bullhorn"></i> Noticeboard</a></li>
+                <li><a href="approvals.html"><i class="fas fa-file-signature"></i> Approvals</a></li>
+                <li><a href="contact.html"><i class="fas fa-phone-alt"></i> Contact Us</a></li>
+            </ul>
+            <div class="sidebar-section-label">Finance & Logistics</div>
+            <ul>
+                <li><a href="fees.html"><i class="fas fa-file-invoice-dollar"></i> Fees & Payments</a></li>
+                <li><a href="wallet.html"><i class="fas fa-wallet"></i> Tuckshop Wallet</a></li>
+                <li><a href="transport.html"><i class="fas fa-bus"></i> Transport Tracker</a></li>
+            </ul>
+        </div>
+        <div class="sidebar-footer">
+            <a href="#" onclick="ParentPortal.logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </div>
+    </aside>
+
+    <div class="main-content">
+        <header class="top-header">
+            <div class="header-left">
+                <button class="mobile-toggle" id="mobileToggle"><i class="fas fa-bars"></i></button>
+                <h2>Academic History & Transcripts</h2>
+            </div>
+            <div class="header-right" id="userInfo">
+                <!-- User profile info -->
+            </div>
+        </header>
+
+        <main class="content-area">
+            <div class="overall-stats">
+                <div class="stat-v-card">
+                    <span class="val">3.8</span>
+                    <span class="lbl">Cumulative GPA</span>
+                </div>
+                <div class="stat-v-card">
+                    <span class="val">14</span>
+                    <span class="lbl">Subjects Passed</span>
+                </div>
+                <div class="stat-v-card">
+                    <span class="val">A</span>
+                    <span class="lbl">Overall Grade</span>
+                </div>
+                <div class="stat-v-card">
+                    <span class="val">0</span>
+                    <span class="lbl">Finals Remaining</span>
+                </div>
+            </div>
+
+            <div class="history-controls">
+                <div style="font-weight:700; color:var(--primary-navy);">Filter by Academic Year</div>
+                <select class="year-selector">
+                    <option>2026 (In Progress)</option>
+                    <option selected>2025 (Completed)</option>
+                    <option>2024 (Completed)</option>
+                </select>
+            </div>
+
+            <div class="transcript-container">
+                <!-- 2025 Block -->
+                <div class="term-block">
+                    <div class="term-header">
+                        <h3>Academic Year 2025</h3>
+                        <div style="font-size:0.8rem; opacity:0.8;">Verified by Ministry of Education</div>
+                    </div>
+                    <div class="report-grid">
+                        <div class="report-card" onclick="alert('Downloading Report PDF (Simulated)')">
+                            <div class="report-icon"><i class="fas fa-file-pdf"></i></div>
+                            <div class="report-info">
+                                <h4>Term 1 Progress Report</h4>
+                                <p>Generated April 15, 2025</p>
+                            </div>
+                        </div>
+                        <div class="report-card" onclick="alert('Downloading Report PDF (Simulated)')">
+                            <div class="report-icon"><i class="fas fa-file-pdf"></i></div>
+                            <div class="report-info">
+                                <h4>Term 2 Progress Report</h4>
+                                <p>Generated August 10, 2025</p>
+                            </div>
+                        </div>
+                        <div class="report-card" onclick="alert('Downloading Transcript PDF (Simulated)')">
+                            <div class="report-icon" style="color:var(--gold-primary);"><i class="fas fa-certificate"></i></div>
+                            <div class="report-info">
+                                <h4>Final Annual Transcript</h4>
+                                <p>Official Seal Verified</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2024 Block -->
+                <div class="term-block" style="opacity: 0.7;">
+                    <div class="term-header" style="background: #334155;">
+                        <h3>Academic Year 2024</h3>
+                        <div style="font-size:0.8rem; opacity:0.8;">Archived Data</div>
+                    </div>
+                    <div class="report-grid">
+                        <div class="report-card">
+                            <div class="report-icon"><i class="fas fa-file-pdf"></i></div>
+                            <div class="report-info">
+                                <h4>Annual Consolidation</h4>
+                                <p>Legacy Data Imported</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../js/parent-portal.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            ParentPortal.init();
+        });
+    </script>
+    <!-- ACADEX: Powered-by footer and school branding -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+
+</body>
+
+</html>
+
+

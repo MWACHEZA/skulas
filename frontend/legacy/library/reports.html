@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library Reports - Bursar Portal</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/library-portal.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            background-color: rgba(var(--school-primary-rgb, 0, 86, 179), 0.2);
+            color: white;
+            border-left: 3px solid var(--school-primary, var(--school-primary, #0056b3));
+        }
+
+        .btn-primary {
+            background: var(--school-primary, var(--school-primary, #0056b3));
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .btn-primary:hover {
+            background: var(--school-primary-dark, var(--school-primary-dark, #003d82));
+            transform: translateY(-2px);
+        }
+
+        .glass-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .top-header h2 {
+            color: var(--school-primary-dark, var(--school-primary-dark, #1a1a2e));
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <img src="../images/logo.png" alt="Logo" class="acadex-school-logo">
+                <h3>Library Portal</h3>
+            </div>
+            <div class="sidebar-menu">
+                <div class="sidebar-section-title">Library System</div>
+                <ul>
+                    <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
+                    <li><a href="books.html"><i class="fas fa-book"></i><span>Catalog Management</span></a></li>
+                    <li><a href="issue.html"><i class="fas fa-exchange-alt"></i><span>Circulation Desk</span></a></li>
+                    <li><a href="digital.html"><i class="fas fa-laptop-code"></i><span>Digital Resources</span></a></li>
+                    <li><a href="reports.html" class="active"><i class="fas fa-file-invoice"></i><span>Reports &
+                                Inventory</span></a></li>
+                </ul>
+                <div class="sidebar-section-title">Operations</div>
+                <ul>
+                    <li><a href="staff-directory.html"><i class="fas fa-users"></i><span>Staff Directory</span></a></li>
+                    <li><a href="procurement.html"><i class="fas fa-shopping-cart"></i><span>Procurement</span></a></li>
+                    <li><a href="assets.html"><i class="fas fa-boxes"></i><span>Asset Management</span></a></li>
+                    <li><a href="schedules.html"><i class="fas fa-calendar-check"></i><span>Schedules &
+                                Shifts</span></a></li>
+                </ul>
+                <div class="sidebar-section-title">Staff HR & Support</div>
+                <ul>
+                    <li><a href="hr-services.html"><i class="fas fa-user-shield"></i><span>HR Services</span></a></li>
+                    <li><a href="profile.html"><i class="fas fa-id-card"></i><span>My Profile</span></a></li>
+                    <li><a href="resources.html"><i class="fas fa-folder-open"></i><span>Resources & Docs</span></a>
+                    </li>
+                    <li><a href="it-support.html"><i class="fas fa-headset"></i><span>IT Support</span></a></li>
+                </ul>
+                <div class="sidebar-section-title">Communication</div>
+                <ul>
+                    <li><a href="news.html"><i class="fas fa-newspaper"></i><span>News & Updates</span></a></li>
+                    <li><a href="announcements.html"><i class="fas fa-bullhorn"></i><span>General Notices</span></a>
+                    </li>
+                    <li><a href="contact.html"><i class="fas fa-address-book"></i><span>Contact Us</span></a></li>
+                    <li><a href="settings.html"><i class="fas fa-cog"></i><span>System Settings</span></a></li>
+                </ul>
+            </div>
+            <div class="sidebar-footer">
+                <a href="login.html"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="top-header">
+                <h2>Reports & Inventory</h2>
+                <div class="user-profile">
+                    <div style="text-align: right; margin-right: 10px;">
+                        <div style="font-weight: 600; font-size: 0.9rem;">Librarian Admin</div>
+                        <div style="font-size: 0.75rem; color: #888;">System Administrator</div>
+                    </div>
+                    <img src="../images/admin-avatar.png" alt="Admin">
+                </div>
+            </div>
+
+            <div class="content-area">
+                <div
+                    style="display: grid; grid-gap: 25px; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); margin-bottom: 30px;">
+                    <!-- Inventory Summary Card -->
+                    <div style="background: white; padding: 25px; border-radius: 12px; box-shadow: var(--card-shadow);">
+                        <div
+                            style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
+                            <div>
+                                <h3 style="margin: 0; color: var(--school-primary, var(--school-primary, #0056b3));">Collection Summary</h3>
+                                <p style="margin: 5px 0 0; color: #888; font-size: 0.9rem;">Total registered assets</p>
+                            </div>
+                            <button class="btn btn-export" onclick="printPage()">
+                                <i class="fas fa-print"></i>
+                            </button>
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 15px;">
+                            <div
+                                style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 10px;">
+                                <span style="font-weight: 500;">Total Books</span>
+                                <span style="font-weight: 700; font-size: 1.1rem; color: var(--school-primary, var(--school-primary, #0056b3));"
+                                    id="totalBooksStat">12,450</span>
+                            </div>
+                            <div
+                                style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 10px;">
+                                <span style="font-weight: 500;">Active Borrowers</span>
+                                <span style="font-weight: 700; font-size: 1.1rem; color: #1cc88a;">842</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span style="font-weight: 500;">Issued items</span>
+                                <span style="font-weight: 700; font-size: 1.1rem; color: #f6c23e;">156</span>
+                            </div>
+                        </div>
+                        <button class="btn-primary" style="width: 100%; margin-top: 25px; justify-content: center;"
+                            onclick="exportToCSV('popularBooksTable', 'inventory-report.csv')">
+                            <i class="fas fa-download"></i> Generate Full Audit
+                        </button>
+                    </div>
+
+                    <!-- Overdue & Fines Card -->
+                    <div style="background: white; padding: 25px; border-radius: 12px; box-shadow: var(--card-shadow);">
+                        <h3 style="margin: 0 0 20px; color: #e74a3b;">Circulation Alerts</h3>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                            <div
+                                style="background: #fff5f5; padding: 15px; border-radius: 8px; text-align: center; border: 1px solid #fadbd8;">
+                                <div style="font-size: 0.8rem; color: #e74a3b; font-weight: 600; margin-bottom: 5px;">
+                                    OVERDUE ITEMS</div>
+                                <div style="font-size: 1.5rem; font-weight: 700; color: #c0392b;">24</div>
+                            </div>
+                            <div
+                                style="background: #fff9f0; padding: 15px; border-radius: 8px; text-align: center; border: 1px solid #faebcc;">
+                                <div style="font-size: 0.8rem; color: #8a6d3b; font-weight: 600; margin-bottom: 5px;">
+                                    UNPAID FINES</div>
+                                <div style="font-size: 1.5rem; font-weight: 700; color: #8a6d3b;">$345.00</div>
+                            </div>
+                        </div>
+                        <div style="margin-top: 20px;">
+                            <h4 style="margin: 0 0 10px; font-size: 0.95rem;">Top Overdue Categories</h4>
+                            <div
+                                style="height: 8px; background: #eee; border-radius: 4px; overflow: hidden; display: flex; margin-bottom: 15px;">
+                                <div style="width: 60%; background: var(--school-primary, var(--school-primary, #0056b3));" title="Fiction (60%)"></div>
+                                <div style="width: 25%; background: #1cc88a;" title="Sciences (25%)"></div>
+                                <div style="width: 15%; background: #f6c23e;" title="History (15%)"></div>
+                            </div>
+                            <div style="display: flex; gap: 15px; font-size: 0.75rem; color: #666;">
+                                <span style="display: flex; align-items: center; gap: 5px;"><i class="fas fa-circle"
+                                        style="color: var(--school-primary, var(--school-primary, #0056b3)); font-size: 0.6rem;"></i> Fiction</span>
+                                <span style="display: flex; align-items: center; gap: 5px;"><i class="fas fa-circle"
+                                        style="color: #1cc88a; font-size: 0.6rem;"></i> Sciences</span>
+                                <span style="display: flex; align-items: center; gap: 5px;"><i class="fas fa-circle"
+                                        style="color: #f6c23e; font-size: 0.6rem;"></i> History</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Popular Books Table -->
+                <div class="table-container">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                        <div>
+                            <h3 style="margin: 0; color: var(--school-primary, var(--school-primary, #4e73df));">Borrowing Trends</h3>
+                            <p style="margin: 5px 0 0; color: #888; font-size: 0.9rem;">Most frequently issued titles
+                                this month</p>
+                        </div>
+                        <div style="display: flex; gap: 10px;">
+                            <button class="btn btn-export"
+                                onclick="exportToCSV('popularBooksTable', 'most-borrowed-books.csv')">
+                                <i class="fas fa-file-csv"></i> Export CSV
+                            </button>
+                            <button class="btn btn-export" onclick="printPage()">
+                                <i class="fas fa-print"></i> Print
+                            </button>
+                        </div>
+                    </div>
+
+                    <table class="table" id="popularBooksTable">
+                        <thead>
+                            <tr>
+                                <th>Book Title</th>
+                                <th>Author</th>
+                                <th>Category</th>
+                                <th>Times Issued</th>
+                                <th>Availability</th>
+                                <th>Trend</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="font-weight: 500;">Practical Biology Grade 12</td>
+                                <td>Dr. J. Smith</td>
+                                <td>Sciences</td>
+                                <td>45</td>
+                                <td><span class="badge bg-danger">Low (2 left)</span></td>
+                                <td style="color: #1cc88a;"><i class="fas fa-arrow-up"></i> 12%</td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight: 500;">The Great Gatsby</td>
+                                <td>F. Scott Fitzgerald</td>
+                                <td>Literature</td>
+                                <td>38</td>
+                                <td><span class="badge bg-success">15 In-stock</span></td>
+                                <td style="color: #1cc88a;"><i class="fas fa-arrow-up"></i> 5%</td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight: 500;">A History of Modern Africa</td>
+                                <td>Richard J. Reid</td>
+                                <td>History</td>
+                                <td>32</td>
+                                <td><span class="badge bg-success">8 In-stock</span></td>
+                                <td style="color: #e74a3b;"><i class="fas fa-arrow-down"></i> 2%</td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight: 500;">Principles of Economics</td>
+                                <td>N. Gregory Mankiw</td>
+                                <td>Humanities</td>
+                                <td>29</td>
+                                <td><span class="badge bg-warning">5 In-stock</span></td>
+                                <td style="color: #1cc88a;"><i class="fas fa-arrow-up"></i> 8%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/library-auth.js"></script>
+    <script src="../js/library-admin.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const stored = getTenantData('libraryBooks', 'null');
+            if (stored) {
+                const books = JSON.parse(stored);
+                const total = books.reduce((sum, b) => sum + (parseInt(b.totalCopies) || 0), 0);
+                const totalBooksStat = document.getElementById('totalBooksStat');
+                if (totalBooksStat) totalBooksStat.innerText = total.toLocaleString();
+            }
+        });
+    </script>
+    <!-- ACADEX: Powered-by footer and school branding -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+
+</body>
+
+</html>
+

@@ -1,0 +1,1112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Management - Admin Portal</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f0f4ff;
+            margin: 0;
+            padding: 0;
+        }
+
+        .admin-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .header-left h2 i {
+            color: var(--school-primary, #dc3545);
+            margin-right: 10px;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: 250px;
+        }
+
+        .top-header {
+            background: white;
+            padding: 15px 30px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, .05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .top-header h2 {
+            margin: 0;
+            font-size: 1.4rem;
+            color: #1a1a1a;
+        }
+
+        .content-area {
+            padding: 30px;
+        }
+
+        /* Stats */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, .05);
+            text-align: center;
+        }
+
+        .stat-card h4 {
+            margin: 0 0 8px;
+            font-size: 0.82rem;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+
+        .stat-card.red .stat-value {
+            color: #dc3545;
+        }
+
+        .stat-card.blue .stat-value {
+            color: #0056b3;
+        }
+
+        .stat-card.green .stat-value {
+            color: #28a745;
+        }
+
+        /* Table */
+        .page-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .search-filter {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-box input {
+            padding: 9px 14px 9px 36px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            width: 260px;
+            font-size: 0.87rem;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+        }
+
+        select {
+            padding: 9px 14px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 0.87rem;
+        }
+
+        .btn {
+            padding: 9px 18px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.87rem;
+            font-weight: 500;
+            transition: all .2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .btn-primary {
+            background-color: var(--school-primary, #0056b3);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--school-primary-dark, #003d82);
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #333;
+        }
+
+        .btn-sm {
+            padding: 5px 11px;
+            font-size: 0.78rem;
+        }
+
+        .data-table {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, .06);
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: #1a1a1a;
+        }
+
+        th {
+            padding: 13px 15px;
+            text-align: left;
+            font-weight: 600;
+            color: white;
+            font-size: 0.82rem;
+        }
+
+        td {
+            padding: 13px 15px;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 0.85rem;
+            color: #333;
+        }
+
+        tbody tr:hover {
+            background: #fafafa;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.88rem;
+            color: white;
+            overflow: hidden;
+            flex-shrink: 0;
+            background: linear-gradient(135deg, var(--school-primary, #dc3545), var(--school-primary-dark, #a71d2a));
+        }
+
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: #222;
+        }
+
+        .user-username {
+            font-size: 0.75rem;
+            color: #888;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-admin {
+            background: rgba(var(--school-primary-rgb, 220, 53, 69), .12);
+            color: var(--school-primary, #dc3545);
+        }
+
+        .badge-super {
+            background: rgba(220, 53, 69, .15);
+            color: #c0392b;
+            border: 1px solid rgba(220, 53, 69, .3);
+        }
+
+        .badge-academic {
+            background: rgba(var(--school-primary-rgb, 0, 86, 179), .12);
+            color: var(--school-primary, #0056b3);
+        }
+
+        .badge-financial {
+            background: rgba(40, 167, 69, .12);
+            color: #28a745;
+        }
+
+        .badge-system {
+            background: rgba(255, 193, 7, .18);
+            color: #b8860b;
+        }
+
+        .badge-hr {
+            background: rgba(156, 39, 176, .12);
+            color: #7b1fa2;
+        }
+
+        .actions-cell {
+            display: flex;
+            gap: 6px;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .5);
+            z-index: 2000;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .modal-overlay.open {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 14px;
+            width: 100%;
+            max-width: 650px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, .25);
+        }
+
+        .modal-header {
+            background: #1a1a1a;
+            color: white;
+            padding: 18px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            font-size: 1.05rem;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            opacity: .7;
+            line-height: 1;
+        }
+
+        .modal-close:hover {
+            opacity: 1;
+        }
+
+        .modal-body {
+            padding: 24px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 9px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 0.87rem;
+            box-sizing: border-box;
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #1a1a1a;
+        }
+
+        .modal-footer {
+            padding: 16px 24px;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        /* Detail panel */
+        .detail-panel {
+            display: none;
+            position: fixed;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            width: 380px;
+            background: white;
+            box-shadow: -4px 0 30px rgba(0, 0, 0, .12);
+            z-index: 1500;
+            overflow-y: auto;
+        }
+
+        .detail-panel.open {
+            display: block;
+        }
+
+        .sidebar {
+            width: 260px;
+            background-color: var(--school-primary-dark, #1a1a2e);
+            color: white;
+            padding: 20px;
+        }
+
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            background-color: rgba(var(--school-primary-rgb, 0, 86, 179), 0.2);
+            color: white;
+            border-left: 3px solid var(--school-primary, #0056b3);
+        }
+
+        .detail-header {
+            background: #1a1a1a;
+            color: white;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .detail-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--school-primary, #dc3545), var(--school-primary-dark, #a71d2a));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            font-weight: 700;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+
+        .detail-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .detail-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+        }
+
+        .detail-sub {
+            font-size: 0.8rem;
+            opacity: .7;
+            margin-top: 2px;
+        }
+
+        .detail-close {
+            position: absolute;
+            top: 14px;
+            right: 14px;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.3rem;
+            cursor: pointer;
+            opacity: .7;
+        }
+
+        .detail-section {
+            padding: 16px 20px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .detail-section h4 {
+            margin: 0 0 12px;
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            color: #888;
+            letter-spacing: 1px;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 6px 0;
+            font-size: 0.85rem;
+        }
+
+        .detail-label {
+            color: #666;
+            font-size: 0.82rem;
+        }
+
+        .detail-value {
+            font-weight: 500;
+            text-align: right;
+            max-width: 55%;
+        }
+
+        .pagination {
+            display: flex;
+            gap: 6px;
+            margin-top: 20px;
+            justify-content: center;
+        }
+
+        .pagination button {
+            padding: 7px 13px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            background: white;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+
+        .pagination button.active {
+            background: #1a1a1a;
+            color: white;
+            border-color: #1a1a1a;
+        }
+
+        .pagination button:disabled {
+            opacity: .4;
+            cursor: default;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin-container">
+        <aside class="sidebar" id="sidebar"></aside>
+        <div class="main-content">
+            <div class="top-header">
+                <h2><i class="fas fa-user-shield" style="margin-right:10px;color:#dc3545;"></i>Admin Management</h2>
+                <button class="btn btn-primary" onclick="openAddModal()">
+                    <i class="fas fa-user-plus"></i> Add New Admin
+                </button>
+            </div>
+
+            <div class="content-area">
+                <!-- Stats -->
+                <div class="stats-row">
+                    <div class="stat-card red">
+                        <h4>Total Admins</h4>
+                        <div class="stat-value" id="statTotal">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h4>Super Administrators</h4>
+                        <div class="stat-value" id="statSuper" style="color:#c0392b;">0</div>
+                    </div>
+                    <div class="stat-card blue">
+                        <h4>Academic Admins</h4>
+                        <div class="stat-value" id="statAcademic">0</div>
+                    </div>
+                    <div class="stat-card green">
+                        <h4>Financial Admins</h4>
+                        <div class="stat-value" id="statFinancial">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h4>System Admins</h4>
+                        <div class="stat-value" id="statSystem" style="color:#b8860b;">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h4>HR Admins</h4>
+                        <div class="stat-value" id="statHR" style="color:#7b1fa2;">0</div>
+                    </div>
+                </div>
+
+                <!-- Filters -->
+                <div class="page-actions">
+                    <div class="search-filter">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="adminSearch" placeholder="Search admins…">
+                        </div>
+                        <select id="roleFilter">
+                            <option value="all">All Roles</option>
+                            <option value="Super Administrator">Super Administrator</option>
+                            <option value="Academic Administrator">Academic Administrator</option>
+                            <option value="Financial Administrator">Financial Administrator</option>
+                            <option value="System Administrator">System Administrator</option>
+                            <option value="HR Administrator">HR Administrator</option>
+                        </select>
+                        <select id="deptFilter">
+                            <option value="all">All Departments</option>
+                            <option>Administration</option>
+                            <option>ICT</option>
+                            <option>Finance</option>
+                            <option>HR</option>
+                            <option>Academic Affairs</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Table -->
+                <div class="data-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Admin ID</th>
+                                <th>Admin</th>
+                                <th>Primary Role</th>
+                                <th>Secondary Role</th>
+                                <th>Department</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminTableBody">
+                            <tr>
+                                <td colspan="8" style="text-align:center;color:#999;padding:30px;">Loading admins…</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="pagination" id="adminPagination"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detail Panel -->
+    <div class="detail-panel" id="detailPanel">
+        <button class="detail-close" onclick="closeDetail()"><i class="fas fa-times"></i></button>
+        <div class="detail-header">
+            <div class="detail-avatar" id="dpAvatar">AD</div>
+            <div>
+                <div class="detail-title" id="dpName">—</div>
+                <div class="detail-sub" id="dpRole">—</div>
+            </div>
+        </div>
+        <div id="dpBody"></div>
+    </div>
+
+    <!-- Add/Edit Modal -->
+    <div class="modal-overlay" id="adminModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="modalTitle">Add New Admin</h3>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="editAdminId">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>First Name *</label>
+                        <input type="text" id="mFirstName" placeholder="First name">
+                    </div>
+                    <div class="form-group">
+                        <label>Last Name *</label>
+                        <input type="text" id="mLastName" placeholder="Last name">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Email *</label>
+                        <input type="email" id="mEmail" placeholder="email@school.edu">
+                    </div>
+                    <div class="form-group">
+                        <label>Phone</label>
+                        <input type="tel" id="mPhone" placeholder="+263…">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Username *</label>
+                        <input type="text" id="mUsername" placeholder="username">
+                    </div>
+                    <div class="form-group">
+                        <label>Department</label>
+                        <select id="mDepartment">
+                            <option value="">— Select —</option>
+                            <option>Administration</option>
+                            <option>ICT</option>
+                            <option>Finance</option>
+                            <option>HR</option>
+                            <option>Academic Affairs</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Secondary Role (Admin Role) *</label>
+                    <select id="mAdminRole">
+                        <option value="">— Select Role —</option>
+                        <option value="Super Administrator">Super Administrator</option>
+                        <option value="Academic Administrator">Academic Administrator</option>
+                        <option value="Financial Administrator">Financial Administrator</option>
+                        <option value="System Administrator">System Administrator</option>
+                        <option value="HR Administrator">HR Administrator</option>
+                    </select>
+                </div>
+
+                <div style="border-top: 1px solid #eee; margin: 15px 0; padding-top: 10px;">
+                    <h4 style="margin: 0 0 10px; font-size: 0.85rem; color: #555;">Personal Details</h4>
+                    <div class="form-row">
+                        <div class="form-group"><label>Date of Birth</label><input type="date" id="mDob"></div>
+                        <div class="form-group">
+                            <label>Gender</label>
+                            <select id="mGender">
+                                <option value="">— Select —</option>
+                                <option>Male</option>
+                                <option>Female</option>
+                                <option>Other</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Religion</label><input type="text" id="mReligion"
+                                placeholder="Religion"></div>
+                        <div class="form-group"><label>National ID</label><input type="text" id="mNationalId"
+                                placeholder="ID Number"></div>
+                    </div>
+                    <div class="form-group"><label>Address</label><input type="text" id="mAddress"
+                            placeholder="Home Address"></div>
+                </div>
+
+                <div style="border-top: 1px solid #eee; margin: 15px 0; padding-top: 10px;">
+                    <h4 style="margin: 0 0 10px; font-size: 0.85rem; color: #555;">Spouse Details</h4>
+                    <div class="form-row">
+                        <div class="form-group"><label>Spouse Name</label><input type="text" id="mSpouseName"
+                                placeholder="Name"></div>
+                        <div class="form-group"><label>Spouse Phone</label><input type="tel" id="mSpousePhone"
+                                placeholder="Phone"></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Occupation</label><input type="text" id="mSpouseOccupation"
+                                placeholder="Occupation"></div>
+                        <div class="form-group"><label>Children</label><input type="number" id="mNumChildren"
+                                placeholder="0" min="0"></div>
+                    </div>
+                </div>
+
+                <div style="border-top: 1px solid #eee; margin: 15px 0; padding-top: 10px;">
+                    <h4 style="margin: 0 0 10px; font-size: 0.85rem; color: #555;">Next of Kin</h4>
+                    <div class="form-row">
+                        <div class="form-group"><label>NOK Name</label><input type="text" id="mNokName"
+                                placeholder="Name"></div>
+                        <div class="form-group"><label>Relationship</label><input type="text" id="mNokRelationship"
+                                placeholder="Relationship"></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>NOK Phone</label><input type="tel" id="mNokPhone"
+                                placeholder="Phone"></div>
+                        <div class="form-group"><label>NOK Email</label><input type="email" id="mNokEmail"
+                                placeholder="Email"></div>
+                    </div>
+                </div>
+
+                <p style="font-size:.8rem;color:#888;margin:10px 0;"><i class="fas fa-info-circle"></i> Primary
+                    role is always <strong>Admin</strong> (system-assigned).</p>
+                <div id="modalError" style="color:#dc3545;font-size:.83rem;display:none;margin-bottom:10px;"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" onclick="closeModal()" style="background:#eee;color:#333;">Cancel</button>
+                <button class="btn btn-primary" onclick="saveAdmin()"><i class="fas fa-save"></i> Save Admin</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const ITEMS_PER_PAGE = 12;
+        let currentPage = 1;
+        let allAdmins = [];
+        let filtered = [];
+
+        function getAdmins() {
+            return getTenantData('adminUsers', []).map(a => ({
+                ...a,
+                name: a.name || ((a.firstName || '') + ' ' + (a.lastName || '')).trim() || a.username || 'Admin',
+                primaryRole: 'Admin'
+            }));
+        }
+
+        function updateStats(admins) {
+            const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+            set('statTotal', admins.length);
+            set('statSuper', admins.filter(a => a.adminRole === 'Super Administrator').length);
+            set('statAcademic', admins.filter(a => a.adminRole === 'Academic Administrator').length);
+            set('statFinancial', admins.filter(a => a.adminRole === 'Financial Administrator').length);
+            set('statSystem', admins.filter(a => a.adminRole === 'System Administrator').length);
+            set('statHR', admins.filter(a => a.adminRole === 'HR Administrator').length);
+        }
+
+        function roleBadgeClass(role) {
+            if (!role) return 'badge-admin';
+            if (role.includes('Super')) return 'badge-super';
+            if (role.includes('Academic')) return 'badge-academic';
+            if (role.includes('Financial')) return 'badge-financial';
+            if (role.includes('System')) return 'badge-system';
+            if (role.includes('HR')) return 'badge-hr';
+            return 'badge-admin';
+        }
+
+        function initials(name) {
+            const parts = (name || '').trim().split(' ');
+            return (parts.length > 1 ? parts[0][0] + parts[parts.length - 1][0] : parts[0].substring(0, 2)).toUpperCase();
+        }
+
+        function renderTable(data = filtered) {
+            const tbody = document.getElementById('adminTableBody');
+            filtered = data;
+            const start = (currentPage - 1) * ITEMS_PER_PAGE;
+            const page = filtered.slice(start, start + ITEMS_PER_PAGE);
+
+            if (page.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:#999;padding:30px;">No admins found.</td></tr>';
+                renderPagination(0); return;
+            }
+
+            tbody.innerHTML = page.map((a, i) => {
+                const ini = initials(a.name);
+                const avatarContent = a.photo
+                    ? `<img src="${a.photo}" alt="">`
+                    : ini;
+                return `
+        <tr>
+            <td style="font-family:monospace;font-size:0.82rem;color:#555;">${a.id || '—'}</td>
+            <td>
+                <div class="user-info">
+                    <div class="user-avatar">${avatarContent}</div>
+                    <div>
+                        <div class="user-name">${a.name}</div>
+                        <div class="user-username">@${a.username || '—'}</div>
+                    </div>
+                </div>
+            </td>
+            <td><span class="badge badge-admin">Admin</span></td>
+            <td><span class="badge ${roleBadgeClass(a.adminRole)}">${a.adminRole || '—'}</span></td>
+            <td>${a.department || '—'}</td>
+            <td>${a.email || '—'}</td>
+            <td>${a.phone || '—'}</td>
+            <td>
+                <div class="actions-cell">
+                    <button class="btn btn-warning btn-sm" onclick="viewAdmin('${a.username}')"><i class="fas fa-eye"></i></button>
+                    <button class="btn btn-primary btn-sm" onclick="editAdmin('${a.username}')"><i class="fas fa-edit"></i></button>
+                    <button class="btn btn-danger btn-sm" onclick="deleteAdmin('${a.username}')"><i class="fas fa-trash"></i></button>
+                </div>
+            </td>
+        </tr>`;
+            }).join('');
+
+            renderPagination(filtered.length);
+        }
+
+        function renderPagination(total) {
+            const container = document.getElementById('adminPagination');
+            const totalPages = Math.ceil(total / ITEMS_PER_PAGE);
+            container.innerHTML = '';
+            if (totalPages <= 1) return;
+            const mk = (label, disabled, fn) => {
+                const b = document.createElement('button');
+                b.innerHTML = label; b.disabled = disabled; b.onclick = fn;
+                container.appendChild(b);
+            };
+            mk('<i class="fas fa-chevron-left"></i>', currentPage === 1, () => { currentPage--; renderTable(); });
+            for (let i = 1; i <= totalPages; i++) {
+                const b = document.createElement('button');
+                b.innerText = i;
+                if (i === currentPage) b.className = 'active';
+                b.onclick = () => { currentPage = i; renderTable(); };
+                container.appendChild(b);
+            }
+            mk('<i class="fas fa-chevron-right"></i>', currentPage === totalPages, () => { currentPage++; renderTable(); });
+        }
+
+        function applyFilters() {
+            const q = document.getElementById('adminSearch').value.toLowerCase();
+            const role = document.getElementById('roleFilter').value;
+            const dept = document.getElementById('deptFilter').value;
+
+            const result = allAdmins.filter(a => {
+                const matchQ = !q || a.name.toLowerCase().includes(q) || (a.email || '').toLowerCase().includes(q) || (a.username || '').toLowerCase().includes(q);
+                const matchRole = role === 'all' || a.adminRole === role;
+                const matchDept = dept === 'all' || a.department === dept;
+                return matchQ && matchRole && matchDept;
+            });
+            currentPage = 1;
+            renderTable(result);
+        }
+
+        function viewAdmin(username) {
+            const a = allAdmins.find(x => x.username === username);
+            if (!a) return;
+            const panel = document.getElementById('detailPanel');
+            panel.classList.add('open');
+
+            const ini = initials(a.name);
+            const dpAvatar = document.getElementById('dpAvatar');
+            dpAvatar.innerHTML = a.photo ? `<img src="${a.photo}" alt="">` : ini;
+            document.getElementById('dpName').textContent = a.name;
+            document.getElementById('dpRole').textContent = a.adminRole || 'Admin';
+
+            document.getElementById('dpBody').innerHTML = `
+        <div class="detail-section">
+            <h4>Identity</h4>
+            <div class="detail-row"><span class="detail-label">Admin ID</span><span class="detail-value" style="font-family:monospace;">${a.id || '—'}</span></div>
+            <div class="detail-row"><span class="detail-label">Username</span><span class="detail-value">@${a.username || '—'}</span></div>
+            <div class="detail-row"><span class="detail-label">Primary Role</span><span class="detail-value"><span class="badge badge-admin">Admin</span></span></div>
+            <div class="detail-row"><span class="detail-label">Secondary Role</span><span class="detail-value"><span class="badge ${roleBadgeClass(a.adminRole)}">${a.adminRole || '—'}</span></span></div>
+        </div>
+        <div class="detail-section">
+            <h4>Contact</h4>
+            <div class="detail-row"><span class="detail-label">Email</span><span class="detail-value">${a.email || '—'}</span></div>
+            <div class="detail-row"><span class="detail-label">Phone</span><span class="detail-value">${a.phone || '—'}</span></div>
+            <div class="detail-row"><span class="detail-label">Department</span><span class="detail-value">${a.department || '—'}</span></div>
+            <div class="detail-row"><span class="detail-label">Address</span><span class="detail-value">${a.address || '—'}</span></div>
+        </div>
+        <div class="detail-section">
+            <h4>Personal</h4>
+            <div class="detail-row"><span class="detail-label">Date of Birth</span><span class="detail-value">${a.dob || '—'}</span></div>
+            <div class="detail-row"><span class="detail-label">Gender</span><span class="detail-value">${a.gender || '—'}</span></div>
+            <div class="detail-row"><span class="detail-label">Religion</span><span class="detail-value">${a.religion || '—'}</span></div>
+            <div class="detail-row"><span class="detail-label">National ID</span><span class="detail-value">${a.nationalId || '—'}</span></div>
+            <div class="detail-row"><span class="detail-label">Registered</span><span class="detail-value">${a.createdAt ? new Date(a.createdAt).toLocaleDateString() : '—'}</span></div>
+        </div>
+        <div class="detail-section">
+            <h4>Spouse / Family</h4>
+            <div class="detail-row"><span class="detail-label">Spouse Name</span><span class="detail-value">${a.spouseName || '—'}</span></div>
+            <div class="detail-row"><span class="detail-label">Spouse Phone</span><span class="detail-value">${a.spousePhone || '—'}</span></div>
+            <div class="detail-row"><span class="detail-label">Spouse Occupation</span><span class="detail-value">${a.spouseOccupation || '—'}</span></div>
+            <div class="detail-row"><span class="detail-label">No. of Children</span><span class="detail-value">${a.numChildren !== undefined && a.numChildren !== '' ? a.numChildren : '—'}</span></div>
+        </div>
+        <div class="detail-section">
+            <h4>Next of Kin</h4>
+            <div class="detail-row"><span class="detail-label">Name</span><span class="detail-value">${a.nokName || '—'}</span></div>
+            <div class="detail-row"><span class="detail-label">Relationship</span><span class="detail-value">${a.nokRelationship || '—'}</span></div>
+            <div class="detail-row"><span class="detail-label">Phone</span><span class="detail-value">${a.nokPhone || '—'}</span></div>
+            <div class="detail-row"><span class="detail-label">Email</span><span class="detail-value">${a.nokEmail || '—'}</span></div>
+        </div>
+        <div style="padding:16px 20px;">
+            <button class="btn btn-primary" style="width:100%;" onclick="editAdmin('${a.username}');closeDetail();">
+                <i class="fas fa-edit"></i> Edit This Admin
+            </button>
+        </div>`;
+        }
+
+        function closeDetail() { document.getElementById('detailPanel').classList.remove('open'); }
+
+        function openAddModal() {
+            document.getElementById('modalTitle').textContent = 'Add New Admin';
+            document.getElementById('editAdminId').value = '';
+            ['mFirstName', 'mLastName', 'mEmail', 'mPhone', 'mUsername', 'mDob', 'mReligion', 'mNationalId', 'mAddress', 'mSpouseName', 'mSpousePhone', 'mSpouseOccupation', 'mNumChildren', 'mNokName', 'mNokRelationship', 'mNokPhone', 'mNokEmail'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.value = '';
+            });
+            document.getElementById('mGender').value = '';
+            document.getElementById('mDepartment').value = '';
+            document.getElementById('mAdminRole').value = '';
+            document.getElementById('modalError').style.display = 'none';
+
+            // Role Restriction Logic
+            const currentUser = JSON.parse(sessionStorage.getItem('adminUser') || '{}');
+            const isSuper = currentUser.adminRole === 'Super Administrator';
+            document.getElementById('mAdminRole').disabled = !isSuper;
+            document.getElementById('mDepartment').disabled = !isSuper;
+
+            document.getElementById('adminModal').classList.add('open');
+        }
+
+        function editAdmin(username) {
+            const a = allAdmins.find(x => x.username === username);
+            if (!a) return;
+            document.getElementById('modalTitle').textContent = 'Edit Admin';
+            document.getElementById('editAdminId').value = username;
+            document.getElementById('mFirstName').value = a.firstName || a.name.split(' ')[0] || '';
+            document.getElementById('mLastName').value = a.lastName || a.name.split(' ').slice(1).join(' ') || '';
+            document.getElementById('mEmail').value = a.email || '';
+            document.getElementById('mPhone').value = a.phone || '';
+            document.getElementById('mUsername').value = a.username || '';
+            document.getElementById('mDepartment').value = a.department || '';
+            document.getElementById('mAdminRole').value = a.adminRole || '';
+
+            // New fields
+            document.getElementById('mDob').value = a.dob || '';
+            document.getElementById('mGender').value = a.gender || '';
+            document.getElementById('mReligion').value = a.religion || '';
+            document.getElementById('mNationalId').value = a.nationalId || '';
+            document.getElementById('mAddress').value = a.address || '';
+            document.getElementById('mSpouseName').value = a.spouseName || '';
+            document.getElementById('mSpousePhone').value = a.spousePhone || '';
+            document.getElementById('mSpouseOccupation').value = a.spouseOccupation || '';
+            document.getElementById('mNumChildren').value = a.numChildren || '';
+            document.getElementById('mNokName').value = a.nokName || '';
+            document.getElementById('mNokRelationship').value = a.nokRelationship || '';
+            document.getElementById('mNokPhone').value = a.nokPhone || '';
+            document.getElementById('mNokEmail').value = a.nokEmail || '';
+
+            document.getElementById('modalError').style.display = 'none';
+
+            // Role Restriction Logic
+            const currentUser = JSON.parse(sessionStorage.getItem('adminUser') || '{}');
+            const isSuper = currentUser.adminRole === 'Super Administrator';
+            document.getElementById('mAdminRole').disabled = !isSuper;
+            document.getElementById('mDepartment').disabled = !isSuper;
+
+            document.getElementById('adminModal').classList.add('open');
+        }
+
+        function saveAdmin() {
+            const firstName = document.getElementById('mFirstName').value.trim();
+            const lastName = document.getElementById('mLastName').value.trim();
+            const email = document.getElementById('mEmail').value.trim();
+            const phone = document.getElementById('mPhone').value.trim();
+            const username = document.getElementById('mUsername').value.trim();
+            const department = document.getElementById('mDepartment').value;
+            const adminRole = document.getElementById('mAdminRole').value;
+            const editId = document.getElementById('editAdminId').value;
+            const errEl = document.getElementById('modalError');
+
+            if (!firstName || !lastName || !email || !username || !adminRole) {
+                errEl.textContent = 'Please fill in all required fields.';
+                errEl.style.display = 'block'; return;
+            }
+            errEl.style.display = 'none';
+
+            let admins = getTenantData('adminUsers', []);
+
+            if (editId) {
+                const idx = admins.findIndex(a => a.username === editId);
+                if (idx > -1) {
+                    admins[idx] = {
+                        ...admins[idx],
+                        firstName, lastName, name: firstName + ' ' + lastName, email, phone, username, department, adminRole,
+                        dob: document.getElementById('mDob').value,
+                        gender: document.getElementById('mGender').value,
+                        religion: document.getElementById('mReligion').value,
+                        nationalId: document.getElementById('mNationalId').value,
+                        address: document.getElementById('mAddress').value,
+                        spouseName: document.getElementById('mSpouseName').value,
+                        spousePhone: document.getElementById('mSpousePhone').value,
+                        spouseOccupation: document.getElementById('mSpouseOccupation').value,
+                        numChildren: document.getElementById('mNumChildren').value,
+                        nokName: document.getElementById('mNokName').value,
+                        nokRelationship: document.getElementById('mNokRelationship').value,
+                        nokPhone: document.getElementById('mNokPhone').value,
+                        nokEmail: document.getElementById('mNokEmail').value
+                    };
+                }
+            } else {
+                admins.push({
+                    id: 'ADM-' + Date.now(), firstName, lastName, name: firstName + ' ' + lastName, email, phone, username, department, adminRole, primaryRole: 'Admin', createdAt: new Date().toISOString(),
+                    dob: document.getElementById('mDob').value,
+                    gender: document.getElementById('mGender').value,
+                    religion: document.getElementById('mReligion').value,
+                    nationalId: document.getElementById('mNationalId').value,
+                    address: document.getElementById('mAddress').value,
+                    spouseName: document.getElementById('mSpouseName').value,
+                    spousePhone: document.getElementById('mSpousePhone').value,
+                    spouseOccupation: document.getElementById('mSpouseOccupation').value,
+                    numChildren: document.getElementById('mNumChildren').value,
+                    nokName: document.getElementById('mNokName').value,
+                    nokRelationship: document.getElementById('mNokRelationship').value,
+
+                    nokPhone: document.getElementById('mNokPhone').value,
+                    nokEmail: document.getElementById('mNokEmail').value
+                });
+            }
+
+            saveTenantData('adminUsers', admins);
+            closeModal();
+            init();
+            Toast.success('Admin saved successfully.');
+        }
+
+        function deleteAdmin(username) {
+            const a = allAdmins.find(x => x.username === username);
+            const name = a ? a.name : username;
+            if (!confirm(`Delete admin "${name}"? This cannot be undone.`)) return;
+            let admins = getTenantData('adminUsers', []);
+            admins = admins.filter(a => a.username !== username);
+            saveTenantData('adminUsers', admins);
+            init();
+            Toast.error(`Admin "${name}" has been deleted.`);
+        }
+
+        function closeModal() { document.getElementById('adminModal').classList.remove('open'); }
+
+        document.getElementById('adminSearch').addEventListener('input', applyFilters);
+        document.getElementById('roleFilter').addEventListener('change', applyFilters);
+        document.getElementById('deptFilter').addEventListener('change', applyFilters);
+
+        // Close modal/panel on outside click
+        document.getElementById('adminModal').addEventListener('click', e => { if (e.target === document.getElementById('adminModal')) closeModal(); });
+
+        function init() {
+            allAdmins = getAdmins();
+            filtered = [...allAdmins];
+            updateStats(allAdmins);
+            renderTable(filtered);
+        }
+
+        init();
+    </script>
+    <!-- ACADEX: Core and Tenant scripts must load first -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+    <script src="../js/toast.js"></script>
+    <script src="../js/admin-sidebar.js"></script>
+</body>
+</html>
+

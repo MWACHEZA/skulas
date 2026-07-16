@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us - Parent Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/parent-portal.css">
+    <style>
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 24px;
+        }
+
+        .contact-box {
+            background: #fff;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: var(--shadow-md);
+            border-bottom: 4px solid var(--primary-navy);
+        }
+
+        .contact-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--primary-navy);
+            margin-bottom: 20px;
+            border-bottom: 1px solid #f1f5f9;
+            padding-bottom: 10px;
+        }
+
+        .contact-details {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            color: var(--text-main);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .contact-item i {
+            width: 20px;
+            color: var(--primary-gold);
+            font-size: 1.1rem;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <div class="brand-icon"><i class="fas fa-graduation-cap"></i></div>
+            <h3>Acadex Portal</h3>
+            <p id="currentSchoolName">Loading school...</p>
+            <!-- SaaS School Switcher -->
+            <div style="margin-top: 15px; padding: 8px; background: rgba(255,255,255,0.05); border-radius: 8px; display: flex; align-items: center; justify-content: space-between; cursor: pointer;" onclick="ParentPortal.toggleSchoolSwitcher()">
+                <span style="font-size: 0.7rem; opacity: 0.8; font-weight: 600;">Switch School</span>
+                <i class="fas fa-chevron-down" style="font-size: 0.6rem; opacity: 0.5;"></i>
+            </div>
+            <div id="schoolSwitcher" style="display: none; margin-top: 10px; background: var(--navy-light); border-radius: 8px; overflow: hidden; text-align: left; box-shadow: var(--shadow-premium);">
+                <!-- Populated dynamically -->
+            </div>
+        </div>
+        <div class="sidebar-menu">
+            <div class="sidebar-section-label">Academic & Life</div>
+            <ul>
+                <li><a href="dashboard.html"><i class="fas fa-th-large"></i> Dashboard</a></li>
+                <li><a href="student-profile.html"><i class="fas fa-user-graduate"></i> Student Profile</a></li>
+                <li><a href="academics.html"><i class="fas fa-chart-line"></i> Academics & Trends</a></li>
+                <li><a href="academic-history.html"><i class="fas fa-history"></i> Academic History</a></li>
+                <li><a href="wellbeing.html"><i class="fas fa-heartbeat"></i> Health & Conduct</a></li>
+                <li><a href="calendar.html"><i class="fas fa-calendar-alt"></i> School Calendar</a></li>
+            </ul>
+            <div class="sidebar-section-label">Communication</div>
+            <ul>
+                <li><a href="messages.html"><i class="fas fa-envelope"></i> Messages</a></li>
+                <li><a href="notices.html"><i class="fas fa-bullhorn"></i> Noticeboard</a></li>
+                <li><a href="approvals.html"><i class="fas fa-file-signature"></i> Approvals</a></li>
+                <li><a href="contact.html" class="active"><i class="fas fa-phone-alt"></i> Contact Us</a></li>
+            </ul>
+            <div class="sidebar-section-label">Finance & Logistics</div>
+            <ul>
+                <li><a href="fees.html"><i class="fas fa-file-invoice-dollar"></i> Fees & Payments</a></li>
+                <li><a href="wallet.html"><i class="fas fa-wallet"></i> Tuckshop Wallet</a></li>
+                <li><a href="transport.html"><i class="fas fa-bus"></i> Transport Tracker</a></li>
+            </ul>
+        </div>
+        <div class="sidebar-footer">
+            <a href="#" onclick="ParentPortal.logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </div>
+    </aside>
+
+    <div class="main-content">
+        <div class="top-header">
+            <div style="display:flex;align-items:center;gap:14px;">
+                <button class="mobile-menu-btn" id="menuBtn" style="background:none; border:none; font-size:1.2rem; cursor:pointer;"><i class="fas fa-bars"></i></button>
+                <h2>Contact & Support</h2>
+            </div>
+            <div class="header-user">
+                <div class="user-avatar" id="initialsDisplay">G</div>
+                <div class="user-details" style="text-align: right;">
+                    <div class="name" id="userDisplay">Guardian Name</div>
+                    <div class="sub" id="idDisplay">Student: XXXX</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-area">
+            <div class="panel" style="background: linear-gradient(135deg, #0f172a 0%, var(--school-primary-dark, #1e293b) 100%); color: white; border: none;">
+                <div class="panel-body" style="text-align: center; padding: 40px;">
+                    <h2 style="margin: 0; font-size: 1.8rem; color: #fbbf24;">Direct Assistance</h2>
+                    <p style="margin: 10px 0 0; opacity: 0.8;">Our administrative team is ready to help you with any inquiries regarding your child’s welfare.</p>
+                </div>
+            </div>
+
+            <div class="contact-grid" id="contactGrid">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/parent-portal.js"></script>
+    <script src="../js/contact-manager.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            renderContacts();
+        });
+
+        function renderContacts() {
+            const grid = document.getElementById('contactGrid');
+            const contacts = ContactManager.getContacts().filter(c => c.type !== 'emergency');
+            
+            grid.innerHTML = contacts.map(c => {
+                const phone = c.phone || (c.details && c.details.find(d => d.type === 'phone')?.value) || 'Not Provided';
+                const email = c.email || (c.details && c.details.find(d => d.type === 'email')?.value) || 'Not Provided';
+                const hours = (c.details && (c.details.find(d => d.icon && d.icon.includes('clock')) || c.details.find(d => d.type === 'text' && d.value.includes(':')))?.value) || 'Standard Office Hours (08:00 - 16:30)';
+
+                return `
+                <div class="contact-box">
+                    <div class="contact-title">
+                        <i class="${c.icon || 'fas fa-building'}"></i>
+                        <span>${c.title}</span>
+                    </div>
+                    <div class="contact-details">
+                        <div class="contact-item">
+                            <i class="fas fa-phone-alt"></i>
+                            <span>${phone}</span>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fas fa-envelope-open-text"></i>
+                            <span>${email}</span>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fas fa-clock"></i>
+                            <span style="font-size: 0.85rem; color: #64748b;">${hours}</span>
+                        </div>
+                    </div>
+                </div>
+            `;}).join('');
+        }
+    </script>
+    <!-- ACADEX: Powered-by footer and school branding -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+
+</body>
+
+</html>
+
+

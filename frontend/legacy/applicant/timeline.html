@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Application Timeline - Your School</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/ancillary-portal.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            background: #f4f6f9;
+            display: flex;
+            min-height: 100vh;
+        }
+
+
+
+        /* Main Content */
+        .main-content {
+            margin-left: 260px;
+            width: calc(100% - 260px);
+            padding: 30px;
+        }
+
+        .page-header {
+            margin-bottom: 30px;
+        }
+
+        .page-header h2 {
+            margin: 0 0 10px;
+            color: #333;
+        }
+
+        .page-header p {
+            color: #666;
+            margin: 0;
+        }
+
+        /* Timeline Styles */
+        .timeline-container {
+            background: white;
+            border-radius: 10px;
+            padding: 40px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .timeline {
+            position: relative;
+            padding: 20px 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 30px;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: #e0e0e0;
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-left: 80px;
+            margin-bottom: 40px;
+        }
+
+        .timeline-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .timeline-icon {
+            position: absolute;
+            left: 0;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            z-index: 1;
+        }
+
+        .timeline-icon.completed {
+            background: #28a745;
+            color: white;
+        }
+
+        .timeline-icon.active {
+            background: #ffc107;
+            color: white;
+            animation: pulse 2s infinite;
+        }
+
+        .timeline-icon.pending {
+            background: #e0e0e0;
+            color: #999;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.7);
+            }
+
+            50% {
+                box-shadow: 0 0 0 10px rgba(255, 193, 7, 0);
+            }
+        }
+
+        .timeline-content {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #e0e0e0;
+        }
+
+        .timeline-item.completed .timeline-content {
+            border-left-color: #28a745;
+        }
+
+        .timeline-item.active .timeline-content {
+            border-left-color: #ffc107;
+        }
+
+        .timeline-content h4 {
+            margin: 0 0 10px;
+            color: #333;
+            font-size: 1.1rem;
+        }
+
+        .timeline-content p {
+            margin: 0 0 10px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .timeline-date {
+            font-size: 0.85rem;
+            color: #999;
+            font-style: italic;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        .badge-completed {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .badge-active {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .badge-pending {
+            background: #e2e3e5;
+            color: #383d41;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 70px;
+            }
+
+            .sidebar-header h3,
+            .nav-link span {
+                display: none;
+            }
+
+            .nav-link {
+                justify-content: center;
+                padding: 15px;
+            }
+
+            .nav-link i {
+                margin: 0;
+            }
+
+            .main-content {
+                margin-left: 70px;
+                width: calc(100% - 70px);
+            }
+
+            .timeline::before {
+                left: 20px;
+            }
+
+            .timeline-item {
+                padding-left: 60px;
+            }
+
+            .timeline-icon {
+                width: 40px;
+                height: 40px;
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Mobile Toggle -->
+    <button class="mobile-toggle" id="mobileToggle">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <img src="../images/logo.png" alt="School Logo" id="sidebarLogo">
+            <h3>Applicant Portal</h3>
+        </div>
+        
+        <div class="sidebar-menu">
+            <div class="sidebar-section-title">Application Journey</div>
+            <ul>
+                <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a></li>
+                <li><a href="timeline.html" class="active"><i class="fas fa-stream"></i> <span>Timeline</span></a></li>
+                <li><a href="documents.html"><i class="fas fa-folder-open"></i> <span>Documents</span></a></li>
+                <li><a href="interview.html"><i class="fas fa-calendar-check"></i> <span>Interview</span></a></li>
+            </ul>
+
+            <div class="sidebar-section-title">Financials & Info</div>
+            <ul>
+                <li><a href="payments.html"><i class="fas fa-credit-card"></i> <span>Payments</span></a></li>
+                <li><a href="fees.html"><i class="fas fa-file-invoice-dollar"></i> <span>Fee Structure</span></a></li>
+                <li><a href="faq.html"><i class="fas fa-question-circle"></i> <span>FAQs</span></a></li>
+            </ul>
+
+            <div class="sidebar-section-title">Communication</div>
+            <ul>
+                <li><a href="messages.html"><i class="fas fa-envelope"></i> <span>Messages</span></a></li>
+                <li><a href="profile.html"><i class="fas fa-user"></i> <span>My Profile</span></a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-footer">
+            <a href="#" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="page-header">
+            <h2>Application Timeline</h2>
+            <p>Track the progress of your application through each stage.</p>
+        </div>
+
+        <div class="timeline-container">
+            <div class="timeline" id="timelineContainer">
+                <!-- Populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script src="js/timeline.js"></script>
+    <script>
+        function logout() {
+            sessionStorage.removeItem('currentApplicant');
+            window.location.href = 'login.html';
+        }
+
+        // Mobile Toggle
+        const mobileToggle = document.getElementById('mobileToggle');
+        const sidebar = document.getElementById('sidebar');
+        if (mobileToggle && sidebar) {
+            mobileToggle.addEventListener('click', () => {
+                sidebar.classList.toggle('active');
+            });
+        }
+    </script>
+    <!-- ACADEX: Powered-by footer and school branding -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+
+</html>
+

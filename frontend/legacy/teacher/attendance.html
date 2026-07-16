@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/toast.css">
+    <link rel="stylesheet" href="../css/ancillary-portal.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: var(--school-primary, var(--school-primary, #0056b3));
+            color: white;
+            padding: 0;
+            position: fixed;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s ease-in-out;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+        }
+
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            display: none;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+        }
+
+        .sidebar-header {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+
+        .sidebar-header img {
+            width: 60px;
+            margin-bottom: 10px;
+        }
+
+        .sidebar-header h3 {
+            margin: 0;
+            font-size: 1.2rem;
+        }
+
+        .sidebar-menu {
+            padding: 20px 0;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .sidebar-menu ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 5px;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .sidebar-menu i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .sidebar-footer {
+            padding: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            width: 100%;
+            box-sizing: border-box;
+            background-color: var(--school-primary, #0056b3);
+            z-index: 10;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--school-primary-dark, #003d7a);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+        }
+
+        .user-avatar i {
+            font-size: 1.2rem;
+        }
+
+        .user-details {
+            flex: 1;
+        }
+
+        .user-details h4 {
+            margin: 0;
+            font-size: 0.9rem;
+        }
+
+        .user-details p {
+            margin: 0;
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+
+        .logout-btn {
+            display: block;
+            margin-top: 10px;
+            padding: 8px 12px;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: background-color 0.3s;
+        }
+
+        .logout-btn:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            margin-left: 250px;
+            width: calc(100% - 250px);
+        }
+
+        .page-header {
+            margin-bottom: 30px;
+        }
+
+        .page-header h2 {
+            margin: 0 0 10px;
+            color: #333;
+        }
+
+        .attendance-controls {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .controls-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .control-group label {
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .control-group select,
+        .control-group input {
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 0.95rem;
+        }
+
+        .bulk-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background-color: var(--school-primary, #0056b3);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--school-primary-dark, #003d82);
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+
+        .btn-success {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #218838;
+        }
+
+        .attendance-table-container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            overflow-x: auto;
+        }
+
+        .attendance-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .attendance-table thead {
+            background-color: #f8f9fa;
+        }
+
+        .attendance-table th,
+        .attendance-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .attendance-table th {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .attendance-table tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .student-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .student-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--school-primary, #0056b3);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            font-weight: 600;
+        }
+
+        .attendance-status {
+            display: flex;
+            gap: 10px;
+        }
+
+        .status-btn {
+            padding: 5px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background-color: white;
+        }
+
+        .status-btn.active {
+            border-color: var(--school-primary, #0056b3);
+            background-color: var(--school-primary, #0056b3);
+            color: white;
+        }
+
+        .status-btn.present.active {
+            border-color: #28a745;
+            background-color: #28a745;
+        }
+
+        .status-btn.absent.active {
+            border-color: #dc3545;
+            background-color: #dc3545;
+        }
+
+        .status-btn.late.active {
+            border-color: #ffc107;
+            background-color: #ffc107;
+        }
+
+        .status-btn.excused.active {
+            border-color: #6c757d;
+            background-color: #6c757d;
+        }
+
+        .mobile-header {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                z-index: 1000;
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding-top: 70px;
+                width: 100%;
+            }
+
+            .mobile-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 15px 20px;
+                background-color: white;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                z-index: 100;
+            }
+
+            .menu-toggle {
+                background: none;
+                border: none;
+                font-size: 1.5rem;
+                color: var(--school-primary, #0056b3);
+                cursor: pointer;
+            }
+
+            .attendance-table {
+                font-size: 0.85rem;
+            }
+
+            .attendance-table th,
+            .attendance-table td {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <!-- Sidebar -->
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <img src="../images/logo.png" alt="School Logo" class="acadex-school-logo">
+                <h3>Teacher Portal</h3>
+            </div>
+            <div class="sidebar-menu">
+                <div class="sidebar-section-title">Teacher System</div>
+                <ul>
+                    <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i>
+                            <span>Dashboard</span></a></li>
+                    <li><a href="classes.html"><i class="fas fa-chalkboard"></i> <span>Classes</span></a></li>
+                    <li><a href="assignments.html"><i class="fas fa-tasks"></i> <span>Assignments</span></a></li>
+                    <li><a href="attendance.html" class="active"><i class="fas fa-clipboard-check"></i>
+                            <span>Attendance</span></a>
+                    </li>
+                    <li><a href="grades.html"><i class="fas fa-chart-line"></i> <span>Grades</span></a></li>
+                    <li><a href="timetable.html"><i class="fas fa-calendar-alt"></i> <span>Timetable</span></a></li>
+                    <li><a href="students.html"><i class="fas fa-users"></i> <span>Students</span></a></li>
+                    <li><a href="textbooks.html"><i class="fas fa-book"></i> <span>Textbooks</span></a></li>
+                    <li><a href="library.html"><i class="fas fa-book-open"></i> <span>Library Catalog</span></a></li>
+                    <li><a href="digital-resources.html"><i class="fas fa-laptop-code"></i> <span>Digital
+                                Resources</span></a></li>
+                    <li><a href="reports.html"><i class="fas fa-file-alt"></i> <span>System Reports</span></a></li>
+                    <li><a href="messages.html"><i class="fas fa-envelope"></i> <span>Messages</span></a></li>
+                </ul>
+
+                <div class="sidebar-section-title">Operations</div>
+                <ul>
+                    <li><a href="staff-directory.html"><i class="fas fa-users"></i> <span>Staff Directory</span></a>
+                    </li>
+                    <li><a href="procurement.html"><i class="fas fa-shopping-cart"></i> <span>Procurement</span></a>
+                    </li>
+                    <li><a href="assets.html"><i class="fas fa-boxes"></i> <span>Asset Management</span></a></li>
+                    <li><a href="schedules.html"><i class="fas fa-calendar-check"></i> <span>Schedules &
+                                Shifts</span></a></li>
+                </ul>
+
+                <div class="sidebar-section-title">Staff HR & Support</div>
+                <ul>
+                    <li><a href="sdc-portal.html"><i class="fas fa-file-invoice-dollar"></i> <span>SDC Staff
+                                Portal</span></a></li>
+                    <li><a href="hr-services.html"><i class="fas fa-user-shield"></i> <span>HR Services</span></a></li>
+                    <li><a href="profile.html"><i class="fas fa-id-card"></i> <span>My Profile</span></a></li>
+                    <li><a href="resources.html"><i class="fas fa-folder-open"></i> <span>Resources & Docs</span></a>
+                    </li>
+                    <li><a href="it-support.html"><i class="fas fa-headset"></i> <span>IT Support</span></a></li>
+                </ul>
+
+                <div class="sidebar-section-title">Communication</div>
+                <ul>
+                    <li><a href="news.html"><i class="fas fa-newspaper"></i> <span>News & Updates</span></a></li>                    <li><a href="announcements.html"><i class="fas fa-bullhorn"></i> <span>General Notices</span></a>
+                    </li>                    <li><a href="contact.html"><i class="fas fa-address-book"></i> <span>Contact Us</span></a></li>
+                    <li><a href="settings.html"><i class="fas fa-cog"></i> <span>Settings</span></a></li>
+                </ul>
+            </div>
+            <div class="sidebar-footer">
+                <a href="login.html"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a>
+            </div>
+        </aside>
+
+        <!-- Sidebar Overlay -->
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Mobile Header -->
+            <div class="mobile-header">
+                <button class="menu-toggle" id="menuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="mobile-logo">
+                    <span>Attendance</span>
+                </div>
+            </div>
+
+            <!-- Page Header -->
+            <div class="page-header">
+                <h2>Mark Attendance</h2>
+            </div>
+
+            <!-- Attendance Controls -->
+            <div class="attendance-controls">
+                <div class="controls-row">
+                    <div class="control-group">
+                        <label>Select Class</label>
+                        <select id="classSelect">
+                            <option>Form 4A - Mathematics</option>
+                            <option>Form 3B - Mathematics</option>
+                            <option>Form 2A - Mathematics</option>
+                            <option>Form 4B - Mathematics</option>
+                            <option>Form 1A - Mathematics</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label>Date</label>
+                        <input type="date" id="attendanceDate" value="2025-12-15">
+                    </div>
+                    <div class="control-group">
+                        <label>Period</label>
+                        <select id="periodSelect">
+                            <option>Period 1 (08:00 - 09:00)</option>
+                            <option>Period 2 (09:00 - 10:00)</option>
+                            <option>Period 3 (10:30 - 11:30)</option>
+                            <option>Period 4 (11:30 - 12:30)</option>
+                            <option>Period 5 (13:00 - 14:00)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="bulk-actions">
+                    <button class="btn btn-success" onclick="markAllPresent()">Mark All Present</button>
+                    <button class="btn btn-secondary" onclick="markAllAbsent()">Mark All Absent</button>
+                    <button class="btn btn-primary" onclick="saveAttendance()">Save Attendance</button>
+                </div>
+            </div>
+
+            <!-- Attendance Table -->
+            <div class="attendance-table-container">
+                <table class="attendance-table">
+                    <thead>
+                        <tr>
+                            <th>Student</th>
+                            <th>Student ID</th>
+                            <th>Status</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div class="student-info">
+                                    <div class="student-avatar">JD</div>
+                                    <div>
+                                        <div style="font-weight: 500;">John Doe</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>STU-2024-001</td>
+                            <td>
+                                <div class="attendance-status">
+                                    <button class="status-btn present active">Present</button>
+                                    <button class="status-btn absent">Absent</button>
+                                    <button class="status-btn late">Late</button>
+                                    <button class="status-btn excused">Excused</button>
+                                </div>
+                            </td>
+                            <td><input type="text" placeholder="Add notes..."
+                                    style="padding: 5px; border: 1px solid #e0e0e0; border-radius: 3px; width: 100%;">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="student-info">
+                                    <div class="student-avatar">JS</div>
+                                    <div>
+                                        <div style="font-weight: 500;">Jane Smith</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>STU-2024-002</td>
+                            <td>
+                                <div class="attendance-status">
+                                    <button class="status-btn present active">Present</button>
+                                    <button class="status-btn absent">Absent</button>
+                                    <button class="status-btn late">Late</button>
+                                    <button class="status-btn excused">Excused</button>
+                                </div>
+                            </td>
+                            <td><input type="text" placeholder="Add notes..."
+                                    style="padding: 5px; border: 1px solid #e0e0e0; border-radius: 3px; width: 100%;">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="student-info">
+                                    <div class="student-avatar">MB</div>
+                                    <div>
+                                        <div style="font-weight: 500;">Michael Brown</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>STU-2024-003</td>
+                            <td>
+                                <div class="attendance-status">
+                                    <button class="status-btn present active">Present</button>
+                                    <button class="status-btn absent">Absent</button>
+                                    <button class="status-btn late">Late</button>
+                                    <button class="status-btn excused">Excused</button>
+                                </div>
+                            </td>
+                            <td><input type="text" placeholder="Add notes..."
+                                    style="padding: 5px; border: 1px solid #e0e0e0; border-radius: 3px; width: 100%;">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="student-info">
+                                    <div class="student-avatar">ED</div>
+                                    <div>
+                                        <div style="font-weight: 500;">Emily Davis</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>STU-2024-004</td>
+                            <td>
+                                <div class="attendance-status">
+                                    <button class="status-btn present active">Present</button>
+                                    <button class="status-btn absent">Absent</button>
+                                    <button class="status-btn late">Late</button>
+                                    <button class="status-btn excused">Excused</button>
+                                </div>
+                            </td>
+                            <td><input type="text" placeholder="Add notes..."
+                                    style="padding: 5px; border: 1px solid #e0e0e0; border-radius: 3px; width: 100%;">
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    </div>
+
+    <script src="../js/toast.js"></script>
+    <script>
+        // Mobile menu toggle
+        const menuToggle = document.getElementById('menuToggle');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+        if (menuToggle) {
+            menuToggle.addEventListener('click', function () {
+                sidebar.classList.toggle('active');
+                if (sidebarOverlay) sidebarOverlay.classList.toggle('active');
+            });
+        }
+
+        if (sidebarOverlay) {
+            sidebarOverlay.addEventListener('click', function () {
+                sidebar.classList.remove('active');
+                sidebarOverlay.classList.remove('active');
+            });
+        }
+
+        // Load teacher name from localStorage
+        const teacherName = getTenantData('teacherName', 'null');
+        if (teacherName) {
+            document.getElementById('teacherName').textContent = teacherName;
+        }
+
+        // Logout functionality
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+                saveTenantData('teacherLoggedIn', []);
+                window.location.href = 'login.html';
+            });
+        }
+
+        // Attendance status toggle
+        document.querySelectorAll('.status-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const row = this.closest('tr');
+                const statusBtns = row.querySelectorAll('.status-btn');
+                statusBtns.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        function markAllPresent() {
+            document.querySelectorAll('.status-btn.present').forEach(btn => {
+                const row = btn.closest('tr');
+                const statusBtns = row.querySelectorAll('.status-btn');
+                statusBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            });
+        }
+
+        function markAllAbsent() {
+            document.querySelectorAll('.status-btn.absent').forEach(btn => {
+                const row = btn.closest('tr');
+                const statusBtns = row.querySelectorAll('.status-btn');
+                statusBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            });
+        }
+
+        function saveAttendance() {
+            Toast.success('Attendance saved successfully!');
+        }
+    </script>
+    <!-- ACADEX: Powered-by footer and school branding -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+
+</body>
+
+</html>
+

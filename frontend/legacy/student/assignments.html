@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Assignments</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../css/student.css">
+    <script src="../js/audit-logger.js"></script>
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <img src="../images/logo.png" alt="School Logo" class="acadex-school-logo">
+                <h3>Student Portal</h3>
+            </div>
+
+            <div class="sidebar-menu">
+                <ul>
+                    <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                    <li><a href="profile.html"><i class="fas fa-user"></i> Profile</a></li>
+                    <li><a href="grades.html"><i class="fas fa-chart-line"></i> Grades</a></li>
+                    <li><a href="timetable.html"><i class="fas fa-calendar-alt"></i> Timetable</a></li>
+                    <li><a href="fees.html"><i class="fas fa-money-bill-wave"></i> Fees</a></li>
+                    <li><a href="assignments.html" class="active"><i class="fas fa-tasks"></i> Assignments</a></li>
+                    <li><a href="attendance.html"><i class="fas fa-clipboard-check"></i> Attendance</a></li>
+                    <li><a href="library.html"><i class="fas fa-book"></i> Library</a></li>
+                    <li><a href="my-books.html"><i class="fas fa-book-reader"></i> My Books</a></li>
+                    <li><a href="events.html"><i class="fas fa-calendar-day"></i> Events</a></li>
+                    <li><a href="it-support.html"><i class="fas fa-headset"></i> IT Support</a></li>
+                    <li><a href="settings.html"><i class="fas fa-cog"></i> Settings</a></li>
+                </ul>
+            </div>
+
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="user-details">
+                        <h4 id="studentName">Student Name</h4>
+                        <p id="studentClass">Loading...</p>
+                    </div>
+                </div>
+                <a href="#" class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </div>
+        </aside>
+
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Mobile Header -->
+            <div class="mobile-header">
+                <button class="menu-toggle" id="menuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="mobile-logo">
+                    <img src="../images/logo.png" alt="School Logo" class="acadex-school-logo">
+                    <span>Student Portal</span>
+                </div>
+            </div>
+
+            <div class="page-title">
+                <h2><i class="fas fa-tasks"></i> Assignments</h2>
+            </div>
+
+            <div class="search-controls">
+                <input type="text" id="assignmentSearch" class="search-input" placeholder="Search assignments...">
+                <select id="statusFilter" class="filter-select">
+                    <option value="all">All Status</option>
+                    <option value="pending">Pending</option>
+                    <option value="submitted">Submitted</option>
+                    <option value="overdue">Overdue</option>
+                </select>
+                <select id="subjectFilter" class="filter-select">
+                    <option value="all">All Subjects</option>
+                    <!-- Populated JS -->
+                </select>
+            </div>
+
+            <!-- Current Assignments -->
+            <div class="assignments-container" id="assignmentsList">
+                <!-- Populated by JS -->
+            </div>
+
+            <!-- Upcoming Assignments -->
+            <div class="upcoming-assignments">
+                <div class="upcoming-header">
+                    <h3>Upcoming Assignments</h3>
+                </div>
+                <div class="upcoming-content">
+                    <table class="upcoming-table">
+                        <thead>
+                            <tr>
+                                <th>Subject</th>
+                                <th>Assignment</th>
+                                <th>Due Date</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Physics</td>
+                                <td>Newton's Laws Problem Set</td>
+                                <td>5 June 2023</td>
+                                <td>Not Started</td>
+                            </tr>
+                            <tr>
+                                <td>History</td>
+                                <td>Research Paper: World War II</td>
+                                <td>10 June 2023</td>
+                                <td>Not Started</td>
+                            </tr>
+                            <tr>
+                                <td>Chemistry</td>
+                                <td>Periodic Table Quiz</td>
+                                <td>7 June 2023</td>
+                                <td>Not Started</td>
+                            </tr>
+                            <tr>
+                                <td>Computer Science</td>
+                                <td>Programming Project</td>
+                                <td>15 June 2023</td>
+                                <td>Not Started</td>
+                            </tr>
+                            <tr>
+                                <td>Art</td>
+                                <td>Portfolio Submission</td>
+                                <td>20 June 2023</td>
+                                <td>Not Started</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Submission Modal -->
+    <div id="submissionModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Submit Assignment</h3>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div id="currentSubmissionSection"
+                    style="display: none; margin-bottom: 20px; padding: 10px; background: #f8f9fa; border-radius: 4px; border: 1px solid #eee;">
+                    <p style="margin: 0 0 10px;"><strong>Current File:</strong> <span id="currentFileName"
+                            style="color: var(--school-primary, #0056b3);">filename.pdf</span></p>
+                    <button type="button" id="detachFileBtn"
+                        style="background-color: #dc3545; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 12px;">
+                        <i class="fas fa-trash"></i> Detach File
+                    </button>
+                    <p style="font-size: 12px; color: #666; margin-top: 5px;">* Detaching will revert status to Pending
+                        until you submit a new file.</p>
+                </div>
+
+                <form id="submissionForm">
+                    <div class="form-group" id="fileUploadGroup">
+                        <label for="submissionFile">Upload File</label>
+                        <input type="file" id="submissionFile" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="submissionComment">Comments</label>
+                        <textarea id="submissionComment" rows="4"
+                            placeholder="Add any comments for your teacher..."></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn-secondary" id="cancelSubmission">Cancel</button>
+                        <button type="submit" class="submit-button">Submit Assignment</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- File Preview Modal -->
+    <div id="viewFileModal" class="modal">
+        <div class="modal-content" style="max-width: 800px; width: 90%;">
+            <div class="modal-header">
+                <h3>File Preview</h3>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div id="filePreviewContainer"
+                    style="background: #f8f9fa; padding: 20px; border-radius: 5px; height: 400px; overflow-y: auto; font-family: monospace; border: 1px solid #ddd;">
+                    <!-- Content injected via JS -->
+                    Loading...
+                </div>
+                <div class="form-actions" style="margin-top: 15px; justify-content: flex-end;">
+                    <button type="button" class="btn-secondary" id="closePreview">Close</button>
+                    <button type="button" class="submit-button" id="downloadPreviewBtn">
+                        <i class="fas fa-download"></i> Download
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Details Modal -->
+    <div id="detailsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Assignment Details</h3>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="assignment-details">
+                    <p><strong>Subject:</strong> <span id="modalSubject"></span></p>
+                    <p><strong>Teacher:</strong> <span id="modalTeacher"></span></p>
+                    <p><strong>Due Date:</strong> <span id="modalDueDate"></span></p>
+                    <p><strong>Points:</strong> <span id="modalPoints"></span></p>
+                </div>
+                <div class="assignment-description">
+                    <h4>Description:</h4>
+                    <p id="modalDescription"></p>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" id="closeDetails">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/student-common.js"></script>
+    <script src="js/toast.js"></script>
+    <script src="js/student-assignments.js"></script>
+    <!-- ACADEX: Powered-by footer and school branding -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+
+</body>
+
+</html>
+

@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messages - Acadex Parent Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/parent-portal.css">
+    <style>
+        .messaging-container {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            background: #fff;
+            border-radius: 16px;
+            height: calc(100vh - 160px);
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Sidebar / Thread List */
+        .threads-sidebar {
+            border-right: 1px solid #f0f4ff;
+            display: flex;
+            flex-direction: column;
+            background: #fcfdfe;
+        }
+
+        .threads-header {
+            padding: 24px;
+            border-bottom: 1px solid #f0f4ff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .new-msg-btn {
+            background: var(--gold-gradient);
+            color: #fff;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s;
+        }
+
+        .new-msg-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .threads-list {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .thread-item {
+            padding: 20px 24px;
+            border-bottom: 1px solid #f8faff;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            gap: 15px;
+            position: relative;
+        }
+
+        .thread-item:hover {
+            background: #f0f4ff;
+        }
+
+        .thread-item.active {
+            background: #f0f4ff;
+            border-left: 4px solid var(--primary-navy);
+        }
+
+        .thread-avatar {
+            width: 48px;
+            height: 48px;
+            background: #e2e8f0;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: var(--primary-navy);
+            flex-shrink: 0;
+        }
+
+        .thread-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .thread-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+
+        .thread-sender {
+            font-weight: 700;
+            color: var(--school-primary-dark, #1e293b);
+            font-size: 0.95rem;
+        }
+
+        .thread-time {
+            font-size: 0.75rem;
+            color: #94a3b8;
+        }
+
+        .thread-subject {
+            font-size: 0.85rem;
+            color: #475569;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 2px;
+        }
+
+        .thread-preview {
+            font-size: 0.85rem;
+            color: #64748b;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .unread-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--gold-primary);
+            border-radius: 50%;
+            position: absolute;
+            right: 24px;
+            bottom: 24px;
+        }
+
+        /* Message Display Area */
+        .message-viewport {
+            display: flex;
+            flex-direction: column;
+            background: #fff;
+        }
+
+        .message-header {
+            padding: 20px 30px;
+            border-bottom: 1px solid #f0f4ff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .sender-meta {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .msg-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #64748b;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid #f1f5f9;
+        }
+
+        .action-icon:hover {
+            background: #f8fafc;
+            color: var(--primary-navy);
+        }
+
+        .message-body {
+            flex: 1;
+            padding: 40px;
+            overflow-y: auto;
+        }
+
+        .msg-subject-line {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary-navy);
+            margin-bottom: 30px;
+        }
+
+        .msg-bubble {
+            background: #f8fafc;
+            padding: 25px;
+            border-radius: 0 20px 20px 20px;
+            color: #334155;
+            line-height: 1.6;
+            max-width: 80%;
+        }
+
+        .compose-area {
+            padding: 20px 30px;
+            border-top: 1px solid #f0f4ff;
+            display: flex;
+            gap: 15px;
+            align-items: flex-end;
+        }
+
+        .msg-input {
+            flex: 1;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 12px 20px;
+            resize: none;
+            max-height: 150px;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .msg-input:focus {
+            border-color: var(--gold-primary);
+        }
+
+        .send-btn {
+            background: var(--navy-gradient);
+            color: #fff;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: transform 0.2s;
+        }
+
+        .send-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .empty-state {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #94a3b8;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            color: #e2e8f0;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <div class="brand-icon"><i class="fas fa-graduation-cap"></i></div>
+            <h3>Acadex Portal</h3>
+            <p id="currentSchoolName">Loading school...</p>
+            <!-- SaaS School Switcher -->
+            <div style="margin-top: 15px; padding: 8px; background: rgba(255,255,255,0.05); border-radius: 8px; display: flex; align-items: center; justify-content: space-between; cursor: pointer;" onclick="ParentPortal.toggleSchoolSwitcher()">
+                <span style="font-size: 0.7rem; opacity: 0.8; font-weight: 600;">Switch School</span>
+                <i class="fas fa-chevron-down" style="font-size: 0.6rem; opacity: 0.5;"></i>
+            </div>
+            <div id="schoolSwitcher" style="display: none; margin-top: 10px; background: var(--navy-light); border-radius: 8px; overflow: hidden; text-align: left; box-shadow: var(--shadow-premium);">
+                <!-- Populated dynamically -->
+            </div>
+        </div>
+        <div class="sidebar-menu">
+            <div class="sidebar-section-label">Academic & Life</div>
+            <ul>
+                <li><a href="dashboard.html"><i class="fas fa-th-large"></i> Dashboard</a></li>
+                <li><a href="student-profile.html"><i class="fas fa-user-graduate"></i> Student Profile</a></li>
+                <li><a href="academics.html"><i class="fas fa-chart-line"></i> Academics & Trends</a></li>
+                <li><a href="academic-history.html"><i class="fas fa-history"></i> Academic History</a></li>
+                <li><a href="wellbeing.html"><i class="fas fa-heartbeat"></i> Health & Conduct</a></li>
+                <li><a href="calendar.html"><i class="fas fa-calendar-alt"></i> School Calendar</a></li>
+            </ul>
+            <div class="sidebar-section-label">Communication</div>
+            <ul>
+                <li><a href="messages.html" class="active"><i class="fas fa-envelope"></i> Messages</a></li>
+                <li><a href="notices.html"><i class="fas fa-bullhorn"></i> Noticeboard</a></li>
+                <li><a href="approvals.html"><i class="fas fa-file-signature"></i> Approvals</a></li>
+                <li><a href="contact.html"><i class="fas fa-phone-alt"></i> Contact Us</a></li>
+            </ul>
+            <div class="sidebar-section-label">Finance & Logistics</div>
+            <ul>
+                <li><a href="fees.html"><i class="fas fa-file-invoice-dollar"></i> Fees & Payments</a></li>
+                <li><a href="wallet.html"><i class="fas fa-wallet"></i> Tuckshop Wallet</a></li>
+                <li><a href="transport.html"><i class="fas fa-bus"></i> Transport Tracker</a></li>
+            </ul>
+        </div>
+        <div class="sidebar-footer">
+            <a href="#" onclick="ParentPortal.logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </div>
+    </aside>
+
+    <div class="main-content">
+        <header class="top-header">
+            <div class="header-left">
+                <button class="mobile-toggle" id="mobileToggle"><i class="fas fa-bars"></i></button>
+                <h2>Secure Messaging</h2>
+            </div>
+            <div class="header-right" id="userInfo">
+                <!-- Populated by JS -->
+            </div>
+        </header>
+
+        <main class="content-area">
+            <div class="messaging-container">
+                <div class="threads-sidebar">
+                    <div class="threads-header">
+                        <h3 style="margin:0; font-size: 1.1rem;">Inbox</h3>
+                        <button class="new-msg-btn" onclick="openNewMessageModal()"><i class="fas fa-edit"></i></button>
+                    </div>
+                    <div class="threads-list" id="threadsList">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <div class="message-viewport" id="messageViewport">
+                    <div class="empty-state">
+                        <i class="fas fa-envelope-open"></i>
+                        <h3>Select a conversation</h3>
+                        <p>Choose a message from the list to view the full details.</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- New Message Modal -->
+    <!-- (Optional for later) -->
+
+    <script src="../js/parent-portal.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            ParentPortal.init();
+            initMessaging();
+        });
+
+        function initMessaging() {
+            // Sample Data for Acadex Roadmap
+            const sampleMessages = [
+                {
+                    id: 1,
+                    sender: 'Principal\'s Office',
+                    subject: 'Term 2 Consultation Meeting',
+                    preview: 'I would like to invite you for a 1-on-1 session...',
+                    body: `Dear Guardian,<br><br>I would like to invite you for a personal consultation regarding your child's recent academic performance and participation in extracurricular activities. We have noticed some excellent progress in Mathematics.<br><br>Best regards,<br>Dr. Sibanda`,
+                    time: '10:45 AM',
+                    unread: true,
+                    initials: 'PO'
+                },
+                {
+                    id: 2,
+                    sender: 'Sports Department',
+                    subject: 'Rugby Tournament Selection',
+                    preview: 'Congratulations! Your child has been selected...',
+                    body: `Hi,<br><br>Your child has been selected for the First XV Rugby squad for the upcoming triangular tournament in Bulawayo next Saturday. Please check the 'Approvals' tab to sign the travel consent form.<br><br>Regards,<br>Coach Mike`,
+                    time: 'Yesterday',
+                    unread: false,
+                    initials: 'SD'
+                },
+                {
+                    id: 3,
+                    sender: 'Accountant',
+                    subject: 'Receipt Confirmation',
+                    preview: 'We have successfully verified your recent...',
+                    body: `Good day,<br><br>This is to confirm that we have successfully verified your payment of USD 510.00. The receipt has been issued and linked to your portal account.<br><br>Thank you.`,
+                    time: 'Mar 18',
+                    unread: false,
+                    initials: 'AC'
+                }
+            ];
+
+            const list = document.getElementById('threadsList');
+            list.innerHTML = sampleMessages.map(m => `
+                <div class="thread-item ${m.unread ? 'unread' : ''}" onclick="viewMessage(${m.id})">
+                    <div class="thread-avatar">${m.initials}</div>
+                    <div class="thread-info">
+                        <div class="thread-top">
+                            <span class="thread-sender">${m.sender}</span>
+                            <span class="thread-time">${m.time}</span>
+                        </div>
+                        <div class="thread-subject">${m.subject}</div>
+                        <div class="thread-preview">${m.preview}</div>
+                    </div>
+                    ${m.unread ? '<div class="unread-dot"></div>' : ''}
+                </div>
+            `).join('');
+
+            window.viewMessage = (id) => {
+                const msg = sampleMessages.find(m => m.id === id);
+                const viewport = document.getElementById('messageViewport');
+                
+                viewport.innerHTML = `
+                    <div class="message-header">
+                        <div class="sender-meta">
+                            <div class="thread-avatar" style="width:40px; height:40px;">${msg.initials}</div>
+                            <div>
+                                <div style="font-weight:700; color:var(--school-primary-dark, #1e293b);">${msg.sender}</div>
+                                <div style="font-size:0.75rem; color:#94a3b8;">Sent via Acadex Direct</div>
+                            </div>
+                        </div>
+                        <div class="msg-actions">
+                            <div class="action-icon"><i class="fas fa-reply"></i></div>
+                            <div class="action-icon"><i class="fas fa-star"></i></div>
+                            <div class="action-icon"><i class="fas fa-trash"></i></div>
+                        </div>
+                    </div>
+                    <div class="message-body">
+                        <div class="msg-subject-line">${msg.subject}</div>
+                        <div class="msg-bubble">
+                            ${msg.body}
+                        </div>
+                    </div>
+                    <div class="compose-area">
+                        <textarea class="msg-input" placeholder="Type your reply to ${msg.sender}..." rows="1"></textarea>
+                        <button class="send-btn">Send <i class="fas fa-paper-plane"></i></button>
+                    </div>
+                `;
+            };
+        }
+    </script>
+    <!-- ACADEX: Powered-by footer and school branding -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+
+</body>
+
+</html>
+
+

@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Books</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../css/student.css">
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <img src="../images/logo.png" alt="School Logo" class="acadex-school-logo">
+                <h3>Student Portal</h3>
+            </div>
+
+            <div class="sidebar-menu">
+                <ul>
+                    <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                    <li><a href="profile.html"><i class="fas fa-user"></i> Profile</a></li>
+                    <li><a href="grades.html"><i class="fas fa-chart-line"></i> Grades</a></li>
+                    <li><a href="timetable.html"><i class="fas fa-calendar-alt"></i> Timetable</a></li>
+                    <li><a href="fees.html"><i class="fas fa-money-bill-wave"></i> Fees</a></li>
+                    <li><a href="assignments.html"><i class="fas fa-tasks"></i> Assignments</a></li>
+                    <li><a href="attendance.html"><i class="fas fa-clipboard-check"></i> Attendance</a></li>
+                    <li><a href="library.html"><i class="fas fa-book"></i> Library</a></li>
+                    <li><a href="my-books.html" class="active"><i class="fas fa-book-reader"></i> My Books</a></li>
+                    <li><a href="events.html"><i class="fas fa-calendar-day"></i> Events</a></li>
+                    <li><a href="it-support.html"><i class="fas fa-headset"></i> IT Support</a></li>
+                    <li><a href="settings.html"><i class="fas fa-cog"></i> Settings</a></li>
+                </ul>
+            </div>
+
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="user-details">
+                        <h4 id="studentName">Student Name</h4>
+                        <p id="studentClass">Loading...</p>
+                    </div>
+                </div>
+                <a href="#" class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Mobile Header -->
+            <div class="mobile-header">
+                <button class="menu-toggle" id="menuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="mobile-logo">
+                    <img src="../images/logo.png" alt="School Logo" class="acadex-school-logo">
+                    <span>Student Portal</span>
+                </div>
+            </div>
+
+            <div class="page-title">
+                <h2>My Borrowing History</h2>
+            </div>
+
+            <!-- Stats -->
+            <div class="dashboard-stats">
+                <div class="stat-card">
+                    <div class="stat-icon attendance">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="statAssignedBooks">0</h3>
+                        <p>Assigned Textbooks</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon grades">
+                        <i class="fas fa-book-reader"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="statCurrentLoans">0</h3>
+                        <p>Library Books</p>
+                    </div>
+                </div>
+                <div class="stat-card" style="display:none;">
+                    <div class="stat-icon events">
+                        <i class="fas fa-exclamation-circle"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="statFinePending" style="color: #dc3545;">$0.00</h3>
+                        <p>Pending Fines</p>
+                    </div>
+                </div>
+                <div class="stat-card" style="display:none;">
+                    <div class="stat-icon assignments">
+                        <i class="fas fa-history"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="statTotalBorrowed">0</h3>
+                        <p>Total Books Read</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Assigned Textbooks -->
+            <div class="content-card">
+                <div class="card-header">
+                    <h3>Assigned Textbooks</h3>
+                </div>
+                <div class="upcoming-content">
+                    <table class="upcoming-table">
+                        <thead>
+                            <tr>
+                                <th>Book Number</th>
+                                <th>Title</th>
+                                <th>Subject</th>
+                                <th>Teacher</th>
+                                <th>Issued Date</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="assignedTextbooksBody">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Active Loans -->
+            <div class="content-card">
+                <div class="card-header">
+                    <h3>Active Loans</h3>
+                </div>
+                <div class="upcoming-content">
+                    <table class="upcoming-table">
+                        <thead>
+                            <tr>
+                                <th>Book Title</th>
+                                <th>Borrowed On</th>
+                                <th>Due Date</th>
+                                <th>Status</th>
+                                <th>Fine</th>
+                            </tr>
+                        </thead>
+                        <tbody id="activeLoansBody">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- History -->
+            <div class="content-card">
+                <div class="card-header">
+                    <h3>Returned History</h3>
+                </div>
+                <div class="upcoming-content">
+                    <table class="upcoming-table">
+                        <thead>
+                            <tr>
+                                <th>Book Title</th>
+                                <th>Borrowed On</th>
+                                <th>Returned On</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historyBody">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    </div>
+
+    <script src="js/student-common.js"></script>
+    <script src="../js/textbook-data.js"></script>
+    <script src="js/student-textbooks.js"></script>
+    <script src="../js/library-student.js"></script>
+    <!-- ACADEX: Powered-by footer and school branding -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+
+</body>
+
+</html>
+

@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - Bursar Portal</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/ancillary-portal.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        .profile-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            padding: 40px;
+            color: white;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .profile-info h1 {
+            margin: 0 0 10px 0;
+            font-size: 2rem;
+        }
+
+        .profile-info p {
+            margin: 0;
+            opacity: 0.9;
+        }
+
+        .profile-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 25px;
+        }
+
+        .info-section {
+            margin-bottom: 25px;
+        }
+
+        .info-section h3 {
+            margin: 0 0 15px 0;
+            font-size: 1.1rem;
+            color: var(--school-primary-dark, #1e293b);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .info-row {
+            display: grid;
+            grid-template-columns: 150px 1fr;
+            padding: 12px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        .info-value {
+            color: var(--school-primary-dark, #1e293b);
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            margin-bottom: 25px;
+        }
+
+        .card-header {
+            padding: 20px 25px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-header h3 {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--school-primary-dark, #003d82);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-body {
+            padding: 25px;
+        }
+
+        .btn-primary {
+            background: var(--school-primary, #0056b3);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .btn-primary:hover {
+            background: var(--school-primary-dark, #003d82);
+        }
+
+        .quick-action {
+            padding: 15px;
+            background: #f8fafc;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .quick-action:hover {
+            background: #eef2ff;
+            transform: translateX(5px);
+        }
+
+        .quick-action i {
+            font-size: 1.5rem;
+            color: var(--school-primary, #0056b3);
+        }
+
+        @media (max-width: 1024px) {
+            .profile-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <button class="mobile-toggle" id="mobile-toggle">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <div class="dashboard-container">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-menu">
+                <div class="sidebar-section-title">Bursar System</div>
+                <ul>
+                    <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i>
+                            <span>Dashboard</span></a></li>
+                    <li><a href="fees-management.html"><i class="fas fa-money-bill-wave"></i> <span>Fees
+                                Management</span></a></li>
+                    <li><a href="payments.html"><i class="fas fa-credit-card"></i> <span>Payments</span></a></li>
+                    <li><a href="expenses.html"><i class="fas fa-file-invoice-dollar"></i> <span>Expenses</span></a>
+                    </li>
+                    <li><a href="payroll.html"><i class="fas fa-users-cog"></i> <span>Payroll</span></a></li>
+                    <li><a href="tuckshop.html"><i class="fas fa-store"></i> <span>Tuckshop</span></a></li>
+                    <li><a href="reports.html"><i class="fas fa-chart-pie"></i> <span>Reports</span></a></li>
+                </ul>
+
+                <div class="sidebar-section-title">Operations</div>
+                <ul>
+                    <li><a href="staff-directory.html"><i class="fas fa-users"></i> <span>Staff Directory</span></a>
+                    </li>
+                    <li><a href="procurement.html"><i class="fas fa-shopping-cart"></i> <span>Procurement</span></a>
+                    </li>
+                    <li><a href="assets.html"><i class="fas fa-boxes"></i> <span>Asset Management</span></a></li>
+                    <li><a href="schedules.html"><i class="fas fa-calendar-check"></i> <span>Schedules &
+                                Shifts</span></a></li>
+                </ul>
+
+                <div class="sidebar-section-title">Staff HR & Support</div>
+                <ul>
+                    <li><a href="sdc-portal.html"><i class="fas fa-file-invoice-dollar"></i> <span>SDC Staff
+                                Portal</span></a></li>
+                    <li><a href="hr-services.html"><i class="fas fa-user-shield"></i> <span>HR Services</span></a></li>
+                    <li><a href="profile-settings.html" class="active"><i class="fas fa-id-card"></i> <span>My
+                                Profile</span></a></li>
+                    <li><a href="resources.html"><i class="fas fa-folder-open"></i> <span>Resources & Docs</span></a>
+                    </li>
+                    <li><a href="it-support.html"><i class="fas fa-headset"></i> <span>IT Support</span></a></li>
+                </ul>
+
+                <div class="sidebar-section-title">Communication</div>
+                <ul>
+                    <li><a href="news.html"><i class="fas fa-newspaper"></i> <span>News & Updates</span></a></li>
+                    <li><a href="contact.html"><i class="fas fa-address-book"></i> <span>Contact Us</span></a></li>
+                    <li><a href="settings.html"><i class="fas fa-cog"></i> <span>Settings</span></a></li>
+                </ul>
+            </div>
+            <div class="sidebar-footer">
+                <a href="login.html"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <!-- Profile Header -->
+            <div class="profile-header">
+                <div class="profile-avatar">TN</div>
+                <div class="profile-info">
+                    <h1>Mrs. T. Ncube</h1>
+                    <p><i class="fas fa-briefcase"></i> Bursar • Finance Department</p>
+                    <p><i class="fas fa-envelope"></i> bursar@Acadex.ac.zw</p>
+                </div>
+            </div>
+
+            <div class="profile-grid">
+                <div>
+                    <!-- Personal Information -->
+                    <section class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-user"></i> Personal Information</h3>
+                            <button class="btn-primary" onclick="showNotification('Opening edit profile...', 'info')">
+                                <i class="fas fa-edit"></i> Edit
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <div class="info-section">
+                                <div class="info-row">
+                                    <span class="info-label">Full Name</span>
+                                    <span class="info-value">Mrs. Thandiwe Ncube</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">Email</span>
+                                    <span class="info-value">bursar@Acadex.ac.zw</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">Phone</span>
+                                    <span class="info-value">+263 77 123 4567</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">Extension</span>
+                                    <span class="info-value">101</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">Office</span>
+                                    <span class="info-value">Finance Block, Room 12</span>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Employment Details -->
+                    <section class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-building"></i> Employment Details</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="info-section">
+                                <div class="info-row">
+                                    <span class="info-label">Position</span>
+                                    <span class="info-value">School Bursar</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">Department</span>
+                                    <span class="info-value">Finance & Administration</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">Employee ID</span>
+                                    <span class="info-value">EMP-2024-001</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">Start Date</span>
+                                    <span class="info-value">January 15, 2020</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">Employment Type</span>
+                                    <span class="info-value">Permanent Full-time</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">Reports To</span>
+                                    <span class="info-value">School Administrator</span>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <div>
+                    <!-- Quick Actions -->
+                    <section class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-bolt"></i> Quick Actions</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="quick-action" onclick="simulateDownload('Employment_Contract.pdf')">
+                                <div>
+                                    <strong>My Contract</strong>
+                                    <p style="margin: 0; font-size: 0.8rem; color: #64748b;">View employment contract
+                                    </p>
+                                </div>
+                                <i class="fas fa-file-contract"></i>
+                            </div>
+
+                            <div class="quick-action" onclick="simulateDownload('Payslip_Jan_2026.pdf')">
+                                <div>
+                                    <strong>Latest Payslip</strong>
+                                    <p style="margin: 0; font-size: 0.8rem; color: #64748b;">January 2026</p>
+                                </div>
+                                <i class="fas fa-file-invoice-dollar"></i>
+                            </div>
+
+                            <div class="quick-action" onclick="showNotification('Opening leave balance...', 'info')">
+                                <div>
+                                    <strong>Leave Balance</strong>
+                                    <p style="margin: 0; font-size: 0.8rem; color: #64748b;">18 days remaining</p>
+                                </div>
+                                <i class="fas fa-calendar-check"></i>
+                            </div>
+
+                            <div class="quick-action" onclick="showNotification('Opening tax documents...', 'info')">
+                                <div>
+                                    <strong>Tax Documents</strong>
+                                    <p style="margin: 0; font-size: 0.8rem; color: #64748b;">View P60, tax certs</p>
+                                </div>
+                                <i class="fas fa-file-alt"></i>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Emergency Contact -->
+                    <section class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-phone-alt"></i> Emergency Contact</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="info-row">
+                                <span class="info-label">Name</span>
+                                <span class="info-value">Mr. S. Ncube</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Relationship</span>
+                                <span class="info-value">Spouse</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Phone</span>
+                                <span class="info-value">+263 77 987 6543</span>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../js/ancillary-common.js"></script>
+    <!-- ACADEX: Powered-by footer and school branding -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+
+</body>
+
+</html>
+

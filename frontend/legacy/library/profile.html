@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Librarian Profile - Bursar Portal</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/library-portal.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        .profile-hero {
+            background: linear-gradient(135deg, var(--school-primary-dark, #1f2937) 0%, #1f2937 100%);
+            height: 120px;
+            border-radius: 16px 16px 0 0;
+        }
+
+        .profile-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: var(--card-shadow);
+            overflow: hidden;
+            text-align: center;
+        }
+
+        .profile-card-body {
+            padding: 0 24px 28px;
+        }
+
+        .profile-avatar-wrap {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 5px solid white;
+            background: #e8f0fe;
+            margin: -60px auto 16px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .profile-avatar-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-avatar-wrap .initials-avatar {
+            width: 100%;
+            height: 100%;
+            background: var(--school-primary, var(--school-primary, #0056b3));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        .profile-name {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #1a2035;
+            margin-bottom: 4px;
+        }
+
+        .profile-role {
+            color: var(--school-primary, var(--school-primary, #0056b3));
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+        }
+
+        .profile-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            text-align: left;
+            padding: 18px;
+            background: rgba(var(--school-primary-rgb, 0, 86, 179), 0.04);
+            border-radius: 10px;
+        }
+
+        .profile-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.85rem;
+            color: #555;
+        }
+
+        .profile-meta-item i {
+            width: 18px;
+            color: var(--school-primary, var(--school-primary, #0056b3));
+        }
+
+        .info-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: var(--card-shadow);
+            padding: 28px;
+            margin-bottom: 20px;
+        }
+
+        .info-card h3 {
+            margin: 0 0 20px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #1a2035;
+            border-bottom: 2px solid rgba(var(--school-primary-rgb, 0, 86, 179), 0.1);
+            padding-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-card h3 i {
+            color: var(--school-primary, var(--school-primary, #0056b3));
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .info-row {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .info-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #9aacca;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-value {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #2d3748;
+        }
+
+        .info-value.placeholder {
+            color: #bbb;
+            font-style: italic;
+        }
+
+        .badge-pill {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            background: rgba(var(--school-primary-rgb, 0, 86, 179), 0.1);
+            color: var(--school-primary, var(--school-primary, #0056b3));
+        }
+
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            background-color: rgba(var(--school-primary-rgb, 0, 86, 179), 0.2);
+            color: white;
+            border-left: 3px solid var(--school-primary, var(--school-primary, #0056b3));
+        }
+
+        .btn-primary {
+            background: var(--school-primary, var(--school-primary, #0056b3));
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .btn-primary:hover {
+            background: var(--school-primary-dark, var(--school-primary-dark, #003d82));
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <img src="../images/logo.png" alt="Logo" class="acadex-school-logo">
+                <h3>Library Portal</h3>
+            </div>
+            <div class="sidebar-menu">
+                <div class="sidebar-section-title">Library System</div>
+                <ul>
+                    <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
+                    <li><a href="books.html"><i class="fas fa-book"></i><span>Catalog Management</span></a></li>
+                    <li><a href="issue.html"><i class="fas fa-exchange-alt"></i><span>Circulation Desk</span></a></li>
+                    <li><a href="digital.html"><i class="fas fa-laptop-code"></i><span>Digital Resources</span></a></li>
+                    <li><a href="reports.html"><i class="fas fa-file-invoice"></i><span>Reports & Inventory</span></a>
+                    </li>
+                </ul>
+                <div class="sidebar-section-title">Operations</div>
+                <ul>
+                    <li><a href="staff-directory.html"><i class="fas fa-users"></i><span>Staff Directory</span></a></li>
+                    <li><a href="procurement.html"><i class="fas fa-shopping-cart"></i><span>Procurement</span></a></li>
+                    <li><a href="assets.html"><i class="fas fa-boxes"></i><span>Asset Management</span></a></li>
+                    <li><a href="schedules.html"><i class="fas fa-calendar-check"></i><span>Schedules &
+                                Shifts</span></a></li>
+                </ul>
+                <div class="sidebar-section-title">Staff HR & Support</div>
+                <ul>
+                    <li><a href="hr-services.html"><i class="fas fa-user-shield"></i><span>HR Services</span></a></li>
+                    <li><a href="profile.html" class="active"><i class="fas fa-id-card"></i><span>My Profile</span></a>
+                    </li>
+                    <li><a href="resources.html"><i class="fas fa-folder-open"></i><span>Resources & Docs</span></a>
+                    </li>
+                    <li><a href="it-support.html"><i class="fas fa-headset"></i><span>IT Support</span></a></li>
+                </ul>
+                <div class="sidebar-section-title">Communication</div>
+                <ul>
+                    <li><a href="news.html"><i class="fas fa-newspaper"></i><span>News & Updates</span></a></li>
+                    <li><a href="announcements.html"><i class="fas fa-bullhorn"></i><span>General Notices</span></a>
+                    </li>
+                    <li><a href="contact.html"><i class="fas fa-address-book"></i><span>Contact Us</span></a></li>
+                    <li><a href="settings.html"><i class="fas fa-cog"></i><span>System Settings</span></a></li>
+                </ul>
+            </div>
+            <div class="sidebar-footer">
+                <a href="login.html"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="top-header">
+                <h2>My Profile</h2>
+                <div class="user-profile">
+                    <div style="text-align:right;margin-right:10px;">
+                        <div style="font-weight:600;font-size:0.9rem;" id="headerName">Librarian</div>
+                        <div style="font-size:0.75rem;color:#888;" id="headerRole">Librarian</div>
+                    </div>
+                    <img src="../images/admin-avatar.png" alt="Avatar" id="headerAvatar"
+                        style="width:40px;height:40px;border-radius:50%;object-fit:cover;">
+                </div>
+            </div>
+
+            <div class="content-area">
+                <div style="display:grid;grid-template-columns:280px 1fr;gap:24px;align-items:start;">
+
+                    <!-- Profile Card -->
+                    <div class="profile-card">
+                        <div class="profile-hero"></div>
+                        <div class="profile-card-body">
+                            <div class="profile-avatar-wrap" id="profileAvatarWrap">
+                                <div class="initials-avatar" id="initialsAvatar">LB</div>
+                            </div>
+                            <div class="profile-name" id="profileName">Librarian</div>
+                            <div class="profile-role" id="profileRoleTitle">Librarian</div>
+                            <div class="profile-meta">
+                                <div class="profile-meta-item"><i class="fas fa-envelope"></i><span
+                                        id="profileEmailMeta">—</span></div>
+                                <div class="profile-meta-item"><i class="fas fa-phone"></i><span
+                                        id="profilePhoneMeta">—</span></div>
+                                <div class="profile-meta-item"><i class="fas fa-building"></i><span
+                                        id="profileDeptMeta">—</span></div>
+                            </div>
+                            <button id="editProfileBtn" class="btn-primary" style="width:100%; margin-top:20px;">
+                                <i class="fas fa-edit"></i> Edit Profile
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Details -->
+                    <div>
+
+                        <!-- Personal -->
+                        <div class="info-card">
+                            <h3><i class="fas fa-user"></i> Personal Information</h3>
+                            <div class="info-grid">
+                                <div class="info-row"><span class="info-label">Full Name</span><span class="info-value"
+                                        id="displayFullName">—</span></div>
+                                <div class="info-row"><span class="info-label">Date of Birth</span><span
+                                        class="info-value" id="displayDOB">—</span></div>
+                                <div class="info-row"><span class="info-label">Gender</span><span class="info-value"
+                                        id="displayGender">—</span></div>
+                                <div class="info-row"><span class="info-label">National ID</span><span
+                                        class="info-value" id="displayNationalId">—</span></div>
+                                <div class="info-row"><span class="info-label">Phone</span><span class="info-value"
+                                        id="displayPhone">—</span></div>
+                                <div class="info-row" style="grid-column:1/-1;"><span
+                                        class="info-label">Address</span><span class="info-value"
+                                        id="displayAddress">—</span></div>
+                            </div>
+                        </div>
+
+                        <!-- Employment -->
+                        <div class="info-card">
+                            <h3><i class="fas fa-briefcase"></i> Employment Details</h3>
+                            <div class="info-grid">
+                                <div class="info-row"><span class="info-label">Employee ID</span><span
+                                        class="info-value" id="displayEmployeeId">—</span></div>
+                                <div class="info-row"><span class="info-label">Department</span><span class="info-value"
+                                        id="displayDepartment">—</span></div>
+                                <div class="info-row"><span class="info-label">Role</span><span class="info-value"
+                                        id="displayRole">—</span></div>
+                                <div class="info-row"><span class="info-label">Work Shift</span><span class="info-value"
+                                        id="displayShift">—</span></div>
+                                <div class="info-row"><span class="info-label">Qualification</span><span
+                                        class="info-value" id="displayQualification">—</span></div>
+                                <div class="info-row"><span class="info-label">Join Date</span><span class="info-value"
+                                        id="displayJoinDate">—</span></div>
+                            </div>
+                        </div>
+
+                        <!-- Family & NOK -->
+                        <div class="info-card">
+                            <h3><i class="fas fa-users"></i> Family &amp; Next of Kin</h3>
+                            <div class="info-grid">
+                                <div class="info-row"><span class="info-label">Marital Status</span><span
+                                        class="info-value" id="displayMarital">—</span></div>
+                                <div class="info-row"><span class="info-label">Spouse's Name</span><span
+                                        class="info-value" id="displaySpouseName">—</span></div>
+                                <div class="info-row"><span class="info-label">Spouse's Phone</span><span
+                                        class="info-value" id="displaySpousePhone">—</span></div>
+                                <div class="info-row"><span class="info-label">Spouse's Occupation</span><span
+                                        class="info-value" id="displaySpouseOccupation">—</span></div>
+                            </div>
+                            <hr style="margin:18px 0;border:none;border-top:1px solid #e8f0fe;">
+                            <div class="info-grid">
+                                <div class="info-row"><span class="info-label">Next of Kin</span><span
+                                        class="info-value" id="displayNokName">—</span></div>
+                                <div class="info-row"><span class="info-label">Relationship</span><span
+                                        class="info-value" id="displayNokRelation">—</span></div>
+                                <div class="info-row"><span class="info-label">NOK Phone</span><span class="info-value"
+                                        id="displayNokPhone">—</span></div>
+                                <div class="info-row"><span class="info-label">NOK Address</span><span
+                                        class="info-value" id="displayNokAddress">—</span></div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Profile Modal -->
+    <div class="modal-overlay" id="editProfileModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit Profile Information</h3>
+                <button class="close-modal" id="closeEditModal">&times;</button>
+            </div>
+            <form id="editProfileForm">
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" id="editName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Date of Birth</label>
+                        <input type="date" id="editDOB">
+                    </div>
+                    <div class="form-group">
+                        <label>Gender</label>
+                        <select id="editGender">
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Phone Number</label>
+                        <input type="text" id="editPhone">
+                    </div>
+                    <div class="form-group" style="grid-column: 1 / -1;">
+                        <label>Residential Address</label>
+                        <textarea id="editAddress" rows="2"></textarea>
+                    </div>
+                </div>
+
+                <div style="margin-top:20px; padding-top:20px; border-top:1px solid #eee;">
+                    <h4 style="margin-bottom:15px; font-size:0.9rem; color:#666;">Family & Next of Kin</h4>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+                        <div class="form-group">
+                            <label>Marital Status</label>
+                            <select id="editMarital">
+                                <option value="Single">Single</option>
+                                <option value="Married">Married</option>
+                                <option value="Divorced">Divorced</option>
+                                <option value="Widowed">Widowed</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Next of Kin Name</label>
+                            <input type="text" id="editNokName">
+                        </div>
+                        <div class="form-group">
+                            <label>Next of Kin Phone</label>
+                            <input type="text" id="editNokPhone">
+                        </div>
+                        <div class="form-group">
+                            <label>NOK Relationship</label>
+                            <input type="text" id="editNokRelation">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer" style="padding:0; margin-top:20px;">
+                    <button type="button" class="btn btn-export" id="cancelEditBtn">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="../js/library-auth.js"></script>
+    <script src="../js/library-admin.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const email = sessionStorage.getItem('librarianEmail');
+            if (!email) return;
+
+            const librarians = getTenantData('librarians', '[]');
+            const user = librarians.find(l => l.email === email);
+            if (!user) return;
+
+            const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val || '—'; };
+
+            // Header
+            set('headerName', user.name);
+            set('headerRole', user.role || 'Librarian');
+
+            // Profile card
+            set('profileName', user.name);
+            set('profileRoleTitle', user.role || 'Librarian');
+            set('profileEmailMeta', user.email);
+            set('profilePhoneMeta', user.phone || '—');
+            set('profileDeptMeta', user.department || '—');
+
+            // Avatar
+            const wrap = document.getElementById('profileAvatarWrap');
+            if (user.profilePic) {
+                wrap.innerHTML = `<img src="${user.profilePic}" alt="Profile">`;
+                document.getElementById('headerAvatar').src = user.profilePic;
+            } else {
+                const initials = (user.firstName || user.name || 'L').charAt(0).toUpperCase() +
+                    (user.lastName ? user.lastName.charAt(0).toUpperCase() : 'B');
+                wrap.innerHTML = `<div class="initials-avatar">${initials}</div>`;
+            }
+
+            // Personal
+            set('displayFullName', user.name);
+            set('displayDOB', user.dob ? new Date(user.dob).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : null);
+            set('displayGender', user.gender);
+            set('displayNationalId', user.nationalId);
+            set('displayPhone', user.phone);
+            set('displayAddress', user.address);
+
+            // Employment
+            set('displayEmployeeId', user.employeeId);
+            set('displayDepartment', user.department);
+            set('displayRole', user.role);
+            set('displayShift', user.workShift);
+            set('displayQualification', user.qualification);
+            set('displayJoinDate', user.joinDate ? new Date(user.joinDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : null);
+
+            // Family
+            set('displayMarital', user.maritalStatus);
+            const isMarried = user.maritalStatus === 'Married';
+            set('displaySpouseName', isMarried ? user.spouseName : 'N/A');
+            set('displaySpousePhone', isMarried ? user.spousePhone : 'N/A');
+            set('displaySpouseOccupation', isMarried ? user.spouseOccupation : 'N/A');
+            set('displayNokName', user.nokName);
+            set('displayNokRelation', user.nokRelation);
+            set('displayNokPhone', user.nokPhone);
+            set('displayNokAddress', user.nokAddress);
+
+            // Edit Profile Functionality
+            const modal = document.getElementById('editProfileModal');
+            const openBtn = document.getElementById('editProfileBtn');
+            const closeBtn = document.getElementById('closeEditModal');
+            const cancelBtn = document.getElementById('cancelEditBtn');
+            const editForm = document.getElementById('editProfileForm');
+
+            openBtn.onclick = () => {
+                document.getElementById('editName').value = user.name || '';
+                document.getElementById('editDOB').value = user.dob || '';
+                document.getElementById('editGender').value = user.gender || 'Male';
+                document.getElementById('editPhone').value = user.phone || '';
+                document.getElementById('editAddress').value = user.address || '';
+                document.getElementById('editMarital').value = user.maritalStatus || 'Single';
+                document.getElementById('editNokName').value = user.nokName || '';
+                document.getElementById('editNokPhone').value = user.nokPhone || '';
+                document.getElementById('editNokRelation').value = user.nokRelation || '';
+                modal.classList.add('active');
+            };
+
+            const closeModal = () => modal.classList.remove('active');
+            closeBtn.onclick = closeModal;
+            cancelBtn.onclick = closeModal;
+            window.onclick = (e) => { if (e.target === modal) closeModal(); };
+
+            editForm.onsubmit = (e) => {
+                e.preventDefault();
+
+                // Update user object
+                user.name = document.getElementById('editName').value;
+                user.dob = document.getElementById('editDOB').value;
+                user.gender = document.getElementById('editGender').value;
+                user.phone = document.getElementById('editPhone').value;
+                user.address = document.getElementById('editAddress').value;
+                user.maritalStatus = document.getElementById('editMarital').value;
+                user.nokName = document.getElementById('editNokName').value;
+                user.nokPhone = document.getElementById('editNokPhone').value;
+                user.nokRelation = document.getElementById('editNokRelation').value;
+
+                // Update localStorage
+                const allLibrarians = getTenantData('librarians', '[]');
+                const idx = allLibrarians.findIndex(l => l.email === user.email);
+                if (idx !== -1) {
+                    allLibrarians[idx] = user;
+                    saveTenantData('librarians', allLibrarians);
+
+                    // Show success message (optional, but good)
+                    alert('Profile updated successfully!');
+                    location.reload();
+                }
+            };
+        });
+    </script>
+    <!-- ACADEX: Powered-by footer and school branding -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+
+</body>
+
+</html>
+

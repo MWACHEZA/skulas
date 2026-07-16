@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reports - Teacher Portal</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/ancillary-portal.css">
+    <link rel="stylesheet" href="../css/toast.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: var(--school-primary, #0056b3);
+            color: white;
+            padding: 0;
+            position: fixed;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s ease-in-out;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+        }
+
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            display: none;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+        }
+
+        .sidebar-header {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+
+        .sidebar-header img {
+            width: 60px;
+            margin-bottom: 10px;
+        }
+
+        .sidebar-header h3 {
+            margin: 0;
+            font-size: 1.2rem;
+        }
+
+        .sidebar-menu {
+            padding: 20px 0;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .sidebar-menu ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 5px;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .sidebar-menu i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .sidebar-footer {
+            padding: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            width: 100%;
+            box-sizing: border-box;
+            background-color: var(--school-primary, #0056b3);
+            z-index: 10;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--school-primary-dark, #003d7a);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+        }
+
+        .user-avatar i {
+            font-size: 1.2rem;
+        }
+
+        .user-details {
+            flex: 1;
+        }
+
+        .user-details h4 {
+            margin: 0;
+            font-size: 0.9rem;
+        }
+
+        .user-details p {
+            margin: 0;
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+
+        .logout-btn {
+            display: block;
+            margin-top: 10px;
+            padding: 8px 12px;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: background-color 0.3s;
+        }
+
+        .logout-btn:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            margin-left: 250px;
+            width: calc(100% - 250px);
+        }
+
+        .page-header {
+            margin-bottom: 30px;
+        }
+
+        .page-header h2 {
+            margin: 0 0 10px;
+            color: #333;
+        }
+
+        .report-generator {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .form-section {
+            margin-bottom: 25px;
+        }
+
+        .form-section h3 {
+            margin: 0 0 15px;
+            color: var(--school-primary, #0056b3);
+            font-size: 1.1rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .form-group select,
+        .form-group input {
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 0.95rem;
+        }
+
+        .report-types {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .report-type-card {
+            padding: 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .report-type-card:hover {
+            border-color: var(--school-primary, #0056b3);
+            background-color: #f8f9fa;
+        }
+
+        .report-type-card.selected {
+            border-color: var(--school-primary, #0056b3);
+            background-color: rgba(var(--school-primary-rgb, 0, 86, 179), 0.1);
+        }
+
+        .report-type-card i {
+            font-size: 2rem;
+            color: var(--school-primary, #0056b3);
+            margin-bottom: 10px;
+        }
+
+        .report-type-card h4 {
+            margin: 0;
+            color: #333;
+            font-size: 1rem;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background-color: var(--school-primary, #0056b3);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--school-primary-dark, #003d82);
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+            margin-left: 10px;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+
+        .saved-reports {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .saved-reports h3 {
+            margin: 0 0 20px;
+            color: #333;
+        }
+
+        .report-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .report-item {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .report-item:last-child {
+            border-bottom: none;
+        }
+
+        .report-info {
+            flex: 1;
+        }
+
+        .report-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .report-meta {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .report-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 0.85rem;
+        }
+
+        .mobile-header {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                z-index: 1000;
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding-top: 70px;
+                width: 100%;
+            }
+
+            .mobile-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 15px 20px;
+                background-color: white;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                z-index: 100;
+            }
+
+            .menu-toggle {
+                background: none;
+                border: none;
+                font-size: 1.5rem;
+                color: var(--school-primary, #0056b3);
+                cursor: pointer;
+            }
+
+            .report-types {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .preview-header {
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .preview-body {
+            background: #f9f9f9;
+            padding: 20px;
+            border: 1px solid #ddd;
+            min-height: 300px;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <img src="../images/logo.png" alt="Logo">
+                <h3>Teacher Portal</h3>
+            </div>
+            <div class="sidebar-menu">
+                <div class="sidebar-section-title">Teacher System</div>
+                <ul>
+                    <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i>
+                            <span>Dashboard</span></a></li>
+                    <li><a href="classes.html"><i class="fas fa-chalkboard"></i> <span>Classes</span></a></li>
+                    <li><a href="assignments.html"><i class="fas fa-tasks"></i> <span>Assignments</span></a></li>
+                    <li><a href="attendance.html"><i class="fas fa-clipboard-check"></i> <span>Attendance</span></a>
+                    </li>
+                    <li><a href="grades.html"><i class="fas fa-chart-line"></i> <span>Grades</span></a></li>
+                    <li><a href="timetable.html"><i class="fas fa-calendar-alt"></i> <span>Timetable</span></a></li>
+                    <li><a href="students.html"><i class="fas fa-users"></i> <span>Students</span></a></li>
+                    <li><a href="textbooks.html"><i class="fas fa-book"></i> <span>Textbooks</span></a></li>
+                    <li><a href="library.html"><i class="fas fa-book-open"></i> <span>Library Catalog</span></a></li>
+                    <li><a href="digital-resources.html"><i class="fas fa-laptop-code"></i> <span>Digital
+                                Resources</span></a></li>
+                    <li><a href="reports.html" class="active"><i class="fas fa-file-alt"></i> <span>System
+                                Reports</span></a></li>
+                    <li><a href="messages.html"><i class="fas fa-envelope"></i> <span>Messages</span></a></li>
+                </ul>
+
+                <div class="sidebar-section-title">Operations</div>
+                <ul>
+                    <li><a href="staff-directory.html"><i class="fas fa-users"></i> <span>Staff Directory</span></a>
+                    </li>
+                    <li><a href="procurement.html"><i class="fas fa-shopping-cart"></i> <span>Procurement</span></a>
+                    </li>
+                    <li><a href="assets.html"><i class="fas fa-boxes"></i> <span>Asset Management</span></a></li>
+                    <li><a href="schedules.html"><i class="fas fa-calendar-check"></i> <span>Schedules &
+                                Shifts</span></a></li>
+                </ul>
+
+                <div class="sidebar-section-title">Staff HR & Support</div>
+                <ul>
+                    <li><a href="sdc-portal.html"><i class="fas fa-file-invoice-dollar"></i> <span>SDC Staff
+                                Portal</span></a></li>
+                    <li><a href="hr-services.html"><i class="fas fa-user-shield"></i> <span>HR Services</span></a></li>
+                    <li><a href="profile.html"><i class="fas fa-id-card"></i> <span>My Profile</span></a></li>
+                    <li><a href="resources.html"><i class="fas fa-folder-open"></i> <span>Resources & Docs</span></a>
+                    </li>
+                    <li><a href="it-support.html"><i class="fas fa-headset"></i> <span>IT Support</span></a></li>
+                </ul>
+
+                <div class="sidebar-section-title">Communication</div>
+                <ul>
+                    <li><a href="news.html"><i class="fas fa-newspaper"></i> <span>News & Updates</span></a></li>                    <li><a href="announcements.html"><i class="fas fa-bullhorn"></i> <span>General Notices</span></a>
+                    </li>                    <li><a href="contact.html"><i class="fas fa-address-book"></i> <span>Contact Us</span></a></li>
+                    <li><a href="settings.html"><i class="fas fa-cog"></i> <span>Settings</span></a></li>
+                </ul>
+            </div>
+            <div class="sidebar-footer">
+                <a href="login.html"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a>
+            </div>
+        </aside>
+
+        <!-- Sidebar Overlay -->
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Mobile Header -->
+            <div class="mobile-header">
+                <button class="menu-toggle" id="menuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="mobile-logo">
+                    <span>Reports</span>
+                </div>
+            </div>
+
+            <!-- Page Header -->
+            <div class="page-header">
+                <h2>Generate Reports</h2>
+            </div>
+
+            <!-- Report Generator -->
+            <div class="report-generator">
+                <div class="form-section">
+                    <h3>Select Report Type</h3>
+                    <div class="report-types">
+                        <div class="report-type-card selected" onclick="selectReportType(this)">
+                            <i class="fas fa-chart-bar"></i>
+                            <h4>Class Performance</h4>
+                        </div>
+                        <div class="report-type-card" onclick="selectReportType(this)">
+                            <i class="fas fa-user-graduate"></i>
+                            <h4>Student Report</h4>
+                        </div>
+                        <div class="report-type-card" onclick="selectReportType(this)">
+                            <i class="fas fa-clipboard-check"></i>
+                            <h4>Attendance Summary</h4>
+                        </div>
+                        <div class="report-type-card" onclick="selectReportType(this)">
+                            <i class="fas fa-chart-pie"></i>
+                            <h4>Grade Distribution</h4>
+                        </div>
+                        <div class="report-type-card" onclick="selectReportType(this)">
+                            <i class="fas fa-tasks"></i>
+                            <h4>Assignment Completion</h4>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>Report Parameters</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Select Class</label>
+                            <select>
+                                <option>All Classes</option>
+                                <option>Form 4A - Mathematics</option>
+                                <option>Form 3B - Mathematics</option>
+                                <option>Form 2A - Mathematics</option>
+                                <option>Form 4B - Mathematics</option>
+                                <option>Form 1A - Mathematics</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Term</label>
+                            <select>
+                                <option>Term 1 - 2025</option>
+                                <option>Term 2 - 2025</option>
+                                <option>Term 3 - 2025</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Date From</label>
+                            <input type="date" value="2025-01-01">
+                        </div>
+                        <div class="form-group">
+                            <label>Date To</label>
+                            <input type="date" value="2025-12-15">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>Export Format</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Format</label>
+                            <select>
+                                <option>PDF Document</option>
+                                <option>Excel Spreadsheet</option>
+                                <option>CSV File</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 25px;">
+                    <button class="btn btn-primary" onclick="generateReport()">
+                        <i class="fas fa-file-download"></i> Generate Report
+                    </button>
+                    <button class="btn btn-secondary" onclick="previewReport()">
+                        <i class="fas fa-eye"></i> Preview
+                    </button>
+                </div>
+            </div>
+
+            <!-- Saved Reports -->
+            <div class="saved-reports">
+                <h3>Recent Reports</h3>
+                <ul class="report-list">
+                    <li class="report-item">
+                        <div class="report-info">
+                            <div class="report-title">Form 4A Class Performance - Term 1 2025</div>
+                            <div class="report-meta">Generated on Dec 10, 2025 • PDF</div>
+                        </div>
+                        <div class="report-actions">
+                            <button class="btn btn-primary btn-small"><i class="fas fa-download"></i> Download</button>
+                            <button class="btn btn-secondary btn-small"><i class="fas fa-eye"></i> View</button>
+                        </div>
+                    </li>
+                    <li class="report-item">
+                        <div class="report-info">
+                            <div class="report-title">Attendance Summary - All Classes</div>
+                            <div class="report-meta">Generated on Dec 8, 2025 • Excel</div>
+                        </div>
+                        <div class="report-actions">
+                            <button class="btn btn-primary btn-small"><i class="fas fa-download"></i> Download</button>
+                            <button class="btn btn-secondary btn-small"><i class="fas fa-eye"></i> View</button>
+                        </div>
+                    </li>
+                    <li class="report-item">
+                        <div class="report-info">
+                            <div class="report-title">Grade Distribution - Form 3B</div>
+                            <div class="report-meta">Generated on Dec 5, 2025 • PDF</div>
+                        </div>
+                        <div class="report-actions">
+                            <button class="btn btn-primary btn-small"><i class="fas fa-download"></i> Download</button>
+                            <button class="btn btn-secondary btn-small"><i class="fas fa-eye"></i> View</button>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Preview Modal -->
+    <div class="modal" id="previewModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closePreview()">&times;</span>
+            <div class="preview-header">
+                <h3 id="previewTitle">Report Preview</h3>
+            </div>
+            <div class="preview-body" id="previewContent">
+                <!-- Content will be injected here -->
+            </div>
+            <div style="margin-top: 20px; text-align: right;">
+                <button class="btn btn-secondary" onclick="closePreview()">Close</button>
+                <button class="btn btn-primary" onclick="downloadFromPreview()">Download</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/toast.js"></script>
+    <script>
+        // Mobile menu toggle
+        const menuToggle = document.getElementById('menuToggle');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+        if (menuToggle) {
+            menuToggle.addEventListener('click', function () {
+                sidebar.classList.toggle('active');
+                if (sidebarOverlay) sidebarOverlay.classList.toggle('active');
+            });
+        }
+
+        if (sidebarOverlay) {
+            sidebarOverlay.addEventListener('click', function () {
+                sidebar.classList.remove('active');
+                sidebarOverlay.classList.remove('active');
+            });
+        }
+
+        // Load teacher name from localStorage
+        const teacherName = getTenantData('teacherName', 'null');
+        if (teacherName) {
+            document.getElementById('teacherName').textContent = teacherName;
+        }
+
+        // Logout functionality
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+                saveTenantData('teacherLoggedIn', []);
+                window.location.href = 'login.html';
+            });
+        }
+
+        function selectReportType(card) {
+            document.querySelectorAll('.report-type-card').forEach(c => c.classList.remove('selected'));
+            card.classList.add('selected');
+        }
+
+        function generateReport(reportType = null) {
+            const btn = document.querySelector('button[onclick="generateReport()"]');
+
+            // If called from Recent Reports, handle differently or simulate selection
+            let typeName = reportType;
+            let fromRecent = false;
+
+            if (!typeName) {
+                // Check if report type is selected from cards
+                const selectedType = document.querySelector('.report-type-card.selected h4');
+                if (!selectedType) {
+                    Toast.error('Please select a report type first');
+                    return;
+                }
+                typeName = selectedType.innerText;
+            } else {
+                fromRecent = true;
+            }
+
+            if (!fromRecent && btn) {
+                var originalText = btn.innerHTML;
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+            } else {
+                Toast.info(`Generating ${typeName}...`);
+            }
+
+            setTimeout(() => {
+                if (!fromRecent && btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = originalText;
+                }
+
+                Toast.success(`${typeName} generated successfully!`);
+                downloadFile(typeName);
+
+            }, 1500);
+        }
+
+        function previewReport(reportType = null) {
+            let typeName = reportType;
+            if (!typeName) {
+                const selectedType = document.querySelector('.report-type-card.selected h4');
+                if (!selectedType) {
+                    Toast.error('Please select a report type to preview');
+                    return;
+                }
+                typeName = selectedType.innerText;
+            }
+
+            Toast.info(`Loading preview for ${typeName}...`);
+
+            setTimeout(() => {
+                const modal = document.getElementById('previewModal');
+                const title = document.getElementById('previewTitle');
+                const content = document.getElementById('previewContent');
+
+                title.innerText = `Preview: ${typeName}`;
+                content.innerText = `REPORT: ${typeName.toUpperCase()}\nDATE: ${new Date().toLocaleDateString()}\n\n----------------------------------------\n\nThis is a generated preview of the ${typeName}.\n\n[Data Content Would Appear Here]\n\n----------------------------------------\n\nEnd of Report`;
+
+                modal.classList.add('active');
+            }, 500);
+        }
+
+        function closePreview() {
+            document.getElementById('previewModal').classList.remove('active');
+        }
+
+        function downloadFromPreview() {
+            const title = document.getElementById('previewTitle').innerText.replace('Preview: ', '');
+            downloadFile(title);
+            closePreview();
+        }
+
+        function downloadFile(filename) {
+            const content = `Report: ${filename}\nGenerated: ${new Date().toLocaleString()}\n\nThis is a simulation of the downloaded file content.`;
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = `${filename.replace(/\s+/g, '_')}_Report.txt`; // Using .txt for demo, would be .pdf in real app
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            Toast.info('Download started...');
+        }
+
+        // Attach listeners to Recent Reports buttons
+        document.querySelectorAll('.report-item').forEach(item => {
+            const title = item.querySelector('.report-title').innerText.split(' - ')[0];
+            const downloadBtn = item.querySelector('.btn-primary');
+            const viewBtn = item.querySelector('.btn-secondary');
+
+            downloadBtn.onclick = () => generateReport(title);
+            viewBtn.onclick = () => previewReport(title);
+        });
+    </script>
+    <!-- ACADEX: Powered-by footer and school branding -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+
+</body>
+
+</html>
+

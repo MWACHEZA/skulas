@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Class Details - Teacher Portal</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../css/ancillary-portal.css">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: var(--school-primary, #0056b3);
+            color: white;
+            padding: 20px 0;
+            position: fixed;
+            height: 100%;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+
+        .sidebar-header img {
+            width: 60px;
+            margin-bottom: 10px;
+        }
+
+        .sidebar-header h3 {
+            margin: 0;
+            font-size: 1.2rem;
+        }
+
+        .sidebar-menu {
+            padding: 20px 0;
+        }
+
+        .sidebar-menu ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 5px;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .sidebar-menu i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            margin-left: 250px;
+            width: calc(100% - 250px);
+        }
+
+        .page-header {
+            margin-bottom: 30px;
+        }
+
+        .page-header h2 {
+            margin: 0 0 10px;
+            color: #333;
+        }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .breadcrumb i {
+            margin: 0 8px;
+            font-size: 0.7rem;
+        }
+
+        .class-header-card {
+            background: linear-gradient(135deg, var(--school-primary, #0056b3), var(--school-primary-dark, #003d82));
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .class-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin: 0 0 10px;
+        }
+
+        .class-meta {
+            display: flex;
+            gap: 30px;
+            font-size: 0.95rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            text-align: center;
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: rgba(var(--school-primary-rgb, 0, 86, 179), 0.1);
+            color: var(--school-primary, #0056b3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            font-size: 1.5rem;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--school-primary, #0056b3);
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+        }
+
+        .content-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .card-header h3 {
+            margin: 0;
+            color: #333;
+        }
+
+        .student-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .student-item {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .student-item:last-child {
+            border-bottom: none;
+        }
+
+        .student-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .student-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--school-primary, #0056b3);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-weight: 600;
+        }
+
+        .student-name {
+            font-weight: 500;
+            color: #333;
+        }
+
+        .student-id {
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .student-grade {
+            font-weight: 600;
+            color: var(--school-primary, #0056b3);
+        }
+
+        .assignment-item {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .assignment-item:last-child {
+            border-bottom: none;
+        }
+
+        .assignment-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .assignment-meta {
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background-color: var(--school-primary, #0056b3);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--school-primary-dark, #003d82);
+        }
+
+        .mobile-header {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                z-index: 1000;
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding-top: 70px;
+                width: 100%;
+            }
+
+            .mobile-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 15px 20px;
+                background-color: white;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                z-index: 100;
+            }
+
+            .menu-toggle {
+                background: none;
+                border: none;
+                font-size: 1.5rem;
+                color: var(--school-primary, #0056b3);
+                cursor: pointer;
+            }
+
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <img src="../images/logo.png" alt="Logo">
+                <h3>Teacher Portal</h3>
+            </div>
+            <div class="sidebar-menu">
+                <div class="sidebar-section-title">Teacher System</div>
+                <ul>
+                    <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i>
+                            <span>Dashboard</span></a></li>
+                    <li><a href="classes.html" class="active"><i class="fas fa-chalkboard"></i> <span>Classes</span></a>
+                    </li>
+                    <li><a href="assignments.html"><i class="fas fa-tasks"></i> <span>Assignments</span></a></li>
+                    <li><a href="attendance.html"><i class="fas fa-clipboard-check"></i> <span>Attendance</span></a>
+                    </li>
+                    <li><a href="grades.html"><i class="fas fa-chart-line"></i> <span>Grades</span></a></li>
+                    <li><a href="timetable.html"><i class="fas fa-calendar-alt"></i> <span>Timetable</span></a></li>
+                    <li><a href="students.html"><i class="fas fa-users"></i> <span>Students</span></a></li>
+                    <li><a href="textbooks.html"><i class="fas fa-book"></i> <span>Textbooks</span></a></li>
+                    <li><a href="library.html"><i class="fas fa-book-open"></i> <span>Library Catalog</span></a></li>
+                    <li><a href="digital-resources.html"><i class="fas fa-laptop-code"></i> <span>Digital
+                                Resources</span></a></li>
+                    <li><a href="reports.html"><i class="fas fa-file-alt"></i> <span>System Reports</span></a></li>
+                    <li><a href="messages.html"><i class="fas fa-envelope"></i> <span>Messages</span></a></li>
+                </ul>
+
+                <div class="sidebar-section-title">Operations</div>
+                <ul>
+                    <li><a href="staff-directory.html"><i class="fas fa-users"></i> <span>Staff Directory</span></a>
+                    </li>
+                    <li><a href="procurement.html"><i class="fas fa-shopping-cart"></i> <span>Procurement</span></a>
+                    </li>
+                    <li><a href="assets.html"><i class="fas fa-boxes"></i> <span>Asset Management</span></a></li>
+                    <li><a href="schedules.html"><i class="fas fa-calendar-check"></i> <span>Schedules &
+                                Shifts</span></a></li>
+                </ul>
+
+                <div class="sidebar-section-title">Staff HR & Support</div>
+                <ul>
+                    <li><a href="sdc-portal.html"><i class="fas fa-file-invoice-dollar"></i> <span>SDC Staff
+                                Portal</span></a></li>
+                    <li><a href="hr-services.html"><i class="fas fa-user-shield"></i> <span>HR Services</span></a></li>
+                    <li><a href="profile.html"><i class="fas fa-id-card"></i> <span>My Profile</span></a></li>
+                    <li><a href="resources.html"><i class="fas fa-folder-open"></i> <span>Resources & Docs</span></a>
+                    </li>
+                    <li><a href="it-support.html"><i class="fas fa-headset"></i> <span>IT Support</span></a></li>
+                </ul>
+
+                <div class="sidebar-section-title">Communication</div>
+                <ul>
+                    <li><a href="news.html"><i class="fas fa-newspaper"></i> <span>News & Updates</span></a></li>                    <li><a href="announcements.html"><i class="fas fa-bullhorn"></i> <span>General Notices</span></a>
+                    </li>                    <li><a href="contact.html"><i class="fas fa-address-book"></i> <span>Contact Us</span></a></li>
+                    <li><a href="settings.html"><i class="fas fa-cog"></i> <span>Settings</span></a></li>
+                </ul>
+            </div>
+            <div class="sidebar-footer">
+                <a href="login.html"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Mobile Header -->
+            <div class="mobile-header">
+                <button class="menu-toggle" id="menuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="mobile-logo">
+                    <span>Class Details</span>
+                </div>
+            </div>
+
+            <!-- Page Header -->
+            <div class="page-header">
+                <h2>Class Details</h2>
+                <div class="breadcrumb">
+                    <span>Classes</span>
+                    <i class="fas fa-chevron-right"></i>
+                    <span>Form 4A - Mathematics</span>
+                </div>
+            </div>
+
+            <!-- Class Header Card -->
+            <div class="class-header-card">
+                <h1 class="class-title">Form 4A - Mathematics</h1>
+                <div class="class-meta">
+                    <span><i class="fas fa-users"></i> 32 Students</span>
+                    <span><i class="fas fa-clock"></i> 5 Periods/Week</span>
+                    <span><i class="fas fa-door-open"></i> Room 101</span>
+                </div>
+            </div>
+
+            <!-- Statistics Grid -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-percentage"></i>
+                    </div>
+                    <div class="stat-value">94%</div>
+                    <div class="stat-label">Attendance Rate</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="stat-value">85.5</div>
+                    <div class="stat-label">Class Average</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-tasks"></i>
+                    </div>
+                    <div class="stat-value">8</div>
+                    <div class="stat-label">Active Assignments</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <div class="stat-value">24</div>
+                    <div class="stat-label">Classes Held</div>
+                </div>
+            </div>
+
+            <!-- Content Grid -->
+            <div class="content-grid">
+                <!-- Student List -->
+                <div class="content-card">
+                    <div class="card-header">
+                        <h3>Class Students</h3>
+                        <a href="students.html" class="btn btn-primary">View All</a>
+                    </div>
+                    <ul class="student-list">
+                        <li class="student-item">
+                            <div class="student-info">
+                                <div class="student-avatar">JD</div>
+                                <div>
+                                    <div class="student-name">John Doe</div>
+                                    <div class="student-id">STU-2024-001</div>
+                                </div>
+                            </div>
+                            <div class="student-grade">85%</div>
+                        </li>
+                        <li class="student-item">
+                            <div class="student-info">
+                                <div class="student-avatar">JS</div>
+                                <div>
+                                    <div class="student-name">Jane Smith</div>
+                                    <div class="student-id">STU-2024-002</div>
+                                </div>
+                            </div>
+                            <div class="student-grade">92%</div>
+                        </li>
+                        <li class="student-item">
+                            <div class="student-info">
+                                <div class="student-avatar">MB</div>
+                                <div>
+                                    <div class="student-name">Michael Brown</div>
+                                    <div class="student-id">STU-2024-003</div>
+                                </div>
+                            </div>
+                            <div class="student-grade">78%</div>
+                        </li>
+                        <li class="student-item">
+                            <div class="student-info">
+                                <div class="student-avatar">ED</div>
+                                <div>
+                                    <div class="student-name">Emily Davis</div>
+                                    <div class="student-id">STU-2024-004</div>
+                                </div>
+                            </div>
+                            <div class="student-grade">88%</div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Recent Assignments -->
+                <div class="content-card">
+                    <div class="card-header">
+                        <h3>Recent Assignments</h3>
+                        <a href="assignments.html" class="btn btn-primary">View All</a>
+                    </div>
+                    <div>
+                        <div class="assignment-item">
+                            <div class="assignment-title">Calculus Problems Set 1</div>
+                            <div class="assignment-meta">Due: Dec 20, 2025 • 24/32 submitted</div>
+                        </div>
+                        <div class="assignment-item">
+                            <div class="assignment-title">Trigonometry Quiz</div>
+                            <div class="assignment-meta">Due: Dec 18, 2025 • 30/32 submitted</div>
+                        </div>
+                        <div class="assignment-item">
+                            <div class="assignment-title">Algebra Practice</div>
+                            <div class="assignment-meta">Due: Dec 15, 2025 • 32/32 submitted</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mobile menu toggle
+        const menuToggle = document.getElementById('menuToggle');
+        const sidebar = document.getElementById('sidebar');
+
+        if (menuToggle) {
+            menuToggle.addEventListener('click', function () {
+                sidebar.classList.toggle('active');
+            });
+        }
+    </script>
+    <!-- ACADEX: Powered-by footer and school branding -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+
+</body>
+
+</html>
+

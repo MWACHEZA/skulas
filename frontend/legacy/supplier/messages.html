@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messages Centre - Your School</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/supplier-portal.css">
+    <link rel="stylesheet" href="../css/toast.css">
+</head>
+
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <div class="brand-icon"><i class="fas fa-truck-loading"></i></div>
+            <h3>Supplier Portal</h3>
+            <p>Your School</p>
+        </div>
+        <div class="sidebar-menu">
+            <div class="sidebar-section-label">Procurement</div>
+            <ul>
+                <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                <li><a href="tenders.html"><i class="fas fa-file-contract"></i> Available Tenders</a></li>
+                <li><a href="quotations.html"><i class="fas fa-file-invoice-dollar"></i> My Quotations</a></li>
+                <li><a href="orders.html"><i class="fas fa-shopping-cart"></i> Purchase Orders</a></li>
+            </ul>
+            <div class="sidebar-section-label">Finance</div>
+            <ul>
+                <li><a href="invoices.html"><i class="fas fa-receipt"></i> Invoices & Payments</a></li>
+            </ul>
+            <div class="sidebar-section-label">Compliance</div>
+            <ul>
+                <li><a href="compliance.html"><i class="fas fa-shield-alt"></i> Compliance Status</a></li>
+                <li><a href="policies.html"><i class="fas fa-book"></i> Policies & Processes</a></li>
+            </ul>
+            <div class="sidebar-section-label">Account</div>
+            <ul>
+                <li><a href="messages.html"><i class="fas fa-bell"></i> Messages</a></li>
+                <li><a href="profile.html" class="active"><i class="fas fa-user-circle"></i> Profile Settings</a></li>
+                <li><a href="contact.html"><i class="fas fa-headset"></i> Contact Us</a></li>
+            </ul>
+        </div>
+        <div class="sidebar-footer">
+            <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="top-header">
+            <div style="display:flex;align-items:center;gap:14px;">
+                <button class="mobile-menu-btn" id="menuBtn"><i class="fas fa-bars"></i></button>
+                <h2>Messages / Notifications</h2>
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="openComposeModal()">
+                <i class="fas fa-edit"></i> New Message
+            </button>
+        </div>
+
+        <div class="content-area">
+            <div class="panel">
+                <div class="panel-header">
+                    <h3><i class="fas fa-inbox" style="color:var(--school-primary, #0056b3);margin-right:8px;"></i> Inbox</h3>
+                    <div style="font-size:0.85rem; color:#888;" id="unreadStats">0 Unread</div>
+                </div>
+                <div id="messageList">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Message Detail Modal -->
+    <div class="sp-modal-overlay" id="msgModal">
+        <div class="sp-modal">
+            <div class="sp-modal-header">
+                <h3>Message Details</h3>
+                <button class="close-btn" onclick="closeModal('msgModal')"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="sp-modal-body" id="msgModalBody">
+                <!-- Dynamic content -->
+            </div>
+            <div class="sp-modal-header" style="border-top:1px solid #eef0f6; border-bottom:none;">
+                <button class="btn btn-outline btn-block" onclick="closeModal('msgModal')">Close</button>
+                <button class="btn btn-primary btn-block" id="replyBtn">Reply</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Compose Modal -->
+    <div class="sp-modal-overlay" id="composeModal">
+        <div class="sp-modal">
+            <div class="sp-modal-header">
+                <h3>Compose Message</h3>
+                <button class="close-btn" onclick="closeModal('composeModal')"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="sp-modal-body">
+                <form id="composeForm">
+                    <div class="form-group">
+                        <label>Recipient</label>
+                        <input type="text" class="form-control" value="Procurement Department" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label>Subject <span class="required">*</span></label>
+                        <input type="text" id="subject" class="form-control" placeholder="e.g. Quotation clarification" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Message <span class="required">*</span></label>
+                        <textarea id="messageBody" class="form-control" rows="5" placeholder="Type your message here..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">
+                        <i class="fas fa-paper-plane"></i> Send Message
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/toast.js"></script>
+    <script>
+        let allMessages = [];
+
+        document.getElementById('menuBtn').addEventListener('click', function () {
+            document.getElementById('sidebar').classList.toggle('open');
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            if (!sessionStorage.getItem('supplierLoggedIn')) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            loadMessages();
+        });
+
+        function loadMessages() {
+            const supplierId = sessionStorage.getItem('supplierId');
+            let messages = getTenantData('school_supplier_messages', '[]');
+            
+            // Seed sample messages
+            if (messages.length === 0) {
+                messages = [
+                    { id: 'MSG-001', from: 'Procurement Dept', to: supplierId, subject: 'Welcome to the Portal', body: 'Welcome to Your School Supplier Portal. Please ensure your compliance documents are up to date.', date: '2026-03-01T10:00:00Z', read: true },
+                    { id: 'MSG-002', from: 'Accounts Office', to: supplierId, subject: 'Invoice #1029 Paid', body: 'We have processed payment for Invoice #1029. Funds should reflect within 48 hours.', date: '2026-03-12T14:30:00Z', read: false },
+                    { id: 'MSG-003', from: 'Procurement Dept', to: supplierId, subject: 'Clarification on Science Lab Chemicals', body: 'Can you provide the MSDS sheets for the sulfuric acid quoted in TND-2026-001?', date: '2026-03-16T09:15:00Z', read: false }
+                ];
+                saveTenantData('school_supplier_messages', messages);
+            }
+
+            allMessages = messages.filter(m => m.to === supplierId || m.from === supplierId);
+            allMessages.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            const unreadCount = allMessages.filter(m => m.to === supplierId && !m.read).length;
+            document.getElementById('unreadStats').textContent = `${unreadCount} Unread`;
+
+            renderMessages();
+        }
+
+        function renderMessages() {
+            const list = document.getElementById('messageList');
+            list.innerHTML = '';
+
+            if (allMessages.length === 0) {
+                list.innerHTML = '<div class="empty-state" style="padding:40px;">No messages found.</div>';
+                return;
+            }
+
+            allMessages.forEach(m => {
+                const isUnread = !m.read && m.to === sessionStorage.getItem('supplierId');
+                const div = document.createElement('div');
+                div.className = `message-item ${isUnread ? 'unread' : ''}`;
+                div.onclick = () => viewMessage(m.id);
+                
+                const initials = m.from.charAt(0);
+                const dateStr = new Date(m.date).toLocaleDateString() + ' ' + new Date(m.date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+
+                div.innerHTML = `
+                    <div class="msg-avatar">${initials}</div>
+                    <div class="msg-body">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <span class="msg-sender">${m.from === sessionStorage.getItem('supplierId') ? 'To: Procurement' : m.from}</span>
+                            <span class="msg-time">${dateStr}</span>
+                        </div>
+                        <div class="msg-subject">${m.subject}</div>
+                        <div class="msg-preview">${m.body}</div>
+                    </div>
+                    ${isUnread ? '<div class="unread-dot"></div>' : ''}
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        function viewMessage(id) {
+            const msg = allMessages.find(m => m.id === id);
+            if (!msg) return;
+
+            // Mark as read if it was for me
+            if (msg.to === sessionStorage.getItem('supplierId') && !msg.read) {
+                const messages = getTenantData('school_supplier_messages', '[]');
+                const idx = messages.findIndex(m => m.id === id);
+                if (idx > -1) {
+                    messages[idx].read = true;
+                    saveTenantData('school_supplier_messages', messages);
+                    loadMessages();
+                }
+            }
+
+            const dateStr = new Date(msg.date).toLocaleString();
+            document.getElementById('msgModalBody').innerHTML = `
+                <div style="margin-bottom:15px; border-bottom:1px solid #f0f4ff; padding-bottom:15px;">
+                    <div style="font-size:0.85rem; color:#888;">From: <strong style="color:var(--school-primary-dark, #1a1a2e);">${msg.from}</strong></div>
+                    <div style="font-size:0.85rem; color:#888;">Date: <strong>${dateStr}</strong></div>
+                    <div style="font-size:1.1rem; font-weight:700; color:var(--school-primary-dark, #1a1a2e); margin-top:8px;">${msg.subject}</div>
+                </div>
+                <div style="line-height:1.6; color:#374151; white-space:pre-wrap;">${msg.body}</div>
+            `;
+
+            document.getElementById('replyBtn').onclick = () => {
+                closeModal('msgModal');
+                openComposeModal(msg.subject.startsWith('Re:') ? msg.subject : 'Re: ' + msg.subject);
+            };
+
+            document.getElementById('msgModal').classList.add('open');
+        }
+
+        function openComposeModal(subject = '') {
+            document.getElementById('subject').value = subject;
+            document.getElementById('messageBody').value = '';
+            document.getElementById('composeModal').classList.add('open');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('open');
+        }
+
+        document.getElementById('composeForm').onsubmit = function(e) {
+            e.preventDefault();
+            const supplierId = sessionStorage.getItem('supplierId');
+            const supplierName = sessionStorage.getItem('supplierName');
+
+            const newMsg = {
+                id: 'MSG-' + Math.random().toString(36).substr(2, 6).toUpperCase(),
+                from: supplierId,
+                fromName: supplierName,
+                to: 'Procurement Office',
+                subject: document.getElementById('subject').value,
+                body: document.getElementById('messageBody').value,
+                date: new Date().toISOString(),
+                read: false
+            };
+
+            const messages = getTenantData('school_supplier_messages', '[]');
+            messages.push(newMsg);
+            saveTenantData('school_supplier_messages', messages);
+
+            showToast('Message sent successfully!', 'success');
+            closeModal('composeModal');
+            loadMessages();
+        };
+
+        function logout() {
+            sessionStorage.clear();
+            window.location.href = 'login.html';
+        }
+    </script>
+    <!-- ACADEX: Powered-by footer and school branding -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+
+</body>
+</html>
+
+

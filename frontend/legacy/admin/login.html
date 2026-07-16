@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - ACADEX</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--school-primary-dark, #1a1a1a);
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 420px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+            overflow: hidden;
+        }
+
+        .login-header {
+            background: linear-gradient(135deg, var(--school-primary, #111), var(--school-primary-dark, #2d2d2d));
+            color: white;
+            text-align: center;
+            padding: 32px 24px 24px;
+        }
+
+        .login-header img {
+            width: 64px;
+            margin-bottom: 12px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .login-header h2 {
+            margin: 0 0 4px;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .login-header p {
+            margin: 0;
+            opacity: 0.75;
+            font-size: 0.85rem;
+        }
+
+        .login-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255, 255, 255, 0.12);
+            border-radius: 20px;
+            padding: 4px 14px;
+            font-size: 0.74rem;
+            font-weight: 600;
+            margin-top: 10px;
+            letter-spacing: 0.5px;
+        }
+
+        .security-bar {
+            background: #fff8e1;
+            padding: 9px 20px;
+            font-size: 0.8rem;
+            color: #6d4c00;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid #ffe082;
+        }
+
+        .login-body {
+            padding: 28px 28px 20px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: #444;
+        }
+
+        .input-group {
+            position: relative;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 11px 40px 11px 14px;
+            border: 1.5px solid #dce4f5;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-family: inherit;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            background: #fafcff;
+        }
+
+        .input-group input:focus {
+            border-color: var(--school-primary, #111);
+            outline: none;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(var(--school-primary-rgb), 0.08);
+        }
+
+        .input-group i {
+            position: absolute;
+            right: 13px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #b0bfd9;
+            font-size: 0.88rem;
+            pointer-events: none;
+        }
+
+        .forgot-link {
+            text-align: right;
+            margin-top: 4px;
+        }
+
+        .forgot-link a {
+            font-size: 0.8rem;
+            color: #555;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 12px;
+            margin-top: 8px;
+            background: linear-gradient(135deg, var(--school-primary, #111), var(--school-primary-dark, #333));
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.15s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-family: inherit;
+        }
+
+        .btn-login:hover {
+            opacity: 0.88;
+            transform: translateY(-1px);
+        }
+
+        .btn-login:active {
+            transform: translateY(0);
+        }
+
+        .login-footer {
+            text-align: center;
+            padding: 16px 28px 22px;
+            font-size: 0.84rem;
+            color: #666;
+            border-top: 1px solid #f0f4ff;
+        }
+
+        .login-footer a {
+            color: var(--school-primary, #333);
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .login-footer .sep {
+            margin: 0 8px;
+            color: #ccc;
+        }
+
+        @media (max-width: 460px) {
+            body {
+                background: var(--school-primary-dark, #111);
+                padding: 0;
+                align-items: flex-start;
+            }
+
+            .login-container {
+                border-radius: 0;
+                min-height: 100vh;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <img src="../images/logo.png" alt="Logo" class="acadex-school-logo">
+            <h2>Admin Portal</h2>
+            <p>Secure administrator access</p>
+            <span class="login-badge"><i class="fas fa-shield-alt"></i> Restricted Area</span>
+        </div>
+
+        <div class="login-body">
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="schoolCode">School Access Code</label>
+                    <div class="input-group">
+                        <input type="text" id="schoolCode" placeholder="e.g. AX-P12345" required
+                            style="text-transform:uppercase">
+                        <i class="fas fa-school"></i>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="loginIdentifier">Email or Username</label>
+                    <div class="input-group">
+                        <input type="text" id="loginIdentifier" placeholder="Enter Admin Email or Username" required>
+                        <i class="fas fa-user-shield"></i>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <div class="input-group">
+                        <input type="password" id="password" placeholder="Enter your password" required>
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <div class="forgot-link"><a href="#">Forgot Password?</a></div>
+                </div>
+                <button type="submit" class="btn-login"><i class="fas fa-sign-in-alt"></i> Secure Login</button>
+            </form>
+        </div>
+        <div class="login-footer">
+            Return to <a href="../index.html"><i class="fas fa-home"></i> Main Site</a>
+        </div>
+    </div>
+
+    <script src="../js/audit-logger.js"></script>
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+    
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const identifier = document.getElementById('loginIdentifier').value.trim();
+            const password = document.getElementById('password').value;
+            const schoolCode = document.getElementById('schoolCode').value.trim().toUpperCase();
+
+            // Validate School Code
+            if (window.AcadexCore) {
+                const school = AcadexCore.getSchoolByCode(schoolCode);
+                if (!school) {
+                    alert('Invalid School Access Code. Please check and try again.');
+                    if (typeof AuditLogger !== 'undefined') AuditLogger.logAuth('Admin Login Attempt', 'failure', `Invalid School Code: ${schoolCode}`);
+                    return;
+                }
+                sessionStorage.setItem('activeSchoolCode', schoolCode);
+                AcadexCore.setActiveSchool(schoolCode);
+            }
+
+            // 1. Get raw list - Use 'adminUsers' (standardized)
+            const activeCode = sessionStorage.getItem('activeSchoolCode');
+            const storageKey = activeCode ? `acadex_${activeCode}_adminUsers` : 'adminUsers';
+            const rawAdmins = getTenantData(storageKey, 'null');
+            let adminList = [];
+            if (rawAdmins) {
+                try {
+                    adminList = JSON.parse(rawAdmins);
+                } catch (err) {
+                    console.error('Error parsing adminUsers:', err);
+                }
+            }
+
+            // 2. Find matching user
+            const user = adminList.find(a => 
+                (a.username && a.username.toLowerCase() === identifier.toLowerCase()) || 
+                (a.email && a.email.toLowerCase() === identifier.toLowerCase())
+            );
+            
+            // 3. Handle status
+            if (user && user.status === 'locked') {
+                alert('Your account has been locked. Please contact the system administrator.');
+                if (typeof AuditLogger !== 'undefined') AuditLogger.logAuth('Admin Login Attempt', 'failure', `Locked user ${identifier} tried to login`);
+                return;
+            }
+
+            // 4. Handle success
+            if (user && user.password === password) {
+                // Check if password change is required
+                if (user.mustChangePassword) {
+                    sessionStorage.setItem('resetUserIdentifier', identifier);
+                    sessionStorage.setItem('resetUserRole', 'admin');
+                    alert('Your password has been reset. You must change it before proceeding.');
+                    window.location.href = 'change-password.html';
+                    return;
+                }
+
+                // Save simplified object for sidebar/common display
+                const userObj = {
+                    name: user.name || (user.firstName && user.lastName ? (user.firstName + ' ' + user.lastName).trim() : (user.name || user.username)),
+                    role: user.adminRole || 'Admin',
+                    schoolCode: activeCode || schoolCode
+                };
+                saveTenantData('currentUser', userObj);
+
+                // Save session flags
+                sessionStorage.setItem('adminLoggedIn', 'true');
+                sessionStorage.setItem('adminUsername', user.username);
+
+                // Save FULL record for the Profile page
+                sessionStorage.setItem('adminUser', JSON.stringify(user));
+
+                if (typeof AuditLogger !== 'undefined') AuditLogger.logAuth('Admin Login', 'success', `User ${identifier} logged in`);
+                window.location.href = 'dashboard.html';
+                return;
+            }
+
+            // Fallback for demo/legacy or if password check is skipped (not recommended)
+            if (identifier && password) {
+                // Even in fallback, TRY to find a full record if it exists
+                const fallbackUser = adminList.find(a =>
+                    (a.username && a.username.toLowerCase() === identifier.toLowerCase()) ||
+                    (a.name && a.name.toLowerCase() === identifier.toLowerCase())
+                );
+
+                const finalUser = fallbackUser || {
+                    username: identifier,
+                    name: identifier,
+                    role: 'Admin',
+                    adminRole: 'Super Administrator'
+                };
+
+                saveTenantData('currentUser', { 
+                    name: finalUser.name, 
+                    role: finalUser.adminRole || 'Admin',
+                    schoolCode: activeCode || schoolCode
+                });
+                sessionStorage.setItem('adminLoggedIn', 'true');
+                sessionStorage.setItem('adminUsername', finalUser.username);
+                sessionStorage.setItem('adminUser', JSON.stringify(finalUser));
+
+                if (typeof AuditLogger !== 'undefined') AuditLogger.logAuth('Admin Login', 'success', `User ${identifier} logged in (fallback)`);
+                window.location.href = 'dashboard.html';
+            } else {
+                if (typeof AuditLogger !== 'undefined') AuditLogger.logAuth('Admin Login Attempt', 'failure', 'Missing credentials');
+                alert('Please enter both username and password.');
+            }
+        });
+    </script>
+</body>
+
+</html>

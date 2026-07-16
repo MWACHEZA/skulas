@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - Applicant Portal</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/ancillary-portal.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            background: #f4f6f9;
+            display: flex;
+            min-height: 100vh;
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            color: #333;
+        }
+
+
+
+        /* Main Content */
+        .main-content {
+            margin-left: 260px;
+            width: calc(100% - 260px);
+            padding: 30px;
+        }
+
+        /* Breadcrumb */
+        .breadcrumb {
+            color: #666;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: #666;
+            text-decoration: none;
+        }
+
+        .breadcrumb i {
+            margin: 0 10px;
+            font-size: 0.8rem;
+        }
+
+        /* Grid Layout */
+        .profile-grid {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 25px;
+        }
+
+        /* Cards */
+        .profile-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+            padding: 25px;
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+
+        .btn-edit {
+            color: var(--school-primary, #0056b3);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 0;
+        }
+
+        .btn-edit:hover {
+            text-decoration: underline;
+        }
+
+        /* Photo Section */
+        .photo-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 0;
+        }
+
+        .profile-avatar {
+            width: 150px;
+            height: 150px;
+            background: #e9ecef;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #adb5bd;
+            font-size: 4rem;
+            margin-bottom: 20px;
+            border: 4px solid #fff;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-change-photo {
+            background: var(--school-primary-dark, #003d82);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-change-photo:hover {
+            background: #002a5c;
+        }
+
+        /* Data Rows */
+        .data-row {
+            display: flex;
+            padding: 12px 0;
+            border-bottom: 1px solid #f1f3f5;
+        }
+
+        .data-row:last-child {
+            border-bottom: none;
+        }
+
+        .data-label {
+            width: 140px;
+            color: #6c757d;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .data-value {
+            flex: 1;
+            color: #212529;
+            font-weight: 500;
+        }
+
+        .form-control-plain {
+            width: 100%;
+            border: 1px solid transparent;
+            background: transparent;
+            padding: 4px;
+            font-family: inherit;
+            font-size: inherit;
+            color: inherit;
+            font-weight: inherit;
+            transition: all 0.2s;
+        }
+
+        .editing .form-control-plain {
+            border-color: #ced4da;
+            background: #fff;
+            border-radius: 4px;
+        }
+
+        /* Save Button Fab */
+        .fab-save {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #28a745;
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.4);
+            cursor: pointer;
+            border: none;
+            transition: transform 0.2s;
+            z-index: 999;
+        }
+
+        .fab-save:hover {
+            transform: scale(1.1);
+        }
+
+        @media (max-width: 992px) {
+            .profile-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Mobile Toggle -->
+    <button class="mobile-toggle" id="mobileToggle">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <img src="../images/logo.png" alt="School Logo" id="sidebarLogo">
+            <h3>Applicant Portal</h3>
+        </div>
+        
+        <div class="sidebar-menu">
+            <div class="sidebar-section-title">Application Journey</div>
+            <ul>
+                <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a></li>
+                <li><a href="timeline.html"><i class="fas fa-stream"></i> <span>Timeline</span></a></li>
+                <li><a href="documents.html"><i class="fas fa-folder-open"></i> <span>Documents</span></a></li>
+                <li><a href="interview.html"><i class="fas fa-calendar-check"></i> <span>Interview</span></a></li>
+            </ul>
+
+            <div class="sidebar-section-title">Financials & Info</div>
+            <ul>
+                <li><a href="payments.html"><i class="fas fa-credit-card"></i> <span>Payments</span></a></li>
+                <li><a href="fees.html"><i class="fas fa-file-invoice-dollar"></i> <span>Fee Structure</span></a></li>
+                <li><a href="faq.html"><i class="fas fa-question-circle"></i> <span>FAQs</span></a></li>
+            </ul>
+
+            <div class="sidebar-section-title">Communication</div>
+            <ul>
+                <li><a href="messages.html"><i class="fas fa-envelope"></i> <span>Messages</span></a></li>
+                <li><a href="profile.html" class="active"><i class="fas fa-user"></i> <span>My Profile</span></a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-footer">
+            <a href="#" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <h2 style="margin: 0; color: #333;">My Profile</h2>
+        </div>
+        <div class="breadcrumb">
+            <a href="dashboard.html">Home</a> <i class="fas fa-chevron-right"></i> <span>My Profile</span>
+        </div>
+
+        <form id="profileForm" onsubmit="saveProfile(event)">
+            <div class="profile-grid">
+
+                <!-- Left Column -->
+                <div class="left-col">
+                    <!-- Photo Card -->
+                    <div class="profile-card">
+                        <div class="card-header">
+                            <div class="card-title">Profile Photo</div>
+                        </div>
+                        <div class="photo-container">
+                            <div class="profile-avatar">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <button type="button" class="btn-change-photo"
+                                onclick="window.location.href='documents.html'"><i class="fas fa-camera"></i> Change
+                                Photo</button>
+                        </div>
+                    </div>
+
+                    <!-- Basic Info Card -->
+                    <div class="profile-card">
+                        <div class="card-header">
+                            <div class="card-title">Basic Information</div>
+                            <span class="btn-edit" style="color: #999; cursor: default;"><i class="fas fa-lock"></i>
+                                Read Only</span>
+                        </div>
+
+                        <div class="data-row">
+                            <div class="data-label">Full Name</div>
+                            <div class="data-value" id="fullName">Loading...</div>
+                        </div>
+                        <div class="data-row">
+                            <div class="data-label">Application ID</div>
+                            <div class="data-value" id="appId">Loading...</div>
+                        </div>
+                        <div class="data-row">
+                            <div class="data-label">Form Applied</div>
+                            <div class="data-value" id="appType">Form 1</div>
+                        </div>
+                        <div class="data-row">
+                            <div class="data-label">Date of Birth</div>
+                            <div class="data-value" id="dob">--</div>
+                        </div>
+                        <div class="data-row">
+                            <div class="data-label">Gender</div>
+                            <div class="data-value" id="gender">--</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column -->
+                <div class="right-col">
+
+                    <!-- Contact Info Card -->
+                    <div class="profile-card">
+                        <div class="card-header">
+                            <div class="card-title">Contact Information</div>
+                            <button type="button" class="btn-edit" onclick="toggleEdit(this)"><i class="fas fa-pen"></i>
+                                Edit</button>
+                        </div>
+
+                        <div class="data-row">
+                            <div class="data-label">Email</div>
+                            <div class="data-value">
+                                <input type="email" class="form-control-plain" id="email" value="" readonly>
+                            </div>
+                        </div>
+                        <div class="data-row">
+                            <div class="data-label">Phone</div>
+                            <div class="data-value">
+                                <input type="tel" class="form-control-plain" id="phone" value="" readonly>
+                            </div>
+                        </div>
+                        <div class="data-row">
+                            <div class="data-label">Address</div>
+                            <div class="data-value">
+                                <input type="text" class="form-control-plain" id="address" value="" readonly
+                                    placeholder="Add residential address">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Guardian Info Card -->
+                    <div class="profile-card">
+                        <div class="card-header">
+                            <div class="card-title">Guardian Information</div>
+                            <button type="button" class="btn-edit" onclick="toggleEdit(this)"><i class="fas fa-pen"></i>
+                                Edit</button>
+                        </div>
+
+                        <div class="data-row">
+                            <div class="data-label">Guardian Name</div>
+                            <div class="data-value">
+                                <input type="text" class="form-control-plain" id="guardianName" readonly
+                                    placeholder="Enter Name">
+                            </div>
+                        </div>
+                        <div class="data-row">
+                            <div class="data-label">Relationship</div>
+                            <div class="data-value">
+                                <select class="form-control-plain" id="relationship" disabled
+                                    style="appearance: none; -webkit-appearance: none;">
+                                    <option>Parent</option>
+                                    <option>Relative</option>
+                                    <option>Other</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="data-row">
+                            <div class="data-label">Guardian Phone</div>
+                            <div class="data-value">
+                                <input type="tel" class="form-control-plain" id="guardianPhone" readonly
+                                    placeholder="+263...">
+                            </div>
+                        </div>
+                        <div class="data-row">
+                            <div class="data-label">Guardian Email</div>
+                            <div class="data-value">
+                                <input type="email" class="form-control-plain" id="guardianEmail" readonly
+                                    placeholder="email@example.com">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Medical & Emergency Card -->
+                    <div class="profile-card">
+                        <div class="card-header">
+                            <div class="card-title">Medical & Emergency</div>
+                            <button type="button" class="btn-edit" onclick="toggleEdit(this)"><i class="fas fa-pen"></i>
+                                Edit</button>
+                        </div>
+
+                        <div class="data-row">
+                            <div class="data-label">Conditions</div>
+                            <div class="data-value">
+                                <input type="text" class="form-control-plain" id="conditions" readonly
+                                    placeholder="None">
+                            </div>
+                        </div>
+                        <div class="data-row">
+                            <div class="data-label">Doctor's Name</div>
+                            <div class="data-value">
+                                <input type="text" class="form-control-plain" id="doctorName" readonly
+                                    placeholder="Dr. Name">
+                            </div>
+                        </div>
+                        <div class="data-row">
+                            <div class="data-label">Emergency #</div>
+                            <div class="data-value">
+                                <input type="tel" class="form-control-plain" id="emergencyContact" readonly
+                                    placeholder="+263...">
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <button type="submit" class="fab-save" title="Save Changes">
+                <i class="fas fa-save"></i>
+            </button>
+        </form>
+    </div>
+
+    <script>
+        // Load data on start
+        document.addEventListener('DOMContentLoaded', () => {
+            const applicantStr = sessionStorage.getItem('currentApplicant');
+            if (!applicantStr) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            const applicant = JSON.parse(applicantStr);
+            const details = applicant.personalDetails || applicant; // Handle both structures if mock varies
+
+            // Basic Info
+            document.getElementById('fullName').textContent = applicant.fullName || (applicant.firstName ? `${applicant.firstName} ${applicant.lastName}` : (details.firstName ? `${details.firstName} ${details.lastName}` : 'Applicant'));
+            document.getElementById('appId').textContent = applicant.id || applicant.applicationId;
+            document.getElementById('appType').textContent = (applicant.id && applicant.id.startsWith('F1')) ? 'Form 1 Admission' : 'A-Level Admission';
+            document.getElementById('dob').textContent = details.dob || '--';
+            document.getElementById('gender').textContent = details.gender || '--';
+
+            // Contact
+            document.getElementById('email').value = details.email || '';
+            document.getElementById('phone').value = details.phone || '';
+
+            // Extra Details
+            if (applicant.extraDetails) {
+                document.getElementById('address').value = applicant.extraDetails.address || details.address || ''; // fallback to app address
+                document.getElementById('guardianName').value = applicant.extraDetails.guardianName || '';
+                document.getElementById('relationship').value = applicant.extraDetails.relationship || 'Parent';
+                document.getElementById('guardianPhone').value = applicant.extraDetails.guardianPhone || '';
+                document.getElementById('guardianEmail').value = applicant.extraDetails.guardianEmail || '';
+                document.getElementById('conditions').value = applicant.extraDetails.conditions || '';
+                document.getElementById('doctorName').value = applicant.extraDetails.doctorName || '';
+                document.getElementById('emergencyContact').value = applicant.extraDetails.emergencyContact || '';
+            }
+        });
+
+        // Toggle Edit Mode for a card
+        function toggleEdit(btn) {
+            const card = btn.closest('.profile-card');
+            const inputs = card.querySelectorAll('input, select');
+            const isEditing = card.classList.contains('editing');
+
+            if (isEditing) {
+                // Cancel/Save state visually - wait for main submit
+                card.classList.remove('editing');
+                btn.innerHTML = '<i class="fas fa-pen"></i> Edit';
+                inputs.forEach(input => {
+                    input.setAttribute('readonly', true);
+                    input.disabled = true; // for select
+                });
+            } else {
+                card.classList.add('editing');
+                btn.innerHTML = '<i class="fas fa-check"></i> Done';
+                inputs.forEach(input => {
+                    input.removeAttribute('readonly');
+                    input.disabled = false;
+                    input.focus();
+                });
+            }
+        }
+
+        function saveProfile(e) {
+            e.preventDefault();
+
+            const applicantStr = sessionStorage.getItem('currentApplicant');
+            if (!applicantStr) return;
+            const applicant = JSON.parse(applicantStr);
+
+            // Update mutable fields
+            if (!applicant.extraDetails) applicant.extraDetails = {};
+
+            // Contact
+            applicant.personalDetails = applicant.personalDetails || {};
+            // Update email/phone in personalDetails if editing allowed there, or keep in extraDetails if strictly separating.
+            // Let's update main object for display consistency
+            if (applicant.firstName) { // Flat structure
+                applicant.email = document.getElementById('email').value;
+                applicant.phone = document.getElementById('phone').value;
+            } else {
+                applicant.personalDetails.email = document.getElementById('email').value;
+                applicant.personalDetails.phone = document.getElementById('phone').value;
+            }
+
+            // Extra Details
+            applicant.extraDetails.address = document.getElementById('address').value;
+            applicant.extraDetails.guardianName = document.getElementById('guardianName').value;
+            applicant.extraDetails.relationship = document.getElementById('relationship').value;
+            applicant.extraDetails.guardianPhone = document.getElementById('guardianPhone').value;
+            applicant.extraDetails.guardianEmail = document.getElementById('guardianEmail').value;
+            applicant.extraDetails.conditions = document.getElementById('conditions').value;
+            applicant.extraDetails.doctorName = document.getElementById('doctorName').value;
+            applicant.extraDetails.emergencyContact = document.getElementById('emergencyContact').value;
+
+            // Save to sessionStorage
+            sessionStorage.setItem('currentApplicant', JSON.stringify(applicant));
+
+            // Save to localStorage
+            const appId = applicant.id || applicant.applicationId;
+
+            // Unify with main DB (localStorage)
+            const allApps = getTenantData('school_applications', '[]');
+            const index = allApps.findIndex(a => (a.id === appId || (a.applicationId && a.applicationId === appId)));
+
+            if (index !== -1) {
+                allApps[index] = applicant;
+                saveTenantData('school_applications', allApps);
+            }
+
+            alert('Profile updated successfully!');
+
+            // Reset UI states
+            document.querySelectorAll('.profile-card.editing').forEach(card => {
+                const btn = card.querySelector('.btn-edit');
+                if (btn) toggleEdit(btn);
+            });
+        }
+
+        function logout() {
+            sessionStorage.removeItem('currentApplicant');
+            window.location.href = 'login.html';
+        }
+
+        // Mobile Toggle logic
+        const mobileToggle = document.getElementById('mobileToggle');
+        const sidebar = document.getElementById('sidebar');
+        if (mobileToggle && sidebar) {
+            mobileToggle.addEventListener('click', () => {
+                sidebar.classList.toggle('active');
+            });
+        }
+    </script>
+    <!-- ACADEX: Powered-by footer and school branding -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+
+</html>
+

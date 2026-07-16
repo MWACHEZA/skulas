@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Announcements Management - Admin Portal</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+
+        .admin-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 260px;
+            background-color: var(--school-primary-dark, #1a1a2e);
+            color: white;
+            position: fixed;
+            height: 100%;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+
+        .sidebar-header img {
+            width: 50px;
+            margin-bottom: 10px;
+        }
+
+        .sidebar-header h3 {
+            margin: 0;
+            font-size: 1.1rem;
+        }
+
+        .sidebar-menu {
+            padding: 20px 0;
+        }
+
+        .menu-section {
+            margin-bottom: 20px;
+        }
+
+        .menu-section-title {
+            padding: 10px 20px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: #888;
+            font-weight: 600;
+        }
+
+        .sidebar-menu ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 2px;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            background-color: rgba(var(--school-primary-rgb, 0, 86, 179), 0.2);
+            color: white;
+            border-left: 3px solid var(--school-primary, #0056b3);
+        }
+
+        .sidebar-menu i {
+            margin-right: 12px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: 250px;
+            width: calc(100% - 250px);
+        }
+
+        .top-header {
+            background-color: white;
+            padding: 15px 30px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-left h2 {
+            margin: 0;
+            color: #333;
+            font-size: 1.5rem;
+        }
+
+        .content-area {
+            padding: 30px;
+        }
+
+        .page-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background-color: var(--school-primary, #0056b3);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--school-primary-dark, #003d82);
+        }
+
+        .announcements-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .announcement-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .announcement-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .announcement-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .announcement-meta {
+            display: flex;
+            gap: 20px;
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .announcement-content {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .announcement-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-small {
+            padding: 8px 15px;
+            font-size: 0.85rem;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+
+        .btn-success {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #218838;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+
+        .status-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .status-published {
+            background-color: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+        }
+
+        .status-draft {
+            background-color: rgba(255, 193, 7, 0.1);
+            color: #ffc107;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+            }
+
+            .announcement-header {
+                flex-direction: column;
+            }
+
+            .announcement-actions {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar"></aside>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Top Header -->
+            <div class="top-header">
+                <div class="header-left">
+                    <h2>Announcements Management</h2>
+                </div>
+            </div>
+
+            <!-- Content Area -->
+            <div class="content-area">
+                <!-- Page Actions -->
+                <div class="page-actions">
+                    <h3>All Announcements</h3>
+                    <button class="btn btn-primary" id="createAnnouncementBtn">
+                        <i class="fas fa-plus"></i> Create New Announcement
+                    </button>
+                </div>
+
+                <!-- Announcements List -->
+                <div class="announcements-list" id="announcementsList">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const menuToggle = document.getElementById('menuToggle');
+        const sidebar = document.getElementById('sidebar');
+
+        if (menuToggle) {
+            menuToggle.addEventListener('click', function () {
+                sidebar.classList.toggle('active');
+            });
+        }
+    </script>
+    <!-- Announcement Modal -->
+    <div id="announcementModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Create New Announcement</h3>
+                <span class="close-modal" onclick="closeModal('announcementModal')">&times;</span>
+            </div>
+            <form id="announcementForm">
+                <input type="hidden" id="announcementId">
+                <div class="form-group">
+                    <label for="title">Title *</label>
+                    <input type="text" id="title" required>
+                </div>
+                <div class="form-group">
+                    <label for="audience">Audience *</label>
+                    <select id="audience" required>
+                        <option value="Students">Students</option>
+                        <option value="Ancillary Staff">Ancillary Staff</option>
+                        <option value="Teacher">Teacher</option>
+                        <option value="Librarian">Librarian</option>
+                        <option value="Bursar">Bursar</option>
+                        <option value="Secretary">Secretary</option>
+                        <option value="Human Resources">Human Resources</option>
+                        <option value="Lab Technician">Lab Technician</option>
+                        <option value="Chef">Chef</option>
+                        <option value="Driver">Driver</option>
+                        <option value="Parents">Parents</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="status">Status *</label>
+                    <select id="status" required>
+                        <option value="Draft">Draft</option>
+                        <option value="Published">Published</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="content">Content *</label>
+                    <textarea id="content" rows="6" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="attachment">Attachment (Optional)</label>
+                    <input type="file" id="attachment">
+                    <div id="currentAttachment"
+                        style="font-size: 0.85rem; color: #666; margin-top: 5px; display: none;">
+                        Current: <span id="currentAttachmentName"></span>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-cancel" onclick="closeModal('announcementModal')">Cancel</button>
+                    <button type="submit" class="btn-submit">Save Announcement</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- View Announcement Modal -->
+    <div id="viewAnnouncementModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="viewTitle">Announcement Title</h3>
+                <span class="close-modal" onclick="closeModal('viewAnnouncementModal')">&times;</span>
+            </div>
+            <div class="modal-body" style="padding: 20px;">
+                <div class="announcement-meta"
+                    style="margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 15px;">
+                    <span class="meta-item"><i class="fas fa-calendar"></i> <span id="viewDate">Date</span></span>
+                    <span class="meta-item"><i class="fas fa-users"></i> <span id="viewAudience">Audience</span></span>
+                    <span class="meta-item"><i class="fas fa-user-edit"></i> <span id="viewPoster">Poster</span></span>
+                    <span class="meta-item"><i class="fas fa-eye"></i> <span id="viewViews">0</span> views</span>
+                    <span id="viewStatusBadge" class="status-badge status-published">Published</span>
+                </div>
+                <div class="announcement-content" style="margin-bottom: 25px;">
+                    <p id="viewContent">Content goes here...</p>
+                </div>
+                <div id="viewAttachmentSection"
+                    style="display: none; background: #f8f9fa; padding: 15px; border-radius: 5px; border-left: 3px solid var(--school-primary, #0056b3);">
+                    <h4 style="margin: 0 0 10px; font-size: 0.9rem; color: #555;">Attachment</h4>
+                    <a href="#" id="viewAttachmentLink" class="btn-text"
+                        style="color: var(--school-primary, #0056b3); text-decoration: none; font-weight: 500;">
+                        <i class="fas fa-paperclip"></i> <span id="viewAttachmentName">filename.pdf</span>
+                    </a>
+                </div>
+            </div>
+            <div class="modal-footer" style="padding: 15px 20px; text-align: right; border-top: 1px solid #eee;">
+                <button class="btn btn-secondary" onclick="closeModal('viewAnnouncementModal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- File Preview Modal -->
+    <div id="filePreviewModal" class="modal">
+        <div class="modal-content file-preview-content">
+            <div class="modal-header">
+                <h3 id="filePreviewTitle">Filename.ext</h3>
+                <span class="close-modal" onclick="closeModal('filePreviewModal')">&times;</span>
+            </div>
+            <div class="modal-body file-preview-body" id="filePreviewBody">
+                <!-- Mock File Content -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('filePreviewModal')">Close</button>
+                <button class="btn btn-primary" id="printFileBtn"><i class="fas fa-print"></i> Print</button>
+                <button class="btn btn-success" id="downloadFileBtn"><i class="fas fa-download"></i> Download</button>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        /* Shared Modal Centering (applied to all modals via JS/CSS class toggles if needed, 
+           but adding specific overrides here for consistency with Reports page style) */
+
+        .file-preview-content {
+            max-width: 800px;
+            width: 90%;
+            margin: auto;
+            background: #fff;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            max-height: 90vh;
+        }
+
+        .file-preview-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 30px;
+            background: #f4f4f4;
+            /* Contrast background for document look */
+            display: flex;
+            justify-content: center;
+        }
+
+        .mock-document-page {
+            background: white;
+            padding: 40px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 700px;
+            min-height: 500px;
+            color: #333;
+            font-family: 'Times New Roman', serif;
+            /* Document look */
+        }
+
+        .mock-document-page h1 {
+            font-size: 1.5rem;
+            border-bottom: 2px solid #333;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .mock-document-page p {
+            line-height: 1.6;
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+
+            #filePreviewModal,
+            #filePreviewModal * {
+                visibility: visible;
+            }
+
+            #filePreviewModal {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                background: white;
+                z-index: 9999;
+                display: block !important;
+            }
+
+            .file-preview-content {
+                box-shadow: none;
+                max-width: 100%;
+                width: 100%;
+                height: auto;
+            }
+
+            .modal-header,
+            .modal-footer,
+            .close-modal {
+                display: none !important;
+            }
+
+            .file-preview-body {
+                background: white;
+                padding: 0;
+            }
+
+            .mock-document-page {
+                box-shadow: none;
+                padding: 0;
+                width: 100%;
+                max-width: 100%;
+            }
+        }
+    </style>
+
+    <script src="../js/admin-common.js"></script>
+    <script src="../js/admin-announcements.js"></script>
+
+<script src="../js/admin-sidebar.js"></script>
+    <!-- ACADEX: Powered-by footer and school branding -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+
+</body>
+
+</html>
+

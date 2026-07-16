@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catalog Management - Bursar Portal</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/library-portal.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            background-color: rgba(var(--school-primary-rgb, 0, 86, 179), 0.2);
+            color: white;
+            border-left: 3px solid var(--school-primary, var(--school-primary, #0056b3));
+        }
+
+        .btn-primary {
+            background: var(--school-primary, var(--school-primary, #0056b3));
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .btn-primary:hover {
+            background: var(--school-primary-dark, var(--school-primary-dark, #003d82));
+            transform: translateY(-2px);
+        }
+
+        .glass-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .top-header h2 {
+            color: var(--school-primary-dark, var(--school-primary-dark, #1a1a2e));
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <img src="../images/logo.png" alt="Logo" class="acadex-school-logo">
+                <h3>Library Portal</h3>
+            </div>
+            <div class="sidebar-menu">
+                <div class="sidebar-section-title">Library System</div>
+                <ul>
+                    <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
+                    <li><a href="books.html" class="active"><i class="fas fa-book"></i><span>Catalog
+                                Management</span></a></li>
+                    <li><a href="issue.html"><i class="fas fa-exchange-alt"></i><span>Circulation Desk</span></a></li>
+                    <li><a href="digital.html"><i class="fas fa-laptop-code"></i><span>Digital Resources</span></a></li>
+                    <li><a href="reports.html"><i class="fas fa-file-invoice"></i><span>Reports & Inventory</span></a>
+                    </li>
+                </ul>
+                <div class="sidebar-section-title">Operations</div>
+                <ul>
+                    <li><a href="staff-directory.html"><i class="fas fa-users"></i><span>Staff Directory</span></a></li>
+                    <li><a href="procurement.html"><i class="fas fa-shopping-cart"></i><span>Procurement</span></a></li>
+                    <li><a href="assets.html"><i class="fas fa-boxes"></i><span>Asset Management</span></a></li>
+                    <li><a href="schedules.html"><i class="fas fa-calendar-check"></i><span>Schedules &
+                                Shifts</span></a></li>
+                </ul>
+                <div class="sidebar-section-title">Staff HR & Support</div>
+                <ul>
+                    <li><a href="hr-services.html"><i class="fas fa-user-shield"></i><span>HR Services</span></a></li>
+                    <li><a href="profile.html"><i class="fas fa-id-card"></i><span>My Profile</span></a></li>
+                    <li><a href="resources.html"><i class="fas fa-folder-open"></i><span>Resources & Docs</span></a>
+                    </li>
+                    <li><a href="it-support.html"><i class="fas fa-headset"></i><span>IT Support</span></a></li>
+                </ul>
+                <div class="sidebar-section-title">Communication</div>
+                <ul>
+                    <li><a href="news.html"><i class="fas fa-newspaper"></i><span>News & Updates</span></a></li>
+                    <li><a href="announcements.html"><i class="fas fa-bullhorn"></i><span>General Notices</span></a>
+                    </li>
+                    <li><a href="contact.html"><i class="fas fa-address-book"></i><span>Contact Us</span></a></li>
+                    <li><a href="settings.html"><i class="fas fa-cog"></i><span>System Settings</span></a></li>
+                </ul>
+            </div>
+            <div class="sidebar-footer">
+                <a href="login.html"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="top-header">
+                <h2>Catalog Management</h2>
+                <div class="user-profile">
+                    <div style="text-align: right; margin-right: 10px;">
+                        <div style="font-weight: 600; font-size: 0.9rem;">Librarian Admin</div>
+                        <div style="font-size: 0.75rem; color: #888;">System Administrator</div>
+                    </div>
+                    <img src="../images/admin-avatar.png" alt="Admin">
+                </div>
+            </div>
+
+            <div class="content-area">
+                <!-- Catalog Stats -->
+                <div
+                    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 25px; margin-bottom: 35px;">
+                    <div class="glass-card"
+                        style="padding: 25px; text-align: left; display: flex; align-items: center; gap: 20px;">
+                        <div
+                            style="width: 60px; height: 60px; background: rgba(var(--school-primary-rgb, 59, 130, 246), 0.1); color: var(--school-primary, #3b82f6); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem;">
+                            <i class="fas fa-layer-group"></i>
+                        </div>
+                        <div>
+                            <div
+                                style="font-size: 0.8rem; color: #888; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">
+                                Total Titles</div>
+                            <div style="font-size: 1.8rem; font-weight: 700; color: #333;"
+                                id="totalTitles">0</div>
+                        </div>
+                    </div>
+                    <div class="glass-card"
+                        style="padding: 25px; text-align: left; display: flex; align-items: center; gap: 20px;">
+                        <div
+                            style="width: 60px; height: 60px; background: rgba(34, 197, 94, 0.1); color: #22c55e; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem;">
+                            <i class="fas fa-check-double"></i>
+                        </div>
+                        <div>
+                            <div
+                                style="font-size: 0.8rem; color: #888; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">
+                                Available</div>
+                            <div style="font-size: 1.8rem; font-weight: 700; color: #333;"
+                                id="totalAvailable">0</div>
+                        </div>
+                    </div>
+                    <div class="glass-card"
+                        style="padding: 25px; text-align: left; display: flex; align-items: center; gap: 20px;">
+                        <div
+                            style="width: 60px; height: 60px; background: rgba(239, 68, 68, 0.1); color: #ef4444; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem;">
+                            <i class="fas fa-exclamation-circle"></i>
+                        </div>
+                        <div>
+                            <div
+                                style="font-size: 0.8rem; color: #888; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">
+                                Out of Stock</div>
+                            <div style="font-size: 1.8rem; font-weight: 700; color: #333;" id="outOfStock">
+                                0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                        <div style="display: flex; gap: 15px; flex: 1;">
+                            <div class="search-box" style="max-width: 400px; flex: 1;">
+                                <i class="fas fa-search"></i>
+                                <input type="text" id="bookSearchInput"
+                                    placeholder="Search by title, author, or ISBN..." oninput="searchBooks()">
+                            </div>
+                            <button class="btn-primary" onclick="openModal('addBookModal')">
+                                <i class="fas fa-plus"></i> Add New Book
+                            </button>
+                        </div>
+                        <div style="display: flex; gap: 10px;">
+                            <button class="btn btn-export" onclick="exportToCSV('booksTable', 'library-inventory.csv')">
+                                <i class="fas fa-file-csv"></i> Export CSV
+                            </button>
+                            <button class="btn btn-export" onclick="printPage()">
+                                <i class="fas fa-print"></i> Print
+                            </button>
+                        </div>
+                    </div>
+
+                    <table class="table" id="booksTable">
+                        <thead>
+                            <tr>
+                                <th>ISBN</th>
+                                <th>Book Details</th>
+                                <th>Category</th>
+                                <th>Shelf</th>
+                                <th class="text-center">Copies</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="booksTableBody">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="addBookModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add New Book</h3>
+                <button class="close-modal" onclick="closeModal('addBookModal')">&times;</button>
+            </div>
+            <form id="addBookForm">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="form-group">
+                        <label>Book Title</label>
+                        <input type="text" id="bookTitle" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Author</label>
+                        <input type="text" id="bookAuthor" required>
+                    </div>
+                    <div class="form-group">
+                        <label>ISBN</label>
+                        <input type="text" id="bookISBN" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Category</label>
+                        <select id="bookCategory" required>
+                            <option value="Sciences">Sciences</option>
+                            <option value="Mathematics">Mathematics</option>
+                            <option value="Literature">Literature</option>
+                            <option value="History">History</option>
+                            <option value="Humanities">Humanities</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Total Copies</label>
+                        <input type="number" id="bookCopies" min="1" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('addBookModal')">Cancel</button>
+                    <button type="submit" class="btn-primary">Add Book</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="editBookModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit Book Details</h3>
+                <button class="close-modal" onclick="closeModal('editBookModal')">&times;</button>
+            </div>
+            <form id="editBookForm">
+                <input type="hidden" id="editBookId">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="form-group">
+                        <label>Book Title</label>
+                        <input type="text" id="editBookTitle" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Author</label>
+                        <input type="text" id="editBookAuthor" required>
+                    </div>
+                    <div class="form-group">
+                        <label>ISBN</label>
+                        <input type="text" id="editBookISBN" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Category</label>
+                        <select id="editBookCategory" required>
+                            <option value="Sciences">Sciences</option>
+                            <option value="Mathematics">Mathematics</option>
+                            <option value="Literature">Literature</option>
+                            <option value="History">History</option>
+                            <option value="Humanities">Humanities</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Total Copies</label>
+                        <input type="number" id="editBookCopies" min="1" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary"
+                        onclick="closeModal('editBookModal')">Cancel</button>
+                    <button type="submit" class="btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="../js/library-auth.js"></script>
+    <script src="../js/library-admin.js"></script>
+    <!-- ACADEX: Powered-by footer and school branding -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+
+</body>
+
+</html>
+

@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Academics & Trends - Acadex Parent Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/parent-portal.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 24px;
+        }
+
+        .chart-container {
+            background: #fff;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .subject-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 24px;
+        }
+
+        .subject-card {
+            background: #fff;
+            padding: 20px;
+            border-radius: 16px;
+            border-left: 4px solid var(--gold-primary);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+            text-align: center;
+        }
+
+        .subject-card .grade {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary-navy);
+            margin: 10px 0;
+        }
+
+        .assignment-list {
+            background: #fff;
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .assignment-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: #f8fafc;
+            border-radius: 12px;
+            border-left: 3px solid #e2e8f0;
+        }
+
+        .assignment-item.due-soon {
+            border-left-color: #ef4444;
+        }
+
+        .assignment-info h4 {
+            margin: 0 0 5px;
+            font-size: 0.95rem;
+            color: var(--primary-navy);
+        }
+
+        .assignment-info p {
+            margin: 0;
+            font-size: 0.8rem;
+            color: #64748b;
+        }
+
+        .assignment-status {
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 6px;
+        }
+
+        .status-pending { background: #fff7ed; color: #c2410c; }
+        .status-submitted { background: #f0fdf4; color: #15803d; }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <div class="brand-icon"><i class="fas fa-graduation-cap"></i></div>
+            <h3>Acadex Portal</h3>
+            <p id="currentSchoolName">Loading school...</p>
+            <!-- SaaS School Switcher -->
+            <div style="margin-top: 15px; padding: 8px; background: rgba(255,255,255,0.05); border-radius: 8px; display: flex; align-items: center; justify-content: space-between; cursor: pointer;" onclick="ParentPortal.toggleSchoolSwitcher()">
+                <span style="font-size: 0.7rem; opacity: 0.8; font-weight: 600;">Switch School</span>
+                <i class="fas fa-chevron-down" style="font-size: 0.6rem; opacity: 0.5;"></i>
+            </div>
+            <div id="schoolSwitcher" style="display: none; margin-top: 10px; background: var(--navy-light); border-radius: 8px; overflow: hidden; text-align: left; box-shadow: var(--shadow-premium);">
+                <!-- Populated dynamically -->
+            </div>
+        </div>
+        <div class="sidebar-menu">
+            <div class="sidebar-section-label">Academic & Life</div>
+            <ul>
+                <li><a href="dashboard.html"><i class="fas fa-th-large"></i> Dashboard</a></li>
+                <li><a href="student-profile.html"><i class="fas fa-user-graduate"></i> Student Profile</a></li>
+                <li><a href="academics.html" class="active"><i class="fas fa-chart-line"></i> Academics & Trends</a></li>
+                <li><a href="academic-history.html"><i class="fas fa-history"></i> Academic History</a></li>
+                <li><a href="wellbeing.html"><i class="fas fa-heartbeat"></i> Health & Conduct</a></li>
+                <li><a href="calendar.html"><i class="fas fa-calendar-alt"></i> School Calendar</a></li>
+            </ul>
+            <div class="sidebar-section-label">Communication</div>
+            <ul>
+                <li><a href="messages.html"><i class="fas fa-envelope"></i> Messages</a></li>
+                <li><a href="notices.html"><i class="fas fa-bullhorn"></i> Noticeboard</a></li>
+                <li><a href="approvals.html"><i class="fas fa-file-signature"></i> Approvals</a></li>
+                <li><a href="contact.html"><i class="fas fa-phone-alt"></i> Contact Us</a></li>
+            </ul>
+            <div class="sidebar-section-label">Finance & Logistics</div>
+            <ul>
+                <li><a href="fees.html"><i class="fas fa-file-invoice-dollar"></i> Fees & Payments</a></li>
+                <li><a href="wallet.html"><i class="fas fa-wallet"></i> Tuckshop Wallet</a></li>
+                <li><a href="transport.html"><i class="fas fa-bus"></i> Transport Tracker</a></li>
+            </ul>
+        </div>
+        <div class="sidebar-footer">
+            <a href="#" onclick="ParentPortal.logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </div>
+    </aside>
+
+    <div class="main-content">
+        <header class="top-header">
+            <div class="header-left">
+                <button class="mobile-toggle" id="mobileToggle"><i class="fas fa-bars"></i></button>
+                <h2>Academics & Trends</h2>
+            </div>
+            <div class="header-right" id="userInfo">
+                <!-- Populated by JS -->
+            </div>
+        </header>
+
+        <main class="content-area">
+            <div class="analytics-grid">
+                <div class="left-col">
+                    <div class="chart-container">
+                        <h3 style="margin-top:0; color:var(--primary-navy);">Termly Performance Trend</h3>
+                        <canvas id="performanceChart" height="150"></canvas>
+                    </div>
+
+                    <div class="subject-cards" id="subjectGrid">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                    <div class="assignment-list">
+                        <h3 style="margin:0; font-size: 1.1rem; color: var(--primary-navy);">Action Center</h3>
+                        <div style="display:flex; flex-direction:column; gap:10px; margin-top:15px;">
+                            <a href="academic-history.html" class="btn-primary" style="text-decoration:none; justify-content:center;">
+                                <i class="fas fa-history"></i> Full Academic History
+                            </a>
+                            <button class="btn-outline" style="width:100%;">Download Term Report PDF</button>
+                        </div>
+                        
+                        <h3 style="margin:20px 0 10px; font-size: 1.1rem; color: var(--primary-navy);">Upcoming Assignments</h3>
+                        <div id="assignmentContainer">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../js/parent-portal.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            ParentPortal.init();
+            initCharts();
+            renderSubjects();
+            renderAssignments();
+        });
+
+        function initCharts() {
+            const ctx = document.getElementById('performanceChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Term 1 2025', 'Term 2 2025', 'Term 3 2025', 'Term 1 2026'],
+                    datasets: [{
+                        label: 'Average Score',
+                        data: [72, 78, 75, 84],
+                        borderColor: 'var(--school-primary, #0056b3)',
+                        backgroundColor: 'rgba(var(--school-primary-rgb, 0, 86, 179), 0.1)',
+                        borderWidth: 3,
+                        tension: 0.4,
+                        fill: true,
+                        pointBackgroundColor: '#fff',
+                        pointBorderColor: 'var(--school-primary, #0056b3)',
+                        pointHoverRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            min: 50,
+                            max: 100,
+                            ticks: { callback: value => value + '%' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderSubjects() {
+            const subjects = [
+                { name: 'Mathematics', grade: 'A', score: '88%' },
+                { name: 'English Lit.', grade: 'B+', score: '79%' },
+                { name: 'Physics', grade: 'A-', score: '82%' },
+                { name: 'History', grade: 'A', score: '91%' }
+            ];
+            const grid = document.getElementById('subjectGrid');
+            grid.innerHTML = subjects.map(s => `
+                <div class="subject-card">
+                    <div style="font-size:0.85rem; color:#64748b; font-weight:700;">${s.name}</div>
+                    <div class="grade">${s.grade}</div>
+                    <div style="font-size:0.8rem; color:var(--gold-primary); font-weight:700;">${s.score} Avg</div>
+                </div>
+            `).join('');
+        }
+
+        function renderAssignments() {
+            const assignments = [
+                { title: 'Calculus Research Project', subject: 'Mathematics', due: 'In 2 Days', status: 'Pending', critical: true },
+                { title: 'The Cold War Essay', subject: 'History', due: 'In 5 Days', status: 'Pending', critical: false },
+                { title: 'Lab Report: Light Waves', subject: 'Physics', due: 'Yesterday', status: 'Submitted', critical: false }
+            ];
+            const container = document.getElementById('assignmentContainer');
+            container.innerHTML = assignments.map(a => `
+                <div class="assignment-item ${a.critical ? 'due-soon' : ''}">
+                    <div class="assignment-info">
+                        <h4>${a.title}</h4>
+                        <p>${a.subject} • Due ${a.due}</p>
+                    </div>
+                    <span class="assignment-status ${a.status === 'Submitted' ? 'status-submitted' : 'status-pending'}">${a.status}</span>
+                </div>
+            `).join('');
+        }
+
+    </script>
+    <!-- ACADEX: Powered-by footer and school branding -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+
+</body>
+
+</html>
+
+

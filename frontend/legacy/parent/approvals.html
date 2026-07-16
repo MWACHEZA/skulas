@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Approvals - Acadex Parent Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/parent-portal.css">
+    <style>
+        .approval-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .approval-item {
+            background: #fff;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            display: grid;
+            grid-template-columns: 1fr 200px;
+            gap: 40px;
+            align-items: center;
+        }
+
+        .approval-content h3 {
+            margin: 0 0 10px;
+            font-size: 1.3rem;
+            color: var(--primary-navy);
+        }
+
+        .approval-content p {
+            color: #64748b;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .approval-meta {
+            display: flex;
+            gap: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #94a3b8;
+        }
+
+        .meta-item i {
+            color: var(--gold-primary);
+        }
+
+        .approval-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .status-pending {
+            background: #fff8e6;
+            color: #d97706;
+        }
+
+        .status-approved {
+            background: #f0fdf4;
+            color: #16a34a;
+        }
+
+        .btn-approve {
+            background: var(--navy-gradient);
+            color: #fff;
+            border: none;
+            padding: 12px;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-approve:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(26, 26, 46, 0.2);
+        }
+
+        .btn-decline {
+            background: #fff;
+            color: #ef4444;
+            border: 1px solid #fee2e2;
+            padding: 10px;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-decline:hover {
+            background: #fef2f2;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <div class="brand-icon"><i class="fas fa-graduation-cap"></i></div>
+            <h3>Acadex Portal</h3>
+            <p id="currentSchoolName">Loading school...</p>
+            <!-- SaaS School Switcher -->
+            <div style="margin-top: 15px; padding: 8px; background: rgba(255,255,255,0.05); border-radius: 8px; display: flex; align-items: center; justify-content: space-between; cursor: pointer;" onclick="ParentPortal.toggleSchoolSwitcher()">
+                <span style="font-size: 0.7rem; opacity: 0.8; font-weight: 600;">Switch School</span>
+                <i class="fas fa-chevron-down" style="font-size: 0.6rem; opacity: 0.5;"></i>
+            </div>
+            <div id="schoolSwitcher" style="display: none; margin-top: 10px; background: var(--navy-light); border-radius: 8px; overflow: hidden; text-align: left; box-shadow: var(--shadow-premium);">
+                <!-- Populated dynamically -->
+            </div>
+        </div>
+        <div class="sidebar-menu">
+            <div class="sidebar-section-label">Academic & Life</div>
+            <ul>
+                <li><a href="dashboard.html"><i class="fas fa-th-large"></i> Dashboard</a></li>
+                <li><a href="student-profile.html"><i class="fas fa-user-graduate"></i> Student Profile</a></li>
+                <li><a href="academics.html"><i class="fas fa-chart-line"></i> Academics & Trends</a></li>
+                <li><a href="academic-history.html"><i class="fas fa-history"></i> Academic History</a></li>
+                <li><a href="wellbeing.html"><i class="fas fa-heartbeat"></i> Health & Conduct</a></li>
+                <li><a href="calendar.html"><i class="fas fa-calendar-alt"></i> School Calendar</a></li>
+            </ul>
+            <div class="sidebar-section-label">Communication</div>
+            <ul>
+                <li><a href="messages.html"><i class="fas fa-envelope"></i> Messages</a></li>
+                <li><a href="notices.html"><i class="fas fa-bullhorn"></i> Noticeboard</a></li>
+                <li><a href="approvals.html" class="active"><i class="fas fa-file-signature"></i> Approvals</a></li>
+                <li><a href="contact.html"><i class="fas fa-phone-alt"></i> Contact Us</a></li>
+            </ul>
+            <div class="sidebar-section-label">Finance & Logistics</div>
+            <ul>
+                <li><a href="fees.html"><i class="fas fa-file-invoice-dollar"></i> Fees & Payments</a></li>
+                <li><a href="wallet.html"><i class="fas fa-wallet"></i> Tuckshop Wallet</a></li>
+                <li><a href="transport.html"><i class="fas fa-bus"></i> Transport Tracker</a></li>
+            </ul>
+        </div>
+        <div class="sidebar-footer">
+            <a href="#" onclick="ParentPortal.logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </div>
+    </aside>
+
+    <div class="main-content">
+        <header class="top-header">
+            <div class="header-left">
+                <button class="mobile-toggle" id="mobileToggle"><i class="fas fa-bars"></i></button>
+                <h2>Digital Approvals</h2>
+            </div>
+            <div class="header-right" id="userInfo">
+                <!-- Populated by JS -->
+            </div>
+        </header>
+
+        <main class="content-area">
+            <div class="approval-list" id="approvalList">
+                <!-- Populated by JS -->
+            </div>
+        </main>
+    </div>
+
+    <script src="../js/parent-portal.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            ParentPortal.init();
+            renderApprovals();
+        });
+
+        function renderApprovals() {
+            const approvals = [
+                {
+                    id: 1,
+                    title: 'Educational Tour: Bulawayo Museum',
+                    description: 'Approval for the Grade 7 educational field trip to the Bulawayo Natural History Museum. Includes transport, lunch, and entry fees.',
+                    deadline: 'March 25, 2026',
+                    cost: 'USD 15.00',
+                    status: 'Pending'
+                },
+                {
+                    id: 2,
+                    title: 'Extracurricular: Rugby First XV Squad',
+                    description: 'Consent for your child to participate in the upcoming triangular tournament. Involves away games and weekend travel.',
+                    deadline: 'March 22, 2026',
+                    cost: 'None',
+                    status: 'Pending'
+                },
+                {
+                    id: 3,
+                    title: 'Computer Lab Access Policy',
+                    description: 'Acknowledgement of the new Acceptable Use Policy for high-speed fiber internet access in the ICT Hub.',
+                    deadline: 'Completed',
+                    cost: 'None',
+                    status: 'Approved'
+                }
+            ];
+
+            const list = document.getElementById('approvalList');
+            list.innerHTML = approvals.map(a => `
+                <div class="approval-item">
+                    <div class="approval-content">
+                        <h3>${a.title}</h3>
+                        <p>${a.description}</p>
+                        <div class="approval-meta">
+                            <div class="meta-item"><i class="fas fa-clock"></i> Deadline: ${a.deadline}</div>
+                            <div class="meta-item"><i class="fas fa-tag"></i> Cost: ${a.cost}</div>
+                        </div>
+                    </div>
+                    <div class="approval-actions">
+                        ${a.status === 'Pending' ? `
+                            <button class="btn-approve" onclick="updateApproval(${a.id}, 'Approved')">Digitally Sign & Approve</button>
+                            <button class="btn-decline" onclick="updateApproval(${a.id}, 'Rejected')">Decline Participation</button>
+                        ` : `
+                            <div class="status-badge status-approved"><i class="fas fa-check-circle"></i> ${a.status}</div>
+                        `}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        window.updateApproval = (id, newStatus) => {
+            alert('Acadex Digital Signature Verified. Action: ' + newStatus);
+            // In real system, this would update school_approvals in localStorage
+        };
+    </script>
+    <!-- ACADEX: Powered-by footer and school branding -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+
+</body>
+
+</html>
+
+

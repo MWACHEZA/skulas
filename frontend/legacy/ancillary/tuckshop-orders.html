@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supplier Orders - Tuckshop Portal</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/library-portal.css">
+    <link rel="stylesheet" href="../css/ancillary-portal.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        .order-detail-row {
+            background: #f8faff;
+            font-size: 0.82rem;
+            color: #555;
+        }
+
+        .order-detail-row td {
+            padding: 8px 15px 8px 30px !important;
+        }
+
+        .ordered-items-chip {
+            display: inline-block;
+            background: #eef2ff;
+            color: var(--school-primary);
+            border-radius: 20px;
+            padding: 3px 10px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            margin: 2px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <img src="../images/logo.png" alt="Logo" class="acadex-school-logo">
+                <h3>ANCILLARY PORTAL</h3>
+            </div>
+            <div class="sidebar-menu">
+                <ul>
+                    <li><a href="dashboard.html"><i class="fas fa-th-large"></i><span>Dashboard</span></a></li>
+                </ul>
+
+                <div id="tuckshop-sidebar-section" style="display: none;">
+                    <div class="sidebar-section-title">Tuckshop System</div>
+                    <ul>
+                        <li><a href="tuckshop-dashboard.html"><i class="fas fa-tachometer-alt"></i><span>TS
+                                    Dashboard</span></a></li>
+                        <li><a href="tuckshop-sales.html"><i class="fas fa-cash-register"></i> <span>Point of
+                                    Sale</span></a></li>
+                        <li><a href="tuckshop-inventory.html"><i class="fas fa-boxes"></i> <span>Inventory</span></a>
+                        </li>
+                        <li><a href="tuckshop-orders.html" class="active"><i class="fas fa-truck"></i> <span>Supplier
+                                    Orders</span></a></li>
+                    </ul>
+                </div>
+
+                <div class="sidebar-section-title">Operations</div>
+                <ul>
+                    <li><a href="staff-directory.html"><i class="fas fa-users"></i> <span>Staff Directory</span></a>
+                    </li>
+                    <li><a href="procurement.html"><i class="fas fa-shopping-cart"></i><span>Procurement</span></a></li>
+                    <li><a href="assets.html"><i class="fas fa-boxes"></i> <span>Asset Management</span></a></li>
+                    <li><a href="schedules.html"><i class="fas fa-calendar-alt"></i> <span>Schedules &amp;
+                                Shifts</span></a></li>
+                </ul>
+
+                <div class="sidebar-section-title">Support &amp; HR</div>
+                <ul>
+                    <li><a href="sdc-portal.html"><i class="fas fa-file-invoice-dollar"></i> <span>SDC Staff
+                                Portal</span></a></li>
+                    <li><a href="hr-services.html"><i class="fas fa-user-shield"></i> <span>HR Services</span></a></li>
+                    <li><a href="profile.html"><i class="fas fa-id-card"></i> <span>My Profile</span></a></li>
+                    <li><a href="resources.html"><i class="fas fa-folder-open"></i> <span>Resources &amp;
+                                Docs</span></a></li>
+                    <li><a href="it-support.html"><i class="fas fa-headset"></i> <span>IT Support</span></a></li>
+                </ul>
+
+                <div class="sidebar-section-title">Communication</div>
+                <ul>
+                    <li><a href="news.html"><i class="fas fa-newspaper"></i> <span>News &amp; Updates</span></a></li>
+                    <li><a href="feedback.html"><i class="fas fa-comment-dots"></i><span>Feedback</span></a></li>
+                    <li><a href="contact.html"><i class="fas fa-address-book"></i> <span>Contact Us</span></a></li>
+                </ul>
+            </div>
+            <div class="sidebar-footer">
+                <a href="login.html"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="top-header">
+                <h2>Supplier Orders</h2>
+                <div class="user-profile">
+                    <div style="text-align: right; margin-right: 10px;">
+                        <div style="font-weight: 600; font-size: 0.9rem;">Tuckshop Manager</div>
+                        <div style="font-size: 0.75rem; color: #888;">Ancillary Staff</div>
+                    </div>
+                    <img src="../images/admin-avatar.png" alt="Admin">
+                </div>
+            </div>
+
+            <div class="content-area">
+                <div class="glass-card" style="padding: 25px;">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h3 style="margin:0;">Order History</h3>
+                        <button class="btn btn-primary" onclick="openNewOrderModal()"><i class="fas fa-plus"></i> New
+                            Order</button>
+                    </div>
+
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Supplier</th>
+                                <th>Items Ordered</th>
+                                <th>Delivery Date</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ordersTableBody">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== CREATE / EDIT ORDER MODAL ===== -->
+    <div id="newOrderModal" class="modal">
+        <div class="modal-content" style="max-width: 560px;">
+            <div class="modal-header">
+                <h3 id="orderModalTitle"><i class="fas fa-truck-loading"></i> Create Supplier Order</h3>
+                <span class="close-modal" onclick="closeModal('newOrderModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="newOrderForm">
+                    <input type="hidden" id="editOrderId">
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+                        <div class="form-group" style="margin-bottom:18px;">
+                            <label
+                                style="font-weight:600; display:block; margin-bottom:8px; color: #1a1a2e; font-size: 0.9rem;">Supplier
+                                Name *</label>
+                            <input type="text" id="orderSupplier" class="form-control"
+                                placeholder="e.g. Metro Wholesale" required
+                                style="width:100%;padding:11px;border:1.5px solid #dce4f5;border-radius:8px; font-size: 0.9rem;">
+                        </div>
+                        <div class="form-group" style="margin-bottom:18px;">
+                            <label
+                                style="font-weight:600; display:block; margin-bottom:8px; color: #1a1a2e; font-size: 0.9rem;">Supplier
+                                Phone</label>
+                            <input type="tel" id="orderSupplierPhone" class="form-control"
+                                placeholder="e.g. +263 77 123 4567"
+                                style="width:100%;padding:11px;border:1.5px solid #dce4f5;border-radius:8px; font-size: 0.9rem;">
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-bottom:18px;">
+                        <label
+                            style="font-weight:600; display:block; margin-bottom:8px; color: #1a1a2e; font-size: 0.9rem;">Supplier
+                            Email</label>
+                        <input type="email" id="orderSupplierEmail" class="form-control"
+                            placeholder="supplier@example.com"
+                            style="width:100%;padding:11px;border:1.5px solid #dce4f5;border-radius:8px; font-size: 0.9rem;">
+                    </div>
+                    <div class="form-group" style="margin-bottom:18px;">
+                        <label
+                            style="font-weight:600; display:block; margin-bottom:8px; color: #1a1a2e; font-size: 0.9rem;">Items
+                            to Order *</label>
+                        <textarea id="orderItems" class="form-control"
+                            placeholder="e.g. 20 Cases Coke, 10 Bags Chips, 30 Loaves Bread..." required
+                            style="width:100%;padding:11px;border:1.5px solid #dce4f5;border-radius:8px;min-height:90px;font-family:inherit; font-size: 0.9rem;"></textarea>
+                    </div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+                        <div class="form-group" style="margin-bottom:18px;">
+                            <label
+                                style="font-weight:600; display:block; margin-bottom:8px; color: #1a1a2e; font-size: 0.9rem;">Expected
+                                Delivery Date *</label>
+                            <input type="date" id="orderDate" class="form-control" required
+                                style="width:100%;padding:11px;border:1.5px solid #dce4f5;border-radius:8px; font-size: 0.9rem;">
+                        </div>
+                        <div class="form-group" style="margin-bottom:18px;">
+                            <label
+                                style="font-weight:600; display:block; margin-bottom:8px; color: #1a1a2e; font-size: 0.9rem;">Delivery
+                                Time</label>
+                            <input type="time" id="orderTime" class="form-control"
+                                style="width:100%;padding:11px;border:1.5px solid #dce4f5;border-radius:8px; font-size: 0.9rem;">
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-bottom:25px;">
+                        <label
+                            style="font-weight:600; display:block; margin-bottom:8px; color: #1a1a2e; font-size: 0.9rem;">Delivery
+                            Instructions</label>
+                        <textarea id="orderNotes" class="form-control"
+                            placeholder="e.g. Deliver to back door, call upon arrival, handle with care..."
+                            style="width:100%;padding:11px;border:1.5px solid #dce4f5;border-radius:8px;min-height:75px;font-family:inherit; font-size: 0.9rem;"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary"
+                        style="width:100%; padding:14px; font-weight:700; font-size:1rem; border-radius:10px; background:var(--school-primary); color:white; border:none; cursor:pointer;"
+                        id="orderSubmitBtn">Create Order</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== APPROVE DELIVERY MODAL ===== -->
+    <div id="approveOrderModal" class="modal">
+        <div class="modal-content" style="max-width: 520px;">
+            <div class="modal-header">
+                <h3><i class="fas fa-clipboard-check"></i> Approve Delivery</h3>
+                <span class="close-modal" onclick="closeModal('approveOrderModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="approveOrderId">
+                <div style="background:#f0f9ff;border-radius:10px;padding:15px;margin-bottom:20px;">
+                    <div style="font-size:0.8rem;color:var(--school-primary);font-weight:700;margin-bottom:8px;"><i
+                            class="fas fa-list-ul"></i> WHAT WAS ORDERED</div>
+                    <div id="approveOrderedItems" style="font-size:0.9rem;color:#555;"></div>
+                </div>
+                <div class="form-group" style="margin-bottom:15px;">
+                    <label style="font-weight:600;display:block;margin-bottom:5px;">What was actually delivered?
+                        *</label>
+                    <textarea id="approveDeliveredItems" class="form-control"
+                        placeholder="List exactly what was delivered, including quantities and any discrepancies..."
+                        required
+                        style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;min-height:100px;"></textarea>
+                </div>
+                <div class="form-group" style="margin-bottom:15px;">
+                    <label style="font-weight:600;display:block;margin-bottom:5px;">Delivery Notes</label>
+                    <input type="text" id="approveNotes" class="form-control"
+                        placeholder="Any additional notes about the delivery..."
+                        style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;">
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;">
+                    <button class="btn btn-outline" onclick="closeModal('approveOrderModal')">Cancel</button>
+                    <button class="btn btn-success" onclick="confirmApproval()"
+                        style="background:#10b981;color:white;border:none;padding:12px;border-radius:8px;font-weight:600;cursor:pointer;"><i
+                            class="fas fa-check"></i> Approve &amp; Update Stock</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== ADD TO INVENTORY FROM ORDER MODAL ===== -->
+    <div id="addFromOrderModal" class="modal">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h3><i class="fas fa-box-open"></i> Add to Inventory</h3>
+                <span class="close-modal" onclick="closeModal('addFromOrderModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p style="font-size:0.85rem;color:#666;margin-bottom:15px;">Details pre-filled from the order. You can
+                    edit before saving.</p>
+                <input type="hidden" id="afoOrderId">
+                <div class="form-group" style="margin-bottom:15px;">
+                    <label style="font-weight:600;display:block;margin-bottom:5px;">Product Name *</label>
+                    <input type="text" id="afoProdName" class="form-control" required
+                        style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;">
+                </div>
+                <div class="form-group" style="margin-bottom:15px;">
+                    <label style="font-weight:600;display:block;margin-bottom:5px;">Category</label>
+                    <select id="afoProdCat" class="form-control"
+                        style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;">
+                        <option>Snacks</option>
+                        <option>Drinks</option>
+                        <option>Hot Food</option>
+                        <option>Sweets</option>
+                        <option>Stationery</option>
+                        <option>Other</option>
+                    </select>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:15px;">
+                    <div>
+                        <label style="font-weight:600;display:block;margin-bottom:5px;font-size:0.85rem;">Price
+                            (USD)</label>
+                        <input type="number" id="afoProdPrice" step="0.01" value="0.50"
+                            style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;">
+                    </div>
+                    <div>
+                        <label style="font-weight:600;display:block;margin-bottom:5px;font-size:0.85rem;">Price
+                            (ZAR)</label>
+                        <input type="number" id="afoProdPriceZAR" step="0.01" value="10.00"
+                            style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;">
+                    </div>
+                    <div>
+                        <label style="font-weight:600;display:block;margin-bottom:5px;font-size:0.85rem;">Price
+                            (ZiG)</label>
+                        <input type="number" id="afoProdPriceZiG" step="0.01" value="15.00"
+                            style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;">
+                    </div>
+                </div>
+                <div class="form-group" style="margin-bottom:20px;">
+                    <label style="font-weight:600;display:block;margin-bottom:5px;">Stock Quantity *</label>
+                    <input type="number" id="afoProdStock" class="form-control" value="1" min="1" required
+                        style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;">
+                </div>
+                <button class="btn btn-primary" style="width:100%;" onclick="saveInventoryFromOrder()"><i
+                        class="fas fa-save"></i> Save to Inventory</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    </script>
+    <script src="../js/ancillary-common.js"></script>
+    <script src="../js/tuckshop.js"></script>
+    <script>
+        // Orders page-specific logic
+        function openNewOrderModal() {
+            document.getElementById('editOrderId').value = '';
+            document.getElementById('orderModalTitle').innerHTML = '<i class="fas fa-truck-loading"></i> Create Supplier Order';
+            document.getElementById('orderSubmitBtn').textContent = 'Create Order';
+            document.getElementById('newOrderForm').reset();
+            openModal('newOrderModal');
+        }
+
+        function openEditOrderModal(id) {
+            const order = getOrders().find(o => o.id === id);
+            if (!order) return;
+            document.getElementById('editOrderId').value = id;
+            document.getElementById('orderModalTitle').innerHTML = '<i class="fas fa-edit"></i> Edit Supplier Order';
+            document.getElementById('orderSubmitBtn').textContent = 'Update Order';
+            document.getElementById('orderSupplier').value = order.supplier || '';
+            document.getElementById('orderSupplierPhone').value = order.supplierPhone || '';
+            document.getElementById('orderSupplierEmail').value = order.supplierEmail || '';
+            document.getElementById('orderItems').value = order.items || '';
+            document.getElementById('orderDate').value = order.date || '';
+            document.getElementById('orderTime').value = order.deliveryTime || '';
+            document.getElementById('orderNotes').value = order.note || '';
+            openModal('newOrderModal');
+        }
+
+        function openApproveModal(id) {
+            const order = getOrders().find(o => o.id === id);
+            if (!order) return;
+            document.getElementById('approveOrderId').value = id;
+            document.getElementById('approveOrderedItems').textContent = order.items;
+            document.getElementById('approveDeliveredItems').value = order.items; // Pre-fill
+            document.getElementById('approveNotes').value = '';
+            openModal('approveOrderModal');
+        }
+
+        function confirmApproval() {
+            const id = document.getElementById('approveOrderId').value;
+            const delivered = document.getElementById('approveDeliveredItems').value.trim();
+            const notes = document.getElementById('approveNotes').value.trim();
+            if (!delivered) { showNotification('Please enter what was delivered.', 'error'); return; }
+
+            const orders = getOrders();
+            const idx = orders.findIndex(o => o.id === id);
+            if (idx !== -1) {
+                orders[idx].status = 'Approved';
+                orders[idx].deliveredItems = delivered;
+                orders[idx].approvalNotes = notes;
+                orders[idx].approvedDate = new Date().toISOString().split('T')[0];
+                saveOrders(orders);
+                closeModal('approveOrderModal');
+                renderOrdersTableEnhanced();
+                showNotification('Delivery approved! Stock can now be added to inventory.', 'success');
+            }
+        }
+
+        function openAddFromOrderModal(id) {
+            const order = getOrders().find(o => o.id === id);
+            if (!order) return;
+            document.getElementById('afoOrderId').value = id;
+            // Pre-fill product name from first item of delivered/ordered
+            const itemText = order.deliveredItems || order.items || '';
+            const firstName = itemText.split(',')[0].replace(/\d+x?\s*/gi, '').trim();
+            document.getElementById('afoProdName').value = firstName;
+            document.getElementById('afoProdStock').value = 1;
+            openModal('addFromOrderModal');
+        }
+
+        function saveInventoryFromOrder() {
+            const name = document.getElementById('afoProdName').value.trim();
+            const stock = parseInt(document.getElementById('afoProdStock').value) || 1;
+            const price = parseFloat(document.getElementById('afoProdPrice').value) || 0;
+            const priceZAR = parseFloat(document.getElementById('afoProdPriceZAR').value) || 0;
+            const priceZiG = parseFloat(document.getElementById('afoProdPriceZiG').value) || 0;
+            const category = document.getElementById('afoProdCat').value;
+
+            if (!name) { showNotification('Please enter a product name.', 'error'); return; }
+
+            const product = { name, category, price, priceZAR, priceZiG, stock, threshold: 5 };
+            addProduct(product);
+            closeModal('addFromOrderModal');
+            // addProduct already shows a notification
+        }
+
+        function renderOrdersTableEnhanced() {
+            const tbody = document.getElementById('ordersTableBody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+            const orders = getOrders();
+
+            if (orders.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#888;padding:30px;">No supplier orders yet. Click "New Order" to create one.</td></tr>';
+                return;
+            }
+
+            orders.forEach(o => {
+                const statusColor = o.status === 'Approved' ? 'bg-success' : (o.status === 'Cancelled' ? 'bg-danger' : 'bg-warning');
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="font-weight:600;">${o.id}</td>
+                    <td>
+                        <div style="font-weight:600;">${o.supplier}</div>
+                        ${o.supplierPhone ? `<div style="font-size:0.78rem;color:#888;"><i class="fas fa-phone" style="width:14px;"></i> ${o.supplierPhone}</div>` : ''}
+                        ${o.supplierEmail ? `<div style="font-size:0.78rem;color:#888;"><i class="fas fa-envelope" style="width:14px;"></i> ${o.supplierEmail}</div>` : ''}
+                    </td>
+                    <td style="max-width:220px;">
+                        <div style="font-size:0.85rem;color:#555;white-space:pre-wrap;">${o.items}</div>
+                        ${o.note ? `<div style="font-size:0.75rem;color:#888;margin-top:4px;font-style:italic;"><i class="fas fa-info-circle"></i> ${o.note}</div>` : ''}
+                    </td>
+                    <td>
+                        <div>${o.date}</div>
+                        ${o.deliveryTime ? `<div style="font-size:0.78rem;color:#888;">${o.deliveryTime}</div>` : ''}
+                    </td>
+                    <td><span class="badge ${statusColor}">${o.status}</span>
+                        ${o.status === 'Approved' && o.approvedDate ? `<div style="font-size:0.72rem;color:#888;">Approved: ${o.approvedDate}</div>` : ''}
+                    </td>
+                    <td>
+                        <div style="display:flex;flex-wrap:wrap;gap:5px;">
+                            ${o.status !== 'Approved' ? `<button class="btn btn-sm btn-primary" title="Edit" onclick="openEditOrderModal('${o.id}')"><i class="fas fa-edit"></i></button>` : ''}
+                            ${o.status !== 'Approved' ? `<button class="btn btn-sm" title="Approve Delivery" onclick="openApproveModal('${o.id}')" style="background:#10b981;color:white;"><i class="fas fa-clipboard-check"></i></button>` : ''}
+                            <button class="btn btn-sm btn-info" title="Add to Inventory" onclick="openAddFromOrderModal('${o.id}')" style="background:var(--school-primary);color:white;"><i class="fas fa-boxes"></i></button>
+                            <button class="btn btn-sm btn-danger" title="Delete" onclick="deleteOrderEnhanced('${o.id}')"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+
+                // Show delivered items row for approved orders
+                if (o.status === 'Approved' && o.deliveredItems) {
+                    const detailRow = document.createElement('tr');
+                    detailRow.className = 'order-detail-row';
+                    detailRow.innerHTML = `
+                        <td colspan="6">
+                            <strong><i class="fas fa-check text-success"></i> Delivered:</strong>
+                            <span style="margin-left:8px;">${o.deliveredItems}</span>
+                            ${o.approvalNotes ? `<span style="margin-left:16px;color:#888;font-style:italic;">Note: ${o.approvalNotes}</span>` : ''}
+                        </td>
+                    `;
+                    tbody.appendChild(detailRow);
+                }
+            });
+        }
+
+        function deleteOrderEnhanced(id) {
+            if (!confirm('Are you sure you want to delete this order?')) return;
+            const orders = getOrders().filter(o => o.id !== id);
+            saveOrders(orders);
+            renderOrdersTableEnhanced();
+            showNotification('Order deleted.', 'info');
+        }
+
+        // Override the form submit for orders
+        document.addEventListener('DOMContentLoaded', () => {
+            renderOrdersTableEnhanced();
+
+            document.getElementById('newOrderForm').addEventListener('submit', function (e) {
+                e.preventDefault();
+                const editId = document.getElementById('editOrderId').value;
+                const supplier = document.getElementById('orderSupplier').value;
+                const supplierPhone = document.getElementById('orderSupplierPhone').value;
+                const supplierEmail = document.getElementById('orderSupplierEmail').value;
+                const items = document.getElementById('orderItems').value;
+                const date = document.getElementById('orderDate').value;
+                const deliveryTime = document.getElementById('orderTime').value;
+                const note = document.getElementById('orderNotes').value;
+
+                if (editId) {
+                    // Edit existing
+                    const orders = getOrders();
+                    const idx = orders.findIndex(o => o.id === editId);
+                    if (idx !== -1) {
+                        orders[idx] = { ...orders[idx], supplier, supplierPhone, supplierEmail, items, date, deliveryTime, note };
+                        saveOrders(orders);
+                        showNotification('Order updated successfully!', 'success');
+                    }
+                } else {
+                    // Create new
+                    const orders = getOrders();
+                    const order = {
+                        id: 'PO-' + Date.now().toString().slice(-6),
+                        date: date || new Date().toISOString().split('T')[0],
+                        supplier, supplierPhone, supplierEmail,
+                        items, deliveryTime, note,
+                        status: 'Pending'
+                    };
+                    orders.push(order);
+                    saveOrders(orders);
+                    showNotification('Supplier order created successfully!', 'success');
+                }
+
+                closeModal('newOrderModal');
+                renderOrdersTableEnhanced();
+                this.reset();
+            });
+        });
+    </script>
+    <!-- ACADEX: Powered-by footer and school branding -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+
+</body>
+
+</html>

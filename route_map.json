@@ -1,0 +1,5741 @@
+{
+  "backendEndpoints": [
+    {
+      "file": "academic-tools.ts",
+      "method": "GET",
+      "fullPath": "/api/academic-tools/question-papers"
+    },
+    {
+      "file": "academic-tools.ts",
+      "method": "POST",
+      "fullPath": "/api/academic-tools/question-papers"
+    },
+    {
+      "file": "academic-tools.ts",
+      "method": "PUT",
+      "fullPath": "/api/academic-tools/question-papers/:id"
+    },
+    {
+      "file": "academic-tools.ts",
+      "method": "DELETE",
+      "fullPath": "/api/academic-tools/question-papers/:id"
+    },
+    {
+      "file": "accounts.ts",
+      "method": "GET",
+      "fullPath": "/api/accounts/categories"
+    },
+    {
+      "file": "accounts.ts",
+      "method": "POST",
+      "fullPath": "/api/accounts/categories"
+    },
+    {
+      "file": "accounts.ts",
+      "method": "DELETE",
+      "fullPath": "/api/accounts/categories/:id"
+    },
+    {
+      "file": "accounts.ts",
+      "method": "GET",
+      "fullPath": "/api/accounts/liabilities"
+    },
+    {
+      "file": "accounts.ts",
+      "method": "POST",
+      "fullPath": "/api/accounts/liabilities"
+    },
+    {
+      "file": "accounts.ts",
+      "method": "PATCH",
+      "fullPath": "/api/accounts/liabilities/:id/settle"
+    },
+    {
+      "file": "accounts.ts",
+      "method": "GET",
+      "fullPath": "/api/accounts/income"
+    },
+    {
+      "file": "accounts.ts",
+      "method": "POST",
+      "fullPath": "/api/accounts/income"
+    },
+    {
+      "file": "accounts.ts",
+      "method": "GET",
+      "fullPath": "/api/accounts/expenses"
+    },
+    {
+      "file": "accounts.ts",
+      "method": "POST",
+      "fullPath": "/api/accounts/expenses"
+    },
+    {
+      "file": "accounts.ts",
+      "method": "GET",
+      "fullPath": "/api/accounts/payment-methods"
+    },
+    {
+      "file": "accounts.ts",
+      "method": "POST",
+      "fullPath": "/api/accounts/payment-methods"
+    },
+    {
+      "file": "accounts.ts",
+      "method": "PATCH",
+      "fullPath": "/api/accounts/payment-methods/:id"
+    },
+    {
+      "file": "accounts.ts",
+      "method": "DELETE",
+      "fullPath": "/api/accounts/payment-methods/:id"
+    },
+    {
+      "file": "ancillary.ts",
+      "method": "GET",
+      "fullPath": "/api/ancillary/hostel-categories"
+    },
+    {
+      "file": "ancillary.ts",
+      "method": "POST",
+      "fullPath": "/api/ancillary/hostel-categories"
+    },
+    {
+      "file": "ancillary.ts",
+      "method": "DELETE",
+      "fullPath": "/api/ancillary/hostel-categories/:id"
+    },
+    {
+      "file": "ancillary.ts",
+      "method": "GET",
+      "fullPath": "/api/ancillary/hostel-rooms"
+    },
+    {
+      "file": "ancillary.ts",
+      "method": "POST",
+      "fullPath": "/api/ancillary/hostel-rooms"
+    },
+    {
+      "file": "ancillary.ts",
+      "method": "DELETE",
+      "fullPath": "/api/ancillary/hostel-rooms/:id"
+    },
+    {
+      "file": "ancillary.ts",
+      "method": "GET",
+      "fullPath": "/api/ancillary/hostels"
+    },
+    {
+      "file": "ancillary.ts",
+      "method": "POST",
+      "fullPath": "/api/ancillary/hostels"
+    },
+    {
+      "file": "ancillary.ts",
+      "method": "DELETE",
+      "fullPath": "/api/ancillary/hostels/:id"
+    },
+    {
+      "file": "ancillary.ts",
+      "method": "POST",
+      "fullPath": "/api/ancillary/boarding/assign"
+    },
+    {
+      "file": "ancillary.ts",
+      "method": "POST",
+      "fullPath": "/api/ancillary/boarding/log"
+    },
+    {
+      "file": "ancillary.ts",
+      "method": "GET",
+      "fullPath": "/api/ancillary/visitors"
+    },
+    {
+      "file": "ancillary.ts",
+      "method": "POST",
+      "fullPath": "/api/ancillary/visitors"
+    },
+    {
+      "file": "ancillary.ts",
+      "method": "GET",
+      "fullPath": "/api/ancillary/menu/current"
+    },
+    {
+      "file": "ancillary.ts",
+      "method": "POST",
+      "fullPath": "/api/ancillary/menu"
+    },
+    {
+      "file": "applications.ts",
+      "method": "GET",
+      "fullPath": "/api/applications"
+    },
+    {
+      "file": "applications.ts",
+      "method": "POST",
+      "fullPath": "/api/applications"
+    },
+    {
+      "file": "applications.ts",
+      "method": "GET",
+      "fullPath": "/api/applications/:id"
+    },
+    {
+      "file": "applications.ts",
+      "method": "PATCH",
+      "fullPath": "/api/applications/:id"
+    },
+    {
+      "file": "applications.ts",
+      "method": "POST",
+      "fullPath": "/api/applications/documents"
+    },
+    {
+      "file": "applications.ts",
+      "method": "PATCH",
+      "fullPath": "/api/applications/documents/:id"
+    },
+    {
+      "file": "assets.ts",
+      "method": "GET",
+      "fullPath": "/api/assets"
+    },
+    {
+      "file": "assets.ts",
+      "method": "POST",
+      "fullPath": "/api/assets"
+    },
+    {
+      "file": "assets.ts",
+      "method": "PATCH",
+      "fullPath": "/api/assets/:id"
+    },
+    {
+      "file": "assets.ts",
+      "method": "POST",
+      "fullPath": "/api/assets/incident"
+    },
+    {
+      "file": "assets.ts",
+      "method": "PATCH",
+      "fullPath": "/api/assets/incident/:id/resolve"
+    },
+    {
+      "file": "assets.ts",
+      "method": "POST",
+      "fullPath": "/api/assets/maintenance/perform"
+    },
+    {
+      "file": "assets.ts",
+      "method": "POST",
+      "fullPath": "/api/assets/request-maintenance"
+    },
+    {
+      "file": "assets.ts",
+      "method": "POST",
+      "fullPath": "/api/assets/maintenance/schedule"
+    },
+    {
+      "file": "assets.ts",
+      "method": "PATCH",
+      "fullPath": "/api/assets/maintenance/:id/complete"
+    },
+    {
+      "file": "attendance.ts",
+      "method": "GET",
+      "fullPath": "/api/attendance"
+    },
+    {
+      "file": "attendance.ts",
+      "method": "POST",
+      "fullPath": "/api/attendance"
+    },
+    {
+      "file": "attendance.ts",
+      "method": "GET",
+      "fullPath": "/api/attendance/gate-check"
+    },
+    {
+      "file": "attendance.ts",
+      "method": "POST",
+      "fullPath": "/api/attendance/qr"
+    },
+    {
+      "file": "attendance.ts",
+      "method": "GET",
+      "fullPath": "/api/attendance/student-clock-ins"
+    },
+    {
+      "file": "audit.ts",
+      "method": "GET",
+      "fullPath": "/api/audit"
+    },
+    {
+      "file": "auth.ts",
+      "method": "POST",
+      "fullPath": "/api/auth/impersonate/:userId"
+    },
+    {
+      "file": "auth.ts",
+      "method": "POST",
+      "fullPath": "/api/auth/register"
+    },
+    {
+      "file": "auth.ts",
+      "method": "POST",
+      "fullPath": "/api/auth/register-user"
+    },
+    {
+      "file": "auth.ts",
+      "method": "POST",
+      "fullPath": "/api/auth/login"
+    },
+    {
+      "file": "auth.ts",
+      "method": "POST",
+      "fullPath": "/api/auth/register-application"
+    },
+    {
+      "file": "auth.ts",
+      "method": "GET",
+      "fullPath": "/api/auth/application-status/:appId"
+    },
+    {
+      "file": "auth.ts",
+      "method": "POST",
+      "fullPath": "/api/auth/change-password"
+    },
+    {
+      "file": "auth.ts",
+      "method": "POST",
+      "fullPath": "/api/auth/link-entity"
+    },
+    {
+      "file": "awards.ts",
+      "method": "GET",
+      "fullPath": "/api/awards/my"
+    },
+    {
+      "file": "awards.ts",
+      "method": "POST",
+      "fullPath": "/api/awards"
+    },
+    {
+      "file": "cbt.ts",
+      "method": "GET",
+      "fullPath": "/api/cbt"
+    },
+    {
+      "file": "cbt.ts",
+      "method": "POST",
+      "fullPath": "/api/cbt"
+    },
+    {
+      "file": "cbt.ts",
+      "method": "GET",
+      "fullPath": "/api/cbt/:id"
+    },
+    {
+      "file": "cbt.ts",
+      "method": "PUT",
+      "fullPath": "/api/cbt/:id"
+    },
+    {
+      "file": "cbt.ts",
+      "method": "DELETE",
+      "fullPath": "/api/cbt/:id"
+    },
+    {
+      "file": "cbt.ts",
+      "method": "POST",
+      "fullPath": "/api/cbt/:id/questions"
+    },
+    {
+      "file": "cbt.ts",
+      "method": "DELETE",
+      "fullPath": "/api/cbt/:examId/questions/:questionId"
+    },
+    {
+      "file": "chaplaincy.ts",
+      "method": "GET",
+      "fullPath": "/api/chaplaincy/events"
+    },
+    {
+      "file": "chaplaincy.ts",
+      "method": "POST",
+      "fullPath": "/api/chaplaincy/events"
+    },
+    {
+      "file": "chaplaincy.ts",
+      "method": "POST",
+      "fullPath": "/api/chaplaincy/broadcast"
+    },
+    {
+      "file": "chaplaincy.ts",
+      "method": "GET",
+      "fullPath": "/api/chaplaincy/religion-stats"
+    },
+    {
+      "file": "chaplaincy.ts",
+      "method": "GET",
+      "fullPath": "/api/chaplaincy/team"
+    },
+    {
+      "file": "chat.ts",
+      "method": "POST",
+      "fullPath": "/api/chat/santa"
+    },
+    {
+      "file": "classes.ts",
+      "method": "GET",
+      "fullPath": "/api/classes"
+    },
+    {
+      "file": "classes.ts",
+      "method": "POST",
+      "fullPath": "/api/classes"
+    },
+    {
+      "file": "classes.ts",
+      "method": "PUT",
+      "fullPath": "/api/classes/:id"
+    },
+    {
+      "file": "classes.ts",
+      "method": "POST",
+      "fullPath": "/api/classes/bulk-upload"
+    },
+    {
+      "file": "classes.ts",
+      "method": "GET",
+      "fullPath": "/api/classes/sections"
+    },
+    {
+      "file": "classes.ts",
+      "method": "POST",
+      "fullPath": "/api/classes/sections"
+    },
+    {
+      "file": "classes.ts",
+      "method": "DELETE",
+      "fullPath": "/api/classes/sections/:id"
+    },
+    {
+      "file": "classes.ts",
+      "method": "DELETE",
+      "fullPath": "/api/classes/:id"
+    },
+    {
+      "file": "classes.ts",
+      "method": "POST",
+      "fullPath": "/api/classes/:id/subject-teachers"
+    },
+    {
+      "file": "classes.ts",
+      "method": "DELETE",
+      "fullPath": "/api/classes/:id/subject-teachers/:recordId"
+    },
+    {
+      "file": "clinic.ts",
+      "method": "GET",
+      "fullPath": "/api/clinic/appointments"
+    },
+    {
+      "file": "clinic.ts",
+      "method": "POST",
+      "fullPath": "/api/clinic/appointments"
+    },
+    {
+      "file": "clinic.ts",
+      "method": "DELETE",
+      "fullPath": "/api/clinic/appointments/:id"
+    },
+    {
+      "file": "clinic.ts",
+      "method": "GET",
+      "fullPath": "/api/clinic/complaints"
+    },
+    {
+      "file": "clinic.ts",
+      "method": "POST",
+      "fullPath": "/api/clinic/complaints"
+    },
+    {
+      "file": "clinic.ts",
+      "method": "DELETE",
+      "fullPath": "/api/clinic/complaints/:id"
+    },
+    {
+      "file": "clinic.ts",
+      "method": "GET",
+      "fullPath": "/api/clinic/emergencies"
+    },
+    {
+      "file": "clinic.ts",
+      "method": "POST",
+      "fullPath": "/api/clinic/emergencies"
+    },
+    {
+      "file": "clinic.ts",
+      "method": "DELETE",
+      "fullPath": "/api/clinic/emergencies/:id"
+    },
+    {
+      "file": "clinic.ts",
+      "method": "GET",
+      "fullPath": "/api/clinic/immunizations"
+    },
+    {
+      "file": "clinic.ts",
+      "method": "POST",
+      "fullPath": "/api/clinic/immunizations"
+    },
+    {
+      "file": "clinic.ts",
+      "method": "DELETE",
+      "fullPath": "/api/clinic/immunizations/:id"
+    },
+    {
+      "file": "clinic.ts",
+      "method": "GET",
+      "fullPath": "/api/clinic/referrals"
+    },
+    {
+      "file": "clinic.ts",
+      "method": "POST",
+      "fullPath": "/api/clinic/referrals"
+    },
+    {
+      "file": "clinic.ts",
+      "method": "DELETE",
+      "fullPath": "/api/clinic/referrals/:id"
+    },
+    {
+      "file": "content.ts",
+      "method": "PATCH",
+      "fullPath": "/api/content/branding"
+    },
+    {
+      "file": "content.ts",
+      "method": "POST",
+      "fullPath": "/api/content/news"
+    },
+    {
+      "file": "content.ts",
+      "method": "DELETE",
+      "fullPath": "/api/content/news/:id"
+    },
+    {
+      "file": "content.ts",
+      "method": "GET",
+      "fullPath": "/api/content/announcements"
+    },
+    {
+      "file": "content.ts",
+      "method": "POST",
+      "fullPath": "/api/content/announcements"
+    },
+    {
+      "file": "content.ts",
+      "method": "DELETE",
+      "fullPath": "/api/content/announcements/:id"
+    },
+    {
+      "file": "courses.ts",
+      "method": "GET",
+      "fullPath": "/api/courses"
+    },
+    {
+      "file": "courses.ts",
+      "method": "POST",
+      "fullPath": "/api/courses"
+    },
+    {
+      "file": "courses.ts",
+      "method": "POST",
+      "fullPath": "/api/courses/enroll"
+    },
+    {
+      "file": "courses.ts",
+      "method": "GET",
+      "fullPath": "/api/courses/:courseId/enrollments"
+    },
+    {
+      "file": "courses.ts",
+      "method": "GET",
+      "fullPath": "/api/courses/revenue/report"
+    },
+    {
+      "file": "dashboard.ts",
+      "method": "GET",
+      "fullPath": "/api/dashboard/admin"
+    },
+    {
+      "file": "dashboard.ts",
+      "method": "GET",
+      "fullPath": "/api/dashboard/teacher"
+    },
+    {
+      "file": "dashboard.ts",
+      "method": "GET",
+      "fullPath": "/api/dashboard/bursar"
+    },
+    {
+      "file": "dashboard.ts",
+      "method": "GET",
+      "fullPath": "/api/dashboard/library"
+    },
+    {
+      "file": "dashboard.ts",
+      "method": "GET",
+      "fullPath": "/api/dashboard/acadex"
+    },
+    {
+      "file": "dashboard.ts",
+      "method": "GET",
+      "fullPath": "/api/dashboard/applicant"
+    },
+    {
+      "file": "dashboard.ts",
+      "method": "GET",
+      "fullPath": "/api/dashboard/ancillary"
+    },
+    {
+      "file": "departments.ts",
+      "method": "GET",
+      "fullPath": "/api/departments"
+    },
+    {
+      "file": "departments.ts",
+      "method": "POST",
+      "fullPath": "/api/departments"
+    },
+    {
+      "file": "departments.ts",
+      "method": "PUT",
+      "fullPath": "/api/departments/:id"
+    },
+    {
+      "file": "departments.ts",
+      "method": "DELETE",
+      "fullPath": "/api/departments/:id"
+    },
+    {
+      "file": "dining-hall.ts",
+      "method": "GET",
+      "fullPath": "/api/dining-hall/menu"
+    },
+    {
+      "file": "dining-hall.ts",
+      "method": "POST",
+      "fullPath": "/api/dining-hall/menu"
+    },
+    {
+      "file": "dining-hall.ts",
+      "method": "GET",
+      "fullPath": "/api/dining-hall/reports"
+    },
+    {
+      "file": "dining-hall.ts",
+      "method": "POST",
+      "fullPath": "/api/dining-hall/reports"
+    },
+    {
+      "file": "extensions.ts",
+      "method": "GET",
+      "fullPath": "/api/extensions"
+    },
+    {
+      "file": "extensions.ts",
+      "method": "POST",
+      "fullPath": "/api/extensions"
+    },
+    {
+      "file": "extensions.ts",
+      "method": "PATCH",
+      "fullPath": "/api/extensions/:id"
+    },
+    {
+      "file": "farm.ts",
+      "method": "GET",
+      "fullPath": "/api/farm/livestock"
+    },
+    {
+      "file": "farm.ts",
+      "method": "POST",
+      "fullPath": "/api/farm/livestock"
+    },
+    {
+      "file": "farm.ts",
+      "method": "GET",
+      "fullPath": "/api/farm/crops"
+    },
+    {
+      "file": "farm.ts",
+      "method": "POST",
+      "fullPath": "/api/farm/crops"
+    },
+    {
+      "file": "farm.ts",
+      "method": "GET",
+      "fullPath": "/api/farm/inventory"
+    },
+    {
+      "file": "farm.ts",
+      "method": "POST",
+      "fullPath": "/api/farm/inventory"
+    },
+    {
+      "file": "fees.ts",
+      "method": "GET",
+      "fullPath": "/api/fees/stats"
+    },
+    {
+      "file": "fees.ts",
+      "method": "GET",
+      "fullPath": "/api/fees/template"
+    },
+    {
+      "file": "fees.ts",
+      "method": "POST",
+      "fullPath": "/api/fees/import"
+    },
+    {
+      "file": "fees.ts",
+      "method": "GET",
+      "fullPath": "/api/fees/groups"
+    },
+    {
+      "file": "fees.ts",
+      "method": "POST",
+      "fullPath": "/api/fees/groups"
+    },
+    {
+      "file": "fees.ts",
+      "method": "DELETE",
+      "fullPath": "/api/fees/groups/:id"
+    },
+    {
+      "file": "fees.ts",
+      "method": "GET",
+      "fullPath": "/api/fees/students-list"
+    },
+    {
+      "file": "fees.ts",
+      "method": "POST",
+      "fullPath": "/api/fees/invoice/standard"
+    },
+    {
+      "file": "fees.ts",
+      "method": "POST",
+      "fullPath": "/api/fees/invoice/custom"
+    },
+    {
+      "file": "fees.ts",
+      "method": "GET",
+      "fullPath": "/api/fees/reminder-logs"
+    },
+    {
+      "file": "fees.ts",
+      "method": "POST",
+      "fullPath": "/api/fees/reminder-logs/:id/retry"
+    },
+    {
+      "file": "fees.ts",
+      "method": "GET",
+      "fullPath": "/api/fees/bulk-invoices"
+    },
+    {
+      "file": "fees.ts",
+      "method": "POST",
+      "fullPath": "/api/fees/bulk-invoices"
+    },
+    {
+      "file": "fees.ts",
+      "method": "DELETE",
+      "fullPath": "/api/fees/bulk-invoices/:id"
+    },
+    {
+      "file": "fees.ts",
+      "method": "GET",
+      "fullPath": "/api/fees/invoices"
+    },
+    {
+      "file": "fees.ts",
+      "method": "POST",
+      "fullPath": "/api/fees/invoices/:id/pay"
+    },
+    {
+      "file": "fees.ts",
+      "method": "GET",
+      "fullPath": "/api/fees/payments"
+    },
+    {
+      "file": "fees.ts",
+      "method": "POST",
+      "fullPath": "/api/fees/ledger"
+    },
+    {
+      "file": "fees.ts",
+      "method": "GET",
+      "fullPath": "/api/fees/ledgers"
+    },
+    {
+      "file": "finance.ts",
+      "method": "GET",
+      "fullPath": "/api/finance/payment-methods"
+    },
+    {
+      "file": "finance.ts",
+      "method": "POST",
+      "fullPath": "/api/finance/payment-methods"
+    },
+    {
+      "file": "finance.ts",
+      "method": "DELETE",
+      "fullPath": "/api/finance/payment-methods/:id"
+    },
+    {
+      "file": "finance.ts",
+      "method": "GET",
+      "fullPath": "/api/finance/revenue-allocations"
+    },
+    {
+      "file": "finance.ts",
+      "method": "POST",
+      "fullPath": "/api/finance/revenue-allocations"
+    },
+    {
+      "file": "finance.ts",
+      "method": "PATCH",
+      "fullPath": "/api/finance/revenue-allocations/:id/toggle"
+    },
+    {
+      "file": "funding.ts",
+      "method": "GET",
+      "fullPath": "/api/funding"
+    },
+    {
+      "file": "funding.ts",
+      "method": "POST",
+      "fullPath": "/api/funding"
+    },
+    {
+      "file": "funding.ts",
+      "method": "PATCH",
+      "fullPath": "/api/funding/:id"
+    },
+    {
+      "file": "funding.ts",
+      "method": "DELETE",
+      "fullPath": "/api/funding/:id"
+    },
+    {
+      "file": "grades.ts",
+      "method": "GET",
+      "fullPath": "/api/grades/class/:classId"
+    },
+    {
+      "file": "grades.ts",
+      "method": "GET",
+      "fullPath": "/api/grades/subject/:classId/:subjectId"
+    },
+    {
+      "file": "grades.ts",
+      "method": "POST",
+      "fullPath": "/api/grades/bulk"
+    },
+    {
+      "file": "grading.ts",
+      "method": "GET",
+      "fullPath": "/api/grading/grading"
+    },
+    {
+      "file": "grading.ts",
+      "method": "POST",
+      "fullPath": "/api/grading/grading"
+    },
+    {
+      "file": "hr-applications.ts",
+      "method": "GET",
+      "fullPath": "/api/hr/applications"
+    },
+    {
+      "file": "hr-applications.ts",
+      "method": "PUT",
+      "fullPath": "/api/hr/applications/:id/status"
+    },
+    {
+      "file": "hr-applications.ts",
+      "method": "DELETE",
+      "fullPath": "/api/hr/applications/:id"
+    },
+    {
+      "file": "hr-applications.ts",
+      "method": "POST",
+      "fullPath": "/api/hr/applications"
+    },
+    {
+      "file": "hr-vacancies.ts",
+      "method": "GET",
+      "fullPath": "/api/hr/vacancies"
+    },
+    {
+      "file": "hr-vacancies.ts",
+      "method": "POST",
+      "fullPath": "/api/hr/vacancies"
+    },
+    {
+      "file": "hr-vacancies.ts",
+      "method": "DELETE",
+      "fullPath": "/api/hr/vacancies/:id"
+    },
+    {
+      "file": "inventory.ts",
+      "method": "GET",
+      "fullPath": "/api/inventory/products"
+    },
+    {
+      "file": "inventory.ts",
+      "method": "POST",
+      "fullPath": "/api/inventory/products"
+    },
+    {
+      "file": "inventory.ts",
+      "method": "DELETE",
+      "fullPath": "/api/inventory/products/:id"
+    },
+    {
+      "file": "inventory.ts",
+      "method": "POST",
+      "fullPath": "/api/inventory/bill"
+    },
+    {
+      "file": "inventory.ts",
+      "method": "GET",
+      "fullPath": "/api/inventory/consumption"
+    },
+    {
+      "file": "inventory.ts",
+      "method": "POST",
+      "fullPath": "/api/inventory/consumption"
+    },
+    {
+      "file": "leave.ts",
+      "method": "GET",
+      "fullPath": "/api/leave/my"
+    },
+    {
+      "file": "leave.ts",
+      "method": "POST",
+      "fullPath": "/api/leave"
+    },
+    {
+      "file": "lesson-plan.ts",
+      "method": "GET",
+      "fullPath": "/api/lesson-plan"
+    },
+    {
+      "file": "lesson-plan.ts",
+      "method": "POST",
+      "fullPath": "/api/lesson-plan"
+    },
+    {
+      "file": "lesson-plan.ts",
+      "method": "DELETE",
+      "fullPath": "/api/lesson-plan/:id"
+    },
+    {
+      "file": "library.ts",
+      "method": "GET",
+      "fullPath": "/api/library/books"
+    },
+    {
+      "file": "library.ts",
+      "method": "GET",
+      "fullPath": "/api/library/categories"
+    },
+    {
+      "file": "library.ts",
+      "method": "POST",
+      "fullPath": "/api/library/categories"
+    },
+    {
+      "file": "library.ts",
+      "method": "GET",
+      "fullPath": "/api/library/reports"
+    },
+    {
+      "file": "library.ts",
+      "method": "GET",
+      "fullPath": "/api/library/digital"
+    },
+    {
+      "file": "library.ts",
+      "method": "GET",
+      "fullPath": "/api/library/loans/overdue"
+    },
+    {
+      "file": "library.ts",
+      "method": "POST",
+      "fullPath": "/api/library/books"
+    },
+    {
+      "file": "library.ts",
+      "method": "PATCH",
+      "fullPath": "/api/library/books/:id"
+    },
+    {
+      "file": "library.ts",
+      "method": "GET",
+      "fullPath": "/api/library/my-books"
+    },
+    {
+      "file": "library.ts",
+      "method": "GET",
+      "fullPath": "/api/library/loans"
+    },
+    {
+      "file": "library.ts",
+      "method": "POST",
+      "fullPath": "/api/library/loans/issue"
+    },
+    {
+      "file": "library.ts",
+      "method": "POST",
+      "fullPath": "/api/library/loans/:id/return"
+    },
+    {
+      "file": "live-class.ts",
+      "method": "GET",
+      "fullPath": "/api/live-class"
+    },
+    {
+      "file": "live-class.ts",
+      "method": "POST",
+      "fullPath": "/api/live-class"
+    },
+    {
+      "file": "live-class.ts",
+      "method": "DELETE",
+      "fullPath": "/api/live-class/:id"
+    },
+    {
+      "file": "meeting-minutes.ts",
+      "method": "GET",
+      "fullPath": "/api/meeting-minutes"
+    },
+    {
+      "file": "meeting-minutes.ts",
+      "method": "POST",
+      "fullPath": "/api/meeting-minutes"
+    },
+    {
+      "file": "meeting-minutes.ts",
+      "method": "DELETE",
+      "fullPath": "/api/meeting-minutes/:id"
+    },
+    {
+      "file": "messages.ts",
+      "method": "GET",
+      "fullPath": "/api/messages"
+    },
+    {
+      "file": "messages.ts",
+      "method": "GET",
+      "fullPath": "/api/messages/users"
+    },
+    {
+      "file": "messages.ts",
+      "method": "POST",
+      "fullPath": "/api/messages"
+    },
+    {
+      "file": "messages.ts",
+      "method": "PATCH",
+      "fullPath": "/api/messages/:id/read"
+    },
+    {
+      "file": "messages.ts",
+      "method": "DELETE",
+      "fullPath": "/api/messages/:id"
+    },
+    {
+      "file": "payment-plans.ts",
+      "method": "POST",
+      "fullPath": "/api/payment-plans"
+    },
+    {
+      "file": "payment-plans.ts",
+      "method": "GET",
+      "fullPath": "/api/payment-plans/my"
+    },
+    {
+      "file": "payment-plans.ts",
+      "method": "GET",
+      "fullPath": "/api/payment-plans/admin"
+    },
+    {
+      "file": "payment-plans.ts",
+      "method": "PATCH",
+      "fullPath": "/api/payment-plans/:id/status"
+    },
+    {
+      "file": "payment-plans.ts",
+      "method": "GET",
+      "fullPath": "/api/payment-plans/templates"
+    },
+    {
+      "file": "payment-plans.ts",
+      "method": "POST",
+      "fullPath": "/api/payment-plans/templates"
+    },
+    {
+      "file": "payment-plans.ts",
+      "method": "DELETE",
+      "fullPath": "/api/payment-plans/templates/:id"
+    },
+    {
+      "file": "payroll.ts",
+      "method": "GET",
+      "fullPath": "/api/payroll/allowances"
+    },
+    {
+      "file": "payroll.ts",
+      "method": "POST",
+      "fullPath": "/api/payroll/allowances"
+    },
+    {
+      "file": "payroll.ts",
+      "method": "DELETE",
+      "fullPath": "/api/payroll/allowances/:id"
+    },
+    {
+      "file": "payroll.ts",
+      "method": "GET",
+      "fullPath": "/api/payroll/deductions"
+    },
+    {
+      "file": "payroll.ts",
+      "method": "POST",
+      "fullPath": "/api/payroll/deductions"
+    },
+    {
+      "file": "payroll.ts",
+      "method": "DELETE",
+      "fullPath": "/api/payroll/deductions/:id"
+    },
+    {
+      "file": "payroll.ts",
+      "method": "GET",
+      "fullPath": "/api/payroll/tax-tables"
+    },
+    {
+      "file": "payroll.ts",
+      "method": "POST",
+      "fullPath": "/api/payroll/tax-tables"
+    },
+    {
+      "file": "payroll.ts",
+      "method": "DELETE",
+      "fullPath": "/api/payroll/tax-tables/:id"
+    },
+    {
+      "file": "payroll.ts",
+      "method": "GET",
+      "fullPath": "/api/payroll/employees"
+    },
+    {
+      "file": "payroll.ts",
+      "method": "PUT",
+      "fullPath": "/api/payroll/employees/:userId"
+    },
+    {
+      "file": "payroll.ts",
+      "method": "GET",
+      "fullPath": "/api/payroll/entries"
+    },
+    {
+      "file": "payroll.ts",
+      "method": "POST",
+      "fullPath": "/api/payroll/entry"
+    },
+    {
+      "file": "payslips.ts",
+      "method": "GET",
+      "fullPath": "/api/payslips/my"
+    },
+    {
+      "file": "prefects.ts",
+      "method": "GET",
+      "fullPath": "/api/prefects/duties"
+    },
+    {
+      "file": "prefects.ts",
+      "method": "POST",
+      "fullPath": "/api/prefects/duties"
+    },
+    {
+      "file": "prefects.ts",
+      "method": "GET",
+      "fullPath": "/api/prefects/meetings"
+    },
+    {
+      "file": "prefects.ts",
+      "method": "POST",
+      "fullPath": "/api/prefects/meetings"
+    },
+    {
+      "file": "prefects.ts",
+      "method": "GET",
+      "fullPath": "/api/prefects/reports"
+    },
+    {
+      "file": "prefects.ts",
+      "method": "POST",
+      "fullPath": "/api/prefects/reports"
+    },
+    {
+      "file": "procurement.ts",
+      "method": "GET",
+      "fullPath": "/api/procurement/requisitions"
+    },
+    {
+      "file": "procurement.ts",
+      "method": "POST",
+      "fullPath": "/api/procurement/requisitions"
+    },
+    {
+      "file": "procurement.ts",
+      "method": "PATCH",
+      "fullPath": "/api/procurement/requisitions/:id/approve"
+    },
+    {
+      "file": "public.ts",
+      "method": "GET",
+      "fullPath": "/api/public/announcements"
+    },
+    {
+      "file": "public.ts",
+      "method": "GET",
+      "fullPath": "/api/public/news"
+    },
+    {
+      "file": "public.ts",
+      "method": "GET",
+      "fullPath": "/api/public/schools/:code/data"
+    },
+    {
+      "file": "public.ts",
+      "method": "POST",
+      "fullPath": "/api/public/inquiries"
+    },
+    {
+      "file": "public.ts",
+      "method": "GET",
+      "fullPath": "/api/public/schools/:code/departments"
+    },
+    {
+      "file": "public.ts",
+      "method": "GET",
+      "fullPath": "/api/public/vacancies"
+    },
+    {
+      "file": "public.ts",
+      "method": "POST",
+      "fullPath": "/api/public/applications"
+    },
+    {
+      "file": "public.ts",
+      "method": "GET",
+      "fullPath": "/api/public/noticeboard"
+    },
+    {
+      "file": "reception.ts",
+      "method": "GET",
+      "fullPath": "/api/reception/inquiries"
+    },
+    {
+      "file": "reception.ts",
+      "method": "POST",
+      "fullPath": "/api/reception/inquiries"
+    },
+    {
+      "file": "reception.ts",
+      "method": "GET",
+      "fullPath": "/api/reception/visitors"
+    },
+    {
+      "file": "reception.ts",
+      "method": "POST",
+      "fullPath": "/api/reception/visitors"
+    },
+    {
+      "file": "reception.ts",
+      "method": "GET",
+      "fullPath": "/api/reception/calls"
+    },
+    {
+      "file": "reception.ts",
+      "method": "POST",
+      "fullPath": "/api/reception/calls"
+    },
+    {
+      "file": "reception.ts",
+      "method": "GET",
+      "fullPath": "/api/reception/complaints"
+    },
+    {
+      "file": "reception.ts",
+      "method": "POST",
+      "fullPath": "/api/reception/complaints"
+    },
+    {
+      "file": "reception.ts",
+      "method": "DELETE",
+      "fullPath": "/api/reception/inquiries/:id"
+    },
+    {
+      "file": "reception.ts",
+      "method": "DELETE",
+      "fullPath": "/api/reception/visitors/:id"
+    },
+    {
+      "file": "reception.ts",
+      "method": "DELETE",
+      "fullPath": "/api/reception/calls/:id"
+    },
+    {
+      "file": "reception.ts",
+      "method": "DELETE",
+      "fullPath": "/api/reception/complaints/:id"
+    },
+    {
+      "file": "report-data.ts",
+      "method": "GET",
+      "fullPath": "/api/report-data/summary"
+    },
+    {
+      "file": "report-data.ts",
+      "method": "GET",
+      "fullPath": "/api/report-data/fees-balances"
+    },
+    {
+      "file": "report-data.ts",
+      "method": "GET",
+      "fullPath": "/api/report-data/payroll-runs"
+    },
+    {
+      "file": "report-data.ts",
+      "method": "GET",
+      "fullPath": "/api/report-data/payroll-run-details/:id"
+    },
+    {
+      "file": "report-data.ts",
+      "method": "GET",
+      "fullPath": "/api/report-data/employee-payslips"
+    },
+    {
+      "file": "report-data.ts",
+      "method": "GET",
+      "fullPath": "/api/report-data/tax-contributions"
+    },
+    {
+      "file": "report-data.ts",
+      "method": "GET",
+      "fullPath": "/api/report-data/grocery-consumption"
+    },
+    {
+      "file": "report-data.ts",
+      "method": "GET",
+      "fullPath": "/api/report-data/profit-loss"
+    },
+    {
+      "file": "report-data.ts",
+      "method": "GET",
+      "fullPath": "/api/report-data/detailed-expenses"
+    },
+    {
+      "file": "report-data.ts",
+      "method": "GET",
+      "fullPath": "/api/report-data/revenue-allocation"
+    },
+    {
+      "file": "report-data.ts",
+      "method": "GET",
+      "fullPath": "/api/report-data/enrollment-grouped"
+    },
+    {
+      "file": "report-data.ts",
+      "method": "GET",
+      "fullPath": "/api/report-data/fees-takings"
+    },
+    {
+      "file": "report-data.ts",
+      "method": "GET",
+      "fullPath": "/api/report-data/payments-analytics"
+    },
+    {
+      "file": "report-data.ts",
+      "method": "GET",
+      "fullPath": "/api/report-data/student-debtors"
+    },
+    {
+      "file": "report-data.ts",
+      "method": "GET",
+      "fullPath": "/api/report-data/balances-summary"
+    },
+    {
+      "file": "report-data.ts",
+      "method": "GET",
+      "fullPath": "/api/report-data/single-fee-group"
+    },
+    {
+      "file": "report-data.ts",
+      "method": "GET",
+      "fullPath": "/api/report-data/student-balances"
+    },
+    {
+      "file": "report-data.ts",
+      "method": "GET",
+      "fullPath": "/api/report-data/communication-logs"
+    },
+    {
+      "file": "report-data.ts",
+      "method": "GET",
+      "fullPath": "/api/report-data/payment-history"
+    },
+    {
+      "file": "report-data.ts",
+      "method": "GET",
+      "fullPath": "/api/report-data/uniforms-analytics"
+    },
+    {
+      "file": "report-data.ts",
+      "method": "GET",
+      "fullPath": "/api/report-data/fees-payments"
+    },
+    {
+      "file": "report-data.ts",
+      "method": "GET",
+      "fullPath": "/api/report-data/audit-logs"
+    },
+    {
+      "file": "report-data.ts",
+      "method": "GET",
+      "fullPath": "/api/report-data/fee-reminders"
+    },
+    {
+      "file": "report-data.ts",
+      "method": "GET",
+      "fullPath": "/api/report-data/institutional-overview"
+    },
+    {
+      "file": "reports.ts",
+      "method": "GET",
+      "fullPath": "/api/reports/classes"
+    },
+    {
+      "file": "reports.ts",
+      "method": "GET",
+      "fullPath": "/api/reports/preview"
+    },
+    {
+      "file": "reports.ts",
+      "method": "POST",
+      "fullPath": "/api/reports/snapshot"
+    },
+    {
+      "file": "reports.ts",
+      "method": "GET",
+      "fullPath": "/api/reports/my"
+    },
+    {
+      "file": "reports.ts",
+      "method": "POST",
+      "fullPath": "/api/reports/template"
+    },
+    {
+      "file": "reports.ts",
+      "method": "GET",
+      "fullPath": "/api/reports/template"
+    },
+    {
+      "file": "reports.ts",
+      "method": "PATCH",
+      "fullPath": "/api/reports/cert-template"
+    },
+    {
+      "file": "reports.ts",
+      "method": "GET",
+      "fullPath": "/api/reports/download/:id"
+    },
+    {
+      "file": "reports.ts",
+      "method": "GET",
+      "fullPath": "/api/reports/principal-comments/:classId"
+    },
+    {
+      "file": "reports.ts",
+      "method": "POST",
+      "fullPath": "/api/reports/principal-comments/bulk"
+    },
+    {
+      "file": "schedules.ts",
+      "method": "GET",
+      "fullPath": "/api/schedules/my"
+    },
+    {
+      "file": "schedules.ts",
+      "method": "GET",
+      "fullPath": "/api/schedules/staff"
+    },
+    {
+      "file": "schedules.ts",
+      "method": "POST",
+      "fullPath": "/api/schedules"
+    },
+    {
+      "file": "schedules.ts",
+      "method": "DELETE",
+      "fullPath": "/api/schedules/:id"
+    },
+    {
+      "file": "schools.ts",
+      "method": "GET",
+      "fullPath": "/api/schools/settings"
+    },
+    {
+      "file": "schools.ts",
+      "method": "PATCH",
+      "fullPath": "/api/schools/settings"
+    },
+    {
+      "file": "schools.ts",
+      "method": "GET",
+      "fullPath": "/api/schools/me"
+    },
+    {
+      "file": "schools.ts",
+      "method": "PATCH",
+      "fullPath": "/api/schools/me/plan"
+    },
+    {
+      "file": "schools.ts",
+      "method": "PATCH",
+      "fullPath": "/api/schools/branding"
+    },
+    {
+      "file": "schools.ts",
+      "method": "PATCH",
+      "fullPath": "/api/schools/info"
+    },
+    {
+      "file": "schools.ts",
+      "method": "GET",
+      "fullPath": "/api/schools"
+    },
+    {
+      "file": "schools.ts",
+      "method": "PATCH",
+      "fullPath": "/api/schools/id-template"
+    },
+    {
+      "file": "schools.ts",
+      "method": "PATCH",
+      "fullPath": "/api/schools/id-template/front"
+    },
+    {
+      "file": "schools.ts",
+      "method": "PATCH",
+      "fullPath": "/api/schools/id-template/back"
+    },
+    {
+      "file": "schools.ts",
+      "method": "GET",
+      "fullPath": "/api/schools/id-card/students"
+    },
+    {
+      "file": "schools.ts",
+      "method": "GET",
+      "fullPath": "/api/schools/id-card/data/:studentId"
+    },
+    {
+      "file": "schools.ts",
+      "method": "PATCH",
+      "fullPath": "/api/schools/favicon"
+    },
+    {
+      "file": "schools.ts",
+      "method": "GET",
+      "fullPath": "/api/schools/houses"
+    },
+    {
+      "file": "schools.ts",
+      "method": "POST",
+      "fullPath": "/api/schools/houses"
+    },
+    {
+      "file": "schools.ts",
+      "method": "PATCH",
+      "fullPath": "/api/schools/houses/:id"
+    },
+    {
+      "file": "schools.ts",
+      "method": "DELETE",
+      "fullPath": "/api/schools/houses/:id"
+    },
+    {
+      "file": "schools.ts",
+      "method": "POST",
+      "fullPath": "/api/schools/houses/assign-student"
+    },
+    {
+      "file": "schools.ts",
+      "method": "GET",
+      "fullPath": "/api/schools/houses/:id/members"
+    },
+    {
+      "file": "schools.ts",
+      "method": "GET",
+      "fullPath": "/api/schools/clubs-list"
+    },
+    {
+      "file": "schools.ts",
+      "method": "POST",
+      "fullPath": "/api/schools/clubs-list"
+    },
+    {
+      "file": "schools.ts",
+      "method": "PATCH",
+      "fullPath": "/api/schools/clubs-list/:id"
+    },
+    {
+      "file": "schools.ts",
+      "method": "DELETE",
+      "fullPath": "/api/schools/clubs-list/:id"
+    },
+    {
+      "file": "schools.ts",
+      "method": "GET",
+      "fullPath": "/api/schools/sports-list"
+    },
+    {
+      "file": "schools.ts",
+      "method": "POST",
+      "fullPath": "/api/schools/sports-list"
+    },
+    {
+      "file": "schools.ts",
+      "method": "PATCH",
+      "fullPath": "/api/schools/sports-list/:id"
+    },
+    {
+      "file": "schools.ts",
+      "method": "DELETE",
+      "fullPath": "/api/schools/sports-list/:id"
+    },
+    {
+      "file": "schools.ts",
+      "method": "GET",
+      "fullPath": "/api/schools/sports-equipment"
+    },
+    {
+      "file": "schools.ts",
+      "method": "POST",
+      "fullPath": "/api/schools/sports-equipment"
+    },
+    {
+      "file": "schools.ts",
+      "method": "PATCH",
+      "fullPath": "/api/schools/sports-equipment/:id"
+    },
+    {
+      "file": "schools.ts",
+      "method": "DELETE",
+      "fullPath": "/api/schools/sports-equipment/:id"
+    },
+    {
+      "file": "schools.ts",
+      "method": "GET",
+      "fullPath": "/api/schools/holidays"
+    },
+    {
+      "file": "schools.ts",
+      "method": "POST",
+      "fullPath": "/api/schools/holidays"
+    },
+    {
+      "file": "schools.ts",
+      "method": "DELETE",
+      "fullPath": "/api/schools/holidays/:id"
+    },
+    {
+      "file": "schools.ts",
+      "method": "GET",
+      "fullPath": "/api/schools/:code"
+    },
+    {
+      "file": "schools.ts",
+      "method": "PATCH",
+      "fullPath": "/api/schools/supplier-categories"
+    },
+    {
+      "file": "schools.ts",
+      "method": "PATCH",
+      "fullPath": "/api/schools/:code"
+    },
+    {
+      "file": "schools.ts",
+      "method": "DELETE",
+      "fullPath": "/api/schools/:code"
+    },
+    {
+      "file": "schools.ts",
+      "method": "GET",
+      "fullPath": "/api/schools/:code/content"
+    },
+    {
+      "file": "schools.ts",
+      "method": "GET",
+      "fullPath": "/api/schools/connections/pending"
+    },
+    {
+      "file": "schools.ts",
+      "method": "PATCH",
+      "fullPath": "/api/schools/connections/:userId/approve"
+    },
+    {
+      "file": "staff-attendance.ts",
+      "method": "GET",
+      "fullPath": "/api/staff-attendance/my"
+    },
+    {
+      "file": "staff-attendance.ts",
+      "method": "GET",
+      "fullPath": "/api/staff-attendance/today"
+    },
+    {
+      "file": "staff-attendance.ts",
+      "method": "POST",
+      "fullPath": "/api/staff-attendance/clock-in"
+    },
+    {
+      "file": "staff-attendance.ts",
+      "method": "POST",
+      "fullPath": "/api/staff-attendance/clock-out"
+    },
+    {
+      "file": "staff-attendance.ts",
+      "method": "GET",
+      "fullPath": "/api/staff-attendance/all"
+    },
+    {
+      "file": "students.ts",
+      "method": "GET",
+      "fullPath": "/api/students"
+    },
+    {
+      "file": "students.ts",
+      "method": "GET",
+      "fullPath": "/api/students/me/dashboard"
+    },
+    {
+      "file": "students.ts",
+      "method": "GET",
+      "fullPath": "/api/students/me/research"
+    },
+    {
+      "file": "students.ts",
+      "method": "GET",
+      "fullPath": "/api/students/me/portfolio"
+    },
+    {
+      "file": "students.ts",
+      "method": "GET",
+      "fullPath": "/api/students/assignments"
+    },
+    {
+      "file": "students.ts",
+      "method": "GET",
+      "fullPath": "/api/students/my-children"
+    },
+    {
+      "file": "students.ts",
+      "method": "GET",
+      "fullPath": "/api/students/:id"
+    },
+    {
+      "file": "students.ts",
+      "method": "POST",
+      "fullPath": "/api/students"
+    },
+    {
+      "file": "students.ts",
+      "method": "PATCH",
+      "fullPath": "/api/students/:id"
+    },
+    {
+      "file": "students.ts",
+      "method": "POST",
+      "fullPath": "/api/students/:id/calculate-standing"
+    },
+    {
+      "file": "students.ts",
+      "method": "DELETE",
+      "fullPath": "/api/students/:id"
+    },
+    {
+      "file": "students.ts",
+      "method": "POST",
+      "fullPath": "/api/students/:id/reset-password"
+    },
+    {
+      "file": "students.ts",
+      "method": "POST",
+      "fullPath": "/api/students/assignments/:id/start"
+    },
+    {
+      "file": "students.ts",
+      "method": "POST",
+      "fullPath": "/api/students/assignments/:id/submit"
+    },
+    {
+      "file": "students.ts",
+      "method": "GET",
+      "fullPath": "/api/students/me/books"
+    },
+    {
+      "file": "students.ts",
+      "method": "GET",
+      "fullPath": "/api/students/by-class/:classId"
+    },
+    {
+      "file": "students.ts",
+      "method": "POST",
+      "fullPath": "/api/students/migrate"
+    },
+    {
+      "file": "students.ts",
+      "method": "POST",
+      "fullPath": "/api/students/bulk-migrate"
+    },
+    {
+      "file": "study-materials.ts",
+      "method": "GET",
+      "fullPath": "/api/study-materials"
+    },
+    {
+      "file": "study-materials.ts",
+      "method": "POST",
+      "fullPath": "/api/study-materials"
+    },
+    {
+      "file": "study-materials.ts",
+      "method": "DELETE",
+      "fullPath": "/api/study-materials/:id"
+    },
+    {
+      "file": "subjects.ts",
+      "method": "GET",
+      "fullPath": "/api/subjects"
+    },
+    {
+      "file": "subjects.ts",
+      "method": "POST",
+      "fullPath": "/api/subjects"
+    },
+    {
+      "file": "subjects.ts",
+      "method": "PUT",
+      "fullPath": "/api/subjects/:id"
+    },
+    {
+      "file": "subjects.ts",
+      "method": "DELETE",
+      "fullPath": "/api/subjects/:id"
+    },
+    {
+      "file": "supervisors.ts",
+      "method": "GET",
+      "fullPath": "/api/supervisors/my-students"
+    },
+    {
+      "file": "supervisors.ts",
+      "method": "POST",
+      "fullPath": "/api/supervisors/assign"
+    },
+    {
+      "file": "supervisors.ts",
+      "method": "POST",
+      "fullPath": "/api/supervisors/reports"
+    },
+    {
+      "file": "support.ts",
+      "method": "GET",
+      "fullPath": "/api/support/my"
+    },
+    {
+      "file": "support.ts",
+      "method": "GET",
+      "fullPath": "/api/support/admin"
+    },
+    {
+      "file": "support.ts",
+      "method": "POST",
+      "fullPath": "/api/support"
+    },
+    {
+      "file": "support.ts",
+      "method": "PATCH",
+      "fullPath": "/api/support/:id"
+    },
+    {
+      "file": "syllabus.ts",
+      "method": "GET",
+      "fullPath": "/api/syllabus"
+    },
+    {
+      "file": "syllabus.ts",
+      "method": "POST",
+      "fullPath": "/api/syllabus"
+    },
+    {
+      "file": "syllabus.ts",
+      "method": "DELETE",
+      "fullPath": "/api/syllabus/:id"
+    },
+    {
+      "file": "teachers.ts",
+      "method": "GET",
+      "fullPath": "/api/teachers"
+    },
+    {
+      "file": "teachers.ts",
+      "method": "POST",
+      "fullPath": "/api/teachers/assignments"
+    },
+    {
+      "file": "teachers.ts",
+      "method": "PATCH",
+      "fullPath": "/api/teachers/assignments/:id/toggle-status"
+    },
+    {
+      "file": "teachers.ts",
+      "method": "GET",
+      "fullPath": "/api/teachers/assignments"
+    },
+    {
+      "file": "teachers.ts",
+      "method": "GET",
+      "fullPath": "/api/teachers/assignments/:id"
+    },
+    {
+      "file": "teachers.ts",
+      "method": "GET",
+      "fullPath": "/api/teachers/assignments/:id/submissions"
+    },
+    {
+      "file": "teachers.ts",
+      "method": "POST",
+      "fullPath": "/api/teachers/submissions/:id/grade"
+    },
+    {
+      "file": "teachers.ts",
+      "method": "POST",
+      "fullPath": "/api/teachers/attendance/mark-bulk"
+    },
+    {
+      "file": "teachers.ts",
+      "method": "POST",
+      "fullPath": "/api/teachers/textbooks/issue"
+    },
+    {
+      "file": "teachers.ts",
+      "method": "GET",
+      "fullPath": "/api/teachers/textbooks"
+    },
+    {
+      "file": "teachers.ts",
+      "method": "GET",
+      "fullPath": "/api/teachers/my-classes"
+    },
+    {
+      "file": "teachers.ts",
+      "method": "GET",
+      "fullPath": "/api/teachers/my-students"
+    },
+    {
+      "file": "teachers.ts",
+      "method": "GET",
+      "fullPath": "/api/teachers/:id/load"
+    },
+    {
+      "file": "teachers.ts",
+      "method": "POST",
+      "fullPath": "/api/teachers/:id/load/assign"
+    },
+    {
+      "file": "teachers.ts",
+      "method": "POST",
+      "fullPath": "/api/teachers/:id/load/unassign"
+    },
+    {
+      "file": "teachers.ts",
+      "method": "POST",
+      "fullPath": "/api/teachers/attendance/mark-bulk"
+    },
+    {
+      "file": "timetable.ts",
+      "method": "GET",
+      "fullPath": "/api/timetable/class/:classId"
+    },
+    {
+      "file": "timetable.ts",
+      "method": "GET",
+      "fullPath": "/api/timetable/my"
+    },
+    {
+      "file": "timetable.ts",
+      "method": "POST",
+      "fullPath": "/api/timetable/save"
+    },
+    {
+      "file": "timetable.ts",
+      "method": "POST",
+      "fullPath": "/api/timetable/publish"
+    },
+    {
+      "file": "transfers.ts",
+      "method": "POST",
+      "fullPath": "/api/transfers/request"
+    },
+    {
+      "file": "transfers.ts",
+      "method": "POST",
+      "fullPath": "/api/transfers/:id/consent"
+    },
+    {
+      "file": "transfers.ts",
+      "method": "GET",
+      "fullPath": "/api/transfers/my-requests"
+    },
+    {
+      "file": "transport-routes.ts",
+      "method": "GET",
+      "fullPath": "/api/transport-routes"
+    },
+    {
+      "file": "transport-routes.ts",
+      "method": "POST",
+      "fullPath": "/api/transport-routes"
+    },
+    {
+      "file": "transport-routes.ts",
+      "method": "DELETE",
+      "fullPath": "/api/transport-routes/:id"
+    },
+    {
+      "file": "transport-routes.ts",
+      "method": "PUT",
+      "fullPath": "/api/transport-routes/:id"
+    },
+    {
+      "file": "transports.ts",
+      "method": "GET",
+      "fullPath": "/api/transports"
+    },
+    {
+      "file": "transports.ts",
+      "method": "POST",
+      "fullPath": "/api/transports"
+    },
+    {
+      "file": "transports.ts",
+      "method": "PUT",
+      "fullPath": "/api/transports/:id"
+    },
+    {
+      "file": "transports.ts",
+      "method": "DELETE",
+      "fullPath": "/api/transports/:id"
+    },
+    {
+      "file": "tuckshop.ts",
+      "method": "GET",
+      "fullPath": "/api/tuckshop/items"
+    },
+    {
+      "file": "tuckshop.ts",
+      "method": "POST",
+      "fullPath": "/api/tuckshop/items"
+    },
+    {
+      "file": "tuckshop.ts",
+      "method": "PUT",
+      "fullPath": "/api/tuckshop/items/:id"
+    },
+    {
+      "file": "tuckshop.ts",
+      "method": "POST",
+      "fullPath": "/api/tuckshop/sales"
+    },
+    {
+      "file": "tuckshop.ts",
+      "method": "GET",
+      "fullPath": "/api/tuckshop/sales/recent"
+    },
+    {
+      "file": "tuckshop.ts",
+      "method": "GET",
+      "fullPath": "/api/tuckshop/reports"
+    },
+    {
+      "file": "uniforms.ts",
+      "method": "GET",
+      "fullPath": "/api/uniforms/items"
+    },
+    {
+      "file": "uniforms.ts",
+      "method": "POST",
+      "fullPath": "/api/uniforms/items"
+    },
+    {
+      "file": "uniforms.ts",
+      "method": "PATCH",
+      "fullPath": "/api/uniforms/items/:id"
+    },
+    {
+      "file": "uniforms.ts",
+      "method": "DELETE",
+      "fullPath": "/api/uniforms/items/:id"
+    },
+    {
+      "file": "uniforms.ts",
+      "method": "GET",
+      "fullPath": "/api/uniforms/stock-orders"
+    },
+    {
+      "file": "uniforms.ts",
+      "method": "POST",
+      "fullPath": "/api/uniforms/stock-orders"
+    },
+    {
+      "file": "uniforms.ts",
+      "method": "GET",
+      "fullPath": "/api/uniforms/sales"
+    },
+    {
+      "file": "uniforms.ts",
+      "method": "POST",
+      "fullPath": "/api/uniforms/sales"
+    },
+    {
+      "file": "uniforms.ts",
+      "method": "GET",
+      "fullPath": "/api/uniforms/supplier-payments"
+    },
+    {
+      "file": "uniforms.ts",
+      "method": "POST",
+      "fullPath": "/api/uniforms/supplier-payments"
+    },
+    {
+      "file": "uniforms.ts",
+      "method": "GET",
+      "fullPath": "/api/uniforms/suppliers"
+    },
+    {
+      "file": "uniforms.ts",
+      "method": "POST",
+      "fullPath": "/api/uniforms/suppliers"
+    },
+    {
+      "file": "users.ts",
+      "method": "GET",
+      "fullPath": "/api/users/me"
+    },
+    {
+      "file": "users.ts",
+      "method": "GET",
+      "fullPath": "/api/users"
+    },
+    {
+      "file": "users.ts",
+      "method": "GET",
+      "fullPath": "/api/users/faculty"
+    },
+    {
+      "file": "users.ts",
+      "method": "POST",
+      "fullPath": "/api/users"
+    },
+    {
+      "file": "users.ts",
+      "method": "PUT",
+      "fullPath": "/api/users/me"
+    },
+    {
+      "file": "users.ts",
+      "method": "PUT",
+      "fullPath": "/api/users/:id"
+    },
+    {
+      "file": "users.ts",
+      "method": "GET",
+      "fullPath": "/api/users/alumni"
+    },
+    {
+      "file": "users.ts",
+      "method": "POST",
+      "fullPath": "/api/users/:id/lock"
+    },
+    {
+      "file": "users.ts",
+      "method": "POST",
+      "fullPath": "/api/users/:id/unlock"
+    },
+    {
+      "file": "users.ts",
+      "method": "POST",
+      "fullPath": "/api/users/:id/reset-password"
+    },
+    {
+      "file": "vehicles.ts",
+      "method": "GET",
+      "fullPath": "/api/vehicles"
+    },
+    {
+      "file": "vehicles.ts",
+      "method": "POST",
+      "fullPath": "/api/vehicles"
+    },
+    {
+      "file": "vehicles.ts",
+      "method": "PUT",
+      "fullPath": "/api/vehicles/:id"
+    },
+    {
+      "file": "vehicles.ts",
+      "method": "DELETE",
+      "fullPath": "/api/vehicles/:id"
+    },
+    {
+      "file": "wallets.ts",
+      "method": "GET",
+      "fullPath": "/api/wallets/:studentId"
+    },
+    {
+      "file": "wallets.ts",
+      "method": "POST",
+      "fullPath": "/api/wallets/fund"
+    },
+    {
+      "file": "website-settings-galleries.ts",
+      "method": "GET",
+      "fullPath": "/api/website-settings/galleries"
+    },
+    {
+      "file": "website-settings-galleries.ts",
+      "method": "POST",
+      "fullPath": "/api/website-settings/galleries"
+    },
+    {
+      "file": "website-settings-galleries.ts",
+      "method": "PUT",
+      "fullPath": "/api/website-settings/galleries/:id"
+    },
+    {
+      "file": "website-settings-galleries.ts",
+      "method": "DELETE",
+      "fullPath": "/api/website-settings/galleries/:id"
+    },
+    {
+      "file": "website-settings-inquiries.ts",
+      "method": "GET",
+      "fullPath": "/api/website-settings/inquiries"
+    },
+    {
+      "file": "website-settings-inquiries.ts",
+      "method": "POST",
+      "fullPath": "/api/website-settings/inquiries"
+    },
+    {
+      "file": "website-settings-inquiries.ts",
+      "method": "DELETE",
+      "fullPath": "/api/website-settings/inquiries/:id"
+    },
+    {
+      "file": "website-settings-news.ts",
+      "method": "GET",
+      "fullPath": "/api/website-settings/news"
+    },
+    {
+      "file": "website-settings-news.ts",
+      "method": "POST",
+      "fullPath": "/api/website-settings/news"
+    },
+    {
+      "file": "website-settings-news.ts",
+      "method": "PUT",
+      "fullPath": "/api/website-settings/news/:id"
+    },
+    {
+      "file": "website-settings-news.ts",
+      "method": "DELETE",
+      "fullPath": "/api/website-settings/news/:id"
+    },
+    {
+      "file": "website-settings-noticeboard.ts",
+      "method": "GET",
+      "fullPath": "/api/website-settings/noticeboard"
+    },
+    {
+      "file": "website-settings-noticeboard.ts",
+      "method": "POST",
+      "fullPath": "/api/website-settings/noticeboard"
+    },
+    {
+      "file": "website-settings-noticeboard.ts",
+      "method": "DELETE",
+      "fullPath": "/api/website-settings/noticeboard/:id"
+    },
+    {
+      "file": "website-settings.ts",
+      "method": "GET",
+      "fullPath": "/api/website-settings"
+    },
+    {
+      "file": "website-settings.ts",
+      "method": "PUT",
+      "fullPath": "/api/website-settings"
+    },
+    {
+      "file": "website-settings.ts",
+      "method": "POST",
+      "fullPath": "/api/website-settings/upload"
+    }
+  ],
+  "frontendCalls": [
+    {
+      "file": "\\App.tsx",
+      "method": "GET",
+      "endpoint": "/api/schools/settings"
+    },
+    {
+      "file": "\\App.tsx",
+      "method": "GET",
+      "endpoint": "/api/schools/:id"
+    },
+    {
+      "file": "\\components\\layout\\Layout.tsx",
+      "method": "GET",
+      "endpoint": "/api/schools/:id"
+    },
+    {
+      "file": "\\components\\portals\\DashboardLayout.tsx",
+      "method": "GET",
+      "endpoint": "/api/staff-attendance/today"
+    },
+    {
+      "file": "\\components\\portals\\PortalLoginPage.tsx",
+      "method": "POST",
+      "endpoint": "/api/auth/login"
+    },
+    {
+      "file": "\\components\\portals\\shared\\ForceLinkOverlay.tsx",
+      "method": "GET",
+      "endpoint": "/api/schools"
+    },
+    {
+      "file": "\\components\\portals\\shared\\ForceLinkOverlay.tsx",
+      "method": "POST",
+      "endpoint": "/api/auth/link-entity"
+    },
+    {
+      "file": "\\components\\portals\\shared\\ProcurementUI.tsx",
+      "method": "GET",
+      "endpoint": "/api/procurement/requisitions"
+    },
+    {
+      "file": "\\components\\portals\\shared\\ProcurementUI.tsx",
+      "method": "GET",
+      "endpoint": "/api/uniforms/items"
+    },
+    {
+      "file": "\\components\\portals\\shared\\ProcurementUI.tsx",
+      "method": "GET",
+      "endpoint": "/api/uniforms/suppliers"
+    },
+    {
+      "file": "\\components\\portals\\shared\\ProcurementUI.tsx",
+      "method": "GET",
+      "endpoint": "/api/uniforms/stock-orders"
+    },
+    {
+      "file": "\\components\\portals\\shared\\ProcurementUI.tsx",
+      "method": "POST",
+      "endpoint": "/api/procurement/requisitions"
+    },
+    {
+      "file": "\\components\\portals\\shared\\ProcurementUI.tsx",
+      "method": "PATCH",
+      "endpoint": "/api/procurement/requisitions/:id/approve"
+    },
+    {
+      "file": "\\components\\portals\\shared\\ReportGeneratorWizard.tsx",
+      "method": "GET",
+      "endpoint": "/api/reports/classes"
+    },
+    {
+      "file": "\\components\\portals\\shared\\ReportGeneratorWizard.tsx",
+      "method": "GET",
+      "endpoint": "/api/reports/template"
+    },
+    {
+      "file": "\\components\\portals\\shared\\ReportGeneratorWizard.tsx",
+      "method": "POST",
+      "endpoint": "/api/reports/snapshot"
+    },
+    {
+      "file": "\\components\\shared\\AdminUserCreateModal.tsx",
+      "method": "GET",
+      "endpoint": "/api/classes"
+    },
+    {
+      "file": "\\components\\shared\\AdminUserCreateModal.tsx",
+      "method": "GET",
+      "endpoint": "/api/departments"
+    },
+    {
+      "file": "\\components\\shared\\AdminUserCreateModal.tsx",
+      "method": "GET",
+      "endpoint": "/api/houses"
+    },
+    {
+      "file": "\\components\\shared\\AdminUserCreateModal.tsx",
+      "method": "GET",
+      "endpoint": "/api/clubs"
+    },
+    {
+      "file": "\\components\\shared\\AdminUserCreateModal.tsx",
+      "method": "GET",
+      "endpoint": "/api/ancillary/hostels"
+    },
+    {
+      "file": "\\components\\shared\\AdminUserCreateModal.tsx",
+      "method": "POST",
+      "endpoint": "/api/users"
+    },
+    {
+      "file": "\\components\\shared\\FeeImportModal.tsx",
+      "method": "GET",
+      "endpoint": "/api/fees/template"
+    },
+    {
+      "file": "\\components\\shared\\FeeImportModal.tsx",
+      "method": "POST",
+      "endpoint": "/api/fees/import"
+    },
+    {
+      "file": "\\components\\shared\\MaintenanceRequestModal.tsx",
+      "method": "GET",
+      "endpoint": "/api/assets"
+    },
+    {
+      "file": "\\components\\shared\\MaintenanceRequestModal.tsx",
+      "method": "POST",
+      "endpoint": "/api/assets/request-maintenance"
+    },
+    {
+      "file": "\\components\\shared\\PasswordChangeModal.tsx",
+      "method": "POST",
+      "endpoint": "/api/auth/change-password"
+    },
+    {
+      "file": "\\components\\shared\\UserEditModal.tsx",
+      "method": "GET",
+      "endpoint": "/api/departments"
+    },
+    {
+      "file": "\\components\\shared\\UserEditModal.tsx",
+      "method": "GET",
+      "endpoint": "/api/reports/classes"
+    },
+    {
+      "file": "\\components\\shared\\UserEditModal.tsx",
+      "method": "PUT",
+      "endpoint": "/api/users/:id"
+    },
+    {
+      "file": "\\contexts\\AuthContext.tsx",
+      "method": "GET",
+      "endpoint": "/api/schools/settings"
+    },
+    {
+      "file": "\\contexts\\AuthContext.tsx",
+      "method": "GET",
+      "endpoint": "/api/users/me"
+    },
+    {
+      "file": "\\hooks\\useLessonReminder.ts",
+      "method": "GET",
+      "endpoint": "/api/timetable/my"
+    },
+    {
+      "file": "\\pages\\Apply.tsx",
+      "method": "GET",
+      "endpoint": "/api/public/schools/:id/data"
+    },
+    {
+      "file": "\\pages\\Apply.tsx",
+      "method": "GET",
+      "endpoint": "/api/schools/:id"
+    },
+    {
+      "file": "\\pages\\Apply.tsx",
+      "method": "GET",
+      "endpoint": "/api/public/schools/:id/data"
+    },
+    {
+      "file": "\\pages\\Apply.tsx",
+      "method": "GET",
+      "endpoint": "/api/schools/:id"
+    },
+    {
+      "file": "\\pages\\Apply.tsx",
+      "method": "POST",
+      "endpoint": "/api/auth/register-application"
+    },
+    {
+      "file": "\\pages\\Careers.tsx",
+      "method": "GET",
+      "endpoint": "/api/public/vacancies"
+    },
+    {
+      "file": "\\pages\\Careers.tsx",
+      "method": "POST",
+      "endpoint": "/api/public/applications"
+    },
+    {
+      "file": "\\pages\\Clubs.tsx",
+      "method": "GET",
+      "endpoint": "/api/schools/:id/content"
+    },
+    {
+      "file": "\\pages\\Contact.tsx",
+      "method": "POST",
+      "endpoint": "/api/public/inquiries"
+    },
+    {
+      "file": "\\pages\\Departments.tsx",
+      "method": "GET",
+      "endpoint": "/api/public/schools/:id/departments"
+    },
+    {
+      "file": "\\pages\\Gallery.tsx",
+      "method": "GET",
+      "endpoint": "/api/schools/:id/content"
+    },
+    {
+      "file": "\\pages\\Home.tsx",
+      "method": "GET",
+      "endpoint": "/api/public/schools/:id/departments"
+    },
+    {
+      "file": "\\pages\\Home.tsx",
+      "method": "GET",
+      "endpoint": "/api/schools/:id/content"
+    },
+    {
+      "file": "\\pages\\News.tsx",
+      "method": "GET",
+      "endpoint": "/api/public/news"
+    },
+    {
+      "file": "\\pages\\News.tsx",
+      "method": "GET",
+      "endpoint": "/api/public/announcements"
+    },
+    {
+      "file": "\\pages\\Noticeboard.tsx",
+      "method": "GET",
+      "endpoint": "/api/public/noticeboard"
+    },
+    {
+      "file": "\\pages\\register\\AdminRegister.tsx",
+      "method": "POST",
+      "endpoint": "/api/auth/register-user"
+    },
+    {
+      "file": "\\pages\\register\\AlumniRegister.tsx",
+      "method": "GET",
+      "endpoint": "/api/schools"
+    },
+    {
+      "file": "\\pages\\register\\AlumniRegister.tsx",
+      "method": "POST",
+      "endpoint": "/api/auth/register-user"
+    },
+    {
+      "file": "\\pages\\register\\ApplicantRegister.tsx",
+      "method": "POST",
+      "endpoint": "/api/auth/register-application"
+    },
+    {
+      "file": "\\pages\\register\\ParentRegister.tsx",
+      "method": "POST",
+      "endpoint": "/api/auth/register-user"
+    },
+    {
+      "file": "\\pages\\register\\SchoolRegister.tsx",
+      "method": "POST",
+      "endpoint": "/api/auth/register"
+    },
+    {
+      "file": "\\pages\\register\\StaffRegister.tsx",
+      "method": "GET",
+      "endpoint": "/api/public/schools/:id/data"
+    },
+    {
+      "file": "\\pages\\register\\StaffRegister.tsx",
+      "method": "POST",
+      "endpoint": "/api/auth/register-user"
+    },
+    {
+      "file": "\\pages\\register\\StaffRegister.tsx",
+      "method": "GET",
+      "endpoint": "/api/public/schools/:id/data"
+    },
+    {
+      "file": "\\pages\\register\\StaffRegister.tsx",
+      "method": "GET",
+      "endpoint": "/api/public/schools/:id/data"
+    },
+    {
+      "file": "\\pages\\register\\StaffRegister.tsx",
+      "method": "POST",
+      "endpoint": "/api/auth/register-user"
+    },
+    {
+      "file": "\\pages\\register\\StudentRegister.tsx",
+      "method": "GET",
+      "endpoint": "/api/public/schools/"
+    },
+    {
+      "file": "\\pages\\register\\StudentRegister.tsx",
+      "method": "GET",
+      "endpoint": "/api/public/schools/"
+    },
+    {
+      "file": "\\pages\\register\\StudentRegister.tsx",
+      "method": "POST",
+      "endpoint": "/api/auth/register-user"
+    },
+    {
+      "file": "\\pages\\register\\TeacherRegister.tsx",
+      "method": "GET",
+      "endpoint": "/api/public/schools/:id/data"
+    },
+    {
+      "file": "\\pages\\register\\TeacherRegister.tsx",
+      "method": "GET",
+      "endpoint": "/api/public/schools/:id/data"
+    },
+    {
+      "file": "\\pages\\register\\TeacherRegister.tsx",
+      "method": "POST",
+      "endpoint": "/api/auth/register-user"
+    },
+    {
+      "file": "\\pages\\register\\TrackApplication.tsx",
+      "method": "GET",
+      "endpoint": "/api/auth/application-status/:id"
+    },
+    {
+      "file": "\\pages\\Sports.tsx",
+      "method": "GET",
+      "endpoint": "/api/schools/:id/content"
+    },
+    {
+      "file": "\\portals\\acadex\\pages\\Dashboard.tsx",
+      "method": "GET",
+      "endpoint": "/api/dashboard/acadex"
+    },
+    {
+      "file": "\\portals\\acadex\\pages\\Onboarding.tsx",
+      "method": "POST",
+      "endpoint": "/api/auth/register"
+    },
+    {
+      "file": "\\portals\\acadex\\pages\\SchoolDetails.tsx",
+      "method": "GET",
+      "endpoint": "/api/schools/:id"
+    },
+    {
+      "file": "\\portals\\acadex\\pages\\SchoolDetails.tsx",
+      "method": "PATCH",
+      "endpoint": "/api/schools/:id"
+    },
+    {
+      "file": "\\portals\\acadex\\pages\\SchoolDetails.tsx",
+      "method": "DELETE",
+      "endpoint": "/api/schools/:id"
+    },
+    {
+      "file": "\\portals\\acadex\\pages\\SchoolRegistry.tsx",
+      "method": "GET",
+      "endpoint": "/api/dashboard/acadex"
+    },
+    {
+      "file": "\\portals\\acadex\\pages\\SchoolRegistry.tsx",
+      "method": "PATCH",
+      "endpoint": "/api/schools/:id"
+    },
+    {
+      "file": "\\portals\\acadex\\pages\\SchoolRegistry.tsx",
+      "method": "POST",
+      "endpoint": "/api/auth/impersonate/:id"
+    },
+    {
+      "file": "\\portals\\acadex\\pages\\SchoolRegistry.tsx",
+      "method": "DELETE",
+      "endpoint": "/api/schools/:id"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\AcademicHistory.tsx",
+      "method": "GET",
+      "endpoint": "/api/students/:id"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\AdminManagement.tsx",
+      "method": "GET",
+      "endpoint": "/api/users"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\AdminManagement.tsx",
+      "method": "POST",
+      "endpoint": "/api/users/:id/reset-password"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\AdminManagement.tsx",
+      "method": "POST",
+      "endpoint": "/api/users/:id/:id"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\AdminManagement.tsx",
+      "method": "DELETE",
+      "endpoint": "/api/users/:id"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\AlumniManagement.tsx",
+      "method": "GET",
+      "endpoint": "/api/users"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\AlumniManagement.tsx",
+      "method": "POST",
+      "endpoint": "/api/users/:id/reset-password"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\AlumniManagement.tsx",
+      "method": "POST",
+      "endpoint": "/api/users/:id/:id"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\AlumniManagement.tsx",
+      "method": "DELETE",
+      "endpoint": "/api/users/:id"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\AncillaryManagement.tsx",
+      "method": "GET",
+      "endpoint": "/api/users"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\AncillaryManagement.tsx",
+      "method": "POST",
+      "endpoint": "/api/users/:id/reset-password"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\AncillaryManagement.tsx",
+      "method": "POST",
+      "endpoint": "/api/users/:id/:id"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\AncillaryManagement.tsx",
+      "method": "DELETE",
+      "endpoint": "/api/users/:id"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\AnnouncementsManagement.tsx",
+      "method": "GET",
+      "endpoint": "/api/admin/announcements"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\AnnouncementsManagement.tsx",
+      "method": "POST",
+      "endpoint": "/api/admin/announcements"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\AnnouncementsManagement.tsx",
+      "method": "DELETE",
+      "endpoint": "/api/admin/announcements/:id"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\Applications.tsx",
+      "method": "GET",
+      "endpoint": "/api/reports/classes"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\Applications.tsx",
+      "method": "GET",
+      "endpoint": "/api/applications"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\Applications.tsx",
+      "method": "PATCH",
+      "endpoint": "/api/applications/:id"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\Applications.tsx",
+      "method": "PATCH",
+      "endpoint": "/api/applications/documents/:id"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\Applications.tsx",
+      "method": "GET",
+      "endpoint": "/api/applications/:id"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\Applications.tsx",
+      "method": "POST",
+      "endpoint": "/api/transfers/request"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\AssetMaintenance.tsx",
+      "method": "GET",
+      "endpoint": "/api/assets"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\AssetMaintenance.tsx",
+      "method": "POST",
+      "endpoint": "/api/assets/maintenance/schedule"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\AssetMaintenance.tsx",
+      "method": "PATCH",
+      "endpoint": "/api/assets/maintenance/:id/complete"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\AssetManagement.tsx",
+      "method": "GET",
+      "endpoint": "/api/assets"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\AssetManagement.tsx",
+      "method": "PATCH",
+      "endpoint": "/api/assets/incident/:id/resolve"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\AssetManagement.tsx",
+      "method": "POST",
+      "endpoint": "/api/assets"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\BursarManagement.tsx",
+      "method": "GET",
+      "endpoint": "/api/users"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\BursarManagement.tsx",
+      "method": "POST",
+      "endpoint": "/api/users/:id/reset-password"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\BursarManagement.tsx",
+      "method": "POST",
+      "endpoint": "/api/users/:id/:id"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\BursarManagement.tsx",
+      "method": "DELETE",
+      "endpoint": "/api/users/:id"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\Classes.tsx",
+      "method": "POST",
+      "endpoint": "/api/classes/sections"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\Classes.tsx",
+      "method": "GET",
+      "endpoint": "/api/classes"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\Classes.tsx",
+      "method": "GET",
+      "endpoint": "/api/teachers"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\Classes.tsx",
+      "method": "GET",
+      "endpoint": "/api/subjects"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\Classes.tsx",
+      "method": "GET",
+      "endpoint": "/api/classes/sections"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\Classes.tsx",
+      "method": "POST",
+      "endpoint": "/api/classes/bulk-upload"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\Classes.tsx",
+      "method": "GET",
+      "endpoint": "/api/students/by-class/:id"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\Classes.tsx",
+      "method": "POST",
+      "endpoint": "/api/students/migrate"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\Classes.tsx",
+      "method": "PUT",
+      "endpoint": "/api/classes/:id"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\Classes.tsx",
+      "method": "POST",
+      "endpoint": "/api/classes"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\Classes.tsx",
+      "method": "POST",
+      "endpoint": "/api/classes/:id/subject-teachers"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\Classes.tsx",
+      "method": "DELETE",
+      "endpoint": "/api/classes/:id/subject-teachers/:id"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\Classes.tsx",
+      "method": "DELETE",
+      "endpoint": "/api/classes/sections/:id"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\ClassMigration.tsx",
+      "method": "GET",
+      "endpoint": "/api/classes"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\ClassMigration.tsx",
+      "method": "GET",
+      "endpoint": "/api/students/by-class/:id"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\ClassMigration.tsx",
+      "method": "POST",
+      "endpoint": "/api/students/bulk-migrate"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\ClassMigration.tsx",
+      "method": "POST",
+      "endpoint": "/api/students/migrate"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\Dashboard.tsx",
+      "method": "GET",
+      "endpoint": "/api/dashboard/admin"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\Dashboard.tsx",
+      "method": "GET",
+      "endpoint": "/api/staff-attendance/today"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\Departments.tsx",
+      "method": "GET",
+      "endpoint": "/api/departments"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\Departments.tsx",
+      "method": "GET",
+      "endpoint": "/api/users"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\Departments.tsx",
+      "method": "POST",
+      "endpoint": "/api/website-settings/upload"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\Departments.tsx",
+      "method": "PUT",
+      "endpoint": "/api/departments/:id"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\Departments.tsx",
+      "method": "POST",
+      "endpoint": "/api/departments"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\Departments.tsx",
+      "method": "DELETE",
+      "endpoint": "/api/departments/:id"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\DocumentTemplates.tsx",
+      "method": "GET",
+      "endpoint": "/api/classes"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\DocumentTemplates.tsx",
+      "method": "GET",
+      "endpoint": "/api/schools/id-card/students"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\DocumentTemplates.tsx",
+      "method": "GET",
+      "endpoint": "/api/schools/me"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\DocumentTemplates.tsx",
+      "method": "GET",
+      "endpoint": "/api/schools/id-card/data/:id"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\DocumentTemplates.tsx",
+      "method": "PATCH",
+      "endpoint": "/api/schools/id-template/:id"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\DocumentTemplates.tsx",
+      "method": "GET",
+      "endpoint": "/api/schools/id-card/students"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\DocumentTemplates.tsx",
+      "method": "GET",
+      "endpoint": "/api/schools/id-card/data/:id"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\DocumentTemplates.tsx",
+      "method": "PATCH",
+      "endpoint": "/api/reports/cert-template"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\DocumentTemplates.tsx",
+      "method": "GET",
+      "endpoint": "/api/schools/id-card/students"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\DocumentTemplates.tsx",
+      "method": "GET",
+      "endpoint": "/api/schools/id-card/data/:id"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\DocumentTemplates.tsx",
+      "method": "PATCH",
+      "endpoint": "/api/reports/report-template"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\DocumentTemplates.tsx",
+      "method": "PATCH",
+      "endpoint": "/api/reports/receipt-logo"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\DocumentTemplates.tsx",
+      "method": "GET",
+      "endpoint": "/api/reports/template"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\DocumentTemplates.tsx",
+      "method": "POST",
+      "endpoint": "/api/reports/template"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\Fees.tsx",
+      "method": "GET",
+      "endpoint": "/api/fees/stats"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\Helpdesk.tsx",
+      "method": "GET",
+      "endpoint": "/api/support/admin"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\Helpdesk.tsx",
+      "method": "PATCH",
+      "endpoint": "/api/support/:id"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\Holiday.tsx",
+      "method": "GET",
+      "endpoint": "/api/schools/holidays"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\Holiday.tsx",
+      "method": "POST",
+      "endpoint": "/api/schools/holidays"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\Holiday.tsx",
+      "method": "DELETE",
+      "endpoint": "/api/schools/holidays/:id"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\LibrarianManagement.tsx",
+      "method": "GET",
+      "endpoint": "/api/users"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\LibrarianManagement.tsx",
+      "method": "POST",
+      "endpoint": "/api/users/:id/reset-password"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\LibrarianManagement.tsx",
+      "method": "POST",
+      "endpoint": "/api/users/:id/:id"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\LibrarianManagement.tsx",
+      "method": "DELETE",
+      "endpoint": "/api/users/:id"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\ManageVehicle.tsx",
+      "method": "GET",
+      "endpoint": "/api/vehicles"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\ManageVehicle.tsx",
+      "method": "GET",
+      "endpoint": "/api/users"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\ManageVehicle.tsx",
+      "method": "PUT",
+      "endpoint": "/api/vehicles/:id"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\ManageVehicle.tsx",
+      "method": "POST",
+      "endpoint": "/api/vehicles"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\ManageVehicle.tsx",
+      "method": "DELETE",
+      "endpoint": "/api/vehicles/:id"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\ParentManagement.tsx",
+      "method": "GET",
+      "endpoint": "/api/users"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\ParentManagement.tsx",
+      "method": "GET",
+      "endpoint": "/api/schools/connections/pending"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\ParentManagement.tsx",
+      "method": "PATCH",
+      "endpoint": "/api/schools/connections/:id/approve"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\ParentManagement.tsx",
+      "method": "POST",
+      "endpoint": "/api/users/:id/reset-password"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\ParentManagement.tsx",
+      "method": "POST",
+      "endpoint": "/api/users/:id/:id"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\ParentManagement.tsx",
+      "method": "DELETE",
+      "endpoint": "/api/users/:id"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\SchoolTransportation.tsx",
+      "method": "GET",
+      "endpoint": "/api/transports"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\SchoolTransportation.tsx",
+      "method": "GET",
+      "endpoint": "/api/transport-routes"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\SchoolTransportation.tsx",
+      "method": "GET",
+      "endpoint": "/api/vehicles"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\SchoolTransportation.tsx",
+      "method": "PUT",
+      "endpoint": "/api/transports/:id"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\SchoolTransportation.tsx",
+      "method": "POST",
+      "endpoint": "/api/transports"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\SchoolTransportation.tsx",
+      "method": "DELETE",
+      "endpoint": "/api/transports/:id"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\SDCFunding.tsx",
+      "method": "GET",
+      "endpoint": "/api/funding"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\SDCFunding.tsx",
+      "method": "PATCH",
+      "endpoint": "/api/funding/:id"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\SDCFunding.tsx",
+      "method": "POST",
+      "endpoint": "/api/funding"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\SDCFunding.tsx",
+      "method": "DELETE",
+      "endpoint": "/api/funding/:id"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\SDCMinutes.tsx",
+      "method": "GET",
+      "endpoint": "/api/meeting-minutes"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\SDCMinutes.tsx",
+      "method": "POST",
+      "endpoint": "/api/meeting-minutes"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\SDCMinutes.tsx",
+      "method": "DELETE",
+      "endpoint": "/api/meeting-minutes/:id"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\SDCMinutes.tsx",
+      "method": "GET",
+      "endpoint": "/api/storage/file/:id"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\StudentClub.tsx",
+      "method": "GET",
+      "endpoint": "/api/users"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\StudentClub.tsx",
+      "method": "GET",
+      "endpoint": "/api/schools/clubs-list"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\StudentClub.tsx",
+      "method": "PATCH",
+      "endpoint": "/api/schools/clubs-list/:id"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\StudentClub.tsx",
+      "method": "POST",
+      "endpoint": "/api/schools/clubs-list"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\StudentClub.tsx",
+      "method": "DELETE",
+      "endpoint": "/api/schools/clubs-list/:id"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\StudentHouse.tsx",
+      "method": "GET",
+      "endpoint": "/api/schools/houses"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\StudentHouse.tsx",
+      "method": "GET",
+      "endpoint": "/api/teachers"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\StudentHouse.tsx",
+      "method": "GET",
+      "endpoint": "/api/students"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\StudentHouse.tsx",
+      "method": "PATCH",
+      "endpoint": "/api/schools/houses/:id"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\StudentHouse.tsx",
+      "method": "POST",
+      "endpoint": "/api/schools/houses"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\StudentHouse.tsx",
+      "method": "DELETE",
+      "endpoint": "/api/schools/houses/:id"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\StudentProfile.tsx",
+      "method": "GET",
+      "endpoint": "/api/students/:id"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\Students.tsx",
+      "method": "GET",
+      "endpoint": "/api/students"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\Students.tsx",
+      "method": "DELETE",
+      "endpoint": "/api/students/:id"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\Students.tsx",
+      "method": "POST",
+      "endpoint": "/api/users/:id/reset-password"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\Students.tsx",
+      "method": "POST",
+      "endpoint": "/api/users/:id/:id"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\Subjects.tsx",
+      "method": "GET",
+      "endpoint": "/api/subjects"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\Subjects.tsx",
+      "method": "GET",
+      "endpoint": "/api/departments"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\Subjects.tsx",
+      "method": "PUT",
+      "endpoint": "/api/subjects/:id"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\Subjects.tsx",
+      "method": "POST",
+      "endpoint": "/api/subjects"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\Subjects.tsx",
+      "method": "DELETE",
+      "endpoint": "/api/subjects/:id"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\Subscription.tsx",
+      "method": "GET",
+      "endpoint": "/api/schools/me"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\Subscription.tsx",
+      "method": "PATCH",
+      "endpoint": "/api/schools/me/plan"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\SupplierManagement.tsx",
+      "method": "GET",
+      "endpoint": "/api/users"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\SupplierManagement.tsx",
+      "method": "GET",
+      "endpoint": "/api/schools/connections/pending"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\SupplierManagement.tsx",
+      "method": "PATCH",
+      "endpoint": "/api/schools/connections/:id/approve"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\SupplierManagement.tsx",
+      "method": "POST",
+      "endpoint": "/api/users/:id/reset-password"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\SupplierManagement.tsx",
+      "method": "POST",
+      "endpoint": "/api/users/:id/:id"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\SupplierManagement.tsx",
+      "method": "DELETE",
+      "endpoint": "/api/users/:id"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\SupplierManagement.tsx",
+      "method": "GET",
+      "endpoint": "/api/schools/me"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\SupplierManagement.tsx",
+      "method": "PATCH",
+      "endpoint": "/api/schools/supplier-categories"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\SupplierManagement.tsx",
+      "method": "PATCH",
+      "endpoint": "/api/schools/supplier-categories"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\TeacherLoad.tsx",
+      "method": "GET",
+      "endpoint": "/api/teachers/:id/load"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\TeacherLoad.tsx",
+      "method": "GET",
+      "endpoint": "/api/reports/classes"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\TeacherLoad.tsx",
+      "method": "GET",
+      "endpoint": "/api/subjects"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\TeacherLoad.tsx",
+      "method": "POST",
+      "endpoint": "/api/teachers/:id/load/assign"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\TeacherLoad.tsx",
+      "method": "POST",
+      "endpoint": "/api/teachers/:id/load/unassign"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\Teachers.tsx",
+      "method": "GET",
+      "endpoint": "/api/teachers"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\Teachers.tsx",
+      "method": "POST",
+      "endpoint": "/api/users/:id/reset-password"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\Teachers.tsx",
+      "method": "POST",
+      "endpoint": "/api/users/:id/:id"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\Teachers.tsx",
+      "method": "DELETE",
+      "endpoint": "/api/teachers/:id"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\Timetable.tsx",
+      "method": "GET",
+      "endpoint": "/api/classes"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\Timetable.tsx",
+      "method": "GET",
+      "endpoint": "/api/subjects"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\Timetable.tsx",
+      "method": "GET",
+      "endpoint": "/api/timetable/class/:id"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\Timetable.tsx",
+      "method": "POST",
+      "endpoint": "/api/timetable/save"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\Timetable.tsx",
+      "method": "POST",
+      "endpoint": "/api/timetable/publish"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\TransportRoute.tsx",
+      "method": "GET",
+      "endpoint": "/api/transport-routes"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\TransportRoute.tsx",
+      "method": "PUT",
+      "endpoint": "/api/transport-routes/:id"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\TransportRoute.tsx",
+      "method": "POST",
+      "endpoint": "/api/transport-routes"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\TransportRoute.tsx",
+      "method": "DELETE",
+      "endpoint": "/api/transport-routes/:id"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\Users.tsx",
+      "method": "GET",
+      "endpoint": "/api/users"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\Users.tsx",
+      "method": "POST",
+      "endpoint": "/api/users/:id/reset-password"
+    },
+    {
+      "file": "\\portals\\admin\\pages\\Users.tsx",
+      "method": "POST",
+      "endpoint": "/api/users/:id/:id"
+    },
+    {
+      "file": "\\portals\\ancillary\\pages\\AncillarySchedules.tsx",
+      "method": "GET",
+      "endpoint": "/api/schedules/staff"
+    },
+    {
+      "file": "\\portals\\ancillary\\pages\\AncillarySchedules.tsx",
+      "method": "GET",
+      "endpoint": "/api/payroll/employees"
+    },
+    {
+      "file": "\\portals\\ancillary\\pages\\AncillarySchedules.tsx",
+      "method": "GET",
+      "endpoint": "/api/schedules/my"
+    },
+    {
+      "file": "\\portals\\ancillary\\pages\\AncillarySchedules.tsx",
+      "method": "POST",
+      "endpoint": "/api/schedules"
+    },
+    {
+      "file": "\\portals\\ancillary\\pages\\AncillarySchedules.tsx",
+      "method": "DELETE",
+      "endpoint": "/api/schedules/:id"
+    },
+    {
+      "file": "\\portals\\ancillary\\pages\\Assets.tsx",
+      "method": "GET",
+      "endpoint": "/api/assets"
+    },
+    {
+      "file": "\\portals\\ancillary\\pages\\Assets.tsx",
+      "method": "POST",
+      "endpoint": "/api/assets/incident"
+    },
+    {
+      "file": "\\portals\\ancillary\\pages\\Assets.tsx",
+      "method": "POST",
+      "endpoint": "/api/assets/request-maintenance"
+    },
+    {
+      "file": "\\portals\\ancillary\\pages\\Assets.tsx",
+      "method": "POST",
+      "endpoint": "/api/assets"
+    },
+    {
+      "file": "\\portals\\ancillary\\pages\\boarding\\AssignStudents.tsx",
+      "method": "GET",
+      "endpoint": "/api/students"
+    },
+    {
+      "file": "\\portals\\ancillary\\pages\\boarding\\AssignStudents.tsx",
+      "method": "GET",
+      "endpoint": "/api/ancillary/hostels"
+    },
+    {
+      "file": "\\portals\\ancillary\\pages\\boarding\\AssignStudents.tsx",
+      "method": "POST",
+      "endpoint": "/api/ancillary/boarding/assign"
+    },
+    {
+      "file": "\\portals\\ancillary\\pages\\boarding\\HostelCategory.tsx",
+      "method": "GET",
+      "endpoint": "/ancillary/hostel-categories"
+    },
+    {
+      "file": "\\portals\\ancillary\\pages\\boarding\\HostelCategory.tsx",
+      "method": "POST",
+      "endpoint": "/ancillary/hostel-categories"
+    },
+    {
+      "file": "\\portals\\ancillary\\pages\\boarding\\HostelCategory.tsx",
+      "method": "DELETE",
+      "endpoint": "/ancillary/hostel-categories/:id"
+    },
+    {
+      "file": "\\portals\\ancillary\\pages\\boarding\\HostelRoom.tsx",
+      "method": "GET",
+      "endpoint": "/ancillary/hostel-rooms"
+    },
+    {
+      "file": "\\portals\\ancillary\\pages\\boarding\\HostelRoom.tsx",
+      "method": "POST",
+      "endpoint": "/ancillary/hostel-rooms"
+    },
+    {
+      "file": "\\portals\\ancillary\\pages\\boarding\\HostelRoom.tsx",
+      "method": "DELETE",
+      "endpoint": "/ancillary/hostel-rooms/:id"
+    },
+    {
+      "file": "\\portals\\ancillary\\pages\\boarding\\ManageHostel.tsx",
+      "method": "GET",
+      "endpoint": "/ancillary/hostels"
+    },
+    {
+      "file": "\\portals\\ancillary\\pages\\boarding\\ManageHostel.tsx",
+      "method": "GET",
+      "endpoint": "/ancillary/hostel-categories"
+    },
+    {
+      "file": "\\portals\\ancillary\\pages\\boarding\\ManageHostel.tsx",
+      "method": "GET",
+      "endpoint": "/ancillary/hostel-rooms"
+    },
+    {
+      "file": "\\portals\\ancillary\\pages\\boarding\\ManageHostel.tsx",
+      "method": "POST",
+      "endpoint": "/ancillary/hostels"
+    },
+    {
+      "file": "\\portals\\ancillary\\pages\\boarding\\ManageHostel.tsx",
+      "method": "DELETE",
+      "endpoint": "/ancillary/hostels/:id"
+    },
+    {
+      "file": "\\portals\\ancillary\\pages\\BoardingManagement.tsx",
+      "method": "GET",
+      "endpoint": "/api/ancillary/hostels"
+    },
+    {
+      "file": "\\portals\\ancillary\\pages\\BoardingManagement.tsx",
+      "method": "GET",
+      "endpoint": "/api/students"
+    },
+    {
+      "file": "\\portals\\ancillary\\pages\\BoardingManagement.tsx",
+      "method": "POST",
+      "endpoint": "/api/ancillary/boarding/log"
+    },
+    {
+      "file": "\\portals\\ancillary\\pages\\Dashboard.tsx",
+      "method": "GET",
+      "endpoint": "/api/staff-attendance/today"
+    },
+    {
+      "file": "\\portals\\ancillary\\pages\\Dashboard.tsx",
+      "method": "GET",
+      "endpoint": "/api/dashboard/ancillary"
+    },
+    {
+      "file": "\\portals\\ancillary\\pages\\GiveStudentAward.tsx",
+      "method": "GET",
+      "endpoint": "/api/students"
+    },
+    {
+      "file": "\\portals\\ancillary\\pages\\GiveStudentAward.tsx",
+      "method": "POST",
+      "endpoint": "/api/awards"
+    },
+    {
+      "file": "\\portals\\ancillary\\pages\\KitchenManagement.tsx",
+      "method": "GET",
+      "endpoint": "/api/ancillary/menu/current"
+    },
+    {
+      "file": "\\portals\\ancillary\\pages\\KitchenManagement.tsx",
+      "method": "GET",
+      "endpoint": "/api/students"
+    },
+    {
+      "file": "\\portals\\ancillary\\pages\\KitchenManagement.tsx",
+      "method": "GET",
+      "endpoint": "/api/users"
+    },
+    {
+      "file": "\\portals\\ancillary\\pages\\office\\AdmissionInquiryPage.tsx",
+      "method": "GET",
+      "endpoint": "/api/reception/inquiries"
+    },
+    {
+      "file": "\\portals\\ancillary\\pages\\office\\AdmissionInquiryPage.tsx",
+      "method": "GET",
+      "endpoint": "/api/classes"
+    },
+    {
+      "file": "\\portals\\ancillary\\pages\\office\\AdmissionInquiryPage.tsx",
+      "method": "POST",
+      "endpoint": "/api/reception/inquiries"
+    },
+    {
+      "file": "\\portals\\ancillary\\pages\\office\\ComplaintsPage.tsx",
+      "method": "GET",
+      "endpoint": "/api/reception/complaints"
+    },
+    {
+      "file": "\\portals\\ancillary\\pages\\office\\ComplaintsPage.tsx",
+      "method": "POST",
+      "endpoint": "/api/reception/complaints"
+    },
+    {
+      "file": "\\portals\\ancillary\\pages\\office\\ComplaintsPage.tsx",
+      "method": "DELETE",
+      "endpoint": "/api/reception/complaints/:id"
+    },
+    {
+      "file": "\\portals\\ancillary\\pages\\office\\PhoneCallLogPage.tsx",
+      "method": "GET",
+      "endpoint": "/api/reception/calls"
+    },
+    {
+      "file": "\\portals\\ancillary\\pages\\office\\PhoneCallLogPage.tsx",
+      "method": "POST",
+      "endpoint": "/api/reception/calls"
+    },
+    {
+      "file": "\\portals\\ancillary\\pages\\office\\PhoneCallLogPage.tsx",
+      "method": "DELETE",
+      "endpoint": "/api/reception/calls/:id"
+    },
+    {
+      "file": "\\portals\\ancillary\\pages\\office\\VisitorBookPage.tsx",
+      "method": "GET",
+      "endpoint": "/api/reception/visitors"
+    },
+    {
+      "file": "\\portals\\ancillary\\pages\\office\\VisitorBookPage.tsx",
+      "method": "POST",
+      "endpoint": "/api/reception/visitors"
+    },
+    {
+      "file": "\\portals\\ancillary\\pages\\office\\VisitorBookPage.tsx",
+      "method": "DELETE",
+      "endpoint": "/api/reception/visitors/:id"
+    },
+    {
+      "file": "\\portals\\ancillary\\pages\\SecurityLog.tsx",
+      "method": "GET",
+      "endpoint": "/api/ancillary/visitors"
+    },
+    {
+      "file": "\\portals\\ancillary\\pages\\SecurityLog.tsx",
+      "method": "POST",
+      "endpoint": "/api/ancillary/visitors"
+    },
+    {
+      "file": "\\portals\\applicant\\pages\\Dashboard.tsx",
+      "method": "GET",
+      "endpoint": "/api/dashboard/applicant"
+    },
+    {
+      "file": "\\portals\\applicant\\pages\\Documents.tsx",
+      "method": "GET",
+      "endpoint": "/api/dashboard/applicant"
+    },
+    {
+      "file": "\\portals\\applicant\\pages\\Documents.tsx",
+      "method": "POST",
+      "endpoint": "/api/applications/documents"
+    },
+    {
+      "file": "\\portals\\bursar\\pages\\Dashboard.tsx",
+      "method": "GET",
+      "endpoint": "/api/dashboard/bursar"
+    },
+    {
+      "file": "\\portals\\bursar\\pages\\SDCFunding.tsx",
+      "method": "GET",
+      "endpoint": "/api/funding"
+    },
+    {
+      "file": "\\portals\\bursar\\pages\\SDCFunding.tsx",
+      "method": "PATCH",
+      "endpoint": "/api/funding/:id"
+    },
+    {
+      "file": "\\portals\\bursar\\pages\\SDCFunding.tsx",
+      "method": "POST",
+      "endpoint": "/api/funding"
+    },
+    {
+      "file": "\\portals\\bursar\\pages\\SDCMinutes.tsx",
+      "method": "GET",
+      "endpoint": "/api/meeting-minutes"
+    },
+    {
+      "file": "\\portals\\bursar\\pages\\SDCMinutes.tsx",
+      "method": "GET",
+      "endpoint": "/api/storage/file/:id"
+    },
+    {
+      "file": "\\portals\\bursar\\pages\\SDCPortal.tsx",
+      "method": "GET",
+      "endpoint": "/api/meeting-minutes"
+    },
+    {
+      "file": "\\portals\\bursar\\pages\\SDCPortal.tsx",
+      "method": "GET",
+      "endpoint": "/api/funding"
+    },
+    {
+      "file": "\\portals\\bursar\\pages\\SDCPortal.tsx",
+      "method": "GET",
+      "endpoint": "/api/storage/file/:id"
+    },
+    {
+      "file": "\\portals\\bursar\\pages\\Tuckshop.tsx",
+      "method": "GET",
+      "endpoint": "/api/tuckshop/sales/recent"
+    },
+    {
+      "file": "\\portals\\bursar\\pages\\Tuckshop.tsx",
+      "method": "GET",
+      "endpoint": "/api/tuckshop/reports"
+    },
+    {
+      "file": "\\portals\\bursar\\pages\\TuckshopInventory.tsx",
+      "method": "GET",
+      "endpoint": "/api/tuckshop/items"
+    },
+    {
+      "file": "\\portals\\bursar\\pages\\TuckshopInventory.tsx",
+      "method": "PUT",
+      "endpoint": "/api/tuckshop/items/:id"
+    },
+    {
+      "file": "\\portals\\bursar\\pages\\TuckshopInventory.tsx",
+      "method": "POST",
+      "endpoint": "/api/tuckshop/items"
+    },
+    {
+      "file": "\\portals\\bursar\\pages\\TuckshopInventory.tsx",
+      "method": "PUT",
+      "endpoint": "/api/tuckshop/items/:id"
+    },
+    {
+      "file": "\\portals\\bursar\\pages\\TuckshopReports.tsx",
+      "method": "GET",
+      "endpoint": "/api/tuckshop/reports"
+    },
+    {
+      "file": "\\portals\\bursar\\pages\\TuckshopSales.tsx",
+      "method": "GET",
+      "endpoint": "/api/tuckshop/items"
+    },
+    {
+      "file": "\\portals\\bursar\\pages\\TuckshopSales.tsx",
+      "method": "GET",
+      "endpoint": "/api/tuckshop/sales/recent"
+    },
+    {
+      "file": "\\portals\\bursar\\pages\\TuckshopSales.tsx",
+      "method": "POST",
+      "endpoint": "/api/tuckshop/sales"
+    },
+    {
+      "file": "\\portals\\clinic\\pages\\Dashboard.tsx",
+      "method": "GET",
+      "endpoint": "/api/clinic/complaints"
+    },
+    {
+      "file": "\\portals\\clinic\\pages\\Dashboard.tsx",
+      "method": "GET",
+      "endpoint": "/api/clinic/appointments"
+    },
+    {
+      "file": "\\portals\\clinic\\pages\\Dashboard.tsx",
+      "method": "GET",
+      "endpoint": "/api/clinic/emergencies"
+    },
+    {
+      "file": "\\portals\\clinic\\pages\\PatientManagement.tsx",
+      "method": "GET",
+      "endpoint": "/api/users"
+    },
+    {
+      "file": "\\portals\\clinic\\pages\\PatientManagement.tsx",
+      "method": "GET",
+      "endpoint": "/api/clinic/complaints"
+    },
+    {
+      "file": "\\portals\\clinic\\pages\\PatientManagement.tsx",
+      "method": "GET",
+      "endpoint": "/api/clinic/appointments"
+    },
+    {
+      "file": "\\portals\\clinic\\pages\\PatientManagement.tsx",
+      "method": "GET",
+      "endpoint": "/api/clinic/immunizations"
+    },
+    {
+      "file": "\\portals\\clinic\\pages\\PatientManagement.tsx",
+      "method": "GET",
+      "endpoint": "/api/clinic/referrals"
+    },
+    {
+      "file": "\\portals\\clinic\\pages\\PatientManagement.tsx",
+      "method": "POST",
+      "endpoint": "/api/clinic/complaints"
+    },
+    {
+      "file": "\\portals\\clinic\\pages\\PatientManagement.tsx",
+      "method": "POST",
+      "endpoint": "/api/clinic/appointments"
+    },
+    {
+      "file": "\\portals\\clinic\\pages\\PatientManagement.tsx",
+      "method": "POST",
+      "endpoint": "/api/clinic/immunizations"
+    },
+    {
+      "file": "\\portals\\clinic\\pages\\PatientManagement.tsx",
+      "method": "POST",
+      "endpoint": "/api/clinic/referrals"
+    },
+    {
+      "file": "\\portals\\library\\pages\\Books.tsx",
+      "method": "GET",
+      "endpoint": "/api/subjects"
+    },
+    {
+      "file": "\\portals\\library\\pages\\Books.tsx",
+      "method": "GET",
+      "endpoint": "/api/classes"
+    },
+    {
+      "file": "\\portals\\library\\pages\\Books.tsx",
+      "method": "GET",
+      "endpoint": "/api/library/books"
+    },
+    {
+      "file": "\\portals\\library\\pages\\Books.tsx",
+      "method": "GET",
+      "endpoint": "/api/library/categories"
+    },
+    {
+      "file": "\\portals\\library\\pages\\Books.tsx",
+      "method": "POST",
+      "endpoint": "/api/library/books"
+    },
+    {
+      "file": "\\portals\\library\\pages\\Dashboard.tsx",
+      "method": "GET",
+      "endpoint": "/api/dashboard/library"
+    },
+    {
+      "file": "\\portals\\library\\pages\\Dashboard.tsx",
+      "method": "GET",
+      "endpoint": "/api/staff-attendance/today"
+    },
+    {
+      "file": "\\portals\\library\\pages\\Dashboard.tsx",
+      "method": "POST",
+      "endpoint": "/api/library/categories"
+    },
+    {
+      "file": "\\portals\\library\\pages\\Dashboard.tsx",
+      "method": "GET",
+      "endpoint": "/api/dashboard/library"
+    },
+    {
+      "file": "\\portals\\library\\pages\\DigitalRepository.tsx",
+      "method": "GET",
+      "endpoint": "/api/library/digital"
+    },
+    {
+      "file": "\\portals\\library\\pages\\DigitalRepository.tsx",
+      "method": "POST",
+      "endpoint": "/api/library/books"
+    },
+    {
+      "file": "\\portals\\library\\pages\\Loans.tsx",
+      "method": "GET",
+      "endpoint": "/api/library/loans"
+    },
+    {
+      "file": "\\portals\\library\\pages\\Loans.tsx",
+      "method": "POST",
+      "endpoint": "/api/library/loans/:id/return"
+    },
+    {
+      "file": "\\portals\\library\\pages\\Loans.tsx",
+      "method": "POST",
+      "endpoint": "/api/library/loans/issue"
+    },
+    {
+      "file": "\\portals\\library\\pages\\Overdue.tsx",
+      "method": "GET",
+      "endpoint": "/api/library/loans/overdue"
+    },
+    {
+      "file": "\\portals\\library\\pages\\Reports.tsx",
+      "method": "GET",
+      "endpoint": "/api/library/reports"
+    },
+    {
+      "file": "\\portals\\library\\pages\\ResourceCategories.tsx",
+      "method": "GET",
+      "endpoint": "/api/library/categories"
+    },
+    {
+      "file": "\\portals\\library\\pages\\ResourceCategories.tsx",
+      "method": "POST",
+      "endpoint": "/api/library/categories"
+    },
+    {
+      "file": "\\portals\\parent\\pages\\PaymentPlans.tsx",
+      "method": "GET",
+      "endpoint": "/api/payment-plans/my"
+    },
+    {
+      "file": "\\portals\\parent\\pages\\PaymentPlans.tsx",
+      "method": "GET",
+      "endpoint": "/api/students/my-children"
+    },
+    {
+      "file": "\\portals\\parent\\pages\\PaymentPlans.tsx",
+      "method": "GET",
+      "endpoint": "/api/payment-plans/templates"
+    },
+    {
+      "file": "\\portals\\parent\\pages\\PaymentPlans.tsx",
+      "method": "POST",
+      "endpoint": "/api/payment-plans"
+    },
+    {
+      "file": "\\portals\\parent\\pages\\Wallet.tsx",
+      "method": "GET",
+      "endpoint": "/api/wallets/${activeEntity"
+    },
+    {
+      "file": "\\portals\\parent\\pages\\Wallet.tsx",
+      "method": "POST",
+      "endpoint": "/api/wallets/fund"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\AcademicPortfolio.tsx",
+      "method": "GET",
+      "endpoint": "/api/students/me/portfolio"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\AcademicPortfolio.tsx",
+      "method": "POST",
+      "endpoint": "/api/transfers/:id/consent"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\academics\\CreateSyllabus.tsx",
+      "method": "GET",
+      "endpoint": "/api/classes"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\academics\\CreateSyllabus.tsx",
+      "method": "GET",
+      "endpoint": "/api/subjects"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\academics\\CreateSyllabus.tsx",
+      "method": "GET",
+      "endpoint": "/api/syllabus"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\academics\\CreateSyllabus.tsx",
+      "method": "POST",
+      "endpoint": "/api/syllabus"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\academics\\StudyMaterial.tsx",
+      "method": "GET",
+      "endpoint": "/api/study-materials"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\academics\\StudyMaterial.tsx",
+      "method": "GET",
+      "endpoint": "/api/classes"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\academics\\StudyMaterial.tsx",
+      "method": "GET",
+      "endpoint": "/api/subjects"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\academics\\StudyMaterial.tsx",
+      "method": "POST",
+      "endpoint": "/api/study-materials"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\academics\\StudyMaterial.tsx",
+      "method": "DELETE",
+      "endpoint": "/api/study-materials/:id"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\academics\\TeacherLessonPlan.tsx",
+      "method": "GET",
+      "endpoint": "/api/classes"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\academics\\TeacherLessonPlan.tsx",
+      "method": "GET",
+      "endpoint": "/api/subjects"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\academics\\TeacherLessonPlan.tsx",
+      "method": "GET",
+      "endpoint": "/api/syllabus"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\academics\\TeacherLessonPlan.tsx",
+      "method": "GET",
+      "endpoint": "/api/lesson-plan"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\academics\\TeacherLessonPlan.tsx",
+      "method": "POST",
+      "endpoint": "/api/lesson-plan"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\academics\\TeacherLessonPlan.tsx",
+      "method": "DELETE",
+      "endpoint": "/api/lesson-plan/:id"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\attendance\\DailyStaffAttendance.tsx",
+      "method": "GET",
+      "endpoint": "/api/staff-attendance/my"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\attendance\\DailyStudentAttendance.tsx",
+      "method": "GET",
+      "endpoint": "/api/classes"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\attendance\\DailyStudentAttendance.tsx",
+      "method": "GET",
+      "endpoint": "/api/students"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\attendance\\DailyStudentAttendance.tsx",
+      "method": "GET",
+      "endpoint": "/api/attendance"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\attendance\\DailyStudentAttendance.tsx",
+      "method": "POST",
+      "endpoint": "/api/attendance"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\attendance\\DailyStudentAttendance.tsx",
+      "method": "GET",
+      "endpoint": "/api/attendance"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\attendance\\DailyStudentAttendanceReport.tsx",
+      "method": "GET",
+      "endpoint": "/api/classes"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\attendance\\QRAttendance.tsx",
+      "method": "POST",
+      "endpoint": "/api/attendance/qr"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\BulkInvoicesPage.tsx",
+      "method": "GET",
+      "endpoint": "/api/fees/bulk-invoices"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\BulkInvoicesPage.tsx",
+      "method": "POST",
+      "endpoint": "/api/fees/bulk-invoices"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\BulkInvoicesPage.tsx",
+      "method": "DELETE",
+      "endpoint": "/api/fees/bulk-invoices/:id"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\cbt\\ManageCBT.tsx",
+      "method": "GET",
+      "endpoint": "/api/cbt"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\cbt\\ManageCBT.tsx",
+      "method": "GET",
+      "endpoint": "/api/classes"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\cbt\\ManageCBT.tsx",
+      "method": "GET",
+      "endpoint": "/api/subjects"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\cbt\\ManageCBT.tsx",
+      "method": "GET",
+      "endpoint": "/api/classes/sections"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\cbt\\ManageCBT.tsx",
+      "method": "POST",
+      "endpoint": "/api/cbt"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\cbt\\ManageCBT.tsx",
+      "method": "DELETE",
+      "endpoint": "/api/cbt/:id"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\cbt\\ManageCBT.tsx",
+      "method": "PUT",
+      "endpoint": "/api/cbt/:id"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\cbt\\ManageQuestions.tsx",
+      "method": "GET",
+      "endpoint": "/api/cbt/:id"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\cbt\\ManageQuestions.tsx",
+      "method": "POST",
+      "endpoint": "/api/cbt/:id/questions"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\cbt\\ManageQuestions.tsx",
+      "method": "DELETE",
+      "endpoint": "/api/cbt/:id/questions/:id"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\ChaplaincyDashboard.tsx",
+      "method": "GET",
+      "endpoint": "/api/chaplaincy/events"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\ChaplaincyDashboard.tsx",
+      "method": "GET",
+      "endpoint": "/api/chaplaincy/team"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\ChaplaincyDashboard.tsx",
+      "method": "GET",
+      "endpoint": "/api/chaplaincy/religion-stats"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\ChaplaincyDashboard.tsx",
+      "method": "POST",
+      "endpoint": "/api/chaplaincy/events"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\ChaplaincyDashboard.tsx",
+      "method": "POST",
+      "endpoint": "/api/chaplaincy/broadcast"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\clinic\\Appointments.tsx",
+      "method": "GET",
+      "endpoint": "/api/clinic/appointments"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\clinic\\Appointments.tsx",
+      "method": "GET",
+      "endpoint": "/api/users"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\clinic\\Appointments.tsx",
+      "method": "POST",
+      "endpoint": "/api/clinic/appointments"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\clinic\\Appointments.tsx",
+      "method": "DELETE",
+      "endpoint": "/api/clinic/appointments/:id"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\clinic\\Emergencies.tsx",
+      "method": "GET",
+      "endpoint": "/api/clinic/emergencies"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\clinic\\Emergencies.tsx",
+      "method": "POST",
+      "endpoint": "/api/clinic/emergencies"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\clinic\\Emergencies.tsx",
+      "method": "DELETE",
+      "endpoint": "/api/clinic/emergencies/:id"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\clinic\\HealthComplaints.tsx",
+      "method": "GET",
+      "endpoint": "/api/clinic/complaints"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\clinic\\HealthComplaints.tsx",
+      "method": "GET",
+      "endpoint": "/api/users"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\clinic\\HealthComplaints.tsx",
+      "method": "POST",
+      "endpoint": "/api/clinic/complaints"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\clinic\\HealthComplaints.tsx",
+      "method": "DELETE",
+      "endpoint": "/api/clinic/complaints/:id"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\clinic\\Immunization.tsx",
+      "method": "GET",
+      "endpoint": "/api/clinic/immunizations"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\clinic\\Immunization.tsx",
+      "method": "GET",
+      "endpoint": "/api/users"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\clinic\\Immunization.tsx",
+      "method": "POST",
+      "endpoint": "/api/clinic/immunizations"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\clinic\\Immunization.tsx",
+      "method": "DELETE",
+      "endpoint": "/api/clinic/immunizations/:id"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\clinic\\Referrals.tsx",
+      "method": "GET",
+      "endpoint": "/api/clinic/referrals"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\clinic\\Referrals.tsx",
+      "method": "GET",
+      "endpoint": "/api/users"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\clinic\\Referrals.tsx",
+      "method": "POST",
+      "endpoint": "/api/clinic/referrals"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\clinic\\Referrals.tsx",
+      "method": "DELETE",
+      "endpoint": "/api/clinic/referrals/:id"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\ClockInLogsPage.tsx",
+      "method": "GET",
+      "endpoint": "/api/departments"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\ClockInLogsPage.tsx",
+      "method": "GET",
+      "endpoint": "/api/staff-attendance/my"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\ClockInLogsPage.tsx",
+      "method": "GET",
+      "endpoint": "/api/staff-attendance/all"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\ClockInLogsPage.tsx",
+      "method": "GET",
+      "endpoint": "/api/attendance/student-clock-ins"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\EmployeeManagementPage.tsx",
+      "method": "GET",
+      "endpoint": "/api/payroll/employees"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\EmployeeManagementPage.tsx",
+      "method": "PUT",
+      "endpoint": "/api/payroll/employees/:id"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\ExpensesPage.tsx",
+      "method": "POST",
+      "endpoint": "/api/accounts/categories"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\ExpensesPage.tsx",
+      "method": "DELETE",
+      "endpoint": "/api/accounts/categories/:id"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\ExpensesPage.tsx",
+      "method": "GET",
+      "endpoint": "/api/schools/settings"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\ExpensesPage.tsx",
+      "method": "GET",
+      "endpoint": "/api/accounts/expenses"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\ExpensesPage.tsx",
+      "method": "GET",
+      "endpoint": "/api/accounts/categories"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\ExpensesPage.tsx",
+      "method": "POST",
+      "endpoint": "/api/accounts/expenses"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\ExpensesPage.tsx",
+      "method": "DELETE",
+      "endpoint": "/api/accounts/expenses/:id"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\FarmManagement.tsx",
+      "method": "GET",
+      "endpoint": "/api/farm/livestock"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\FarmManagement.tsx",
+      "method": "GET",
+      "endpoint": "/api/farm/crops"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\FarmManagement.tsx",
+      "method": "GET",
+      "endpoint": "/api/farm/inventory"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\FarmManagement.tsx",
+      "method": "POST",
+      "endpoint": "/api/farm/livestock"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\FarmManagement.tsx",
+      "method": "POST",
+      "endpoint": "/api/farm/crops"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\FarmManagement.tsx",
+      "method": "POST",
+      "endpoint": "/api/farm/inventory"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\FeeGroupsPage.tsx",
+      "method": "GET",
+      "endpoint": "/api/classes"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\FeeGroupsPage.tsx",
+      "method": "GET",
+      "endpoint": "/api/fees/groups"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\FeeGroupsPage.tsx",
+      "method": "POST",
+      "endpoint": "/api/fees/groups"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\FeeGroupsPage.tsx",
+      "method": "DELETE",
+      "endpoint": "/api/fees/groups/:id"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\FeeReminderLogsPage.tsx",
+      "method": "GET",
+      "endpoint": "/api/fees/reminder-logs"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\FeeReminderLogsPage.tsx",
+      "method": "POST",
+      "endpoint": "/api/fees/reminder-logs/:id/retry"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\FeesBillingPage.tsx",
+      "method": "GET",
+      "endpoint": "/api/fees/groups"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\FeesBillingPage.tsx",
+      "method": "GET",
+      "endpoint": "/api/classes"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\FeesBillingPage.tsx",
+      "method": "GET",
+      "endpoint": "/api/fees/students-list"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\FeesBillingPage.tsx",
+      "method": "POST",
+      "endpoint": "/api/fees/invoice/standard"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\FeesBillingPage.tsx",
+      "method": "POST",
+      "endpoint": "/api/fees/invoice/custom"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\GradingSettingsPage.tsx",
+      "method": "GET",
+      "endpoint": "/api/academic-tools/grading"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\GradingSettingsPage.tsx",
+      "method": "POST",
+      "endpoint": "/api/academic-tools/grading"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\GroceriesPage.tsx",
+      "method": "GET",
+      "endpoint": "/api/inventory/products"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\GroceriesPage.tsx",
+      "method": "GET",
+      "endpoint": "/api/classes"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\GroceriesPage.tsx",
+      "method": "GET",
+      "endpoint": "/api/inventory/consumption"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\GroceriesPage.tsx",
+      "method": "POST",
+      "endpoint": "/api/inventory/products"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\GroceriesPage.tsx",
+      "method": "DELETE",
+      "endpoint": "/api/inventory/products/:id"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\GroceriesPage.tsx",
+      "method": "POST",
+      "endpoint": "/api/inventory/bill"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\GroceriesPage.tsx",
+      "method": "POST",
+      "endpoint": "/api/inventory/consumption"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\HouseDashboard.tsx",
+      "method": "GET",
+      "endpoint": "/api/schools/houses"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\HouseDashboard.tsx",
+      "method": "GET",
+      "endpoint": "/api/schools/houses/:id/members"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\HouseDashboard.tsx",
+      "method": "GET",
+      "endpoint": "/api/students"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\HouseDashboard.tsx",
+      "method": "POST",
+      "endpoint": "/api/schools/houses/assign-student"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\HouseDashboard.tsx",
+      "method": "POST",
+      "endpoint": "/api/schools/houses/assign-student"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\hr\\MyAwards.tsx",
+      "method": "GET",
+      "endpoint": "/api/awards/my"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\hr\\MyLeave.tsx",
+      "method": "GET",
+      "endpoint": "/api/leave/my"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\hr\\MyLeave.tsx",
+      "method": "POST",
+      "endpoint": "/api/leave"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\hr\\MyPaymentSlip.tsx",
+      "method": "GET",
+      "endpoint": "/api/payslips/my"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\human-resources\\CreatePayslip.tsx",
+      "method": "GET",
+      "endpoint": "/api/departments"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\human-resources\\CreatePayslip.tsx",
+      "method": "GET",
+      "endpoint": "/api/payroll/employees"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\human-resources\\CreatePayslip.tsx",
+      "method": "POST",
+      "endpoint": "/api/payroll/entry"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\human-resources\\JobApplications.tsx",
+      "method": "GET",
+      "endpoint": "/api/hr/vacancies"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\human-resources\\JobApplications.tsx",
+      "method": "POST",
+      "endpoint": "/api/hr/applications"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\human-resources\\JobApplications.tsx",
+      "method": "GET",
+      "endpoint": "/api/hr/applications"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\human-resources\\JobApplications.tsx",
+      "method": "PUT",
+      "endpoint": "/api/hr/applications/:id/status"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\human-resources\\JobApplications.tsx",
+      "method": "DELETE",
+      "endpoint": "/api/hr/applications/:id"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\human-resources\\JobApplications.tsx",
+      "method": "GET",
+      "endpoint": "/api/storage/file/:id"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\human-resources\\JobApplications.tsx",
+      "method": "GET",
+      "endpoint": "/api/storage/file/:id"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\human-resources\\ListLeaves.tsx",
+      "method": "GET",
+      "endpoint": "/api/leave"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\human-resources\\ManageAwards.tsx",
+      "method": "GET",
+      "endpoint": "/api/payroll/employees"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\human-resources\\ManageAwards.tsx",
+      "method": "GET",
+      "endpoint": "/api/awards"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\human-resources\\ManageAwards.tsx",
+      "method": "POST",
+      "endpoint": "/api/awards"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\human-resources\\ManagePaymentPlans.tsx",
+      "method": "GET",
+      "endpoint": "/api/payment-plans/admin"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\human-resources\\ManagePaymentPlans.tsx",
+      "method": "GET",
+      "endpoint": "/api/payment-plans/templates"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\human-resources\\ManagePaymentPlans.tsx",
+      "method": "POST",
+      "endpoint": "/api/payment-plans/templates"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\human-resources\\ManagePaymentPlans.tsx",
+      "method": "DELETE",
+      "endpoint": "/api/payment-plans/templates/:id"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\human-resources\\ManagePaymentPlans.tsx",
+      "method": "PATCH",
+      "endpoint": "/api/payment-plans/:id/status"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\human-resources\\ManageVacancies.tsx",
+      "method": "GET",
+      "endpoint": "/api/hr/vacancies"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\human-resources\\ManageVacancies.tsx",
+      "method": "GET",
+      "endpoint": "/api/departments"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\human-resources\\ManageVacancies.tsx",
+      "method": "GET",
+      "endpoint": "/api/users"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\human-resources\\ManageVacancies.tsx",
+      "method": "POST",
+      "endpoint": "/api/hr/vacancies"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\human-resources\\ManageVacancies.tsx",
+      "method": "DELETE",
+      "endpoint": "/api/hr/vacancies/:id"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\human-resources\\PayrollList.tsx",
+      "method": "GET",
+      "endpoint": "/api/payroll/entries"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\IncomePage.tsx",
+      "method": "POST",
+      "endpoint": "/api/accounts/categories"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\IncomePage.tsx",
+      "method": "DELETE",
+      "endpoint": "/api/accounts/categories/:id"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\IncomePage.tsx",
+      "method": "GET",
+      "endpoint": "/api/schools/settings"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\IncomePage.tsx",
+      "method": "GET",
+      "endpoint": "/api/accounts/income"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\IncomePage.tsx",
+      "method": "GET",
+      "endpoint": "/api/accounts/categories"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\IncomePage.tsx",
+      "method": "POST",
+      "endpoint": "/api/accounts/income"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\IncomePage.tsx",
+      "method": "DELETE",
+      "endpoint": "/api/accounts/income/:id"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\ITSupportPage.tsx",
+      "method": "GET",
+      "endpoint": "/api/support/my"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\ITSupportPage.tsx",
+      "method": "POST",
+      "endpoint": "/api/support"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\LiabilitiesPage.tsx",
+      "method": "POST",
+      "endpoint": "/api/accounts/categories"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\LiabilitiesPage.tsx",
+      "method": "DELETE",
+      "endpoint": "/api/accounts/categories/:id"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\LiabilitiesPage.tsx",
+      "method": "GET",
+      "endpoint": "/api/schools/settings"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\LiabilitiesPage.tsx",
+      "method": "GET",
+      "endpoint": "/api/accounts/liabilities"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\LiabilitiesPage.tsx",
+      "method": "GET",
+      "endpoint": "/api/accounts/categories"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\LiabilitiesPage.tsx",
+      "method": "POST",
+      "endpoint": "/api/accounts/liabilities"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\LiabilitiesPage.tsx",
+      "method": "PATCH",
+      "endpoint": "/api/accounts/liabilities/:id/settle"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\LiabilitiesPage.tsx",
+      "method": "DELETE",
+      "endpoint": "/api/accounts/liabilities/:id"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\Library.tsx",
+      "method": "GET",
+      "endpoint": "/api/library/books"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\Library.tsx",
+      "method": "GET",
+      "endpoint": "/api/library/my-books"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\live-classes\\JitsiLiveClass.tsx",
+      "method": "GET",
+      "endpoint": "/api/classes"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\live-classes\\JitsiLiveClass.tsx",
+      "method": "GET",
+      "endpoint": "/api/live-class"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\live-classes\\JitsiLiveClass.tsx",
+      "method": "POST",
+      "endpoint": "/api/live-class"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\live-classes\\JitsiLiveClass.tsx",
+      "method": "DELETE",
+      "endpoint": "/api/live-class/:id"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\live-classes\\ZoomLiveClass.tsx",
+      "method": "GET",
+      "endpoint": "/api/classes"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\live-classes\\ZoomLiveClass.tsx",
+      "method": "GET",
+      "endpoint": "/api/live-class"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\live-classes\\ZoomLiveClass.tsx",
+      "method": "POST",
+      "endpoint": "/api/live-class"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\live-classes\\ZoomLiveClass.tsx",
+      "method": "DELETE",
+      "endpoint": "/api/live-class/:id"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\ManageInvoicesPage.tsx",
+      "method": "GET",
+      "endpoint": "/api/fees/invoices"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\ManageInvoicesPage.tsx",
+      "method": "POST",
+      "endpoint": "/api/fees/invoices/:id/pay"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\MarksEntryPage.tsx",
+      "method": "GET",
+      "endpoint": "/api/classes"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\MarksEntryPage.tsx",
+      "method": "GET",
+      "endpoint": "/api/subjects"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\MarksEntryPage.tsx",
+      "method": "GET",
+      "endpoint": "/api/grades/subject/:id/:id"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\MarksEntryPage.tsx",
+      "method": "POST",
+      "endpoint": "/api/grades/bulk"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\MessagesPage.tsx",
+      "method": "GET",
+      "endpoint": "/api/messages"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\MessagesPage.tsx",
+      "method": "GET",
+      "endpoint": "/api/messages/users"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\MessagesPage.tsx",
+      "method": "PATCH",
+      "endpoint": "/api/messages/:id/read"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\MessagesPage.tsx",
+      "method": "POST",
+      "endpoint": "/api/messages"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\MessagesPage.tsx",
+      "method": "DELETE",
+      "endpoint": "/api/messages/:id"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\PaymentHistoryPage.tsx",
+      "method": "GET",
+      "endpoint": "/api/classes"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\PaymentHistoryPage.tsx",
+      "method": "GET",
+      "endpoint": "/api/students"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\PaymentMethodsPage.tsx",
+      "method": "GET",
+      "endpoint": "/api/schools/settings"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\PaymentMethodsPage.tsx",
+      "method": "GET",
+      "endpoint": "/api/finance/payment-methods"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\PaymentMethodsPage.tsx",
+      "method": "POST",
+      "endpoint": "/api/finance/payment-methods"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\PaymentMethodsPage.tsx",
+      "method": "POST",
+      "endpoint": "/api/finance/payment-methods"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\PaymentMethodsPage.tsx",
+      "method": "DELETE",
+      "endpoint": "/api/finance/payment-methods/:id"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\PayrollSettingsPage.tsx",
+      "method": "GET",
+      "endpoint": "/api/payroll/allowances"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\PayrollSettingsPage.tsx",
+      "method": "GET",
+      "endpoint": "/api/payroll/deductions"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\PayrollSettingsPage.tsx",
+      "method": "GET",
+      "endpoint": "/api/payroll/tax-tables"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\PayrollSettingsPage.tsx",
+      "method": "POST",
+      "endpoint": "/api/payroll/:id"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\PayrollSettingsPage.tsx",
+      "method": "DELETE",
+      "endpoint": "/api/payroll/:id/:id"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\PayrollSettingsPage.tsx",
+      "method": "POST",
+      "endpoint": "/api/payroll/tax-tables"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\PrincipalCommentsPage.tsx",
+      "method": "GET",
+      "endpoint": "/api/classes"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\PrincipalCommentsPage.tsx",
+      "method": "GET",
+      "endpoint": "/api/reports/principal-comments/:id"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\PrincipalCommentsPage.tsx",
+      "method": "POST",
+      "endpoint": "/api/reports/principal-comments/bulk"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\ProfilePage.tsx",
+      "method": "GET",
+      "endpoint": "/api/users/me"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\ProfilePage.tsx",
+      "method": "PUT",
+      "endpoint": "/api/users/me"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\ProfilePage.tsx",
+      "method": "POST",
+      "endpoint": "/api/auth/change-password"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\ProgressReports.tsx",
+      "method": "GET",
+      "endpoint": "/api/reports/my"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\ProgressReports.tsx",
+      "method": "GET",
+      "endpoint": "/api/reports/template"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\QuestionPaperBuilder.tsx",
+      "method": "GET",
+      "endpoint": "/api/subjects"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\QuestionPaperBuilder.tsx",
+      "method": "GET",
+      "endpoint": "/api/academic-tools/question-papers/:id"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\QuestionPaperBuilder.tsx",
+      "method": "PUT",
+      "endpoint": "/api/academic-tools/question-papers/:id"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\QuestionPaperBuilder.tsx",
+      "method": "POST",
+      "endpoint": "/api/academic-tools/question-papers"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\QuestionPapersPage.tsx",
+      "method": "GET",
+      "endpoint": "/api/academic-tools/question-papers"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\QuestionPapersPage.tsx",
+      "method": "DELETE",
+      "endpoint": "/api/academic-tools/question-papers/:id"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\ReportsDashboardPage.tsx",
+      "method": "GET",
+      "endpoint": "/api/report-data/summary"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\ReportViewerPage.tsx",
+      "method": "GET",
+      "endpoint": "/api/classes"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\ReportViewerPage.tsx",
+      "method": "GET",
+      "endpoint": "/api/accounts/categories"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\ReportViewerPage.tsx",
+      "method": "GET",
+      "endpoint": "/api/finance/payment-methods"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\ReportViewerPage.tsx",
+      "method": "GET",
+      "endpoint": "/api/fees/groups"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\ReportViewerPage.tsx",
+      "method": "GET",
+      "endpoint": "/api/finance/revenue-allocations"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\RevenueAllocationPage.tsx",
+      "method": "GET",
+      "endpoint": "/api/finance/revenue-allocations"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\RevenueAllocationPage.tsx",
+      "method": "GET",
+      "endpoint": "/api/finance/fee-groups"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\RevenueAllocationPage.tsx",
+      "method": "POST",
+      "endpoint": "/api/finance/revenue-allocations"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\RevenueAllocationPage.tsx",
+      "method": "PATCH",
+      "endpoint": "/api/finance/revenue-allocations/:id/toggle"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\SettingsPage.tsx",
+      "method": "GET",
+      "endpoint": "/api/schools/settings"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\SettingsPage.tsx",
+      "method": "PATCH",
+      "endpoint": "/api/schools/settings"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\SportsManagement.tsx",
+      "method": "GET",
+      "endpoint": "/api/teachers"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\SportsManagement.tsx",
+      "method": "GET",
+      "endpoint": "/api/students"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\SportsManagement.tsx",
+      "method": "GET",
+      "endpoint": "/api/schools/sports-list"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\SportsManagement.tsx",
+      "method": "PATCH",
+      "endpoint": "/api/schools/sports-list/:id"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\SportsManagement.tsx",
+      "method": "POST",
+      "endpoint": "/api/schools/sports-list"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\SportsManagement.tsx",
+      "method": "DELETE",
+      "endpoint": "/api/schools/sports-list/:id"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\SportsManagement.tsx",
+      "method": "GET",
+      "endpoint": "/api/schools/houses"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\SportsManagement.tsx",
+      "method": "PATCH",
+      "endpoint": "/api/schools/houses/:id"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\SportsManagement.tsx",
+      "method": "POST",
+      "endpoint": "/api/schools/houses"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\SportsManagement.tsx",
+      "method": "DELETE",
+      "endpoint": "/api/schools/houses/:id"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\SportsManagement.tsx",
+      "method": "GET",
+      "endpoint": "/api/schools/sports-equipment"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\SportsManagement.tsx",
+      "method": "PATCH",
+      "endpoint": "/api/schools/sports-equipment/:id"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\SportsManagement.tsx",
+      "method": "POST",
+      "endpoint": "/api/schools/sports-equipment"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\SportsManagement.tsx",
+      "method": "DELETE",
+      "endpoint": "/api/schools/sports-equipment/:id"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\StudentLedgersPage.tsx",
+      "method": "GET",
+      "endpoint": "/api/classes"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\StudentLedgersPage.tsx",
+      "method": "GET",
+      "endpoint": "/api/students"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\StudentLedgersPage.tsx",
+      "method": "POST",
+      "endpoint": "/api/fees/ledger"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\StudentLedgersPage.tsx",
+      "method": "GET",
+      "endpoint": "/api/fees/ledgers"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\UniformsPage.tsx",
+      "method": "GET",
+      "endpoint": "/api/uniforms/items"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\UniformsPage.tsx",
+      "method": "GET",
+      "endpoint": "/api/uniforms/suppliers"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\UniformsPage.tsx",
+      "method": "GET",
+      "endpoint": "/api/uniforms/stock-orders"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\UniformsPage.tsx",
+      "method": "GET",
+      "endpoint": "/api/uniforms/sales"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\UniformsPage.tsx",
+      "method": "POST",
+      "endpoint": "/api/uniforms/items"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\UniformsPage.tsx",
+      "method": "POST",
+      "endpoint": "/api/uniforms/stock-orders"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\UniformsPage.tsx",
+      "method": "POST",
+      "endpoint": "/api/uniforms/sales"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\UniformsPage.tsx",
+      "method": "POST",
+      "endpoint": "/api/uniforms/suppliers"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\website-settings\\AboutSettings.tsx",
+      "method": "POST",
+      "endpoint": "/api/website-settings/upload"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\website-settings\\AboutSettings.tsx",
+      "method": "GET",
+      "endpoint": "/api/website-settings"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\website-settings\\AboutSettings.tsx",
+      "method": "GET",
+      "endpoint": "/api/schools/settings"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\website-settings\\AboutSettings.tsx",
+      "method": "GET",
+      "endpoint": "/api/schools/me"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\website-settings\\AboutSettings.tsx",
+      "method": "PUT",
+      "endpoint": "/api/website-settings"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\website-settings\\AboutSettings.tsx",
+      "method": "PATCH",
+      "endpoint": "/api/schools/info"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\website-settings\\AdmissionSettings.tsx",
+      "method": "GET",
+      "endpoint": "/api/website-settings"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\website-settings\\AdmissionSettings.tsx",
+      "method": "PUT",
+      "endpoint": "/api/website-settings"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\website-settings\\BannerSettings.tsx",
+      "method": "GET",
+      "endpoint": "/api/website-settings"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\website-settings\\BannerSettings.tsx",
+      "method": "GET",
+      "endpoint": "/api/schools/settings"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\website-settings\\BannerSettings.tsx",
+      "method": "POST",
+      "endpoint": "/api/website-settings/upload"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\website-settings\\BannerSettings.tsx",
+      "method": "PATCH",
+      "endpoint": "/api/schools/favicon"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\website-settings\\BannerSettings.tsx",
+      "method": "PUT",
+      "endpoint": "/api/website-settings"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\website-settings\\BannerSettings.tsx",
+      "method": "PATCH",
+      "endpoint": "/api/schools/branding"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\website-settings\\CampusSettings.tsx",
+      "method": "POST",
+      "endpoint": "/api/website-settings/upload"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\website-settings\\CampusSettings.tsx",
+      "method": "GET",
+      "endpoint": "/api/website-settings"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\website-settings\\CampusSettings.tsx",
+      "method": "PUT",
+      "endpoint": "/api/website-settings"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\website-settings\\GallerySettings.tsx",
+      "method": "POST",
+      "endpoint": "/api/website-settings/upload"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\website-settings\\GallerySettings.tsx",
+      "method": "GET",
+      "endpoint": "/api/website-settings/galleries"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\website-settings\\GallerySettings.tsx",
+      "method": "PUT",
+      "endpoint": "/api/website-settings/galleries/:id"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\website-settings\\GallerySettings.tsx",
+      "method": "POST",
+      "endpoint": "/api/website-settings/galleries"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\website-settings\\GallerySettings.tsx",
+      "method": "DELETE",
+      "endpoint": "/api/website-settings/galleries/:id"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\website-settings\\InquirySettings.tsx",
+      "method": "GET",
+      "endpoint": "/api/website-settings/inquiries"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\website-settings\\InquirySettings.tsx",
+      "method": "DELETE",
+      "endpoint": "/api/website-settings/inquiries/:id"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\website-settings\\NewsSettings.tsx",
+      "method": "POST",
+      "endpoint": "/api/website-settings/upload"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\website-settings\\NewsSettings.tsx",
+      "method": "GET",
+      "endpoint": "/api/website-settings/news"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\website-settings\\NewsSettings.tsx",
+      "method": "PUT",
+      "endpoint": "/api/website-settings/news/:id"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\website-settings\\NewsSettings.tsx",
+      "method": "POST",
+      "endpoint": "/api/website-settings/news"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\website-settings\\NewsSettings.tsx",
+      "method": "DELETE",
+      "endpoint": "/api/website-settings/news/:id"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\website-settings\\NoticeboardSettings.tsx",
+      "method": "GET",
+      "endpoint": "/api/website-settings/noticeboard"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\website-settings\\NoticeboardSettings.tsx",
+      "method": "POST",
+      "endpoint": "/api/website-settings/noticeboard"
+    },
+    {
+      "file": "\\portals\\shared\\pages\\website-settings\\NoticeboardSettings.tsx",
+      "method": "DELETE",
+      "endpoint": "/api/website-settings/noticeboard/:id"
+    },
+    {
+      "file": "\\portals\\student\\pages\\academics\\StudentStudyMaterial.tsx",
+      "method": "GET",
+      "endpoint": "/api/study-materials"
+    },
+    {
+      "file": "\\portals\\student\\pages\\academics\\StudentStudyMaterial.tsx",
+      "method": "GET",
+      "endpoint": "/api/subjects"
+    },
+    {
+      "file": "\\portals\\student\\pages\\Assignments.tsx",
+      "method": "GET",
+      "endpoint": "/api/students/assignments"
+    },
+    {
+      "file": "\\portals\\student\\pages\\Assignments.tsx",
+      "method": "POST",
+      "endpoint": "/api/students/assignments/:id/start"
+    },
+    {
+      "file": "\\portals\\student\\pages\\Assignments.tsx",
+      "method": "POST",
+      "endpoint": "/api/students/assignments/:id/submit"
+    },
+    {
+      "file": "\\portals\\student\\pages\\Assignments.tsx",
+      "method": "POST",
+      "endpoint": "/api/students/assignments/:id/submit"
+    },
+    {
+      "file": "\\portals\\student\\pages\\Attendance.tsx",
+      "method": "GET",
+      "endpoint": "/api/students/me/dashboard"
+    },
+    {
+      "file": "\\portals\\student\\pages\\Attendance.tsx",
+      "method": "GET",
+      "endpoint": "/api/students/me/dashboard"
+    },
+    {
+      "file": "\\portals\\student\\pages\\Dashboard.tsx",
+      "method": "GET",
+      "endpoint": "/api/students/me/dashboard"
+    },
+    {
+      "file": "\\portals\\student\\pages\\DHRepresentative.tsx",
+      "method": "GET",
+      "endpoint": "/api/dining-hall/menu"
+    },
+    {
+      "file": "\\portals\\student\\pages\\DHRepresentative.tsx",
+      "method": "GET",
+      "endpoint": "/api/dining-hall/reports"
+    },
+    {
+      "file": "\\portals\\student\\pages\\DHRepresentative.tsx",
+      "method": "POST",
+      "endpoint": "/api/dining-hall/reports"
+    },
+    {
+      "file": "\\portals\\student\\pages\\DHRepresentative.tsx",
+      "method": "POST",
+      "endpoint": "/api/dining-hall/menu"
+    },
+    {
+      "file": "\\portals\\student\\pages\\DHRepresentative.tsx",
+      "method": "POST",
+      "endpoint": "/api/dining-hall/menu"
+    },
+    {
+      "file": "\\portals\\student\\pages\\Events.tsx",
+      "method": "GET",
+      "endpoint": "/api/website-settings/noticeboard"
+    },
+    {
+      "file": "\\portals\\student\\pages\\Fees.tsx",
+      "method": "GET",
+      "endpoint": "/api/students/me/dashboard"
+    },
+    {
+      "file": "\\portals\\student\\pages\\Grades.tsx",
+      "method": "GET",
+      "endpoint": "/api/students/me/dashboard"
+    },
+    {
+      "file": "\\portals\\student\\pages\\Grades.tsx",
+      "method": "GET",
+      "endpoint": "/api/reports/my"
+    },
+    {
+      "file": "\\portals\\student\\pages\\Login.tsx",
+      "method": "POST",
+      "endpoint": "/api/auth/login"
+    },
+    {
+      "file": "\\portals\\student\\pages\\MyBooks.tsx",
+      "method": "GET",
+      "endpoint": "/api/students/me/books"
+    },
+    {
+      "file": "\\portals\\student\\pages\\PrefectCouncil.tsx",
+      "method": "GET",
+      "endpoint": "/api/prefects/duties"
+    },
+    {
+      "file": "\\portals\\student\\pages\\PrefectCouncil.tsx",
+      "method": "GET",
+      "endpoint": "/api/prefects/meetings"
+    },
+    {
+      "file": "\\portals\\student\\pages\\PrefectCouncil.tsx",
+      "method": "GET",
+      "endpoint": "/api/prefects/reports"
+    },
+    {
+      "file": "\\portals\\student\\pages\\PrefectCouncil.tsx",
+      "method": "POST",
+      "endpoint": "/api/prefects/duties"
+    },
+    {
+      "file": "\\portals\\student\\pages\\PrefectCouncil.tsx",
+      "method": "POST",
+      "endpoint": "/api/prefects/meetings"
+    },
+    {
+      "file": "\\portals\\student\\pages\\PrefectCouncil.tsx",
+      "method": "POST",
+      "endpoint": "/api/prefects/reports"
+    },
+    {
+      "file": "\\portals\\student\\pages\\ResearchDashboard.tsx",
+      "method": "GET",
+      "endpoint": "/api/students/me/research"
+    },
+    {
+      "file": "\\portals\\student\\pages\\ResearchDashboard.tsx",
+      "method": "POST",
+      "endpoint": "/api/extensions"
+    },
+    {
+      "file": "\\portals\\student\\pages\\Timetable.tsx",
+      "method": "GET",
+      "endpoint": "/api/timetable/my"
+    },
+    {
+      "file": "\\portals\\teacher\\pages\\Assets.tsx",
+      "method": "GET",
+      "endpoint": "/api/assets"
+    },
+    {
+      "file": "\\portals\\teacher\\pages\\Assets.tsx",
+      "method": "POST",
+      "endpoint": "/api/assets/incident"
+    },
+    {
+      "file": "\\portals\\teacher\\pages\\Assets.tsx",
+      "method": "POST",
+      "endpoint": "/api/assets/request-maintenance"
+    },
+    {
+      "file": "\\portals\\teacher\\pages\\Assets.tsx",
+      "method": "POST",
+      "endpoint": "/api/assets"
+    },
+    {
+      "file": "\\portals\\teacher\\pages\\Assignments.tsx",
+      "method": "GET",
+      "endpoint": "/api/teachers/assignments"
+    },
+    {
+      "file": "\\portals\\teacher\\pages\\Assignments.tsx",
+      "method": "GET",
+      "endpoint": "/api/teachers/my-classes"
+    },
+    {
+      "file": "\\portals\\teacher\\pages\\Assignments.tsx",
+      "method": "GET",
+      "endpoint": "/api/subjects"
+    },
+    {
+      "file": "\\portals\\teacher\\pages\\Assignments.tsx",
+      "method": "POST",
+      "endpoint": "/api/teachers/assignments"
+    },
+    {
+      "file": "\\portals\\teacher\\pages\\Assignments.tsx",
+      "method": "PATCH",
+      "endpoint": "/api/teachers/assignments/:id/toggle-status"
+    },
+    {
+      "file": "\\portals\\teacher\\pages\\AssignmentSubmissions.tsx",
+      "method": "GET",
+      "endpoint": "/api/teachers/assignments/:id/submissions"
+    },
+    {
+      "file": "\\portals\\teacher\\pages\\AssignmentSubmissions.tsx",
+      "method": "GET",
+      "endpoint": "/api/teachers/assignments/:id"
+    },
+    {
+      "file": "\\portals\\teacher\\pages\\AssignmentSubmissions.tsx",
+      "method": "POST",
+      "endpoint": "/api/teachers/submissions/:id/grade"
+    },
+    {
+      "file": "\\portals\\teacher\\pages\\ClassAttendance.tsx",
+      "method": "GET",
+      "endpoint": "/api/teachers/my-students"
+    },
+    {
+      "file": "\\portals\\teacher\\pages\\ClassAttendance.tsx",
+      "method": "POST",
+      "endpoint": "/api/teachers/attendance/mark-bulk"
+    },
+    {
+      "file": "\\portals\\teacher\\pages\\ClassDetails.tsx",
+      "method": "GET",
+      "endpoint": "/api/teachers/my-classes"
+    },
+    {
+      "file": "\\portals\\teacher\\pages\\ClassDetails.tsx",
+      "method": "GET",
+      "endpoint": "/api/teachers/my-students"
+    },
+    {
+      "file": "\\portals\\teacher\\pages\\Classes.tsx",
+      "method": "GET",
+      "endpoint": "/api/teachers/my-classes"
+    },
+    {
+      "file": "\\portals\\teacher\\pages\\Dashboard.tsx",
+      "method": "GET",
+      "endpoint": "/api/dashboard/teacher"
+    },
+    {
+      "file": "\\portals\\teacher\\pages\\Dashboard.tsx",
+      "method": "GET",
+      "endpoint": "/api/staff-attendance/today"
+    },
+    {
+      "file": "\\portals\\teacher\\pages\\Grades.tsx",
+      "method": "GET",
+      "endpoint": "/api/teachers/my-classes"
+    },
+    {
+      "file": "\\portals\\teacher\\pages\\Grades.tsx",
+      "method": "GET",
+      "endpoint": "/api/teachers/my-students"
+    },
+    {
+      "file": "\\portals\\teacher\\pages\\Grades.tsx",
+      "method": "GET",
+      "endpoint": "/api/grades/class/:id"
+    },
+    {
+      "file": "\\portals\\teacher\\pages\\Grades.tsx",
+      "method": "POST",
+      "endpoint": "/api/grades/bulk"
+    },
+    {
+      "file": "\\portals\\teacher\\pages\\online-learning\\AddNewCourse.tsx",
+      "method": "GET",
+      "endpoint": "/api/classes"
+    },
+    {
+      "file": "\\portals\\teacher\\pages\\online-learning\\AddNewCourse.tsx",
+      "method": "POST",
+      "endpoint": "/api/courses"
+    },
+    {
+      "file": "\\portals\\teacher\\pages\\online-learning\\CoursesDashboard.tsx",
+      "method": "GET",
+      "endpoint": "/api/courses"
+    },
+    {
+      "file": "\\portals\\teacher\\pages\\online-learning\\EnrolStudent.tsx",
+      "method": "GET",
+      "endpoint": "/api/classes"
+    },
+    {
+      "file": "\\portals\\teacher\\pages\\online-learning\\EnrolStudent.tsx",
+      "method": "GET",
+      "endpoint": "/api/students"
+    },
+    {
+      "file": "\\portals\\teacher\\pages\\online-learning\\EnrolStudent.tsx",
+      "method": "GET",
+      "endpoint": "/api/courses"
+    },
+    {
+      "file": "\\portals\\teacher\\pages\\online-learning\\EnrolStudent.tsx",
+      "method": "GET",
+      "endpoint": "/api/courses/:id/enrollments"
+    },
+    {
+      "file": "\\portals\\teacher\\pages\\online-learning\\EnrolStudent.tsx",
+      "method": "POST",
+      "endpoint": "/api/courses/enroll"
+    },
+    {
+      "file": "\\portals\\teacher\\pages\\online-learning\\RevenueReport.tsx",
+      "method": "GET",
+      "endpoint": "/api/courses/revenue/report"
+    },
+    {
+      "file": "\\portals\\teacher\\pages\\Reports.tsx",
+      "method": "GET",
+      "endpoint": "/api/teachers/my-classes"
+    },
+    {
+      "file": "\\portals\\teacher\\pages\\Reports.tsx",
+      "method": "GET",
+      "endpoint": "/api/teachers/my-students"
+    },
+    {
+      "file": "\\portals\\teacher\\pages\\Students.tsx",
+      "method": "GET",
+      "endpoint": "/api/teachers/my-classes"
+    },
+    {
+      "file": "\\portals\\teacher\\pages\\Students.tsx",
+      "method": "GET",
+      "endpoint": "/api/teachers/my-students${selectedClassId "
+    },
+    {
+      "file": "\\portals\\teacher\\pages\\SupervisorDashboardPage.tsx",
+      "method": "GET",
+      "endpoint": "/api/supervisors/my-students"
+    },
+    {
+      "file": "\\portals\\teacher\\pages\\SupervisorDashboardPage.tsx",
+      "method": "POST",
+      "endpoint": "/api/supervisors/reports"
+    },
+    {
+      "file": "\\portals\\teacher\\pages\\Textbooks.tsx",
+      "method": "GET",
+      "endpoint": "/api/teachers/textbooks"
+    },
+    {
+      "file": "\\portals\\teacher\\pages\\Textbooks.tsx",
+      "method": "GET",
+      "endpoint": "/api/teachers/my-classes"
+    },
+    {
+      "file": "\\portals\\teacher\\pages\\Textbooks.tsx",
+      "method": "GET",
+      "endpoint": "/api/subjects"
+    },
+    {
+      "file": "\\portals\\teacher\\pages\\Textbooks.tsx",
+      "method": "POST",
+      "endpoint": "/api/teachers/textbooks/issue"
+    },
+    {
+      "file": "\\portals\\teacher\\pages\\Textbooks.tsx",
+      "method": "POST",
+      "endpoint": "/api/library/books"
+    },
+    {
+      "file": "\\portals\\teacher\\pages\\Timetable.tsx",
+      "method": "GET",
+      "endpoint": "/api/timetable/my"
+    }
+  ]
+}

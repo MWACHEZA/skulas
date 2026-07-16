@@ -1,0 +1,89 @@
+
+# =====================================================================
+# Staging Environment - mirrors production constraints with safe mocks
+# NEVER run load tests against production.
+# Start: docker-compose -f docker-compose.staging.yml up --build -d
+# Stop:  docker-compose -f docker-compose.staging.yml down -v
+# =====================================================================
+
+services:
+  # -------------------------------------------------------------------
+  # PostgreSQL - resource-limited to mirror Cloud SQL tier
+  # -------------------------------------------------------------------
+  db:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: acadex_staging
+      POSTGRES_PASSWORD: staging_secret
+      POSTGRES_DB: acadex_staging
+    ports:
+      - "5433:5432"   # Exposed on 5433 to avoid clash with local Postgres
+    volumes:
+      - staging_db_data:/var/lib/postgresql/data
+    # Resource limits simulate a constrained Cloud SQL tier
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: "1G"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U acadex_staging -d acadex_staging"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # -------------------------------------------------------------------
+  # Backend API - compiled to JS (no ts-node-dev, just like production)
+  # -------------------------------------------------------------------
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgresql://acadex_staging:staging_secret@db:5432/acadex_staging
+      JWT_SECRET: staging_jwt_secret_do_not_use_in_prod_12345678
+      GEMINI_API_KEY: ""           # Disable AI features in staging
+      PORT: 5000
+      MOCK_WHATSAPP: "true"        # *** Safe: all WhatsApp calls are intercepted ***
+    ports:
+      - "5001:5000"                 # Exposed on 5001 to avoid clash with local backend
+    volumes:
+      - staging_storage:/app/storage
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: "512M"
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:5000/api/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # -------------------------------------------------------------------
+  # Frontend - built with Vite, served by Nginx with API proxy
+  # -------------------------------------------------------------------
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "8080:80"                   # Access staging frontend at http://localhost:8080
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: "128M"
+
+volumes:
+  staging_db_data:
+  staging_storage:

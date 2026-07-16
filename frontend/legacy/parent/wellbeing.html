@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health & Conduct - Acadex Parent Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/parent-portal.css">
+    <style>
+        .wellbeing-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .wellbeing-card {
+            background: #fff;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .card-header h3 {
+            margin: 0;
+            color: var(--primary-navy);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .card-header i {
+            color: var(--gold-primary);
+        }
+
+        /* Clinic Log Styles */
+        .clinic-log {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .log-item {
+            display: grid;
+            grid-template-columns: 80px 1fr;
+            gap: 20px;
+        }
+
+        .log-date {
+            text-align: center;
+            padding: 10px;
+            background: #f8fafc;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .log-date span:first-child {
+            display: block;
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--primary-navy);
+        }
+
+        .log-date span:last-child {
+            font-size: 0.75rem;
+            color: #64748b;
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+
+        .log-details h4 {
+            margin: 0 0 5px;
+            color: var(--school-primary-dark, #1e293b);
+        }
+
+        .log-details p {
+            margin: 0;
+            font-size: 0.9rem;
+            color: #64748b;
+            line-height: 1.5;
+        }
+
+        /* Conduct Ledger Styles */
+        .conduct-summary {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-box {
+            padding: 20px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-merits { background: #f0fdf4; color: #16a34a; }
+        .stat-demerits { background: #fef2f2; color: #dc2626; }
+
+        .stat-box .count {
+            display: block;
+            font-size: 2rem;
+            font-weight: 800;
+        }
+
+        .stat-box .label {
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .ledger-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .ledger-table th {
+            text-align: left;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            color: #94a3b8;
+            padding: 10px 0;
+            border-bottom: 2px solid #f1f5f9;
+        }
+
+        .ledger-table td {
+            padding: 15px 0;
+            border-bottom: 1px solid #f8faff;
+            font-size: 0.9rem;
+        }
+
+        .tag {
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .tag-merit { background: #dcfce7; color: #15803d; }
+        .tag-demerit { background: #fee2e2; color: #b91c1c; }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <div class="brand-icon"><i class="fas fa-graduation-cap"></i></div>
+            <h3>Acadex Portal</h3>
+            <p id="currentSchoolName">Loading school...</p>
+            <!-- SaaS School Switcher -->
+            <div style="margin-top: 15px; padding: 8px; background: rgba(255,255,255,0.05); border-radius: 8px; display: flex; align-items: center; justify-content: space-between; cursor: pointer;" onclick="ParentPortal.toggleSchoolSwitcher()">
+                <span style="font-size: 0.7rem; opacity: 0.8; font-weight: 600;">Switch School</span>
+                <i class="fas fa-chevron-down" style="font-size: 0.6rem; opacity: 0.5;"></i>
+            </div>
+            <div id="schoolSwitcher" style="display: none; margin-top: 10px; background: var(--navy-light); border-radius: 8px; overflow: hidden; text-align: left; box-shadow: var(--shadow-premium);">
+                <!-- Populated dynamically -->
+            </div>
+        </div>
+        <div class="sidebar-menu">
+            <div class="sidebar-section-label">Academic & Life</div>
+            <ul>
+                <li><a href="dashboard.html"><i class="fas fa-th-large"></i> Dashboard</a></li>
+                <li><a href="student-profile.html"><i class="fas fa-user-graduate"></i> Student Profile</a></li>
+                <li><a href="academics.html"><i class="fas fa-chart-line"></i> Academics & Trends</a></li>
+                <li><a href="academic-history.html"><i class="fas fa-history"></i> Academic History</a></li>
+                <li><a href="wellbeing.html" class="active"><i class="fas fa-heartbeat"></i> Health & Conduct</a></li>
+                <li><a href="calendar.html"><i class="fas fa-calendar-alt"></i> School Calendar</a></li>
+            </ul>
+            <div class="sidebar-section-label">Communication</div>
+            <ul>
+                <li><a href="messages.html"><i class="fas fa-envelope"></i> Messages</a></li>
+                <li><a href="notices.html"><i class="fas fa-bullhorn"></i> Noticeboard</a></li>
+                <li><a href="approvals.html"><i class="fas fa-file-signature"></i> Approvals</a></li>
+                <li><a href="contact.html"><i class="fas fa-phone-alt"></i> Contact Us</a></li>
+            </ul>
+            <div class="sidebar-section-label">Finance & Logistics</div>
+            <ul>
+                <li><a href="fees.html"><i class="fas fa-file-invoice-dollar"></i> Fees & Payments</a></li>
+                <li><a href="wallet.html"><i class="fas fa-wallet"></i> Tuckshop Wallet</a></li>
+                <li><a href="transport.html"><i class="fas fa-bus"></i> Transport Tracker</a></li>
+            </ul>
+        </div>
+        <div class="sidebar-footer">
+            <a href="#" onclick="ParentPortal.logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </div>
+    </aside>
+
+    <div class="main-content">
+        <header class="top-header">
+            <div class="header-left">
+                <button class="mobile-toggle" id="mobileToggle"><i class="fas fa-bars"></i></button>
+                <h2>Health & Conduct Ledger</h2>
+            </div>
+            <div class="header-right" id="userInfo">
+                <!-- Populated by JS -->
+            </div>
+        </header>
+
+        <main class="content-area">
+            <div class="wellbeing-grid">
+                <!-- Clinic Log Section -->
+                <div class="wellbeing-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-clinic-medical"></i> Clinic Visit Log</h3>
+                        <button class="btn-sm-outline">Archive</button>
+                    </div>
+                    <div class="clinic-log" id="clinicLog">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <!-- Conduct Ledger Section -->
+                <div class="wellbeing-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-gavel"></i> Conduct Ledger</h3>
+                        <button class="btn-sm-outline">Rules Policy</button>
+                    </div>
+                    <div class="conduct-summary">
+                        <div class="stat-box stat-merits">
+                            <span class="count">12</span>
+                            <span class="label">Merit Points</span>
+                        </div>
+                        <div class="stat-box stat-demerits">
+                            <span class="count">2</span>
+                            <span class="label">Demerits</span>
+                        </div>
+                    </div>
+                    <table class="ledger-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Activity</th>
+                                <th>Points</th>
+                            </tr>
+                        </thead>
+                        <tbody id="conductLedger">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../js/parent-portal.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            ParentPortal.init();
+            renderClinicLog();
+            renderConductLedger();
+        });
+
+        function renderClinicLog() {
+            const logs = [
+                { day: '15', month: 'MAR', title: 'Seasonal Allergy Relief', desc: 'Patient presented with sneezing and itchy eyes. Administered 10mg Loratadine. To be monitored for 24 hours.' },
+                { day: '02', month: 'MAR', title: 'Minor Abrasion (Sport)', desc: 'Surface graze on left knee during rugby practice. Cleaned with antiseptic and dressed. No further action needed.' },
+                { day: '24', month: 'FEB', title: 'Routine Health Check', desc: 'Quarterly height, weight, and blood pressure monitoring. All vitals within normal range for age group.' }
+            ];
+            const container = document.getElementById('clinicLog');
+            container.innerHTML = logs.map(l => `
+                <div class="log-item">
+                    <div class="log-date">
+                        <span>${l.day}</span>
+                        <span>${l.month}</span>
+                    </div>
+                    <div class="log-details">
+                        <h4>${l.title}</h4>
+                        <p>${l.desc}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderConductLedger() {
+            const records = [
+                { date: 'Mar 18', event: 'Academic Excellence (Math)', type: 'Merit', pts: '+5' },
+                { date: 'Mar 12', event: 'Late for Assembly', type: 'Demerit', pts: '-2' },
+                { date: 'Mar 05', event: 'Community Service Day', type: 'Merit', pts: '+7' }
+            ];
+            const tbody = document.getElementById('conductLedger');
+            tbody.innerHTML = records.map(r => `
+                <tr>
+                    <td>${r.date}</td>
+                    <td>${r.event}</td>
+                    <td><span class="tag ${r.type === 'Merit' ? 'tag-merit' : 'tag-demerit'}">${r.pts}</span></td>
+                </tr>
+            `).join('');
+        }
+    </script>
+    <!-- ACADEX: Powered-by footer and school branding -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+
+</body>
+
+</html>
+
+

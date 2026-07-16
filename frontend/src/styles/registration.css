@@ -1,0 +1,355 @@
+/* 
+  Legacy Registration Styles 
+  Replicated from Acadex Legacy Portal
+*/
+
+:root {
+  --school-primary: #0056b3;
+  --school-primary-dark: #003d7a;
+  --school-primary-rgb: 0, 86, 179;
+}
+
+.register-page-wrapper {
+  background: rgba(var(--school-primary-rgb), 0.05);
+  font-family: 'Poppins', sans-serif;
+  margin: 0;
+  padding: 40px 0;
+  min-height: 100vh;
+}
+
+.register-container {
+  max-width: 640px;
+  margin: 0 auto;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 8px 30px rgba(var(--school-primary-rgb), 0.12);
+  overflow: hidden;
+}
+
+.register-header {
+  background: linear-gradient(135deg, var(--school-primary), var(--school-primary-dark));
+  color: white;
+  text-align: center;
+  padding: 28px 20px 20px;
+}
+
+.register-header img {
+  width: 60px;
+  margin-bottom: 10px;
+}
+
+.register-header h2 {
+  margin: 0 0 4px;
+  font-size: 1.4rem;
+  color: white;
+}
+
+.register-header p {
+  margin: 0;
+  opacity: 0.8;
+  font-size: 0.85rem;
+  color: white;
+}
+
+/* Progress Steps - Support for more steps */
+.steps-bar {
+  display: flex;
+  background: #f8faff;
+  border-bottom: 1px solid #e8ecf5;
+  overflow-x: auto;
+}
+
+.step-item {
+  flex: 1;
+  min-width: 80px;
+  text-align: center;
+  padding: 14px 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #9aacca;
+  border-bottom: 3px solid transparent;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.3s;
+}
+
+.step-item .step-num {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #dce4f5;
+  color: #9aacca;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  transition: all 0.3s;
+}
+
+.step-item.active {
+  color: var(--school-primary);
+  border-bottom-color: var(--school-primary);
+}
+
+.step-item.active .step-num {
+  background: var(--school-primary);
+  color: white;
+}
+
+.step-item.done {
+  color: #28a745;
+  border-bottom-color: #28a745;
+}
+
+.step-item.done .step-num {
+  background: #28a745;
+  color: white;
+}
+
+/* Animations */
+.step-panel {
+  display: none;
+  animation: fadeSlide 0.4s ease-out;
+}
+
+.step-panel.active {
+  display: block;
+}
+
+@keyframes fadeSlide {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* Interactive Chips */
+.role-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.role-chip {
+  padding: 6px 14px;
+  background: #f3f6ff;
+  border: 1.5px solid #dce4f0;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #555;
+  cursor: pointer;
+  transition: all 0.2s;
+  user-select: none;
+}
+
+.role-chip:hover {
+  background: #e9efff;
+  border-color: var(--school-primary);
+}
+
+.role-chip.selected {
+  background: var(--school-primary);
+  color: white;
+  border-color: var(--school-primary);
+  box-shadow: 0 4px 10px rgba(var(--school-primary-rgb), 0.2);
+}
+
+/* Avatar Upload */
+.avatar-preview-wrap {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  border: 3px dashed #cbd5e0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: #f8f9fa;
+  margin-right: 20px;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.avatar-preview-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Form body */
+.form-body {
+  padding: 28px 32px;
+}
+
+.step-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--school-primary);
+  margin: 0 0 20px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #e8f0fe;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Form elements */
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.form-row.single {
+  grid-template-columns: 1fr;
+}
+
+.form-group {
+  margin-bottom: 14px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #444;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1.5px solid #dce4f5;
+  border-radius: 7px;
+  font-size: 0.88rem;
+  font-family: inherit;
+  transition: border-color 0.2s;
+  background: #fafcff;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: var(--school-primary);
+  outline: none;
+  background: white;
+}
+
+.input-group {
+  position: relative;
+}
+
+.input-group i {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #b0bfd9;
+  font-size: 0.9rem;
+  pointer-events: none;
+}
+
+.input-group input {
+  padding-right: 36px;
+}
+
+.section-divider {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--school-primary);
+  margin: 18px 0 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.section-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: #e8f0fe;
+}
+
+/* Buttons */
+.btn-row {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.btn-prev,
+.btn-next,
+.btn-submit {
+  flex: 1;
+  padding: 11px;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-prev {
+  background: rgba(var(--school-primary-rgb), 0.05);
+  color: var(--school-primary);
+  border: 1.5px solid rgba(var(--school-primary-rgb), 0.3);
+}
+
+.btn-prev:hover {
+  background: #e2eaf8;
+}
+
+.btn-next {
+  background: var(--school-primary);
+  color: white;
+}
+
+.btn-next:hover {
+  background: var(--school-primary-dark);
+}
+
+.btn-submit {
+  background: #28a745;
+  color: white;
+}
+
+.btn-submit:hover {
+  background: #1e7e34;
+}
+
+.register-footer {
+  text-align: center;
+  padding: 16px 32px 24px;
+  font-size: 0.85rem;
+  color: #666;
+  border-top: 1px solid #f0f4ff;
+}
+
+.register-footer a {
+  color: var(--school-primary);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+@media (max-width: 580px) {
+  .form-body {
+    padding: 20px 16px;
+  }
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+  .step-item span {
+    display: none;
+  }
+}

@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expenses - Bursar</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/ancillary-portal.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../css/ancillary-portal.css">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+
+        .bursar-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 260px;
+            background-color: var(--school-primary-dark, var(--school-primary-dark, #1a1a2e));
+            color: white;
+            position: fixed;
+            height: 100%;
+            overflow-y: auto;
+            z-index: 1000;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+
+        .sidebar-header img {
+            width: 50px;
+            margin-bottom: 10px;
+        }
+
+        .sidebar-header h3 {
+            margin: 0;
+            font-size: 1.1rem;
+        }
+
+        .sidebar-menu {
+            padding: 20px 0;
+        }
+
+        .menu-section-title {
+            padding: 10px 20px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: #888;
+            font-weight: 600;
+        }
+
+        .sidebar-menu ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            background-color: rgba(var(--school-primary-rgb, 0, 86, 179), 0.2);
+            color: white;
+            border-left: 3px solid var(--school-primary, var(--school-primary, #0056b3));
+        }
+
+        .sidebar-menu i {
+            margin-right: 12px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: 260px;
+            width: calc(100% - 260px);
+        }
+
+        .top-header {
+            background-color: white;
+            padding: 15px 30px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .content-area {
+            padding: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bursar-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <img src="../images/logo.png" alt="School Logo" class="acadex-school-logo">
+                <h3>Finance Portal</h3>
+            </div>
+            <div class="sidebar-menu">
+                <div class="sidebar-section-title">Bursar System</div>
+                <ul>
+                    <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i>
+                            <span>Dashboard</span></a></li>
+                    <li><a href="fees-management.html"><i class="fas fa-money-bill-wave"></i> <span>Fees
+                                Management</span></a></li>
+                    <li><a href="payments.html"><i class="fas fa-credit-card"></i> <span>Payments</span></a></li>
+                    <li><a href="expenses.html" class="active"><i class="fas fa-file-invoice-dollar"></i>
+                            <span>Expenses</span></a>
+                    </li>
+                    <li><a href="payroll.html"><i class="fas fa-users-cog"></i> <span>Payroll</span></a></li>
+                    <li><a href="tuckshop.html"><i class="fas fa-store"></i> <span>Tuckshop</span></a></li>
+                    <li><a href="reports.html"><i class="fas fa-chart-pie"></i> <span>Reports</span></a></li>
+                </ul>
+
+                <div class="sidebar-section-title">Operations</div>
+                <ul>
+                    <li><a href="staff-directory.html"><i class="fas fa-users"></i> <span>Staff Directory</span></a>
+                    </li>
+                    <li><a href="procurement.html"><i class="fas fa-shopping-cart"></i> <span>Procurement</span></a>
+                    </li>
+                    <li><a href="assets.html"><i class="fas fa-boxes"></i> <span>Asset Management</span></a></li>
+                    <li><a href="schedules.html"><i class="fas fa-calendar-check"></i> <span>Schedules &
+                                Shifts</span></a></li>
+                </ul>
+
+                <div class="sidebar-section-title">Staff HR & Support</div>
+                <ul>
+                    <li><a href="sdc-portal.html"><i class="fas fa-file-invoice-dollar"></i> <span>SDC Staff
+                                Portal</span></a></li>
+                    <li><a href="hr-services.html"><i class="fas fa-user-shield"></i> <span>HR Services</span></a></li>
+                    <li><a href="profile-settings.html"><i class="fas fa-id-card"></i> <span>My Profile</span></a></li>
+                    <li><a href="resources.html"><i class="fas fa-folder-open"></i> <span>Resources & Docs</span></a>
+                    </li>
+                    <li><a href="it-support.html"><i class="fas fa-headset"></i> <span>IT Support</span></a></li>
+                </ul>
+
+                <div class="sidebar-section-title">Communication</div>
+                <ul>
+                    <li><a href="news.html"><i class="fas fa-newspaper"></i> <span>News & Updates</span></a></li>
+                    <li><a href="contact.html"><i class="fas fa-address-book"></i> <span>Contact Us</span></a></li>
+                    <li><a href="settings.html"><i class="fas fa-cog"></i> <span>Settings</span></a></li>
+                </ul>
+            </div>
+            <div class="sidebar-footer">
+                <a href="login.html"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="top-header">
+                <h2>Expenses Tracker</h2>
+                <button class="btn btn-primary"
+                    style="padding: 8px 15px; border-radius: 5px; border:none; background: var(--school-primary, var(--school-primary, #0056b3)); color:white; cursor:pointer;"
+                    onclick="alert('Feature coming soon')"><i class="fas fa-plus"></i> Add New Expense</button>
+            </div>
+
+            <div class="content-area">
+                <div
+                    style="background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                        <h3>Expense History</h3>
+                        <div>
+                            <select style="padding: 8px; border-radius: 5px; border: 1px solid #ddd;">
+                                <option>All Categories</option>
+                                <option>Utilities</option>
+                                <option>Supplies</option>
+                                <option>Maintenance</option>
+                                <option>Boarding Expenses</option>
+                                <option>DH Expenses (Dining Hall)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="text-align: left; background: #f8f9fa;">
+                                <th style="padding: 12px; border-bottom: 2px solid #eee;">Date</th>
+                                <th style="padding: 12px; border-bottom: 2px solid #eee;">Category</th>
+                                <th style="padding: 12px; border-bottom: 2px solid #eee;">Description</th>
+                                <th style="padding: 12px; border-bottom: 2px solid #eee;">Amount</th>
+                                <th style="padding: 12px; border-bottom: 2px solid #eee;">Approved By</th>
+                                <th style="padding: 12px; border-bottom: 2px solid #eee;">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="padding: 12px; border-bottom: 1px solid #eee;">Dec 30, 2025</td>
+                                <td style="padding: 12px; border-bottom: 1px solid #eee;"><span
+                                        style="background: #e0f7fa; color: #006064; padding: 2px 8px; border-radius: 4px; font-size: 0.8rem;">DH
+                                        Expenses</span></td>
+                                <td style="padding: 12px; border-bottom: 1px solid #eee;">Food Supplies (Rice, Oil)</td>
+                                <td style="padding: 12px; border-bottom: 1px solid #eee;" class="text-danger">$1,200.00
+                                </td>
+                                <td style="padding: 12px; border-bottom: 1px solid #eee;">Bursar</td>
+                                <td style="padding: 12px; border-bottom: 1px solid #eee;"><span
+                                        style="background: #e6f9ed; color: #28a745; padding: 4px 8px; border-radius: 4px; font-size: 0.85rem;">Paid</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 12px; border-bottom: 1px solid #eee;">Dec 29, 2025</td>
+                                <td style="padding: 12px; border-bottom: 1px solid #eee;"><span
+                                        style="background: #ede7f6; color: #4527a0; padding: 2px 8px; border-radius: 4px; font-size: 0.8rem;">Boarding</span>
+                                </td>
+                                <td style="padding: 12px; border-bottom: 1px solid #eee;">Dorm Cleaning Supplies</td>
+                                <td style="padding: 12px; border-bottom: 1px solid #eee;" class="text-danger">$350.00
+                                </td>
+                                <td style="padding: 12px; border-bottom: 1px solid #eee;">Matron</td>
+                                <td style="padding: 12px; border-bottom: 1px solid #eee;"><span
+                                        style="background: #fff3cd; color: #856404; padding: 4px 8px; border-radius: 4px; font-size: 0.85rem;">Pending</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 12px; border-bottom: 1px solid #eee;">Dec 28, 2025</td>
+                                <td style="padding: 12px; border-bottom: 1px solid #eee;">Maintenance</td>
+                                <td style="padding: 12px; border-bottom: 1px solid #eee;">Plumbing Repairs</td>
+                                <td style="padding: 12px; border-bottom: 1px solid #eee;" class="text-danger">$150.00
+                                </td>
+                                <td style="padding: 12px; border-bottom: 1px solid #eee;">Principal</td>
+                                <td style="padding: 12px; border-bottom: 1px solid #eee;"><span
+                                        style="background: #e6f9ed; color: #28a745; padding: 4px 8px; border-radius: 4px; font-size: 0.85rem;">Paid</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="../js/bursar-common.js"></script>
+    <!-- ACADEX: Powered-by footer and school branding -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+
+</body>
+
+</html>
+

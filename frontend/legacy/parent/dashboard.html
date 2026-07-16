@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Parent Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/parent-portal.css">
+</head>
+
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <div class="brand-icon acadex-school-logo">
+                <i class="fas fa-graduation-cap"></i>
+            </div>
+            <h3 class="acadex-school-name">Acadex Portal</h3>
+            <p id="currentSchoolName">Loading school...</p>
+            <!-- SaaS School Switcher -->
+            <div style="margin-top: 15px; padding: 8px; background: rgba(255,255,255,0.05); border-radius: 8px; display: flex; align-items: center; justify-content: space-between; cursor: pointer;" onclick="ParentPortal.toggleSchoolSwitcher()">
+                <span style="font-size: 0.7rem; opacity: 0.8; font-weight: 600;">Switch School</span>
+                <i class="fas fa-chevron-down" style="font-size: 0.6rem; opacity: 0.5;"></i>
+            </div>
+            <div id="schoolSwitcher" style="display: none; margin-top: 10px; background: var(--navy-light); border-radius: 8px; overflow: hidden; text-align: left; box-shadow: var(--shadow-premium);">
+                <!-- Populated dynamically based on linkedStudents -->
+            </div>
+        </div>
+        <div class="sidebar-menu">
+            <div class="sidebar-section-label">Academic & Life</div>
+            <ul>
+                <li><a href="dashboard.html" class="active"><i class="fas fa-th-large"></i> Dashboard</a></li>
+                <li><a href="student-profile.html"><i class="fas fa-user-graduate"></i> Student Profile</a></li>
+                <li><a href="academics.html"><i class="fas fa-chart-line"></i> Academics & Trends</a></li>
+                <li><a href="academic-history.html"><i class="fas fa-history"></i> Academic History</a></li>
+                <li><a href="wellbeing.html"><i class="fas fa-heartbeat"></i> Health & Conduct</a></li>
+                <li><a href="calendar.html"><i class="fas fa-calendar-alt"></i> School Calendar</a></li>
+            </ul>
+            <div class="sidebar-section-label">Communication</div>
+            <ul>
+                <li><a href="messages.html"><i class="fas fa-envelope"></i> Messages</a></li>
+                <li><a href="notices.html"><i class="fas fa-bullhorn"></i> Noticeboard</a></li>
+                <li><a href="approvals.html"><i class="fas fa-file-signature"></i> Approvals</a></li>
+                <li><a href="contact.html"><i class="fas fa-phone-alt"></i> Contact Us</a></li>
+            </ul>
+            <div class="sidebar-section-label">Finance & Logistics</div>
+            <ul>
+                <li><a href="fees.html"><i class="fas fa-file-invoice-dollar"></i> Fees & Payments</a></li>
+                <li><a href="wallet.html"><i class="fas fa-wallet"></i> Tuckshop Wallet</a></li>
+                <li><a href="transport.html"><i class="fas fa-bus"></i> Transport Tracker</a></li>
+            </ul>
+        </div>
+        <div class="sidebar-footer">
+            <a href="#" onclick="ParentPortal.logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="top-header">
+            <div style="display:flex;align-items:center;gap:14px;">
+                <button class="mobile-menu-btn" id="menuBtn" style="background:none; border:none; font-size:1.2rem; cursor:pointer;"><i class="fas fa-bars"></i></button>
+                <h2>Guardian Dashboard</h2>
+            </div>
+            <div class="header-user">
+                <div class="user-avatar" id="initialsDisplay">G</div>
+                <div class="user-details" style="text-align: right;">
+                    <div class="name" id="userDisplay" style="font-weight: 700; color: #0f172a; font-size: 0.95rem;">Guardian Name</div>
+                    <div class="sub" id="idDisplay" style="color: #64748b; font-size: 0.75rem;">Student ID: XXXX</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-area">
+            <!-- Summary Stats -->
+            <div class="summary-grid">
+                <div class="summary-card navy">
+                    <div class="icon-box"><i class="fas fa-wallet"></i></div>
+                    <div class="info">
+                        <h4>Outstand Balance</h4>
+                        <div class="value" id="balanceDisplay">USD$ 0.00</div>
+                    </div>
+                </div>
+                <div class="summary-card gold">
+                    <div class="icon-box"><i class="fas fa-calendar-check"></i></div>
+                    <div class="info">
+                        <h4>Attendance Rate</h4>
+                        <div class="value" id="attendanceDisplay">98%</div>
+                    </div>
+                </div>
+                <!-- Wallet Card -->
+                <div class="stat-card" style="border-bottom: 4px solid var(--gold-primary);">
+                    <div class="stat-icon" style="background: #fff8e6; color: var(--gold-primary);">
+                        <i class="fas fa-wallet"></i>
+                    </div>
+                    <div class="stat-details">
+                        <span class="label">Tuckshop Wallet</span>
+                        <h3 class="value">USD$ 42.50</h3>
+                        <p class="trend"><i class="fas fa-plus"></i> <a href="wallet.html" style="color:var(--gold-primary); text-decoration:none;">Add Funds</a></p>
+                    </div>
+                </div>
+
+                <!-- Health/Behavior Card -->
+                <div class="stat-card" style="border-bottom: 4px solid #10b981;">
+                    <div class="stat-icon" style="background: #ecfdf5; color: #10b981;">
+                        <i class="fas fa-heartbeat"></i>
+                    </div>
+                    <div class="stat-details">
+                        <span class="label">Health & Behavior</span>
+                        <h3 class="value">Normal</h3>
+                        <p class="trend"><i class="fas fa-star"></i> 12 Merits</p>
+                    </div>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 30px;">
+                <!-- Main Notices -->
+                <div class="panel">
+                    <div class="panel-header">
+                        <h3><i class="fas fa-bullhorn" style="color: #fbbf24;"></i> Recent Announcements</h3>
+                        <a href="#" style="font-size: 0.8rem; color: #38bdf8; text-decoration: none; font-weight: 600;">View All</a>
+                    </div>
+                    <div class="panel-body">
+                        <div id="announcementsList">
+                            <!-- Populated by JS -->
+                            <div style="padding: 15px; border-bottom: 1px solid #f1f5f9; position: relative;">
+                                <div style="font-size: 0.7rem; color: #94a3b8; margin-bottom: 4px;">20 March 2026</div>
+                                <h4 style="margin: 0; font-size: 1rem; color: #0f172a;">Upcoming Parent-Teacher Consultations</h4>
+                                <p style="margin: 6px 0 0; color: #64748b; font-size: 0.85rem; line-height: 1.5;">Please be advised that the Form 1 and Form 4 consultations will be held this Saturday from 08:30 AM in the Great Hall.</p>
+                            </div>
+                            <div style="padding: 15px; border-bottom: 1px solid #f1f5f9; position: relative;">
+                                <div style="font-size: 0.7rem; color: #94a3b8; margin-bottom: 4px;">18 March 2026</div>
+                                <h4 style="margin: 0; font-size: 1rem; color: #0f172a;">School Fees Term 2 Reminder</h4>
+                                <p style="margin: 6px 0 0; color: #64748b; font-size: 0.85rem; line-height: 1.5;">Term 2 fee invoices have been published. Early bird discounts apply for payments made before April 5th.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Links -->
+                <div>
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h3>Quick Actions</h3>
+                        </div>
+                        <div class="panel-body" style="padding: 15px;">
+                            <a href="fees.html" class="btn btn-primary" style="width: 100%; margin-bottom: 12px; justify-content: flex-start;">
+                                <i class="fas fa-upload"></i> Upload Proof of Payment
+                            </a>
+                            <a href="student-profile.html" class="btn btn-gold" style="width: 100%; margin-bottom: 12px; justify-content: flex-start; color: #0f172a;">
+                                <i class="fas fa-chart-line"></i> View Academic Report
+                            </a>
+                            <a href="contact.html" class="btn" style="width: 100%; justify-content: flex-start; background: #f1f5f9; color: #475569;">
+                                <i class="fas fa-question-circle"></i> Support Inquiry
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="panel" style="background: linear-gradient(135deg, #0f172a 0%, var(--school-primary-dark, #1e293b) 100%); color: white;">
+                        <div class="panel-body" style="text-align: center; padding: 30px 20px;">
+                            <div style="width: 60px; height: 60px; background: rgba(251, 191, 36, 0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; color: #fbbf24;">
+                                <i class="fas fa-shield-alt" style="font-size: 1.8rem;"></i>
+                            </div>
+                            <h4 style="margin: 0 0 10px;">Security First</h4>
+                            <p style="margin: 0; font-size: 0.8rem; opacity: 0.7; line-height: 1.6;">Your portal access is encrypted. Never share your student's login credentials with anyone.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/parent-portal.js"></script>
+    <script src="../js/fees-manager.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            ParentPortal.init();
+            
+            const student = ParentPortal.getStudentData();
+            if (student) {
+                // Load Balance
+                const balance = student.currentBalance || student.balance || 0;
+                const balanceEl = document.getElementById('balanceDisplay');
+                if (balanceEl) {
+                    balanceEl.textContent = "USD$ " + parseFloat(balance).toLocaleString(undefined, {minimumFractionDigits: 2});
+                }
+                
+                // Load Attendance
+                const attendanceRate = getAttendanceForClass(student.class);
+                const attendanceEl = document.getElementById('attendanceDisplay');
+                if (attendanceEl) {
+                    attendanceEl.textContent = attendanceRate + "%";
+                }
+            }
+        });
+
+        function getAttendanceForClass(className) {
+            const rates = {
+                'Form 1A': 94, 'Form 1B': 97, 'Form 2A': 89, 'Form 2B': 96,
+                'Form 3A': 93, 'Form 4A': 96, 'Lower Six Sciences': 93, 'Upper Six Arts': 100
+            };
+            return rates[className] || 95;
+        }
+
+    </script>
+    <!-- ACADEX: Powered-by footer and school branding -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+
+</body>
+
+</html>
+
+

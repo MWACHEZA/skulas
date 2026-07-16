@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Applicant Dashboard - Your School</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/ancillary-portal.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .status-card {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+            border-top: 5px solid #ccc;
+            /* Default grey */
+        }
+
+        .status-card.Pending {
+            border-top-color: #ffc107;
+        }
+
+        .status-card.Approved {
+            border-top-color: #28a745;
+        }
+
+        .status-card.Rejected {
+            border-top-color: #dc3545;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .status-Pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-Approved {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-Rejected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .info-card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .info-card h4 {
+            color: var(--school-primary, #0056b3);
+            margin-bottom: 15px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        /* Acceptance Section */
+        #acceptanceSection {
+            display: none;
+            background: linear-gradient(to right, #d4edda, #c3e6cb);
+            border: 1px solid #c3e6cb;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            color: #155724;
+        }
+
+        .creds-box {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 15px;
+            border-left: 4px solid #28a745;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Mobile Toggle -->
+    <button class="mobile-toggle" id="mobileToggle">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <img src="../images/logo.png" alt="School Logo" id="sidebarLogo">
+            <h3>Applicant Portal</h3>
+        </div>
+        
+        <div class="sidebar-menu">
+            <div class="sidebar-section-title">Application Journey</div>
+            <ul>
+                <li>
+                    <a href="dashboard.html" class="active">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="timeline.html">
+                        <i class="fas fa-stream"></i>
+                        <span>Timeline</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="documents.html">
+                        <i class="fas fa-folder-open"></i>
+                        <span>Documents</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="interview.html">
+                        <i class="fas fa-calendar-check"></i>
+                        <span>Interview</span>
+                    </a>
+                </li>
+            </ul>
+
+            <div class="sidebar-section-title">Financials & Info</div>
+            <ul>
+                <li>
+                    <a href="payments.html">
+                        <i class="fas fa-credit-card"></i>
+                        <span>Payments</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="fees.html">
+                        <i class="fas fa-file-invoice-dollar"></i>
+                        <span>Fee Structure</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="faq.html">
+                        <i class="fas fa-question-circle"></i>
+                        <span>FAQs</span>
+                    </a>
+                </li>
+            </ul>
+
+            <div class="sidebar-section-title">Communication</div>
+            <ul>
+                <li>
+                    <a href="messages.html">
+                        <i class="fas fa-envelope"></i>
+                        <span>Messages</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="profile.html">
+                        <i class="fas fa-user"></i>
+                        <span>My Profile</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="sidebar-footer">
+            <a href="#" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="dashboard-header">
+            <div>
+                <h2 id="welcomeMsg">Welcome, Applicant</h2>
+                <p style="color: #666;">Track your application and view admission details.</p>
+            </div>
+            <div id="dateDisplay" style="color: #666;"></div>
+        </div>
+
+        <!-- Status Card -->
+        <div class="status-card" id="statusCard">
+            <div style="display: flex; justify-content: space-between; align-items: start;">
+                <div>
+                    <h3 style="margin: 0 0 10px;">Application Status</h3>
+                    <p style="margin: 0;">Application ID: <strong id="appIdDisplay">...</strong></p>
+                    <p style="margin: 5px 0;">Type: <strong id="appTypeDisplay">...</strong></p>
+                </div>
+                <span class="status-badge" id="statusBadge">Checking...</span>
+            </div>
+        </div>
+
+        <!-- Acceptance Section (Hidden by default) -->
+        <div id="acceptanceSection">
+            <h3><i class="fas fa-check-circle"></i> Congratulations! You have been accepted.</h3>
+            <p>We are pleased to offer you a place at Your School. Below are your student login credentials.
+                Please use them to access the main Student Portal where you can view your timetable, results, and more.
+            </p>
+
+            <div class="creds-box">
+                <p><strong>Student ID:</strong> <span style="font-family: monospace; font-size: 1.2rem;"
+                        id="studentId">...</span></p>
+                <p><strong>Password:</strong> <span style="font-family: monospace; font-size: 1.2rem;"
+                        id="studentPass">...</span></p>
+                <a href="../student/login.html" class="btn btn-primary"
+                    style="margin-top: 15px; display: inline-block; background: #28a745; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none;">Login
+                    to Student Portal</a>
+            </div>
+        </div>
+
+        <div class="info-grid">
+            <div class="info-card">
+                <h4><i class="fas fa-user-edit"></i> Profile Actions</h4>
+                <p>Please ensure your profile information is complete. You can add medical details and guardian
+                    information in the Profile section.</p>
+                <a href="profile.html" style="color: var(--school-primary, #0056b3); text-decoration: none; font-weight: 500;">Go to Profile
+                    &rarr;</a>
+            </div>
+            <div class="info-card">
+                <h4><i class="fas fa-credit-card"></i> Payments</h4>
+                <p>Track your application fees and view receipts for any payments made during the process.</p>
+                <a href="payments.html" style="color: var(--school-primary, #0056b3); text-decoration: none; font-weight: 500;">View Payments
+                    &rarr;</a>
+            </div>
+            <div class="info-card">
+                <h4><i class="fas fa-info-circle"></i> Next Steps</h4>
+                <ul id="nextStepsList" style="padding-left: 20px; color: #555; margin: 10px 0;">
+                    <li>Wait for application review.</li>
+                    <li>Complete profile details.</li>
+                    <li>Check Fee structure.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/dashboard.js"></script>
+    <script>
+        document.getElementById('dateDisplay').textContent = new Date().toLocaleDateString('en-GB', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+        function logout() {
+            sessionStorage.removeItem('currentApplicant');
+            window.location.href = 'login.html';
+        }
+
+        // Mobile Toggle Logic
+        const mobileToggle = document.getElementById('mobileToggle');
+        const sidebar = document.getElementById('sidebar');
+        if (mobileToggle && sidebar) {
+            mobileToggle.addEventListener('click', () => {
+                sidebar.classList.toggle('active');
+            });
+        }
+    </script>
+    <!-- ACADEX: Powered-by footer and school branding -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+
+</html>
+

@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subscription Management - Admin Portal</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8f9fc;
+            margin: 0;
+            padding: 0;
+        }
+
+        .admin-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: 250px;
+        }
+
+        .top-header {
+            background-color: white;
+            padding: 15px 30px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .content-area {
+            padding: 30px;
+        }
+
+        .welcome-banner {
+            background: linear-gradient(135deg, var(--school-primary, #4e73df) 0%, var(--school-primary-dark, #224abe) 100%);
+            border-radius: 15px;
+            padding: 30px;
+            color: white;
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .welcome-text h1 {
+            margin: 0;
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .welcome-text p {
+            margin: 10px 0 0;
+            opacity: 0.9;
+        }
+
+        /* Subscription Cards */
+        .subscription-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            border: 1px solid #edf2f9;
+        }
+
+        .plan-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .plan-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .plan-status {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .status-active { background: #e3fcef; color: #00875a; }
+        .status-trial { background: #e6f4ff; color: #0052cc; }
+        .status-warning { background: #fffde7; color: #f9a825; }
+        .status-expired { background: #ffe9e9; color: #bf2600; }
+
+        .metric-group {
+            margin-bottom: 20px;
+        }
+
+        .metric-label {
+            font-size: 0.85rem;
+            color: #6c757d;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .progress-bar {
+            height: 10px;
+            background: #f0f2f5;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--school-primary, #4e73df);
+            border-radius: 5px;
+            transition: width 0.3s ease;
+        }
+
+        .plan-details {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 20px;
+        }
+
+        .plan-details li {
+            padding: 10px 0;
+            border-bottom: 1px solid #f8f9fc;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .plan-details li i {
+            color: #28a745;
+            font-size: 0.8rem;
+        }
+
+        .action-btns {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+            font-size: 0.85rem;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--school-primary, #4e73df);
+            color: white;
+        }
+
+        .btn-outline {
+            background: white;
+            border: 1px solid #ddd;
+            color: #333;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .renewal-warning {
+            background: #fff8e1;
+            border-left: 5px solid #ffc107;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 0.95rem;
+            color: #856404;
+        }
+
+        .renewal-warning i {
+            font-size: 1.4rem;
+        }
+
+        /* Comparison Table */
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .comparison-table th {
+            text-align: left;
+            padding: 15px 20px;
+            background: #f8f9fc;
+            border-bottom: 1px solid #edf2f9;
+            color: #4e73df;
+            font-size: 0.9rem;
+        }
+
+        .comparison-table td {
+            padding: 15px 20px;
+            border-bottom: 1px solid #f8f9fc;
+            font-size: 0.88rem;
+        }
+
+        .feature-name { font-weight: 600; color: #333; }
+
+        @media (max-width: 768px) {
+            .main-content { margin-left: 0; }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar"></aside>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Top Header -->
+            <div class="top-header">
+                <h2>Subscription & License</h2>
+            </div>
+
+            <div class="content-area">
+                <!-- Renewal Alert (Hidden by default) -->
+                <div id="renewalAlert" class="renewal-warning" style="display: none;">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <div>
+                        <strong>Action Required:</strong> Your subscription will expire in <span id="daysRemaining">0</span> days. Please renew to avoid service interruption.
+                    </div>
+                </div>
+
+                <div class="welcome-banner">
+                    <div class="welcome-text">
+                        <h1 id="schoolNameDisplay">School Name</h1>
+                        <p id="planTagline">Manage your Acadex subscription and usage limits.</p>
+                    </div>
+                    <div class="plan-badge">
+                        <span id="badgePlan" class="plan-status status-active">Professional</span>
+                    </div>
+                </div>
+
+                <div class="subscription-grid">
+                    <!-- Plan Info -->
+                    <div class="card">
+                        <div class="plan-header">
+                            <div class="plan-title">Current Plan</div>
+                            <span id="statusLabel" class="plan-status status-active">Active</span>
+                        </div>
+                        <div style="font-size: 2rem; font-weight: 700; color: #333; margin-bottom: 20px;" id="planName">Professional Plan</div>
+                        <div class="metric-group">
+                            <div class="metric-label">
+                                <span>Renewal Date</span>
+                                <span id="renewDate" style="font-weight: 600; color: #333;">Dec 31, 2026</span>
+                            </div>
+                        </div>
+                        <div class="action-btns">
+                            <button class="btn btn-primary"><i class="fas fa-sync-alt"></i> Renew Now</button>
+                            <button class="btn btn-outline"><i class="fas fa-layer-group"></i> Change Plan</button>
+                        </div>
+                    </div>
+
+                    <!-- Usage Stats -->
+                    <div class="card">
+                        <div class="plan-header">
+                            <div class="plan-title">Resource Usage</div>
+                        </div>
+                        
+                        <div class="metric-group">
+                            <div class="metric-label">
+                                <span>Student Enrollments</span>
+                                <span id="studentCount">0 / 1,000</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="studentProgress" style="width: 0%"></div>
+                            </div>
+                        </div>
+
+                        <div class="metric-group">
+                            <div class="metric-label">
+                                <span>Academic Staff</span>
+                                <span id="staffCount">0 / 100</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="staffProgress" style="width: 0%; background: #28a745;"></div>
+                            </div>
+                        </div>
+
+                        <div class="metric-group">
+                            <div class="metric-label">
+                                <span>Cloud Storage</span>
+                                <span>2.4 GB / 50 GB</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 5%; background: #ffc107;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Plan Comparison -->
+                <div class="card" style="padding: 0;">
+                    <div style="padding: 25px;">
+                        <div class="plan-title">Plan Features & Limits</div>
+                    </div>
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Feature</th>
+                                <th>Starter</th>
+                                <th>Professional</th>
+                                <th>Enterprise</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="feature-name">Max Students</td>
+                                <td>100</td>
+                                <td>1,000</td>
+                                <td>Unlimited</td>
+                            </tr>
+                            <tr>
+                                <td class="feature-name">Cloud Storage</td>
+                                <td>5 GB</td>
+                                <td>50 GB</td>
+                                <td>500 GB</td>
+                            </tr>
+                            <tr>
+                                <td class="feature-name">Multi-Portal Access</td>
+                                <td><i class="fas fa-check text-success"></i></td>
+                                <td><i class="fas fa-check text-success"></i></td>
+                                <td><i class="fas fa-check text-success"></i></td>
+                            </tr>
+                            <tr>
+                                <td class="feature-name">Mobile Apps</td>
+                                <td><i class="fas fa-times text-danger"></i></td>
+                                <td><i class="fas fa-check text-success"></i></td>
+                                <td><i class="fas fa-check text-success"></i></td>
+                            </tr>
+                            <tr>
+                                <td class="feature-name">White Label Branding</td>
+                                <td><i class="fas fa-times text-danger"></i></td>
+                                <td><i class="fas fa-times text-danger"></i></td>
+                                <td><i class="fas fa-check text-success"></i></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+    <script src="../js/admin-sidebar.js"></script>
+    <script>
+        function initializePage() {
+            const school = AcadexCore.getActiveSchool();
+            const sub = AcadexCore.getSubscription();
+
+            if (!school || !sub) return;
+
+            // Update UI
+            document.getElementById('schoolNameDisplay').textContent = school.name;
+            document.getElementById('planName').textContent = sub.plan + ' Plan';
+            document.getElementById('badgePlan').textContent = sub.plan;
+            document.getElementById('statusLabel').textContent = sub.status;
+            
+            const rDate = new Date(sub.renewalDate);
+            document.getElementById('renewDate').textContent = rDate.toLocaleDateString(undefined, {
+                year: 'numeric', month: 'long', day: 'numeric'
+            });
+
+            // Status Colors
+            const statusEl = document.getElementById('statusLabel');
+            const badgeEl = document.getElementById('badgePlan');
+            statusEl.className = 'plan-status status-' + sub.status.toLowerCase();
+            badgeEl.className = 'plan-status status-' + sub.status.toLowerCase();
+
+            // Usage
+            const sCur = sub.usage.students.current;
+            const sLim = sub.usage.students.limit;
+            const sPerc = (sCur / sLim) * 100;
+            document.getElementById('studentCount').textContent = `${sCur.toLocaleString()} / ${sLim.toLocaleString()}`;
+            document.getElementById('studentProgress').style.width = Math.min(sPerc, 100) + '%';
+
+            const tCur = sub.usage.staff.current;
+            const tLim = sub.usage.staff.limit;
+            const tPerc = (tCur / tLim) * 100;
+            document.getElementById('staffCount').textContent = `${tCur.toLocaleString()} / ${tLim.toLocaleString()}`;
+            document.getElementById('staffProgress').style.width = Math.min(tPerc, 100) + '%';
+
+            // Renewal Warning
+            const now = new Date();
+            const diffTime = rDate - now;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+            if (diffDays <= 30) {
+                const alertEl = document.getElementById('renewalAlert');
+                alertEl.style.display = 'flex';
+                document.getElementById('daysRemaining').textContent = diffDays < 0 ? 0 : diffDays;
+                if (diffDays <= 7) {
+                    alertEl.style.background = '#ffe9e9';
+                    alertEl.style.borderColor = '#bf2600';
+                    alertEl.style.color = '#bf2600';
+                }
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', initializePage);
+    </script>
+</body>
+
+</html>
+

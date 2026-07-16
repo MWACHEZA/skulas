@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schedules & Shifts - ACADEX</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/ancillary-portal.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        /* SCHEDULE SPECIFIC STYLES */
+        .calendar-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            background: white;
+            padding: 15px 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+        }
+
+        .calendar-nav h2 {
+            margin: 0;
+            font-size: 1.2rem;
+            color: #1e293b;
+        }
+
+        .nav-btns {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-nav {
+            padding: 8px 15px;
+            border: 1px solid #e2e8f0;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            color: #64748b;
+            font-weight: 600;
+        }
+
+        .btn-nav:hover {
+            background: #f8fafc;
+            border-color: var(--school-primary);
+            color: var(--school-primary);
+        }
+
+        .schedule-table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+
+        .schedule-table th {
+            background: #f8fafc;
+            padding: 15px;
+            text-align: left;
+            font-size: 0.85rem;
+            color: #64748b;
+            border-bottom: 2px solid #f1f5f9;
+        }
+
+        .schedule-table td {
+            height: 120px;
+            border: 1px solid #f1f5f9;
+            vertical-align: top;
+            padding: 10px;
+        }
+
+        .day-num {
+            display: block;
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: #94a3b8;
+            margin-bottom: 8px;
+        }
+
+        .today {
+            background: #eff6ff;
+        }
+
+        .today .day-num {
+            color: var(--school-primary);
+        }
+
+        .shift-badge {
+            display: block;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .shift-morning {
+            background: #dcfce7;
+            color: #166534;
+            border-left: 3px solid #166534;
+        }
+
+        .shift-afternoon {
+            background: #eef2ff;
+            color: var(--school-primary);
+            border-left: 3px solid var(--school-primary);
+        }
+
+        .shift-night {
+            background: #f5f3ff;
+            color: #6d28d9;
+            border-left: 3px solid #6d28d9;
+        }
+
+        .shift-off {
+            background: #f1f5f9;
+            color: #64748b;
+            border-left: 3px solid #64748b;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            margin-bottom: 25px;
+        }
+
+        .card-header {
+            padding: 20px 25px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-header h3 {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--school-primary-dark, #003d82);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-body {
+            padding: 25px;
+        }
+
+        @media (max-width: 768px) {
+            .schedule-table {
+                font-size: 0.7rem;
+            }
+
+            .shift-badge {
+                padding: 4px;
+                font-size: 0.6rem;
+            }
+        }
+
+        .view-pane {
+            display: none;
+        }
+
+        .view-pane.active {
+            display: block;
+        }
+
+        /* WEEK VIEW */
+        .week-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 15px;
+        }
+
+        .week-day {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            min-height: 200px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.02);
+            border: 1px solid #f1f5f9;
+        }
+
+        .week-day.today {
+            border-color: var(--school-primary);
+            background: #f8fafc;
+        }
+
+        /* LIST VIEW */
+        .shift-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .list-item {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 80px 1fr 150px 150px;
+            align-items: center;
+            gap: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+            border: 1px solid #f1f5f9;
+            transition: 0.3s;
+        }
+
+        .list-item:hover {
+            transform: translateX(5px);
+            border-color: var(--school-primary);
+        }
+
+        .list-date {
+            text-align: center;
+            border-right: 1px solid #f1f5f9;
+        }
+
+        .list-date .day {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1e293b;
+            display: block;
+        }
+
+        .list-date .month {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            color: #64748b;
+            font-weight: 700;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Mobile Toggle Button -->
+    <button class="mobile-toggle" id="mobile-toggle">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <div class="dashboard-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <img src="../images/logo.png" alt="Logo" class="acadex-school-logo">
+                <h3>ANCILLARY PORTAL</h3>
+            </div>
+            <div class="sidebar-menu">
+                <ul>
+                    <li><a href="dashboard.html"><i class="fas fa-th-large"></i> <span>Dashboard</span></a></li>
+                </ul>
+
+                <div id="tuckshop-sidebar-section" style="display: none;">
+                    <div class="sidebar-section-title">Tuckshop System</div>
+                    <ul>
+                        <li><a href="tuckshop-dashboard.html"><i class="fas fa-tachometer-alt"></i> <span>TS
+                                    Dashboard</span></a></li>
+                        <li><a href="tuckshop-sales.html"><i class="fas fa-cash-register"></i> <span>Point of
+                                    Sale</span></a></li>
+                        <li><a href="tuckshop-inventory.html"><i class="fas fa-boxes"></i> <span>Inventory</span></a>
+                        </li>
+                        <li><a href="tuckshop-orders.html"><i class="fas fa-truck"></i> <span>Supplier
+                                    Orders</span></a></li>
+                    </ul>
+                </div>
+
+                <div class="sidebar-section-title">Operations</div>
+                <ul>
+                    <li><a href="staff-directory.html"><i class="fas fa-users"></i> <span>Staff Directory</span></a>
+                    </li>
+                    <li><a href="procurement.html"><i class="fas fa-shopping-cart"></i> <span>Procurement</span></a>
+                    </li>
+                    <li><a href="assets.html"><i class="fas fa-boxes"></i> <span>Asset Management</span></a></li>
+                    <li><a href="schedules.html" class="active"><i class="fas fa-calendar-alt"></i> <span>Schedules &
+                                Shifts</span></a></li>
+                </ul>
+
+                <div class="sidebar-section-title">Support & HR</div>
+                <ul>
+                    <li><a href="sdc-portal.html"><i class="fas fa-file-invoice-dollar"></i> <span>SDC Staff
+                                Portal</span></a></li>
+                    <li><a href="hr-services.html"><i class="fas fa-user-shield"></i> <span>HR Services</span></a></li>
+                    <li><a href="profile.html"><i class="fas fa-id-card"></i> <span>My Profile</span></a></li>
+                    <li><a href="resources.html"><i class="fas fa-folder-open"></i> <span>Resources & Docs</span></a>
+                    </li>
+                    <li><a href="it-support.html"><i class="fas fa-headset"></i> <span>IT Support</span></a></li>
+                </ul>
+
+                <div class="sidebar-section-title">Communication</div>
+                <ul>
+                    <li><a href="news.html"><i class="fas fa-newspaper"></i> <span>News & Updates</span></a></li>
+                    <li><a href="feedback.html"><i class="fas fa-comment-dots"></i> <span>Feedback</span></a></li>
+                    <li><a href="contact.html"><i class="fas fa-address-book"></i> <span>Contact Us</span></a></li>
+                </ul>
+            </div>
+            <div class="sidebar-footer">
+                <a href="login.html"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 30px;">
+                <div>
+                    <h1 style="margin-bottom: 10px; color: #1e293b;">Schedules & Shifts</h1>
+                    <p style="color: #64748b;">View your assigned shifts and departmental duty rosters.</p>
+                </div>
+                <div id="hodControls" style="display: none;">
+                    <button onclick="openAssignModal()" class="btn-nav"
+                        style="background: var(--school-primary); color: white; border: none; height: 45px; padding: 0 20px;">
+                        <i class="fas fa-user-plus"></i> Assign Dept. Duty
+                    </button>
+                    <button onclick="openSwapApprovals()" class="btn-nav"
+                        style="border-color: var(--school-primary); color: var(--school-primary); height: 45px; padding: 0 20px;">
+                        <i class="fas fa-check-double"></i> Swap Requests <span id="swapBadge" class="shift-badge"
+                            style="display:inline; margin-left:5px; background: #ef4444; color:white; padding: 2px 6px;">0</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="calendar-nav">
+                <div class="nav-btns">
+                    <button class="btn-nav">Today</button>
+                    <button class="btn-nav"><i class="fas fa-chevron-left"></i></button>
+                    <button class="btn-nav"><i class="fas fa-chevron-right"></i></button>
+                </div>
+                <h2>January 2026</h2>
+                <div class="nav-btns">
+                    <button class="btn-nav active" style="background: var(--school-primary); color: white;">Month</button>
+                    <button class="btn-nav">Week</button>
+                    <button class="btn-nav">List</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-body" style="padding: 0;">
+                    <!-- MONTH VIEW -->
+                    <div id="monthView" class="view-pane active">
+                        <table class="schedule-table">
+                            <thead>
+                                <tr>
+                                    <th>Monday</th>
+                                    <th>Tuesday</th>
+                                    <th>Wednesday</th>
+                                    <th>Thursday</th>
+                                    <th>Friday</th>
+                                    <th>Saturday</th>
+                                    <th>Sunday</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><span class="day-num">29</span></td>
+                                    <td><span class="day-num">30</span></td>
+                                    <td><span class="day-num">31</span></td>
+                                    <td><span class="day-num">01</span><span class="shift-badge shift-morning">Morning
+                                            07:00</span></td>
+                                    <td><span class="day-num">02</span><span class="shift-badge shift-morning">Morning
+                                            07:00</span></td>
+                                    <td><span class="day-num">03</span><span class="shift-badge shift-off">OFF - New
+                                            Year</span></td>
+                                    <td><span class="day-num">04</span><span class="shift-badge shift-off">OFF</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><span class="day-num">05</span><span class="shift-badge shift-morning">Morning
+                                            07:00</span></td>
+                                    <td class="today"><span class="day-num">06</span><span
+                                            class="shift-badge shift-morning">Morning 07:00</span><span
+                                            class="shift-badge shift-afternoon"
+                                            style="background:#fee2e2; color:#991b1b; border-left-color:#991b1b;">Meeting
+                                            14:00</span></td>
+                                    <td><span class="day-num">07</span><span class="shift-badge shift-morning">Morning
+                                            07:00</span></td>
+                                    <td><span class="day-num">08</span><span class="shift-badge shift-morning">Morning
+                                            07:00</span></td>
+                                    <td><span class="day-num">09</span><span class="shift-badge shift-morning">Morning
+                                            07:00</span></td>
+                                    <td><span class="day-num">10</span><span class="shift-badge shift-night">Event Setup
+                                            08:00</span></td>
+                                    <td><span class="day-num">11</span><span class="shift-badge shift-off">OFF</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><span class="day-num">12</span><span
+                                            class="shift-badge shift-afternoon">Afternoon
+                                            15:00</span></td>
+                                    <td><span class="day-num">13</span><span
+                                            class="shift-badge shift-afternoon">Afternoon
+                                            15:00</span></td>
+                                    <td><span class="day-num">14</span><span
+                                            class="shift-badge shift-afternoon">Afternoon
+                                            15:00</span></td>
+                                    <td><span class="day-num">15</span><span
+                                            class="shift-badge shift-afternoon">Afternoon
+                                            15:00</span></td>
+                                    <td><span class="day-num">16</span><span
+                                            class="shift-badge shift-afternoon">Afternoon
+                                            15:00</span></td>
+                                    <td><span class="day-num">17</span><span class="shift-badge shift-off">OFF</span>
+                                    </td>
+                                    <td><span class="day-num">18</span><span class="shift-badge shift-off">OFF</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><span class="day-num">19</span><span class="shift-badge shift-night">Night
+                                            23:00</span></td>
+                                    <td><span class="day-num">20</span><span class="shift-badge shift-night">Night
+                                            23:00</span></td>
+                                    <td><span class="day-num">21</span><span class="shift-badge shift-night">Night
+                                            23:00</span></td>
+                                    <td><span class="day-num">22</span><span class="shift-badge shift-night">Night
+                                            23:00</span></td>
+                                    <td><span class="day-num">23</span><span class="shift-badge shift-night">Night
+                                            23:00</span></td>
+                                    <td><span class="day-num">24</span><span class="shift-badge shift-off">OFF</span>
+                                    </td>
+                                    <td><span class="day-num">25</span><span class="shift-badge shift-off">OFF</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- WEEK VIEW -->
+                    <div id="weekView" class="view-pane" style="padding: 20px;">
+                        <div class="week-grid">
+                            <div class="week-day today">
+                                <span class="day-num" style="color: var(--school-primary);">Tue Jan 06</span>
+                                <span class="shift-badge shift-morning">Morning Shift</span>
+                                <span class="shift-badge shift-afternoon"
+                                    style="background:#fee2e2; color:#991b1b; border-left-color:#991b1b;">Dept
+                                    Meeting</span>
+                            </div>
+                            <div class="week-day">
+                                <span class="day-num">Wed Jan 07</span>
+                                <span class="shift-badge shift-morning">Morning Shift</span>
+                            </div>
+                            <div class="week-day">
+                                <span class="day-num">Thu Jan 08</span>
+                                <span class="shift-badge shift-morning">Morning Shift</span>
+                            </div>
+                            <div class="week-day">
+                                <span class="day-num">Fri Jan 09</span>
+                                <span class="shift-badge shift-morning">Morning Shift</span>
+                            </div>
+                            <div class="week-day">
+                                <span class="day-num">Sat Jan 10</span>
+                                <span class="shift-badge shift-night">Event Setup</span>
+                            </div>
+                            <div class="week-day">
+                                <span class="day-num">Sun Jan 11</span>
+                                <span class="shift-badge shift-off">OFF</span>
+                            </div>
+                            <div class="week-day">
+                                <span class="day-num">Mon Jan 12</span>
+                                <span class="shift-badge shift-afternoon">Afternoon Shift</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- LIST VIEW -->
+                    <div id="listView" class="view-pane" style="padding: 20px;">
+                        <div class="shift-list">
+                            <div class="list-item">
+                                <div class="list-date">
+                                    <span class="day">06</span>
+                                    <span class="month">Jan</span>
+                                </div>
+                                <div>
+                                    <h4 style="margin: 0; color: #1e293b;">Morning Shift</h4>
+                                    <p style="margin: 5px 0 0; color: #64748b; font-size: 0.85rem;">Facilities
+                                        Department</p>
+                                </div>
+                                <div style="color: #64748b; font-size: 0.9rem;">
+                                    <i class="far fa-clock"></i> 07:00 - 15:00
+                                </div>
+                                <div>
+                                    <span class="shift-badge shift-morning" style="margin: 0;">Active Today</span>
+                                </div>
+                            </div>
+                            <div class="list-item">
+                                <div class="list-date">
+                                    <span class="day">07</span>
+                                    <span class="month">Jan</span>
+                                </div>
+                                <div>
+                                    <h4 style="margin: 0; color: #1e293b;">Morning Shift</h4>
+                                    <p style="margin: 5px 0 0; color: #64748b; font-size: 0.85rem;">Facilities
+                                        Department</p>
+                                </div>
+                                <div style="color: #64748b; font-size: 0.9rem;">
+                                    <i class="far fa-clock"></i> 07:00 - 15:00
+                                </div>
+                                <div>
+                                    <span class="shift-badge shift-morning" style="margin: 0;">Upcoming</span>
+                                </div>
+                            </div>
+                            <div class="list-item">
+                                <div class="list-date">
+                                    <span class="day">10</span>
+                                    <span class="month">Jan</span>
+                                </div>
+                                <div>
+                                    <h4 style="margin: 0; color: #1e293b;">Event Setup (Special)</h4>
+                                    <p style="margin: 5px 0 0; color: #64748b; font-size: 0.85rem;">Sports Grounds</p>
+                                </div>
+                                <div style="color: #64748b; font-size: 0.9rem;">
+                                    <i class="far fa-clock"></i> 08:00 - 17:00
+                                </div>
+                                <div>
+                                    <span class="shift-badge shift-night" style="margin: 0;">Extra Shift</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="resource-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 25px;">
+                <section class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-info-circle"></i> Shift Legend</h3>
+                    </div>
+                    <div class="card-body">
+                        <div style="display: flex; flex-direction: column; gap: 10px;">
+                            <div style="display: flex; align-items: center; gap: 15px;">
+                                <div
+                                    style="width: 20px; height: 20px; border-radius: 4px; background: #dcfce7; border-left: 3px solid #166534;">
+                                </div>
+                                <span style="font-size: 0.9rem;"><strong>Morning Shift:</strong> 07:00 AM - 03:00
+                                    PM</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 15px;">
+                                <div
+                                    style="width: 20px; height: 20px; border-radius: 4px; background: #eef2ff; border-left: 3px solid var(--school-primary);">
+                                </div>
+                                <span style="font-size: 0.9rem;"><strong>Afternoon Shift:</strong> 03:00 PM - 11:00
+                                    PM</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 15px;">
+                                <div
+                                    style="width: 20px; height: 20px; border-radius: 4px; background: #f5f3ff; border-left: 3px solid #6d28d9;">
+                                </div>
+                                <span style="font-size: 0.9rem;"><strong>Night Shift:</strong> 11:00 PM - 07:00
+                                    AM</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-exchange-alt"></i> Request Shift Swap</h3>
+                    </div>
+                    <div class="card-body">
+                        <p style="font-size: 0.85rem; color: #666; margin-bottom: 20px;">Need to swap your shift with a
+                            colleague? Submit a request here for manager approval.</p>
+                        <button id="swapBtn" class="btn-nav"
+                            style="width: 100%; height: 45px; background: var(--school-primary); color: white; border: none;">Start
+                            Swap Request</button>
+                    </div>
+                </section>
+            </div>
+            <!-- SHIFT SWAP MODAL -->
+            <div id="swapModal" class="modal">
+                <div class="modal-content" style="max-width: 600px; border-radius: 20px;">
+                    <div class="modal-header"
+                        style="background: linear-gradient(135deg, var(--school-primary), var(--school-primary-dark, #003d82)); color: white; border-radius: 20px 20px 0 0;">
+                        <h3><i class="fas fa-exchange-alt"></i> Shift Swap Request</h3>
+                        <span class="close-modal" style="color: white; opacity: 0.8;">&times;</span>
+                    </div>
+                    <div class="modal-body" style="padding: 30px;">
+                        <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 25px;">Please fill in the details
+                            for your shift swap. Requests are sent to your immediate supervisor for approval.</p>
+                        <form id="shiftSwapForm" class="report-form">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                                <div class="form-group" style="display: flex; flex-direction: column; gap: 8px;">
+                                    <label
+                                        style="font-size: 0.85rem; font-weight: 600; color: #1e293b; display: flex; align-items: center; gap: 8px;">
+                                        <i class="fas fa-calendar-day" style="color: var(--school-primary);"></i> Your Shift Date
+                                    </label>
+                                    <input type="date" id="swapDate"
+                                        style="padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px; font-family: inherit;"
+                                        required>
+                                </div>
+                                <div class="form-group" style="display: flex; flex-direction: column; gap: 8px;">
+                                    <label
+                                        style="font-size: 0.85rem; font-weight: 600; color: #1e293b; display: flex; align-items: center; gap: 8px;">
+                                        <i class="fas fa-clock" style="color: var(--school-primary);"></i> Shift Type
+                                    </label>
+                                    <select id="swapType"
+                                        style="padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px; font-family: inherit;"
+                                        required>
+                                        <option value="Morning">Morning (07:00 - 15:00)</option>
+                                        <option value="Afternoon">Afternoon (15:00 - 23:00)</option>
+                                        <option value="Night">Night (23:00 - 07:00)</option>
+                                    </select>
+                                </div>
+                                <div class="form-group"
+                                    style="display: flex; flex-direction: column; gap: 8px; grid-column: span 2;">
+                                    <label
+                                        style="font-size: 0.85rem; font-weight: 600; color: #1e293b; display: flex; align-items: center; gap: 8px;">
+                                        <i class="fas fa-user-friends" style="color: var(--school-primary);"></i> Colleague to Swap
+                                        With
+                                    </label>
+                                    <input type="text" id="colleague" placeholder="Search for colleague name..."
+                                        style="padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px; font-family: inherit;"
+                                        required>
+                                </div>
+                                <div class="form-group"
+                                    style="display: flex; flex-direction: column; gap: 8px; grid-column: span 2;">
+                                    <label
+                                        style="font-size: 0.85rem; font-weight: 600; color: #1e293b; display: flex; align-items: center; gap: 8px;">
+                                        <i class="fas fa-pen-nib" style="color: var(--school-primary);"></i> Reason for Swap
+                                    </label>
+                                    <textarea id="swapReason" rows="3"
+                                        placeholder="Please provide a brief reason for the request..."
+                                        style="padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px; font-family: inherit; resize: none;"></textarea>
+                                </div>
+                            </div>
+                            <div style="margin-top: 30px; display: flex; gap: 15px;">
+                                <button type="button" class="close-modal-btn"
+                                    style="flex: 1; padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px; background: white; color: #64748b; font-weight: 600; cursor: pointer;">Cancel</button>
+                                <button type="submit"
+                                    style="flex: 2; padding: 12px; border: none; border-radius: 10px; background: var(--school-primary); color: white; font-weight: 600; cursor: pointer; transition: 0.3s;"
+                                    onmouseover="this.style.background='var(--school-primary-dark, #003d82)'"
+                                    onmouseout="this.style.background='var(--school-primary)'">Submit Request</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ASSIGN SHIFT MODAL (HOD ONLY) -->
+            <div id="assignModal" class="modal">
+                <div class="modal-content" style="max-width: 500px;">
+                    <div class="modal-header">
+                        <h3><i class="fas fa-user-clock"></i> Assign Departmental Duty</h3>
+                        <span class="close-modal">&times;</span>
+                    </div>
+                    <div class="modal-body">
+                        <form id="assignShiftForm" class="report-form">
+                            <div class="form-group">
+                                <label>Staff Member</label>
+                                <select id="assignStaff" required>
+                                    <!-- Populated from Staff Directory -->
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Date</label>
+                                <input type="date" id="assignDate" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Shift Period</label>
+                                <select id="assignType" required>
+                                    <option value="Morning">Morning (07:00 - 15:00)</option>
+                                    <option value="Afternoon">Afternoon (15:00 - 23:00)</option>
+                                    <option value="Night">Night (23:00 - 07:00)</option>
+                                    <option value="OFF">OFF / Holiday</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Special Notes</label>
+                                <input type="text" id="assignNotes" placeholder="e.g. Grounds Maintenance">
+                            </div>
+                            <button type="submit" class="btn-submit" style="width:100%; margin-top: 20px;">Save
+                                Assignment</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SWAP APPROVALS MODAL (HOD ONLY) -->
+            <div id="approvalsModal" class="modal">
+                <div class="modal-content" style="max-width: 700px;">
+                    <div class="modal-header">
+                        <h3><i class="fas fa-check-double"></i> Pending Swap Requests</h3>
+                        <span class="close-modal">&times;</span>
+                    </div>
+                    <div class="modal-body" style="padding: 0;">
+                        <table class="schedule-table" style="table-layout: auto;">
+                            <thead>
+                                <tr>
+                                    <th>Staff</th>
+                                    <th>Date/Shift</th>
+                                    <th>With</th>
+                                    <th>Reason</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="swapApprovalsBody">
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../js/ancillary-common.js"></script>
+    <script>
+        // Helper: User data from localStorage
+        const currentUser = JSON.parse(getTenantData('currentUser', 'null')) || { name: 'Staff Member', role: 'ancillary', dept: 'Facilities & Maintenance', email: 'staff@acadex.com' };
+        const userEmail = currentUser.email;
+        const userDept = currentUser.dept || 'General';
+        const secondaryRoles = currentUser.secondaryRoles || [];
+        const isHOD = secondaryRoles.includes('Head of Department') || secondaryRoles.includes('HOD') || currentUser.role === 'admin';
+
+        // Data Keys
+        const DB_KEYS = {
+            ASSIGNMENTS: 'shiftAssignments',
+            SWAPS: 'shiftSwapRequests',
+            USERS: 'registeredUsers'
+        };
+
+        // UI Elements
+        const monthTitle = document.querySelector('.calendar-nav h2');
+        const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        let currentMonthIdx = 0; // January
+        let currentYear = 2026;
+
+        function updateCalendarTitle() {
+            monthTitle.textContent = `${months[currentMonthIdx]} ${currentYear}`;
+            // In a real app, this would trigger a re-render of assignments for the selected month
+        }
+
+        // 1. Initialize Role-Based UI
+        function initRoleUI() {
+            if (isHOD) {
+                document.getElementById('hodControls').style.display = 'flex';
+                populateStaffSelect();
+                updateSwapBadge();
+            }
+        }
+
+        function populateStaffSelect() {
+            const select = document.getElementById('assignStaff');
+            if (!select) return;
+
+            const users = getTenantData(DB_KEYS.USERS, '[]');
+            // Filter by department
+            const deptStaff = users.filter(u => u.dept === userDept);
+
+            select.innerHTML = '<option value="">Select Staff</option>';
+            deptStaff.forEach(s => {
+                const opt = document.createElement('option');
+                opt.value = s.email;
+                opt.textContent = s.name;
+                select.appendChild(opt);
+            });
+        }
+
+        // 2. Shift Assignment Persistence
+        document.getElementById('assignShiftForm').onsubmit = function (e) {
+            e.preventDefault();
+            const assignment = {
+                id: 'SHIFT-' + Date.now(),
+                staffEmail: document.getElementById('assignStaff').value,
+                staffName: document.getElementById('assignStaff').options[document.getElementById('assignStaff').selectedIndex].text,
+                date: document.getElementById('assignDate').value,
+                type: document.getElementById('assignType').value,
+                notes: document.getElementById('assignNotes').value,
+                assignedBy: userEmail,
+                dept: userDept,
+                timestamp: Date.now()
+            };
+
+            let assignments = getTenantData(DB_KEYS.ASSIGNMENTS, '[]');
+            assignments.push(assignment);
+            saveTenantData(DB_KEYS.ASSIGNMENTS, assignments);
+
+            showNotification(`Duty assigned to ${assignment.staffName}`, 'success');
+            document.getElementById('assignModal').style.display = 'none';
+            this.reset();
+        };
+
+        // 3. Shift Swap Logic
+        const swapModal = document.getElementById('swapModal');
+        const swapBtn = document.getElementById('swapBtn');
+        const closeModals = document.querySelectorAll('.close-modal, .close-modal-btn');
+
+        if (swapBtn) swapBtn.onclick = () => swapModal.style.display = "flex";
+
+        closeModals.forEach(btn => {
+            btn.onclick = () => {
+                document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
+            };
+        });
+
+        document.getElementById('shiftSwapForm').onsubmit = function (e) {
+            e.preventDefault();
+            const request = {
+                id: 'SWAP-' + Date.now(),
+                requesterEmail: userEmail,
+                requesterName: currentUser.name,
+                dept: userDept,
+                date: document.getElementById('swapDate').value,
+                type: document.getElementById('swapType').value,
+                colleague: document.getElementById('colleague').value,
+                reason: document.getElementById('swapReason').value,
+                status: 'Pending',
+                timestamp: Date.now()
+            };
+
+            let swaps = getTenantData(DB_KEYS.SWAPS, '[]');
+            swaps.push(request);
+            saveTenantData(DB_KEYS.SWAPS, swaps);
+
+            showNotification('Shift swap request sent for approval.', 'success');
+            swapModal.style.display = "none";
+            this.reset();
+        };
+
+        // 4. HOD Swap Approvals
+        function openSwapApprovals() {
+            const modal = document.getElementById('approvalsModal');
+            const tbody = document.getElementById('swapApprovalsBody');
+            const swaps = getTenantData(DB_KEYS.SWAPS, '[]');
+            const pending = swaps.filter(s => s.status === 'Pending' && s.dept === userDept);
+
+            if (pending.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:20px; color:#64748b;">No pending swap requests.</td></tr>';
+            } else {
+                tbody.innerHTML = '';
+                pending.forEach(s => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td style="font-weight:600;">${s.requesterName}</td>
+                        <td>${s.date}<br><small>${s.type}</small></td>
+                        <td>${s.colleague}</td>
+                        <td style="max-width:150px; font-size:0.8rem;">${s.reason}</td>
+                        <td>
+                            <div style="display:flex; gap:5px;">
+                                <button onclick="handleSwap('${s.id}', 'Approved')" class="btn-nav" style="background:#10b981; color:white; border:none; padding:4px 8px;"><i class="fas fa-check"></i></button>
+                                <button onclick="handleSwap('${s.id}', 'Rejected')" class="btn-nav" style="background:#ef4444; color:white; border:none; padding:4px 8px;"><i class="fas fa-times"></i></button>
+                            </div>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+            modal.style.display = 'flex';
+        }
+
+        window.handleSwap = function (id, status) {
+            let swaps = getTenantData(DB_KEYS.SWAPS, '[]');
+            const idx = swaps.findIndex(s => s.id === id);
+            if (idx > -1) {
+                swaps[idx].status = status;
+                saveTenantData(DB_KEYS.SWAPS, swaps);
+                showNotification(`Swap request ${status}`, status === 'Approved' ? 'success' : 'info');
+                openSwapApprovals(); // Refresh table
+                updateSwapBadge();
+            }
+        };
+
+        function updateSwapBadge() {
+            const badge = document.getElementById('swapBadge');
+            if (!badge) return;
+            const swaps = getTenantData(DB_KEYS.SWAPS, '[]');
+            const count = swaps.filter(s => s.status === 'Pending' && s.dept === userDept).length;
+            badge.textContent = count;
+            badge.parentElement.style.display = count > 0 ? 'flex' : 'none';
+        }
+
+        // 5. Open Modals
+        window.openAssignModal = () => document.getElementById('assignModal').style.display = 'flex';
+        window.openSwapApprovals = openSwapApprovals;
+
+        // View Switching Logic
+        const viewBtns = document.querySelectorAll('.calendar-nav .nav-btns:last-child .btn-nav');
+        const viewPanes = document.querySelectorAll('.view-pane');
+
+        viewBtns.forEach(btn => {
+            btn.addEventListener('click', function () {
+                const view = this.textContent.trim().toLowerCase();
+                viewBtns.forEach(b => {
+                    b.classList.remove('active');
+                    b.style.background = 'white';
+                    b.style.color = '#64748b';
+                });
+                this.classList.add('active');
+                this.style.background = 'var(--school-primary)';
+                this.style.color = 'white';
+                viewPanes.forEach(pane => pane.classList.remove('active'));
+                const target = document.getElementById(view + 'View');
+                if (target) target.classList.add('active');
+            });
+        });
+
+        // Navigation Initialization
+        document.querySelectorAll('.calendar-nav .nav-btns:first-child .btn-nav').forEach(btn => {
+            if (btn.textContent === 'Today') {
+                btn.onclick = () => { currentMonthIdx = 0; currentYear = 2026; updateCalendarTitle(); };
+            } else {
+                const icon = btn.querySelector('i');
+                if (icon && icon.classList.contains('fa-chevron-left')) {
+                    btn.onclick = () => { if (--currentMonthIdx < 0) { currentMonthIdx = 11; currentYear--; } updateCalendarTitle(); };
+                } else if (icon && icon.classList.contains('fa-chevron-right')) {
+                    btn.onclick = () => { if (++currentMonthIdx > 11) { currentMonthIdx = 0; currentYear++; } updateCalendarTitle(); };
+                }
+            }
+        });
+
+        // Global Modal Closer
+        window.onclick = (e) => {
+            if (e.target.classList.contains('modal')) {
+                e.target.style.display = "none";
+            }
+        };
+
+        // Seed School Calendar Events (Simulated)
+        function initCalendarEvents() {
+            const events = getTenantData('schoolCalendar', '[]');
+            if (events.length === 0) {
+                const seedEvents = [
+                    { title: "Term Start", date: "2026-01-05", type: "academic" },
+                    { title: "Staff Briefing", date: "2026-01-06", type: "admin" },
+                    { title: "Grounds Inspection", date: "2026-01-10", type: "facilities" }
+                ];
+                saveTenantData('schoolCalendar', seedEvents);
+            }
+        }
+
+        initRoleUI();
+        initCalendarEvents();
+    </script>
+    <!-- ACADEX: Powered-by footer and school branding -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+
+</body>
+
+</html>

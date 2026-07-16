@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Librarian Registration - Bursar Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --school-primary: var(--school-primary, #0056b3);
+            --school-primary-dark: var(--school-primary-dark, #003d7a);
+            --school-primary-rgb: 0, 86, 179;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: #f4f7fe;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .reg-container {
+            width: 100%;
+            max-width: 900px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(var(--school-primary-rgb), 0.1);
+            overflow: hidden;
+            display: flex;
+        }
+
+        .reg-sidebar {
+            width: 35%;
+            background: linear-gradient(135deg, var(--school-primary), var(--school-primary-dark));
+            padding: 40px;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .reg-sidebar h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .reg-sidebar p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            font-size: 0.85rem;
+        }
+
+        .feature-item i {
+            width: 30px;
+            height: 30px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .reg-body {
+            width: 65%;
+            padding: 40px 50px;
+        }
+
+        .reg-header {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .reg-header img {
+            height: 50px;
+            margin-bottom: 15px;
+        }
+
+        .reg-header h2 {
+            font-size: 1.5rem;
+            color: #1a2035;
+            font-weight: 700;
+        }
+
+        .form-section {
+            display: none;
+        }
+
+        .form-section.active {
+            display: block;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--school-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1.5px solid #f0f4ff;
+            padding-bottom: 10px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: #444;
+            margin-bottom: 8px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 11px 15px;
+            border: 1.5px solid #dce4f5;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            outline: none;
+            transition: 0.3s;
+            background: #fafcff;
+        }
+
+        .form-group input:focus {
+            border-color: var(--school-primary);
+            box-shadow: 0 0 0 3px rgba(var(--school-primary-rgb), 0.1);
+            background: white;
+        }
+
+        .form-navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 35px;
+            padding-top: 20px;
+            border-top: 1px solid #f0f4ff;
+        }
+
+        .btn {
+            padding: 11px 25px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-prev {
+            background: #f1f5f9;
+            color: #64748b;
+        }
+
+        .btn-prev:hover {
+            background: #e2e8f0;
+        }
+
+        .btn-next {
+            background: var(--school-primary);
+            color: white;
+            margin-left: auto;
+        }
+
+        .btn-next:hover {
+            background: var(--school-primary-dark);
+            transform: translateY(-1px);
+        }
+
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .step {
+            width: 35px;
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 10px;
+            transition: 0.3s;
+        }
+
+        .step.active {
+            background: var(--school-primary);
+            width: 50px;
+        }
+
+        .step.completed {
+            background: #1cc88a;
+        }
+
+        @media (max-width: 850px) {
+            .reg-container {
+                flex-direction: column;
+            }
+
+            .reg-sidebar {
+                width: 100%;
+                padding: 30px;
+            }
+
+            .reg-body {
+                width: 100%;
+                padding: 30px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="reg-container">
+        <aside class="reg-sidebar">
+            <div>
+                <h1>Librarian Hub</h1>
+                <p>Join our academic community and help manage the future of learning at your institution.</p>
+
+                <div class="feature-item">
+                    <i class="fas fa-book"></i>
+                    <span>Manage Global Book Catalog</span>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-exchange-alt"></i>
+                    <span>Real-time Circulation Tracking</span>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-laptop-code"></i>
+                    <span>Digital Resource Integration</span>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Advanced Analytics & Reporting</span>
+                </div>
+            </div>
+
+            <div style="font-size: 0.8rem; opacity: 0.7;">
+                &copy; 2024 ACADEX System. All rights reserved.
+            </div>
+        </aside>
+
+        <main class="reg-body">
+            <div class="reg-header">
+                <img src="../images/logo.png" alt="Logo" class="acadex-school-logo">
+                <h2>Create Account</h2>
+            </div>
+
+            <div class="step-indicator">
+                <div class="step active" id="stepIndicator1"></div>
+                <div class="step" id="stepIndicator2"></div>
+                <div class="step" id="stepIndicator3"></div>
+                <div class="step" id="stepIndicator4"></div>
+            </div>
+
+            <form id="registrationForm">
+                <!-- Step 1: Institutional & Personal -->
+                <div class="form-section active" id="section1">
+                    <h3 class="section-title"><i class="fas fa-school"></i> Institutional & Personal</h3>
+                    <div class="form-grid">
+                        <div class="form-group full-width">
+                            <label>School Access Code</label>
+                            <input type="text" id="schoolCode" placeholder="Enter provided code (e.g. AX-P12345)"
+                                required style="text-transform: uppercase;">
+                        </div>
+                        <div class="form-group">
+                            <label>First Name</label>
+                            <input type="text" id="firstName" placeholder="Enter first name" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Last Name</label>
+                            <input type="text" id="lastName" placeholder="Enter last name" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Gender</label>
+                            <select id="gender" required>
+                                <option value="">Select Gender</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Date of Birth</label>
+                            <input type="date" id="dob" required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Professional & Work -->
+                <div class="form-section" id="section2">
+                    <h3 class="section-title"><i class="fas fa-briefcase"></i> Professional Details</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Work Email Address</label>
+                            <input type="email" id="email" placeholder="e.g. librarian@school.ac.zw" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Employee / Staff ID</label>
+                            <input type="text" id="employeeId" placeholder="Enter staff ID" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Job Title / Role</label>
+                            <select id="primaryRole" required>
+                                <option value="Senior Librarian">Senior Librarian</option>
+                                <option value="Assistant Librarian">Assistant Librarian</option>
+                                <option value="Library Technician">Library Technician</option>
+                                <option value="Resource Center Head">Resource Center Head</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>National ID Number</label>
+                            <input type="text" id="nationalId" placeholder="ID Number" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Highest Qualification</label>
+                            <input type="text" id="qualification" placeholder="e.g. Degree in Library Science" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Phone Number</label>
+                            <input type="text" id="phone" placeholder="Contact number" required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3: Contact & Family -->
+                <div class="form-section" id="section3">
+                    <h3 class="section-title"><i class="fas fa-users"></i> Family & Contact</h3>
+                    <div class="form-grid">
+                        <div class="form-group full-width">
+                            <label>Residential Address</label>
+                            <textarea id="address" rows="2" placeholder="House number, street, city..."
+                                required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Marital Status</label>
+                            <select id="maritalStatus" required>
+                                <option value="Single">Single</option>
+                                <option value="Married">Married</option>
+                                <option value="Divorced">Divorced</option>
+                                <option value="Widowed">Widowed</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Next of Kin Name</label>
+                            <input type="text" id="nokName" placeholder="NOK Full Name" required>
+                        </div>
+                        <div class="form-group">
+                            <label>NOK Phone</label>
+                            <input type="text" id="nokPhone" placeholder="NOK Phone" required>
+                        </div>
+                        <div class="form-group">
+                            <label>NOK Relationship</label>
+                            <input type="text" id="nokRelation" placeholder="e.g. Spouse, Parent" required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 4: Security -->
+                <div class="form-section" id="section4">
+                    <h3 class="section-title"><i class="fas fa-shield-alt"></i> Account Security</h3>
+                    <div class="form-grid">
+                        <div class="form-group full-width">
+                            <label>Create Password</label>
+                            <input type="password" id="password" placeholder="Min 6 characters" required>
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Confirm Password</label>
+                            <input type="password" id="confirmPassword" placeholder="Repeat password" required>
+                        </div>
+                    </div>
+                    <div style="margin-top:20px; font-size: 0.8rem; color: #666;">
+                        <input type="checkbox" required id="terms"> I agree to the <a href="#"
+                            style="color: var(--school-primary);">Terms of Service</a> and Privacy Policy.
+                    </div>
+                </div>
+
+                <div class="form-navigation">
+                    <button type="button" class="btn btn-prev" id="prevBtn" style="visibility: hidden;"><i
+                            class="fas fa-arrow-left"></i> Previous</button>
+                    <button type="button" class="btn btn-next" id="nextBtn">Next Step <i
+                            class="fas fa-arrow-right"></i></button>
+                    <button type="submit" class="btn btn-next" id="submitBtn" style="display: none;">Complete
+                        Registration <i class="fas fa-check"></i></button>
+                </div>
+            </form>
+
+            <div style="text-align: center; margin-top: 30px; font-size: 0.85rem; color: #64748b;">
+                Already have an account? <a href="login.html"
+                    style="color: var(--school-primary); font-weight: 600; text-decoration: none;">Login Here</a>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        let currentStep = 1;
+        const totalSteps = 4;
+
+        const nextBtn = document.getElementById('nextBtn');
+        const prevBtn = document.getElementById('prevBtn');
+        const submitBtn = document.getElementById('submitBtn');
+
+        nextBtn.addEventListener('click', () => {
+            if (validateStep(currentStep)) {
+                document.getElementById(`stepIndicator${currentStep}`).classList.add('completed');
+                document.getElementById(`section${currentStep}`).classList.remove('active');
+                currentStep++;
+                document.getElementById(`section${currentStep}`).classList.add('active');
+                document.getElementById(`stepIndicator${currentStep}`).classList.add('active');
+                updateNav();
+            }
+        });
+
+        prevBtn.addEventListener('click', () => {
+            document.getElementById(`section${currentStep}`).classList.remove('active');
+            document.getElementById(`stepIndicator${currentStep}`).classList.remove('active');
+            currentStep--;
+            document.getElementById(`section${currentStep}`).classList.add('active');
+            updateNav();
+        });
+
+        function validateStep(step) {
+            const inputs = document.getElementById(`section${step}`).querySelectorAll('input[required], select[required], textarea[required]');
+            let valid = true;
+            inputs.forEach(input => {
+                if (!input.value) {
+                    input.style.borderColor = '#ff4d4f';
+                    valid = false;
+                } else {
+                    input.style.borderColor = '#dce4f5';
+                }
+            });
+
+            if (step === 1) {
+                const code = document.getElementById('schoolCode').value.trim();
+                if (window.AcadexCore && !AcadexCore.getSchoolByCode(code)) {
+                    alert('Invalid School Access Code. Please check and try again.');
+                    return false;
+                }
+            }
+
+            if (!valid) alert('Please fill in all required fields.');
+            return valid;
+        }
+
+        function updateNav() {
+            prevBtn.style.visibility = currentStep === 1 ? 'hidden' : 'visible';
+            if (currentStep === totalSteps) {
+                nextBtn.style.display = 'none';
+                submitBtn.style.display = 'flex';
+            } else {
+                nextBtn.style.display = 'flex';
+                submitBtn.style.display = 'none';
+            }
+        }
+
+        document.getElementById('registrationForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const pass = document.getElementById('password').value;
+            const confirm = document.getElementById('confirmPassword').value;
+
+            if (pass !== confirm) {
+                alert('Passwords do not match.');
+                return;
+            }
+
+            const librarianData = {
+                name: `${document.getElementById('firstName').value} ${document.getElementById('lastName').value}`,
+                firstName: document.getElementById('firstName').value,
+                lastName: document.getElementById('lastName').value,
+                email: document.getElementById('email').value,
+                employeeId: document.getElementById('employeeId').value,
+                gender: document.getElementById('gender').value,
+                dob: document.getElementById('dob').value,
+                nationalId: document.getElementById('nationalId').value,
+                qualification: document.getElementById('qualification').value,
+                phone: document.getElementById('phone').value,
+                address: document.getElementById('address').value,
+                maritalStatus: document.getElementById('maritalStatus').value,
+                nokName: document.getElementById('nokName').value,
+                nokPhone: document.getElementById('nokPhone').value,
+                nokRelation: document.getElementById('nokRelation').value,
+                password: pass,
+                primaryRole: document.getElementById('primaryRole').value,
+                schoolCode: document.getElementById('schoolCode').value.toUpperCase(),
+                joinDate: new Date().toISOString(),
+                status: 'active'
+            };
+
+            const librarians = getTenantData('school_librarians', '[]');
+            if (librarians.some(l => l.email === librarianData.email)) {
+                alert('An account with this email already exists.');
+                return;
+            }
+
+            librarians.push(librarianData);
+            saveTenantData('school_librarians', librarians);
+
+            alert('Registration successful! Redirecting to login...');
+            window.location.href = 'login.html';
+        });
+    </script>
+    <!-- ACADEX: Powered-by footer and school branding -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+
+</body>
+
+</html>
+

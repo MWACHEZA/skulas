@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Procurement Oversight - Admin Portal</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        body { font-family: 'Poppins', sans-serif; background-color: #f1f5f9; margin: 0; padding: 0; }
+        .admin-container { display: flex; min-height: 100vh; }
+        .main-content { flex: 1; margin-left: 260px; width: calc(100% - 260px); }
+        .sidebar { width: 260px; background-color: var(--school-primary-dark, #1e293b); color: white; position: fixed; height: 100%; z-index: 1000; }
+        .content-area { padding: 30px; }
+        
+        .procurement-nav { display: flex; gap: 10px; margin-bottom: 25px; background: white; padding: 10px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .pnav-item { padding: 12px 20px; border-radius: 8px; cursor: pointer; color: #64748b; font-weight: 500; transition: 0.3s; }
+        .pnav-item:hover { background: #f1f5f9; color: var(--school-primary-dark, #1e293b); }
+        .pnav-item.active { background: var(--school-primary-dark, #1e293b); color: white; }
+
+        .tab-pane { display: none; }
+        .tab-pane.active { display: block; }
+        
+        .card { background: white; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 25px; overflow: hidden; }
+        .card-header { padding: 20px 25px; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center; }
+        .card-header h3 { margin: 0; font-size: 1.1rem; color: var(--school-primary-dark, #1e293b); }
+        .card-body { padding: 25px; }
+
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; padding: 15px; background: #f8fafc; color: #64748b; font-weight: 600; font-size: 0.85rem; border-bottom: 2px solid #f1f5f9; }
+        td { padding: 15px; border-bottom: 1px solid #f1f5f9; color: #334155; font-size: 0.9rem; }
+        
+        .status-badge { padding: 5px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
+        .status-Pending { background: #fef3c7; color: #92400e; }
+        .status-Approved { background: #dcfce7; color: #166534; }
+        .status-Rejected, .status-Denied { background: #fee2e2; color: #991b1b; }
+
+        .btn-sm { padding: 6px 12px; border-radius: 6px; border: none; cursor: pointer; font-size: 0.8rem; font-weight: 500; transition: 0.2s; }
+        .btn-approve { background: #10b981; color: white; }
+        .btn-deny { background: #ef4444; color: white; }
+        .btn-edit { background: #3b82f6; color: white; }
+
+        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; }
+        .modal-content { background: white; border-radius: 12px; width: 90%; max-width: 600px; padding: 30px; position: relative; }
+        .close-modal { position: absolute; right: 20px; top: 20px; font-size: 1.5rem; cursor: pointer; color: #64748b; }
+
+        .doc-preview-card { padding: 15px; border: 1px solid #ddd; background: #f8fafc; border-radius: 12px; cursor: pointer; transition: 0.2s; }
+        .doc-preview-card:hover { border-color: #3b82f6; background: #f0f7ff; }
+    </style>
+</head>
+
+<body>
+    <div class="admin-container">
+        <aside class="sidebar" id="sidebar"></aside>
+
+        <main class="main-content">
+            <header class="top-header">
+                <div class="header-left">
+                    <h2>Procurement Oversight</h2>
+                </div>
+            </header>
+
+            <div class="content-area">
+                <nav class="procurement-nav">
+                    <div class="pnav-item active" data-tab="approvals">Requisition Oversight</div>
+                    <div class="pnav-item" data-tab="suppliers">Approved Suppliers</div>
+                    <div class="pnav-item" data-tab="policies">Policies & Processes</div>
+                    <div class="pnav-item" data-tab="tenders">Tenders</div>
+                    <div class="pnav-item" data-tab="quotations">Quotations</div>
+                    <div class="pnav-item" data-tab="invoices">Invoices <span id="invoiceCount" style="background:#ef4444; color:white; padding:2px 6px; border-radius:10px; font-size:0.7rem; margin-left:5px;">0</span></div>
+                    <div class="pnav-item" data-tab="admin-messages">Messages</div>
+                </nav>
+
+                <div id="approvals" class="tab-pane active">
+                    <section class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-clipboard-check"></i> Pending Requisition Approvals</h3>
+                            <button class="btn-sm" style="background:var(--school-primary, #0056b3); color:white;" onclick="init()"><i class="fas fa-sync-alt"></i> Refresh Data</button>
+                        </div>
+                        <div class="card-body">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Req ID</th>
+                                        <th>Dept</th>
+                                        <th>Description</th>
+                                        <th>Amount</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="reqTableBody"></tbody>
+                            </table>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- Suppliers Tab -->
+                <div id="suppliers" class="tab-pane">
+                    <section class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-check-circle"></i> Approved Vendor Directory</h3>
+                        </div>
+                        <div class="card-body">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Supplier Name</th>
+                                        <th>Reg No</th>
+                                        <th>Compliance</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="approvedSuppliersBody"></tbody>
+                            </table>
+                        </div>
+                    </section>
+                </div>
+
+
+
+                <!-- Policies Tab -->
+                <div id="policies" class="tab-pane">
+                    <section class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-file-alt"></i> Procurement Policies</h3>
+                            <button class="btn-sm btn-edit" onclick="uploadPolicy()"><i class="fas fa-upload"></i> Upload Policy</button>
+                        </div>
+                        <div class="card-body">
+                            <div class="policy-list"></div>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- Tenders Tab -->
+                <div id="tenders" class="tab-pane">
+                    <section class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-gavel"></i> Active Tender Notices</h3>
+                        </div>
+                        <div class="card-body">
+                            <table id="tenderTable">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Title</th>
+                                        <th>Category</th>
+                                        <th>Deadline</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tenderTableBody"></tbody>
+                            </table>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- Quotations Tab -->
+                <div id="quotations" class="tab-pane">
+                    <section class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-file-invoice-dollar"></i> Supplier Quotations</h3>
+                        </div>
+                        <div class="card-body">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Supplier</th>
+                                        <th>Tender</th>
+                                        <th>Amount</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="quotationTableBody"></tbody>
+                            </table>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- Invoices Tab -->
+                <div id="invoices" class="tab-pane">
+                    <section class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-receipt"></i> Supplier Invoices</h3>
+                            <button class="btn-sm" style="background:var(--school-primary, #0056b3); color:white;" onclick="renderInvoices()"><i class="fas fa-sync-alt"></i> Refresh</button>
+                        </div>
+                        <div class="card-body">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Invoice #</th>
+                                        <th>Supplier</th>
+                                        <th>Order Ref</th>
+                                        <th>Amount</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="invoiceTableBody"></tbody>
+                            </table>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- Messages Tab -->
+                <div id="admin-messages" class="tab-pane">
+                    <section class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-envelope"></i> Supplier Communication</h3>
+                            <button class="btn-sm btn-edit" onclick="openNewMessageModal()"><i class="fas fa-paper-plane"></i> New Message</button>
+                        </div>
+                        <div class="card-body">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Supplier</th>
+                                        <th>Subject</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="messageTableBody"></tbody>
+                            </table>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Supplier Detail Modal -->
+    <div id="supplierModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeSupplierModal()">&times;</span>
+            <h3>Supplier Profile & Compliance</h3>
+            <div id="supplierModalContent" style="margin-top: 20px;"></div>
+        </div>
+    </div>
+
+    <!-- Document Viewer Modal -->
+    <div id="documentViewerModal" class="modal" style="z-index: 2100;">
+        <div class="modal-content" style="max-width: 800px; height: 90vh; display: flex; flex-direction: column;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 15px;">
+                <h3 id="docViewerTitle">Document View</h3>
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn-sm" style="background: #3b82f6; color: white;" onclick="window.print()"><i class="fas fa-print"></i> Print</button>
+                    <button class="btn-sm" style="background: #10b981; color: white;" onclick="alert('Downloading...')"><i class="fas fa-download"></i> Download</button>
+                    <span class="close-modal" onclick="closeDocumentViewer()" style="position: static;">&times;</span>
+                </div>
+            </div>
+            <div id="docViewerBody" style="flex: 1; overflow-y: auto; padding: 20px; background: #f8fafc; display: flex; justify-content: center; align-items: center;"></div>
+        </div>
+    </div>
+
+    <!-- PO Issuance Modal -->
+    <div id="poModal" class="modal" style="z-index:9999;">
+        <div class="modal-content">
+            <span class="close-modal" onclick="document.getElementById('poModal').style.display='none'">&times;</span>
+            <h3 id="poModalTitle">Issue Purchase Order</h3>
+            <form id="poForm" style="margin-top:20px;" onsubmit="handlePOForm(event)">
+                <input type="hidden" id="poSupplierId">
+                <div class="form-group" style="margin-bottom:15px;">
+                    <label style="display:block; margin-bottom:5px; font-weight:600;">Supplier:</label>
+                    <input type="text" id="poSupplierName" class="form-control" style="width:100%; padding:10px; border-radius:8px; border:1px solid #ddd; background:#f8fafc;" readonly>
+                </div>
+                <div class="form-group" style="margin-bottom:15px;">
+                    <label style="display:block; margin-bottom:5px; font-weight:600;">PO Description / Items:</label>
+                    <textarea id="poDescription" class="form-control" style="width:100%; padding:10px; border-radius:8px; border:1px solid #ddd;" rows="3" placeholder="e.g. Supply and delivery of ICT equipment" required></textarea>
+                </div>
+                <div class="form-group" style="margin-bottom:15px;">
+                    <label style="display:block; margin-bottom:5px; font-weight:600;">Total Amount (USD):</label>
+                    <input type="number" id="poAmount" class="form-control" style="width:100%; padding:10px; border-radius:8px; border:1px solid #ddd;" step="0.01" required>
+                </div>
+                <button type="submit" class="btn-sm btn-approve" style="width:100%; padding:12px; border:none; border-radius:8px;">Generate & Issue PO</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Message Modal -->
+    <div id="messageModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="document.getElementById('messageModal').style.display='none'">&times;</span>
+            <h3 id="msgModalTitle">Compose Message</h3>
+            <form id="msgForm" style="margin-top:20px;">
+                <div class="form-group" style="margin-bottom:15px;">
+                    <label style="display:block; margin-bottom:5px; font-weight:600;">Recipient Supplier:</label>
+                    <select id="msgRecipient" class="form-control" style="width:100%; padding:10px; border-radius:8px; border:1px solid #ddd;"></select>
+                </div>
+                <div class="form-group" style="margin-bottom:15px;">
+                    <label style="display:block; margin-bottom:5px; font-weight:600;">Subject:</label>
+                    <input type="text" id="msgSubject" class="form-control" style="width:100%; padding:10px; border-radius:8px; border:1px solid #ddd;" required>
+                </div>
+                <div class="form-group" style="margin-bottom:15px;">
+                    <label style="display:block; margin-bottom:5px; font-weight:600;">Message:</label>
+                    <textarea id="msgBody" class="form-control" style="width:100%; padding:10px; border-radius:8px; border:1px solid #ddd;" rows="5" required></textarea>
+                </div>
+                <button type="submit" class="btn-sm btn-approve" style="width:100%; padding:12px;">Send Message</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Tab Navigation
+        document.querySelectorAll('.pnav-item').forEach(item => {
+            item.addEventListener('click', () => {
+                document.querySelectorAll('.pnav-item').forEach(i => i.classList.remove('active'));
+                document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+                item.classList.add('active');
+                document.getElementById(item.dataset.tab).classList.add('active');
+            });
+        });
+
+        // Data Helpers
+        function getProcData(key, defaultValue) {
+            return getTenantData(key, defaultValue);
+        }
+
+        function saveProcData(key, data) {
+            saveTenantData(key, data);
+        }
+
+        // --- Data Initialisation ---
+        let requisitions = [];
+        let tenders = [];
+        let suppliers = [];
+        let quotations = [];
+        let invoices = [];
+        let messages = [];
+        let policies = [];
+
+        function loadInitialStorage() {
+            const defaultReqs = [
+                { id: 'REQ-1001', dept: 'ICT Department', priority: 'Normal', description: 'Server Rack Bolts', cost: 45.00, reason: 'Maintenance', status: 'Pending', date: '01/05/2026' },
+                { id: 'REQ-1002', dept: 'Hostels', priority: 'Urgent', description: 'Plumbing Supplies', cost: 120.50, reason: 'Leak repair', status: 'Pending', date: '01/08/2026' }
+            ];
+            const defaultPolicies = [
+                { id: 1, title: 'Standard Procurement Procedure v2026', desc: 'Step-by-step guide for school purchases.', date: '2026-01-01' }
+            ];
+
+            requisitions = getProcData('purchaseRequisitions', defaultReqs);
+            tenders = getProcData('school_tenders', []);
+            suppliers = getProcData('school_suppliers', []);
+            quotations = getProcData('school_quotations', []);
+            invoices = getProcData('school_invoices', []);
+            messages = getProcData('school_supplier_messages', []);
+            policies = getProcData('school_policies', defaultPolicies);
+
+            // Mock Data Cleanup Hook (Tenant-Aware Purge)
+            const mockTenderIds = ['TND-2026-001', 'TND-2026-002', 'TND-2026-003'];
+            const mockSupplierIds = ['SUP-001', 'SUP-002', 'SUP-003'];
+            
+            if (tenders.some(t => mockTenderIds.includes(t.id))) {
+                tenders = tenders.filter(t => t && t.id && !mockTenderIds.includes(t.id));
+                saveProcData('school_tenders', tenders);
+            }
+            if (suppliers.some(s => mockSupplierIds.includes(s.id))) {
+                suppliers = suppliers.filter(s => s && s.id && !mockSupplierIds.includes(s.id));
+                saveProcData('school_suppliers', suppliers);
+            }
+        }
+
+        window.init = function() {
+            loadInitialStorage();
+            try { window.renderRequisitions(); } catch(e) { console.error("Error rendering requisitions:", e); }
+            try { window.renderSuppliers(); } catch(e) { console.error("Error rendering suppliers:", e); }
+            try { window.renderTenders(); } catch(e) { console.error("Error rendering tenders:", e); }
+            try { window.renderQuotations(); } catch(e) { console.error("Error rendering quotations:", e); }
+            try { window.renderPolicies(); } catch(e) { console.error("Error rendering policies:", e); }
+            try { window.renderInvoices(); } catch(e) { console.error("Error rendering invoices:", e); }
+            try { window.renderAdminMessages(); } catch(e) { console.error("Error rendering messages:", e); }
+        }
+
+        window.renderRequisitions = function() {
+            try {
+                const tbody = document.getElementById('reqTableBody');
+                if (!tbody) return;
+                tbody.innerHTML = '';
+                
+                const allReqs = getProcData('purchaseRequisitions', []);
+                
+                if (allReqs.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:20px; color:#94a3b8;">No requisitions found in the system.</td></tr>';
+                    return;
+                }
+
+                allReqs.forEach(r => {
+                    const tr = document.createElement('tr');
+                    const status = r.status || 'Pending';
+                    const cost = parseFloat(r.cost) || 0;
+                    
+                    tr.innerHTML = `
+                        <td>${r.date || 'N/A'}</td>
+                        <td style="font-family:monospace; font-weight:600;">${r.id}</td>
+                        <td>${r.dept || 'N/A'}</td>
+                        <td>${r.description || 'N/A'}</td>
+                        <td>$${cost.toFixed(2)}</td>
+                        <td><span class="status-badge status-${status.replace(' ', '')}">${status}</span></td>
+                        <td>
+                            <div style="display:flex; gap:5px;">
+                                ${(status === 'Pending' || status === 'HOD Approved') ? `
+                                    <button class="btn-sm btn-approve" onclick="window.updateReqStatus('${r.id}', 'Approved')">Approve</button>
+                                    <button class="btn-sm btn-deny" onclick="window.updateReqStatus('${r.id}', 'Denied')">Deny</button>
+                                ` : '-'}
+                            </div>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch (e) {
+                console.error("Error in renderRequisitions:", e);
+            }
+        }
+
+        window.renderSuppliers = function() {
+            try {
+                const approvedBody = document.getElementById('approvedSuppliersBody');
+                const pendingBody = document.getElementById('pendingRegistrationsBody');
+                const regCount = document.getElementById('registrationCount');
+                if (!approvedBody || !pendingBody) return;
+                
+                const sups = getProcData('school_suppliers', []);
+                
+                approvedBody.innerHTML = '';
+
+                sups.forEach(s => {
+                    const tr = document.createElement('tr');
+                    const status = s.status || 'Pending Verification';
+                    
+                    if (status === 'Approved') {
+                        tr.innerHTML = `
+                            <td><strong>${s.companyName}</strong></td>
+                            <td>${s.regNo || 'N/A'}</td>
+                            <td><span class="status-badge status-Approved">Compliant</span></td>
+                            <td><button class="btn-sm btn-edit" onclick="window.viewSupplierDetails('${s.id}')">View Profile</button></td>
+                        `;
+                        approvedBody.appendChild(tr);
+                    }
+                });
+            } catch (e) {
+                console.error("Error in renderSuppliers:", e);
+            }
+        }
+
+        window.renderTenders = function() {
+            const tbody = document.getElementById('tenderTableBody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+            
+            const currentTenders = getProcData('school_tenders', []);
+            
+            if (currentTenders.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:20px; color:#94a3b8;">No active tenders.</td></tr>';
+                return;
+            }
+
+            currentTenders.forEach(t => {
+                const tr = document.createElement('tr');
+                const status = t.status || 'Open';
+                const isClosed = status === 'Closed' || status === 'Awarded';
+                
+                tr.innerHTML = `
+                    <td>${t.id}</td>
+                    <td>${t.title}</td>
+                    <td>${t.category}</td>
+                    <td>${t.deadline}</td>
+                    <td><span class="status-badge status-${status}">${status}</span></td>
+                    <td>
+                        <div style="display:flex; gap:5px;">
+                            ${!isClosed ? `<button class="btn-sm btn-deny" onclick="window.closeTender('${t.id}')">Close</button>` : ''}
+                            <button class="btn-sm" style="background:#64748b; color:white;" onclick="window.deleteTender('${t.id}')"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        window.closeTender = (id) => {
+            if (confirm('Close this tender manually?')) {
+                const idx = tenders.findIndex(t => t.id === id);
+                if (idx > -1) {
+                    tenders[idx].status = 'Closed';
+                    saveProcData('school_tenders', tenders);
+                    renderTenders();
+                }
+            }
+        };
+
+        window.deleteTender = (id) => {
+            if (confirm('Delete this tender?')) {
+                tenders = tenders.filter(t => t.id !== id);
+                saveProcData('school_tenders', tenders);
+                renderTenders();
+            }
+        };
+
+        function renderQuotations() {
+            const tbody = document.getElementById('quotationTableBody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+            
+            let currentQuotations = getProcData('school_quotations', []);
+            if (!Array.isArray(currentQuotations)) currentQuotations = [];
+            
+            if (currentQuotations.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:20px; color:#94a3b8;">No quotations received yet.</td></tr>';
+                return;
+            }
+
+            currentQuotations.forEach(q => {
+                const tr = document.createElement('tr');
+                const status = q.status || 'Pending Review';
+                const isPending = status === 'Pending Review';
+                const amount = parseFloat(q.amount) || 0;
+                
+                tr.innerHTML = `
+                    <td>${q.id}</td>
+                    <td>${q.supplierName}</td>
+                    <td>${q.tenderTitle}</td>
+                    <td>$${amount.toLocaleString()}</td>
+                    <td><span class="status-badge status-${status.replace(' ','')}">${status}</span></td>
+                    <td>
+                        <div style="display:flex; gap:5px;">
+                            <button class="btn-sm btn-edit" onclick="window.viewSupplierDetails('${q.supplierId}')">View Compliance</button>
+                            ${isPending ? `
+                                <button class="btn-sm btn-approve" onclick="window.updateQuoteStatus('${q.id}', 'Approved')">Approve</button>
+                                <button class="btn-sm btn-deny" onclick="window.updateQuoteStatus('${q.id}', 'Rejected')">Reject</button>
+                            ` : ''}
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        window.renderQuotations = renderQuotations;
+
+        window.updateQuoteStatus = (id, status) => {
+            const currentQuotes = getProcData('school_quotations', []);
+            const idx = currentQuotes.findIndex(q => q.id === id);
+            if (idx > -1) {
+                const quote = currentQuotes[idx];
+                quote.status = status;
+                
+                if (status === 'Approved') {
+                    const currentTenders = getProcData('school_tenders', []);
+                    const tenderIdx = currentTenders.findIndex(t => t.id === quote.tenderId);
+                    if (tenderIdx > -1) {
+                        currentTenders[tenderIdx].status = 'Awarded';
+                        currentTenders[tenderIdx].awardedTo = quote.supplierId;
+                        currentTenders[tenderIdx].awardedToName = quote.supplierName;
+                        currentTenders[tenderIdx].awardedAmount = quote.amount;
+                        saveProcData('school_tenders', currentTenders);
+                        window.renderTenders();
+                    }
+                }
+                
+                saveProcData('school_quotations', currentQuotes);
+                window.renderQuotations();
+                alert(`Quotation ${status} successfully.`);
+            }
+        };
+
+        function renderPolicies() {
+            const list = document.querySelector('.policy-list');
+            if (!list) return;
+            list.innerHTML = '';
+            const currentPolicies = getProcData('school_policies', []);
+            currentPolicies.forEach(p => {
+                const div = document.createElement('div');
+                div.className = 'policy-item';
+                div.style.cssText = 'display:flex; align-items:center; gap:15px; padding:15px; background:#f8fafc; border-radius:12px; margin-bottom:10px;';
+                div.innerHTML = `
+                    <i class="fas fa-file-pdf" style="color:#ef4444; font-size:1.5rem;"></i>
+                    <div style="flex:1;">
+                        <h4 style="margin:0; font-size:0.95rem;">${p.title}</h4>
+                        <p style="margin:4px 0 0; font-size:0.8rem; color:#64748b;">${p.desc}</p>
+                    </div>
+                    <button class="btn-sm btn-edit" onclick="alert('Downloading...')"><i class="fas fa-download"></i></button>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        window.renderPolicies = renderPolicies;
+
+        window.updateReqStatus = (id, status) => {
+            try {
+                const reqs = getProcData('purchaseRequisitions', []);
+                const idx = reqs.findIndex(r => r.id === id);
+                if (idx > -1) {
+                    const notes = document.getElementById('revNotes') ? document.getElementById('revNotes').value : '';
+                    reqs[idx].status = status;
+                    reqs[idx].reviewNotes = notes;
+                    saveProcData('purchaseRequisitions', reqs);
+                    
+                    renderRequisitions();
+                    alert(`Requisition ${id} ${status} successfully.`);
+                } else {
+                    alert(`Error: Requisition ${id} not found.`);
+                }
+            } catch (e) {
+                console.error("Error in updateReqStatus:", e);
+                alert("An error occurred while updating the requisition.");
+            }
+        };
+
+        window.approveSupplier = (id) => {
+            try {
+                const sups = getProcData('school_suppliers', []);
+                const idx = sups.findIndex(sup => sup.id === id);
+                if (idx > -1) {
+                    sups[idx].status = 'Approved';
+                    saveProcData('school_suppliers', sups);
+                    
+                    // Force refresh of the global suppliers variable used by viewSupplierDetails
+                    suppliers = sups;
+                    
+                    renderSuppliers();
+                    closeSupplierModal();
+                    alert('Supplier approved successfully!');
+                } else {
+                    alert('Error: Supplier not found.');
+                }
+            } catch (e) {
+                console.error("Error in approveSupplier:", e);
+                alert("An error occurred while approving the supplier.");
+            }
+        };
+
+        window.rejectSupplier = (id) => {
+            try {
+                const sups = getProcData('school_suppliers', []);
+                const idx = sups.findIndex(sup => sup.id === id);
+                if (idx > -1) {
+                    sups[idx].status = 'Rejected';
+                    saveProcData('school_suppliers', sups);
+                    
+                    // Force refresh
+                    suppliers = sups;
+                    
+                    renderSuppliers();
+                    closeSupplierModal();
+                    alert('Supplier rejected.');
+                } else {
+                    alert('Error: Supplier not found.');
+                }
+            } catch (e) {
+                console.error("Error in rejectSupplier:", e);
+                alert("An error occurred while rejecting the supplier.");
+            }
+        };
+
+        window.viewSupplierDetails = (id) => {
+            try {
+                const sups = getProcData('school_suppliers', []);
+                const s = sups.find(sup => sup.id === id);
+                const modal = document.getElementById('supplierModal');
+                const content = document.getElementById('supplierModalContent');
+                
+                if (s && content) {
+                    const taxValid = new Date(s.taxExpiry) > new Date();
+                    const prazValid = new Date(s.prazExpiry) > new Date();
+                    
+                    content.innerHTML = `
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+                            <div>
+                                <p><strong>Name:</strong> ${s.companyName}</p>
+                                <p><strong>Reg No:</strong> ${s.regNo || 'N/A'}</p>
+                                <p><strong>Address:</strong> ${s.address || 'N/A'}</p>
+                            </div>
+                            <div>
+                                <p><strong>Contact:</strong> ${s.contactPerson}</p>
+                                <p><strong>Email:</strong> ${s.email}</p>
+                                <p><strong>Phone:</strong> ${s.phone}</p>
+                            </div>
+                        </div>
+                        <div style="margin-top:20px; border-top:1px solid #eee; padding-top:15px;">
+                            <h5 style="color:#64748b; margin-bottom:10px;">Compliance Documents</h5>
+                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                                <div class="doc-preview-card" style="border-color:${taxValid?'#10b981':'#ef4444'}" onclick="viewDocument('Tax Clearance','tax.pdf')">
+                                    <div style="font-size:0.8rem; font-weight:600;">Tax Clearance</div>
+                                    <div style="font-size:0.7rem; color:#64748b;">Exp: ${s.taxExpiry}</div>
+                                    <button class="btn-sm btn-edit" style="width:100%; margin-top:5px;">View</button>
+                                </div>
+                                <div class="doc-preview-card" style="border-color:${prazValid?'#10b981':'#ef4444'}" onclick="viewDocument('PRAZ Registration','praz.pdf')">
+                                    <div style="font-size:0.8rem; font-weight:600;">PRAZ Reg</div>
+                                    <div style="font-size:0.7rem; color:#64748b;">Exp: ${s.prazExpiry}</div>
+                                    <button class="btn-sm btn-edit" style="width:100%; margin-top:5px;">View</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="margin-top:25px; display:flex; flex-wrap:wrap; justify-content:flex-end; gap:10px;">
+                            ${s.status === 'Approved' ? `<button class="btn-sm btn-edit" onclick="openPOModal('${s.id}', '${s.companyName}')">Issue PO</button>` : ''}
+                            <button class="btn-sm" style="background:#64748b; color:white;" onclick="resetSupplierPassword('${s.id}')">Reset Password</button>
+                            <button class="btn-sm btn-deny" onclick="rejectSupplier('${s.id}')">Reject</button>
+                            <button class="btn-sm btn-approve" onclick="approveSupplier('${s.id}')">Approve</button>
+                        </div>
+                    `;
+                    modal.style.display = 'flex';
+                }
+            } catch (e) {
+                console.error("Error in viewSupplierDetails:", e);
+            }
+        };
+
+        window.openPOModal = (id, name) => {
+            document.getElementById('poSupplierId').value = id;
+            document.getElementById('poSupplierName').value = name;
+            document.getElementById('poDescription').value = '';
+            document.getElementById('poAmount').value = '';
+            document.getElementById('poModal').style.display = 'flex';
+        };
+
+        window.handlePOForm = function(e) {
+            e.preventDefault();
+            const sid = document.getElementById('poSupplierId').value;
+            const sname = document.getElementById('poSupplierName').value;
+            const desc = document.getElementById('poDescription').value;
+            const amt = document.getElementById('poAmount').value;
+
+            if (!sid || !desc || !amt) {
+                alert('Please fill in all fields.');
+                return;
+            }
+
+            const newPO = {
+                id: 'PO-' + Math.floor(1000 + Math.random() * 9000),
+                supplierId: sid,
+                supplierName: sname,
+                items: desc,
+                amount: parseFloat(amt),
+                date: new Date().toISOString().split('T')[0],
+                status: 'Pending Delivery'
+            };
+
+            const orders = getProcData('school_orders', []);
+            orders.push(newPO);
+            saveProcData('school_orders', orders);
+
+            alert('Purchase Order ' + newPO.id + ' issued successfully to ' + sname + '!');
+            document.getElementById('poModal').style.display = 'none';
+        };
+
+        window.resetSupplierPassword = (id) => {
+            const newPw = prompt("Enter new password for this supplier:");
+            if (!newPw) return;
+            if (newPw.length < 8) {
+                alert("Password must be at least 8 characters.");
+                return;
+            }
+            const sups = getProcData('school_suppliers', []);
+            const idx = sups.findIndex(s => s.id === id);
+            if (idx > -1) {
+                sups[idx].password = newPw;
+                saveProcData('school_suppliers', sups);
+                alert("Password reset successfully.");
+            }
+        };
+
+        window.renderInvoices = () => {
+            const tbody = document.getElementById('invoiceTableBody');
+            const countBadge = document.getElementById('invoiceCount');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+            
+            const invoices = getProcData('school_invoices', []);
+            let pendingCount = 0;
+
+            invoices.forEach(inv => {
+                const tr = document.createElement('tr');
+                const status = inv.status || 'Processing';
+                if (status === 'Processing' || status === 'Under Review') pendingCount++;
+                
+                tr.innerHTML = `
+                    <td style="font-weight:600;">${inv.id}</td>
+                    <td>${inv.supplierName || 'N/A'}</td>
+                    <td>${inv.orderId}</td>
+                    <td style="font-weight:600;">$${parseFloat(inv.amount).toLocaleString()}</td>
+                    <td><span class="status-badge status-${status.replace(' ','')}">${status}</span></td>
+                    <td>
+                        <div style="display:flex; gap:5px;">
+                            <button class="btn-sm btn-edit" onclick="viewDocument('Invoice ${inv.id}', 'invoice.pdf')">View PDF</button>
+                            ${status !== 'Paid' ? `
+                                <button class="btn-sm btn-approve" onclick="updateInvoiceStatus('${inv.id}', 'Paid')">Mark Paid</button>
+                                <button class="btn-sm btn-deny" onclick="updateInvoiceStatus('${inv.id}', 'Rejected')">Reject</button>
+                            ` : ''}
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            if (countBadge) countBadge.textContent = pendingCount;
+        };
+
+        window.updateInvoiceStatus = (id, status) => {
+            const invoices = getProcData('school_invoices', []);
+            const idx = invoices.findIndex(inv => inv.id === id);
+            if (idx > -1) {
+                invoices[idx].status = status;
+                if (status === 'Paid') invoices[idx].paidDate = new Date().toISOString().split('T')[0];
+                saveProcData('school_invoices', invoices);
+                renderInvoices();
+                alert(`Invoice ${id} updated to ${status}.`);
+            }
+        };
+
+        window.renderAdminMessages = () => {
+            const tbody = document.getElementById('messageTableBody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+            
+            const messages = getProcData('school_supplier_messages', []);
+            // Filter to show messages sent by admin or to admin
+            const adminMsgs = messages.filter(m => m.from === 'Procurement Office' || m.to === 'Procurement Office' || m.to === 'Accounts Office');
+            adminMsgs.sort((a,b) => new Date(b.date) - new Date(a.date));
+
+            adminMsgs.forEach(m => {
+                const tr = document.createElement('tr');
+                const isFromAdmin = m.from === 'Procurement Office';
+                const peerName = isFromAdmin ? m.to : m.fromName || m.from;
+                
+                tr.innerHTML = `
+                    <td>${new Date(m.date).toLocaleDateString()}</td>
+                    <td><strong>${peerName}</strong> <small style="display:block; color:#888;">${isFromAdmin ? '(Sent)' : '(Received)'}</small></td>
+                    <td>${m.subject}</td>
+                    <td><span class="status-badge status-${m.read ? 'Approved' : 'Pending'}">${m.read ? 'Read' : 'Unread'}</span></td>
+                    <td>
+                        <button class="btn-sm btn-edit" onclick="viewAdminMessage('${m.id}')">View</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        };
+
+        window.viewAdminMessage = (id) => {
+            const messages = getProcData('school_supplier_messages', []);
+            const m = messages.find(msg => msg.id === id);
+            if (!m) return;
+
+            // Mark as read if received by admin
+            if (m.to === 'Procurement Office' && !m.read) {
+                m.read = true;
+                saveProcData('school_supplier_messages', messages);
+                renderAdminMessages();
+            }
+
+            alert(`Message Detail\n\nFrom: ${m.from}\nSubject: ${m.subject}\n\n${m.body}`);
+        };
+
+        window.openNewMessageModal = () => {
+            const select = document.getElementById('msgRecipient');
+            const sups = getProcData('school_suppliers', []);
+            
+            select.innerHTML = '<option value="">-- Select Supplier --</option>';
+            sups.forEach(s => {
+                select.innerHTML += `<option value="${s.id}">${s.companyName} (${s.id})</option>`;
+            });
+
+            document.getElementById('msgModalTitle').textContent = 'New Message to Supplier';
+            document.getElementById('msgForm').reset();
+            document.getElementById('messageModal').style.display = 'flex';
+        };
+
+        document.getElementById('msgForm').onsubmit = function(e) {
+            e.preventDefault();
+            const recipientId = document.getElementById('msgRecipient').value;
+            const subject = document.getElementById('msgSubject').value;
+            const body = document.getElementById('msgBody').value;
+
+            if (!recipientId) return alert('Please select a recipient.');
+
+            const newMsg = {
+                id: 'MSG-ADM-' + Math.random().toString(36).substr(2, 6).toUpperCase(),
+                from: 'Procurement Office',
+                fromName: 'School Procurement',
+                to: recipientId,
+                subject: subject,
+                body: body,
+                date: new Date().toISOString(),
+                read: false
+            };
+
+            const messages = getProcData('school_supplier_messages', []);
+            messages.push(newMsg);
+            saveProcData('school_supplier_messages', messages);
+
+            alert('Message sent successfully!');
+            document.getElementById('messageModal').style.display = 'none';
+            renderAdminMessages();
+        };
+
+        window.viewDocument = (title, url) => {
+            document.getElementById('docViewerTitle').textContent = title;
+            document.getElementById('docViewerBody').innerHTML = `
+                <div style="text-align:center; padding:40px; background:white; border-radius:8px; border:1px solid #ddd;">
+                    <i class="fas fa-file-pdf" style="font-size:4rem; color:#ef4444; margin-bottom:15px;"></i>
+                    <h4>${title} Preview</h4>
+                    <p style="color:#64748b;">Simulated view of ${url}</p>
+                </div>
+            `;
+            document.getElementById('documentViewerModal').style.display = 'flex';
+        };
+
+        window.closeSupplierModal = () => document.getElementById('supplierModal').style.display = 'none';
+        window.closeDocumentViewer = () => document.getElementById('documentViewerModal').style.display = 'none';
+
+        window.uploadPolicy = () => {
+            const title = prompt("Policy Title:");
+            if (!title) return;
+            const desc = prompt("Short Description:");
+            if (!desc) return;
+            
+            policies.push({ 
+                id: Date.now(), 
+                title: title, 
+                desc: desc, 
+                date: new Date().toISOString().split('T')[0] 
+            });
+            saveProcData('school_policies', policies);
+            renderPolicies();
+        };
+
+        init();
+    </script>
+    <script src="../js/admin-common.js"></script>
+    <script src="../js/admin-sidebar.js"></script>
+    <!-- ACADEX: Powered-by footer and school branding -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+
+</body>
+</html>
+

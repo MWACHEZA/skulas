@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Resources - Bursar Portal</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/library-portal.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            background-color: rgba(var(--school-primary-rgb, 0, 86, 179), 0.2);
+            color: white;
+            border-left: 3px solid var(--school-primary, var(--school-primary, #0056b3));
+        }
+
+        .btn-primary {
+            background: var(--school-primary, var(--school-primary, #0056b3));
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .btn-primary:hover {
+            background: var(--school-primary-dark, var(--school-primary-dark, #003d82));
+            transform: translateY(-2px);
+        }
+
+        .glass-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .top-header h2 {
+            color: var(--school-primary-dark, var(--school-primary-dark, #1a1a2e));
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <img src="../images/logo.png" alt="Logo" class="acadex-school-logo">
+                <h3>Library Portal</h3>
+            </div>
+            <div class="sidebar-menu">
+                <div class="sidebar-section-title">Library System</div>
+                <ul>
+                    <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
+                    <li><a href="books.html"><i class="fas fa-book"></i><span>Catalog Management</span></a></li>
+                    <li><a href="issue.html"><i class="fas fa-exchange-alt"></i><span>Circulation Desk</span></a></li>
+                    <li><a href="digital.html" class="active"><i class="fas fa-laptop-code"></i><span>Digital
+                                Resources</span></a></li>
+                    <li><a href="reports.html"><i class="fas fa-file-invoice"></i><span>Reports & Inventory</span></a>
+                    </li>
+                </ul>
+                <div class="sidebar-section-title">Operations</div>
+                <ul>
+                    <li><a href="staff-directory.html"><i class="fas fa-users"></i><span>Staff Directory</span></a></li>
+                    <li><a href="procurement.html"><i class="fas fa-shopping-cart"></i><span>Procurement</span></a></li>
+                    <li><a href="assets.html"><i class="fas fa-boxes"></i><span>Asset Management</span></a></li>
+                    <li><a href="schedules.html"><i class="fas fa-calendar-check"></i><span>Schedules &
+                                Shifts</span></a></li>
+                </ul>
+                <div class="sidebar-section-title">Staff HR & Support</div>
+                <ul>
+                    <li><a href="hr-services.html"><i class="fas fa-user-shield"></i><span>HR Services</span></a></li>
+                    <li><a href="profile.html"><i class="fas fa-id-card"></i><span>My Profile</span></a></li>
+                    <li><a href="resources.html"><i class="fas fa-folder-open"></i><span>Resources & Docs</span></a>
+                    </li>
+                    <li><a href="it-support.html"><i class="fas fa-headset"></i><span>IT Support</span></a></li>
+                </ul>
+                <div class="sidebar-section-title">Communication</div>
+                <ul>
+                    <li><a href="news.html"><i class="fas fa-newspaper"></i><span>News & Updates</span></a></li>
+                    <li><a href="announcements.html"><i class="fas fa-bullhorn"></i><span>General Notices</span></a>
+                    </li>
+                    <li><a href="contact.html"><i class="fas fa-address-book"></i><span>Contact Us</span></a></li>
+                    <li><a href="settings.html"><i class="fas fa-cog"></i><span>System Settings</span></a></li>
+                </ul>
+            </div>
+            <div class="sidebar-footer">
+                <a href="login.html"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="top-header">
+                <h2>Digital Resources</h2>
+                <div class="user-profile">
+                    <div style="text-align: right; margin-right: 10px;">
+                        <div style="font-weight: 600; font-size: 0.9rem;">Librarian Admin</div>
+                        <div style="font-size: 0.75rem; color: #888;">System Administrator</div>
+                    </div>
+                    <img src="../images/admin-avatar.png" alt="Admin">
+                </div>
+            </div>
+
+            <div class="contentArea">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                    <div class="search-box" style="max-width: 400px; flex: 1;">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="resourceSearchInput" placeholder="Search eBooks, Past Papers, Videos..."
+                            oninput="filterResources()">
+                    </div>
+                    <button class="btn-primary" onclick="openModal('uploadModal')">
+                        <i class="fas fa-cloud-upload-alt"></i> Upload Resource
+                    </button>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px;"
+                    id="resourceGrid">
+                    <!-- Resource Cards -->
+                    <div class="resource-card glass-card" style="overflow: hidden;">
+                        <div
+                            style="height: 140px; background: linear-gradient(135deg, var(--school-primary, #3b82f6) 0%, var(--school-primary-dark, var(--school-primary, #2563eb)) 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 3.5rem;">
+                            <i class="fas fa-file-pdf"></i>
+                        </div>
+                        <div style="padding: 25px;">
+                            <div
+                                style="font-size: 0.7rem; text-transform: uppercase; color: var(--school-primary, #3b82f6); font-weight: 700; margin-bottom: 8px; letter-spacing: 1px;">
+                                PAST PAPER</div>
+                            <h4
+                                style="margin: 0 0 12px; color: #333; font-size: 1.1rem; font-weight: 600;">
+                                Mathematics Grade 12 - 2023</h4>
+                            <div
+                                style="font-size: 0.85rem; color: #888; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+                                <i class="fas fa-database"></i> 2.4 MB | PDF
+                            </div>
+                            <div style="display: flex; gap: 12px;">
+                                <button class="btn-primary"
+                                    style="flex: 2; justify-content: center; padding: 10px;"><i
+                                        class="fas fa-download"></i> Download</button>
+                                <button class="btn btn-export"
+                                    style="flex: 1; justify-content: center; color: #ef4444;"><i
+                                        class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="resource-card glass-card" style="overflow: hidden;">
+                        <div
+                            style="height: 140px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 3.5rem;">
+                            <i class="fas fa-video"></i>
+                        </div>
+                        <div style="padding: 25px;">
+                            <div
+                                style="font-size: 0.7rem; text-transform: uppercase; color: #10b981; font-weight: 700; margin-bottom: 8px; letter-spacing: 1px;">
+                                VIDEO LECTURE</div>
+                            <h4
+                                style="margin: 0 0 12px; color: #333; font-size: 1.1rem; font-weight: 600;">
+                                Introduction to Calculus</h4>
+                            <div
+                                style="font-size: 0.85rem; color: #888; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+                                <i class="fas fa-clock"></i> 45 mins | MP4
+                            </div>
+                            <div style="display: flex; gap: 12px;">
+                                <button class="btn-primary"
+                                    style="flex: 2; justify-content: center; background: #10b981; padding: 10px;"><i
+                                        class="fas fa-play"></i> Watch</button>
+                                <button class="btn btn-export"
+                                    style="flex: 1; justify-content: center; color: #ef4444;"><i
+                                        class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upload Modal -->
+    <div id="uploadModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Upload Digital Resource</h3>
+                <button class="close-modal" onclick="closeModal('uploadModal')">&times;</button>
+            </div>
+            <form id="uploadForm">
+                <div class="form-group">
+                    <label>Resource Title</label>
+                    <input type="text" id="resTitle" required placeholder="e.g. Physics Formulation Sheet">
+                </div>
+                <div class="form-group">
+                    <label>Category</label>
+                    <select id="resType" required>
+                        <option value="">Select Category</option>
+                        <option value="E-Book">E-Book</option>
+                        <option value="Past Paper">Past Paper</option>
+                        <option value="Video Lecture">Video Lecture</option>
+                        <option value="Journal">Journal</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>File Upload</label>
+                    <div style="border: 2px dashed #ddd; padding: 30px; text-align: center; border-radius: 12px; transition: 0.3s;"
+                        onmouseover="this.style.borderColor='var(--school-primary, var(--school-primary, #0056b3))'"
+                        onmouseout="this.style.borderColor='#ddd'">
+                        <i class="fas fa-cloud-upload-alt fa-3x" style="color: #ccc; margin-bottom: 15px;"></i>
+                        <div style="font-size: 0.95rem; color: #666; margin-bottom: 10px;">Drag and drop or click to
+                            select</div>
+                        <input type="file" id="fileInput" style="display: none;"
+                            accept=".pdf,.mp4,.avi,.mov,.epub,.mobi,.doc,.docx" onchange="handleFileSelect(event)">
+                        <button type="button" class="btn btn-export"
+                            onclick="document.getElementById('fileInput').click()">
+                            Browse Files
+                        </button>
+                        <div id="filePreview"
+                            style="display: none; margin-top: 15px; padding: 12px; background: #f0f9ff; border-radius: 8px; align-items: center; gap: 10px; justify-content: center;">
+                            <i class="fas fa-file" style="color: var(--school-primary, var(--school-primary, #0056b3));"></i>
+                            <span id="fileName" style="font-weight: 600; color: #333;">No file
+                                selected</span>
+                            <span id="fileSize" style="color: #6b7280; font-size: 0.85rem;"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-export" onclick="closeModal('uploadModal')">Cancel</button>
+                    <button type="submit" class="btn-primary">Start Upload</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="../js/library-auth.js"></script>
+    <script src="../js/library-admin.js"></script>
+    <!-- ACADEX: Powered-by footer and school branding -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+
+</body>
+
+</html>
+

@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fee Management - Admin Portal</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="../js/financial-config.js"></script>
+    <script src="../js/fees-manager.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+
+        .admin-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 260px;
+            background-color: var(--school-primary-dark, #1a1a2e);
+            color: white;
+            position: fixed;
+            height: 100%;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+
+        .sidebar-header img {
+            width: 50px;
+            margin-bottom: 10px;
+        }
+
+        .sidebar-header h3 {
+            margin: 0;
+            font-size: 1.1rem;
+        }
+
+        .sidebar-menu {
+            padding: 20px 0;
+        }
+
+        .menu-section {
+            margin-bottom: 20px;
+        }
+
+        .menu-section-title {
+            padding: 10px 20px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: #888;
+            font-weight: 600;
+        }
+
+        .sidebar-menu ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 2px;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            background-color: rgba(var(--school-primary-rgb, 0, 86, 179), 0.2);
+            color: white;
+            border-left: 3px solid var(--school-primary, #0056b3);
+        }
+
+        .sidebar-menu i {
+            margin-right: 12px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: 250px;
+            width: calc(100% - 250px);
+        }
+
+        .top-header {
+            background-color: white;
+            padding: 15px 30px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-left h2 {
+            margin: 0;
+            color: #333;
+            font-size: 1.5rem;
+        }
+
+        .content-area {
+            padding: 30px;
+        }
+
+        .fee-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .fee-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .fee-card h3 {
+            margin: 0 0 10px;
+            color: #333;
+            font-size: 1.1rem;
+        }
+
+        .fee-amount {
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--school-primary, #0056b3);
+            margin-bottom: 15px;
+        }
+
+        .fee-details {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .fee-details li {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .fee-details li:last-child {
+            border-bottom: none;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            width: 100%;
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .btn-primary {
+            background-color: var(--school-primary, #0056b3);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--school-primary-dark, #003d82);
+        }
+
+        .data-table {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+
+        .table-header {
+            padding: 20px;
+            border-bottom: 2px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .table-header h3 {
+            margin: 0;
+            color: #333;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background-color: #f8f9fa;
+        }
+
+        th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .status-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .status-paid {
+            background-color: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+        }
+
+        .status-pending {
+            background-color: rgba(255, 193, 7, 0.1);
+            color: #ffc107;
+        }
+
+        .status-overdue {
+            background-color: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar"></aside>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Top Header -->
+            <div class="top-header">
+                <div class="header-left">
+                    <h2>Fee Management</h2>
+                </div>
+            </div>
+
+            <!-- Content Area -->
+            <div class="content-area">
+
+                <!-- Daily Rates Display -->
+                <div class="rate-card"
+                    style="background: white; padding: 20px; border-radius: 10px; margin-bottom: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-left: 5px solid #28a745;">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+                        <div>
+                            <h4 style="margin: 0 0 5px 0; font-size: 1.1rem; font-weight: 600; color: #333;">Today's
+                                Official Rates</h4>
+                            <div style="font-size: 0.85rem; color: #666;">Effective: <span
+                                     id="ratesDate">Loading...</span></div>
+                        </div>
+                        <div id="dailyRatesDisplay" style="display: flex; gap: 15px; flex-wrap: wrap;">
+                            <!-- Populated by JS -->
+                            <div
+                                style="background: #f8f9fa; padding: 8px 15px; border-radius: 6px; font-weight: 500; border: 1px solid #ddd;">
+                                Loading...</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Fee Cards -->
+                <div class="fee-cards" id="tieredFeeCards">
+                    <!-- Dynamic Tiered Cards -->
+                </div>
+
+                <!-- Pending Verifications -->
+                <div class="data-table" style="margin-bottom: 30px; border-left: 4px solid #ffc107;">
+                    <div class="table-header">
+                        <h3>Pending Receipt Verifications</h3>
+                    </div>
+                    <table id="pendingTable">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Type</th>
+                                <th>Amount</th>
+                                <th>Reference</th>
+                                <th>Date Uploaded</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pendingTableBody">
+                            <!-- Dynamic Content -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Recent Payments Table -->
+                <div class="data-table">
+                    <div class="table-header">
+                        <h3>Recent Payment Transactions</h3>
+                        <button class="btn btn-primary">View All Payments</button>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Transaction ID</th>
+                                <th>Student Name</th>
+                                <th>Class</th>
+                                <th>Amount</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>TXN-001234</td>
+                                <td>John Doe</td>
+                                <td>Form 4A</td>
+                                <td>$550</td>
+                                <td>Dec 10, 2025</td>
+                                <td><span class="status-badge status-paid">Paid</span></td>
+                            </tr>
+                            <tr>
+                                <td>TXN-001235</td>
+                                <td>Jane Smith</td>
+                                <td>Form 3B</td>
+                                <td>$550</td>
+                                <td>Dec 9, 2025</td>
+                                <td><span class="status-badge status-pending">Pending</span></td>
+                            </tr>
+                            <tr>
+                                <td>TXN-001236</td>
+                                <td>Michael Brown</td>
+                                <td>Form 2A</td>
+                                <td>$450</td>
+                                <td>Dec 8, 2025</td>
+                                <td><span class="status-badge status-overdue">Overdue</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Verification Modal -->
+    <div id="verificationModal"
+        style="display: none; position: fixed; z-index: 1001; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.5); backdrop-filter: blur(5px);">
+        <div
+            style="background-color: #fefefe; margin: 2% auto; padding: 0; border: none; width: 90%; max-width: 900px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); overflow: hidden; display: flex; flex-direction: column;">
+
+            <!-- Modal Header -->
+            <div
+                style="background: var(--school-primary-dark, #1a1a2e); color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center;">
+                <h3 style="margin: 0; font-size: 1.2rem;"><i class="fas fa-file-invoice-dollar"
+                        style="margin-right: 10px; color: #00d2d3;"></i> Verify Payment Receipt</h3>
+                <span style="color: #fff; font-size: 24px; cursor: pointer; opacity: 0.7; transition: opacity 0.3s;"
+                    onclick="closeModal()" onmouseover="this.style.opacity=1"
+                    onmouseout="this.style.opacity=0.7">&times;</span>
+            </div>
+
+            <!-- Modal Body (Split View) -->
+            <div style="display: flex; flex-wrap: wrap; height: 600px;">
+                <!-- Left: Payment Details -->
+                <div style="flex: 1; min-width: 300px; padding: 25px; border-right: 1px solid #eee; overflow-y: auto;">
+                    <h4
+                        style="margin-top: 0; color: var(--school-primary, #0056b3); border-bottom: 2px solid var(--school-primary, #0056b3); padding-bottom: 10px; display: inline-block;">
+                        Payment Details</h4>
+
+                    <div style="margin-top: 15px;">
+                        <p style="margin-bottom: 8px; color: #666; font-size: 0.9rem;">Student Name</p>
+                        <div id="vName" style="font-weight: 600; font-size: 1.1rem; color: #333;">-</div>
+                    </div>
+
+                    <div style="display: flex; gap: 20px; margin-top: 15px;">
+                        <div style="flex: 1;">
+                            <p style="margin-bottom: 8px; color: #666; font-size: 0.9rem;">Student ID</p>
+                            <div id="vStudentId"
+                                style="font-weight: 600; color: #333; background: #f8f9fa; padding: 5px 10px; border-radius: 4px; border: 1px solid #ddd;">
+                                -</div>
+                        </div>
+                        <div style="flex: 1;">
+                            <p style="margin-bottom: 8px; color: #666; font-size: 0.9rem;">Class / Grade</p>
+                            <div id="vClass" style="font-weight: 600; color: #333;">-</div>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 15px;">
+                        <p style="margin-bottom: 8px; color: #666; font-size: 0.9rem;">Term</p>
+                        <div id="vTerm" style="font-weight: 500; color: #555;">-</div>
+                    </div>
+
+                    <div style="background: #f0f4f8; padding: 15px; border-radius: 8px; margin-top: 20px;">
+                        <p style="margin-bottom: 8px; color: #666; font-size: 0.9rem;">Amount Claimed</p>
+                        <div id="vAmount" style="font-weight: 700; font-size: 1.3rem; color: #28a745;">-</div>
+                        <div id="vUSDEq" style="font-size: 0.85rem; color: #555; margin-top: 5px;"></div>
+                    </div>
+
+                    <div style="margin-top: 20px;">
+                        <p style="margin-bottom: 8px; color: #666; font-size: 0.9rem;">Reference Number / POP</p>
+                        <div id="vRef"
+                            style="font-family: monospace; letter-spacing: 1px; background: #eee; padding: 8px 12px; border-radius: 4px;">
+                            -</div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div style="margin-top: 30px; display: flex; gap: 15px; flex-direction: column;">
+                        <button onclick="approvePayment()" class="btn-primary"
+                            style="background: #28a745; width: 100%; padding: 12px; font-size: 1rem; margin-top: 0;">
+                            <i class="fas fa-check-circle" style="margin-right: 8px;"></i> Approve & Update Balance
+                        </button>
+                        <button onclick="rejectPayment()" class="btn-primary"
+                            style="background: #dc3545; width: 100%; padding: 12px; font-size: 1rem; margin-top: 0;">
+                            <i class="fas fa-times-circle" style="margin-right: 8px;"></i> Reject Receipt
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Right: Receipt Preview -->
+                <div style="flex: 1; min-width: 300px; background: #333; display: flex; flex-direction: column;">
+                    <div style="padding: 10px; background: #222; color: #aaa; font-size: 0.85rem; text-align: center;">
+                        Receipt Preview
+                    </div>
+                    <div id="receiptPreviewContainer"
+                        style="flex: 1; display: flex; justify-content: center; align-items: center; overflow: hidden; padding: 20px;">
+                        <span style="color: #666;">No preview available</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Fee Structure Modal -->
+    <div id="editFeeModal"
+        style="display: none; position: fixed; z-index: 1001; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.6);">
+        <div
+            style="background-color: white; margin: 2% auto; padding: 0; border: none; width: 90%; max-width: 650px; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
+            <div
+                style="background: var(--school-primary-dark, #1a1a2e); color: white; padding: 20px 25px; display: flex; justify-content: space-between; align-items: center;">
+                <h3 style="margin: 0; font-size: 1.25rem;">Edit Tiered Fee Structure</h3>
+                <span id="closeEditModalBtn" style="font-size: 24px; cursor: pointer; opacity: 0.8;"
+                    onclick="closeEditFeeModal()">&times;</span>
+            </div>
+
+            <div style="padding: 25px;">
+                <div style="display: flex; gap: 15px; margin-bottom: 20px;">
+                    <div style="flex: 1;">
+                        <label
+                            style="display: block; font-size: 0.85rem; color: #666; margin-bottom: 5px;">Level</label>
+                        <select id="editLevel" onchange="loadStructureToEditor()"
+                            style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ddd;">
+                            <option value="ZJC">ZJC (Form 1 - 2)</option>
+                            <option value="O-Level">O-Level (Form 3 - 4)</option>
+                            <option value="A-Level">A-Level (Lower 6 - Upper 6)</option>
+                        </select>
+                    </div>
+                    <div style="flex: 1;" id="editCombinationContainer">
+                        <label
+                            style="display: block; font-size: 0.85rem; color: #666; margin-bottom: 5px;">Category/Combination</label>
+                        <select id="editCombination" onchange="loadStructureToEditor()"
+                            style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ddd;">
+                            <option value="base">Base (All Students)</option>
+                            <option value="Sciences">Sciences</option>
+                            <option value="Commercials">Commercials</option>
+                            <option value="Arts">Arts</option>
+                        </select>
+                    </div>
+                </div>
+                <p style="margin-top: 0; color: #666; font-size: 0.9rem; margin-bottom: 20px;">Use this form to add,
+                    remove, or modify fee categories for the current term.</p>
+
+                <div
+                    style="max-height: 400px; overflow-y: auto; margin-bottom: 20px; border: 1px solid #eee; border-radius: 8px;">
+                    <table style="width: 100%; border-collapse: collapse; margin-bottom: 0;">
+                        <thead style="position: sticky; top: 0; background: #f8f9fa; z-index: 10;">
+                            <tr>
+                                <th style="padding: 12px 15px; font-size: 0.85rem;">Category Description</th>
+                                <th style="padding: 12px 15px; font-size: 0.85rem; width: 150px;">Amount ($)</th>
+                                <th style="padding: 12px 15px; font-size: 0.85rem; width: 50px; text-align: center;">
+                                    Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="feeStructureRows">
+                            <!-- Injected rows -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div
+                    style="display: flex; justify-content: space-between; align-items: center; background: #f0f4f8; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px;">
+                    <button type="button" class="btn btn-primary" onclick="addNewFeeRow()"
+                        style="width: auto; margin: 0; font-size: 0.85rem; background: #2c3e50;">
+                        <i class="fas fa-plus" style="margin-right: 8px;"></i> Add Category
+                    </button>
+                    <div style="text-align: right;">
+                        <span style="font-size: 0.9rem; color: #666;">Calculated Total:</span>
+                        <div id="modalCalculatedTotal" style="font-size: 1.5rem; font-weight: 700; color: var(--school-primary, #0056b3);">
+                            $520.00</div>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 12px;">
+                    <button class="btn btn-secondary" onclick="closeEditFeeModal()"
+                        style="flex: 1; margin: 0; background: #e9ecef; color: #333; border: 1px solid #ddd;">Cancel</button>
+                    <button class="btn btn-primary" onclick="saveFeeStructure()" style="flex: 2; margin: 0;">Save &
+                        Apply Structure</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../js/admin-common.js"></script>
+    <script src="../js/page-enhancer.js"></script>
+    <script src="../js/admin-sidebar.js"></script>
+    <script>
+        // --- Shared State & Initialization ---
+        let currentReceiptId = null;
+        let currentLevel = 'ZJC';
+        let currentCombination = 'base';
+        let activeStructures = {};
+        let currentEditingItems = [];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initFees();
+            loadPendingReceipts();
+            
+            // Sidebar Toggle
+            const menuToggle = document.getElementById('menuToggle');
+            const sidebar = document.getElementById('sidebar');
+            if (menuToggle && sidebar) {
+                menuToggle.addEventListener('click', () => sidebar.classList.toggle('active'));
+            }
+        });
+
+        // --- Fee Structure & Rates ---
+        function initFees() {
+            if (typeof FeesManager !== 'undefined') {
+                activeStructures = FeesManager.getStructures();
+                renderTieredCards();
+            }
+            initRateDisplay();
+        }
+
+        function initRateDisplay() {
+            const container = document.getElementById('dailyRatesDisplay');
+            const dateEl = document.getElementById('ratesDate');
+            if (!container || !dateEl || !window.FinancialConfig) return;
+
+            const rates = window.FinancialConfig.EXCHANGE_RATES;
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            dateEl.textContent = new Date().toLocaleDateString('en-US', options);
+
+            container.innerHTML = `
+                <div style="background: #e8f5e9; color: #2e7d32; padding: 8px 15px; border-radius: 6px; font-weight: 600; border: 1px solid #c8e6c9;">
+                    🇺🇸 USD 1.00 = 🇿🇼 ZiG ${window.FinancialConfig.format(rates.ZiG, 'ZiG')}
+                </div>
+                <div style="background: #e8f5e9; color: #2e7d32; padding: 8px 15px; border-radius: 6px; font-weight: 600; border: 1px solid #c8e6c9;">
+                    🇺🇸 USD 1.00 = 🇿🇦 ZAR ${window.FinancialConfig.format(rates.ZAR, 'ZAR')}
+                </div>
+            `;
+        }
+
+        function renderTieredCards() {
+            const container = document.getElementById('tieredFeeCards');
+            if (!container) return;
+            container.innerHTML = '';
+
+            const levels = ['ZJC', 'O-Level', 'A-Level'];
+            levels.forEach(level => {
+                const tier = activeStructures[level];
+                if (!tier) return;
+                const baseTotal = FeesManager.calculateTotal(tier.base);
+
+                const card = document.createElement('div');
+                card.className = 'fee-card';
+                card.style.cssText = 'border-top: 4px solid #0056b3;';
+
+                let combinationsSummary = '';
+                if (tier.combinations) {
+                    combinationsSummary = `
+                        <div style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed #eee;">
+                            <p style="font-size: 0.8rem; color: #888; margin-bottom: 10px;">Combination Extras:</p>
+                            <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                                ${Object.keys(tier.combinations).map(comb => {
+                                    const combTotal = FeesManager.calculateTotal(tier.combinations[comb]);
+                                    return `<span style="font-size:0.75rem; background:#f0f4f8; padding:4px 8px; border-radius:4px; color:#555;">${comb}: +$${combTotal.toFixed(2)}</span>`;
+                                }).join('')}
+                            </div>
+                        </div>
+                    `;
+                }
+
+                card.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                        <div>
+                            <h3 style="margin:0">${level}</h3>
+                            <p style="font-size:0.8rem; color:#666; margin:5px 0 15px;">${tier.description}</p>
+                        </div>
+                        <div style="text-align:right">
+                            <div style="font-size:1.5rem; font-weight:700; color:#0056b3;">$${baseTotal.toFixed(2)}</div>
+                            <span style="font-size:0.75rem; color:#888;">Base Total</span>
+                        </div>
+                    </div>
+                    ${combinationsSummary}
+                    <button class="btn btn-primary" onclick="openTierEdit('${level}')" style="margin-top:20px; font-size:0.85rem;">Manage Structure</button>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // --- Pending Verification Table ---
+        function loadPendingReceipts() {
+            const tbody = document.getElementById('pendingTableBody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+
+            const pending = getTenantData('pendingReceipts', []);
+
+            if (pending.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No pending verifications</td></tr>';
+                return;
+            }
+
+            pending.forEach(p => {
+                const date = new Date(p.date).toLocaleDateString();
+                const displayAmount = (p.currency && p.currency !== 'USD' && p.usdEquivalent)
+                    ? `${p.amount} ${p.currency} (≈ USD$${parseFloat(p.usdEquivalent).toFixed(2)})`
+                    : `USD$${parseFloat(p.amount).toFixed(2)}`;
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${p.name}</td>
+                    <td>${p.type}</td>
+                    <td>${displayAmount}</td>
+                    <td>${p.ref}</td>
+                    <td>${date}</td>
+                    <td>
+                        <button class="btn btn-primary" style="padding: 5px 10px; font-size: 0.8rem; width: auto; margin:0;" 
+                            onclick="openVerificationModal('${p.id}')">Verify</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // --- Verification Modal Logic ---
+        function openVerificationModal(id) {
+            const pending = getTenantData('pendingReceipts', []);
+            const receipt = pending.find(r => r.id == id);
+            if (!receipt) return;
+
+            currentReceiptId = id;
+            document.getElementById('vName').innerText = receipt.name;
+            document.getElementById('vStudentId').innerText = receipt.studentId || 'N/A';
+            document.getElementById('vClass').innerText = receipt.class || 'N/A';
+            document.getElementById('vTerm').innerText = receipt.term || 'N/A';
+
+            const displayAmt = receipt.currency && receipt.currency !== 'USD'
+                ? `${window.FinancialConfig.format(receipt.amount, receipt.currency)}`
+                : window.FinancialConfig.format(receipt.amount, 'USD');
+            document.getElementById('vAmount').innerText = displayAmt;
+
+            if (receipt.currency && receipt.currency !== 'USD') {
+                document.getElementById('vUSDEq').innerText = `(≈ ${window.FinancialConfig.format(receipt.usdEquivalent, 'USD')} USD)`;
+            } else {
+                document.getElementById('vUSDEq').innerText = '';
+            }
+
+            document.getElementById('vRef').innerText = receipt.ref;
+
+            const previewContainer = document.getElementById('receiptPreviewContainer');
+            if (receipt.receiptImage) {
+                if (receipt.receiptImage.startsWith('data:application/pdf')) {
+                    previewContainer.innerHTML = `<embed src="${receipt.receiptImage}" type="application/pdf" width="100%" height="100%" />`;
+                } else {
+                    previewContainer.innerHTML = `<img src="${receipt.receiptImage}" style="max-width: 100%; max-height: 100%; object-fit: contain;">`;
+                }
+            } else {
+                previewContainer.innerHTML = `
+                    <div style="text-align: center; color: #888;">
+                        <i class="fas fa-file-invoice-dollar" style="font-size: 48px; margin-bottom: 10px; opacity: 0.5;"></i>
+                        <p>No preview file uploaded.</p>
+                        <p style="font-size: 0.8rem;">Verify using Reference Number: <strong>${receipt.ref}</strong></p>
+                    </div>
+                `;
+            }
+
+            document.getElementById('verificationModal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('verificationModal').style.display = 'none';
+            currentReceiptId = null;
+        }
+
+        window.onclick = function (event) {
+            const modal = document.getElementById('verificationModal');
+            if (event.target == modal) closeModal();
+        }
+
+        function approvePayment() {
+            if (!currentReceiptId) return;
+
+            let pending = getTenantData('pendingReceipts', []);
+            const receiptIndex = pending.findIndex(r => r.id == currentReceiptId);
+            if (receiptIndex === -1) return;
+            const receipt = pending[receiptIndex];
+
+            if (receipt.type === 'Student' && receipt.studentId) {
+                const students = getTenantData('school_students', []);
+                const studentIndex = students.findIndex(s => s.studentId === receipt.studentId);
+
+                if (studentIndex !== -1) {
+                    const currentBal = parseFloat(students[studentIndex].currentBalance) || 0;
+                    const paidAmtUSD = parseFloat(receipt.usdEquivalent || receipt.amount);
+                    const newBal = currentBal - paidAmtUSD;
+
+                    students[studentIndex].currentBalance = newBal.toFixed(2);
+                    saveTenantData('school_students', students);
+
+                    const activeStudent = getTenantData('student', null);
+                    if (activeStudent && (activeStudent.studentId === receipt.studentId || activeStudent.id === receipt.studentId)) {
+                        activeStudent.currentBalance = newBal.toFixed(2);
+                        saveTenantData('student', activeStudent);
+                        saveTenantData('studentBalance', newBal.toFixed(2));
+                    }
+                    alert(`Approved! ${receipt.name}'s balance updated.`);
+                } else {
+                    alert("Student record not found. Payment approved but balance not auto-updated.");
+                }
+            } else if (receipt.type === 'Alumni') {
+                let statusMap = getTenantData('alumniFeeStatus', {});
+                if (receipt.amount == 75) statusMap['Reunion Event Fee'] = 'paid';
+                if (receipt.amount == 50) statusMap['Alumni Association Membership'] = 'paid';
+                saveTenantData('alumniFeeStatus', statusMap);
+                alert(`Alumni payment verified.`);
+            }
+
+            pending.splice(receiptIndex, 1);
+            saveTenantData('pendingReceipts', pending);
+            closeModal();
+            loadPendingReceipts();
+        }
+
+        function rejectPayment() {
+            if (!currentReceiptId) return;
+            let pending = getTenantData('pendingReceipts', []);
+            const receiptIndex = pending.findIndex(r => r.id == currentReceiptId);
+            if (receiptIndex !== -1) {
+                pending.splice(receiptIndex, 1);
+                saveTenantData('pendingReceipts', pending);
+            }
+            alert('Payment rejected.');
+            closeModal();
+            loadPendingReceipts();
+        }
+
+        // --- Fee Structure Editor Logic ---
+        function openTierEdit(level) {
+            currentLevel = level;
+            document.getElementById('editLevel').value = level;
+            const comboContainer = document.getElementById('editCombinationContainer');
+            if (level === 'ZJC') {
+                comboContainer.style.opacity = '0.5';
+                comboContainer.style.pointerEvents = 'none';
+                currentCombination = 'base';
+                document.getElementById('editCombination').value = 'base';
+            } else {
+                comboContainer.style.opacity = '1';
+                comboContainer.style.pointerEvents = 'auto';
+            }
+            loadStructureToEditor();
+            document.getElementById('editFeeModal').style.display = 'block';
+        }
+
+        function loadStructureToEditor() {
+            currentLevel = document.getElementById('editLevel').value;
+            currentCombination = document.getElementById('editCombination').value;
+            const comboContainer = document.getElementById('editCombinationContainer');
+            if (currentLevel === 'ZJC') {
+                comboContainer.style.opacity = '0.5';
+                comboContainer.style.pointerEvents = 'none';
+                currentCombination = 'base';
+            } else {
+                comboContainer.style.opacity = '1';
+                comboContainer.style.pointerEvents = 'auto';
+            }
+
+            const tier = activeStructures[currentLevel];
+            let list = (currentCombination === 'base') ? tier.base : (tier.combinations[currentCombination] || []);
+            currentEditingItems = JSON.parse(JSON.stringify(list));
+            renderEditorRows();
+        }
+
+        function renderEditorRows() {
+            const tbody = document.getElementById('feeStructureRows');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+            let total = 0;
+            currentEditingItems.forEach((item, index) => {
+                total += parseFloat(item.amount || 0);
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="padding: 10px 15px; border-bottom: 1px solid #eee;">
+                        <input type="text" value="${item.desc}" onchange="updateRowItem(${index}, 'desc', this.value)" 
+                            style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                    </td>
+                    <td style="padding: 10px 15px; border-bottom: 1px solid #eee;">
+                        <input type="number" step="0.01" value="${item.amount}" oninput="updateRowItem(${index}, 'amount', this.value)"
+                            style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                    </td>
+                    <td style="padding: 10px 15px; border-bottom: 1px solid #eee; text-align: center;">
+                        <button onclick="removeEditorRow(${index})" style="background: none; border: none; color: #dc3545; cursor: pointer;">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+            document.getElementById('modalCalculatedTotal').textContent = '$' + total.toFixed(2);
+        }
+
+        function updateRowItem(index, field, value) {
+            if (field === 'amount') {
+                currentEditingItems[index][field] = value === '' ? 0 : parseFloat(value);
+                const total = currentEditingItems.reduce((sum, item) => sum + parseFloat(item.amount || 0), 0);
+                document.getElementById('modalCalculatedTotal').textContent = '$' + total.toFixed(2);
+            } else {
+                currentEditingItems[index][field] = value;
+            }
+        }
+
+        function addNewFeeRow() {
+            currentEditingItems.push({ desc: "New Item", amount: 0 });
+            renderEditorRows();
+        }
+
+        function removeEditorRow(index) {
+            currentEditingItems.splice(index, 1);
+            renderEditorRows();
+        }
+
+        function saveFeeStructure() {
+            const level = document.getElementById('editLevel').value;
+            const comb = document.getElementById('editCombination').value;
+
+            if (comb === 'base') {
+                activeStructures[level].base = currentEditingItems;
+            } else {
+                if (!activeStructures[level].combinations) activeStructures[level].combinations = {};
+                activeStructures[level].combinations[comb] = currentEditingItems;
+            }
+
+            FeesManager.saveStructures(activeStructures);
+            renderTieredCards();
+            closeEditFeeModal();
+            alert('Fee structure updated successfully.');
+        }
+
+        function closeEditFeeModal() {
+            document.getElementById('editFeeModal').style.display = 'none';
+        }
+    </script>
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+</body>
+
+</html>
+

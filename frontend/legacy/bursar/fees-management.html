@@ -1,0 +1,1308 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fee Management - Bursar Portal</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/ancillary-portal.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <script src="../js/audit-logger.js"></script>
+    <script src="../js/financial-config.js"></script>
+    <script src="../js/fees-manager.js"></script>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+
+        .admin-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 260px;
+            background-color: var(--school-primary-dark, var(--school-primary-dark, #1a1a2e));
+            color: white;
+            position: fixed;
+            height: 100%;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+
+        .sidebar-header img {
+            width: 50px;
+            margin-bottom: 10px;
+        }
+
+        .sidebar-header h3 {
+            margin: 0;
+            font-size: 1.1rem;
+        }
+
+        .sidebar-menu {
+            padding: 20px 0;
+        }
+
+        .menu-section {
+            margin-bottom: 20px;
+        }
+
+        .menu-section-title {
+            padding: 10px 20px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: #888;
+            font-weight: 600;
+        }
+
+        .sidebar-menu ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 2px;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            background-color: rgba(var(--school-primary-rgb, 0, 86, 179), 0.2);
+            color: white;
+            border-left: 3px solid var(--school-primary, var(--school-primary, #0056b3));
+        }
+
+        .sidebar-menu i {
+            margin-right: 12px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: 260px;
+            width: calc(100% - 260px);
+        }
+
+        .top-header {
+            background-color: white;
+            padding: 15px 30px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-left h2 {
+            margin: 0;
+            color: #333;
+            font-size: 1.5rem;
+        }
+
+        .content-area {
+            padding: 30px;
+        }
+
+        .fee-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .fee-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .fee-card h3 {
+            margin: 0 0 10px;
+            color: #333;
+            font-size: 1.1rem;
+        }
+
+        .fee-amount {
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--school-primary, var(--school-primary, #0056b3));
+            margin-bottom: 15px;
+        }
+
+        .fee-details {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .fee-details li {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .fee-details li:last-child {
+            border-bottom: none;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            width: 100%;
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .btn-primary {
+            background-color: var(--school-primary, var(--school-primary, #0056b3));
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--school-primary-dark, var(--school-primary-dark, #003d82));
+        }
+
+        .data-table {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+
+        .table-header {
+            padding: 20px;
+            border-bottom: 2px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .table-header h3 {
+            margin: 0;
+            color: #333;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background-color: #f8f9fa;
+        }
+
+        th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .status-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .status-paid {
+            background-color: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+        }
+
+        .status-pending {
+            background-color: rgba(255, 193, 7, 0.1);
+            color: #ffc107;
+        }
+
+        .status-overdue {
+            background-color: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin-container">
+        <!-- Sidebar (Bursar) -->
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-menu">
+                <div class="sidebar-section-title">Bursar System</div>
+                <ul>
+                    <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i>
+                            <span>Dashboard</span></a></li>
+                    <li><a href="fees-management.html" class="active"><i class="fas fa-money-bill-wave"></i> <span>Fees
+                                Management</span></a></li>
+                    <li><a href="payments.html"><i class="fas fa-credit-card"></i> <span>Payments</span></a></li>
+                    <li><a href="expenses.html"><i class="fas fa-file-invoice-dollar"></i> <span>Expenses</span></a>
+                    </li>
+                    <li><a href="payroll.html"><i class="fas fa-users-cog"></i> <span>Payroll</span></a></li>
+                    <li><a href="tuckshop.html"><i class="fas fa-store"></i> <span>Tuckshop</span></a></li>
+                    <li><a href="reports.html"><i class="fas fa-chart-pie"></i> <span>Reports</span></a></li>
+                </ul>
+
+                <div class="sidebar-section-title">Operations</div>
+                <ul>
+                    <li><a href="staff-directory.html"><i class="fas fa-users"></i> <span>Staff Directory</span></a>
+                    </li>
+                    <li><a href="procurement.html"><i class="fas fa-shopping-cart"></i> <span>Procurement</span></a>
+                    </li>
+                    <li><a href="assets.html"><i class="fas fa-boxes"></i> <span>Asset Management</span></a></li>
+                    <li><a href="schedules.html"><i class="fas fa-calendar-check"></i> <span>Schedules &
+                                Shifts</span></a></li>
+                </ul>
+
+                <div class="sidebar-section-title">Staff HR & Support</div>
+                <ul>
+                    <li><a href="sdc-portal.html"><i class="fas fa-file-invoice-dollar"></i> <span>SDC Staff
+                                Portal</span></a></li>
+                    <li><a href="hr-services.html"><i class="fas fa-user-shield"></i> <span>HR Services</span></a></li>
+                    <li><a href="profile-settings.html"><i class="fas fa-id-card"></i> <span>My Profile</span></a></li>
+                    <li><a href="resources.html"><i class="fas fa-folder-open"></i> <span>Resources & Docs</span></a>
+                    </li>
+                    <li><a href="it-support.html"><i class="fas fa-headset"></i> <span>IT Support</span></a></li>
+                </ul>
+
+                <div class="sidebar-section-title">Communication</div>
+                <ul>
+                    <li><a href="news.html"><i class="fas fa-newspaper"></i> <span>News & Updates</span></a></li>
+                    <li><a href="contact.html"><i class="fas fa-address-book"></i> <span>Contact Us</span></a></li>
+                    <li><a href="settings.html"><i class="fas fa-cog"></i> <span>Settings</span></a></li>
+                </ul>
+            </div>
+            <div class="sidebar-footer">
+                <a href="login.html"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a>
+            </div>
+        </aside>
+
+        <!-- Main Content (From Admin Fees) -->
+        <div class="main-content">
+            <!-- Top Header -->
+            <div class="top-header">
+                <div class="header-left">
+                    <h2>Fee Management</h2>
+                </div>
+            </div>
+
+            <!-- Content Area -->
+            <div class="content-area">
+
+                <!-- Exchange Rate Management -->
+                <div class="rate-management-card"
+                    style="background: white; padding: 20px; border-radius: 10px; margin-bottom: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border-left: 5px solid var(--school-primary, var(--school-primary, #0056b3)); display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 20px;">
+                    <div>
+                        <h3 style="margin: 0; color: #2c3e50; font-size: 1.2rem;">Daily Exchange Rates</h3>
+                        <p style="margin: 5px 0 0; color: #666; font-size: 0.9rem;">Set the official bank rates for
+                            today (<span id="customRateDate">...</span>)</p>
+                    </div>
+                    <div style="display: flex; gap: 20px; align-items: flex-end; flex-wrap: wrap;">
+                        <div class="rate-input-group">
+                            <label
+                                style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 5px; color: #555;">USD
+                                to ZiG</label>
+                            <div
+                                style="display: flex; align-items: center; background: #f8f9fa; border: 1px solid #ddd; border-radius: 4px; padding: 5px 10px;">
+                                <span style="font-weight: 600; color: #555; margin-right: 10px; font-size: 0.9rem;">1
+                                    USD =</span>
+                                <input type="number" id="inputRateZiG" step="0.01"
+                                    style="border: none; background: transparent; width: 70px; font-weight: bold; font-size: 1.1rem; color: var(--school-primary, var(--school-primary, #0056b3));">
+                                <span style="color: #888; margin-left: 5px; font-weight: 500;">ZiG</span>
+                            </div>
+                        </div>
+                        <div class="rate-input-group">
+                            <label
+                                style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 5px; color: #555;">USD
+                                to ZAR</label>
+                            <div
+                                style="display: flex; align-items: center; background: #f8f9fa; border: 1px solid #ddd; border-radius: 4px; padding: 5px 10px;">
+                                <span style="font-weight: 600; color: #555; margin-right: 10px; font-size: 0.9rem;">1
+                                    USD =</span>
+                                <input type="number" id="inputRateZAR" step="0.01"
+                                    style="border: none; background: transparent; width: 70px; font-weight: bold; font-size: 1.1rem; color: var(--school-primary, var(--school-primary, #0056b3));">
+                                <span style="color: #888; margin-left: 5px; font-weight: 500;">ZAR</span>
+                            </div>
+                        </div>
+                        <button onclick="saveDailyRates()" class="btn-primary"
+                            style="width: auto; padding: 0 25px; height: 42px; margin-top: 0; display: flex; align-items: center; gap: 8px;">
+                            <i class="fas fa-save"></i> Update Rates
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Fee Cards -->
+                <div class="fee-cards" id="tieredFeeCards">
+                    <!-- Dynamic Tiered Cards -->
+                </div>
+
+                <!-- Pending Verifications -->
+                <div class="data-table" style="margin-bottom: 30px; border-left: 4px solid #ffc107;">
+                    <div class="table-header">
+                        <h3>Pending Receipt Verifications</h3>
+                    </div>
+                    <table id="pendingTable">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Type</th>
+                                <th>Amount</th>
+                                <th>Reference</th>
+                                <th>Date Uploaded</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pendingTableBody">
+                            <!-- Dynamic Content -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Recent Payments Table ... (unchanged) ... -->
+                <!-- ... -->
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Verification Modal -->
+    <div id="verificationModal"
+        style="display: none; position: fixed; z-index: 1001; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.5); backdrop-filter: blur(5px);">
+        <div
+            style="background-color: #fefefe; margin: 10px auto; padding: 0; border: none; width: 95%; max-width: 1100px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); overflow: hidden; display: flex; flex-direction: column; position: relative;">
+
+            <!-- Modal Header -->
+            <div
+                style="background: var(--school-primary-dark, var(--school-primary-dark, #1a1a2e)); color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center;">
+                <h3 style="margin: 0; font-size: 1.2rem;"><i class="fas fa-file-invoice-dollar"
+                        style="margin-right: 10px; color: #00d2d3;"></i> Verify Payment Receipt</h3>
+                <span style="color: #fff; font-size: 24px; cursor: pointer; opacity: 0.7; transition: opacity 0.3s;"
+                    onclick="closeModal()" onmouseover="this.style.opacity=1"
+                    onmouseout="this.style.opacity=0.7">&times;</span>
+            </div>
+
+            <!-- Modal Body (Split View) -->
+            <div style="display: flex; flex-wrap: wrap; height: auto; max-height: 85vh; overflow-y: auto;">
+                <!-- Left: Payment Details -->
+                <div style="flex: 1; min-width: 400px; padding: 25px; border-right: 1px solid #eee;">
+                    <h4
+                        style="margin-top: 0; color: var(--school-primary, var(--school-primary, #0056b3)); border-bottom: 2px solid var(--school-primary, var(--school-primary, #0056b3)); padding-bottom: 10px; display: inline-block;">
+                        Payment Details</h4>
+
+                    <div style="margin-top: 15px;">
+                        <p style="margin-bottom: 8px; color: #666; font-size: 0.9rem;">Student Name</p>
+                        <div id="vName" style="font-weight: 600; font-size: 1.1rem; color: #333;">-</div>
+                    </div>
+
+                    <div style="display: flex; gap: 20px; margin-top: 15px;">
+                        <div style="flex: 1;">
+                            <p style="margin-bottom: 8px; color: #666; font-size: 0.9rem;">Student ID</p>
+                            <div id="vStudentId"
+                                style="font-weight: 600; color: #333; background: #f8f9fa; padding: 5px 10px; border-radius: 4px; border: 1px solid #ddd;">
+                                -</div>
+                        </div>
+                        <div style="flex: 1;">
+                            <p style="margin-bottom: 8px; color: #666; font-size: 0.9rem;">Class / Grade</p>
+                            <div id="vClass" style="font-weight: 600; color: #333;">-</div>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 15px;">
+                        <p style="margin-bottom: 8px; color: #666; font-size: 0.9rem;">Term</p>
+                        <div id="vTerm" style="font-weight: 500; color: #555;">-</div>
+                    </div>
+
+                    <div style="background: #f0f4f8; padding: 15px; border-radius: 8px; margin-top: 20px;">
+                        <p style="margin-bottom: 8px; color: #666; font-size: 0.9rem;">Amount Claimed</p>
+                        <div id="vAmount" style="font-weight: 700; font-size: 1.3rem; color: #28a745;">-</div>
+                        <div id="vUSDEq" style="font-size: 0.85rem; color: #555; margin-top: 5px;"></div>
+                    </div>
+
+                    <div style="margin-top: 20px;">
+                        <p style="margin-bottom: 8px; color: #666; font-size: 0.9rem;">Reference Number / POP</p>
+                        <div id="vRef"
+                            style="font-family: monospace; letter-spacing: 1px; background: #eee; padding: 8px 12px; border-radius: 4px;">
+                            -</div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div style="margin-top: 30px; display: flex; gap: 15px; flex-direction: column;">
+                        <button onclick="approvePayment()" class="btn-primary"
+                            style="background: #28a745; width: 100%; padding: 12px; font-size: 1rem; margin-top: 0;">
+                            <i class="fas fa-check-circle" style="margin-right: 8px;"></i> Approve & Update Balance
+                        </button>
+                        <button onclick="rejectPayment()" class="btn-primary"
+                            style="background: #dc3545; width: 100%; padding: 12px; font-size: 1rem; margin-top: 0;">
+                            <i class="fas fa-times-circle" style="margin-right: 8px;"></i> Reject Receipt
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Right: Receipt Preview -->
+                <div
+                    style="flex: 1; min-width: 400px; background: #333; display: flex; flex-direction: column; min-height: 500px;">
+                    <div style="padding: 10px; background: #222; color: #aaa; font-size: 0.85rem; text-align: center;">
+                        Receipt Preview
+                    </div>
+                    <div id="receiptPreviewContainer"
+                        style="flex: 1; display: flex; justify-content: center; align-items: center; overflow: hidden; padding: 20px;">
+                        <span style="color: #666;">No preview available</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentReceiptId = null;
+
+        document.addEventListener('DOMContentLoaded', loadPendingReceipts);
+
+        function loadPendingReceipts() {
+            const tbody = document.getElementById('pendingTableBody');
+            tbody.innerHTML = '';
+
+            const pending = JSON.parse(getTenantData('pendingReceipts', 'null')) || [];
+
+            if (pending.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No pending verifications</td></tr>';
+                return;
+            }
+
+            pending.forEach(p => {
+                const date = new Date(p.date).toLocaleDateString();
+                const displayCurrency = p.currency || 'USD';
+                const displayAmount = p.currency && p.currency !== 'USD'
+                    ? `${p.amount} ${p.currency} (USD$${parseFloat(p.usdEquivalent).toFixed(2)})`
+                    : `USD$${parseFloat(p.amount).toFixed(2)}`;
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${p.name}</td>
+                    <td>${p.type}</td>
+                    <td>${displayAmount}</td>
+                    <td>${p.ref}</td>
+                    <td>${date}</td>
+                    <td>
+                        <button class="btn btn-primary" style="padding: 5px 10px; font-size: 0.8rem; width: auto; margin:0;" 
+                            onclick="openVerificationModal('${p.id}')">Verify</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function openVerificationModal(id) {
+            const pending = JSON.parse(getTenantData('pendingReceipts', 'null')) || [];
+            const receipt = pending.find(r => r.id == id);
+
+            if (!receipt) return;
+
+            currentReceiptId = id;
+            document.getElementById('vName').innerText = receipt.name;
+            // document.getElementById('vType').innerText = receipt.type; // Removed type, focused on details
+
+            document.getElementById('vStudentId').innerText = receipt.studentId || 'N/A';
+            document.getElementById('vClass').innerText = receipt.class || 'N/A';
+            document.getElementById('vTerm').innerText = receipt.term || 'N/A';
+
+            console.log('[DEBUG] Opening verification modal for receipt:', {
+                id: receipt.id,
+                name: receipt.name,
+                hasReceiptImage: !!receipt.receiptImage,
+                receiptImageLength: receipt.receiptImage ? receipt.receiptImage.length : 0,
+                receiptImagePreview: receipt.receiptImage ? receipt.receiptImage.substring(0, 50) : 'null'
+            });
+
+            const displayAmt = receipt.currency && receipt.currency !== 'USD'
+                ? `${window.FinancialConfig.format(receipt.amount, receipt.currency)}`
+                : window.FinancialConfig.format(receipt.amount, 'USD');
+
+            document.getElementById('vAmount').innerText = displayAmt;
+
+            if (receipt.currency && receipt.currency !== 'USD') {
+                document.getElementById('vUSDEq').innerText = `(≈ ${window.FinancialConfig.format(receipt.usdEquivalent, 'USD')} USD)`;
+            } else {
+                document.getElementById('vUSDEq').innerText = '';
+            }
+
+            document.getElementById('vRef').innerText = receipt.ref;
+
+            // Handle Receipt Preview
+            const previewContainer = document.getElementById('receiptPreviewContainer');
+            if (receipt.receiptImage) {
+                console.log('[DEBUG] Receipt has image, displaying preview');
+                if (receipt.receiptImage.startsWith('data:application/pdf')) {
+                    console.log('[DEBUG] Detected PDF format');
+                    previewContainer.innerHTML = `<embed src="${receipt.receiptImage}" type="application/pdf" width="100%" height="100%" />`;
+                } else {
+                    console.log('[DEBUG] Detected image format');
+                    previewContainer.innerHTML = `<img src="${receipt.receiptImage}" style="max-width: 100%; max-height: 100%; object-fit: contain;">`;
+                }
+            } else {
+                console.log('[DEBUG] No receipt image found, showing placeholder');
+                previewContainer.innerHTML = `
+                    <div style="text-align: center; color: #888;">
+                        <i class="fas fa-file-invoice-dollar" style="font-size: 48px; margin-bottom: 10px; opacity: 0.5;"></i>
+                        <p>No preview file uploaded.</p>
+                        <p style="font-size: 0.8rem;">Verify using Reference Number: <strong>${receipt.ref}</strong></p>
+                    </div>
+                `;
+            }
+
+            document.getElementById('verificationModal').style.display = 'block';
+        }
+
+
+        function approvePayment() {
+            if (!currentReceiptId) return;
+
+            let pending = JSON.parse(getTenantData('pendingReceipts', 'null')) || [];
+            const receiptIndex = pending.findIndex(r => r.id == currentReceiptId);
+
+            if (receiptIndex === -1) return;
+            const receipt = pending[receiptIndex];
+
+            // 1. Update Balance Logic
+            if (receipt.type === 'Student' && receipt.studentId) {
+                // Find strict student match
+                let students = JSON.parse(getTenantData('students', 'null')) || [];
+                let studentIndex = students.findIndex(s => s.studentId === receipt.studentId);
+
+                if (studentIndex !== -1) {
+                    let currentBal = parseFloat(students[studentIndex].currentBalance) || 0;
+                    let paidAmtUSD = parseFloat(receipt.usdEquivalent || receipt.amount);
+                    let newBal = currentBal - paidAmtUSD;
+
+                    // Update Student specific record
+                    students[studentIndex].currentBalance = newBal.toFixed(2);
+                    saveTenantData('students', students);
+
+                    // If it's the *currently logged in* student (edge case testing), updating 'studentBalance' key too for legacy support
+                    // But preferably we rely on 'students' array as source of truth. 
+                    // However, existing fees.js might look at 'studentBalance' simple key for demo. 
+                    // Let's update the specific object AND the legacy key if simple demo mode.
+                    if (!receipt.studentId.includes('demo') || true) {
+                        // Check if this student is the active one in localStorage 'student' (legacy)
+                        let activeStudent = JSON.parse(getTenantData('student', 'null'));
+                        if (activeStudent && activeStudent.studentId === receipt.studentId) {
+                            activeStudent.currentBalance = newBal.toFixed(2);
+                            saveTenantData('student', activeStudent);
+                            saveTenantData('studentBalance', newBal.toFixed(2));
+                        }
+                    }
+
+                    if (typeof showSuccessMessage === 'function') showSuccessMessage(`Approved! ${receipt.name}'s balance updated. New: $${newBal.toFixed(2)}`);
+                    else alert(`Approved! ${receipt.name}'s balance updated.`);
+
+                } else {
+                    alert("Student record not found. Payment approved but balance not auto-updated (check Student ID).");
+                }
+            } else if (receipt.type === 'Student') {
+                // Fallback for legacy receipts without studentId
+                let currentBal = parseFloat(getTenantData('studentBalance', 'null')) || 0;
+                let paidAmtUSD = parseFloat(receipt.usdEquivalent || receipt.amount);
+                let newBal = currentBal - paidAmtUSD;
+                saveTenantData('studentBalance', newBal.toFixed(2));
+                showSuccessMessage(`Student balance updated (Legacy Mode). New Balance: $${newBal.toFixed(2)} USD`);
+            } else if (receipt.type === 'Alumni') {
+                // For alumni, we mark the fee as paid in a map, or just generally "paid"
+                // Ideally we'd map receipts to specific fee IDs. For now, let's assume it pays "Reunion Event Fee" by default if amount matches, or just generic.
+                let statusMap = JSON.parse(getTenantData('alumniFeeStatus', 'null')) || {};
+
+                // Simple logic: if 75, pay reunion. if 50, pay membership.
+                if (receipt.amount == 75) statusMap['Reunion Event Fee'] = 'paid';
+                if (receipt.amount == 50) statusMap['Alumni Association Membership'] = 'paid';
+
+                saveTenantData('alumniFeeStatus', statusMap);
+                showSuccessMessage(`Alumni payment verified. Fee status updated to Paid.`);
+            } else if (receipt.type === 'Applicant') {
+                // Update Applicant record
+                const applicantId = receipt.applicantId;
+
+                // Check A-Level
+                let aLevelApps = JSON.parse(getTenantData('aLevelApplications', 'null')) || [];
+                const aIdx = aLevelApps.findIndex(a => (a.applicationId === applicantId || a.id === applicantId));
+
+                if (aIdx !== -1) {
+                    if (!aLevelApps[aIdx].payments) aLevelApps[aIdx].payments = [];
+                    aLevelApps[aIdx].payments.push({
+                        date: receipt.date,
+                        description: 'Application/Initial Fee',
+                        amount: parseFloat(receipt.amount),
+                        method: 'Bank Deposit',
+                        status: 'Paid'
+                    });
+                    saveTenantData('aLevelApplications', aLevelApps);
+                } else {
+                    // Check School Apps (Form 1)
+                    let schoolApps = JSON.parse(getTenantData('school_applications', 'null')) || [];
+                    const sIdx = schoolApps.findIndex(a => (a.applicationId === applicantId || a.id === applicantId));
+                    if (sIdx !== -1) {
+                        if (!schoolApps[sIdx].payments) schoolApps[sIdx].payments = [];
+                        schoolApps[sIdx].payments.push({
+                            date: receipt.date,
+                            description: 'Application/Initial Fee',
+                            amount: parseFloat(receipt.amount),
+                            method: 'Bank Deposit',
+                            status: 'Paid'
+                        });
+                        saveTenantData('school_applications', schoolApps);
+                    }
+                }
+
+                showSuccessMessage('Applicant payment verified.');
+            }
+
+            if (typeof AuditLogger !== 'undefined') {
+                AuditLogger.log('Payment Approved', `Approved ${receipt.amount} payment for ${receipt.name} (${receipt.type})`, AuditLogger.SEVERITY.INFO, AuditLogger.PORTAL.BURSAR, 'Finance');
+            }
+
+            // 2. Remove from pending
+            pending.splice(receiptIndex, 1);
+            saveTenantData('pendingReceipts', pending);
+
+            closeModal();
+            loadPendingReceipts();
+        }
+
+        function rejectPayment() {
+            if (!currentReceiptId) return;
+            // Just remove it for now, or move to 'rejected' list
+            let pending = JSON.parse(getTenantData('pendingReceipts', 'null')) || [];
+            pending = pending.filter(r => r.id != currentReceiptId);
+            saveTenantData('pendingReceipts', pending); // Remove it
+
+            if (typeof AuditLogger !== 'undefined') {
+                // Find the receipt before removing it from pending if needed, but it's already removed in the next step
+                AuditLogger.log('Payment Rejected', `Rejected payment for receipt ID ${currentReceiptId}`, AuditLogger.SEVERITY.WARNING, AuditLogger.PORTAL.BURSAR, 'Finance');
+            }
+            showSuccessMessage('Payment rejected.');
+            closeModal();
+            loadPendingReceipts();
+        }
+
+        function closeModal() {
+            document.getElementById('verificationModal').style.display = 'none';
+            currentReceiptId = null;
+        }
+
+        window.onclick = function (event) {
+            if (event.target == document.getElementById('verificationModal')) {
+                closeModal();
+            }
+        }
+    </script>
+
+    <!-- Edit Fee Structure Modal -->
+    <div id="editFeeModal"
+        style="display: none; position: fixed; z-index: 1001; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.6);">
+        <div
+            style="background-color: white; margin: 2% auto; padding: 0; border: none; width: 90%; max-width: 650px; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
+            <div
+                style="background: var(--school-primary-dark, var(--school-primary-dark, #1a1a2e)); color: white; padding: 20px 25px; display: flex; justify-content: space-between; align-items: center;">
+                <h3 style="margin: 0; font-size: 1.25rem;">Edit Tiered Fee Structure</h3>
+                <span style="font-size: 24px; cursor: pointer; opacity: 0.8;"
+                    onclick="closeEditFeeModal()">&times;</span>
+            </div>
+
+            <div style="padding: 25px;">
+                <div style="display: flex; gap: 15px; margin-bottom: 20px;">
+                    <div style="flex: 1;">
+                        <label
+                            style="display: block; font-size: 0.85rem; color: #666; margin-bottom: 5px;">Level</label>
+                        <select id="editLevel" onchange="loadStructureToEditor()"
+                            style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ddd;">
+                            <option value="ZJC">ZJC (Form 1 - 2)</option>
+                            <option value="O-Level">O-Level (Form 3 - 4)</option>
+                            <option value="A-Level">A-Level (Lower 6 - Upper 6)</option>
+                        </select>
+                    </div>
+                    <div style="flex: 1;" id="editCombinationContainer">
+                        <label
+                            style="display: block; font-size: 0.85rem; color: #666; margin-bottom: 5px;">Category/Combination</label>
+                        <select id="editCombination" onchange="loadStructureToEditor()"
+                            style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ddd;">
+                            <option value="base">Base (All Students)</option>
+                            <option value="Sciences">Sciences</option>
+                            <option value="Commercials">Commercials</option>
+                            <option value="Arts">Arts</option>
+                        </select>
+                    </div>
+                </div>
+                <p style="margin-top: 0; color: #666; font-size: 0.9rem; margin-bottom: 20px;">Use this form to add,
+                    remove, or modify fee categories for the current term.</p>
+
+                <div
+                    style="max-height: 400px; overflow-y: auto; margin-bottom: 20px; border: 1px solid #eee; border-radius: 8px;">
+                    <table style="width: 100%; border-collapse: collapse; margin-bottom: 0;">
+                        <thead style="position: sticky; top: 0; background: #f8f9fa; z-index: 10;">
+                            <tr>
+                                <th style="padding: 12px 15px; font-size: 0.85rem;">Category Description</th>
+                                <th style="padding: 12px 15px; font-size: 0.85rem; width: 150px;">Amount ($)</th>
+                                <th style="padding: 12px 15px; font-size: 0.85rem; width: 50px; text-align: center;">
+                                    Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="feeStructureRows">
+                            <!-- Injected rows -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div
+                    style="display: flex; justify-content: space-between; align-items: center; background: #f0f4f8; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px;">
+                    <button type="button" class="btn btn-primary" onclick="addNewFeeRow()"
+                        style="width: auto; margin: 0; font-size: 0.85rem; background: #2c3e50;">
+                        <i class="fas fa-plus" style="margin-right: 8px;"></i> Add Category
+                    </button>
+                    <div style="text-align: right;">
+                        <span style="font-size: 0.9rem; color: #666;">Calculated Total:</span>
+                        <div id="modalCalculatedTotal" style="font-size: 1.5rem; font-weight: 700; color: var(--school-primary, #0056b3);">
+                            $520.00</div>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 12px;">
+                    <button class="btn btn-secondary" onclick="closeEditFeeModal()"
+                        style="flex: 1; margin: 0; background: #e9ecef; color: #333; border: 1px solid #ddd;">Cancel</button>
+                    <button class="btn btn-primary" onclick="saveFeeStructure()" style="flex: 2; margin: 0;">Save &
+                        Apply Structure</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', loadPendingReceipts);
+
+        function loadPendingReceipts() {
+            const tbody = document.getElementById('pendingTableBody');
+            tbody.innerHTML = '';
+
+            const pending = JSON.parse(getTenantData('pendingReceipts', 'null')) || [];
+
+            if (pending.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No pending verifications</td></tr>';
+                return;
+            }
+
+            pending.forEach(p => {
+                const date = new Date(p.date).toLocaleDateString();
+                const displayCurrency = p.currency || 'USD';
+                const displayAmount = p.currency && p.currency !== 'USD'
+                    ? `${p.amount} ${p.currency} (USD$${parseFloat(p.usdEquivalent).toFixed(2)})`
+                    : `USD$${parseFloat(p.amount).toFixed(2)}`;
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${p.name}</td>
+                    <td>${p.type}</td>
+                    <td>${displayAmount}</td>
+                    <td>${p.ref}</td>
+                    <td>${date}</td>
+                    <td>
+                        <button class="btn btn-primary" style="padding: 5px 10px; font-size: 0.8rem; width: auto; margin:0;" 
+                            onclick="openVerificationModal('${p.id}')">Verify</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function openVerificationModal(id) {
+            const pending = JSON.parse(getTenantData('pendingReceipts', 'null')) || [];
+            const receipt = pending.find(r => r.id == id);
+
+            if (!receipt) return;
+
+            currentReceiptId = id;
+            document.getElementById('vName').innerText = receipt.name;
+            // document.getElementById('vType').innerText = receipt.type; // Removed type, focused on details
+
+            document.getElementById('vStudentId').innerText = receipt.studentId || 'N/A';
+            document.getElementById('vClass').innerText = receipt.class || 'N/A';
+            document.getElementById('vTerm').innerText = receipt.term || 'N/A';
+
+            const displayAmt = receipt.currency && receipt.currency !== 'USD'
+                ? `${window.FinancialConfig.format(receipt.amount, receipt.currency)}`
+                : window.FinancialConfig.format(receipt.amount, 'USD');
+
+            document.getElementById('vAmount').innerText = displayAmt;
+
+            if (receipt.currency && receipt.currency !== 'USD') {
+                document.getElementById('vUSDEq').innerText = `(≈ ${window.FinancialConfig.format(receipt.usdEquivalent, 'USD')} USD)`;
+            } else {
+                document.getElementById('vUSDEq').innerText = '';
+            }
+
+            document.getElementById('vRef').innerText = receipt.ref;
+
+            // Handle Receipt Preview
+            const previewContainer = document.getElementById('receiptPreviewContainer');
+            if (receipt.receiptImage) {
+                // Determine if image or PDF (basic check on Base64 header or assume image)
+                // For simplicity, treating as image. If PDF, embed needs tweaking.
+                // Base64 normally starts with data:image/... or data:application/pdf...
+                if (receipt.receiptImage.startsWith('data:application/pdf')) {
+                    previewContainer.innerHTML = `<embed src="${receipt.receiptImage}" type="application/pdf" width="100%" height="100%" />`;
+                } else {
+                    previewContainer.innerHTML = `<img src="${receipt.receiptImage}" style="max-width: 100%; max-height: 100%; object-fit: contain;">`;
+                }
+            } else {
+                previewContainer.innerHTML = `
+                    <div style="text-align: center; color: #888;">
+                        <i class="fas fa-file-invoice-dollar" style="font-size: 48px; margin-bottom: 10px; opacity: 0.5;"></i>
+                        <p>No preview file uploaded.</p>
+                        <p style="font-size: 0.8rem;">Verify using Reference Number: <strong>${receipt.ref}</strong></p>
+                    </div>
+                `;
+            }
+
+            document.getElementById('verificationModal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('verificationModal').style.display = 'none';
+            currentReceiptId = null;
+        }
+
+        window.onclick = function (event) {
+            if (event.target == document.getElementById('verificationModal')) {
+                closeModal();
+            }
+        }
+
+        function approvePayment() {
+            if (!currentReceiptId) return;
+
+            let pending = JSON.parse(getTenantData('pendingReceipts', 'null')) || [];
+            const receiptIndex = pending.findIndex(r => r.id == currentReceiptId);
+
+            if (receiptIndex === -1) return;
+            const receipt = pending[receiptIndex];
+
+            // 1. Update Balance Logic
+            if (receipt.type === 'Student' && receipt.studentId) {
+                // Find strict student match
+                let students = JSON.parse(getTenantData('students', 'null')) || [];
+                let studentIndex = students.findIndex(s => s.studentId === receipt.studentId);
+
+                if (studentIndex !== -1) {
+                    let currentBal = parseFloat(students[studentIndex].currentBalance) || 0;
+                    let paidAmtUSD = parseFloat(receipt.usdEquivalent || receipt.amount);
+                    let newBal = currentBal - paidAmtUSD;
+
+                    // Update Student specific record
+                    students[studentIndex].currentBalance = newBal.toFixed(2);
+                    saveTenantData('students', students);
+
+                    // If it's the *currently logged in* student (edge case testing), updating 'studentBalance' key too for legacy support
+                    // But preferably we rely on 'students' array as source of truth. 
+                    // However, existing fees.js might look at 'studentBalance' simple key for demo. 
+                    // Let's update the specific object AND the legacy key if simple demo mode.
+                    if (!receipt.studentId.includes('demo') || true) {
+                        // Check if this student is the active one in localStorage 'student' (legacy)
+                        let activeStudent = JSON.parse(getTenantData('student', 'null'));
+                        if (activeStudent && activeStudent.studentId === receipt.studentId) {
+                            activeStudent.currentBalance = newBal.toFixed(2);
+                            saveTenantData('student', activeStudent);
+                            saveTenantData('studentBalance', newBal.toFixed(2));
+                        }
+                    }
+
+                    if (typeof showSuccessMessage === 'function') showSuccessMessage(`Approved! ${receipt.name}'s balance updated. New: $${newBal.toFixed(2)}`);
+                    else alert(`Approved! ${receipt.name}'s balance updated.`);
+
+                } else {
+                    alert("Student record not found. Payment approved but balance not auto-updated (check Student ID).");
+                }
+            } else if (receipt.type === 'Student') {
+                // Fallback for legacy receipts without studentId
+                let currentBal = parseFloat(getTenantData('studentBalance', 'null')) || 0;
+                let paidAmtUSD = parseFloat(receipt.usdEquivalent || receipt.amount);
+                let newBal = currentBal - paidAmtUSD;
+                saveTenantData('studentBalance', newBal.toFixed(2));
+                showSuccessMessage(`Student balance updated (Legacy Mode). New Balance: $${newBal.toFixed(2)} USD`);
+            } else if (receipt.type === 'Alumni') {
+                // For alumni, we mark the fee as paid in a map, or just generally "paid"
+                // Ideally we'd map receipts to specific fee IDs. For now, let's assume it pays "Reunion Event Fee" by default if amount matches, or just generic.
+                let statusMap = JSON.parse(getTenantData('alumniFeeStatus', 'null')) || {};
+
+                // Simple logic: if 75, pay reunion. if 50, pay membership.
+                if (receipt.amount == 75) statusMap['Reunion Event Fee'] = 'paid';
+                if (receipt.amount == 50) statusMap['Alumni Association Membership'] = 'paid';
+
+                saveTenantData('alumniFeeStatus', statusMap);
+                showSuccessMessage(`Alumni payment verified. Fee status updated to Paid.`);
+            } else if (receipt.type === 'Applicant') {
+                // Update Applicant record
+                const applicantId = receipt.applicantId;
+
+                // Check A-Level
+                let aLevelApps = JSON.parse(getTenantData('aLevelApplications', 'null')) || [];
+                const aIdx = aLevelApps.findIndex(a => (a.applicationId === applicantId || a.id === applicantId));
+
+                if (aIdx !== -1) {
+                    if (!aLevelApps[aIdx].payments) aLevelApps[aIdx].payments = [];
+                    aLevelApps[aIdx].payments.push({
+                        date: receipt.date,
+                        description: 'Application/Initial Fee',
+                        amount: parseFloat(receipt.amount),
+                        method: 'Bank Deposit',
+                        status: 'Paid'
+                    });
+                    saveTenantData('aLevelApplications', aLevelApps);
+                } else {
+                    // Check School Apps (Form 1)
+                    let schoolApps = JSON.parse(getTenantData('school_applications', 'null')) || [];
+                    const sIdx = schoolApps.findIndex(a => (a.applicationId === applicantId || a.id === applicantId));
+                    if (sIdx !== -1) {
+                        if (!schoolApps[sIdx].payments) schoolApps[sIdx].payments = [];
+                        schoolApps[sIdx].payments.push({
+                            date: receipt.date,
+                            description: 'Application/Initial Fee',
+                            amount: parseFloat(receipt.amount),
+                            method: 'Bank Deposit',
+                            status: 'Paid'
+                        });
+                        saveTenantData('school_applications', schoolApps);
+                    }
+                }
+
+                showSuccessMessage('Applicant payment verified.');
+            }
+
+            if (typeof AuditLogger !== 'undefined') {
+                AuditLogger.log('Payment Approved', `Approved ${receipt.amount} payment for ${receipt.name} (${receipt.type})`, AuditLogger.SEVERITY.INFO, AuditLogger.PORTAL.BURSAR, 'Finance');
+            }
+
+            // 2. Remove from pending
+            pending.splice(receiptIndex, 1);
+            saveTenantData('pendingReceipts', pending);
+
+            closeModal();
+            loadPendingReceipts();
+        }
+
+        function rejectPayment() {
+            if (!currentReceiptId) return;
+            // Just remove it for now, or move to 'rejected' list
+            let pending = JSON.parse(getTenantData('pendingReceipts', 'null')) || [];
+            pending = pending.filter(r => r.id != currentReceiptId);
+            saveTenantData('pendingReceipts', pending); // Remove it
+
+            if (typeof AuditLogger !== 'undefined') {
+                // Find the receipt before removing it from pending if needed, but it's already removed in the next step
+                AuditLogger.log('Payment Rejected', `Rejected payment for receipt ID ${currentReceiptId}`, AuditLogger.SEVERITY.WARNING, AuditLogger.PORTAL.BURSAR, 'Finance');
+            }
+            showSuccessMessage('Payment rejected.');
+            closeModal();
+            loadPendingReceipts();
+        }
+
+        // --- Fee Structure Editor Logic (Tiered) ---
+        let currentLevel = 'ZJC';
+        let currentCombination = 'base';
+        let activeStructures = {};
+
+        function initFees() {
+            activeStructures = FeesManager.getStructures();
+            renderTieredCards();
+            initRateManager(); // Initialize Rate Manager
+        }
+
+        // --- Rate Management Logic ---
+        function initRateManager() {
+            const rates = window.FinancialConfig.EXCHANGE_RATES;
+            document.getElementById('inputRateZiG').value = rates.ZiG;
+            document.getElementById('inputRateZAR').value = rates.ZAR;
+
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('customRateDate').textContent = new Date().toLocaleDateString('en-US', options);
+        }
+
+        function saveDailyRates() {
+            const zig = parseFloat(document.getElementById('inputRateZiG').value);
+            const zar = parseFloat(document.getElementById('inputRateZAR').value);
+
+            if (!zig || !zar || zig <= 0 || zar <= 0) {
+                alert("Please enter valid positive numbers for exchange rates.");
+                return;
+            }
+
+            const newRates = {
+                'ZiG': zig,
+                'ZAR': zar
+            };
+
+            window.FinancialConfig.saveDailyRates(newRates);
+
+            if (typeof AuditLogger !== 'undefined') {
+                AuditLogger.log('Update Exchange Rates', `Updated Daily Rates: 1 USD = ${zig} ZiG, ${zar} ZAR`, AuditLogger.SEVERITY.INFO, AuditLogger.PORTAL.BURSAR, 'Finance');
+            }
+
+            // Show success feedback
+            const btn = document.querySelector('.rate-management-card .btn-primary');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-check"></i> Updated!';
+            btn.style.background = '#28a745';
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.style.background = '';
+            }, 2000);
+        }
+        // -----------------------------
+
+        function renderTieredCards() {
+            const container = document.getElementById('tieredFeeCards');
+            if (!container) return;
+
+            container.innerHTML = '';
+
+            const levels = ['ZJC', 'O-Level', 'A-Level'];
+            levels.forEach(level => {
+                const tier = activeStructures[level];
+                const baseTotal = FeesManager.calculateTotal(tier.base);
+
+                const card = document.createElement('div');
+                card.className = 'fee-card';
+                card.style.cssText = 'border-top: 4px solid var(--school-primary, #0056b3);';
+
+                let combinationsSummary = '';
+                if (tier.combinations) {
+                    combinationsSummary = `
+                        <div style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed #eee;">
+                            <p style="font-size: 0.8rem; color: #888; margin-bottom: 10px;">Combination Extras:</p>
+                            <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                                ${Object.keys(tier.combinations).map(comb => {
+                        const combTotal = FeesManager.calculateTotal(tier.combinations[comb]);
+                        return `<span style="font-size:0.75rem; background:#f0f4f8; padding:4px 8px; border-radius:4px; color:#555;">${comb}: +$${combTotal.toFixed(2)}</span>`;
+                    }).join('')}
+                            </div>
+                        </div>
+                    `;
+                }
+
+                card.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                        <div>
+                            <h3 style="margin:0">${level}</h3>
+                            <p style="font-size:0.8rem; color:#666; margin:5px 0 15px;">${tier.description}</p>
+                        </div>
+                        <div style="text-align:right">
+                            <div style="font-size:1.5rem; font-weight:700; color:var(--school-primary, #0056b3);">$${baseTotal.toFixed(2)}</div>
+                            <span style="font-size:0.75rem; color:#888;">Base Total</span>
+                        </div>
+                    </div>
+                    ${combinationsSummary}
+                    <button class="btn btn-primary" onclick="openTierEdit('${level}')" style="margin-top:20px; font-size:0.85rem;">Manage Structure</button>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function openTierEdit(level) {
+            currentLevel = level;
+            document.getElementById('editLevel').value = level;
+
+            const comboContainer = document.getElementById('editCombinationContainer');
+            if (level === 'ZJC') {
+                comboContainer.style.opacity = '0.5';
+                comboContainer.style.pointerEvents = 'none';
+                currentCombination = 'base';
+                document.getElementById('editCombination').value = 'base';
+            } else {
+                comboContainer.style.opacity = '1';
+                comboContainer.style.pointerEvents = 'auto';
+            }
+
+            loadStructureToEditor();
+            document.getElementById('editFeeModal').style.display = 'block';
+        }
+
+        function loadStructureToEditor() {
+            currentLevel = document.getElementById('editLevel').value;
+            currentCombination = document.getElementById('editCombination').value;
+
+            // Handle combination visibility
+            const comboContainer = document.getElementById('editCombinationContainer');
+            if (currentLevel === 'ZJC') {
+                comboContainer.style.opacity = '0.5';
+                comboContainer.style.pointerEvents = 'none';
+                currentCombination = 'base';
+            } else {
+                comboContainer.style.opacity = '1';
+                comboContainer.style.pointerEvents = 'auto';
+            }
+
+            const tier = activeStructures[currentLevel];
+            let list = [];
+            if (currentCombination === 'base') {
+                list = tier.base;
+            } else {
+                list = tier.combinations[currentCombination] || [];
+            }
+
+            currentEditingItems = JSON.parse(JSON.stringify(list));
+            renderEditorRows();
+        }
+
+        let currentEditingItems = [];
+
+        function renderEditorRows() {
+            const tbody = document.getElementById('feeStructureRows');
+            tbody.innerHTML = '';
+
+            let total = 0;
+            currentEditingItems.forEach((item, index) => {
+                total += parseFloat(item.amount || 0);
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="padding: 10px 15px; border-bottom: 1px solid #eee;">
+                        <input type="text" value="${item.desc}" onchange="updateRowItem(${index}, 'desc', this.value)" 
+                            style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                    </td>
+                    <td style="padding: 10px 15px; border-bottom: 1px solid #eee;">
+                        <input type="number" step="0.01" value="${item.amount}" oninput="updateRowItem(${index}, 'amount', this.value)"
+                            style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                    </td>
+                    <td style="padding: 10px 15px; border-bottom: 1px solid #eee; text-align: center;">
+                        <button onclick="removeEditorRow(${index})" style="background: none; border: none; color: #dc3545; cursor: pointer;">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('modalCalculatedTotal').textContent = '$' + total.toFixed(2);
+        }
+
+        function updateRowItem(index, field, value) {
+            if (field === 'amount') {
+                currentEditingItems[index][field] = value === '' ? 0 : parseFloat(value);
+                let total = currentEditingItems.reduce((sum, item) => sum + parseFloat(item.amount || 0), 0);
+                document.getElementById('modalCalculatedTotal').textContent = '$' + total.toFixed(2);
+            } else {
+                currentEditingItems[index][field] = value;
+            }
+        }
+
+        function addNewFeeRow() {
+            currentEditingItems.push({ desc: "New Item", amount: 0 });
+            renderEditorRows();
+        }
+
+        function removeEditorRow(index) {
+            currentEditingItems.splice(index, 1);
+            renderEditorRows();
+        }
+
+        function saveFeeStructure() {
+            const level = document.getElementById('editLevel').value;
+            const comb = document.getElementById('editCombination').value;
+
+            if (comb === 'base') {
+                activeStructures[level].base = currentEditingItems;
+            } else {
+                if (!activeStructures[level].combinations) activeStructures[level].combinations = {};
+                activeStructures[level].combinations[comb] = currentEditingItems;
+            }
+
+            FeesManager.saveStructures(activeStructures);
+            renderTieredCards();
+            closeEditFeeModal();
+
+            // Audit Log
+            if (typeof AuditLogger !== 'undefined') {
+                AuditLogger.log('Update Fees', `Updated ${level} (${comb}) fee structure`, AuditLogger.SEVERITY.INFO, AuditLogger.PORTAL.BURSAR, 'Finance');
+            }
+
+            if (typeof showSuccessMessage === 'function') {
+                showSuccessMessage(`Fee structure for ${level} ${comb !== 'base' ? '(' + comb + ')' : ''} updated successfully.`);
+            } else {
+                alert(`Fee structure for ${level} ${comb !== 'base' ? '(' + comb + ')' : ''} updated successfully.`);
+            }
+        }
+
+        function openEditFeeModal() {
+            // Default to ZJC base if called generically
+            openTierEdit('ZJC');
+        }
+
+        function closeEditFeeModal() {
+            document.getElementById('editFeeModal').style.display = 'none';
+        }
+
+        // Initialize
+        window.addEventListener('load', initFees);
+    </script>
+    </div>
+    </div>
+    </div>
+    <script src="../js/bursar-common.js"></script>
+    <!-- ACADEX: Powered-by footer and school branding -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+
+</body>
+
+</html>
+

@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supplier Registration - Your School</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/supplier-portal.css">
+    <link rel="stylesheet" href="../css/toast.css">
+    <style>
+        .step-progress {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            position: relative;
+            padding: 0 10px;
+        }
+
+        .step-progress::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #eef0f6;
+            z-index: 1;
+        }
+
+        .step-item {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            flex: 1;
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #fff;
+            border: 2px solid #eef0f6;
+            color: #888;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            margin: 0 auto 8px;
+            transition: all 0.3s;
+        }
+
+        .step-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .step-item.active .step-number {
+            background: var(--school-primary, var(--school-primary, #0056b3));
+            border-color: var(--school-primary, var(--school-primary, #0056b3));
+            color: #fff;
+            box-shadow: 0 4px 10px rgba(var(--school-primary-rgb), 0.3);
+        }
+
+        .step-item.active .step-label {
+            color: var(--school-primary, var(--school-primary, #0056b3));
+        }
+
+        .step-item.completed .step-number {
+            background: #28a745;
+            border-color: #28a745;
+            color: #fff;
+        }
+
+        .form-step {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .form-step.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .step-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            gap: 15px;
+        }
+    </style>
+</head>
+
+<body class="auth-page" style="display:block; background: linear-gradient(135deg, var(--school-primary-dark, #1a1a1e) 0%, var(--school-primary, #0f3460) 50%, var(--school-primary-dark, #1a1a1e) 100%); min-height:100vh; padding: 30px 0;">
+    <div class="auth-wrapper" style="align-items:flex-start; padding-top: 30px;">
+        <div class="auth-card auth-card-wide">
+            <div class="auth-header">
+                <div class="auth-icon">
+                    <i class="fas fa-truck-loading"></i>
+                </div>
+                <h2>Supplier Registration</h2>
+                <p>Join our database of compliant suppliers</p>
+            </div>
+
+            <div class="auth-body">
+                <!-- Progress Bar -->
+                <div class="step-progress">
+                    <div class="step-item active" id="stepIndicator1">
+                        <div class="step-number">1</div>
+                        <div class="step-label">Company</div>
+                    </div>
+                    <div class="step-item" id="stepIndicator2">
+                        <div class="step-number">2</div>
+                        <div class="step-label">Contact</div>
+                    </div>
+                    <div class="step-item" id="stepIndicator3">
+                        <div class="step-number">3</div>
+                        <div class="step-label">Documents</div>
+                    </div>
+                </div>
+
+                <form id="supplierRegisterForm" novalidate>
+                    
+                    <!-- Step 1: Company Profile -->
+                    <div class="form-step active" id="step1">
+                        <div class="form-section-title">
+                            <i class="fas fa-building"></i> Company Information
+                        </div>
+                        <div class="form-group">
+                            <label>Legal Company Name <span class="required">*</span></label>
+                            <input type="text" id="companyName" class="form-control" placeholder="ABC Holdings Ltd" required>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>BP / Registration No <span class="required">*</span></label>
+                                <input type="text" id="regNo" class="form-control" placeholder="e.g. 1234/2024" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Year of Incorporation <span class="required">*</span></label>
+                                <input type="number" id="incorpYear" class="form-control" placeholder="YYYY" min="1900" max="2026" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Physical Address <span class="required">*</span></label>
+                            <textarea id="address" class="form-control" rows="3" placeholder="123 Samora Machel Ave, Harare" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Business Category / Area of Expertise <span class="required">*</span></label>
+                            <select id="category" class="form-control" required>
+                                <option value="">-- Select Category --</option>
+                                <option value="ICT / Software">ICT / Software</option>
+                                <option value="Transport & Logistics">Transport & Logistics</option>
+                                <option value="Science & Laboratory">Science & Laboratory</option>
+                                <option value="Stationery & Printing">Stationery & Printing</option>
+                                <option value="Building & Construction">Building & Construction</option>
+                                <option value="Food & Catering">Food & Catering</option>
+                                <option value="General Services">General Services</option>
+                                <option value="Medical & Health">Medical & Health</option>
+                                <option value="Furniture & Equipment">Furniture & Equipment</option>
+                            </select>
+                            <small style="color:#64748b;">This helps us show you relevant tenders.</small>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Contact Details -->
+                    <div class="form-step" id="step2">
+                        <div class="form-section-title">
+                            <i class="fas fa-user-tie"></i> Primary Contact Details
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Contact Person <span class="required">*</span></label>
+                                <input type="text" id="contactPerson" class="form-control" placeholder="Full Name" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Designation <span class="required">*</span></label>
+                                <input type="text" id="designation" class="form-control" placeholder="e.g. Sales Manager" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Supplier Email <span class="required">*</span></label>
+                                <input type="email" id="email" class="form-control" placeholder="sales@company.com" required>
+                                <small style="color:#888;">This will be your login email.</small>
+                            </div>
+                            <div class="form-group">
+                                <label>Phone Number <span class="required">*</span></label>
+                                <input type="tel" id="phone" class="form-control" placeholder="+263 XXX XXX XXX" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Portal Password <span class="required">*</span></label>
+                            <div class="input-icon-wrap">
+                                <input type="password" id="password" class="form-control" placeholder="Create a secure password" required>
+                                <button type="button" class="toggle-pw" id="togglePw">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Compliance Documents -->
+                    <div class="form-step" id="step3">
+                        <div class="form-section-title">
+                            <i class="fas fa-file-contract"></i> Compliance Documents
+                        </div>
+                        <p style="font-size:0.82rem; color:#64748b; margin-bottom:16px;">
+                            <i class="fas fa-info-circle" style="color:var(--school-primary, #0056b3);"></i>
+                            Upload clear PDF copies of your current certificates.
+                        </p>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Tax Clearance (ITF263) <span class="required">*</span></label>
+                                <input type="file" id="taxClearance" class="form-control" accept=".pdf,image/*" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Tax Expiry Date <span class="required">*</span></label>
+                                <input type="date" id="taxExpiry" class="form-control" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>PRAZ Registration No <span class="required">*</span></label>
+                                <input type="text" id="prazNo" class="form-control" placeholder="e.g. PRAZ-2024-X" required>
+                            </div>
+                            <div class="form-group">
+                                <label>PRAZ Expiry Date <span class="required">*</span></label>
+                                <input type="date" id="prazExpiry" class="form-control" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>PRAZ Certificate <span class="required">*</span></label>
+                                <input type="file" id="prazCert" class="form-control" accept=".pdf,image/*" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Certificate of Incorporation <span class="required">*</span></label>
+                                <input type="file" id="certIncorp" class="form-control" accept=".pdf,image/*" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>NSSA Clearance <span class="required">*</span></label>
+                                <input type="file" id="nssaClearance" class="form-control" accept=".pdf,image/*" required>
+                            </div>
+                            <div class="form-group">
+                                <label>NSSA Expiry Date <span class="required">*</span></label>
+                                <input type="date" id="nssaExpiry" class="form-control" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Government Vendor Number <span class="required">*</span></label>
+                            <input type="text" id="vendorNo" class="form-control" placeholder="e.g. VEN-XXXX-YYYY" required>
+                        </div>
+                    </div>
+
+                    <!-- Navigation -->
+                    <div class="step-actions">
+                        <button type="button" id="prevBtn" class="btn btn-outline" style="display:none;">
+                            <i class="fas fa-chevron-left"></i> Previous
+                        </button>
+                        <div style="flex:1;"></div>
+                        <button type="button" id="nextBtn" class="btn btn-primary">
+                            Next Step <i class="fas fa-chevron-right"></i>
+                        </button>
+                        <button type="button" id="submitBtn" class="btn btn-primary" style="display:none;">
+                            Complete Registration <i class="fas fa-check-circle"></i>
+                        </button>
+                    </div>
+                </form>
+
+                <div class="auth-link">
+                    Already registered? <a href="login.html">Login here</a>
+                </div>
+                <div class="auth-back">
+                    <a href="../index.html"><i class="fas fa-arrow-left"></i> Back to School Home</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/toast.js"></script>
+    <script>
+        let currentStep = 1;
+
+        const nextBtn = document.getElementById('nextBtn');
+        const prevBtn = document.getElementById('prevBtn');
+        const submitBtn = document.getElementById('submitBtn');
+
+        // Toggle password visibility
+        document.getElementById('togglePw').addEventListener('click', function () {
+            const pw = document.getElementById('password');
+            const icon = this.querySelector('i');
+            if (pw.type === 'password') {
+                pw.type = 'text';
+                icon.className = 'fas fa-eye-slash';
+            } else {
+                pw.type = 'password';
+                icon.className = 'fas fa-eye';
+            }
+        });
+
+        // Navigation Logic
+        nextBtn.addEventListener('click', () => {
+            if (validateStep(currentStep)) {
+                changeStep(1);
+            } else {
+                showToast('Please fill in all required fields properly.', 'error');
+            }
+        });
+
+        prevBtn.addEventListener('click', () => {
+            changeStep(-1);
+        });
+
+        function changeStep(val) {
+            // Update UI indicators
+            document.getElementById(`stepIndicator${currentStep}`).classList.remove('active');
+            if (val > 0) document.getElementById(`stepIndicator${currentStep}`).classList.add('completed');
+            
+            document.getElementById(`step${currentStep}`).classList.remove('active');
+            
+            currentStep += val;
+            
+            document.getElementById(`stepIndicator${currentStep}`).classList.add('active');
+            document.getElementById(`stepIndicator${currentStep}`).classList.remove('completed');
+            document.getElementById(`step${currentStep}`).classList.add('active');
+
+            // Button visibility
+            prevBtn.style.display = currentStep > 1 ? 'flex' : 'none';
+            if (currentStep === 3) {
+                nextBtn.style.display = 'none';
+                submitBtn.style.display = 'flex';
+            } else {
+                nextBtn.style.display = 'flex';
+                submitBtn.style.display = 'none';
+            }
+        }
+
+        function validateStep(step) {
+            const container = document.getElementById(`step${step}`);
+            const inputs = container.querySelectorAll('[required]');
+            let valid = true;
+            
+            inputs.forEach(input => {
+                if (!input.value.trim()) {
+                    input.style.borderColor = '#dc3545';
+                    valid = false;
+                } else {
+                    input.style.borderColor = '#dce4f5';
+                }
+            });
+
+            // Special email check on step 2
+            if (step === 2 && valid) {
+                const email = document.getElementById('email').value.trim();
+                if (!email.includes('@')) {
+                    showToast('Invalid email address.', 'error');
+                    valid = false;
+                }
+            }
+
+            return valid;
+        }
+
+        // Helper to convert file to base64
+        function getBase64(file) {
+            return new Promise((resolve, reject) => {
+                if (!file) return resolve(null);
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+            });
+        }
+
+        // Final Submission (Manual handle to avoid browser submission issues)
+        submitBtn.addEventListener('click', async function () {
+            console.log('Manual submission click triggered...');
+
+            try {
+                if (!validateStep(3)) {
+                    console.warn('Validation failed on Step 3');
+                    showToast('Please upload all required documents.', 'error');
+                    return;
+                }
+
+                const email = document.getElementById('email').value.trim();
+                console.log('Checking email:', email);
+                
+                const suppliers = getTenantData('school_suppliers', '[]');
+                
+                if (suppliers.find(s => s.email === email)) {
+                    showToast('This email is already registered. Please login.', 'error');
+                    return;
+                }
+
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+
+                const taxFile = document.getElementById('taxClearance').files[0];
+                const prazFile = document.getElementById('prazCert').files[0];
+                const certFile = document.getElementById('certIncorp').files[0];
+                const nssaFile = document.getElementById('nssaClearance').files[0];
+
+                const [taxData, prazData, certData, nssaData] = await Promise.all([
+                    getBase64(taxFile),
+                    getBase64(prazFile),
+                    getBase64(certFile),
+                    getBase64(nssaFile)
+                ]);
+
+                const supplierData = {
+                    id: 'SUP-' + Math.random().toString(36).substr(2, 6).toUpperCase(),
+                    companyName: document.getElementById('companyName').value,
+                    regNo: document.getElementById('regNo').value,
+                    incorpYear: document.getElementById('incorpYear').value,
+                    address: document.getElementById('address').value,
+                    email: email,
+                    phone: document.getElementById('phone').value,
+                    contactPerson: document.getElementById('contactPerson').value,
+                    designation: document.getElementById('designation').value,
+                    taxExpiry: document.getElementById('taxExpiry').value,
+                    prazNo: document.getElementById('prazNo').value,
+                    prazExpiry: document.getElementById('prazExpiry').value,
+                    vendorNo: document.getElementById('vendorNo').value,
+                    nssaExpiry: document.getElementById('nssaExpiry').value,
+                    category: document.getElementById('category').value,
+                    password: document.getElementById('password').value,
+                    status: 'Pending Verification',
+                    complianceStatus: 'Active',
+                    registeredAt: new Date().toISOString(),
+                    taxDoc: taxData,
+                    prazDoc: prazData,
+                    certDoc: certData,
+                    nssaDoc: nssaData
+                };
+
+                console.log('Saving supplier data:', supplierData);
+                suppliers.push(supplierData);
+                saveTenantData('school_suppliers', suppliers);
+
+                // Auto Log In
+                sessionStorage.setItem('supplierLoggedIn', 'true');
+                sessionStorage.setItem('supplierName', supplierData.companyName);
+                sessionStorage.setItem('supplierId', supplierData.id);
+
+                console.log('Registration success. Redirecting...');
+                alert('Registration successful! Redirecting to dashboard...');
+                window.location.href = 'dashboard.html';
+            } catch (err) {
+                console.error('Registration Error:', err);
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = 'Complete Registration <i class="fas fa-check-circle"></i>';
+                alert('An error occurred during registration: ' + err.message);
+            }
+        });
+    </script>
+    <!-- ACADEX: Powered-by footer and school branding -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+
+</body>
+
+</html>
+
+

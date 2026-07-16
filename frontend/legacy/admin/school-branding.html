@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>School Branding — Admin Portal</title>
+  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="stylesheet" href="../css/common.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f5f5f5;
+      margin: 0;
+    }
+
+    .admin-container {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .main-content {
+      flex: 1;
+      margin-left: 260px;
+    }
+
+    .section-card {
+      background: white;
+      border-radius: 12px;
+      padding: 28px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      margin-bottom: 24px;
+    }
+
+    .section-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--school-primary-dark, #1a1a2e);
+      margin: 0 0 4px;
+    }
+
+    .section-sub {
+      font-size: 0.82rem;
+      color: #64748b;
+      margin: 0 0 1.5rem;
+    }
+
+    .content-area {
+      padding: 28px;
+    }
+
+    .page-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+    }
+
+    .page-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--school-primary-dark, #1a1a2e);
+      margin: 0;
+    }
+
+    /* Color picker custom */
+    .color-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .color-swatch {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      border: 2px solid #e2e8f0;
+      overflow: hidden;
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+
+    .color-swatch input[type=color] {
+      width: 100%;
+      height: 100%;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .color-input {
+      flex: 1;
+      padding: 10px 12px;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      font-family: monospace;
+      font-size: 0.9rem;
+      color: #333;
+    }
+
+    .form-label {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    .form-sub {
+      font-size: 0.75rem;
+      color: #94a3b8;
+      margin-bottom: 10px;
+    }
+
+    /* Logo upload */
+    .logo-drop {
+      border: 2px dashed #cbd5e1;
+      border-radius: 12px;
+      padding: 2rem;
+      text-align: center;
+      cursor: pointer;
+      transition: 0.2s;
+      position: relative;
+      background: #f8fafc;
+    }
+
+    .logo-drop:hover {
+      border-color: #3b82f6;
+      background: #eff6ff;
+    }
+
+    .logo-drop input[type=file] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    /* Palettes */
+    .palette-swatch {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      cursor: pointer;
+      border: 2px solid #e2e8f0;
+      overflow: hidden;
+      display: flex;
+      transition: 0.15s;
+    }
+
+    .palette-swatch:hover {
+      border-color: #3b82f6;
+      transform: scale(1.1);
+    }
+
+    /* Preview */
+    .preview-wrap {
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid #e2e8f0;
+    }
+
+    .pv-header {
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .pv-body {
+      background: #f8fafc;
+      padding: 14px;
+      display: flex;
+      gap: 10px;
+    }
+
+    .pv-sidebar {
+      width: 120px;
+      border-radius: 8px;
+      padding: 10px;
+      font-size: 10px;
+      flex-shrink: 0;
+    }
+
+    .pv-sidebar-item {
+      padding: 5px 8px;
+      border-radius: 5px;
+      margin-bottom: 3px;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .pv-sidebar-item.active {
+      color: white;
+      font-weight: 700;
+    }
+
+    .pv-content {
+      flex: 1;
+    }
+
+    .pv-card {
+      background: white;
+      border-radius: 8px;
+      padding: 10px;
+      margin-bottom: 8px;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+      font-size: 10px;
+      color: #333;
+    }
+
+    .pv-btn {
+      border: none;
+      border-radius: 6px;
+      padding: 4px 10px;
+      font-size: 10px;
+      font-weight: 700;
+      color: white;
+    }
+
+    .pv-footer {
+      padding: 7px 14px;
+      font-size: 10px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #10b981;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 0.88rem;
+      z-index: 9999;
+      display: none;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .toast.show {
+      display: block;
+      animation: slideUp 0.3s ease;
+    }
+
+    @keyframes slideUp {
+      from {
+        transform: translateY(20px);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="admin-container">
+    <aside class="sidebar" id="sidebar"></aside>
+
+    <div class="main-content">
+      <!-- Mobile Header -->
+      <div class="mobile-header" style="display:none;">
+        <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
+        <span>School Branding</span>
+      </div>
+
+      <div class="top-header"
+        style="background:white;padding:15px 28px;box-shadow:0 2px 5px rgba(0,0,0,0.05);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;">
+        <div>
+          <h2 style="margin:0;font-size:1.3rem;color:#333;">🎨 School Branding</h2>`
+
+          <p style="margin:0;font-size:0.82rem;color:#64748b;" id="headerSchoolName">Loading school…</p>
+        </div>
+        <button onclick="saveBranding()"
+          style="background:linear-gradient(135deg,var(--school-primary, #2563eb),var(--school-primary-dark, #1d4ed8));color:white;border:none;border-radius:8px;padding:10px 20px;font-weight:700;font-size:0.9rem;cursor:pointer;display:flex;align-items:center;gap:8px;">
+          <i class="fas fa-save"></i> Save Changes
+        </button>
+      </div>
+
+      <div class="content-area">
+
+        <!-- School Code display -->
+        <div
+          style="background:linear-gradient(135deg,#1e3a5f,var(--school-primary-dark, #1a1a2e));color:white;border-radius:12px;padding:18px 24px;margin-bottom:24px;display:flex;align-items:center;gap:16px;">
+          <div style="font-size:2rem;">🏫</div>
+          <div>
+            <div style="font-size:1rem;font-weight:700;" id="schoolDisplayName">—</div>
+            <div style="font-size:0.8rem;opacity:0.6;margin-top:2px;">School Code: <strong id="schoolDisplayCode"
+                style="font-family:monospace;opacity:1;">—</strong></div>
+          </div>
+          <div style="flex:1;"></div>
+          <div style="text-align:right;">
+            <div style="font-size:0.72rem;opacity:0.5;text-transform:uppercase;letter-spacing:0.05em;">Branding applies
+              to</div>
+            <div style="font-size:0.82rem;font-weight:600;">All 10 Portal Pages</div>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1.3fr 1fr;gap:20px;">
+          <!-- LEFT: Editor -->
+          <div>
+            <!-- Logo -->
+            <div class="section-card">
+              <div class="section-title">School Logo</div>
+              <div class="section-sub">Displayed in the top banner and "Powered by ACADEX" footer on every page.</div>
+              <div class="logo-drop" id="logoDrop" onclick="document.getElementById('logoFile').click()">
+                <input type="file" id="logoFile" accept="image/*" onchange="handleLogo(event)" style="display:none;" />
+                <div id="logoDropContent">
+                  <div style="font-size:2.5rem;margin-bottom:8px;" id="logoEmoji">🏫</div>
+                  <div style="font-weight:700;color:#374151;">Click to upload school logo</div>
+                  <div style="font-size:0.78rem;color:#94a3b8;margin-top:4px;">PNG, JPG or SVG · Max 2MB</div>
+                </div>
+                <img id="logoPreview" src="" alt=""
+                  style="max-height:80px;max-width:200px;border-radius:8px;margin:0.75rem auto 0;display:none;" />
+              </div>
+              <div style="display:flex;gap:10px;margin-top:12px;">
+                <button onclick="document.getElementById('logoFile').click()"
+                  style="flex:1;padding:9px 14px;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:8px;font-size:0.82rem;font-weight:600;cursor:pointer;color:#374151;">
+                  <i class="fas fa-upload"></i> Upload Logo
+                </button>
+                <button onclick="removeLogo()" id="removeLogoBtn"
+                  style="padding:9px 14px;background:#fff5f5;border:1px solid #fecaca;border-radius:8px;font-size:0.82rem;font-weight:600;cursor:pointer;color:#dc2626;display:none;">
+                  <i class="fas fa-trash"></i> Remove
+                </button>
+              </div>
+            </div>
+
+            <!-- Colours -->
+            <div class="section-card">
+              <div class="section-title">Colour Scheme</div>
+              <div class="section-sub">Choose your school's colours. They define the sidebar, header, banner, buttons,
+                and the footer bar.</div>
+
+              <div style="margin-bottom:1.25rem;">
+                <label class="form-label">Primary Colour</label>
+                <div class="form-sub">Sidebar background, header & Powered-by banner</div>
+                <div class="color-row">
+                  <div class="color-swatch"><input type="color" id="primaryColor" value="var(--school-primary-dark, #1a1a2e)"
+                      oninput="onColorChange('primary')" /></div>
+                  <input type="text" class="color-input" id="primaryHex" value="var(--school-primary-dark, #1a1a2e)" placeholder="var(--school-primary-dark, #1a1a2e)"
+                    oninput="syncHex('primary')" />
+                </div>
+              </div>
+
+              <div style="margin-bottom:1.5rem;">
+                <label class="form-label">Accent Colour</label>
+                <div class="form-sub">Buttons, active links, highlights</div>
+                <div class="color-row">
+                  <div class="color-swatch"><input type="color" id="accentColor" value="var(--school-primary, #2563eb)"
+                      oninput="onColorChange('accent')" /></div>
+                  <input type="text" class="color-input" id="accentHex" value="var(--school-primary, #2563eb)" placeholder="var(--school-primary, #2563eb)"
+                    oninput="syncHex('accent')" />
+                </div>
+              </div>
+
+              <!-- Quick palettes -->
+              <label class="form-label" style="margin-bottom:10px;">Quick Palettes</label>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                <div class="palette-swatch" onclick="setPalette('var(--school-primary-dark, #1a1a2e)','var(--school-primary, #2563eb)')" title="Navy & Blue">
+                  <div style="flex:1;background:var(--school-primary-dark, #1a1a2e);"></div>
+                  <div style="flex:1;background:var(--school-primary, #2563eb);"></div>
+                </div>
+                <div class="palette-swatch" onclick="setPalette('#064e3b','#10b981')" title="Forest Green">
+                  <div style="flex:1;background:#064e3b;"></div>
+                  <div style="flex:1;background:#10b981;"></div>
+                </div>
+                <div class="palette-swatch" onclick="setPalette('#4a1942','#a855f7')" title="Royal Purple">
+                  <div style="flex:1;background:#4a1942;"></div>
+                  <div style="flex:1;background:#a855f7;"></div>
+                </div>
+                <div class="palette-swatch" onclick="setPalette('#7c1a1a','#ef4444')" title="School Red">
+                  <div style="flex:1;background:#7c1a1a;"></div>
+                  <div style="flex:1;background:#ef4444;"></div>
+                </div>
+                <div class="palette-swatch" onclick="setPalette('#78350f','#f59e0b')" title="Gold & Amber">
+                  <div style="flex:1;background:#78350f;"></div>
+                  <div style="flex:1;background:#f59e0b;"></div>
+                </div>
+                <div class="palette-swatch" onclick="setPalette('#0c4a6e','#0ea5e9')" title="Ocean Blue">
+                  <div style="flex:1;background:#0c4a6e;"></div>
+                  <div style="flex:1;background:#0ea5e9;"></div>
+                </div>
+                <div class="palette-swatch" onclick="setPalette('#1c1917','#f97316')" title="Dark & Orange">
+                  <div style="flex:1;background:#1c1917;"></div>
+                  <div style="flex:1;background:#f97316;"></div>
+                </div>
+                <div class="palette-swatch" onclick="setPalette('#1e1b4b','#6366f1')" title="Indigo Night">
+                  <div style="flex:1;background:#1e1b4b;"></div>
+                  <div style="flex:1;background:#6366f1;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- RIGHT: Live Preview -->
+          <div>
+            <div class="section-card" style="padding:20px;">
+              <div class="section-title" style="margin-bottom:4px;">Live Preview</div>
+              <div class="section-sub" style="margin-bottom:14px;">This is how your portal pages will look to all staff
+                and students.</div>
+              <div class="preview-wrap">
+                <!-- Top banner -->
+                <div class="pv-header" id="pvHeader" style="background:var(--school-primary-dark, #1a1a2e);color:white;">
+                  <span id="pvLogoThumb"
+                    style="width:22px;height:22px;border-radius:5px;background:var(--school-primary, #2563eb);display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;color:white;flex-shrink:0;">S</span>
+                  <span id="pvSchoolNamePreview" style="font-weight:700;">Your School</span>
+                  <span style="flex:1;"></span>
+                  <span style="opacity:0.6;font-size:10px;">Powered by <strong>ACADEX</strong></span>
+                </div>
+                <!-- Body -->
+                <div class="pv-body">
+                  <div class="pv-sidebar" id="pvSidebar" style="background:var(--school-primary-dark, #1a1a2e);">
+                    <div
+                      style="color:rgba(255,255,255,0.4);font-size:9px;text-transform:uppercase;padding:2px 6px 4px;letter-spacing:0.06em;">
+                      Menu</div>
+                    <div class="pv-sidebar-item active" id="pvActiveItem" style="background:rgba(37,99,235,0.2);">📊
+                      Dashboard</div>
+                    <div class="pv-sidebar-item">🎒 Students</div>
+                    <div class="pv-sidebar-item">👩‍🏫 Teachers</div>
+                    <div class="pv-sidebar-item">💰 Fees</div>
+                    <div class="pv-sidebar-item">📚 Library</div>
+                  </div>
+                  <div class="pv-content">
+                    <div class="pv-card"><strong>Total Students</strong><br /><span
+                        style="font-size:16px;font-weight:800;">1,245</span></div>
+                    <div class="pv-card" style="display:flex;align-items:center;justify-content:space-between;">
+                      <span>Quick Action</span>
+                      <div class="pv-btn" id="pvBtn" style="background:var(--school-primary, #2563eb);">Go →</div>
+                    </div>
+                    <div class="pv-card" style="font-size:9px;color:#666;">Attendance today: <strong>96%</strong></div>
+                  </div>
+                </div>
+                <!-- Footer -->
+                <div class="pv-footer" id="pvFooter" style="background:var(--school-primary-dark, #1a1a2e);color:rgba(255,255,255,0.7);">
+                  <span id="pvFooterLeft">🏫 Your School</span>
+                  <span>Powered by <strong style="color:white;">ACADEX</strong> · © 2025</span>
+                </div>
+              </div>
+
+              <!-- Info note -->
+              <div
+                style="margin-top:14px;padding:10px 14px;background:#f0f9ff;border-radius:8px;border-left:3px solid #0ea5e9;font-size:0.78rem;color:#0c4a6e;">
+                <strong>Global Effect</strong> — saving here will immediately update the colour scheme shown on the top
+                banner and footer across all portal pages for every user logged in to your school.
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">✅ Branding saved successfully!</div>
+
+  <script src="../js/admin-common.js"></script>
+  <script src="../js/admin-sidebar.js"></script>
+  <script src="../acadex/js/acadex-core.js"></script>
+  <script src="../acadex/js/acadex-tenant.js"></script>
+  <script>
+    let school = null;
+    let logoDataUrl = '';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      school = AcadexCore.getActiveSchool();
+      if (school) {
+        document.getElementById('headerSchoolName').textContent = school.name;
+        document.getElementById('schoolDisplayName').textContent = school.name;
+        document.getElementById('schoolDisplayCode').textContent = school.code;
+        document.getElementById('pvSchoolNamePreview').textContent = school.name;
+        document.getElementById('pvFooterLeft').textContent = '🏫 ' + school.name;
+        const initial = school.name.charAt(0).toUpperCase();
+        document.getElementById('pvLogoThumb').textContent = initial;
+
+        // Load existing branding
+        const b = school.branding || {};
+        if (b.primaryColor) { document.getElementById('primaryColor').value = b.primaryColor; document.getElementById('primaryHex').value = b.primaryColor; }
+        if (b.accentColor) { document.getElementById('accentColor').value = b.accentColor; document.getElementById('accentHex').value = b.accentColor; }
+        if (b.logo) {
+          logoDataUrl = b.logo;
+          const img = document.getElementById('logoPreview');
+          img.src = b.logo; img.style.display = 'block';
+          document.getElementById('logoDropContent').style.display = 'none';
+          document.getElementById('logoEmoji').style.display = 'none';
+          document.getElementById('removeLogoBtn').style.display = 'block';
+          document.getElementById('pvLogoThumb').innerHTML = `<img src="${b.logo}" style="width:100%;height:100%;object-fit:contain;border-radius:4px;" />`;
+        }
+        updatePreview();
+      }
+    });
+
+    function handleLogo(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      if (file.size > 2 * 1024 * 1024) { alert('Logo must be under 2MB.'); return; }
+      const reader = new FileReader();
+      reader.onload = e => {
+        logoDataUrl = e.target.result;
+        const img = document.getElementById('logoPreview');
+        img.src = logoDataUrl; img.style.display = 'block';
+        document.getElementById('logoDropContent').style.display = 'none';
+        document.getElementById('removeLogoBtn').style.display = 'block';
+        document.getElementById('pvLogoThumb').innerHTML = `<img src="${logoDataUrl}" style="width:100%;height:100%;object-fit:contain;border-radius:4px;" />`;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function removeLogo() {
+      logoDataUrl = '';
+      document.getElementById('logoPreview').style.display = 'none';
+      document.getElementById('logoDropContent').style.display = 'block';
+      document.getElementById('removeLogoBtn').style.display = 'none';
+      const initial = school ? school.name.charAt(0).toUpperCase() : 'S';
+      document.getElementById('pvLogoThumb').textContent = initial;
+    }
+
+    function onColorChange(type) {
+      const val = document.getElementById(type + 'Color').value;
+      document.getElementById(type + 'Hex').value = val;
+      updatePreview();
+    }
+
+    function syncHex(type) {
+      const val = document.getElementById(type + 'Hex').value.trim();
+      if (/^#[0-9a-fA-F]{6}$/.test(val)) {
+        document.getElementById(type + 'Color').value = val;
+        updatePreview();
+      }
+    }
+
+    function setPalette(primary, accent) {
+      document.getElementById('primaryColor').value = primary; document.getElementById('primaryHex').value = primary;
+      document.getElementById('accentColor').value = accent; document.getElementById('accentHex').value = accent;
+      updatePreview();
+    }
+
+    function updatePreview() {
+      const primary = document.getElementById('primaryColor').value;
+      const accent = document.getElementById('accentColor').value;
+      document.getElementById('pvHeader').style.background = primary;
+      document.getElementById('pvSidebar').style.background = primary;
+      document.getElementById('pvFooter').style.background = primary;
+      document.getElementById('pvBtn').style.background = accent;
+      const r = parseInt(accent.slice(1, 3), 16), g = parseInt(accent.slice(3, 5), 16), b = parseInt(accent.slice(5, 7), 16);
+      document.getElementById('pvActiveItem').style.background = `rgba(${r},${g},${b},0.25)`;
+
+      // LIVE UPDATE THE ACTUAL SIDEBAR TOO
+      if (window.AcadexTenant) {
+        AcadexTenant.applyBranding({ name: school.name, branding: { primaryColor: primary, accentColor: accent, logo: logoDataUrl } });
+      }
+    }
+
+    function saveBranding() {
+      if (!school) return alert('No school session found. Please log in first.');
+      const primary = document.getElementById('primaryColor').value;
+      const accent = document.getElementById('accentColor').value;
+      AcadexCore.updateSchool(school.id, {
+        branding: { primaryColor: primary, accentColor: accent, logo: logoDataUrl }
+      });
+      school.branding = { primaryColor: primary, accentColor: accent, logo: logoDataUrl };
+
+      // Apply changes immediately to the current page
+      if (window.AcadexTenant) {
+        AcadexTenant.applyBranding(school);
+      }
+
+      const toast = document.getElementById('toast');
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+  </script>
+</body>
+
+</html>

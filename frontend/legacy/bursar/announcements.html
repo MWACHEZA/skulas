@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Announcements - Bursar Portal</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/ancillary-portal.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        .notice-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border-left: 6px solid #e2e8f0;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s;
+        }
+
+        .notice-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .notice-card.urgent {
+            border-left-color: #ef4444;
+            background: linear-gradient(to right, #fef2f2 0%, white 100%);
+        }
+
+        .notice-card.important {
+            border-left-color: #f59e0b;
+            background: linear-gradient(to right, #fffbeb 0%, white 100%);
+        }
+
+        .notice-card.info {
+            border-left-color: var(--school-primary, var(--school-primary, #0056b3));
+            background: linear-gradient(to right, rgba(var(--school-primary-rgb, 0, 86, 179), 0.1) 0%, white 100%);
+        }
+
+        .notice-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .notice-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .badge-urgent {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .badge-important {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-info {
+            background: rgba(var(--school-primary-rgb, 0, 86, 179), 0.1);
+            color: var(--school-primary-dark, #1e40af);
+        }
+
+        .notice-date {
+            font-size: 0.85rem;
+            color: #64748b;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .notice-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--school-primary-dark, #1e293b);
+            margin: 10px 0;
+        }
+
+        .notice-content {
+            color: #475569;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .notice-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 15px;
+            border-top: 1px solid #f1f5f9;
+        }
+
+        .notice-author {
+            font-size: 0.85rem;
+            color: #64748b;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn-acknowledge {
+            background: var(--school-primary, var(--school-primary, #0056b3));
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .btn-acknowledge:hover {
+            background: var(--school-primary-dark, var(--school-primary-dark, #003d82));
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 10px 20px;
+            border: 2px solid #e2e8f0;
+            background: white;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            color: #64748b;
+        }
+
+        .tab-btn.active {
+            background: var(--school-primary, var(--school-primary, #0056b3));
+            color: white;
+            border-color: var(--school-primary, var(--school-primary, #0056b3));
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            margin-bottom: 25px;
+        }
+
+        .card-header {
+            padding: 20px 25px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-header h3 {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--school-primary-dark, var(--school-primary-dark, #003d82));
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-body {
+            padding: 25px;
+        }
+
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            background-color: rgba(var(--school-primary-rgb, 0, 86, 179), 0.2);
+            color: white;
+            border-left: 3px solid var(--school-primary, var(--school-primary, #0056b3));
+        }
+    </style>
+</head>
+
+<body>
+    <button class="mobile-toggle" id="mobile-toggle">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <div class="dashboard-container">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-menu">
+                <div class="sidebar-section-title">Bursar System</div>
+                <ul>
+                    <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i>
+                            <span>Dashboard</span></a></li>
+                    <li><a href="fees-management.html"><i class="fas fa-money-bill-wave"></i> <span>Fees
+                                Management</span></a></li>
+                    <li><a href="payments.html"><i class="fas fa-credit-card"></i> <span>Payments</span></a></li>
+                    <li><a href="expenses.html"><i class="fas fa-file-invoice-dollar"></i> <span>Expenses</span></a>
+                    </li>
+                    <li><a href="payroll.html"><i class="fas fa-users-cog"></i> <span>Payroll</span></a></li>
+                    <li><a href="tuckshop.html"><i class="fas fa-store"></i> <span>Tuckshop</span></a></li>
+                    <li><a href="reports.html"><i class="fas fa-chart-pie"></i> <span>Reports</span></a></li>
+                </ul>
+
+                <!-- Operations placeholder -->
+                <div class="sidebar-section-title">Operations</div>
+                <!-- ... other links ... -->
+
+                <!-- Communication -->
+                <div class="sidebar-section-title">Communication</div>
+                <ul>
+                    <li><a href="news.html"><i class="fas fa-newspaper"></i> <span>News & Updates</span></a></li>
+                    <li><a href="announcements.html" class="active"><i class="fas fa-bullhorn"></i>
+                            <span>Announcements</span></a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <h1 style="margin-bottom: 30px; color: var(--school-primary-dark, #1e293b);">Staff Announcements</h1>
+
+            <div class="filter-tabs">
+                <button class="tab-btn active">All</button>
+                <button class="tab-btn">Urgent</button>
+                <button class="tab-btn">Finance</button>
+                <button class="tab-btn">Administrative</button>
+            </div>
+
+            <div class="announcements-list">
+                <!-- Urgent Notice -->
+                <div class="notice-card urgent">
+                    <div class="notice-header">
+                        <span class="notice-badge badge-urgent">Urgent</span>
+                        <span class="notice-date"><i class="far fa-clock"></i> 2 hours ago</span>
+                    </div>
+                    <h2 class="notice-title">System Maintenance: Payroll Module</h2>
+                    <p class="notice-content">The payroll module will be offline for emergency maintenance today between
+                        16:00 and 18:00. Please ensure all pending entries are saved before this period.</p>
+                    <div class="notice-footer">
+                        <span class="notice-author"><i class="fas fa-user-circle"></i> IT Department</span>
+                        <button class="btn-acknowledge" onclick="showNotification('Announcement acknowledged', 'success')">Acknowledge</button>
+                    </div>
+                </div>
+
+                <!-- Info Notice -->
+                <div class="notice-card info">
+                    <div class="notice-header">
+                        <span class="notice-badge badge-info">Info</span>
+                        <span class="notice-date"><i class="far fa-clock"></i> 1 day ago</span>
+                    </div>
+                    <h2 class="notice-title">New Security Protocols</h2>
+                    <p class="notice-content">Please be advised that new multi-factor authentication protocols will be
+                        implemented for all staff logins starting next Monday. Check your email for setup instructions.
+                    </p>
+                    <div class="notice-footer">
+                        <span class="notice-author"><i class="fas fa-user-circle"></i> Admin</span>
+                        <button class="btn-acknowledge" onclick="showNotification('Announcement acknowledged', 'success')">Acknowledge</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../js/ancillary-common.js"></script>
+    <!-- ACADEX: Powered-by footer and school branding -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+
+</body>
+
+</html>
+

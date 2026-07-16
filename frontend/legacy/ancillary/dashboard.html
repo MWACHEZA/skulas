@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ancillary Staff Dashboard - ACADEX</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/ancillary-portal.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../css/announcements.css">
+    <style>
+        /* Dashboard Specific Styles (Not in common) */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            transition: transform 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+        }
+
+        .icon-blue {
+            background: rgba(var(--school-primary-rgb), 0.1);
+            color: var(--school-primary);
+        }
+
+        .icon-green {
+            background: #ecfdf5;
+            color: #10b981;
+        }
+
+        .icon-orange {
+            background: #fff7ed;
+            color: #f59e0b;
+        }
+
+        .icon-purple {
+            background: #f5f3ff;
+            color: #8b5cf6;
+        }
+
+        .stat-details h3 {
+            margin: 0;
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .stat-details p {
+            margin: 5px 0 0;
+            color: #888;
+            font-size: 0.9rem;
+        }
+
+        .content-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 25px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            margin-bottom: 25px;
+        }
+
+        .card-header {
+            padding: 20px 25px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-header h3 {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--school-primary-dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-body {
+            padding: 25px;
+        }
+
+        .announcement-item {
+            padding: 15px;
+            border-radius: 12px;
+            background: #f8fafc;
+            margin-bottom: 15px;
+            border-left: 4px solid var(--school-primary);
+            transition: all 0.3s;
+        }
+
+        .announcement-item:hover {
+            background: #f1f5f9;
+            transform: translateX(5px);
+        }
+
+        .announcement-date {
+            font-size: 0.75rem;
+            color: #888;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .announcement-title {
+            font-weight: 600;
+            font-size: 1rem;
+            color: #334155;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .announcement-text {
+            font-size: 0.9rem;
+            color: #64748b;
+            line-height: 1.5;
+        }
+
+        .schedule-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .schedule-item {
+            display: flex;
+            gap: 15px;
+            padding: 15px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .schedule-item:last-child {
+            border-bottom: none;
+        }
+
+        .schedule-date {
+            text-align: center;
+            min-width: 50px;
+        }
+
+        .schedule-date .day {
+            display: block;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--school-primary);
+        }
+
+        .schedule-date .month {
+            display: block;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            color: #888;
+        }
+
+        .schedule-info h4 {
+            margin: 0;
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+
+        .schedule-info p {
+            margin: 2px 0 0;
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .quick-links-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .quick-link-card {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            text-decoration: none;
+            color: #333;
+            transition: all 0.3s;
+            border: 1px solid transparent;
+        }
+
+        .quick-link-card:hover {
+            background: white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            border-color: var(--school-primary);
+            transform: translateY(-3px);
+        }
+
+        .quick-link-card i {
+            display: block;
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: var(--school-primary);
+        }
+
+        .quick-link-card span {
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .badge-warning {
+            background: #fef9c3;
+            color: #854d0e;
+        }
+
+        .badge-danger {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .top-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            background: white;
+            padding: 15px 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .welcome-text h2 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: var(--school-primary-dark);
+        }
+
+        .welcome-text p {
+            margin: 5px 0 0;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-info .name {
+            display: block;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .user-info .role {
+            display: block;
+            font-size: 0.8rem;
+            color: #888;
+        }
+
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            background: #eef2ff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--school-primary);
+            font-size: 1.2rem;
+            border: 2px solid #fff;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        @media (max-width: 1024px) {
+            .content-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .top-nav {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+                padding: 20px;
+            }
+
+            .user-info {
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Mobile Toggle Button -->
+    <button class="mobile-toggle" id="mobile-toggle">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <div class="dashboard-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <img src="../images/logo.png" alt="Logo" class="acadex-school-logo">
+                <h3>ANCILLARY PORTAL</h3>
+            </div>
+            <div class="sidebar-menu">
+                <ul>
+                    <li><a href="dashboard.html" class="active"><i class="fas fa-th-large"></i>
+                            <span>Dashboard</span></a></li>
+                </ul>
+
+                <div id="tuckshop-sidebar-section" style="display: none;">
+                    <div class="sidebar-section-title">Tuckshop System</div>
+                    <ul>
+                        <li><a href="tuckshop-dashboard.html"><i class="fas fa-tachometer-alt"></i> <span>TS
+                                    Dashboard</span></a></li>
+                        <li><a href="tuckshop-sales.html"><i class="fas fa-cash-register"></i> <span>Point of
+                                    Sale</span></a></li>
+                        <li><a href="tuckshop-inventory.html"><i class="fas fa-boxes"></i> <span>Inventory</span></a>
+                        </li>
+                        <li><a href="tuckshop-orders.html"><i class="fas fa-truck"></i> <span>Supplier
+                                    Orders</span></a></li>
+                    </ul>
+                </div>
+
+                <div class="sidebar-section-title">Operations</div>
+                <ul>
+                    <li><a href="staff-directory.html"><i class="fas fa-users"></i> <span>Staff Directory</span></a>
+                    </li>
+                    <li><a href="procurement.html"><i class="fas fa-shopping-cart"></i> <span>Procurement</span></a>
+                    </li>
+                    <li><a href="assets.html"><i class="fas fa-boxes"></i> <span>Asset Management</span></a></li>
+                    <li><a href="schedules.html"><i class="fas fa-calendar-alt"></i> <span>Schedules & Shifts</span></a>
+                    </li>
+                </ul>
+
+                <div class="sidebar-section-title">Support & HR</div>
+                <ul>
+                    <li><a href="sdc-portal.html"><i class="fas fa-file-invoice-dollar"></i> <span>SDC Staff
+                                Portal</span></a></li>
+                    <li><a href="hr-services.html"><i class="fas fa-user-shield"></i> <span>HR Services</span></a></li>
+                    <li><a href="profile.html"><i class="fas fa-id-card"></i> <span>My Profile</span></a></li>
+                    <li><a href="resources.html"><i class="fas fa-folder-open"></i> <span>Resources & Docs</span></a>
+                    </li>
+                    <li><a href="it-support.html"><i class="fas fa-headset"></i> <span>IT Support</span></a></li>
+                </ul>
+
+                <div class="sidebar-section-title">Communication</div>
+                <ul>
+                    <li><a href="news.html"><i class="fas fa-newspaper"></i> <span>News & Updates</span></a></li>
+                    <li><a href="feedback.html"><i class="fas fa-comment-dots"></i> <span>Feedback</span></a></li>
+                    <li><a href="contact.html"><i class="fas fa-address-book"></i> <span>Contact Us</span></a></li>
+                </ul>
+            </div>
+            <div class="sidebar-footer">
+                <a href="login.html"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Top Navigation Bar -->
+            <header class="top-nav">
+                <div class="welcome-text">
+                    <h2>Welcome back, Staff Member!</h2>
+                    <p>Welcome to your staff portal extension.</p>
+                </div>
+                <div class="user-profile">
+                    <div class="user-info">
+                        <span class="name">Tendai Moyo</span>
+                        <span class="role">Senior Facilities Manager</span>
+                    </div>
+                    <div class="user-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Dashboard Statistics -->
+            <div class="dashboard-grid">
+                <div class="stat-card">
+                    <div class="stat-icon icon-blue">
+                        <i class="fas fa-clipboard-list"></i>
+                    </div>
+                    <div class="stat-details">
+                        <h3>12</h3>
+                        <p>Pending Tasks</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon icon-green">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="stat-details">
+                        <h3>85%</h3>
+                        <p>Efficiency Rate</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon icon-orange">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="stat-details">
+                        <h3>3</h3>
+                        <p>Urgent Alerts</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content Row 1: Announcements & Quick Links -->
+            <div class="content-row">
+                <div class="content-left">
+                    <!-- Important Announcements -->
+                    <section class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-bullhorn"></i> Important Announcements</h3>
+                            <a href="news.html"
+                                style="color: var(--school-primary); font-size: 0.85rem; font-weight: 600; text-decoration: none;">View
+                                All</a>
+                        </div>
+                        <div class="card-body">
+                            <div id="announcements-container">
+                                <div style="text-align:center; padding: 20px; color:#666;">Loading announcements...
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Quick Tools -->
+                    <section class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-tools"></i> Quick Access Tools</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="quick-links-grid">
+                                <a href="hr-services.html" class="quick-link-card">
+                                    <i class="fas fa-calendar-plus"></i>
+                                    <span>Request Leave</span>
+                                </a>
+                                <a href="procurement.html" class="quick-link-card">
+                                    <i class="fas fa-file-invoice"></i>
+                                    <span>New Requisition</span>
+                                </a>
+                                <a href="assets.html" class="quick-link-card">
+                                    <i class="fas fa-tools"></i>
+                                    <span>Log Maintenance</span>
+                                </a>
+                                <a href="it-support.html" class="quick-link-card">
+                                    <i class="fas fa-bug"></i>
+                                    <span>Report IT Issue</span>
+                                </a>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <div class="content-right">
+                    <!-- Upcoming Schedules -->
+                    <section class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-clock"></i> Next Shifts</h3>
+                            <a href="schedules.html" title="Full Calendar"><i class="fas fa-calendar-alt"></i></a>
+                        </div>
+                        <div class="card-body">
+                            <ul class="schedule-list">
+                                <li class="schedule-item">
+                                    <div class="schedule-date">
+                                        <span class="day">07</span>
+                                        <span class="month">Jan</span>
+                                    </div>
+                                    <div class="schedule-info">
+                                        <h4>Morning Shift</h4>
+                                        <p>07:00 AM - 03:00 PM</p>
+                                        <span class="badge badge-success">Confimed</span>
+                                    </div>
+                                </li>
+                                <li class="schedule-item">
+                                    <div class="schedule-date">
+                                        <span class="day">08</span>
+                                        <span class="month">Jan</span>
+                                    </div>
+                                    <div class="schedule-info">
+                                        <h4>Morning Shift</h4>
+                                        <p>07:00 AM - 03:00 PM</p>
+                                        <span class="badge badge-success">Confimed</span>
+                                    </div>
+                                </li>
+                                <li class="schedule-item">
+                                    <div class="schedule-date">
+                                        <span class="day">09</span>
+                                        <span class="month">Jan</span>
+                                    </div>
+                                    <div class="schedule-info">
+                                        <h4>Off Duty</h4>
+                                        <p>Family Day</p>
+                                        <span class="badge badge-warning">Rest</span>
+                                    </div>
+                                </li>
+                                <li class="schedule-item">
+                                    <div class="schedule-date">
+                                        <span class="day">10</span>
+                                        <span class="month">Jan</span>
+                                    </div>
+                                    <div class="schedule-info">
+                                        <h4>Event Setup</h4>
+                                        <p>08:00 AM - 05:00 PM</p>
+                                        <span class="badge badge-danger">High Priority</span>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </section>
+
+                    <!-- Useful Contacts -->
+                    <section class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-phone-alt"></i> Emergency</h3>
+                        </div>
+                        <div class="card-body">
+                            <div style="margin-bottom: 15px;">
+                                <p style="margin: 0; font-size: 0.8rem; color: #888;">Security Hub</p>
+                                <p style="margin: 2px 0; font-weight: 600;">+263 (0) 771 123 456</p>
+                            </div>
+                            <div style="margin-bottom: 15px;">
+                                <p style="margin: 0; font-size: 0.8rem; color: #888;">Clinical Support</p>
+                                <p style="margin: 2px 0; font-weight: 600;">+263 (0) 772 987 654</p>
+                            </div>
+                            <a href="contact.html" class="btn"
+                                style="width: 100%; display: block; text-align: center; background: rgba(var(--school-primary-rgb), 0.1); color: var(--school-primary); border: none; padding: 10px; border-radius: 10px; font-weight: 600; text-decoration: none; font-size: 0.85rem;">View
+                                Full Contact List</a>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../js/ancillary-common.js"></script>
+    <script src="../js/announcements-loader.js"></script>
+    <!-- ACADEX: Powered-by footer and school branding -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HR Services - ACADEX</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/library-portal.css">
+    <link rel="stylesheet" href="../css/ancillary-portal.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            background-color: rgba(var(--school-primary-rgb), 0.2);
+            color: white;
+            border-left: 3px solid var(--school-primary);
+        }
+
+        .top-header h2 {
+            color: var(--school-primary-dark);
+        }
+
+        .btn-primary {
+            background: var(--school-primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .btn-primary:hover {
+            background: var(--school-primary-dark);
+        }
+
+        .btn-outline {
+            border: 1px solid var(--school-primary);
+            color: var(--school-primary);
+            background: transparent;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .btn-outline:hover {
+            background: var(--school-primary);
+            color: white;
+        }
+
+        .fa-file-invoice-dollar {
+            color: var(--school-primary) !important;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <img src="../images/logo.png" alt="Logo" class="acadex-school-logo">
+                <h3>Library Portal</h3>
+            </div>
+            <div class="sidebar-menu">
+                <div class="sidebar-section-title">Library System</div>
+                <ul>
+                    <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
+                    <li><a href="books.html"><i class="fas fa-book"></i><span>Catalog Management</span></a></li>
+                    <li><a href="issue.html"><i class="fas fa-exchange-alt"></i><span>Circulation Desk</span></a></li>
+                    <li><a href="digital.html"><i class="fas fa-laptop-code"></i><span>Digital Resources</span></a></li>
+                    <li><a href="reports.html"><i class="fas fa-file-invoice"></i><span>Reports & Inventory</span></a>
+                    </li>
+                </ul>
+                <div class="sidebar-section-title">Operations</div>
+                <ul>
+                    <li><a href="staff-directory.html"><i class="fas fa-users"></i><span>Staff Directory</span></a></li>
+                    <li><a href="procurement.html"><i class="fas fa-shopping-cart"></i><span>Procurement</span></a></li>
+                    <li><a href="assets.html"><i class="fas fa-boxes"></i><span>Asset Management</span></a></li>
+                    <li><a href="schedules.html"><i class="fas fa-calendar-check"></i><span>Schedules &
+                                Shifts</span></a></li>
+                </ul>
+                <div class="sidebar-section-title">Staff HR & Support</div>
+                <ul>
+                    <li><a href="hr-services.html" class="active"><i class="fas fa-user-shield"></i><span>HR
+                                Services</span></a></li>
+                    <li><a href="profile.html"><i class="fas fa-id-card"></i><span>My Profile</span></a></li>
+                    <li><a href="resources.html"><i class="fas fa-folder-open"></i><span>Resources & Docs</span></a>
+                    </li>
+                    <li><a href="it-support.html"><i class="fas fa-headset"></i><span>IT Support</span></a></li>
+                </ul>
+                <div class="sidebar-section-title">Communication</div>
+                <ul>
+                    <li><a href="news.html"><i class="fas fa-newspaper"></i><span>News & Updates</span></a></li>
+                    <li><a href="announcements.html"><i class="fas fa-bullhorn"></i><span>General Notices</span></a>
+                    </li>
+                    <li><a href="contact.html"><i class="fas fa-address-book"></i><span>Contact Us</span></a></li>
+                    <li><a href="settings.html"><i class="fas fa-cog"></i><span>System Settings</span></a></li>
+                </ul>
+            </div>
+            <div class="sidebar-footer">
+                <a href="login.html"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="top-header">
+                <h2>HR Services</h2>
+                <div class="user-profile">
+                    <div style="text-align: right; margin-right: 10px;">
+                        <div style="font-weight: 600; font-size: 0.9rem;">Librarian Admin</div>
+                        <div style="font-size: 0.75rem; color: #888;">System Administrator</div>
+                    </div>
+                    <img src="../images/admin-avatar.png" alt="Admin">
+                </div>
+            </div>
+
+            <div class="content Area">
+                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 25px;">
+                    <!-- Leave Management -->
+                    <div class="glass-card" style="padding: 25px;">
+                        <div
+                            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <h3 style="margin: 0; color: var(--school-primary-dark, #1a1a2e);">Leave Management</h3>
+                            <button class="btn-primary" onclick="openModal('leaveRequestModal')"><i
+                                    class="fas fa-plus"></i> Request Leave</button>
+                        </div>
+
+                        <div
+                            style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 25px;">
+                            <div
+                                style="border: 1px solid #eef2ff; padding: 15px; border-radius: 8px; text-align: center; background: #f8fafc;">
+                                <div style="font-size: 0.8rem; color: #888; text-transform: uppercase;">Annual Leave
+                                </div>
+                                <div style="font-size: 1.5rem; font-weight: 700; color: var(--school-primary);">12 <span
+                                        style="font-size: 0.9rem; font-weight: 400; color: #666;">Days</span></div>
+                            </div>
+                            <div
+                                style="border: 1px solid #eef2ff; padding: 15px; border-radius: 8px; text-align: center; background: #f8fafc;">
+                                <div style="font-size: 0.8rem; color: #888; text-transform: uppercase;">Sick Leave</div>
+                                <div style="font-size: 1.5rem; font-weight: 700; color: #10b981;">5 <span
+                                        style="font-size: 0.9rem; font-weight: 400; color: #666;">Days</span></div>
+                            </div>
+                            <div
+                                style="border: 1px solid #eef2ff; padding: 15px; border-radius: 8px; text-align: center; background: #f8fafc;">
+                                <div style="font-size: 0.8rem; color: #888; text-transform: uppercase;">Study Leave
+                                </div>
+                                <div style="font-size: 1.5rem; font-weight: 700; color: #f6c23e;">0 <span
+                                        style="font-size: 0.9rem; font-weight: 400; color: #666;">Days</span></div>
+                            </div>
+                        </div>
+
+                        <h4 style="margin: 0 0 15px 0; border-bottom: 1px solid #eee; padding-bottom: 10px;">Recent
+                            Requests</h4>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Type</th>
+                                    <th>Dates</th>
+                                    <th>Duration</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="leaveRequestsTable">
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Sidebar Widgets -->
+                    <div>
+                        <!-- Payslips -->
+                        <div class="glass-card" style="padding: 25px; margin-bottom: 25px;">
+                            <h3 style="margin: 0 0 20px 0; color: var(--school-primary-dark, #1a1a2e);">Payslips</h3>
+                            <div style="display: flex; flex-direction: column; gap: 15px;">
+                                <div
+                                    style="display: flex; align-items: center; justify-content: space-between; padding: 10px; border: 1px solid #eee; border-radius: 8px;">
+                                    <div style="display: flex; align-items: center; gap: 10px;">
+                                        <i class="fas fa-file-invoice-dollar"
+                                            style="color: var(--school-primary); font-size: 1.2rem;"></i>
+                                        <div>
+                                            <div style="font-weight: 600; font-size: 0.9rem;">Jan 2026</div>
+                                            <div style="font-size: 0.75rem; color: #888;">PDF • 120 KB</div>
+                                        </div>
+                                    </div>
+                                    <button class="btn-sm btn-outline"><i class="fas fa-download"></i></button>
+                                </div>
+                                <div
+                                    style="display: flex; align-items: center; justify-content: space-between; padding: 10px; border: 1px solid #eee; border-radius: 8px;">
+                                    <div style="display: flex; align-items: center; gap: 10px;">
+                                        <i class="fas fa-file-invoice-dollar"
+                                            style="color: var(--school-primary); font-size: 1.2rem;"></i>
+                                        <div>
+                                            <div style="font-weight: 600; font-size: 0.9rem;">Dec 2025</div>
+                                            <div style="font-size: 0.75rem; color: #888;">PDF • 120 KB</div>
+                                        </div>
+                                    </div>
+                                    <button class="btn-sm btn-outline"><i class="fas fa-download"></i></button>
+                                </div>
+                            </div>
+                            <button class="btn-outline"
+                                style="width: 100%; justify-content: center; margin-top: 15px;">View All
+                                History</button>
+                        </div>
+
+                        <!-- Benefits -->
+                        <div class="glass-card" style="padding: 25px;">
+                            <h3 style="margin: 0 0 15px 0; color: var(--school-primary-dark, #1a1a2e);">My Benefits</h3>
+                            <ul style="list-style: none; padding: 0; margin: 0;">
+                                <li
+                                    style="padding: 10px 0; border-bottom: 1px solid #f0f0f0; display: flex; gap: 10px; align-items: center;">
+                                    <i class="fas fa-notes-medical" style="color: #e74a3b;"></i> Medical Aid (CIMAS)
+                                </li>
+                                <li
+                                    style="padding: 10px 0; border-bottom: 1px solid #f0f0f0; display: flex; gap: 10px; align-items: center;">
+                                    <i class="fas fa-piggy-bank" style="color: #f6c23e;"></i> Pension Fund
+                                </li>
+                                <li style="padding: 10px 0; display: flex; gap: 10px; align-items: center;">
+                                    <i class="fas fa-bus" style="color: #1cc88a;"></i> Transport Allowance
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Request Leave Modal -->
+    <div id="leaveRequestModal" class="modal">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h3><i class="fas fa-calendar-plus"></i> Request Leave</h3>
+                <span class="close-modal" onclick="closeModal('leaveRequestModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="leaveRequestForm">
+                    <div class="form-group" style="margin-bottom: 15px;">
+                        <label>Leave Type</label>
+                        <select id="leaveType" class="form-control" required
+                            style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px;">
+                            <option value="Annual Leave">Annual Leave</option>
+                            <option value="Sick Leave">Sick Leave</option>
+                            <option value="Study Leave">Study Leave</option>
+                            <option value="Unpaid Leave">Unpaid Leave</option>
+                        </select>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                        <div class="form-group">
+                            <label>Start Date</label>
+                            <input type="date" id="leaveStartDate" class="form-control" required
+                                style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px;">
+                        </div>
+                        <div class="form-group">
+                            <label>End Date</label>
+                            <input type="date" id="leaveEndDate" class="form-control" required
+                                style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px;">
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 20px;">
+                        <label>Reason / Comments</label>
+                        <textarea id="leaveReason" class="form-control" placeholder="Optional notes..."
+                            style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px;"></textarea>
+                    </div>
+                    <button type="submit" class="btn-primary" style="width: 100%;">Submit Request</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/library-auth.js"></script>
+    <script src="../js/library-admin.js"></script>
+    <!-- ACADEX: Powered-by footer and school branding -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+
+</body>
+
+</html>
+

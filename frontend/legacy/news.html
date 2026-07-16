@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>News - Embakwe High School</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/announcements.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        /* Additional styles for news page */
+        .page-banner {
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('images/news-banner.jpg');
+            background-size: cover;
+            background-position: center;
+            padding: 80px 0;
+            color: #fff;
+            text-align: center;
+        }
+
+        .page-banner h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        .news-section {
+            padding: 80px 0;
+        }
+
+        .news-filters {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 40px;
+        }
+
+        .filter-btn {
+            background: none;
+            border: none;
+            padding: 8px 20px;
+            margin: 0 5px;
+            cursor: pointer;
+            font-weight: 500;
+            border-radius: 30px;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn.active,
+        .filter-btn:hover {
+            background-color: #0056b3;
+            color: #fff;
+        }
+
+        .news-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 30px;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 50px;
+        }
+
+        .pagination a {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            line-height: 40px;
+            text-align: center;
+            margin: 0 5px;
+            border-radius: 5px;
+            background-color: #f1f1f1;
+            transition: all 0.3s ease;
+        }
+
+        .pagination a:hover,
+        .pagination a.active {
+            background-color: #0056b3;
+            color: #fff;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <div class="container">
+            <div class="contact-info">
+                <span><i class="fas fa-phone"></i> +263 123 456 789</span>
+                <span><i class="fas fa-envelope"></i> info@embakwe.ac.zw</span>
+            </div>
+            <div class="portal-links">
+                <a href="student/login.html"><i class="fas fa-user-graduate"></i> Student Portal</a>
+                <a href="teacher/login.html"><i class="fas fa-chalkboard-teacher"></i> Teacher Portal</a>
+                <a href="alumni/login.html"><i class="fas fa-user-tie"></i> Alumni Portal</a>
+                <a href="admin/login.html"><i class="fas fa-lock"></i> Admin</a>
+
+                <a href="library/login.html"><i class="fas fa-book"></i> Librarian</a>
+                <a href="bursar/login.html"><i class="fas fa-money-check-alt"></i> Bursar</a>
+                <a href="student/login.html"><i class="fas fa-user-graduate"></i> Student Portal</a>
+                <a href="teacher/login.html"><i class="fas fa-chalkboard-teacher"></i> Teacher Portal</a>
+                <a href="alumni/login.html"><i class="fas fa-user-tie"></i> Alumni Portal</a>
+                <a href="admin/login.html"><i class="fas fa-lock"></i> Admin</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header Section -->
+    <header>
+        <div class="container">
+            <div class="logo">
+                <h1 class="acadex-school-name">Embakwe High School</h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="departments.html">Departments</a></li>
+                    <li><a href="apply.html">Applications</a></li>
+                    <li><a href="check-status.html">Track Application</a></li>
+                    <li><a href="gallery.html">Gallery</a></li>
+                    <li><a href="news.html" class="active">News</a></li>
+                    <li><a href="sports.html">Sports</a></li>
+                    <li><a href="clubs.html">Clubs</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+            </nav>
+            <div class="menu-toggle">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </header>
+
+    <!-- Page Banner -->
+    <section class="page-banner">
+        <div class="container">
+            <h1 id="hero-title">School News & Updates</h1>
+            <p id="hero-subtitle">Stay informed about the latest happenings at Embakwe High School</p>
+        </div>
+    </section>
+
+    <!-- News Section -->
+    <section class="news-section">
+        <div class="container">
+            <div class="news-filters">
+                <button class="filter-btn active" data-filter="all">All News</button>
+                <button class="filter-btn" data-filter="academic">Academic</button>
+                <button class="filter-btn" data-filter="sports">Sports</button>
+                <button class="filter-btn" data-filter="events">Events</button>
+                <button class="filter-btn" data-filter="announcements">Portal Announcements</button>
+            </div>
+
+            <div id="news-dynamic-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 30px; margin-bottom: 40px;">
+                <!-- Dynamic content injected by acadex-tenant.js -->
+            </div>
+
+            <div id="announcements-container" class="announcements-grid" style="display: none; margin-bottom: 40px; border: 1px solid #eee; border-radius: 10px; padding: 20px; background: #fdfdfd;">
+                <!-- Dynamically loaded from shared loader -->
+            </div>
+
+            <div class="news-container">
+                <!-- News Item 1 -->
+                    <div class="news-img">
+                        <img src="images/news1.jpg" alt="Science Fair">
+                    </div>
+                    <div class="news-content">
+                        <span class="date">June 15, 2023</span>
+                        <h3>Annual Science Fair Winners Announced</h3>
+                        <p>Congratulations to all participants in this year's science fair. The creativity and
+                            innovation displayed by our students were truly impressive. Special recognition goes to the
+                            top three projects:</p>
+                        <p>1st Place: "Renewable Energy Solutions" by Sarah Johnson<br>
+                            2nd Place: "Water Purification System" by Michael Chen<br>
+                            3rd Place: "Biodegradable Plastics" by Emily Rodriguez</p>
+                        <a href="#" class="read-more">Read More</a>
+                    </div>
+                </div>
+
+                <!-- News Item 2 -->
+                <div class="news-card" data-category="academic">
+                    <div class="news-img">
+                        <img src="images/news2.jpg" alt="Computer Lab">
+                    </div>
+                    <div class="news-content">
+                        <span class="date">June 10, 2023</span>
+                        <h3>New Computer Lab Inauguration</h3>
+                        <p>The school proudly inaugurated its state-of-the-art computer lab equipped with 30 new
+                            computers, high-speed internet, and the latest software. This facility will enhance our
+                            students' digital literacy and provide them with essential skills for the future.</p>
+                        <p>The lab was made possible through generous donations from our alumni association and
+                            corporate partners.</p>
+                        <a href="#" class="read-more">Read More</a>
+                    </div>
+                </div>
+
+                <!-- News Item 3 -->
+                <div class="news-card" data-category="sports">
+                    <div class="news-img">
+                        <img src="images/news3.jpg" alt="Sports Day">
+                    </div>
+                    <div class="news-content">
+                        <span class="date">June 5, 2023</span>
+                        <h3>Sports Day Celebration</h3>
+                        <p>Students showcased their athletic talents during the annual sports day. Events included track
+                            and field, basketball, volleyball, and soccer tournaments. The Blue House emerged as the
+                            overall champion with 250 points.</p>
+                        <p>Special congratulations to John Smith who broke the school record in the 100m sprint with a
+                            time of 10.85 seconds.</p>
+                        <a href="#" class="read-more">Read More</a>
+                    </div>
+                </div>
+
+                <!-- News Item 4 -->
+                <div class="news-card" data-category="events">
+                    <div class="news-img">
+                        <img src="images/news4.jpg" alt="Cultural Day">
+                    </div>
+                    <div class="news-content">
+                        <span class="date">May 28, 2023</span>
+                        <h3>Cultural Day Celebrations</h3>
+                        <p>Our annual Cultural Day was a vibrant celebration of diversity and heritage. Students
+                            presented traditional dances, music, and cuisine from various cultures around the world.</p>
+                        <p>The event fostered cultural appreciation and understanding among our diverse student body.
+                            Parents and community members joined in the festivities.</p>
+                        <a href="#" class="read-more">Read More</a>
+                    </div>
+                </div>
+
+                <!-- News Item 5 -->
+                <div class="news-card" data-category="announcements">
+                    <div class="news-img">
+                        <img src="images/news5.jpg" alt="Exam Schedule">
+                    </div>
+                    <div class="news-content">
+                        <span class="date">May 20, 2023</span>
+                        <h3>End of Term Examination Schedule Released</h3>
+                        <p>The schedule for the end-of-term examinations has been released. Exams will run from June 20
+                            to July 5, 2023. Students are advised to prepare adequately and check the detailed timetable
+                            on the school notice board.</p>
+                        <p>Study resources and past papers are available in the school library and online learning
+                            portal.</p>
+                        <a href="#" class="read-more">Read More</a>
+                    </div>
+                </div>
+
+                <!-- News Item 6 -->
+                <div class="news-card" data-category="academic">
+                    <div class="news-img">
+                        <img src="images/news6.jpg" alt="Debate Competition">
+                    </div>
+                    <div class="news-content">
+                        <span class="date">May 15, 2023</span>
+                        <h3>Debate Team Wins Regional Championship</h3>
+                        <p>Our debate team emerged victorious at the Regional Schools Debate Championship. The team
+                            demonstrated exceptional critical thinking, research, and public speaking skills throughout
+                            the competition.</p>
+                        <p>They will now represent our region at the National Debate Finals scheduled for August 2023.
+                        </p>
+                        <a href="#" class="read-more">Read More</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pagination">
+                <a href="#" class="active">1</a>
+                <a href="#">2</a>
+                <a href="#">3</a>
+                <a href="#"><i class="fas fa-angle-right"></i></a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>Embakwe High School</h3>
+                    <p>Nurturing Excellence, Building Character, Shaping Futures</p>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                <div class="footer-column">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="news.html">News</a></li>
+                        <li><a href="sports.html">Sports</a></li>
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Contact Info</h3>
+                    <p><i class="fas fa-map-marker-alt"></i> 123 School Road, Embakwe</p>
+                    <p><i class="fas fa-phone"></i> +123 456 7890</p>
+                    <p><i class="fas fa-envelope"></i> info@embakwehigh.edu</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2023 Embakwe High School. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="acadex/js/acadex-core.js"></script>
+    <script src="acadex/js/acadex-tenant.js"></script>
+    <script src="js/script.js"></script>
+    <script src="js/announcements-loader.js"></script>
+    <script>
+        // News Filter Functionality
+        document.addEventListener('DOMContentLoaded', function () {
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            const newsItems = document.querySelectorAll('.news-card');
+            const announceContainer = document.getElementById('announcements-container');
+
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', function () {
+                    // Remove active class from all buttons
+                    filterBtns.forEach(btn => btn.classList.remove('active'));
+
+                    // Add active class to clicked button
+                    this.classList.add('active');
+
+                    // Get filter value
+                    const filterValue = this.getAttribute('data-filter');
+
+                    // Show/Hide news vs announcements
+                    if (filterValue === 'announcements') {
+                        newsItems.forEach(item => item.style.display = 'none');
+                        announceContainer.style.display = 'block';
+                    } else {
+                        announceContainer.style.display = 'none';
+                        // Filter news items
+                        newsItems.forEach(item => {
+                            if (filterValue === 'all' || item.getAttribute('data-category') === filterValue) {
+                                item.style.display = 'block';
+                            } else {
+                                item.style.display = 'none';
+                            }
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HR Services - ACADEX</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/ancillary-portal.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        /* HR SERVICES SPECIFIC STYLES */
+        .hr-profile {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.03);
+            margin-bottom: 30px;
+        }
+
+        .profile-img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: rgba(var(--school-primary-rgb), 0.1);
+            color: var(--school-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+        }
+
+        .profile-info h2 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: #1e293b;
+        }
+
+        .profile-info p {
+            margin: 5px 0 0;
+            color: #64748b;
+            font-size: 0.95rem;
+        }
+
+        .leave-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .leave-box {
+            padding: 15px;
+            background: #f8fafc;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid #e2e8f0;
+        }
+
+        .leave-box span {
+            display: block;
+        }
+
+        .leave-box .val {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--school-primary);
+        }
+
+        .leave-box .lab {
+            font-size: 0.75rem;
+            color: #64748b;
+            margin-top: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group label {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #475569;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 10px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-family: inherit;
+        }
+
+        .record-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .record-item:last-child {
+            border-bottom: none;
+        }
+
+        .record-info span {
+            display: block;
+        }
+
+        .record-date {
+            font-size: 0.8rem;
+            color: #888;
+        }
+
+        .record-title {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #334155;
+        }
+
+        .record-status {
+            font-size: 0.75rem;
+            color: #10b981;
+            font-weight: 700;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            margin-bottom: 25px;
+        }
+
+        .card-header {
+            padding: 20px 25px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-header h3 {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--school-primary-dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-body {
+            padding: 25px;
+        }
+
+        @media (max-width: 1024px) {
+            .hr-profile {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Mobile Toggle Button -->
+    <button class="mobile-toggle" id="mobile-toggle">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <div class="dashboard-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <img src="../images/logo.png" alt="Logo" class="acadex-school-logo">
+                <h3>ANCILLARY PORTAL</h3>
+            </div>
+            <div class="sidebar-menu">
+                <ul>
+                    <li><a href="dashboard.html"><i class="fas fa-th-large"></i> <span>Dashboard</span></a></li>
+                </ul>
+
+                <div id="tuckshop-sidebar-section" style="display: none;">
+                    <div class="sidebar-section-title">Tuckshop System</div>
+                    <ul>
+                        <li><a href="tuckshop-dashboard.html"><i class="fas fa-tachometer-alt"></i> <span>TS Dashboard</span></a></li>
+                        <li><a href="tuckshop-sales.html"><i class="fas fa-cash-register"></i> <span>Point of Sale</span></a></li>
+                        <li><a href="tuckshop-inventory.html"><i class="fas fa-boxes"></i> <span>Inventory</span></a></li>
+                        <li><a href="tuckshop-orders.html"><i class="fas fa-truck"></i> <span>Supplier Orders</span></a></li>
+                    </ul>
+                </div>
+
+                <div class="sidebar-section-title">Operations</div>
+                <ul>
+                    <li><a href="staff-directory.html"><i class="fas fa-users"></i> <span>Staff Directory</span></a></li>
+                    <li><a href="procurement.html"><i class="fas fa-shopping-cart"></i> <span>Procurement</span></a></li>
+                    <li><a href="assets.html"><i class="fas fa-boxes"></i> <span>Asset Management</span></a></li>
+                    <li><a href="schedules.html"><i class="fas fa-calendar-alt"></i> <span>Schedules & Shifts</span></a></li>
+                </ul>
+
+                <div class="sidebar-section-title">Support & HR</div>
+                <ul>
+                    <li><a href="sdc-portal.html"><i class="fas fa-file-invoice-dollar"></i> <span>SDC Staff Portal</span></a></li>
+                    <li><a href="hr-services.html" class="active"><i class="fas fa-user-shield"></i> <span>HR Services</span></a></li>
+                    <li><a href="profile.html"><i class="fas fa-id-card"></i> <span>My Profile</span></a></li>
+                    <li><a href="resources.html"><i class="fas fa-folder-open"></i> <span>Resources & Docs</span></a></li>
+                    <li><a href="it-support.html"><i class="fas fa-headset"></i> <span>IT Support</span></a></li>
+                </ul>
+
+                <div class="sidebar-section-title">Communication</div>
+                <ul>
+                    <li><a href="news.html"><i class="fas fa-newspaper"></i> <span>News & Updates</span></a></li>
+                    <li><a href="feedback.html"><i class="fas fa-comment-dots"></i> <span>Feedback</span></a></li>
+                    <li><a href="contact.html"><i class="fas fa-address-book"></i> <span>Contact Us</span></a></li>
+                </ul>
+            </div>
+            <div class="sidebar-footer">
+                <a href="login.html"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <header class="hr-profile">
+                <div class="profile-img"><i class="fas fa-user"></i></div>
+                <div class="profile-info">
+                    <h2>Tendai Moyo</h2>
+                    <p><i class="fas fa-briefcase"></i> Senior Facilities Manager • Staff ID: ACX-ANC-042</p>
+                    <p><i class="fas fa-id-card"></i> Joined: March 15, 2018</p>
+                </div>
+                <div style="margin-left: auto;">
+                    <button onclick="window.location.href='profile.html'"
+                        style="background: rgba(var(--school-primary-rgb), 0.1); color: var(--school-primary); border: none; padding: 10px 20px; border-radius: 10px; font-weight: 600; cursor: pointer;">Edit Personal Info</button>
+                </div>
+            </header>
+
+            <div class="content-row" style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 30px;">
+                <div class="content-left">
+                    <!-- Leave Application -->
+                    <section class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-calendar-plus"></i> Leave Application</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="leave-stats">
+                                <div class="leave-box">
+                                    <span class="val">24</span>
+                                    <span class="lab">Annual Total</span>
+                                </div>
+                                <div class="leave-box">
+                                    <span class="val">12</span>
+                                    <span class="lab">Used Days</span>
+                                </div>
+                                <div class="leave-box" style="background: rgba(var(--school-primary-rgb), 0.05);">
+                                    <span class="val" style="color: var(--school-primary);">12</span>
+                                    <span class="lab">Remaining</span>
+                                </div>
+                            </div>
+
+                            <form class="form-grid" id="leaveForm">
+                                <div class="form-group">
+                                    <label>Leave Type</label>
+                                    <select id="leaveType" required>
+                                        <option value="">Select Type</option>
+                                        <option>Annual Leave</option>
+                                        <option>Sick Leave</option>
+                                        <option>Compassionate Leave</option>
+                                        <option>Maternity/Paternity</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Substitute Staff (if applicable)</label>
+                                    <input type="text" id="substitute" placeholder="Who will cover your shift?">
+                                </div>
+                                <div class="form-group">
+                                    <label>Start Date</label>
+                                    <input type="date" id="startDate" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>End Date</label>
+                                    <input type="date" id="endDate" required>
+                                </div>
+                                <div class="form-group" style="grid-column: span 2;">
+                                    <label>Reason / Comments</label>
+                                    <textarea id="reason" rows="3" placeholder="Provide details..."></textarea>
+                                </div>
+                                <button type="submit"
+                                    style="grid-column: span 2; background: var(--school-primary); color: white; border: none; padding: 12px; border-radius: 10px; font-weight: 600; cursor: pointer; margin-top: 10px;">Submit Leave Request</button>
+                            </form>
+                        </div>
+                    </section>
+
+                    <!-- Benefits Hub -->
+                    <section class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-heartbeat"></i> Benefits & Enrollment</h3>
+                        </div>
+                        <div class="card-body">
+                            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
+                                <div
+                                    style="padding: 15px; border-radius: 12px; border: 1px solid #f1f5f9; display: flex; align-items: center; gap: 15px;">
+                                    <i class="fas fa-medical-star" style="font-size: 1.5rem; color: #10b981;"></i>
+                                    <div>
+                                        <span style="display: block; font-weight: 600; font-size: 0.9rem;">Medical Aid</span>
+                                        <span style="font-size: 0.75rem; color: #64748b;">Plan: Comprehensive Gold</span>
+                                    </div>
+                                </div>
+                                <div
+                                    style="padding: 15px; border-radius: 12px; border: 1px solid #f1f5f9; display: flex; align-items: center; gap: 15px;">
+                                    <i class="fas fa-piggy-bank" style="font-size: 1.5rem; color: #f59e0b;"></i>
+                                    <div>
+                                        <span style="display: block; font-weight: 600; font-size: 0.9rem;">Pension Fund</span>
+                                        <span style="font-size: 0.75rem; color: #64748b;">Member since 2018</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <button
+                                style="width: 100%; margin-top: 20px; border: 1px solid #e2e8f0; background: white; padding: 10px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; color: #64748b; cursor: pointer;">Update Benefits / Add Dependents</button>
+                        </div>
+                    </section>
+                </div>
+
+                <div class="content-right">
+                    <!-- Payslips -->
+                    <section class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-file-invoice-dollar"></i> Recent Payslips</h3>
+                        </div>
+                        <div class="card-body" style="padding: 0;">
+                            <div class="record-item">
+                                <div class="record-info">
+                                    <span class="record-title">December 2025 Payslip</span>
+                                    <span class="record-date">Paid on Dec 24</span>
+                                </div>
+                                <a href="#" style="color: var(--school-primary);"><i class="fas fa-download"></i></a>
+                            </div>
+                            <div class="record-item">
+                                <div class="record-info">
+                                    <span class="record-title">November 2025 Payslip</span>
+                                    <span class="record-date">Paid on Nov 25</span>
+                                </div>
+                                <a href="#" style="color: var(--school-primary);"><i class="fas fa-download"></i></a>
+                            </div>
+                            <div class="record-item">
+                                <div class="record-info">
+                                    <span class="record-title">October 2025 Payslip</span>
+                                    <span class="record-date">Paid on Oct 25</span>
+                                </div>
+                                <a href="#" style="color: var(--school-primary);"><i class="fas fa-download"></i></a>
+                            </div>
+                            <div style="padding: 15px;">
+                                <a href="#"
+                                    style="font-size: 0.85rem; font-weight: 600; color: var(--school-primary); text-decoration: none;">View Pay History</a>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Performance -->
+                    <section class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-star"></i> Performance Reviews</h3>
+                        </div>
+                        <div class="card-body">
+                            <div
+                                style="background: #ecfdf5; border-radius: 12px; padding: 15px; border-left: 4px solid #10b981;">
+                                <span style="display: block; font-weight: 700; color: #166534; font-size: 1.1rem;">Exceeds Expectations</span>
+                                <span style="font-size: 0.8rem; color: #065f46;">Annual Review - Nov 2025</span>
+                                <p style="margin: 10px 0 0; font-size: 0.8rem; color: #065f46; line-height: 1.4;">"Tendai has demonstrated exceptional leadership in the facilities team, especially during the solar plant installation project."</p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Manager Contact -->
+                    <section class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-user-tie"></i> My Manager</h3>
+                        </div>
+                        <div class="card-body" style="display: flex; align-items: center; gap: 15px;">
+                            <div
+                                style="width: 50px; height: 50px; background: #e2e8f0; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #64748b;">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div>
+                                <span style="display: block; font-weight: 600; font-size: 0.95rem;">Mrs. Abigail Shumba</span>
+                                <span style="font-size: 0.75rem; color: #64748b;">Human Resources Director</span>
+                            </div>
+                        </div>
+                    </section>
+                    
+                    <!-- Company Policies -->
+                    <section class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-file-contract"></i> Company Policies</h3>
+                        </div>
+                        <div class="card-body" style="padding: 15px;">
+                            <a href="#" class="kb-item policy-link" data-file="Staff_Handbook_2026.pdf">
+                                <div class="kb-icon"><i class="fas fa-book-reader"></i></div>
+                                <span>Ancillary Staff Handbook</span>
+                            </a>
+                            <a href="#" class="kb-item policy-link" data-file="Safety_Procedures.pdf">
+                                <div class="kb-icon"><i class="fas fa-hard-hat"></i></div>
+                                <span>Safety & Compliance</span>
+                            </a>
+                            <a href="#" class="kb-item policy-link" data-file="Code_of_Conduct.pdf">
+                                <div class="kb-icon"><i class="fas fa-user-check"></i></div>
+                                <span>Staff Code of Conduct</span>
+                            </a>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../js/ancillary-common.js"></script>
+    <script>
+        // Helper: User data (Session first, then Local)
+        const currentUser = JSON.parse(sessionStorage.getItem('ancillaryUser') || getTenantData('currentUser', 'null')) || { name: 'Staff Member', role: 'ancillary', dept: 'Facilities & Maintenance', email: 'staff@acadex.co.zw' };
+        const userEmail = currentUser.email;
+
+        // Populate Profile Info
+        if (document.querySelector('.profile-info h2')) {
+            document.querySelector('.profile-info h2').textContent = currentUser.name;
+        }
+
+        const profileSubtitle = document.querySelector('.profile-info p:first-of-type');
+        if (profileSubtitle) {
+            const role = currentUser.post || currentUser.role || currentUser.primaryRole || 'Staff';
+            const staffId = currentUser.id || `ACX-ANC-${userEmail.slice(0, 3).toUpperCase()}`;
+            profileSubtitle.innerHTML = `<i class="fas fa-briefcase"></i> ${role} • ${currentUser.dept} • Staff ID: ${staffId}`;
+        }
+
+        const joinedInfo = document.querySelector('.profile-info p:nth-of-type(2)');
+        if (joinedInfo) {
+            const joinedDate = currentUser.joined || currentUser.joinDate || 'March 15, 2018';
+            joinedInfo.innerHTML = `<i class="fas fa-id-card"></i> Joined: ${joinedDate}`;
+        }
+
+        // Load Leave Balances
+        function loadLeave() {
+            const allBalances = JSON.parse(getTenantData('leaveBalances', 'null') || '{}');
+            if (!allBalances[userEmail]) {
+                allBalances[userEmail] = { total: 24, used: 12 };
+                saveTenantData('leaveBalances', allBalances);
+            }
+
+            const balance = allBalances[userEmail];
+            const remaining = balance.total - balance.used;
+
+            const boxes = document.querySelectorAll('.leave-box .val');
+            if (boxes.length >= 3) {
+                boxes[0].textContent = balance.total;
+                boxes[1].textContent = balance.used;
+                boxes[2].textContent = remaining;
+            }
+        }
+
+        // Load Benefits
+        function loadBenefits() {
+            const allBenefits = JSON.parse(getTenantData('userBenefits', 'null') || '{}');
+            const userBen = allBenefits[userEmail];
+            const container = document.querySelector('.card:has(.fa-heartbeat) .card-body div');
+
+            if (userBen) {
+                container.innerHTML = `
+                    <div style="padding: 15px; border-radius: 12px; border: 1px solid #f1f5f9; display: flex; align-items: center; gap: 15px;">
+                        <i class="fas fa-medical-star" style="font-size: 1.5rem; color: #10b981;"></i>
+                        <div>
+                            <span style="display: block; font-weight: 600; font-size: 0.9rem;">Medical Aid</span>
+                            <span style="font-size: 0.75rem; color: #64748b;">Plan: ${userBen.medicalAid || 'Not Enrolled'}</span>
+                        </div>
+                    </div>
+                    <div style="padding: 15px; border-radius: 12px; border: 1px solid #f1f5f9; display: flex; align-items: center; gap: 15px;">
+                        <i class="fas fa-piggy-bank" style="font-size: 1.5rem; color: #f59e0b;"></i>
+                        <div>
+                            <span style="display: block; font-weight: 600; font-size: 0.9rem;">Pension Fund</span>
+                            <span style="font-size: 0.75rem; color: #64748b;">Plan: ${userBen.pension || 'Not Enrolled'}</span>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        document.getElementById('leaveForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const type = document.getElementById('leaveType').value;
+            const start = new Date(document.getElementById('startDate').value);
+            const end = new Date(document.getElementById('endDate').value);
+            const diffTime = Math.abs(end - start);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+
+            if (diffDays <= 0) {
+                showNotification('Invalid date range', 'error');
+                return;
+            }
+
+            const allBalances = JSON.parse(getTenantData('leaveBalances', 'null') || '{}');
+            const balance = allBalances[userEmail];
+
+            if ((balance.total - balance.used) < diffDays) {
+                showNotification('Insufficient leave balance!', 'error');
+                return;
+            }
+
+            const requests = getTenantData('leaveRequests', '[]');
+            requests.unshift({
+                id: `LV-${Date.now().toString().slice(-4)}`,
+                userEmail: userEmail,
+                userName: currentUser.name,
+                type: type,
+                start: start.toISOString(),
+                end: end.toISOString(),
+                days: diffDays,
+                status: 'Pending'
+            });
+            saveTenantData('leaveRequests', requests);
+
+            balance.used += diffDays;
+            saveTenantData('leaveBalances', allBalances);
+
+            showNotification(`Leave Request Submitted: ${diffDays} day(s) of ${type}`, 'success');
+            loadLeave();
+            this.reset();
+        });
+
+        // Initialize
+        loadLeave();
+        loadBenefits();
+
+        // Payslip downloads
+        document.querySelectorAll('.record-item a').forEach(link => {
+            link.onclick = (e) => {
+                e.preventDefault();
+                const title = link.closest('.record-item').querySelector('.record-title').textContent;
+                showNotification(`Downloading: ${title}`, 'info');
+                simulateDownload(`${title.replace(/\s+/g, '_')}.pdf`, `This is a simulated payslip for ${currentUser.name} - ${title}`);
+            };
+        });
+
+        // Policy downloads
+        document.querySelectorAll('.policy-link').forEach(link => {
+            link.onclick = (e) => {
+                e.preventDefault();
+                const fileName = link.getAttribute('data-file');
+                const title = link.querySelector('span').textContent;
+                showNotification(`Downloading Policy: ${title}`, 'success');
+                simulateDownload(fileName, `Official ACADEX Policy: ${title}`);
+            };
+        });
+    </script>
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+</body>
+
+</html>

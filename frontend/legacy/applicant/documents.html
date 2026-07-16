@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documents Upload - Applicant Portal</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/ancillary-portal.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        .documents-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+
+        .doc-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 200px;
+            border-left: 5px solid #eee;
+        }
+
+        .doc-info i {
+            font-size: 2rem;
+            color: var(--school-primary, #0056b3);
+            margin-bottom: 15px;
+        }
+
+        .doc-info h4 {
+            margin: 0 0 8px;
+            color: #333;
+        }
+
+        .doc-info p {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 10000;
+            inset: 0;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(5px);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            max-width: 800px;
+            width: 90%;
+            position: relative;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 1.5rem;
+            color: #333;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Mobile Toggle -->
+    <button class="mobile-toggle" id="mobileToggle">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <img src="../images/logo.png" alt="School Logo" class="acadex-school-logo">
+            <h3 class="acadex-school-name">Applicant Portal</h3>
+        </div>
+        
+        <div class="sidebar-menu">
+            <div class="sidebar-section-title">Application Journey</div>
+            <ul>
+                <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
+                <li><a href="timeline.html"><i class="fas fa-stream"></i><span>Timeline</span></a></li>
+                <li><a href="documents.html" class="active"><i class="fas fa-folder-open"></i><span>Documents</span></a></li>
+                <li><a href="interview.html"><i class="fas fa-calendar-check"></i><span>Interview</span></a></li>
+            </ul>
+
+            <div class="sidebar-section-title">Financials & Info</div>
+            <ul>
+                <li><a href="payments.html"><i class="fas fa-credit-card"></i><span>Payments</span></a></li>
+                <li><a href="fees.html"><i class="fas fa-file-invoice-dollar"></i><span>Fee Structure</span></a></li>
+                <li><a href="faq.html"><i class="fas fa-question-circle"></i><span>FAQs</span></a></li>
+            </ul>
+
+            <div class="sidebar-section-title">Communication</div>
+            <ul>
+                <li><a href="messages.html"><i class="fas fa-envelope"></i><span>Messages</span></a></li>
+                <li><a href="profile.html"><i class="fas fa-user"></i><span>My Profile</span></a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-footer">
+            <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="dashboard-header">
+            <div>
+                <h2>Documents & Attachments</h2>
+                <p style="color: #666;">Upload required documents for your application. (Max 2MB per file)</p>
+            </div>
+        </div>
+
+        <div class="documents-grid">
+            <!-- ID/Passport -->
+            <div class="doc-card" id="card-id">
+                <div class="doc-info">
+                    <i class="fas fa-id-card"></i>
+                    <h4>Identity Document</h4>
+                    <p>Clear copy of National ID, Passport or Driver's License.</p>
+                </div>
+                <div class="action-area">
+                    <!-- JS Injected -->
+                </div>
+            </div>
+
+            <!-- Birth Certificate -->
+            <div class="doc-card" id="card-birth">
+                <div class="doc-info">
+                    <i class="fas fa-baby"></i>
+                    <h4>Birth Certificate</h4>
+                    <p>Standard birth certificate showing parents' details.</p>
+                </div>
+                <div class="action-area">
+                    <!-- JS Injected -->
+                </div>
+            </div>
+
+            <!-- Proof of Residence -->
+            <div class="doc-card" id="card-address">
+                <div class="doc-info">
+                    <i class="fas fa-home"></i>
+                    <h4>Proof of Residence</h4>
+                    <p>Utility bill or affidavit not older than 3 months.</p>
+                </div>
+                <div class="action-area">
+                    <!-- JS Injected -->
+                </div>
+            </div>
+
+            <!-- Academic Certificates -->
+            <div class="doc-card" id="card-academic">
+                <div class="doc-info">
+                    <i class="fas fa-file-signature"></i>
+                    <h4>Academic / Results</h4>
+                    <p>Latest school report or O/A Level result slips.</p>
+                </div>
+                <div class="action-area">
+                    <!-- JS Injected -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden File Input -->
+    <input type="file" id="fileInput" style="display: none;" onchange="handleFileUpload(this)" accept="image/*,application/pdf">
+
+    <!-- View Modal -->
+    <div id="viewModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal()">&times;</span>
+            <div id="previewContent" style="margin-top: 20px; overflow: auto; text-align: center;"></div>
+        </div>
+    </div>
+
+    <script src="js/documents.js"></script>
+    <!-- ACADEX: Powered-by footer and school branding -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+
+</body>
+
+</html>
+

@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Super Admin — ACADEX Platform</title>
+  <link rel="stylesheet" href="../css/acadex.css" />
+  <style>
+    body { background: var(--acadex-navy); padding: 0; }
+    .sa-layout { display: flex; min-height: 100vh; }
+    .page-title { font-family: var(--font-display); font-size: 1.5rem; font-weight: 700; }
+    .page-sub { font-size: 0.875rem; color: var(--acadex-gray-400); margin-top: 2px; }
+    .stats-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 1.25rem; margin-bottom: 2rem; }
+    @media (max-width: 900px) { .stats-grid { grid-template-columns: repeat(2,1fr); } .sa-sidebar { display: none; } .sa-main { margin-left: 0; } }
+    .sc { padding: 1.5rem; border-radius: 16px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); }
+    .sc-icon { font-size: 1.5rem; margin-bottom: 0.75rem; }
+    .sc-num { font-family: var(--font-display); font-size: 2rem; font-weight: 800; line-height: 1; margin-bottom: 4px; }
+    .sc-label { font-size: 0.8rem; color: var(--acadex-gray-400); }
+    .sc-change { font-size: 0.75rem; margin-top: 4px; }
+    .content-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 16px; padding: 1.5rem; margin-bottom: 1.5rem; }
+    .content-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; }
+    .content-card-title { font-weight: 700; font-size: 1rem; }
+    .status-pill { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 999px; font-size: 0.72rem; font-weight: 700; }
+    .s-active { background: rgba(16,185,129,0.12); color: #34d399; }
+    .s-trial { background: rgba(37,99,235,0.12); color: #60a5fa; }
+    .s-suspended { background: rgba(239,68,68,0.12); color: #f87171; }
+    .plan-chip { display: inline-block; font-size: 0.7rem; font-weight: 700; padding: 2px 8px; border-radius: 999px; }
+    .plan-starter { background: rgba(100,116,139,0.15); color: #94a3b8; }
+    .plan-professional { background: rgba(37,99,235,0.15); color: #60a5fa; }
+    .plan-enterprise { background: rgba(245,158,11,0.15); color: #fcd34d; }
+    .action-btn { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; padding: 5px 10px; font-size: 0.75rem; font-weight: 600; color: var(--acadex-gray-300); cursor: pointer; transition: var(--transition); }
+    .action-btn:hover { background: rgba(255,255,255,0.12); color: white; }
+    .revenue-bar-wrap { background: rgba(255,255,255,0.06); border-radius: 6px; height: 8px; overflow: hidden; }
+    .revenue-bar { height: 100%; border-radius: 6px; background: var(--grad-blue); }
+    .quick-actions { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; margin-bottom: 2rem; }
+    .qa-card { padding: 1.25rem; border-radius: 14px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); cursor: pointer; transition: var(--transition); text-align: center; }
+    .qa-card:hover { border-color: rgba(37,99,235,0.35); background: rgba(37,99,235,0.06); transform: translateY(-2px); }
+    .qa-icon { font-size: 1.6rem; margin-bottom: 6px; }
+    .qa-label { font-size: 0.8rem; font-weight: 700; }
+    .qa-desc { font-size: 0.72rem; color: var(--acadex-gray-500); margin-top: 2px; }
+    /* Modal */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 9000; display: flex; align-items: center; justify-content: center; padding: 1rem; }
+    .modal-box { background: var(--acadex-navy-800); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 2rem; max-width: 480px; width: 100%; max-height: 90vh; overflow-y: auto; }
+    .modal-title { font-family: var(--font-display); font-size: 1.2rem; font-weight: 700; margin-bottom: 1.5rem; }
+  </style>
+</head>
+<body>
+<div class="sa-layout">
+  <!-- SIDEBAR -->
+  <div class="sa-sidebar">
+    <div class="sa-sidebar-logo">
+      <a href="../index.html" style="display:flex;align-items:center;gap:8px;">
+        <div class="nav-logo-icon" style="width:32px;height:32px;font-size:0.9rem;">A</div>
+        <div style="font-family:var(--font-display);font-size:1.1rem;font-weight:800;">ACAD<span style="color:var(--acadex-gold);">EX</span></div>
+      </a>
+      <div style="font-size:0.65rem;color:var(--acadex-gray-600);margin-top:4px;letter-spacing:0.08em;text-transform:uppercase;">Super Admin</div>
+    </div>
+    <div class="sa-nav-section">Platform</div>
+    <a href="dashboard.html" class="sa-nav-item active" id="nav-dashboard">📊 Dashboard</a>
+    <a href="schools.html" class="sa-nav-item" id="nav-schools">🏫 Schools</a>
+    <a href="subscriptions.html" class="sa-nav-item" id="nav-subs">💳 Subscriptions</a>
+    <div class="sa-nav-section">System</div>
+    <a href="announcements.html" class="sa-nav-item">📢 Announcements</a>
+    <a href="security.html" class="sa-nav-item">🔒 Security</a>
+    <a href="audit-logs.html" class="sa-nav-item">📋 Audit Logs</a>
+    <div style="flex:1;"></div>
+    <div style="padding:1rem 1.25rem;border-top:1px solid rgba(255,255,255,0.07);margin-top:auto;">
+      <a href="../index.html" class="sa-nav-item" style="border:none;padding:8px 0;color:var(--acadex-gray-500);font-size:0.8rem;">← Back to ACADEX Site</a>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <main class="sa-main">
+    <div class="sa-header">
+      <div>
+        <div class="page-title">Platform Dashboard</div>
+        <div class="page-sub">Welcome back — here's what's happening across all schools.</div>
+      </div>
+      <div style="display:flex;gap:0.75rem;">
+        <a href="../onboard.html" class="btn btn-primary btn-sm">+ Add School</a>
+        <button class="btn btn-ghost btn-sm" onclick="refreshStats()">↻ Refresh</button>
+      </div>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats-grid" id="statsGrid">
+      <div class="sc">
+        <div class="sc-icon">🏫</div>
+        <div class="sc-num" id="st-total">—</div>
+        <div class="sc-label">Total Schools</div>
+        <div class="sc-change" style="color:#34d399;">↑ All time</div>
+      </div>
+      <div class="sc">
+        <div class="sc-icon">✅</div>
+        <div class="sc-num" id="st-active" style="color:#34d399;">—</div>
+        <div class="sc-label">Active Subscriptions</div>
+      </div>
+      <div class="sc">
+        <div class="sc-icon">⏳</div>
+        <div class="sc-num" id="st-trial" style="color:#60a5fa;">—</div>
+        <div class="sc-label">Free Trials</div>
+      </div>
+      <div class="sc">
+        <div class="sc-icon">💰</div>
+        <div class="sc-num" id="st-revenue" style="color:#fcd34d;">$—</div>
+        <div class="sc-label">Monthly Revenue</div>
+      </div>
+    </div>
+
+    <!-- QUICK ACTIONS -->
+    <div class="quick-actions">
+      <div class="qa-card" onclick="window.location.href='../onboard.html'">
+        <div class="qa-icon">🏫</div>
+        <div class="qa-label">Register School</div>
+        <div class="qa-desc">Add a new school tenant</div>
+      </div>
+      <div class="qa-card" onclick="window.location.href='schools.html'">
+        <div class="qa-icon">📋</div>
+        <div class="qa-label">Manage Schools</div>
+        <div class="qa-desc">View and edit all schools</div>
+      </div>
+      <div class="qa-card" onclick="window.location.href='subscriptions.html'">
+        <div class="qa-icon">💳</div>
+        <div class="qa-label">Subscriptions</div>
+        <div class="qa-desc">Revenue and plan stats</div>
+      </div>
+    </div>
+
+    <!-- PLAN BREAKDOWN & RECENT SCHOOLS -->
+    <div style="display:grid;grid-template-columns:1fr 2fr;gap:1.25rem;margin-bottom:1.5rem;" id="mainGrid">
+      <!-- Plan Breakdown -->
+      <div class="content-card">
+        <div class="content-card-header">
+          <div class="content-card-title">Plan Breakdown</div>
+        </div>
+        <div id="planBreakdown">
+          <div style="margin-bottom:1rem;">
+            <div style="display:flex;justify-content:space-between;font-size:0.82rem;margin-bottom:5px;">
+              <span style="color:var(--acadex-gray-400);">Starter</span><span id="pb-starter">0 schools</span>
+            </div>
+            <div class="revenue-bar-wrap"><div class="revenue-bar" id="pb-starter-bar" style="width:0%;background:linear-gradient(135deg,#64748b,#94a3b8);"></div></div>
+          </div>
+          <div style="margin-bottom:1rem;">
+            <div style="display:flex;justify-content:space-between;font-size:0.82rem;margin-bottom:5px;">
+              <span style="color:#60a5fa;">Professional</span><span id="pb-pro">0 schools</span>
+            </div>
+            <div class="revenue-bar-wrap"><div class="revenue-bar" id="pb-pro-bar" style="width:0%;"></div></div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;font-size:0.82rem;margin-bottom:5px;">
+              <span style="color:#fcd34d;">Enterprise</span><span id="pb-ent">0 schools</span>
+            </div>
+            <div class="revenue-bar-wrap"><div class="revenue-bar" id="pb-ent-bar" style="width:0%;background:linear-gradient(135deg,#d97706,#f59e0b);"></div></div>
+          </div>
+          <div style="margin-top:1.5rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,0.07);">
+            <div style="font-size:0.72rem;color:var(--acadex-gray-500);margin-bottom:4px;">Total MRR</div>
+            <div style="font-family:var(--font-display);font-size:1.75rem;font-weight:800;color:#fcd34d;" id="pb-mrr">$0</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Schools -->
+      <div class="content-card">
+        <div class="content-card-header">
+          <div class="content-card-title">Recent Schools</div>
+          <a href="schools.html" style="font-size:0.8rem;color:var(--acadex-blue-light);">View all →</a>
+        </div>
+        <div id="recentSchools">
+          <div style="text-align:center;padding:2rem;color:var(--acadex-gray-600);">
+            <div style="font-size:2rem;margin-bottom:0.5rem;">🏫</div>
+            <div>No schools registered yet.</div>
+            <a href="../onboard.html" class="btn btn-primary btn-sm" style="margin-top:1rem;">Register a School</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ALL SCHOOLS TABLE -->
+    <div class="content-card">
+      <div class="content-card-header">
+        <div class="content-card-title">All Schools</div>
+        <div style="display:flex;gap:8px;">
+          <input type="text" placeholder="Search schools…" class="form-control" style="width:200px;padding:7px 12px;font-size:0.82rem;" id="schoolSearch" oninput="renderSchoolsTable()" />
+          <a href="schools.html" class="btn btn-ghost btn-sm">Full View</a>
+        </div>
+      </div>
+      <div id="schoolsTableWrap" style="overflow-x:auto;">
+        <table class="acadex-table" id="schoolsTable">
+          <thead>
+            <tr>
+              <th>School</th>
+              <th>Type</th>
+              <th>Plan</th>
+              <th>Status</th>
+              <th>Students</th>
+              <th>Joined</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="schoolsTbody">
+            <tr><td colspan="7" style="text-align:center;color:var(--acadex-gray-600);padding:2rem;">No schools yet — <a href="../onboard.html" style="color:var(--acadex-blue-light);">register one</a></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="../js/acadex-core.js"></script>
+<script src="../js/acadex-subscription.js"></script>
+<script>
+  let allSchools = [];
+
+  function refreshStats() {
+    allSchools = AcadexCore.getAllSchools();
+    const stats = AcadexCore.getPlatformStats();
+
+    document.getElementById('st-total').textContent = stats.totalSchools;
+    document.getElementById('st-active').textContent = stats.active;
+    document.getElementById('st-trial').textContent = stats.trial;
+    document.getElementById('st-revenue').textContent = '$' + stats.monthlyRevenue.toLocaleString();
+
+    // Plan breakdown
+    const total = Math.max(stats.totalSchools, 1);
+    document.getElementById('pb-starter').textContent = stats.starter + ' school' + (stats.starter !== 1 ? 's' : '');
+    document.getElementById('pb-pro').textContent = stats.professional + ' school' + (stats.professional !== 1 ? 's' : '');
+    document.getElementById('pb-ent').textContent = stats.enterprise + ' school' + (stats.enterprise !== 1 ? 's' : '');
+    document.getElementById('pb-starter-bar').style.width = (stats.starter / total * 100) + '%';
+    document.getElementById('pb-pro-bar').style.width = (stats.professional / total * 100) + '%';
+    document.getElementById('pb-ent-bar').style.width = (stats.enterprise / total * 100) + '%';
+    document.getElementById('pb-mrr').textContent = '$' + stats.monthlyRevenue.toLocaleString();
+
+    renderRecentSchools();
+    renderSchoolsTable();
+  }
+
+  function renderRecentSchools() {
+    const recent = [...allSchools].sort((a,b) => new Date(b.joinedAt) - new Date(a.joinedAt)).slice(0, 5);
+    const el = document.getElementById('recentSchools');
+    if (recent.length === 0) {
+      el.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--acadex-gray-600);"><div style="font-size:2rem;margin-bottom:0.5rem;">🏫</div><div>No schools yet.</div><a href="../onboard.html" class="btn btn-primary btn-sm" style="margin-top:1rem;">Register a School</a></div>';
+      return;
+    }
+    el.innerHTML = recent.map(s => {
+      const plan = ACADEX_PLANS[s.plan] || {};
+      return `<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.05);">
+        <div style="width:38px;height:38px;border-radius:10px;background:rgba(37,99,235,0.15);display:flex;align-items:center;justify-content:center;font-weight:700;color:#60a5fa;font-size:0.9rem;flex-shrink:0;">${s.name.charAt(0)}</div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-weight:700;font-size:0.88rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${s.name}</div>
+          <div style="font-size:0.73rem;color:var(--acadex-gray-500);">${s.country} · ${s.code}</div>
+        </div>
+        <span class="plan-chip plan-${s.plan}">${plan.name || s.plan}</span>
+      </div>`;
+    }).join('');
+  }
+
+  function renderSchoolsTable() {
+    const search = (document.getElementById('schoolSearch').value || '').toLowerCase();
+    const filtered = allSchools.filter(s => s.name.toLowerCase().includes(search) || s.code.toLowerCase().includes(search) || s.country.toLowerCase().includes(search));
+    const tbody = document.getElementById('schoolsTbody');
+    if (filtered.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:var(--acadex-gray-600);padding:2rem;">No schools found.</td></tr>`;
+      return;
+    }
+    tbody.innerHTML = filtered.map(s => {
+      const plan = ACADEX_PLANS[s.plan] || {};
+      const joined = new Date(s.joinedAt).toLocaleDateString();
+      const statusClass = { active: 's-active', trial: 's-trial', suspended: 's-suspended' }[s.status] || 's-trial';
+      return `<tr>
+        <td><div style="font-weight:700;">${s.name}</div><div style="font-size:0.72rem;color:var(--acadex-gray-500);">${s.code} · ${s.email}</div></td>
+        <td style="color:var(--acadex-gray-400);font-size:0.82rem;">${s.type || '—'}</td>
+        <td><span class="plan-chip plan-${s.plan}">${plan.name || s.plan}</span></td>
+        <td><span class="status-pill ${statusClass}">${s.status}</span></td>
+        <td style="font-size:0.88rem;">${s.students || 0}</td>
+        <td style="font-size:0.8rem;color:var(--acadex-gray-400);">${joined}</td>
+        <td><div style="display:flex;gap:5px;">
+          <button class="action-btn" onclick="toggleStatus('${s.id}','${s.status}')">${s.status === 'suspended' ? '▶ Activate' : '⏸ Suspend'}</button>
+          <button class="action-btn" onclick="deleteSchool('${s.id}')" style="color:#f87171;">🗑</button>
+        </div></td>
+      </tr>`;
+    }).join('');
+  }
+
+  function toggleStatus(id, current) {
+    const newStatus = current === 'suspended' ? 'active' : 'suspended';
+    AcadexCore.updateSchool(id, { status: newStatus });
+    refreshStats();
+  }
+
+  function deleteSchool(id) {
+    const school = AcadexCore.getSchoolById(id);
+    if (!school) return;
+    if (!confirm(`Delete "${school.name}"? This cannot be undone.`)) return;
+    AcadexCore.deleteSchool(id);
+    refreshStats();
+  }
+
+  // seed demo school if empty for demo
+  function seedDemo() {
+    if (AcadexCore.getAllSchools().length === 0) {
+      AcadexCore.registerSchool({
+        name: 'Sunrise Secondary School', type: 'secondary', address: '123 Main St',
+        country: 'Zimbabwe', email: 'admin@sunrise.ac.zw', phone: '+263770001', adminName: 'Mr. N. Moyo',
+        adminEmail: 'moyo@sunrise.ac.zw', adminPassword: 'Admin@123', students: 560, plan: 'professional'
+      });
+      AcadexCore.registerSchool({
+        name: 'Greenfields Primary', type: 'primary', address: '5 School Rd',
+        country: 'Zimbabwe', email: 'admin@greenfields.ac.zw', phone: '+263770002', adminName: 'Mrs. S. Rungano',
+        adminEmail: 'rungano@greenfields.ac.zw', adminPassword: 'Admin@123', students: 180, plan: 'starter'
+      });
+      AcadexCore.registerSchool({
+        name: 'St. Andrews College', type: 'college', address: 'College Hill',
+        country: 'Zimbabwe', email: 'admin@standrews.ac.zw', phone: '+263770003', adminName: 'Prof. P. Chikwanda',
+        adminEmail: 'chikwanda@standrews.ac.zw', adminPassword: 'Admin@123', students: 1200, plan: 'enterprise'
+      });
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => { seedDemo(); refreshStats(); });
+</script>
+</body>
+</html>
+

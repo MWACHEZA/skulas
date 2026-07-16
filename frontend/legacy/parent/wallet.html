@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tuckshop Wallet - Acadex Parent Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/parent-portal.css">
+    <style>
+        .wallet-container {
+            display: grid;
+            grid-template-columns: 400px 1fr;
+            gap: 24px;
+        }
+
+        .wallet-card {
+            background: var(--navy-gradient);
+            color: #fff;
+            padding: 40px;
+            border-radius: 24px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(26, 26, 46, 0.2);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 250px;
+        }
+
+        .wallet-card::after {
+            content: '';
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 200px;
+            height: 200px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 50%;
+        }
+
+        .balance-label {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.8;
+            font-weight: 600;
+        }
+
+        .balance-amount {
+            font-size: 3rem;
+            font-weight: 800;
+            margin: 10px 0;
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+        }
+
+        .student-chip {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px 15px;
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.85rem;
+            width: fit-content;
+        }
+
+        .topup-card {
+            background: #fff;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            margin-top: 24px;
+        }
+
+        .topup-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .amount-option {
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            text-align: center;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .amount-option:hover {
+            border-color: var(--gold-primary);
+            color: var(--gold-primary);
+        }
+
+        .amount-option.active {
+            background: var(--gold-primary);
+            border-color: var(--gold-primary);
+            color: #fff;
+        }
+
+        .history-card {
+            background: #fff;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .transaction-list {
+            margin-top: 20px;
+        }
+
+        .transaction-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #f8faff;
+        }
+
+        .tx-main {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .tx-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+        }
+
+        .icon-food { background: #fef3c7; color: #d97706; }
+        .icon-topup { background: #dcfce7; color: #16a34a; }
+
+        .tx-info h4 {
+            margin: 0;
+            font-size: 0.95rem;
+            color: var(--school-primary-dark, #1e293b);
+        }
+
+        .tx-info p {
+            margin: 0;
+            font-size: 0.8rem;
+            color: #94a3b8;
+        }
+
+        .tx-amount {
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .amount-neg { color: #ef4444; }
+        .amount-pos { color: #16a34a; }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <div class="brand-icon"><i class="fas fa-graduation-cap"></i></div>
+            <h3>Acadex Portal</h3>
+            <p id="currentSchoolName">Loading school...</p>
+            <!-- SaaS School Switcher -->
+            <div style="margin-top: 15px; padding: 8px; background: rgba(255,255,255,0.05); border-radius: 8px; display: flex; align-items: center; justify-content: space-between; cursor: pointer;" onclick="ParentPortal.toggleSchoolSwitcher()">
+                <span style="font-size: 0.7rem; opacity: 0.8; font-weight: 600;">Switch School</span>
+                <i class="fas fa-chevron-down" style="font-size: 0.6rem; opacity: 0.5;"></i>
+            </div>
+            <div id="schoolSwitcher" style="display: none; margin-top: 10px; background: var(--navy-light); border-radius: 8px; overflow: hidden; text-align: left; box-shadow: var(--shadow-premium);">
+                <!-- Populated dynamically -->
+            </div>
+        </div>
+        <div class="sidebar-menu">
+            <div class="sidebar-section-label">Academic & Life</div>
+            <ul>
+                <li><a href="dashboard.html"><i class="fas fa-th-large"></i> Dashboard</a></li>
+                <li><a href="student-profile.html"><i class="fas fa-user-graduate"></i> Student Profile</a></li>
+                <li><a href="academics.html"><i class="fas fa-chart-line"></i> Academics & Trends</a></li>
+                <li><a href="academic-history.html"><i class="fas fa-history"></i> Academic History</a></li>
+                <li><a href="wellbeing.html"><i class="fas fa-heartbeat"></i> Health & Conduct</a></li>
+                <li><a href="calendar.html"><i class="fas fa-calendar-alt"></i> School Calendar</a></li>
+            </ul>
+            <div class="sidebar-section-label">Communication</div>
+            <ul>
+                <li><a href="messages.html"><i class="fas fa-envelope"></i> Messages</a></li>
+                <li><a href="notices.html"><i class="fas fa-bullhorn"></i> Noticeboard</a></li>
+                <li><a href="approvals.html"><i class="fas fa-file-signature"></i> Approvals</a></li>
+                <li><a href="contact.html"><i class="fas fa-phone-alt"></i> Contact Us</a></li>
+            </ul>
+            <div class="sidebar-section-label">Finance & Logistics</div>
+            <ul>
+                <li><a href="fees.html"><i class="fas fa-file-invoice-dollar"></i> Fees & Payments</a></li>
+                <li><a href="wallet.html" class="active"><i class="fas fa-wallet"></i> Tuckshop Wallet</a></li>
+                <li><a href="transport.html"><i class="fas fa-bus"></i> Transport Tracker</a></li>
+            </ul>
+        </div>
+        <div class="sidebar-footer">
+            <a href="#" onclick="ParentPortal.logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </div>
+    </aside>
+
+    <div class="main-content">
+        <header class="top-header">
+            <div class="header-left">
+                <button class="mobile-toggle" id="mobileToggle"><i class="fas fa-bars"></i></button>
+                <h2>Tuckshop E-Wallet</h2>
+            </div>
+            <div class="header-right" id="userInfo">
+                <!-- Populated by JS -->
+            </div>
+        </header>
+
+        <main class="content-area">
+            <div class="wallet-container">
+                <div class="left-col">
+                    <div class="wallet-card">
+                        <div>
+                            <span class="balance-label">Current Balance</span>
+                            <div class="balance-amount">
+                                <span style="font-size: 1.5rem; opacity: 0.8;">USD</span>
+                                <span id="walletValue">42.50</span>
+                            </div>
+                        </div>
+                        <div class="student-chip">
+                            <i class="fas fa-user-circle"></i>
+                            <span id="studentChipName">Loading Student...</span>
+                        </div>
+                    </div>
+
+                    <div class="topup-card">
+                        <h3 style="margin-top:0; color:var(--primary-navy); font-size: 1.1rem;">Instant Top-up</h3>
+                        <p style="font-size:0.85rem; color:#64748b;">Select an amount to add to your child's card.</p>
+                        <div class="topup-grid">
+                            <div class="amount-option">$10</div>
+                            <div class="amount-option active">$25</div>
+                            <div class="amount-option">$50</div>
+                        </div>
+                        <button class="btn-primary" style="width:100%;" onclick="simulateTopup()">Top-up Now (Simulated Checkout)</button>
+                        <div style="margin-top:20px; display:flex; gap:10px; justify-content: center;">
+                            <i class="fab fa-cc-visa" style="font-size:1.5rem; color:#94a3b8;"></i>
+                            <i class="fab fa-cc-mastercard" style="font-size:1.5rem; color:#94a3b8;"></i>
+                            <i class="fas fa-mobile-alt" style="font-size:1.5rem; color:#94a3b8;"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="right-col">
+                    <div class="history-card">
+                        <h3 style="margin:0; color:var(--primary-navy); font-size: 1.1rem;">Spending History</h3>
+                        <div class="transaction-list" id="transactionList">
+                            <!-- Populated by JS -->
+                        </div>
+                        <button class="btn-outline" style="width:100%; margin-top:20px;">Download Monthly Report</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../js/parent-portal.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            ParentPortal.init();
+            renderTransactions();
+            
+            const student = ParentPortal.getStudentData();
+            if (student) {
+                document.getElementById('studentChipName').textContent = student.name;
+            }
+        });
+
+        function renderTransactions() {
+            const txs = [
+                { id: 1, type: 'food', title: 'Lunch Combo (Burger + Juice)', date: 'Today, 12:45 PM', amount: '-$5.50' },
+                { id: 2, type: 'food', title: 'Fruit Salad & Yogurt', date: 'Yesterday, 10:15 AM', amount: '-$3.00' },
+                { id: 3, type: 'topup', title: 'Wallet Top-up (Visa)', date: 'Mar 18, 09:30 AM', amount: '+$25.00' },
+                { id: 4, type: 'food', title: 'Afternoon Tea & Biscuits', date: 'Mar 17, 03:20 PM', amount: '-$2.50' },
+                { id: 5, type: 'food', title: 'Steak Pie (Hot)', date: 'Mar 17, 01:10 PM', amount: '-$4.00' }
+            ];
+
+            const list = document.getElementById('transactionList');
+            list.innerHTML = txs.map(t => `
+                <div class="transaction-item">
+                    <div class="tx-main">
+                        <div class="tx-icon ${t.type === 'food' ? 'icon-food' : 'icon-topup'}">
+                            <i class="fas ${t.type === 'food' ? 'fa-hamburger' : 'fa-plus-circle'}"></i>
+                        </div>
+                        <div class="tx-info">
+                            <h4>${t.title}</h4>
+                            <p>${t.date}</p>
+                        </div>
+                    </div>
+                    <div class="tx-amount ${t.amount.startsWith('+') ? 'amount-pos' : 'amount-neg'}">${t.amount}</div>
+                </div>
+            `).join('');
+        }
+
+        function simulateTopup() {
+            alert('Acadex Payment Simulation: Successfully charged $25 to your secondary account. Balanced updated.');
+            document.getElementById('walletValue').textContent = '67.50';
+        }
+    </script>
+    <!-- ACADEX: Powered-by footer and school branding -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+
+</body>
+
+</html>
+
+

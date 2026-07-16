@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alumni Login - Your School</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            background: rgba(var(--school-primary-rgb, 238, 244, 255), 0.05);
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 420px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 8px 30px rgba(var(--school-primary-rgb, 0, 86, 179), 0.12);
+            overflow: hidden;
+        }
+
+        .login-header {
+            background: linear-gradient(135deg, var(--school-primary, var(--school-primary, #0056b3)), var(--school-primary-dark, var(--school-primary-dark, #003d7a)));
+            color: white;
+            text-align: center;
+            padding: 32px 24px 24px;
+        }
+
+        .login-header img {
+            width: 64px;
+            margin-bottom: 12px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .login-header h2 {
+            margin: 0 0 5px;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .login-header p {
+            margin: 0;
+            opacity: 0.8;
+            font-size: 0.85rem;
+        }
+
+        .login-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255, 255, 255, 0.18);
+            border-radius: 20px;
+            padding: 4px 14px;
+            font-size: 0.74rem;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        .login-body {
+            padding: 28px 28px 20px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: #444;
+        }
+
+        .input-group {
+            position: relative;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 11px 40px 11px 14px;
+            border: 1.5px solid #dce4f5;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-family: inherit;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            background: #fafcff;
+        }
+
+        .input-group input:focus {
+            border-color: var(--school-primary, var(--school-primary, #0056b3));
+            outline: none;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(var(--school-primary-rgb), 0.08);
+        }
+
+        .input-group i {
+            position: absolute;
+            right: 13px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #b0bfd9;
+            font-size: 0.88rem;
+            pointer-events: none;
+        }
+
+        .forgot-link {
+            text-align: right;
+            margin-top: 5px;
+        }
+
+        .forgot-link a {
+            font-size: 0.8rem;
+            color: var(--school-primary, var(--school-primary, #0056b3));
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 12px;
+            margin-top: 8px;
+            background: linear-gradient(135deg, var(--school-primary, var(--school-primary, #0056b3)), var(--school-primary-dark, var(--school-primary-dark, #003d7a)));
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.15s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-family: inherit;
+        }
+
+        .btn-login:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .login-footer {
+            text-align: center;
+            padding: 16px 28px 22px;
+            font-size: 0.84rem;
+            color: #666;
+            border-top: 1px solid #f0f4ff;
+        }
+
+        .login-footer a {
+            color: var(--school-primary, var(--school-primary, #0056b3));
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .login-footer .sep {
+            margin: 0 8px;
+            color: #ccc;
+        }
+
+        @media (max-width: 460px) {
+            body {
+                padding: 0;
+                align-items: flex-start;
+            }
+
+            .login-container {
+                border-radius: 0;
+                min-height: 100vh;
+            }
+
+            .login-body {
+                padding: 22px 16px 14px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <img src="../images/logo.png" alt="Your School Logo">
+            <h2>Alumni Portal</h2>
+            <p>Welcome back to your alumni network</p>
+            <span class="login-badge"><i class="fas fa-user-graduate"></i> Alumni Access</span>
+        </div>
+
+        <div class="login-body">
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="schoolCode">School Access Code</label>
+                    <div class="input-group">
+                        <input type="text" id="schoolCode" placeholder="e.g. AX-P12345" required style="text-transform:uppercase">
+                        <i class="fas fa-school"></i>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <div class="input-group">
+                        <input type="email" id="email" placeholder="Enter your registered email" required>
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <div class="input-group">
+                        <input type="password" id="password" placeholder="Enter your password" required>
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <div class="forgot-link"><a href="#">Forgot Password?</a></div>
+                </div>
+                <button type="submit" class="btn-login"><i class="fas fa-sign-in-alt"></i> Sign In</button>
+            </form>
+        </div>
+
+        <div class="login-footer">
+            New alumni? <a href="register.html">Register Now</a>
+            <span class="sep">|</span>
+            <a href="../index.html"><i class="fas fa-home"></i> Home</a>
+        </div>
+    </div>
+
+    <script src="../js/script.js"></script>
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const schoolCode = document.getElementById('schoolCode').value.trim().toUpperCase();
+
+            // Validate School Code
+            if (window.AcadexCore) {
+                const school = AcadexCore.getSchoolByCode(schoolCode);
+                if (!school) {
+                    alert('Invalid School Access Code. Please check and try again.');
+                    return;
+                }
+                sessionStorage.setItem('activeSchoolCode', schoolCode);
+            }
+
+            const alumni = getTenantData('school_alumni', '[]');
+            const user = alumni.find(a => a.email === email && a.password === password);
+
+            if (user) {
+                if (user.status === 'locked') {
+                    alert('Your alumni account is locked. Please contact the school.');
+                    return;
+                }
+                
+                if (user.mustChangePassword) {
+                    sessionStorage.setItem('resetUserIdentifier', email);
+                    sessionStorage.setItem('resetUserRole', 'alumni');
+                    alert('Security update required. Redirecting...');
+                    window.location.href = 'change-password.html';
+                    return;
+                }
+                sessionStorage.setItem('loggedIn', 'true');
+                sessionStorage.setItem('userEmail', email);
+                sessionStorage.setItem('userName', user.name);
+                sessionStorage.setItem('userId', user.id);
+                sessionStorage.setItem('alumniUser', JSON.stringify(user));
+                window.location.href = 'dashboard.html';
+                return;
+            }
+
+            // Demo fallback
+            if (email === 'alumni@example.com' && password === 'password123') {
+                sessionStorage.setItem('loggedIn', 'true');
+                sessionStorage.setItem('userEmail', email);
+                sessionStorage.setItem('userName', 'Demo Alumni');
+                window.location.href = 'dashboard.html';
+                return;
+            }
+
+            alert("Invalid credentials. Please check your email and password.");
+        });
+    </script>
+    <!-- ACADEX: Powered-by footer and school branding -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+
+</body>
+
+</html>
+

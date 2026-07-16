@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audit Logs - Admin Portal</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+
+        .admin-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 260px;
+            background-color: var(--school-primary-dark, #1a1a2e);
+            color: white;
+            position: fixed;
+            height: 100%;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+
+        .sidebar-header img {
+            width: 50px;
+            margin-bottom: 10px;
+        }
+
+        .sidebar-header h3 {
+            margin: 0;
+            font-size: 1.1rem;
+        }
+
+        .sidebar-menu {
+            padding: 20px 0;
+        }
+
+        .menu-section {
+            margin-bottom: 20px;
+        }
+
+        .menu-section-title {
+            padding: 10px 20px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: #888;
+            font-weight: 600;
+        }
+
+        .sidebar-menu ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 2px;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            background-color: rgba(var(--school-primary-rgb, 0, 86, 179), 0.2);
+            color: white;
+            border-left: 3px solid var(--school-primary, #0056b3);
+        }
+
+        .sidebar-menu i {
+            margin-right: 12px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: 250px;
+            width: calc(100% - 250px);
+            min-height: 100vh;
+        }
+
+        .top-header {
+            background-color: white;
+            padding: 15px 30px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 900;
+        }
+
+        .header-left h2 {
+            margin: 0;
+            color: #333;
+            font-size: 1.5rem;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .content-area {
+            padding: 30px;
+        }
+
+        .filter-bar {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: flex-end;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .filter-group label {
+            font-size: 0.85rem;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .filter-group select,
+        .filter-group input {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            min-width: 150px;
+        }
+
+        .severity-badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .severity-info {
+            background: #e3f2fd;
+            color: #0d47a1;
+        }
+
+        .severity-warning {
+            background: #fff3e0;
+            color: #e65100;
+        }
+
+        .severity-critical {
+            background: #ffebee;
+            color: #b71c1c;
+        }
+
+        .portal-tag {
+            font-size: 0.8rem;
+            color: #777;
+            background: #f0f0f0;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .btn-export {
+            background: #2e7d32;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-export:hover {
+            background: #1b5e20;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 600px;
+            width: 90%;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .log-json {
+            background: #272822;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-family: monospace;
+            font-size: 0.9rem;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        .log-table-container {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .log-header {
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: #333;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin-container">
+        <!-- Sidebar ... same ... -->
+        <aside class="sidebar" id="sidebar"></aside>
+
+        <main class="main-content">
+            <div class="top-header">
+                <div class="header-left">
+                    <h2>System Audit Logs</h2>
+                </div>
+                <div class="user-profile">
+                    <div class="user-avatar"
+                        style="width:35px;height:35px;background:var(--school-primary, #0056b3);color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;">
+                        AD</div>
+                    <span>Admin</span>
+                </div>
+            </div>
+
+            <div class="content-area">
+                <!-- Advanced Filter Bar -->
+                <div class="filter-bar">
+                    <div class="filter-group">
+                        <label>Portal</label>
+                        <select id="portalFilter">
+                            <option value="all">All Portals</option>
+                            <option value="Admin">Admin</option>
+                            <option value="Teacher">Teacher</option>
+                            <option value="Bursar">Bursar</option>
+                            <option value="Student">Student</option>
+                            <option value="Public">Public</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Severity</label>
+                        <select id="severityFilter">
+                            <option value="all">All Severities</option>
+                            <option value="info">Info</option>
+                            <option value="warning">Warning</option>
+                            <option value="critical">Critical</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Date Range</label>
+                        <select id="dateFilter">
+                            <option value="all">All Time</option>
+                            <option value="today">Today</option>
+                            <option value="week">This Week</option>
+                            <option value="month">This Month</option>
+                            <option value="year">This Year</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Search</label>
+                        <input type="text" id="logSearch" placeholder="Search logs...">
+                    </div>
+                    <div style="margin-left: auto; display: flex; gap: 10px;">
+                        <button class="btn-export" id="exportCSV">
+                            <i class="fas fa-file-csv"></i> Export to CSV
+                        </button>
+                        <button class="btn-export" onclick="confirmClearLogs()" style="background-color: #dc3545;">
+                            <i class="fas fa-trash-alt"></i> Clear All
+                        </button>
+                    </div>
+                </div>
+
+                <div class="log-table-container">
+                    <div class="log-header">
+                        <h3>System Activity Stream</h3>
+                    </div>
+                    <table id="logTable">
+                        <thead>
+                            <tr>
+                                <th>Timestamp</th>
+                                <th>Portal</th>
+                                <th>User</th>
+                                <th>Action</th>
+                                <th>Severity</th>
+                                <th>Details</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Logs loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Details Modal -->
+    <div id="detailsModal" class="modal">
+        <div class="modal-content">
+            <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
+                <h3>Log Details</h3>
+                <button onclick="closeDetails()"
+                    style="border:none; background:none; cursor:pointer; font-size:1.5rem;">&times;</button>
+            </div>
+            <div id="logFullDetails"></div>
+        </div>
+    </div>
+
+    <script src="../js/admin-common.js"></script>
+    <script src="../js/audit-logger.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            loadLogs();
+
+            const filters = ['logSearch', 'portalFilter', 'severityFilter', 'dateFilter'];
+            filters.forEach(id => {
+                document.getElementById(id).addEventListener('change', () => loadLogs());
+                if (id === 'logSearch') {
+                    document.getElementById(id).addEventListener('keyup', () => loadLogs());
+                }
+            });
+
+            document.getElementById('exportCSV').addEventListener('click', exportLogs);
+        });
+
+        function loadLogs() {
+            const logs = getTenantData('auditLogs', '[]');
+            const tbody = document.querySelector('#logTable tbody');
+
+            const searchTerm = document.getElementById('logSearch').value.toLowerCase();
+            const portalFilter = document.getElementById('portalFilter').value;
+            const severityFilter = document.getElementById('severityFilter').value;
+            const dateFilter = document.getElementById('dateFilter').value;
+
+            const now = new Date();
+            const filteredLogs = logs.filter(log => {
+                const logDate = new Date(log.timestamp);
+
+                // Date filtering
+                let matchesDate = true;
+                if (dateFilter === 'today') {
+                    matchesDate = logDate.toDateString() === now.toDateString();
+                } else if (dateFilter === 'week') {
+                    const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                    matchesDate = logDate >= oneWeekAgo;
+                } else if (dateFilter === 'month') {
+                    matchesDate = logDate.getMonth() === now.getMonth() && logDate.getFullYear() === now.getFullYear();
+                } else if (dateFilter === 'year') {
+                    matchesDate = logDate.getFullYear() === now.getFullYear();
+                }
+
+                const matchesSearch = !searchTerm ||
+                    log.action.toLowerCase().includes(searchTerm) ||
+                    log.user.toLowerCase().includes(searchTerm) ||
+                    (log.details && log.details.toLowerCase().includes(searchTerm));
+
+                const matchesPortal = portalFilter === 'all' || log.portal === portalFilter;
+                const matchesSeverity = severityFilter === 'all' || log.severity === severityFilter;
+
+                return matchesDate && matchesSearch && matchesPortal && matchesSeverity;
+            });
+
+            tbody.innerHTML = '';
+
+            if (filteredLogs.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#999; padding: 40px;">No logs found matching your criteria</td></tr>';
+                return;
+            }
+
+            filteredLogs.forEach(log => {
+                const date = new Date(log.timestamp).toLocaleString();
+                const row = document.createElement('tr');
+
+                // Truncate details for table view
+                let displayDetails = log.details || '';
+                if (displayDetails.length > 50) {
+                    displayDetails = displayDetails.substring(0, 50) + '...';
+                }
+
+                row.innerHTML = `
+                    <td class="timestamp">${date}</td>
+                    <td><span class="portal-tag">${log.portal || 'Unknown'}</span></td>
+                    <td><span class="user-badge">${log.user}</span></td>
+                    <td class="action-type">${log.action}</td>
+                    <td><span class="severity-badge severity-${log.severity || 'info'}">${log.severity || 'info'}</span></td>
+                    <td class="log-details">
+                        ${displayDetails}
+                        <a href="#" onclick="viewDetails('${log.id}')" style="margin-left:10px; font-size:0.8rem; color:var(--school-primary, #0056b3);">View More</a>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function viewDetails(logId) {
+            const logs = getTenantData('auditLogs', '[]');
+            const log = logs.find(l => l.id === logId);
+            if (!log) return;
+
+            const modal = document.getElementById('detailsModal');
+            const container = document.getElementById('logFullDetails');
+
+            let detailsHtml = `
+                <p><strong>Action:</strong> ${log.action}</p>
+                <p><strong>User:</strong> ${log.user}</p>
+                <p><strong>Timestamp:</strong> ${new Date(log.timestamp).toLocaleString()}</p>
+                <p><strong>Portal:</strong> ${log.portal}</p>
+                <p><strong>Category:</strong> ${log.category || 'N/A'}</p>
+                <p><strong>Full Details:</strong></p>
+            `;
+
+            try {
+                // Try to parse if it's JSON
+                const parsed = JSON.parse(log.details);
+                detailsHtml += `<div class="log-json">${JSON.stringify(parsed, null, 2)}</div>`;
+            } catch (e) {
+                detailsHtml += `<div class="log-json">${log.details}</div>`;
+            }
+
+            container.innerHTML = detailsHtml;
+            modal.style.display = 'flex';
+        }
+
+        function closeDetails() {
+            document.getElementById('detailsModal').style.display = 'none';
+        }
+
+        function confirmClearLogs() {
+            if (confirm('Are you sure you want to clear all audit logs? This action cannot be undone.')) {
+                if (typeof AuditLogger !== 'undefined') {
+                    AuditLogger.clearLogs();
+                    loadLogs();
+                    // Assuming showSuccessMessage is defined elsewhere or needs to be added
+                    // For now, a simple alert or console log can suffice if not available
+                    console.log('All audit logs have been cleared.');
+                } else {
+                    // Fallback if AuditLogger is not loaded
+                    if (typeof saveTenantData === 'function') { saveTenantData('auditLogs', []); } else { saveTenantData('auditLogs', []); } loadLogs();
+                    console.log('All audit logs have been cleared (via localStorage direct access).');
+                }
+            }
+        }
+
+        function exportLogs() {
+            const logs = getTenantData('auditLogs', '[]');
+            if (logs.length === 0) {
+                alert('No logs to export');
+                return;
+            }
+
+            const headers = ['Timestamp', 'Portal', 'User', 'Action', 'Severity', 'Category', 'Details'];
+            const csvRows = [headers.join(',')];
+
+            logs.forEach(log => {
+                const row = [
+                    new Date(log.timestamp).toISOString(),
+                    log.portal || 'Unknown',
+                    log.user,
+                    `"${log.action.replace(/"/g, '""')}"`,
+                    log.severity || 'info',
+                    log.category || 'System',
+                    `"${(log.details || '').replace(/"/g, '""')}"`
+                ];
+                csvRows.push(row.join(','));
+            });
+
+            const blob = new Blob([csvRows.join('\n')], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.setAttribute('hidden', '');
+            a.setAttribute('href', url);
+            a.setAttribute('download', `audit-logs-${new Date().toISOString().split('T')[0]}.csv`);
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+
+        // Close modal on outside click
+        window.onclick = function (event) {
+            const modal = document.getElementById('detailsModal');
+            if (event.target == modal) {
+                closeDetails();
+            }
+        }
+    </script>
+<script src="../js/admin-sidebar.js"></script>
+    <!-- ACADEX: Powered-by footer and school branding -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+
+</body>
+
+</html>
+
+

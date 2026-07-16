@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ancillary Staff Registration - ACADEX</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            background: rgba(var(--school-primary-rgb), 0.05);
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 20px 0;
+        }
+
+        .register-container {
+            max-width: 660px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 8px 30px rgba(var(--school-primary-rgb), 0.12);
+            overflow: hidden;
+        }
+
+        .register-header {
+            background: linear-gradient(135deg, var(--school-primary), var(--school-primary-dark));
+            color: white;
+            text-align: center;
+            padding: 28px 20px 20px;
+        }
+
+        .register-header img {
+            width: 60px;
+            margin-bottom: 10px;
+        }
+
+        .register-header h2 {
+            margin: 0 0 4px;
+            font-size: 1.4rem;
+        }
+
+        .register-header p {
+            margin: 0;
+            opacity: 0.8;
+            font-size: 0.85rem;
+        }
+
+        .steps-bar {
+            display: flex;
+            background: #f8faff;
+            border-bottom: 1px solid #e8ecf5;
+        }
+
+        .step-item {
+            flex: 1;
+            text-align: center;
+            padding: 12px 4px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: #9aacca;
+            border-bottom: 3px solid transparent;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.3s;
+        }
+
+        .step-item .step-num {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #dce4f5;
+            color: #9aacca;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+            transition: all 0.3s;
+        }
+
+        .step-item.active {
+            color: var(--school-primary);
+            border-bottom-color: var(--school-primary);
+        }
+
+        .step-item.active .step-num {
+            background: var(--school-primary);
+            color: white;
+        }
+
+        .step-item.done {
+            color: #28a745;
+            border-bottom-color: #28a745;
+        }
+
+        .step-item.done .step-num {
+            background: #28a745;
+            color: white;
+        }
+
+        .form-body {
+            padding: 28px 32px;
+        }
+
+        .step-panel {
+            display: none;
+            animation: fadeSlide 0.3s ease;
+        }
+
+        .step-panel.active {
+            display: block;
+        }
+
+        @keyframes fadeSlide {
+            from {
+                opacity: 0;
+                transform: translateX(15px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .step-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--school-primary);
+            margin: 0 0 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e8f0fe;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .avatar-upload {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 16px;
+        }
+
+        .image-preview {
+            width: 80px;
+            height: 80px;
+            border: 2px dashed #c0d0ea;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background: #f0f4ff;
+            flex-shrink: 0;
+        }
+
+        .image-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .image-preview i {
+            font-size: 1.5rem;
+            color: #b0bfd9;
+        }
+
+        .upload-info {
+            flex: 1;
+        }
+
+        .upload-info label {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .upload-info input[type="file"] {
+            font-size: 0.8rem;
+            color: #555;
+            width: 100%;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin-bottom: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: #444;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 9px 12px;
+            border: 1.5px solid #dce4f5;
+            border-radius: 7px;
+            font-size: 0.88rem;
+            font-family: inherit;
+            transition: border-color 0.2s;
+            background: #fafcff;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: var(--school-primary);
+            outline: none;
+            background: white;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+        }
+
+        .input-group {
+            position: relative;
+        }
+
+        .input-group i {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #b0bfd9;
+            font-size: 0.9rem;
+            pointer-events: none;
+        }
+
+        .input-group input {
+            padding-right: 36px;
+        }
+
+        .section-subtitle {
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--school-primary);
+            margin: 18px 0 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-subtitle::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #e8f0fe;
+        }
+
+        .spouse-section {
+            display: none;
+        }
+
+        .spouse-section.visible {
+            display: block;
+        }
+
+        .role-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 6px;
+        }
+
+        .role-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 12px;
+            border: 1.5px solid #dce4f5;
+            border-radius: 20px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: #555;
+            background: #fafcff;
+            cursor: pointer;
+            transition: all 0.2s;
+            user-select: none;
+        }
+
+        .role-chip input[type="checkbox"] {
+            display: none;
+        }
+
+        .role-chip.selected {
+            background: var(--school-primary);
+            border-color: var(--school-primary);
+            color: white;
+        }
+
+        .role-chip.selected::before {
+            content: '✓ ';
+        }
+
+        .btn-row {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .btn-prev,
+        .btn-next,
+        .btn-submit {
+            flex: 1;
+            padding: 11px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-prev {
+            background: #f0f4ff;
+            color: var(--school-primary);
+            border: 1.5px solid #c0d0ea;
+        }
+
+        .btn-prev:hover {
+            background: #e2eaf8;
+        }
+
+        .btn-next {
+            background: var(--school-primary);
+            color: white;
+        }
+
+        .btn-next:hover {
+            background: var(--school-primary-dark);
+        }
+
+        .btn-submit {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-submit:hover {
+            background: #1e7e34;
+        }
+
+        .register-footer {
+            text-align: center;
+            padding: 16px 32px 24px;
+            font-size: 0.85rem;
+            color: #666;
+            border-top: 1px solid #f0f4ff;
+        }
+
+        .register-footer a {
+            color: var(--school-primary);
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        /* Toast Notification */
+        .reg-toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #10b981;
+            color: white;
+            padding: 14px 22px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 9999;
+            font-weight: 600;
+            font-size: 0.9rem;
+            animation: toastIn 0.4s ease-out;
+        }
+
+        .reg-toast.error {
+            background: #ef4444;
+        }
+
+        .reg-toast.warning {
+            background: #f59e0b;
+        }
+
+        @keyframes toastIn {
+            from {
+                transform: translateY(80px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 580px) {
+            .form-body {
+                padding: 20px 16px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .step-item span {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="register-container">
+        <div class="register-header">
+            <img src="../images/logo.png" alt="Logo" class="acadex-school-logo">
+            <h2>Ancillary Staff Registration</h2>
+            <p>Create your portal account</p>
+        </div>
+
+        <div class="steps-bar">
+            <div class="step-item active" id="step-tab-1">
+                <div class="step-num">1</div><span>Personal</span>
+            </div>
+            <div class="step-item" id="step-tab-2">
+                <div class="step-num">2</div><span>Work</span>
+            </div>
+            <div class="step-item" id="step-tab-3">
+                <div class="step-num">3</div><span>Family</span>
+            </div>
+            <div class="step-item" id="step-tab-4">
+                <div class="step-num">4</div><span>Account</span>
+            </div>
+        </div>
+
+        <div class="form-body">
+            <form id="registerForm">
+
+                <!-- STEP 1: Personal -->
+                <div class="step-panel active" id="panel-1">
+                    <div class="step-title"><i class="fas fa-user-circle"></i> Personal Information</div>
+
+                    <div class="avatar-upload">
+                        <div class="image-preview" id="imagePreviewWrap">
+                            <i class="fas fa-camera"></i>
+                        </div>
+                        <div class="upload-info">
+                            <label>Profile Photo</label>
+                            <input type="file" id="profilePic" accept="image/*">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="firstName">First Name *</label>
+                            <input type="text" id="firstName" placeholder="First name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="lastName">Last Name *</label>
+                            <input type="text" id="lastName" placeholder="Last name" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="dob">Date of Birth *</label>
+                            <input type="date" id="dob" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="gender">Gender *</label>
+                            <select id="gender" required>
+                                <option value="" disabled selected>Select gender</option>
+                                <option>Male</option>
+                                <option>Female</option>
+                                <option>Other</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="nationalId">National ID *</label>
+                            <input type="text" id="nationalId" placeholder="e.g. 63-123456 A 72" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Phone Number *</label>
+                            <input type="tel" id="phone" placeholder="Enter phone number" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="address">Residential Address *</label>
+                        <textarea id="address" rows="2" placeholder="Enter your full home address" required></textarea>
+                    </div>
+
+                    <div class="btn-row">
+                        <button type="button" class="btn-next" onclick="goToStep(2)">Next <i
+                                class="fas fa-arrow-right"></i></button>
+                    </div>
+                </div>
+
+                <!-- STEP 2: Work -->
+                <div class="step-panel" id="panel-2">
+                    <div class="step-title"><i class="fas fa-briefcase"></i> Work Information</div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="dept">Department *</label>
+                            <select id="dept" required>
+                                <option value="" disabled selected>Select Dept</option>
+                                <option>Facilities &amp; Maintenance</option>
+                                <option>Hostels &amp; Catering</option>
+                                <option>ICT Department</option>
+                                <option>Security</option>
+                                <option>Sports &amp; Grounds</option>
+                                <option>Tuckshop Management</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="post">Designation (Post) *</label>
+                            <select id="post" required>
+                                <option value="" disabled selected>Select designation</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Secondary Roles <span style="font-weight:400; color:#888;">(Optional — select all that
+                                apply)</span></label>
+                        <div class="role-chips" id="secondaryRolesContainer">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="qualification">Highest Qualification *</label>
+                            <select id="qualification" required>
+                                <option value="" disabled selected>Select qualification</option>
+                                <option>None</option>
+                                <option>Primary School</option>
+                                <option>O' Level</option>
+                                <option>A' Level</option>
+                                <option>Certificate</option>
+                                <option>Diploma</option>
+                                <option>Degree</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="joinDate">Join Date *</label>
+                            <input type="date" id="joinDate" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Work Email Address *</label>
+                        <div class="input-group">
+                            <input type="email" id="email" placeholder="Enter work email" required>
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                    </div>
+
+                    <div class="btn-row">
+                        <button type="button" class="btn-prev" onclick="goToStep(1)"><i class="fas fa-arrow-left"></i>
+                            Back</button>
+                        <button type="button" class="btn-next" onclick="goToStep(3)">Next <i
+                                class="fas fa-arrow-right"></i></button>
+                    </div>
+                </div>
+
+                <!-- STEP 3: Family -->
+                <div class="step-panel" id="panel-3">
+                    <div class="step-title"><i class="fas fa-users"></i> Family &amp; Information</div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="maritalStatus">Marital Status *</label>
+                            <select id="maritalStatus" onchange="toggleSpouse()" required>
+                                <option value="" disabled selected>Select status</option>
+                                <option>Single</option>
+                                <option>Married</option>
+                                <option>Divorced</option>
+                                <option>Widowed</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="religion">Religion *</label>
+                            <select id="religion" required>
+                                <option value="" disabled selected>Select Religion</option>
+                                <option>Christianity</option>
+                                <option>Islam</option>
+                                <option>Traditional</option>
+                                <option>Other</option>
+                                <option>None</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Spouse Section (shown when Married) -->
+                    <div class="spouse-section" id="spouseSection">
+                        <div class="section-subtitle"><i class="fas fa-ring"></i> Spouse Details</div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="spouseName">Spouse's Full Name</label>
+                                <input type="text" id="spouseName" placeholder="Enter spouse's full name">
+                            </div>
+                            <div class="form-group">
+                                <label for="spousePhone">Spouse's Phone</label>
+                                <input type="tel" id="spousePhone" placeholder="Enter spouse's phone">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="spouseOccupation">Spouse's Occupation</label>
+                                <input type="text" id="spouseOccupation" placeholder="e.g. Nurse, Teacher">
+                            </div>
+                            <div class="form-group">
+                                <label for="numChildren">Number of Children</label>
+                                <input type="number" id="numChildren" placeholder="e.g. 2" min="0">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Next of Kin -->
+                    <div class="section-subtitle"><i class="fas fa-user-shield"></i> Next of Kin</div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="ecName">Full Name *</label>
+                            <input type="text" id="ecName" placeholder="Next of kin's full name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="ecPhone">Contact Phone *</label>
+                            <input type="tel" id="ecPhone" placeholder="Next of kin's phone" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="ecRelationship">Relationship *</label>
+                            <select id="ecRelationship" required>
+                                <option value="" disabled selected>Select relationship</option>
+                                <option>Spouse</option>
+                                <option>Parent</option>
+                                <option>Sibling</option>
+                                <option>Child</option>
+                                <option>Relative</option>
+                                <option>Friend</option>
+                                <option>Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="ecAddress">Address</label>
+                            <input type="text" id="ecAddress" placeholder="Next of kin's address">
+                        </div>
+                    </div>
+
+                    <div class="btn-row">
+                        <button type="button" class="btn-prev" onclick="goToStep(2)"><i class="fas fa-arrow-left"></i>
+                            Back</button>
+                        <button type="button" class="btn-next" onclick="goToStep(4)">Next <i
+                                class="fas fa-arrow-right"></i></button>
+                    </div>
+                </div>
+
+                <!-- STEP 4: Account -->
+                <div class="step-panel" id="panel-4">
+                    <div class="step-title"><i class="fas fa-lock"></i> Account Security</div>
+
+                    <div class="form-group">
+                        <label for="password">Password *</label>
+                        <div class="input-group">
+                            <input type="password" id="password" placeholder="Create a strong password" required>
+                            <i class="fas fa-lock"></i>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirm Password *</label>
+                        <div class="input-group">
+                            <input type="password" id="confirmPassword" placeholder="Re-enter your password" required>
+                            <i class="fas fa-lock"></i>
+                        </div>
+                    </div>
+
+                    <div class="btn-row">
+                        <button type="button" class="btn-prev" onclick="goToStep(3)"><i class="fas fa-arrow-left"></i>
+                            Back</button>
+                        <button type="submit" class="btn-submit"><i class="fas fa-user-plus"></i> Create
+                            Account</button>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+
+        <div class="register-footer">
+            Already have an account? <a href="login.html">Sign In</a> &nbsp;|&nbsp; <a href="../index.html"><i
+                    class="fas fa-home"></i> Home</a>
+        </div>
+    </div>
+
+    <script>
+        let currentStep = 1;
+        const totalSteps = 4;
+
+        // ---- Secondary Roles ----
+        const SECONDARY_ROLES = [
+            'Tuckshop Manager',
+            'Sports Coordinator',
+            'Hostel Supervisor',
+            'Security Supervisor',
+            'Maintenance Supervisor',
+            'ICT Technician',
+            'Driver',
+            'First Aider',
+            'Groundskeeper',
+            'Cook / Catering',
+            'Cleaner Lead',
+            'SDC Representative',
+            'Procurement Officer'
+        ];
+
+        function buildRoleChips() {
+            const container = document.getElementById('secondaryRolesContainer');
+            container.innerHTML = '';
+            SECONDARY_ROLES.forEach(role => {
+                const chip = document.createElement('label');
+                chip.className = 'role-chip';
+                chip.innerHTML = `<input type="checkbox" value="${role}"> ${role}`;
+                chip.querySelector('input').addEventListener('change', function () {
+                    chip.classList.toggle('selected', this.checked);
+                });
+                container.appendChild(chip);
+            });
+        }
+
+        function getSelectedRoles() {
+            return [...document.querySelectorAll('#secondaryRolesContainer input:checked')].map(c => c.value);
+        }
+
+        // Designations by department
+        const DESIGNATIONS = {
+            'Facilities & Maintenance': ['Maintenance Supervisor', 'Plumber', 'Electrician', 'General Maintenance Worker', 'Carpenter'],
+            'Hostels & Catering': ['Hostel Matron', 'Cook', 'Kitchen Assistant', 'Catering Supervisor', 'Housekeeper'],
+            'ICT Department': ['ICT Technician', 'Network Administrator', 'Systems Support', 'Computer Lab Attendant'],
+            'Security': ['Security Guard', 'Security Supervisor', 'Night Watchman', 'Gate Officer'],
+            'Sports & Grounds': ['Groundskeeper', 'Sports Coordinator', 'Gardener', 'Pool Attendant'],
+            'Tuckshop Management': ['Tuckshop Manager', 'Cashier', 'Stock Controller', 'Tuckshop Assistant']
+        };
+
+        document.getElementById('dept').addEventListener('change', function () {
+            const postSel = document.getElementById('post');
+            const depts = DESIGNATIONS[this.value] || [];
+            postSel.innerHTML = '<option value="" disabled selected>Select designation</option>' +
+                depts.map(d => `<option>${d}</option>`).join('');
+        });
+
+        buildRoleChips();
+
+        // ---- Profile Pic Preview ----
+        document.getElementById('profilePic').addEventListener('change', function (e) {
+            const file = e.target.files[0];
+            if (file) {
+                if (file.size > 500000) {
+                    showRegToast('File too large! Please select an image under 500KB.', 'error');
+                    this.value = '';
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = e => {
+                    document.getElementById('imagePreviewWrap').innerHTML = `<img src="${e.target.result}" alt="Preview">`;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // ---- Spouse Toggle ----
+        function toggleSpouse() {
+            const status = document.getElementById('maritalStatus').value;
+            document.getElementById('spouseSection').classList.toggle('visible', status === 'Married');
+        }
+
+        // ---- Step Navigation ----
+        function goToStep(step) {
+            if (step > currentStep && !validateStep(currentStep)) return;
+            for (let i = 1; i <= totalSteps; i++) {
+                const tab = document.getElementById(`step-tab-${i}`);
+                const panel = document.getElementById(`panel-${i}`);
+                panel.classList.remove('active');
+                tab.classList.remove('active', 'done');
+                if (i < step) tab.classList.add('done');
+                else if (i === step) tab.classList.add('active');
+            }
+            document.getElementById(`panel-${step}`).classList.add('active');
+            currentStep = step;
+            document.querySelector('.steps-bar').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function validateStep(step) {
+            const required = document.querySelectorAll(`#panel-${step} [required]`);
+            for (const field of required) {
+                if (!field.value.trim()) {
+                    field.focus();
+                    field.style.borderColor = '#dc3545';
+                    field.addEventListener('input', () => field.style.borderColor = '', { once: true });
+                    showRegToast('Please fill in all required fields.', 'error');
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        // ---- Toast ----
+        function showRegToast(message, type = 'success') {
+            document.querySelectorAll('.reg-toast').forEach(t => t.remove());
+            const toast = document.createElement('div');
+            toast.className = `reg-toast${type !== 'success' ? ' ' + type : ''}`;
+            const icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', warning: 'fa-exclamation-triangle' };
+            toast.innerHTML = `<i class="fas ${icons[type] || icons.success}"></i><span>${message}</span>`;
+            document.body.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.5s';
+                setTimeout(() => toast.remove(), 500);
+            }, type === 'error' ? 3500 : 2500);
+        }
+
+        // ---- Submit ----
+        document.getElementById('registerForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            if (password !== confirmPassword) {
+                showRegToast('Passwords do not match!', 'error');
+                return;
+            }
+
+            const ancillaryStaffList = getTenantData('ancillaryStaff', '[]');
+            const email = document.getElementById('email').value;
+
+            if (ancillaryStaffList.some(s => s.email === email)) {
+                showRegToast('An account with this email already exists!', 'error');
+                return;
+            }
+
+            // Generate Staff ID: ANCYY00001
+            const now = new Date();
+            const yearSuffix = now.getFullYear().toString().slice(-2);
+            const prefix = 'ANC' + yearSuffix;
+            const yearStaff = ancillaryStaffList.filter(s => s.id && s.id.startsWith(prefix));
+            let nextNum = 1;
+            if (yearStaff.length > 0) {
+                const ids = yearStaff.map(s => parseInt(s.id.substring(5)) || 0);
+                nextNum = Math.max(...ids) + 1;
+            }
+            const staffId = prefix + nextNum.toString().padStart(5, '0');
+
+            const firstName = document.getElementById('firstName').value;
+            const lastName = document.getElementById('lastName').value;
+            const selectedRoles = getSelectedRoles();
+
+            const userData = {
+                id: staffId,
+                name: firstName + ' ' + lastName,
+                firstName, lastName,
+                dob: document.getElementById('dob').value,
+                gender: document.getElementById('gender').value,
+                nationalId: document.getElementById('nationalId').value,
+                phone: document.getElementById('phone').value,
+                address: document.getElementById('address').value,
+                email,
+                dept: document.getElementById('dept').value,
+                post: document.getElementById('post').value,
+                qualification: document.getElementById('qualification').value,
+                joinDate: document.getElementById('joinDate').value,
+                maritalStatus: document.getElementById('maritalStatus').value,
+                religion: document.getElementById('religion').value,
+                spouseName: document.getElementById('spouseName').value,
+                spousePhone: document.getElementById('spousePhone').value,
+                spouseOccupation: document.getElementById('spouseOccupation').value,
+                numChildren: document.getElementById('numChildren').value,
+                ecName: document.getElementById('ecName').value,
+                ecPhone: document.getElementById('ecPhone').value,
+                ecRelationship: document.getElementById('ecRelationship').value,
+                ecAddress: document.getElementById('ecAddress').value,
+                password,
+                primaryRole: 'Ancillary Staff',
+                secondaryRoles: selectedRoles,
+                status: 'Active',
+                joined: new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' }),
+                registeredDate: new Date().toISOString(),
+                photo: null
+            };
+
+            const profilePicInput = document.getElementById('profilePic');
+
+            function saveAndRedirect(user) {
+                try {
+                    ancillaryStaffList.push(user);
+                    saveTenantData('ancillaryStaff', ancillaryStaffList);
+
+                    // Set currentUser in localStorage for cross-portal consistency
+                    saveTenantData('currentUser', user);
+
+                    sessionStorage.setItem('ancillaryUser', JSON.stringify(user));
+                    sessionStorage.setItem('ancillaryLoggedIn', 'true');
+                    sessionStorage.setItem('ancillaryEmail', user.email);
+
+                    showRegToast('Registration successful! Redirecting...', 'success');
+                    setTimeout(() => window.location.href = 'dashboard.html', 1800);
+                } catch (error) {
+                    if (error.name === 'QuotaExceededError') {
+                        user.photo = null;
+                        ancillaryStaffList.push(user);
+                        saveTenantData('ancillaryStaff', ancillaryStaffList);
+                        showRegToast('Registration successful! Redirecting...', 'success');
+                        setTimeout(() => window.location.href = 'dashboard.html', 1800);
+                    } else {
+                        showRegToast('An error occurred during registration. Please try again.', 'error');
+                        console.error(error);
+                    }
+                }
+            }
+
+            if (profilePicInput.files && profilePicInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = e => { userData.photo = e.target.result; saveAndRedirect(userData); };
+                reader.readAsDataURL(profilePicInput.files[0]);
+            } else {
+                saveAndRedirect(userData);
+            }
+        });
+    </script>
+    <!-- ACADEX: Powered-by footer and school branding -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+
+</body>
+
+</html>

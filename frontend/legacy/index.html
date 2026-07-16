@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Embakwe High School</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        /* Enhanced homepage styles */
+        .hero {
+            position: relative;
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+            background-size: cover;
+            background-position: center;
+            color: #fff;
+            padding: 120px 0;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 86, 179, 0.3);
+            z-index: 1;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .hero-content h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            animation: fadeInUp 1s ease;
+        }
+
+        .hero-content p {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            animation: fadeInUp 1.2s ease;
+        }
+
+        .hero-buttons {
+            animation: fadeInUp 1.4s ease;
+        }
+
+        .school-motto {
+            font-style: italic;
+            font-size: 1.4rem;
+            margin-bottom: 30px;
+            color: #f8f8f8;
+            animation: fadeInUp 1.3s ease;
+        }
+
+        .stats-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin: 50px 0;
+        }
+
+        .stat-item {
+            text-align: center;
+            flex: 0 0 200px;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+        }
+
+        .stat-item:hover {
+            transform: translateY(-10px);
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+
+        .stat-label {
+            font-size: 1rem;
+            color: #f0f0f0;
+        }
+
+        .features {
+            padding: 80px 0;
+            background-color: #f9f9f9;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+            margin-top: 50px;
+        }
+
+        .feature-item {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .feature-item:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-icon {
+            width: 70px;
+            height: 70px;
+            background-color: #0056b3;
+            color: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 1.8rem;
+        }
+
+        .religious-section {
+            padding: 80px 0;
+            background-color: #fff;
+            text-align: center;
+        }
+
+        .religious-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .mass-schedule {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-top: 40px;
+        }
+
+        .mass-item {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            flex: 0 0 calc(33.333% - 20px);
+            text-align: center;
+        }
+
+        .mass-day {
+            font-weight: 600;
+            font-size: 1.2rem;
+            color: #0056b3;
+            margin-bottom: 10px;
+        }
+
+        .mass-time {
+            color: #666;
+        }
+
+        .clubs-section {
+            padding: 80px 0;
+            background-color: #f0f7ff;
+        }
+
+        .clubs-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-top: 40px;
+        }
+
+        .club-item {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .club-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .club-icon {
+            font-size: 2rem;
+            color: #0056b3;
+            margin-bottom: 15px;
+        }
+
+        .club-name {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .club-description {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .testimonials {
+            padding: 80px 0;
+            background-color: #0056b3;
+            color: #fff;
+        }
+
+        .testimonials .section-header h2,
+        .testimonials .section-header p {
+            color: #fff;
+        }
+
+        .testimonial-slider {
+            max-width: 800px;
+            margin: 40px auto 0;
+            position: relative;
+        }
+
+        .testimonial-item {
+            text-align: center;
+            padding: 0 20px;
+        }
+
+        .testimonial-text {
+            font-size: 1.1rem;
+            font-style: italic;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .testimonial-author {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .testimonial-role {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .cta {
+            padding: 80px 0;
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://images.unsplash.com/photo-1577896851231-70ef18881754?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: #fff;
+            text-align: center;
+        }
+
+        .cta-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .cta-text h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        .cta-text p {
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 992px) {
+
+            .features-grid,
+            .clubs-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .hero-content h1 {
+                font-size: 2.8rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .stat-item {
+                flex: 0 0 calc(50% - 30px);
+            }
+
+            .mass-item {
+                flex: 0 0 calc(50% - 20px);
+            }
+        }
+
+        @media (max-width: 576px) {
+
+            .features-grid,
+            .clubs-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stat-item {
+                flex: 0 0 100%;
+            }
+
+            .mass-item {
+                flex: 0 0 100%;
+            }
+
+            .hero-content h1 {
+                font-size: 2.2rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Top Bar for Portals & Contact -->
+    <div class="top-bar">
+        <div class="container">
+            <div class="contact-info">
+                <span><i class="fas fa-phone"></i> +263 123 456 789</span>
+                <span><i class="fas fa-envelope"></i> info@embakwe.ac.zw</span>
+            </div>
+            <div class="portal-links">
+                <a href="library/login.html"><i class="fas fa-book"></i> Librarian</a>
+                <a href="bursar/login.html"><i class="fas fa-money-check-alt"></i> Bursar</a>
+                <a href="student/login.html"><i class="fas fa-user-graduate"></i> Student Portal</a>
+                <a href="teacher/login.html"><i class="fas fa-chalkboard-teacher"></i> Teacher Portal</a>
+                <a href="alumni/login.html"><i class="fas fa-user-tie"></i> Alumni Portal</a>
+                <a href="ancillary/login.html"><i class="fas fa-hands-helping"></i> Ancillary Portal</a>
+                <a href="admin/login.html"><i class="fas fa-lock"></i> Admin</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header Section -->
+    <header>
+        <div class="container">
+            <div class="logo">
+                <h1 class="acadex-school-name">Embakwe High School</h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="index.html" class="active">Home</a></li>
+                    <li><a href="departments.html">Departments</a></li>
+                    <li><a href="apply.html">Applications</a></li>
+                    <li><a href="check-status.html">Track Application</a></li>
+                    <li><a href="gallery.html">Gallery</a></li>
+                    <li><a href="news.html">News</a></li>
+                    <li><a href="sports.html">Sports</a></li>
+                    <li><a href="clubs.html">Clubs</a></li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle">Portals</a>
+                        <div class="dropdown-content">
+                            <a href="library/login.html"><i class="fas fa-book"></i> Librarian Portal</a>
+                            <a href="bursar/login.html"><i class="fas fa-money-check-alt"></i> Bursar Portal</a>
+                            <a href="student/login.html"><i class="fas fa-user-graduate"></i> Student Portal</a>
+                            <a href="teacher/login.html"><i class="fas fa-chalkboard-teacher"></i> Teacher Portal</a>
+                            <a href="ancillary/login.html"><i class="fas fa-tools"></i> Ancillary Portal</a>
+                            <a href="admin/login.html"><i class="fas fa-user-shield"></i> Admin Portal</a>
+                        </div>
+                    </li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+            </nav>
+            <div class="menu-toggle">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1 id="hero-title">Welcome to Embakwe High School</h1>
+                <p class="school-motto" id="school-motto">"Fide et Labore" - Faith and Hard Work</p>
+                <p id="hero-subtitle">Nurturing minds, building character, and inspiring excellence since 1963</p>
+
+                <div class="stats-container">
+                    <div class="stat-item">
+                        <div class="stat-number">60+</div>
+                        <div class="stat-label">Years of Excellence</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">15+</div>
+                        <div class="stat-label">Sports Teams</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">10+</div>
+                        <div class="stat-label">Student Clubs</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">1000+</div>
+                        <div class="stat-label">Successful Alumni</div>
+                    </div>
+                </div>
+
+                <div class="hero-buttons">
+                    <a href="about.html" class="btn btn-primary">Learn More</a>
+                    <a href="contact.html" class="btn btn-secondary">Contact Us</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Catholic Identity Section -->
+    <section class="catholic-identity" style="background-color: #fce8e6; padding: 60px 0; text-align: center;">
+        <div class="container">
+            <div class="section-header">
+                <span class="sub-title"
+                    style="color: #d1410c; font-weight: 600; text-transform: uppercase; letter-spacing: 2px;">Our
+                    Foundation</span>
+                <h2 style="color: #8c2b0e; margin-top: 10px;">Rooted in Catholic Tradition</h2>
+                <p>Guided by the values of the Church and the spirit of our Patron Saint.</p>
+            </div>
+            <div class="identity-grid"
+                style="display: flex; justify-content: center; gap: 40px; margin-top: 40px; flex-wrap: wrap;">
+                <div class="identity-card"
+                    style="background: white; padding: 30px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); max-width: 300px;">
+                    <div class="icon" style="font-size: 2.5rem; color: #d1410c; margin-bottom: 20px;"><i
+                            class="fas fa-church"></i></div>
+                    <h3>Patron Saint</h3>
+                    <p>Dedicated to St. Francis Xavier, embracing his zeal for missions and holistic education.</p>
+                </div>
+                <div class="identity-card"
+                    style="background: white; padding: 30px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); max-width: 300px;">
+                    <div class="icon" style="font-size: 2.5rem; color: #d1410c; margin-bottom: 20px;"><i
+                            class="fas fa-heart"></i></div>
+                    <h3>Core Values</h3>
+                    <p>Faith, Integrity, Service, and Excellence define every aspect of our school life.</p>
+                </div>
+                <div class="identity-card"
+                    style="background: white; padding: 30px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); max-width: 300px;">
+                    <div class="icon" style="font-size: 2.5rem; color: #d1410c; margin-bottom: 20px;"><i
+                            class="fas fa-praying-hands"></i></div>
+                    <h3>Chaplaincy</h3>
+                    <p>Our school chaplain invites students to encounter Christ through daily prayer and sacraments.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Departments Preview Section -->
+    <section class="departments-preview" style="padding: 80px 0;">
+        <div class="container">
+            <div class="section-header">
+                <h2>Academic Excellence</h2>
+                <p>Discover our specialized departments dedicated to nurturing talent.</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-item">
+                    <div class="feature-icon"><i class="fas fa-flask"></i></div>
+                    <h3>Sciences</h3>
+                    <p>State-of-the-art labs and innovation hubs.</p>
+                    <a href="departments.html" style="color: #0056b3; font-weight: 500; text-decoration: none;">Explore
+                        Science &rarr;</a>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon"><i class="fas fa-book-reader"></i></div>
+                    <h3>Humanities</h3>
+                    <p>Fostering critical thinking and cultural depth.</p>
+                    <a href="departments.html" style="color: #0056b3; font-weight: 500; text-decoration: none;">Explore
+                        Humanities &rarr;</a>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon"><i class="fas fa-laptop-code"></i></div>
+                    <h3>ICT & Technicals</h3>
+                    <p>Equipping students for the digital future.</p>
+                    <a href="departments.html" style="color: #0056b3; font-weight: 500; text-decoration: none;">Explore
+                        Tech &rarr;</a>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon"><i class="fas fa-palette"></i></div>
+                    <h3>Arts & Culture</h3>
+                    <p>Expressing creativity through diverse mediums.</p>
+                    <a href="departments.html" style="color: #0056b3; font-weight: 500; text-decoration: none;">Explore
+                        Arts &rarr;</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Religious Section -->
+    <section class="religious-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Faith & Spiritual Life</h2>
+                <p>At Embakwe High School, we nurture spiritual growth alongside academic excellence</p>
+            </div>
+            <div class="religious-content">
+                <p>Our Catholic tradition is at the heart of our educational philosophy. We celebrate daily masses for
+                    all students, fostering a community of faith and reflection.</p>
+
+                <div class="mass-schedule">
+                    <div class="mass-item">
+                        <div class="mass-day">Daily Masses</div>
+                        <div class="mass-time">6:30 AM</div>
+                        <p>For all students</p>
+                    </div>
+                    <div class="mass-item">
+                        <div class="mass-day">Sunday Mass</div>
+                        <div class="mass-time">9:00 AM</div>
+                        <p>High School students</p>
+                    </div>
+                    <div class="mass-item">
+                        <div class="mass-day">Wednesday Mass</div>
+                        <div class="mass-time">3:30 PM</div>
+                        <p>High School students</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Clubs Section -->
+    <section class="clubs-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Student Clubs & Activities</h2>
+                <p>Discover your passions and develop your talents through our diverse range of clubs</p>
+            </div>
+            <div class="clubs-grid">
+                <div class="club-item">
+                    <div class="club-icon">
+                        <i class="fas fa-book-reader"></i>
+                    </div>
+                    <h3 class="club-name">CLC</h3>
+                    <p class="club-description">Christian Life Community fosters spiritual growth and community service.
+                    </p>
+                </div>
+                <div class="club-item">
+                    <div class="club-icon">
+                        <i class="fas fa-microphone"></i>
+                    </div>
+                    <h3 class="club-name">Public Speaking</h3>
+                    <p class="club-description">Develop confidence and communication skills through public speaking.</p>
+                </div>
+                <div class="club-item">
+                    <div class="club-icon">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <h3 class="club-name">Debate</h3>
+                    <p class="club-description">Sharpen critical thinking and argumentation skills in our debate team.
+                    </p>
+                </div>
+                <div class="club-item">
+                    <div class="club-icon">
+                        <i class="fas fa-spell-check"></i>
+                    </div>
+                    <h3 class="club-name">Spelling Bee</h3>
+                    <p class="club-description">Enhance vocabulary and spelling skills in competitive spelling bees.</p>
+                </div>
+                <div class="club-item">
+                    <div class="club-icon">
+                        <i class="fas fa-theater-masks"></i>
+                    </div>
+                    <h3 class="club-name">Drama</h3>
+                    <p class="club-description">Express creativity through acting, directing, and producing plays.</p>
+                </div>
+                <div class="club-item">
+                    <div class="club-icon">
+                        <i class="fas fa-hands-helping"></i>
+                    </div>
+                    <h3 class="club-name">Interact</h3>
+                    <p class="club-description">Develop leadership skills through community service and international
+                        understanding.</p>
+                </div>
+                <div class="club-item">
+                    <div class="club-icon">
+                        <i class="fas fa-dove"></i>
+                    </div>
+                    <h3 class="club-name">Edmund Rice Society</h3>
+                    <p class="club-description">Promote social justice and service in the tradition of Edmund Rice.</p>
+                </div>
+                <div class="club-item">
+                    <div class="club-icon">
+                        <i class="fas fa-music"></i>
+                    </div>
+                    <h3 class="club-name">Choir</h3>
+                    <p class="club-description">Develop musical talents and perform at school and community events.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- News Section -->
+    <section class="news-highlights">
+        <div class="container">
+            <div class="section-header">
+                <h2>Latest News</h2>
+                <a href="news.html" class="view-all">View All</a>
+            </div>
+            <div class="news-grid">
+                <div class="news-item">
+                    <div class="news-image" style="background-image: url('images/news1.jpg')"></div>
+                    <div class="news-content">
+                        <div class="news-date">June 15, 2023</div>
+                        <h3>Embakwe Students Win National Science Competition</h3>
+                        <p>Our talented science team took first place at the National Science Fair with their innovative
+                            renewable energy project.</p>
+                        <a href="news.html" class="read-more">Read More</a>
+                    </div>
+                </div>
+                <div class="news-item">
+                    <div class="news-image" style="background-image: url('images/news2.jpg')"></div>
+                    <div class="news-content">
+                        <div class="news-date">May 28, 2023</div>
+                        <h3>Annual Sports Day Celebrates Athletic Achievement</h3>
+                        <p>Students showcased their sporting talents at our annual Sports Day event, breaking several
+                            school records.</p>
+                        <a href="news.html" class="read-more">Read More</a>
+                    </div>
+                </div>
+                <div class="news-item">
+                    <div class="news-image" style="background-image: url('images/news3.jpg')"></div>
+                    <div class="news-content">
+                        <div class="news-date">May 10, 2023</div>
+                        <h3>Alumni Reunion Brings Generations Together</h3>
+                        <p>Hundreds of alumni returned to campus for a weekend of reminiscing, networking, and
+                            celebrating our school's legacy.</p>
+                        <a href="news.html" class="read-more">Read More</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="testimonials">
+        <div class="container">
+            <div class="section-header">
+                <h2>What Our Community Says</h2>
+                <p>Hear from our students, parents, and alumni about their Embakwe experience</p>
+            </div>
+            <div class="testimonial-slider">
+                <div class="testimonial-item">
+                    <p class="testimonial-text">"Embakwe High School provided me with not just academic knowledge, but
+                        also life skills and values that have shaped my career and personal life. The supportive
+                        teachers and diverse activities helped me discover my potential."</p>
+                    <div class="testimonial-author">John Moyo</div>
+                    <div class="testimonial-role">Class of 2010, Doctor</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Call to Action Section -->
+    <section class="cta">
+        <div class="container">
+            <div class="cta-content">
+                <div class="cta-text">
+                    <h2>Join Our Embakwe Family</h2>
+                    <p>Applications for the upcoming academic year are now open. Take the first step towards a bright
+                        future built on faith and hard work.</p>
+                </div>
+                <a href="apply.html" class="btn btn-primary">Apply Now</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer Section -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <h2 class="acadex-school-name">Embakwe High School</h2>
+                    <p id="footer-tagline">Excellence in Education</p>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-column">
+                        <h3>Quick Links</h3>
+                        <ul>
+                            <li><a href="index.html">Home</a></li>
+                            <li><a href="news.html">News</a></li>
+                            <li><a href="sports.html">Sports</a></li>
+                            <li><a href="clubs.html">Clubs</a></li>
+                            <li><a href="about.html">About Us</a></li>
+                            <li><a href="contact.html">Contact</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h3>Resources</h3>
+                        <ul>
+                            <li><a href="#">Academic Calendar</a></li>
+                            <li><a href="#">Student Handbook</a></li>
+                            <li><a href="#">Library</a></li>
+                            <li><a href="#">Careers</a></li>
+                            <li><a href="alumni/login.html">Alumni Portal</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h3>Contact</h3>
+                        <ul>
+                            <li><i class="fas fa-map-marker-alt"></i> Embakwe, Plumtree, Zimbabwe</li>
+                            <li><i class="fas fa-phone"></i> +263 123 456 789</li>
+                            <li><i class="fas fa-envelope"></i> info@embakwehigh.edu.zw</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2023 Embakwe High School. All Rights Reserved.</p>
+                <div class="social-icons">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="acadex/js/acadex-core.js"></script>
+    <script src="acadex/js/acadex-tenant.js"></script>
+    <script src="js/script.js"></script>
+</body>
+
+</html>

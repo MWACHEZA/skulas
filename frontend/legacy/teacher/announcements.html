@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Announcements - Teacher Portal</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/ancillary-portal.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar, Main Content, and Mobile Header styles are now in ancillary-portal.css */
+
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .page-header h2 {
+            margin: 0;
+            color: #333;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background-color: var(--school-primary, #0056b3);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--school-primary-dark, #003d82);
+        }
+
+        .announcements-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .announcement-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .announcement-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .announcement-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #333;
+            margin: 0 0 10px;
+        }
+
+        .announcement-meta {
+            display: flex;
+            gap: 20px;
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+        }
+
+        .meta-item i {
+            margin-right: 5px;
+            color: var(--school-primary, #0056b3);
+        }
+
+        .announcement-content {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .announcement-actions {
+            display: flex;
+            gap: 10px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 0.85rem;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+
+        .badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .badge-success {
+            background-color: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+        }
+
+        .badge-warning {
+            background-color: rgba(255, 193, 7, 0.1);
+            color: #ffc107;
+        }
+
+        .mobile-header {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                z-index: 1000;
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding-top: 70px;
+                width: 100%;
+            }
+
+            .mobile-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 15px 20px;
+                background-color: white;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                z-index: 100;
+            }
+
+            .menu-toggle {
+                background: none;
+                border: none;
+                font-size: 1.5rem;
+                color: var(--school-primary, #0056b3);
+                cursor: pointer;
+            }
+
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+        }
+
+        /* Modal Styles */
+        /* Modal Styles are in ancillary-portal.css */
+    </style>
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <img src="../images/logo.png" alt="Logo">
+                <h3>Teacher Portal</h3>
+            </div>
+            <div class="sidebar-menu">
+                <div class="sidebar-section-title">Teacher System</div>
+                <ul>
+                    <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i>
+                            <span>Dashboard</span></a></li>
+                    <li><a href="classes.html"><i class="fas fa-chalkboard"></i> <span>Classes</span></a></li>
+                    <li><a href="assignments.html"><i class="fas fa-tasks"></i> <span>Assignments</span></a></li>
+                    <li><a href="attendance.html"><i class="fas fa-clipboard-check"></i> <span>Attendance</span></a>
+                    </li>
+                    <li><a href="grades.html"><i class="fas fa-chart-line"></i> <span>Grades</span></a></li>
+                    <li><a href="timetable.html"><i class="fas fa-calendar-alt"></i> <span>Timetable</span></a></li>
+                    <li><a href="students.html"><i class="fas fa-users"></i> <span>Students</span></a></li>
+                    <li><a href="textbooks.html"><i class="fas fa-book"></i> <span>Textbooks</span></a></li>
+                    <li><a href="library.html"><i class="fas fa-book-open"></i> <span>Library Catalog</span></a></li>
+                    <li><a href="digital-resources.html"><i class="fas fa-laptop-code"></i> <span>Digital
+                                Resources</span></a></li>
+                    <li><a href="reports.html"><i class="fas fa-file-alt"></i> <span>System Reports</span></a></li>
+                    <li><a href="messages.html"><i class="fas fa-envelope"></i> <span>Messages</span></a></li>
+                </ul>
+
+                <div class="sidebar-section-title">Operations</div>
+                <ul>
+                    <li><a href="staff-directory.html"><i class="fas fa-users"></i> <span>Staff Directory</span></a>
+                    </li>
+                    <li><a href="procurement.html"><i class="fas fa-shopping-cart"></i> <span>Procurement</span></a>
+                    </li>
+                    <li><a href="assets.html"><i class="fas fa-boxes"></i> <span>Asset Management</span></a></li>
+                    <li><a href="schedules.html"><i class="fas fa-calendar-check"></i> <span>Schedules &
+                                Shifts</span></a></li>
+                </ul>
+
+                <div class="sidebar-section-title">Staff HR & Support</div>
+                <ul>
+                    <li><a href="sdc-portal.html"><i class="fas fa-file-invoice-dollar"></i> <span>SDC Staff
+                                Portal</span></a></li>
+                    <li><a href="hr-services.html"><i class="fas fa-user-shield"></i> <span>HR Services</span></a></li>
+                    <li><a href="profile.html"><i class="fas fa-id-card"></i> <span>My Profile</span></a></li>
+                    <li><a href="resources.html"><i class="fas fa-folder-open"></i> <span>Resources & Docs</span></a>
+                    </li>
+                    <li><a href="it-support.html"><i class="fas fa-headset"></i> <span>IT Support</span></a></li>
+                </ul>
+
+                <div class="sidebar-section-title">Communication</div>
+                <ul>
+                    <li><a href="news.html"><i class="fas fa-newspaper"></i> <span>News & Updates</span></a></li>                    <li><a href="announcements.html" class="active"><i class="fas fa-bullhorn"></i> <span>General
+                                Notices</span></a>
+                    </li>                    <li><a href="contact.html"><i class="fas fa-address-book"></i> <span>Contact Us</span></a></li>
+                    <li><a href="settings.html"><i class="fas fa-cog"></i> <span>Settings</span></a></li>
+                </ul>
+            </div>
+            <div class="sidebar-footer">
+                <a href="login.html"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a>
+            </div>
+        </aside>
+
+        <!-- Sidebar Overlay -->
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Mobile Header -->
+            <div class="mobile-header">
+                <button class="menu-toggle" id="menuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="mobile-logo">
+                    <span>Announcements</span>
+                </div>
+            </div>
+
+            <!-- Page Header -->
+            <div class="page-header">
+                <h2>Announcements</h2>
+                <button class="btn btn-primary" onclick="createAnnouncement()">
+                    <i class="fas fa-plus"></i> New Announcement
+                </button>
+            </div>
+
+            <!-- Announcements List -->
+            <div class="announcements-list">
+                <div class="announcement-card">
+                    <div class="announcement-header">
+                        <div>
+                            <h3 class="announcement-title">Upcoming Science Fair - December 22</h3>
+                            <div class="announcement-meta">
+                                <div class="meta-item">
+                                    <i class="fas fa-calendar"></i>
+                                    Posted on Dec 10, 2025
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-users"></i>
+                                    All Classes
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-eye"></i>
+                                    156 views
+                                </div>
+                            </div>
+                        </div>
+                        <span class="badge badge-success">Published</span>
+                    </div>
+                    <div class="announcement-content">
+                        <p>Dear Students,</p>
+                        <p>We are excited to announce that the annual Science Fair will be held on December 22, 2025.
+                            This is a great opportunity to showcase your scientific projects and innovations. All
+                            students are encouraged to participate.</p>
+                        <p>Registration deadline: December 18, 2025</p>
+                    </div>
+                    <div class="announcement-actions">
+                        <button class="btn btn-primary btn-small"><i class="fas fa-edit"></i> Edit</button>
+                        <button class="btn btn-secondary btn-small"><i class="fas fa-eye"></i> View Details</button>
+                        <button class="btn btn-danger btn-small"><i class="fas fa-trash"></i> Delete</button>
+                    </div>
+                </div>
+
+                <div class="announcement-card">
+                    <div class="announcement-header">
+                        <div>
+                            <h3 class="announcement-title">Mathematics Quiz - Form 4A</h3>
+                            <div class="announcement-meta">
+                                <div class="meta-item">
+                                    <i class="fas fa-calendar"></i>
+                                    Posted on Dec 8, 2025
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-users"></i>
+                                    Form 4A
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-eye"></i>
+                                    32 views
+                                </div>
+                            </div>
+                        </div>
+                        <span class="badge badge-success">Published</span>
+                    </div>
+                    <div class="announcement-content">
+                        <p>Form 4A Students,</p>
+                        <p>There will be a mathematics quiz on Friday, December 15, covering chapters 5-7. Please review
+                            your notes and complete the practice problems.</p>
+                        <p>Topics: Calculus, Trigonometry, and Algebra</p>
+                    </div>
+                    <div class="announcement-actions">
+                        <button class="btn btn-primary btn-small"><i class="fas fa-edit"></i> Edit</button>
+                        <button class="btn btn-secondary btn-small"><i class="fas fa-eye"></i> View Details</button>
+                        <button class="btn btn-danger btn-small"><i class="fas fa-trash"></i> Delete</button>
+                    </div>
+                </div>
+
+                <div class="announcement-card">
+                    <div class="announcement-header">
+                        <div>
+                            <h3 class="announcement-title">Parent-Teacher Meeting Reminder</h3>
+                            <div class="announcement-meta">
+                                <div class="meta-item">
+                                    <i class="fas fa-calendar"></i>
+                                    Posted on Dec 5, 2025
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-users"></i>
+                                    All Classes
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-eye"></i>
+                                    145 views
+                                </div>
+                            </div>
+                        </div>
+                        <span class="badge badge-success">Published</span>
+                    </div>
+                    <div class="announcement-content">
+                        <p>Dear Students and Parents,</p>
+                        <p>This is a reminder that the Parent-Teacher Meeting is scheduled for December 20, 2025, from
+                            2:00 PM to 5:00 PM. Parents are encouraged to attend to discuss their child's academic
+                            progress.</p>
+                        <p>Location: School Main Hall</p>
+                    </div>
+                    <div class="announcement-actions">
+                        <button class="btn btn-primary btn-small"><i class="fas fa-edit"></i> Edit</button>
+                        <button class="btn btn-secondary btn-small"><i class="fas fa-eye"></i> View Details</button>
+                        <button class="btn btn-danger btn-small"><i class="fas fa-trash"></i> Delete</button>
+                    </div>
+                </div>
+
+                <div class="announcement-card">
+                    <div class="announcement-header">
+                        <div>
+                            <h3 class="announcement-title">Holiday Assignment - Form 3B</h3>
+                            <div class="announcement-meta">
+                                <div class="meta-item">
+                                    <i class="fas fa-calendar"></i>
+                                    Scheduled for Dec 20, 2025
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-users"></i>
+                                    Form 3B
+                                </div>
+                            </div>
+                        </div>
+                        <span class="badge badge-warning">Draft</span>
+                    </div>
+                    <div class="announcement-content">
+                        <p>Form 3B Students,</p>
+                        <p>Your holiday assignment will be posted here on December 20. Make sure to complete it before
+                            the new term begins.</p>
+                    </div>
+                    <div class="announcement-actions">
+                        <button class="btn btn-primary btn-small"><i class="fas fa-paper-plane"></i> Publish</button>
+                        <button class="btn btn-secondary btn-small"><i class="fas fa-edit"></i> Edit</button>
+                        <button class="btn btn-danger btn-small"><i class="fas fa-trash"></i> Delete</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create/Edit Announcement Modal -->
+    <div class="modal" id="announcementModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Create New Announcement</h3>
+                <button class="close-modal" onclick="closeAnnouncementModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="announcementForm">
+                    <input type="hidden" id="announcementId">
+
+                    <div class="form-group">
+                        <label for="announcementTitle">Title *</label>
+                        <input type="text" id="announcementTitle" required
+                            placeholder="e.g., Upcoming Quiz Announcement">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="announcementAudience">Audience *</label>
+                            <select id="announcementAudience" required>
+                                <option value="">Select Audience</option>
+                                <option value="All Classes">All Classes</option>
+                                <option value="Form 1A">Form 1A</option>
+                                <option value="Form 2A">Form 2A</option>
+                                <option value="Form 3B">Form 3B</option>
+                                <option value="Form 4A">Form 4A</option>
+                                <option value="Form 4B">Form 4B</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="announcementStatus">Status *</label>
+                            <select id="announcementStatus" required>
+                                <option value="draft">Draft</option>
+                                <option value="published">Published</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="announcementDate">Post Date *</label>
+                        <input type="date" id="announcementDate" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="announcementContent">Content *</label>
+                        <textarea id="announcementContent" required
+                            placeholder="Enter announcement content..."></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeAnnouncementModal()">Cancel</button>
+                <button type="button" class="btn btn-danger" id="deleteBtn" onclick="deleteAnnouncement()"
+                    style="display: none; margin-right: auto;">Delete</button>
+                <button type="button" class="btn btn-primary" onclick="saveAnnouncement()">Save Announcement</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Details Modal -->
+    <div class="modal" id="viewDetailsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Announcement Details</h3>
+                <button class="close-modal" onclick="closeViewDetailsModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Title</label>
+                    <p id="viewTitle" style="margin: 0; padding: 10px; background: #f8f9fa; border-radius: 5px;"></p>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Audience</label>
+                        <p id="viewAudience" style="margin: 0; padding: 10px; background: #f8f9fa; border-radius: 5px;">
+                        </p>
+                    </div>
+                    <div class="form-group">
+                        <label>Status</label>
+                        <p id="viewStatus" style="margin: 0; padding: 10px; background: #f8f9fa; border-radius: 5px;">
+                        </p>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Date</label>
+                        <p id="viewDate" style="margin: 0; padding: 10px; background: #f8f9fa; border-radius: 5px;"></p>
+                    </div>
+                    <div class="form-group">
+                        <label>Views</label>
+                        <p id="viewViews" style="margin: 0; padding: 10px; background: #f8f9fa; border-radius: 5px;">
+                        </p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Content</label>
+                    <div id="viewContent"
+                        style="padding: 15px; background: #f8f9fa; border-radius: 5px; white-space: pre-wrap;"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="closeViewDetailsModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    </div>
+
+    <script src="../js/toast.js"></script>
+    <script>
+        // Mobile menu toggle
+        const menuToggle = document.getElementById('menuToggle');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+        if (menuToggle) {
+            menuToggle.addEventListener('click', function () {
+                sidebar.classList.toggle('active');
+                if (sidebarOverlay) sidebarOverlay.classList.toggle('active');
+            });
+        }
+
+        if (sidebarOverlay) {
+            sidebarOverlay.addEventListener('click', function () {
+                sidebar.classList.remove('active');
+                sidebarOverlay.classList.remove('active');
+            });
+        }
+
+        // Load teacher name from localStorage
+        const teacherName = getTenantData('teacherName', 'null');
+        if (teacherName) {
+            document.getElementById('teacherName').textContent = teacherName;
+        }
+
+        // Logout functionality
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+                saveTenantData('teacherLoggedIn', []);
+                window.location.href = 'login.html';
+            });
+        }
+
+        // Announcement Management System with localStorage
+        const ANNOUNCEMENTS_KEY = 'teacherAnnouncements';
+
+        // Initialize announcements from localStorage or use defaults
+        function getAnnouncements() {
+            const stored = getTenantData(ANNOUNCEMENTS_KEY, 'null');
+            if (stored) {
+                return JSON.parse(stored);
+            }
+            // Default announcements
+            return [
+                {
+                    id: '1',
+                    title: 'Upcoming Mathematics Quiz - Form 4A',
+                    content: 'Form 4A Students,\n\nThere will be a mathematics quiz on Friday, December 15, covering chapters 5-7. Please review your notes and complete the practice problems.\n\nTopics: Calculus, Trigonometry, and Algebra',
+                    audience: 'Form 4A',
+                    date: '2025-12-08',
+                    status: 'published',
+                    views: 32
+                },
+                {
+                    id: '2',
+                    title: 'Parent-Teacher Meeting Reminder',
+                    content: 'Dear Students and Parents,\n\nThis is a reminder that the Parent-Teacher Meeting is scheduled for December 20, 2025, from 2:00 PM to 5:00 PM. Parents are encouraged to attend to discuss their child\'s academic progress.\n\nLocation: School Main Hall',
+                    audience: 'All Classes',
+                    date: '2025-12-05',
+                    status: 'published',
+                    views: 145
+                },
+                {
+                    id: '3',
+                    title: 'Holiday Assignment - Form 3B',
+                    content: 'Form 3B Students,\n\nYour holiday assignment has been posted. Please complete all exercises from Chapter 8 and submit by January 5, 2026.\n\nGood luck!',
+                    audience: 'Form 3B',
+                    date: '2025-12-20',
+                    status: 'draft',
+                    views: 0
+                }
+            ];
+        }
+
+        function saveAnnouncements(announcements) {
+            saveTenantData(ANNOUNCEMENTS_KEY, announcements);
+        }
+
+        // Render announcements to the page
+        function renderAnnouncements() {
+            const announcements = getAnnouncements();
+            const container = document.querySelector('.announcements-list');
+            container.innerHTML = '';
+
+            announcements.forEach(announcement => {
+                const card = createAnnouncementCard(announcement);
+                container.appendChild(card);
+            });
+        }
+
+        function createAnnouncementCard(announcement) {
+            const card = document.createElement('div');
+            card.className = 'announcement-card';
+
+            const badgeClass = announcement.status === 'published' ? 'badge-success' : 'badge-warning';
+            const badgeText = announcement.status === 'published' ? 'Published' : 'Draft';
+            const formattedDate = formatDate(announcement.date);
+
+            card.innerHTML = `
+                <div class="announcement-header">
+                    <div>
+                        <h3 class="announcement-title">${announcement.title}</h3>
+                        <div class="announcement-meta">
+                            <div class="meta-item">
+                                <i class="fas fa-calendar"></i>
+                                ${announcement.status === 'published' ? 'Posted on' : 'Scheduled for'} ${formattedDate}
+                            </div>
+                            <div class="meta-item">
+                                <i class="fas fa-users"></i>
+                                ${announcement.audience}
+                            </div>
+                            ${announcement.status === 'published' ? `
+                                <div class="meta-item">
+                                    <i class="fas fa-eye"></i>
+                                    ${announcement.views} views
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                    <span class="badge ${badgeClass}">${badgeText}</span>
+                </div>
+                <div class="announcement-content">
+                    ${formatContent(announcement.content)}
+                </div>
+                <div class="announcement-actions">
+                    <button class="btn btn-primary btn-small" onclick="editAnnouncement('${announcement.id}')">
+                        <i class="fas fa-edit"></i> Edit
+                    </button>
+                    <button class="btn btn-secondary btn-small" onclick="viewDetails('${announcement.id}')">
+                        <i class="fas fa-eye"></i> View Details
+                    </button>
+                    <button class="btn btn-danger btn-small" onclick="confirmDelete('${announcement.id}')">
+                        <i class="fas fa-trash"></i> Delete
+                    </button>
+                </div>
+            `;
+
+            return card;
+        }
+
+        function formatContent(content) {
+            const paragraphs = content.split('\n').filter(p => p.trim());
+            return paragraphs.map(p => `<p>${p}</p>`).join('');
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        }
+
+        // Create Announcement
+        function createAnnouncement() {
+            document.getElementById('modalTitle').textContent = 'Create New Announcement';
+            document.getElementById('announcementForm').reset();
+            document.getElementById('announcementId').value = '';
+            document.getElementById('deleteBtn').style.display = 'none';
+
+            // Set default date to today
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('announcementDate').value = today;
+            document.getElementById('announcementStatus').value = 'draft';
+
+            document.getElementById('announcementModal').classList.add('active');
+        }
+
+        // Edit Announcement
+        function editAnnouncement(announcementId) {
+            const announcements = getAnnouncements();
+            const announcement = announcements.find(a => a.id === announcementId);
+
+            if (!announcement) {
+                Toast.error('Announcement not found');
+                return;
+            }
+
+            document.getElementById('modalTitle').textContent = 'Edit Announcement';
+            document.getElementById('announcementId').value = announcement.id;
+            document.getElementById('announcementTitle').value = announcement.title;
+            document.getElementById('announcementAudience').value = announcement.audience;
+            document.getElementById('announcementStatus').value = announcement.status;
+            document.getElementById('announcementDate').value = announcement.date;
+            document.getElementById('announcementContent').value = announcement.content;
+            document.getElementById('deleteBtn').style.display = 'block';
+
+            document.getElementById('announcementModal').classList.add('active');
+        }
+
+        // Save Announcement (Create or Update)
+        function saveAnnouncement() {
+            const form = document.getElementById('announcementForm');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            const announcementId = document.getElementById('announcementId').value;
+            let announcements = getAnnouncements();
+
+            const announcementData = {
+                title: document.getElementById('announcementTitle').value,
+                audience: document.getElementById('announcementAudience').value,
+                status: document.getElementById('announcementStatus').value,
+                date: document.getElementById('announcementDate').value,
+                content: document.getElementById('announcementContent').value
+            };
+
+            if (announcementId) {
+                // Update existing
+                const index = announcements.findIndex(a => a.id === announcementId);
+                if (index !== -1) {
+                    announcements[index] = { ...announcements[index], ...announcementData };
+                    Toast.success('Announcement updated successfully!');
+                }
+            } else {
+                // Create new
+                const newAnnouncement = {
+                    id: Date.now().toString(),
+                    ...announcementData,
+                    views: 0
+                };
+                announcements.push(newAnnouncement);
+                Toast.success('Announcement created successfully!');
+            }
+
+            saveAnnouncements(announcements);
+            closeAnnouncementModal();
+            renderAnnouncements();
+        }
+
+        // Delete Announcement
+        let pendingDeleteId = null;
+
+        function confirmDelete(announcementId) {
+            const announcements = getAnnouncements();
+            const announcement = announcements.find(a => a.id === announcementId);
+
+            if (!announcement) {
+                Toast.error('Announcement not found');
+                return;
+            }
+
+            // If this is the pending delete, proceed with deletion
+            if (pendingDeleteId === announcementId) {
+                deleteAnnouncementById(announcementId);
+                pendingDeleteId = null;
+                return;
+            }
+
+            // First click - show warning
+            pendingDeleteId = announcementId;
+            Toast.warning(`Click delete again to confirm deletion of "${announcement.title}"`);
+
+            // Reset pending delete after 5 seconds
+            setTimeout(() => {
+                if (pendingDeleteId === announcementId) {
+                    pendingDeleteId = null;
+                }
+            }, 5000);
+        }
+
+        function deleteAnnouncement() {
+            const announcementId = document.getElementById('announcementId').value;
+            const announcements = getAnnouncements();
+            const announcement = announcements.find(a => a.id === announcementId);
+
+            if (!announcement) {
+                Toast.error('Announcement not found');
+                return;
+            }
+
+            // If this is the pending delete, proceed
+            if (pendingDeleteId === announcementId) {
+                deleteAnnouncementById(announcementId);
+                closeAnnouncementModal();
+                pendingDeleteId = null;
+                return;
+            }
+
+            // First click - show warning
+            pendingDeleteId = announcementId;
+            Toast.warning(`Click delete again to confirm deletion of "${announcement.title}"`);
+
+            // Reset pending delete after 5 seconds
+            setTimeout(() => {
+                if (pendingDeleteId === announcementId) {
+                    pendingDeleteId = null;
+                }
+            }, 5000);
+        }
+
+        function deleteAnnouncementById(announcementId) {
+            let announcements = getAnnouncements();
+            const announcement = announcements.find(a => a.id === announcementId);
+            const title = announcement ? announcement.title : 'Announcement';
+
+            announcements = announcements.filter(a => a.id !== announcementId);
+
+            saveAnnouncements(announcements);
+            renderAnnouncements();
+            Toast.success(`"${title}" deleted successfully`);
+        }
+
+        // View Details
+        function viewDetails(announcementId) {
+            let announcements = getAnnouncements();
+            const announcement = announcements.find(a => a.id === announcementId);
+
+            if (!announcement) {
+                Toast.error('Announcement not found');
+                return;
+            }
+
+            // Populate modal with announcement details
+            document.getElementById('viewTitle').textContent = announcement.title;
+            document.getElementById('viewAudience').textContent = announcement.audience;
+            document.getElementById('viewStatus').textContent = announcement.status.charAt(0).toUpperCase() + announcement.status.slice(1);
+            document.getElementById('viewDate').textContent = formatDate(announcement.date);
+            document.getElementById('viewViews').textContent = announcement.views;
+            document.getElementById('viewContent').textContent = announcement.content;
+
+            // Increment views if published
+            if (announcement.status === 'published') {
+                announcement.views++;
+                saveAnnouncements(announcements);
+                renderAnnouncements();
+                Toast.info('View count incremented');
+            }
+
+            // Show modal
+            document.getElementById('viewDetailsModal').classList.add('active');
+        }
+
+        // Close View Details Modal
+        function closeViewDetailsModal() {
+            document.getElementById('viewDetailsModal').classList.remove('active');
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('viewDetailsModal')?.addEventListener('click', function (e) {
+            if (e.target === this) {
+                closeViewDetailsModal();
+            }
+        });
+
+
+        // Close Modal
+        function closeAnnouncementModal() {
+            document.getElementById('announcementModal').classList.remove('active');
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('announcementModal')?.addEventListener('click', function (e) {
+            if (e.target === this) {
+                closeAnnouncementModal();
+            }
+        });
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function () {
+            renderAnnouncements();
+        });
+
+    </script>
+    <!-- ACADEX: Powered-by footer and school branding -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+
+</body>
+
+</html>
+

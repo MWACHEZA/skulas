@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Website Content Manager — Admin Portal</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .content-area { padding: 28px; }
+        .section-card { background: white; border-radius: 12px; padding: 25px; margin-bottom: 24px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; font-weight: 600; margin-bottom: 8px; font-size: 0.9rem; }
+        .form-control { width: 100%; padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px; font-family: inherit; }
+        .btn { padding: 10px 20px; border-radius: 8px; border: none; font-weight: 700; cursor: pointer; transition: 0.2s; }
+        .btn-primary { background: var(--school-primary, #2563eb); color: white; }
+        .btn-success { background: #10b981; color: white; }
+        .btn-danger { background: #ef4444; color: white; }
+        .btn-sm { padding: 5px 12px; font-size: 0.8rem; }
+        .item-list { margin-top: 15px; }
+        .item-row { display: flex; align-items: flex-start; gap: 10px; padding: 15px; border: 1px solid #f1f5f9; border-radius: 10px; margin-bottom: 10px; background: #fafafa; }
+        .item-details { flex: 1; }
+        .item-details h4 { margin: 0 0 5px; font-size: 1rem; }
+        .item-details p { margin: 0; font-size: 0.85rem; color: #64748b; }
+        .toast { position: fixed; bottom: 24px; right: 24px; background: #10b981; color: white; padding: 12px 20px; border-radius: 10px; display: none; z-index: 9999; }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <aside class="sidebar" id="sidebar"></aside>
+
+        <main class="main-content">
+            <div class="top-header" style="background:white;padding:15px 28px;box-shadow:0 2px 5px rgba(0,0,0,0.05);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;">
+                <div>
+                    <h2 style="margin:0;font-size:1.3rem;color:#333;">🌐 Website Content Manager</h2>
+                    <p style="margin:0;font-size:0.82rem;color:#64748b;" id="headerSchoolName">Loading school...</p>
+                </div>
+                <div style="display:flex; gap:10px;">
+                    <a href="../index.html" target="_blank" class="btn btn-secondary" style="background:#f1f5f9; color:#334155; text-decoration:none; display:flex; align-items:center; gap:8px;">
+                        <i class="fas fa-external-link-alt"></i> View Website
+                    </a>
+                    <button onclick="saveAllContent()" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Save All Changes
+                    </button>
+                </div>
+            </div>
+
+            <div class="content-area">
+                <!-- Header & Hero -->
+                <div class="section-card">
+                    <h3 style="margin-top:0;"><i class="fas fa-heading"></i> Header & Hero Section</h3>
+                    <div class="form-group">
+                        <label>School Motto / Tagline</label>
+                        <input type="text" id="motto" class="form-control" placeholder="e.g. Fide et Labore - Faith and Hard Work">
+                    </div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+                        <div class="form-group">
+                            <label>Welcome Title</label>
+                            <input type="text" id="welcomeTitle" class="form-control" placeholder="e.g. Welcome to Our School">
+                        </div>
+                        <div class="form-group">
+                            <label>Welcome Subtitle</label>
+                            <input type="text" id="welcomeSubtitle" class="form-control" placeholder="e.g. Nurturing minds, building character...">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <div class="section-card">
+                    <h3><i class="fas fa-shoe-prints"></i> Footer Section</h3>
+                    <div class="form-group">
+                        <label>Footer Copyright Text</label>
+                        <input type="text" id="footerText" class="form-control" placeholder="e.g. Excellence in Education">
+                    </div>
+                </div>
+
+                <!-- Clubs Manager -->
+                <div class="section-card">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <h3><i class="fas fa-users"></i> Clubs & Activities</h3>
+                        <button onclick="addClub()" class="btn btn-success btn-sm">+ Add Club</button>
+                    </div>
+                    <div id="clubsList" class="item-list"></div>
+                </div>
+
+                <!-- Departments Manager -->
+                <div class="section-card">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <h3><i class="fas fa-graduation-cap"></i> Academic Departments</h3>
+                        <button onclick="addDept()" class="btn btn-success btn-sm">+ Add Department</button>
+                    </div>
+                    <div id="deptsList" class="item-list"></div>
+                </div>
+
+                <!-- Gallery Manager -->
+                <div class="section-card">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <h3><i class="fas fa-images"></i> School Gallery</h3>
+                        <button onclick="addGallery()" class="btn btn-success btn-sm">+ Add Photo</button>
+                    </div>
+                    <div id="galleryList" class="item-list" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap:15px;"></div>
+                </div>
+
+                <!-- Sports Manager -->
+                <div class="section-card">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <h3><i class="fas fa-trophy"></i> Sports Programs</h3>
+                        <button onclick="addSport()" class="btn btn-success btn-sm">+ Add Sport</button>
+                    </div>
+                    <div id="sportsList" class="item-list"></div>
+                </div>
+
+                <!-- News Manager -->
+                <div class="section-card">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <h3><i class="fas fa-news"></i> School News & Announcements</h3>
+                        <button onclick="addNews()" class="btn btn-success btn-sm">+ Add News Item</button>
+                    </div>
+                    <div id="newsList" class="item-list"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="toast" class="toast">✅ Changes saved successfully!</div>
+
+    <script src="../js/admin-common.js"></script>
+    <script src="../js/admin-sidebar.js"></script>
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+    <script>
+        let school = null;
+        let content = {
+            motto: "", welcomeTitle: "", welcomeSubtitle: "", footerText: "",
+            clubs: [], departments: [], gallery: [], sports: [], news: []
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            school = AcadexCore.getActiveSchool();
+            if (school) {
+                document.getElementById('headerSchoolName').textContent = school.name;
+                if (school.customContent) {
+                    content = { ...content, ...school.customContent };
+                }
+                loadFields();
+            }
+        });
+
+        function loadFields() {
+            document.getElementById('motto').value = content.motto || "";
+            document.getElementById('welcomeTitle').value = content.welcomeTitle || "";
+            document.getElementById('welcomeSubtitle').value = content.welcomeSubtitle || "";
+            document.getElementById('footerText').value = content.footerText || "";
+            renderClubs();
+            renderDepts();
+            renderGallery();
+            renderSports();
+            renderNews();
+        }
+
+        // --- Clubs ---
+        function renderClubs() {
+            const container = document.getElementById('clubsList');
+            container.innerHTML = content.clubs.map((c, i) => `
+                <div class="item-row">
+                    <div class="item-details">
+                        <input type="text" class="form-control" value="${c.name}" onchange="content.clubs[${i}].name=this.value" placeholder="Club Name" style="margin-bottom:5px;">
+                        <textarea class="form-control" onchange="content.clubs[${i}].description=this.value" placeholder="Description">${c.description}</textarea>
+                    </div>
+                    <button class="btn btn-danger btn-sm" onclick="deleteClub(${i})"><i class="fas fa-trash"></i></button>
+                </div>
+            `).join('');
+        }
+        function addClub() { content.clubs.push({ name: "New Club", description: "", icon: "fas fa-users" }); renderClubs(); }
+        function deleteClub(i) { content.clubs.splice(i, 1); renderClubs(); }
+
+        // --- Depts ---
+        function renderDepts() {
+            const container = document.getElementById('deptsList');
+            container.innerHTML = content.departments.map((d, i) => `
+                <div class="item-row">
+                    <div class="item-details">
+                        <input type="text" class="form-control" value="${d.name}" onchange="content.departments[${i}].name=this.value" placeholder="Dept Name" style="margin-bottom:5px;">
+                        <input type="text" class="form-control" value="${d.subjects.join(', ')}" onchange="content.departments[${i}].subjects=this.value.split(',').map(s=>s.trim())" placeholder="Subjects (comma separated)">
+                    </div>
+                    <button class="btn btn-danger btn-sm" onclick="deleteDept(${i})"><i class="fas fa-trash"></i></button>
+                </div>
+            `).join('');
+        }
+        function addDept() { content.departments.push({ name: "New Dept", description: "", subjects: [] }); renderDepts(); }
+        function deleteDept(i) { content.departments.splice(i, 1); renderDepts(); }
+
+        // --- Gallery ---
+        function renderGallery() {
+            const container = document.getElementById('galleryList');
+            container.innerHTML = content.gallery.map((g, i) => `
+                <div style="background:#f8f9fa; border-radius:10px; padding:10px; border:1px solid #e2e8f0; text-align:center;">
+                    <img src="${g.url}" style="width:100%; height:100px; object-fit:cover; border-radius:6px; background:#ddd;" onerror="this.src='https://placehold.co/200x100?text=No+Image'">
+                    <input type="text" class="form-control" value="${g.url}" onchange="content.gallery[${i}].url=this.value; renderGallery();" placeholder="Image URL" style="font-size:0.7rem; margin:10px 0 5px;">
+                    <input type="text" class="form-control" value="${g.caption}" onchange="content.gallery[${i}].caption=this.value" placeholder="Caption" style="font-size:0.7rem; margin-bottom:10px;">
+                    <button class="btn btn-danger btn-sm" style="width:100%" onclick="deleteGallery(${i})">Delete</button>
+                </div>
+            `).join('');
+        }
+        function addGallery() { content.gallery.push({ url: "", caption: "New Photo" }); renderGallery(); }
+        function deleteGallery(i) { content.gallery.splice(i, 1); renderGallery(); }
+
+        // --- Sports ---
+        function renderSports() {
+            const container = document.getElementById('sportsList');
+            container.innerHTML = (content.sports || []).map((s, i) => `
+                <div class="item-row">
+                    <div class="item-details">
+                        <input type="text" class="form-control" value="${s.name}" onchange="content.sports[${i}].name=this.value" placeholder="Sport Name" style="margin-bottom:5px;">
+                        <textarea class="form-control" onchange="content.sports[${i}].description=this.value" placeholder="Description">${s.description}</textarea>
+                    </div>
+                    <button class="btn btn-danger btn-sm" onclick="deleteSport(${i})"><i class="fas fa-trash"></i></button>
+                </div>
+            `).join('');
+        }
+        function addSport() { if(!content.sports) content.sports=[]; content.sports.push({ name: "New Sport", description: "", icon: "fas fa-trophy" }); renderSports(); }
+        function deleteSport(i) { content.sports.splice(i, 1); renderSports(); }
+
+        // --- News ---
+        function renderNews() {
+            const container = document.getElementById('newsList');
+            container.innerHTML = (content.news || []).map((n, i) => `
+                <div class="item-row">
+                    <div class="item-details">
+                        <input type="text" class="form-control" value="${n.title}" onchange="content.news[${i}].title=this.value" placeholder="Title" style="margin-bottom:5px;">
+                        <input type="text" class="form-control" value="${n.image || ''}" onchange="content.news[${i}].image=this.value" placeholder="Image URL (optional)" style="margin-bottom:5px;">
+                        <textarea class="form-control" onchange="content.news[${i}].summary=this.value" placeholder="Summary/Content">${n.summary || n.content || ''}</textarea>
+                    </div>
+                    <button class="btn btn-danger btn-sm" onclick="deleteNews(${i})"><i class="fas fa-trash"></i></button>
+                </div>
+            `).join('');
+        }
+        function addNews() { if(!content.news) content.news=[]; content.news.push({ title: "New Announcement", summary: "", date: new Date().toISOString() }); renderNews(); }
+        function deleteNews(i) { content.news.splice(i, 1); renderNews(); }
+
+        function saveAllContent() {
+            if (!school) return;
+            content.motto = document.getElementById('motto').value;
+            content.welcomeTitle = document.getElementById('welcomeTitle').value;
+            content.welcomeSubtitle = document.getElementById('welcomeSubtitle').value;
+            content.footerText = document.getElementById('footerText').value;
+
+            AcadexCore.updateSchool(school.id, { customContent: content });
+            
+            const toast = document.getElementById('toast');
+            toast.style.display = 'block';
+            setTimeout(() => toast.style.display = 'none', 3000);
+        }
+    </script>
+</body>
+</html>
+

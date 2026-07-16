@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - ACADEX</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/ancillary-portal.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        .profile-hero {
+            background: linear-gradient(135deg, var(--sidebar-bg) 0%, #1f2937 100%);
+            height: 120px;
+            border-radius: 16px 16px 0 0;
+        }
+
+        .profile-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: var(--card-shadow);
+            overflow: hidden;
+            text-align: center;
+        }
+
+        .profile-card-body {
+            padding: 0 24px 28px;
+        }
+
+        .profile-avatar-wrap {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 5px solid white;
+            background: #e8f0fe;
+            margin: -60px auto 16px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+
+    <script src="../js/ancillary-common.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const email = sessionStorage.getItem('ancillaryEmail');
+            if (!email) return;
+
+            const staffList = getTenantData('ancillaryStaff', '[]');
+            let user = staffList.find(s => s.email === email);
+            if (!user) return;
+
+            const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val || '—'; };
+
+            function renderHeader() {
+                set('headerName', user.name);
+                set('headerRole', user.post || 'Ancillary Staff');
+                if (user.photo) document.getElementById('headerAvatar').src = user.photo;
+            }
+
+            function renderProfile() {
+                set('profileName', user.name);
+                set('profileRoleTitle', user.post || 'Ancillary Staff');
+                set('profileEmailMeta', user.email);
+                set('profilePhoneMeta', user.phone || '—');
+                set('profileDeptMeta', user.dept || '—');
+
+                const wrap = document.getElementById('profileAvatarWrap');
+                if (user.photo) {
+                    wrap.innerHTML = `<img src="${user.photo}" alt="Profile">`;
+                } else {
+                    const initials = (user.firstName || user.name || 'A').charAt(0).toUpperCase() +
+                        (user.lastName ? user.lastName.charAt(0).toUpperCase() : 'S');
+                    wrap.innerHTML = `<div class="initials-avatar">${initials}</div>`;
+                }
+
+                // Personal
+                set('dispFullName', user.name);
+                set('dispDOB', user.dob ? new Date(user.dob).toLocaleDateString() : null);
+                set('dispGender', user.gender);
+                set('dispNationalId', user.nationalId);
+                set('dispReligion', user.religion);
+                set('dispPhone', user.phone);
+                set('dispAddress', user.address);
+
+                // Work
+                set('dispStaffId', user.id);
+                set('dispDept', user.dept);
+                set('dispPost', user.post);
+                set('dispQual', user.qualification);
+                set('dispJoinDate', user.joinDate ? new Date(user.joinDate).toLocaleDateString() : user.joined);
+
+                // Family
+                set('dispMarital', user.maritalStatus);
+                const isMarried = user.maritalStatus === 'Married';
+                set('dispSpouseName', isMarried ? user.spouseName : 'N/A');
+                set('dispSpousePhone', isMarried ? user.spousePhone : 'N/A');
+                set('dispEcName', user.ecName);
+                set('dispEcPhone', user.ecPhone);
+
+                // Populate Modal
+                document.getElementById('editName').value = user.name || '';
+                document.getElementById('editNationalId').value = user.nationalId || '';
+                document.getElementById('editPhone').value = user.phone || '';
+                document.getElementById('editMarital').value = user.maritalStatus || 'Single';
+                document.getElementById('editReligion').value = user.religion || 'Christianity';
+                document.getElementById('editAddress').value = user.address || '';
+                document.getElementById('editEcName').value = user.ecName || '';
+                document.getElementById('editEcPhone').value = user.ecPhone || '';
+            }
+
+            renderHeader();
+            renderProfile();
+
+            // Modal logic
+            const modal = document.getElementById('editModal');
+            const editBtn = document.getElementById('editProfileBtn');
+            const closeBtns = document.querySelectorAll('.close-modal, .close-modal-btn');
+
+            editBtn.onclick = () => modal.style.display = 'flex';
+            closeBtns.forEach(btn => btn.onclick = () => modal.style.display = 'none');
+            window.onclick = (e) => { if (e.target == modal) modal.style.display = 'none'; }
+
+            document.getElementById('editProfileForm').onsubmit = function (e) {
+                e.preventDefault();
+
+                user.name = document.getElementById('editName').value;
+                user.nationalId = document.getElementById('editNationalId').value;
+                user.phone = document.getElementById('editPhone').value;
+                user.maritalStatus = document.getElementById('editMarital').value;
+                user.religion = document.getElementById('editReligion').value;
+                user.address = document.getElementById('editAddress').value;
+                user.ecName = document.getElementById('editEcName').value;
+                user.ecPhone = document.getElementById('editEcPhone').value;
+
+                // Sync back to list
+                const idx = staffList.findIndex(s => s.email === email);
+                if (idx !== -1) {
+                    staffList[idx] = user;
+                    saveTenantData('ancillaryStaff', staffList);
+                    sessionStorage.setItem('ancillaryUser', JSON.stringify(user));
+                    alert('Profile updated successfully!');
+                    location.reload();
+                }
+            };
+        });
+    </script>
+    <!-- ACADEX: Powered-by footer and school branding -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+
+</body>
+
+</html>

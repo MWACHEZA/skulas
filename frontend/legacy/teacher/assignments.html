@@ -1,0 +1,1272 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assignments</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/toast.css">
+    <link rel="stylesheet" href="../css/ancillary-portal.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: var(--school-primary, var(--school-primary, #0056b3));
+            color: white;
+            padding: 0;
+            position: fixed;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s ease-in-out;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+        }
+
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            display: none;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+        }
+
+        .sidebar-header {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+
+        .sidebar-header img {
+            width: 60px;
+            margin-bottom: 10px;
+        }
+
+        .sidebar-header h3 {
+            margin: 0;
+            font-size: 1.2rem;
+        }
+
+        .sidebar-menu {
+            padding: 20px 0;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .sidebar-menu ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 5px;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .sidebar-menu i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .sidebar-footer {
+            padding: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            width: 100%;
+            box-sizing: border-box;
+            background-color: var(--school-primary, var(--school-primary, #0056b3));
+            z-index: 10;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--school-primary-dark, #003d7a);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+        }
+
+        .user-avatar i {
+            font-size: 1.2rem;
+        }
+
+        .user-details {
+            flex: 1;
+        }
+
+        .user-details h4 {
+            margin: 0;
+            font-size: 0.9rem;
+        }
+
+        .user-details p {
+            margin: 0;
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+
+        .logout-btn {
+            display: block;
+            margin-top: 10px;
+            padding: 8px 12px;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: background-color 0.3s;
+        }
+
+        .logout-btn:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            margin-left: 250px;
+            width: calc(100% - 250px);
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .page-header h2 {
+            margin: 0;
+            color: #333;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background-color: var(--school-primary, #0056b3);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--school-primary-dark, #003d82);
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            background-color: white;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .tab {
+            padding: 10px 20px;
+            border: none;
+            background-color: transparent;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        .tab.active {
+            background-color: var(--school-primary, #0056b3);
+            color: white;
+        }
+
+        .assignments-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+        }
+
+        .assignment-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .assignment-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .assignment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .assignment-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #333;
+            margin: 0 0 5px;
+        }
+
+        .assignment-class {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status-active {
+            background-color: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+        }
+
+        .status-past {
+            background-color: rgba(108, 117, 125, 0.1);
+            color: #6c757d;
+        }
+
+        .status-draft {
+            background-color: rgba(255, 193, 7, 0.1);
+            color: #ffc107;
+        }
+
+        .assignment-meta {
+            display: flex;
+            gap: 15px;
+            margin: 15px 0;
+            padding: 15px 0;
+            border-top: 1px solid #eee;
+            border-bottom: 1px solid #eee;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .meta-item i {
+            margin-right: 5px;
+            color: var(--school-primary, #0056b3);
+        }
+
+        .submission-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--school-primary, #0056b3);
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .assignment-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-small {
+            flex: 1;
+            padding: 8px;
+            font-size: 0.85rem;
+            text-align: center;
+        }
+
+        .btn-secondary {
+            background-color: #f8f9fa;
+            color: #333;
+            border: 1px solid #e0e0e0;
+        }
+
+        .btn-secondary:hover {
+            background-color: #e9ecef;
+        }
+
+        .mobile-header {
+            display: none;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            overflow-y: auto;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background-color: white;
+            border-radius: 10px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 5px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            color: #333;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #999;
+            cursor: pointer;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close-modal:hover {
+            color: #333;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 0.95rem;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--school-primary, #0056b3);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .modal-footer {
+            padding: 20px;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                z-index: 1000;
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding-top: 70px;
+                width: 100%;
+            }
+
+            .mobile-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 15px 20px;
+                background-color: white;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                z-index: 100;
+            }
+
+            .menu-toggle {
+                background: none;
+                border: none;
+                font-size: 1.5rem;
+                color: var(--school-primary, #0056b3);
+                cursor: pointer;
+            }
+
+            .assignments-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <img src="../images/logo.png" alt="School Logo" class="acadex-school-logo">
+                <h3>Teacher Portal</h3>
+            </div>
+            <div class="sidebar-menu">
+                <div class="sidebar-section-title">Teacher System</div>
+                <ul>
+                    <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i>
+                            <span>Dashboard</span></a></li>
+                    <li><a href="classes.html"><i class="fas fa-chalkboard"></i> <span>Classes</span></a></li>
+                    <li><a href="assignments.html" class="active"><i class="fas fa-tasks"></i>
+                            <span>Assignments</span></a></li>
+                    <li><a href="attendance.html"><i class="fas fa-clipboard-check"></i> <span>Attendance</span></a>
+                    </li>
+                    <li><a href="grades.html"><i class="fas fa-chart-line"></i> <span>Grades</span></a></li>
+                    <li><a href="timetable.html"><i class="fas fa-calendar-alt"></i> <span>Timetable</span></a></li>
+                    <li><a href="students.html"><i class="fas fa-users"></i> <span>Students</span></a></li>
+                    <li><a href="textbooks.html"><i class="fas fa-book"></i> <span>Textbooks</span></a></li>
+                    <li><a href="library.html"><i class="fas fa-book-open"></i> <span>Library Catalog</span></a></li>
+                    <li><a href="digital-resources.html"><i class="fas fa-laptop-code"></i> <span>Digital
+                                Resources</span></a></li>
+                    <li><a href="reports.html"><i class="fas fa-file-alt"></i> <span>System Reports</span></a></li>
+                    <li><a href="messages.html"><i class="fas fa-envelope"></i> <span>Messages</span></a></li>
+                </ul>
+
+                <div class="sidebar-section-title">Operations</div>
+                <ul>
+                    <li><a href="staff-directory.html"><i class="fas fa-users"></i> <span>Staff Directory</span></a>
+                    </li>
+                    <li><a href="procurement.html"><i class="fas fa-shopping-cart"></i> <span>Procurement</span></a>
+                    </li>
+                    <li><a href="assets.html"><i class="fas fa-boxes"></i> <span>Asset Management</span></a></li>
+                    <li><a href="schedules.html"><i class="fas fa-calendar-check"></i> <span>Schedules &
+                                Shifts</span></a></li>
+                </ul>
+
+                <div class="sidebar-section-title">Staff HR & Support</div>
+                <ul>
+                    <li><a href="sdc-portal.html"><i class="fas fa-file-invoice-dollar"></i> <span>SDC Staff
+                                Portal</span></a></li>
+                    <li><a href="hr-services.html"><i class="fas fa-user-shield"></i> <span>HR Services</span></a></li>
+                    <li><a href="profile.html"><i class="fas fa-id-card"></i> <span>My Profile</span></a></li>
+                    <li><a href="resources.html"><i class="fas fa-folder-open"></i> <span>Resources & Docs</span></a>
+                    </li>
+                    <li><a href="it-support.html"><i class="fas fa-headset"></i> <span>IT Support</span></a></li>
+                </ul>
+
+                <div class="sidebar-section-title">Communication</div>
+                <ul>
+                    <li><a href="news.html"><i class="fas fa-newspaper"></i> <span>News & Updates</span></a></li>                    <li><a href="announcements.html"><i class="fas fa-bullhorn"></i> <span>General Notices</span></a>
+                    </li>                    <li><a href="contact.html"><i class="fas fa-address-book"></i> <span>Contact Us</span></a></li>
+                    <li><a href="settings.html"><i class="fas fa-cog"></i> <span>Settings</span></a></li>
+                </ul>
+            </div>
+            <div class="sidebar-footer">
+                <a href="login.html"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a>
+            </div>
+        </aside>
+
+        <!-- Sidebar Overlay -->
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Mobile Header -->
+            <div class="mobile-header">
+                <button class="menu-toggle" id="menuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="mobile-logo">
+                    <span>Assignments</span>
+                </div>
+            </div>
+
+            <!-- Page Header -->
+            <div class="page-header">
+                <h2>Assignments</h2>
+                <a href="#" class="btn btn-primary" onclick="createAssignment()">
+                    <i class="fas fa-plus"></i> Create Assignment
+                </a>
+            </div>
+
+            <!-- Tabs -->
+            <div class="tabs">
+                <button class="tab active">All Assignments</button>
+                <button class="tab">Active</button>
+                <button class="tab">Past</button>
+                <button class="tab">Drafts</button>
+            </div>
+
+            <!-- Assignments Grid -->
+            <div class="assignments-grid">
+                <div class="assignment-card">
+                    <div class="assignment-header">
+                        <div>
+                            <h3 class="assignment-title">Calculus Problems Set 1</h3>
+                            <p class="assignment-class">Form 4A - Mathematics</p>
+                        </div>
+                        <span class="status-badge status-active">Active</span>
+                    </div>
+                    <div class="assignment-meta">
+                        <div class="meta-item">
+                            <i class="fas fa-calendar"></i>
+                            Due: Dec 20, 2025
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-star"></i>
+                            100 points
+                        </div>
+                    </div>
+                    <div class="submission-stats">
+                        <div class="stat">
+                            <div class="stat-value">24</div>
+                            <div class="stat-label">Submitted</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">8</div>
+                            <div class="stat-label">Pending</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">32</div>
+                            <div class="stat-label">Total</div>
+                        </div>
+                    </div>
+                    <div class="assignment-actions">
+                        <a href="#" class="btn btn-primary btn-small"
+                            onclick="viewSubmissions('Calculus Problems Set 1', 'Form 4A'); return false;">View
+                            Submissions</a>
+                        <a href="#" class="btn btn-secondary btn-small"
+                            onclick="editAssignment('Calculus Problems Set 1'); return false;">Edit</a>
+                    </div>
+                </div>
+
+                <div class="assignment-card">
+                    <div class="assignment-header">
+                        <div>
+                            <h3 class="assignment-title">Algebra Practice</h3>
+                            <p class="assignment-class">Form 3B - Mathematics</p>
+                        </div>
+                        <span class="status-badge status-active">Active</span>
+                    </div>
+                    <div class="assignment-meta">
+                        <div class="meta-item">
+                            <i class="fas fa-calendar"></i>
+                            Due: Dec 18, 2025
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-star"></i>
+                            50 points
+                        </div>
+                    </div>
+                    <div class="submission-stats">
+                        <div class="stat">
+                            <div class="stat-value">20</div>
+                            <div class="stat-label">Submitted</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">8</div>
+                            <div class="stat-label">Pending</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">28</div>
+                            <div class="stat-label">Total</div>
+                        </div>
+                    </div>
+                    <div class="assignment-actions">
+                        <a href="#" class="btn btn-primary btn-small"
+                            onclick="viewSubmissions('Algebra Practice', 'Form 3B'); return false;">View Submissions</a>
+                        <a href="#" class="btn btn-secondary btn-small"
+                            onclick="editAssignment('Algebra Practice'); return false;">Edit</a>
+                    </div>
+                </div>
+
+                <div class="assignment-card">
+                    <div class="assignment-header">
+                        <div>
+                            <h3 class="assignment-title">Geometry Worksheet</h3>
+                            <p class="assignment-class">Form 2A - Mathematics</p>
+                        </div>
+                        <span class="status-badge status-past">Past</span>
+                    </div>
+                    <div class="assignment-meta">
+                        <div class="meta-item">
+                            <i class="fas fa-calendar"></i>
+                            Due: Dec 10, 2025
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-star"></i>
+                            75 points
+                        </div>
+                    </div>
+                    <div class="submission-stats">
+                        <div class="stat">
+                            <div class="stat-value">30</div>
+                            <div class="stat-label">Submitted</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">0</div>
+                            <div class="stat-label">Pending</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">30</div>
+                            <div class="stat-label">Total</div>
+                        </div>
+                    </div>
+                    <div class="assignment-actions">
+                        <a href="#" class="btn btn-primary btn-small"
+                            onclick="viewSubmissions('Geometry Worksheet', 'Form 2A'); return false;">View
+                            Submissions</a>
+                        <a href="#" class="btn btn-secondary btn-small"
+                            onclick="editAssignment('Geometry Worksheet'); return false;">Edit</a>
+                    </div>
+                </div>
+
+                <div class="assignment-card">
+                    <div class="assignment-header">
+                        <div>
+                            <h3 class="assignment-title">Trigonometry Quiz</h3>
+                            <p class="assignment-class">Form 4B - Mathematics</p>
+                        </div>
+                        <span class="status-badge status-draft">Draft</span>
+                    </div>
+                    <div class="assignment-meta">
+                        <div class="meta-item">
+                            <i class="fas fa-calendar"></i>
+                            Due: Dec 25, 2025
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-star"></i>
+                            100 points
+                        </div>
+                    </div>
+                    <div class="submission-stats">
+                        <div class="stat">
+                            <div class="stat-value">0</div>
+                            <div class="stat-label">Submitted</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">34</div>
+                            <div class="stat-label">Pending</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">34</div>
+                            <div class="stat-label">Total</div>
+                        </div>
+                    </div>
+                    <div class="assignment-actions">
+                        <a href="#" class="btn btn-primary btn-small"
+                            onclick="publishAssignment('Trigonometry Quiz'); return false;">Publish</a>
+                        <a href="#" class="btn btn-secondary btn-small"
+                            onclick="editAssignment('Trigonometry Quiz'); return false;">Edit</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create/Edit Assignment Modal -->
+    <div class="modal" id="assignmentModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Create New Assignment</h3>
+                <button class="close-modal" onclick="closeAssignmentModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="assignmentForm">
+                    <input type="hidden" id="assignmentId">
+
+                    <div class="form-group">
+                        <label for="assignmentTitle">Assignment Title *</label>
+                        <input type="text" id="assignmentTitle" required placeholder="e.g., Calculus Problems Set 1">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="assignmentClass">Class *</label>
+                            <select id="assignmentClass" required>
+                                <option value="">Select Class</option>
+                                <option value="Form 1A">Form 1A - Mathematics</option>
+                                <option value="Form 2A">Form 2A - Mathematics</option>
+                                <option value="Form 3B">Form 3B - Mathematics</option>
+                                <option value="Form 4A">Form 4A - Mathematics</option>
+                                <option value="Form 4B">Form 4B - Mathematics</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="assignmentPoints">Points *</label>
+                            <input type="number" id="assignmentPoints" required min="1" max="1000" placeholder="100">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="assignmentFile">Attachment (PDF, Image, etc.)</label>
+                        <input type="file" id="assignmentFile" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+                        <small id="currentFile" style="display:none; color: var(--school-primary, #0056b3); margin-top: 5px;"></small>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="assignmentDueDate">Due Date *</label>
+                            <input type="date" id="assignmentDueDate" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="assignmentStatus">Status *</label>
+                            <select id="assignmentStatus" required>
+                                <option value="draft">Draft</option>
+                                <option value="active">Active</option>
+                                <option value="past">Past</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="assignmentDescription">Description</label>
+                        <textarea id="assignmentDescription"
+                            placeholder="Enter assignment instructions and details..."></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeAssignmentModal()">Cancel</button>
+                <button type="button" class="btn btn-danger" id="deleteBtn" onclick="deleteAssignment()"
+                    style="display: none; margin-right: auto;">Delete</button>
+                <button type="button" class="btn btn-primary" onclick="saveAssignment()">Save Assignment</button>
+            </div>
+        </div>
+    </div>
+
+    </div>
+
+
+    <script src="../js/toast.js"></script>
+    <script>
+        // Mobile menu toggle
+        const menuToggle = document.getElementById('menuToggle');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+        if (menuToggle) {
+            menuToggle.addEventListener('click', function () {
+                sidebar.classList.toggle('active');
+                if (sidebarOverlay) sidebarOverlay.classList.toggle('active');
+            });
+        }
+
+        if (sidebarOverlay) {
+            sidebarOverlay.addEventListener('click', function () {
+                sidebar.classList.remove('active');
+                sidebarOverlay.classList.remove('active');
+            });
+        }
+
+        // Load teacher name from localStorage
+        const teacherName = getTenantData('teacherName', 'null');
+        if (teacherName) {
+            document.getElementById('teacherName').textContent = teacherName;
+        }
+
+        // Logout functionality
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+                saveTenantData('teacherLoggedIn', []);
+                window.location.href = 'login.html';
+            });
+        }
+
+
+        // Assignment Management System with localStorage
+        const STORAGE_KEY = 'teacherAssignments';
+
+        // Initialize assignments from localStorage or use defaults
+        function getAssignments() {
+            const stored = getTenantData(STORAGE_KEY, 'null');
+            if (stored) {
+                return JSON.parse(stored);
+            }
+            // Default assignments
+            return [
+                {
+                    id: '1',
+                    title: 'Calculus Problems Set 1',
+                    class: 'Form 4A',
+                    dueDate: '2025-12-20',
+                    points: 100,
+                    description: 'Complete problems 1-20 from chapter 5',
+                    status: 'active',
+                    submitted: 24,
+                    pending: 8,
+                    total: 32
+                },
+                {
+                    id: '2',
+                    title: 'Algebra Practice',
+                    class: 'Form 3B',
+                    dueDate: '2025-12-18',
+                    points: 50,
+                    description: 'Practice worksheet on algebraic expressions',
+                    status: 'active',
+                    submitted: 20,
+                    pending: 8,
+                    total: 28
+                },
+                {
+                    id: '3',
+                    title: 'Geometry Worksheet',
+                    class: 'Form 2A',
+                    dueDate: '2025-12-10',
+                    points: 75,
+                    description: 'Geometry problems on triangles and circles',
+                    status: 'past',
+                    submitted: 30,
+                    pending: 0,
+                    total: 30
+                },
+                {
+                    id: '4',
+                    title: 'Trigonometry Quiz',
+                    class: 'Form 4B',
+                    dueDate: '2025-12-25',
+                    points: 100,
+                    description: 'Quiz on trigonometric functions',
+                    status: 'draft',
+                    submitted: 0,
+                    pending: 34,
+                    total: 34
+                }
+            ];
+        }
+
+        function saveAssignments(assignments) {
+            saveTenantData(STORAGE_KEY, assignments);
+        }
+
+        // Render assignments to the page
+        function renderAssignments() {
+            const assignments = getAssignments();
+            const grid = document.querySelector('.assignments-grid');
+            grid.innerHTML = '';
+
+            assignments.forEach(assignment => {
+                const card = createAssignmentCard(assignment);
+                grid.appendChild(card);
+            });
+
+            // Reattach tab filtering
+            attachTabFiltering();
+        }
+
+        function createAssignmentCard(assignment) {
+            const card = document.createElement('div');
+            card.className = 'assignment-card';
+            card.setAttribute('data-status', assignment.status);
+
+            const statusClass = `status-${assignment.status}`;
+            const statusText = assignment.status.charAt(0).toUpperCase() + assignment.status.slice(1);
+
+            card.innerHTML = `
+                <div class="assignment-header">
+                    <div>
+                        <h3 class="assignment-title">${assignment.title}</h3>
+                        <p class="assignment-class">${assignment.class} - Mathematics</p>
+                    </div>
+                    <span class="status-badge ${statusClass}">${statusText}</span>
+                </div>
+                <div class="assignment-meta">
+                    <div class="meta-item">
+                        <i class="fas fa-calendar"></i>
+                        Due: ${formatDate(assignment.dueDate)}
+                    </div>
+                    <div class="meta-item">
+                        <i class="fas fa-star"></i>
+                        ${assignment.points} points
+                    </div>
+                    ${assignment.attachment ? `
+                    <div class="meta-item" title="${assignment.attachment}">
+                        <i class="fas fa-paperclip"></i>
+                        ${assignment.attachment.length > 20 ? assignment.attachment.substring(0, 17) + '...' : assignment.attachment}
+                    </div>
+                    ` : ''}
+                </div>
+                <div class="submission-stats">
+                    <div class="stat">
+                        <div class="stat-value">${assignment.submitted}</div>
+                        <div class="stat-label">Submitted</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value">${assignment.pending}</div>
+                        <div class="stat-label">Pending</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value">${assignment.total}</div>
+                        <div class="stat-label">Total</div>
+                    </div>
+                </div>
+                <div class="assignment-actions">
+                    ${assignment.status === 'draft'
+                    ? `<a href="#" class="btn btn-primary btn-small" onclick="publishAssignment('${assignment.id}'); return false;">Publish</a>`
+                    : `<a href="#" class="btn btn-primary btn-small" onclick="viewSubmissions('${assignment.id}'); return false;">View Submissions</a>`
+                }
+                    <a href="#" class="btn btn-secondary btn-small" onclick="editAssignment('${assignment.id}'); return false;">Edit</a>
+                </div>
+            `;
+
+            return card;
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        }
+
+        // Create Assignment
+        function createAssignment() {
+            document.getElementById('modalTitle').textContent = 'Create New Assignment';
+            document.getElementById('assignmentForm').reset();
+            document.getElementById('assignmentId').value = '';
+            document.getElementById('deleteBtn').style.display = 'none';
+            document.getElementById('currentFile').style.display = 'none';
+            document.getElementById('currentFile').textContent = '';
+
+            // Set default due date to tomorrow
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            document.getElementById('assignmentDueDate').value = tomorrow.toISOString().split('T')[0];
+
+            document.getElementById('assignmentModal').classList.add('active');
+        }
+
+        // Edit Assignment
+        function editAssignment(assignmentId) {
+            const assignments = getAssignments();
+            const assignment = assignments.find(a => a.id === assignmentId);
+
+            if (!assignment) {
+                Toast.error('Assignment not found');
+                return;
+            }
+
+            document.getElementById('modalTitle').textContent = 'Edit Assignment';
+            document.getElementById('assignmentId').value = assignment.id;
+            document.getElementById('assignmentTitle').value = assignment.title;
+            document.getElementById('assignmentClass').value = assignment.class;
+            document.getElementById('assignmentPoints').value = assignment.points;
+            document.getElementById('assignmentDueDate').value = assignment.dueDate;
+            document.getElementById('assignmentStatus').value = assignment.status;
+            document.getElementById('assignmentDescription').value = assignment.description || '';
+
+            // Handle file display
+            const currentFileEl = document.getElementById('currentFile');
+            if (assignment.attachment) {
+                currentFileEl.textContent = `Current attachment: ${assignment.attachment}`;
+                currentFileEl.style.display = 'block';
+            } else {
+                currentFileEl.style.display = 'none';
+            }
+
+            document.getElementById('deleteBtn').style.display = 'block';
+
+            document.getElementById('assignmentModal').classList.add('active');
+        }
+
+        // Save Assignment (Create or Update)
+        function saveAssignment() {
+            const form = document.getElementById('assignmentForm');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            const assignmentId = document.getElementById('assignmentId').value;
+            let assignments = getAssignments();
+
+            const assignmentData = {
+                title: document.getElementById('assignmentTitle').value,
+                class: document.getElementById('assignmentClass').value,
+                points: parseInt(document.getElementById('assignmentPoints').value),
+                dueDate: document.getElementById('assignmentDueDate').value,
+                status: document.getElementById('assignmentStatus').value,
+                description: document.getElementById('assignmentDescription').value
+            };
+
+            // Handle file upload (simulation)
+            const fileInput = document.getElementById('assignmentFile');
+            if (fileInput.files.length > 0) {
+                assignmentData.attachment = fileInput.files[0].name;
+            } else if (assignmentId) {
+                // Keep existing attachment if editing and no new file selected
+                const existingAssignment = assignments.find(a => a.id === assignmentId);
+                if (existingAssignment && existingAssignment.attachment) {
+                    assignmentData.attachment = existingAssignment.attachment;
+                }
+            }
+
+            if (assignmentId) {
+                // Update existing
+                const index = assignments.findIndex(a => a.id === assignmentId);
+                if (index !== -1) {
+                    assignments[index] = { ...assignments[index], ...assignmentData };
+                    Toast.success('Assignment updated successfully!');
+                }
+            } else {
+                // Create new
+                const newAssignment = {
+                    id: Date.now().toString(),
+                    ...assignmentData,
+                    submitted: 0,
+                    pending: 32, // Default class size
+                    total: 32
+                };
+                assignments.push(newAssignment);
+                Toast.success('Assignment created successfully!');
+            }
+
+            saveAssignments(assignments);
+            closeAssignmentModal();
+            renderAssignments();
+        }
+
+        // Delete Assignment
+        function deleteAssignment() {
+            if (!confirm('Are you sure you want to delete this assignment? This action cannot be undone.')) {
+                return;
+            }
+
+            const assignmentId = document.getElementById('assignmentId').value;
+            let assignments = getAssignments();
+            assignments = assignments.filter(a => a.id !== assignmentId);
+
+            saveAssignments(assignments);
+            closeAssignmentModal();
+            renderAssignments();
+            Toast.success('Assignment deleted successfully');
+        }
+
+        // Publish Assignment
+        function publishAssignment(assignmentId) {
+            let assignments = getAssignments();
+            const assignment = assignments.find(a => a.id === assignmentId);
+
+            if (!assignment) {
+                Toast.error('Assignment not found');
+                return;
+            }
+
+            assignment.status = 'active';
+            saveAssignments(assignments);
+            renderAssignments();
+            Toast.success(`${assignment.title} has been published!`);
+        }
+
+        // View Submissions
+        function viewSubmissions(assignmentId) {
+            const assignments = getAssignments();
+            const assignment = assignments.find(a => a.id === assignmentId);
+
+            if (!assignment) {
+                Toast.error('Assignment not found');
+                return;
+            }
+
+            // Store assignment ID for the submissions page
+            sessionStorage.setItem('currentAssignmentId', assignmentId);
+            sessionStorage.setItem('currentAssignmentTitle', assignment.title);
+            sessionStorage.setItem('currentAssignmentClass', assignment.class);
+
+            // Navigate to submissions page
+            window.location.href = 'assignment-submissions.html';
+        }
+
+        // Close Modal
+        function closeAssignmentModal() {
+            document.getElementById('assignmentModal').classList.remove('active');
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('assignmentModal')?.addEventListener('click', function (e) {
+            if (e.target === this) {
+                closeAssignmentModal();
+            }
+        });
+
+        // Tab filtering functionality
+        function attachTabFiltering() {
+            const tabs = document.querySelectorAll('.tab');
+            const assignmentCards = document.querySelectorAll('.assignment-card');
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function () {
+                    tabs.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+
+                    const filterType = this.textContent.toLowerCase();
+
+                    assignmentCards.forEach(card => {
+                        const status = card.getAttribute('data-status');
+
+                        if (filterType === 'all assignments') {
+                            card.style.display = 'block';
+                        } else if (filterType === status) {
+                            card.style.display = 'block';
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    });
+
+                    Toast.info(`Showing ${filterType === 'all assignments' ? 'all' : filterType} assignments`);
+                });
+            });
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function () {
+            renderAssignments();
+        });
+
+
+    </script>
+    <!-- ACADEX: Powered-by footer and school branding -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+
+</body>
+
+</html>
+

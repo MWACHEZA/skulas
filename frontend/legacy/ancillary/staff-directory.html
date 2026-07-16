@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staff Directory - ACADEX</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/library-portal.css">
+    <link rel="stylesheet" href="../css/ancillary-portal.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        .staff-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px;
+        }
+
+        .staff-card {
+            background: white;
+            border-radius: 14px;
+            padding: 22px 18px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(var(--school-primary-rgb), 0.08);
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: 1px solid #eef0f8;
+        }
+
+        .staff-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(var(--school-primary-rgb), 0.14);
+        }
+
+        .staff-avatar {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            margin: 0 auto 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: white;
+            overflow: hidden;
+        }
+
+        .staff-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .staff-card h4 {
+            margin: 0 0 4px;
+            font-size: 0.95rem;
+            color: #1a1a2e;
+        }
+
+        .staff-card .post {
+            font-size: 0.8rem;
+            color: var(--school-primary);
+            font-weight: 600;
+            margin: 0 0 4px;
+        }
+
+        .staff-card .dept {
+            font-size: 0.75rem;
+            color: #888;
+            margin: 0 0 8px;
+        }
+
+        .staff-badge {
+            display: inline-block;
+            background: #eef2ff;
+            color: var(--school-primary);
+            border-radius: 20px;
+            padding: 3px 10px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            margin: 2px;
+        }
+
+        .staff-badge.role-admin {
+            background: #fef3c7;
+            color: #b45309;
+        }
+
+        .staff-badge.role-teacher {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .staff-badge.role-library {
+            background: #ede9fe;
+            color: #5b21b6;
+        }
+
+        .staff-badge.role-bursar {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .staff-badge.role-ancillary {
+            background: #e0f2fe;
+            color: var(--school-primary);
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .filter-tab {
+            padding: 7px 16px;
+            border-radius: 20px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1.5px solid #dce4f5;
+            color: #888;
+            padding: 40px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <img src="../images/logo.png" alt="Logo" class="acadex-school-logo">
+                <h3>ANCILLARY PORTAL</h3>
+            </div>
+            <div class="sidebar-menu">
+                <ul>
+                    <li><a href="dashboard.html"><i class="fas fa-th-large"></i><span>Dashboard</span></a></li>
+                </ul>
+
+                <div id="tuckshop-sidebar-section" style="display: none;">
+                    <div class="sidebar-section-title">Tuckshop System</div>
+                    <ul>
+                        <li><a href="tuckshop-dashboard.html"><i class="fas fa-tachometer-alt"></i><span>TS
+                                    Dashboard</span></a></li>
+                        <li><a href="tuckshop-sales.html"><i class="fas fa-cash-register"></i> <span>Point of
+                                    Sale</span></a></li>
+                        <li><a href="tuckshop-inventory.html"><i class="fas fa-boxes"></i> <span>Inventory</span></a>
+                        </li>
+                        <li><a href="tuckshop-orders.html"><i class="fas fa-truck"></i> <span>Supplier Orders</span></a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="sidebar-section-title">Operations</div>
+                <ul>
+                    <li><a href="staff-directory.html" class="active"><i class="fas fa-users"></i> <span>Staff
+                                Directory</span></a></li>
+                    <li><a href="procurement.html"><i class="fas fa-shopping-cart"></i><span>Procurement</span></a></li>
+                    <li><a href="assets.html"><i class="fas fa-boxes"></i> <span>Asset Management</span></a></li>
+                    <li><a href="schedules.html"><i class="fas fa-calendar-alt"></i> <span>Schedules &amp;
+                                Shifts</span></a></li>
+                </ul>
+
+                <div class="sidebar-section-title">Support &amp; HR</div>
+                <ul>
+                    <li><a href="sdc-portal.html"><i class="fas fa-file-invoice-dollar"></i> <span>SDC Staff
+                                Portal</span></a></li>
+                    <li><a href="hr-services.html"><i class="fas fa-user-shield"></i> <span>HR Services</span></a></li>
+                    <li><a href="profile.html"><i class="fas fa-id-card"></i> <span>My Profile</span></a></li>
+                    <li><a href="resources.html"><i class="fas fa-folder-open"></i> <span>Resources &amp;
+                                Docs</span></a></li>
+                    <li><a href="it-support.html"><i class="fas fa-headset"></i> <span>IT Support</span></a></li>
+                </ul>
+
+                <div class="sidebar-section-title">Communication</div>
+                <ul>
+                    <li><a href="news.html"><i class="fas fa-newspaper"></i> <span>News &amp; Updates</span></a></li>
+                    <li><a href="feedback.html"><i class="fas fa-comment-dots"></i><span>Feedback</span></a></li>
+                    <li><a href="contact.html"><i class="fas fa-address-book"></i> <span>Contact Us</span></a></li>
+                </ul>
+            </div>
+            <div class="sidebar-footer">
+                <a href="login.html"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="top-header">
+                <h2>Staff Directory</h2>
+                <div class="user-profile">
+                    <div style="text-align: right; margin-right: 10px;">
+                        <div style="font-weight: 600; font-size: 0.9rem;" id="headerName">Staff Member</div>
+                        <div style="font-size: 0.75rem; color: #888;" id="headerRole">Ancillary Staff</div>
+                    </div>
+                    <img src="../images/admin-avatar.png" alt="Admin">
+                </div>
+            </div>
+
+            <div class="content-area">
+                <div class="glass-card" style="padding: 25px;">
+                    <div
+                        style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:12px;">
+                        <div id="totalStaffCount" style="font-size:0.85rem;color:#888;">Loading staff...</div>
+                        <div class="search-box" style="width:280px;">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="staffSearch" placeholder="Search by name, post, or department..."
+                                style="border:1px solid #ddd;padding:8px 10px 8px 35px;border-radius:6px;width:100%;">
+                        </div>
+                    </div>
+
+                    <!-- Role Filters -->
+                    <div class="filter-tabs">
+                        <button class="filter-tab active" data-role="all">All Staff</button>
+                        <button class="filter-tab" data-role="ancillary">Ancillary</button>
+                        <button class="filter-tab" data-role="admin">Admin</button>
+                        <button class="filter-tab" data-role="teacher">Teachers</button>
+                        <button class="filter-tab" data-role="library">Library</button>
+                        <button class="filter-tab" data-role="bursar">Bursar</button>
+                    </div>
+
+                    <div class="staff-grid" id="staffGrid">
+                        <div class="no-staff-msg"><i class="fas fa-spinner fa-spin fa-2x" style="color:var(--school-primary);"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/ancillary-common.js"></script>
+    <script src="../js/common-staff.js"></script>
+    <script src="../js/staff-directory-loader.js"></script>
+    <!-- ACADEX: Powered-by footer and school branding -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+
+</body>
+
+</html>

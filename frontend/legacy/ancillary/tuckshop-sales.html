@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Point of Sale - Tuckshop Portal</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/library-portal.css">
+    <link rel="stylesheet" href="../css/ancillary-portal.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        .product-card:hover {
+            transform: translateY(-5px);
+            border: 1px solid var(--school-primary);
+        }
+
+        .cart-section {
+            background: white;
+            border-left: 1px solid #eee;
+            position: fixed;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            width: 350px;
+            z-index: 100;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.05);
+        }
+
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+
+            #receiptModal,
+            #receiptModal * {
+                visibility: visible;
+            }
+
+            #receiptModal {
+                position: fixed;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                background: white !important;
+                display: flex !important;
+                justify-content: center;
+                align-items: flex-start;
+                padding-top: 20px;
+                box-shadow: none !important;
+                z-index: 99999;
+            }
+
+            #receiptModal .modal-content {
+                box-shadow: none !important;
+                border: none !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+            #receiptModal .btn,
+            #receiptModal .modal-header .close-modal,
+            #receiptModal .modal-header h3 {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <img src="../images/logo.png" alt="Logo" class="acadex-school-logo">
+                <h3>ANCILLARY PORTAL</h3>
+            </div>
+            <div class="sidebar-menu">
+                <ul>
+                    <li><a href="dashboard.html"><i class="fas fa-th-large"></i>
+                            <span>Dashboard</span></a></li>
+                </ul>
+
+                <div id="tuckshop-sidebar-section" style="display: none;">
+                    <div class="sidebar-section-title">Tuckshop System</div>
+                    <ul>
+                        <li><a href="tuckshop-dashboard.html"><i class="fas fa-tachometer-alt"></i>
+                                <span>TS Dashboard</span></a></li>
+                        <li><a href="tuckshop-sales.html" class="active"><i class="fas fa-cash-register"></i>
+                                <span>Point of
+                                    Sale</span></a></li>
+                        <li><a href="tuckshop-inventory.html"><i class="fas fa-boxes"></i> <span>Inventory</span></a>
+                        </li>
+                        <li><a href="tuckshop-orders.html"><i class="fas fa-truck"></i> <span>Supplier Orders</span></a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="sidebar-section-title">Operations</div>
+                <ul>
+                    <li><a href="staff-directory.html"><i class="fas fa-users"></i> <span>Staff
+                                Directory</span></a>
+                    </li>
+                    <li><a href="procurement.html"><i class="fas fa-shopping-cart"></i>
+                            <span>Procurement</span></a>
+                    </li>
+                    <li><a href="assets.html"><i class="fas fa-boxes"></i> <span>Asset
+                                Management</span></a></li>
+                    <li><a href="schedules.html"><i class="fas fa-calendar-alt"></i> <span>Schedules &
+                                Shifts</span></a>
+                    </li>
+                </ul>
+
+                <div class="sidebar-section-title">Support & HR</div>
+                <ul>
+                    <li><a href="sdc-portal.html"><i class="fas fa-file-invoice-dollar"></i> <span>SDC
+                                Staff
+                                Portal</span></a></li>
+                    <li><a href="hr-services.html"><i class="fas fa-user-shield"></i> <span>HR
+                                Services</span></a></li>
+                    <li><a href="profile.html"><i class="fas fa-id-card"></i> <span>My Profile</span></a>
+                    </li>
+                    <li><a href="resources.html"><i class="fas fa-folder-open"></i> <span>Resources &
+                                Docs</span></a>
+                    </li>
+                    <li><a href="it-support.html"><i class="fas fa-headset"></i> <span>IT
+                                Support</span></a>
+                    </li>
+                </ul>
+
+                <div class="sidebar-section-title">Communication</div>
+                <ul>
+                    <li><a href="news.html"><i class="fas fa-newspaper"></i> <span>News &
+                                Updates</span></a></li>
+                    <li><a href="training.html"><i class="fas fa-graduation-cap"></i> <span>Training &
+                                Dev</span></a>
+                    </li>
+                    <li><a href="feedback.html"><i class="fas fa-comment-dots"></i>
+                            <span>Feedback</span></a></li>
+                    <li><a href="contact.html"><i class="fas fa-address-book"></i> <span>Contact
+                                Us</span></a></li>
+                </ul>
+            </div>
+            <div class="sidebar-footer">
+                <a href="login.html"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="main-content" style="margin-right: 350px;">
+            <div class="top-header">
+                <h2>Point of Sale</h2>
+            </div>
+
+            <div class="content-area">
+                <div class="search-box" style="margin-bottom: 25px;">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="posSearch" placeholder="Search products to add..."
+                        style="width: 100%; border: 1px solid #ccc; padding: 12px 12px 12px 40px; border-radius: 8px; font-size: 1rem;">
+                </div>
+
+                <div id="posGrid"
+                    style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px;">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Cart Sidebar -->
+        <div class="cart-section">
+            <h3 style="margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 10px;">Current Sale</h3>
+
+            <div id="cartItems" style="flex: 1; overflow-y: auto;">
+                <!-- Cart Items Here -->
+                <div style="text-align: center; color: #888; margin-top: 50px;">Cart is empty</div>
+            </div>
+
+            <div style="border-top: 2px solid #eee; padding-top: 20px;">
+                <div style="margin-bottom: 15px;">
+                    <label
+                        style="display: block; font-size: 0.8rem; color: #888; font-weight: 600; margin-bottom: 5px;">Payment
+                        Details</label>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                        <select id="saleCurrency"
+                            style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px;">
+                            <option value="USD">USD ($)</option>
+                            <option value="ZiG">ZiG</option>
+                            <option value="ZAR">ZAR (R)</option>
+                        </select>
+                        <select id="saleMethod"
+                            style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px;">
+                            <option value="Cash">Cash</option>
+                            <option value="EcoCash">EcoCash</option>
+                        </select>
+                    </div>
+                    <input type="text" id="buyerName" placeholder="Buyer Name (Optional)"
+                        style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 10px;">
+                    <div id="ecocashField" style="display: none; margin-bottom: 10px;">
+                        <input type="text" id="ecocashNumber" placeholder="EcoCash Number (e.g. 077...)"
+                            style="width: 100%; padding: 10px; border: 2px solid var(--school-primary); border-radius: 8px;">
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
+                        <div>
+                            <label style="display: block; font-size: 0.75rem; color: #888; margin-bottom: 3px;">Amount
+                                Paid</label>
+                            <input type="number" id="amountPaid" step="0.01" placeholder="0.00"
+                                style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px;">
+                        </div>
+                        <div>
+                            <label style="display: block; font-size: 0.75rem; color: #888; margin-bottom: 3px;">Change
+                                Due</label>
+                            <div id="changeGiven"
+                                style="padding: 10px; background: #f8f9fc; border-radius: 8px; font-weight: 700; color: #1cc88a; border: 1px solid #e3e6f0; min-height: 42px; display: flex; align-items: center;">
+                                $0.00</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div
+                    style="display: flex; justify-content: space-between; font-weight: 700; font-size: 1.2rem; margin-bottom: 20px;">
+                    <span>Total</span>
+                    <span id="cartTotal">$0.00</span>
+                </div>
+                <button class="btn btn-primary" onclick="completeSale()"
+                    style="width: 100%; padding: 15px; font-size: 1.1rem; justify-content: center;">
+                    <i class="fas fa-check-circle" style="margin-right: 10px;"></i> Complete Sale
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- EcoCash Processing Modal -->
+    <div id="ecocashModal" class="modal" style="display: none; background: rgba(0,0,0,0.8); z-index: 2000;">
+        <div class="modal-content" style="max-width: 400px; text-align: center; padding: 40px;">
+            <div id="ecocashStatusIcon" style="font-size: 3rem; color: var(--school-primary); margin-bottom: 20px;">
+                <i class="fas fa-spinner fa-spin"></i>
+            </div>
+            <h3 id="ecocashStatusTitle">Processing EcoCash...</h3>
+            <p id="ecocashStatusMsg" style="color: #666; margin-top: 10px;">Connecting to payment gateway...</p>
+        </div>
+    </div>
+
+    <!-- Receipt Modal -->
+    <div id="receiptModal" class="modal" style="display: none; background: rgba(0,0,0,0.8);">
+        <div class="modal-content" style="max-width: 400px; padding: 0; border-radius: 0;">
+            <div id="receiptContent"
+                style="padding: 30px; background: white; font-family: 'Courier New', Courier, monospace; color: #333;">
+                <!-- Populated by JS -->
+            </div>
+            <div style="padding: 15px; display: flex; gap: 10px;">
+                <button class="btn btn-primary" onclick="window.print()" style="flex: 1;">Print Receipt</button>
+                <button class="btn btn-outline" onclick="closeReceiptModal()" style="flex: 1;">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/ancillary-common.js"></script>
+    <script src="../js/tuckshop.js"></script>
+    <script>
+        function closeReceiptModal() {
+            closeModal('receiptModal');
+        }
+    </script>
+    <!-- ACADEX: Powered-by footer and school branding -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+
+</body>
+
+</html>

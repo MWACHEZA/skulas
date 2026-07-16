@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library Resource Center - Student Portal</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/student.css">
+    <link rel="stylesheet" href="../css/library-portal.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        .library-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e0e0e0;
+            flex-wrap: wrap;
+        }
+
+        .library-tabs button {
+            padding: 12px 25px;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            color: #666;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1rem;
+        }
+
+        .library-tabs button:hover {
+            color: var(--school-primary, #0056b3);
+        }
+
+        .library-tabs button.active {
+            color: var(--school-primary, #0056b3);
+            border-bottom-color: var(--school-primary, #0056b3);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .resource-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <img src="../images/logo.png" alt="School Logo" class="acadex-school-logo">
+                <h3>Student Portal</h3>
+            </div>
+
+            <div class="sidebar-menu">
+                <ul>
+                    <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                    <li><a href="profile.html"><i class="fas fa-user"></i> Profile</a></li>
+                    <li><a href="grades.html"><i class="fas fa-chart-line"></i> Grades</a></li>
+                    <li><a href="timetable.html"><i class="fas fa-calendar-alt"></i> Timetable</a></li>
+                    <li><a href="fees.html"><i class="fas fa-money-bill-wave"></i> Fees</a></li>
+                    <li><a href="assignments.html"><i class="fas fa-tasks"></i> Assignments</a></li>
+                    <li><a href="attendance.html"><i class="fas fa-clipboard-check"></i> Attendance</a></li>
+                    <li><a href="library.html" class="active"><i class="fas fa-book"></i> Library</a></li>
+                    <li><a href="my-books.html"><i class="fas fa-book-reader"></i> My Books</a></li>
+                    <li><a href="events.html"><i class="fas fa-calendar-day"></i> Events</a></li>
+                    <li><a href="it-support.html"><i class="fas fa-headset"></i> IT Support</a></li>
+                    <li><a href="settings.html"><i class="fas fa-cog"></i> Settings</a></li>
+                </ul>
+            </div>
+
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="user-details">
+                        <h4 id="studentName">Student Name</h4>
+                        <p id="studentClass">Loading...</p>
+                    </div>
+                </div>
+                <a href="#" class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </div>
+        </aside>
+
+        <!-- Sidebar Overlay -->
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Mobile Header -->
+            <div class="mobile-header">
+                <button class="menu-toggle" id="menuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="mobile-logo">
+                    <img src="../images/logo.png" alt="School Logo" class="acadex-school-logo">
+                    <span>Student Portal</span>
+                </div>
+            </div>
+
+            <!-- Dashboard Header -->
+            <div class="dashboard-header">
+                <h2>Library Resource Center</h2>
+                <div class="breadcrumb">
+                    <span>Home</span>
+                    <i class="fas fa-chevron-right"></i>
+                    <span>Library</span>
+                </div>
+            </div>
+
+            <div class="content-area" style="padding: 20px;">
+                <!-- Search Bar -->
+                <div style="margin-bottom: 30px;">
+                    <div class="search-box" style="max-width: 600px;">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="globalSearch" placeholder="Search across all resources..."
+                            oninput="searchAllResources()">
+                    </div>
+                </div>
+
+                <!-- Tabs -->
+                <div class="library-tabs">
+                    <button class="tab-btn active" data-tab="catalog"><i class="fas fa-book"></i> Catalog</button>
+                    <button class="tab-btn" data-tab="digital"><i class="fas fa-cloud"></i> Digital Resources</button>
+                    <button class="tab-btn" data-tab="papers"><i class="fas fa-file-pdf"></i> Past Papers</button>
+                    <button class="tab-btn" data-tab="research"><i class="fas fa-database"></i> Research DB</button>
+                </div>
+
+                <!-- Tab Content: Catalog -->
+                <div class="tab-content active" id="catalog">
+                    <h3 style="margin-bottom: 20px;">Physical Books Catalog</h3>
+                    <div class="resource-grid" id="catalogGrid">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <!-- Tab Content: Digital Resources -->
+                <div class="tab-content" id="digital">
+                    <h3 style="margin-bottom: 20px;">Digital Resources</h3>
+                    <div class="resource-grid" id="digitalGrid">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <!-- Tab Content: Past Papers -->
+                <div class="tab-content" id="papers">
+                    <h3 style="margin-bottom: 20px;">Past Examination Papers</h3>
+                    <div class="resource-grid" id="papersGrid">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <!-- Tab Content: Research -->
+                <div class="tab-content" id="research">
+                    <h3 style="margin-bottom: 20px;">Research Databases & Journals</h3>
+                    <div class="resource-grid" id="researchGrid">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/student-common.js"></script>
+    <script src="js/student-library.js"></script>
+    <script>
+        // Tab switching
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const tabName = this.dataset.tab;
+
+                // Remove active class from all tabs and content
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+                // Add active class to clicked tab and corresponding content
+                this.classList.add('active');
+                document.getElementById(tabName).classList.add('active');
+            });
+        });
+
+        // Render catalog (physical books)
+        function renderCatalog() {
+            const books = loadBooks();
+            const grid = document.getElementById('catalogGrid');
+            grid.innerHTML = '';
+
+            books.forEach(book => {
+                const card = document.createElement('div');
+                card.className = 'glass-card';
+                card.style.padding = '20px';
+
+                const statusBadge = book.available > 0 ?
+                    `<span class="badge bg-success">Available (${book.available})</span>` :
+                    `<span class="badge bg-danger">Out of Stock</span>`;
+
+                card.innerHTML = `
+                    <h4 style="margin: 0 0 8px; color: var(--sidebar-bg);">${book.title}</h4>
+                    <p style="color: #666; margin: 0 0 12px; font-size: 0.9rem;">by ${book.author}</p>
+                    <div style="font-size: 0.85rem; color: #888; margin-bottom: 15px;">
+                        <div><i class="fas fa-tag"></i> ${book.category}</div>
+                        <div><i class="fas fa-barcode"></i> ${book.isbn}</div>
+                        <div><i class="fas fa-map-marker-alt"></i> Shelf ${book.shelf}</div>
+                    </div>
+                    ${statusBadge}
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Render digital resources (student view-only)
+        function renderDigitalResources() {
+            const resources = loadResources();
+            const grid = document.getElementById('digitalGrid');
+            grid.innerHTML = '';
+
+            resources.forEach(res => {
+                const card = document.createElement('div');
+                card.className = 'resource-card glass-card';
+                card.style.overflow = 'hidden';
+
+                const actionBtn = res.icon === 'fa-video' ?
+                    `<button class="btn btn-primary" style="width: 100%; justify-content: center; background: #10b981; padding: 10px;" onclick="playResource('${res.id}')"><i class="fas fa-play"></i> Watch</button>` :
+                    `<button class="btn btn-primary" style="width: 100%; justify-content: center; padding: 10px;" onclick="downloadResource('${res.id}')"><i class="fas fa-download"></i> Download</button>`;
+
+                card.innerHTML = `
+                    <div style="height: 140px; background: linear-gradient(135deg, ${res.color} 0%, #1f2937 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 3.5rem;">
+                        <i class="fas ${res.icon}"></i>
+                    </div>
+                    <div style="padding: 25px;">
+                        <div style="font-size: 0.7rem; text-transform: uppercase; color: ${res.color}; font-weight: 700; margin-bottom: 8px; letter-spacing: 1px;">${res.type}</div>
+                        <h4 style="margin: 0 0 12px; color: var(--sidebar-bg); font-size: 1.1rem; font-weight: 600;">${res.title}</h4>
+                        <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px;">
+                            <i class="fas ${res.icon === 'fa-video' ? 'fa-clock' : 'fa-database'}"></i> 
+                            ${res.icon === 'fa-video' ? '45 mins | ' + res.format : res.size + ' | ' + res.format}
+                        </div>
+                        ${actionBtn}
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Render past papers
+        function renderPastPapers() {
+            const grid = document.getElementById('papersGrid');
+            const papers = [
+                { subject: 'Mathematics', year: 2023, term: 'Final', format: 'PDF' },
+                { subject: 'English', year: 2023, term: 'Final', format: 'PDF' },
+                { subject: 'Physics', year: 2023, term: 'Midterm', format: 'PDF' },
+                { subject: 'Chemistry', year: 2023, term: 'Final', format: 'PDF' },
+                { subject: 'Biology', year: 2023, term: 'Final', format: 'PDF' },
+                { subject: 'History', year: 2023, term: 'Final', format: 'PDF' }
+            ];
+
+            grid.innerHTML = '';
+            papers.forEach(paper => {
+                const card = document.createElement('div');
+                card.className = 'glass-card';
+                card.style.padding = '20px';
+                card.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px;">
+                        <i class="fas fa-file-pdf" style="font-size: 2.5rem; color: #dc3545;"></i>
+                        <div>
+                            <h4 style="margin: 0; color: var(--sidebar-bg);">${paper.subject}</h4>
+                            <p style="margin: 5px 0 0; color: #666; font-size: 0.9rem;">${paper.year} ${paper.term} Exam</p>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" style="width: 100%;" onclick="alert('Downloading ${paper.subject} ${paper.year} ${paper.term} exam...')">
+                        <i class="fas fa-download"></i> Download
+                    </button>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Render research databases
+        function renderResearchDB() {
+            const grid = document.getElementById('researchGrid');
+            const databases = [
+                { name: 'JSTOR', description: 'Academic journals and primary sources', icon: 'fa-graduation-cap', color: '#e74c3c' },
+                { name: 'Google Scholar', description: 'Scholarly literature search', icon: 'fa-google', color: '#4285f4' },
+                { name: 'PubMed', description: 'Biomedical literature database', icon: 'fa-heartbeat', color: '#27ae60' },
+                { name: 'IEEE Xplore', description: 'Engineering and technology papers', icon: 'fa-microchip', color: '#00629b' }
+            ];
+
+            grid.innerHTML = '';
+            databases.forEach(db => {
+                const card = document.createElement('div');
+                card.className = 'glass-card';
+                card.style.padding = '20px';
+                card.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px;">
+                        <i class="fas ${db.icon}" style="font-size: 2.5rem; color: ${db.color};"></i>
+                        <div>
+                            <h4 style="margin: 0; color: var(--sidebar-bg);">${db.name}</h4>
+                            <p style="margin: 5px 0 0; color: #666; font-size: 0.9rem;">${db.description}</p>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" style="width: 100%;" onclick="window.open('https://www.google.com/search?q=${db.name}', '_blank')">
+                        <i class="fas fa-external-link-alt"></i> Access Database
+                    </button>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function () {
+            renderCatalog();
+            renderDigitalResources();
+            renderPastPapers();
+            renderResearchDB();
+
+            // Mobile menu
+            const menuToggle = document.getElementById('menuToggle');
+            const sidebar = document.getElementById('sidebar');
+            const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+            if (menuToggle) {
+                menuToggle.addEventListener('click', () => {
+                    sidebar.classList.toggle('active');
+                    sidebarOverlay.classList.toggle('active');
+                });
+            }
+
+            if (sidebarOverlay) {
+                sidebarOverlay.addEventListener('click', () => {
+                    sidebar.classList.remove('active');
+                    sidebarOverlay.classList.remove('active');
+                });
+            }
+        });
+
+        // Global search
+        function searchAllResources() {
+            const query = document.getElementById('globalSearch').value.toLowerCase();
+            // Implement search across all tabs
+            console.log('Searching for:', query);
+        }
+    </script>
+    <!-- ACADEX: Powered-by footer and school branding -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+
+</body>
+
+</html>
+

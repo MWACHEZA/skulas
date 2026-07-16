@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Profile - Admin Portal</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f0f4ff;
+            margin: 0;
+            padding: 0;
+        }
+
+        .admin-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar injected by admin-sidebar.js */
+        .sidebar {
+            width: 250px;
+            background: #1a1a1a;
+            color: white;
+            position: fixed;
+            height: 100%;
+            overflow-y: auto;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: 250px;
+        }
+
+        .top-header {
+            background: white;
+            padding: 15px 30px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, .05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .top-header h2 {
+            margin: 0;
+            font-size: 1.4rem;
+            color: #1a1a1a;
+        }
+
+        .content-area {
+            padding: 30px;
+        }
+
+        /* Profile Hero */
+        .profile-hero {
+            background: linear-gradient(135deg, var(--school-primary-dark, #1a1a1a) 0%, var(--school-primary, #2d2d2d) 100%);
+            border-radius: 16px;
+            padding: 32px;
+            display: flex;
+            align-items: center;
+            gap: 28px;
+            margin-bottom: 24px;
+        }
+
+        .hero-avatar {
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            border: 4px solid rgba(255, 255, 255, .3);
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.4rem;
+            font-weight: 700;
+            color: white;
+            background: linear-gradient(135deg, var(--school-primary), var(--school-primary-dark));
+            flex-shrink: 0;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .hero-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .hero-avatar .cam-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, .5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity .2s;
+            border-radius: 50%;
+            color: white;
+            font-size: 1.4rem;
+        }
+
+        .hero-avatar:hover .cam-overlay {
+            opacity: 1;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .hero-info {
+            flex: 1;
+            color: white;
+        }
+
+        .hero-name {
+            font-size: 1.7rem;
+            font-weight: 700;
+            margin: 0 0 4px;
+        }
+
+        .hero-username {
+            opacity: .65;
+            font-size: 0.9rem;
+            margin-bottom: 12px;
+        }
+
+        .hero-badges {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.78rem;
+            font-weight: 600;
+        }
+
+        .badge-primary {
+            background: rgba(255, 255, 255, .15);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, .3);
+        }
+
+        .badge-secondary {
+            background: rgba(220, 53, 69, .25);
+            color: #ff6b7b;
+            border: 1px solid rgba(220, 53, 69, .4);
+        }
+
+        .badge-dept {
+            background: rgba(255, 255, 255, .08);
+            color: rgba(255, 255, 255, .7);
+        }
+
+        .hero-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 9px 18px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            font-family: inherit;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            transition: all .2s;
+        }
+
+        .btn-edit {
+            background: white;
+            color: #1a1a1a;
+        }
+
+        .btn-edit:hover {
+            background: #f0f0f0;
+        }
+
+        .btn-photo {
+            background: rgba(255, 255, 255, .1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, .25);
+        }
+
+        .btn-photo:hover {
+            background: rgba(255, 255, 255, .2);
+        }
+
+        /* Cards grid */
+        .profile-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 900px) {
+            .profile-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .profile-hero {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .hero-badges {
+                justify-content: center;
+            }
+        }
+
+        .info-card {
+            background: white;
+            border-radius: 14px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, .06);
+            overflow: hidden;
+        }
+
+        .info-card.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .card-header {
+            background: #f8f9fa;
+            padding: 14px 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .card-header i {
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #1a1a1a;
+            color: white;
+            font-size: 0.82rem;
+        }
+
+        .card-header h3 {
+            margin: 0;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+
+        .card-body {
+            padding: 16px 20px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 8px 0;
+            border-bottom: 1px solid #f5f5f5;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            font-size: 0.8rem;
+            color: #888;
+            font-weight: 500;
+            min-width: 130px;
+        }
+
+        .info-value {
+            font-size: 0.87rem;
+            color: #222;
+            font-weight: 500;
+            text-align: right;
+            max-width: 55%;
+            word-break: break-word;
+        }
+
+        .info-value.empty {
+            color: #bbb;
+            font-style: italic;
+            font-weight: 400;
+        }
+
+        /* Edit Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .55);
+            z-index: 2000;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .modal-overlay.open {
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 660px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, .3);
+            margin: auto;
+        }
+
+        .modal-header {
+            background: #1a1a1a;
+            color: white;
+            padding: 20px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 16px 16px 0 0;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            font-size: 1.05rem;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.6rem;
+            cursor: pointer;
+            opacity: .7;
+            line-height: 1;
+        }
+
+        .modal-close:hover {
+            opacity: 1;
+        }
+
+        .modal-body {
+            padding: 24px;
+            max-height: 75vh;
+            overflow-y: auto;
+        }
+
+        .modal-section {
+            margin-bottom: 20px;
+        }
+
+        .modal-section h4 {
+            font-size: 0.82rem;
+            text-transform: uppercase;
+            color: #888;
+            letter-spacing: 1px;
+            margin: 0 0 12px;
+            padding-bottom: 6px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #444;
+            margin-bottom: 5px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 9px 12px;
+            border: 1.5px solid #e0e0e0;
+            border-radius: 7px;
+            font-size: 0.87rem;
+            font-family: inherit;
+            transition: border-color .2s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #1a1a1a;
+        }
+
+        .role-read-only {
+            background: #f8f9fa;
+            color: #555;
+            cursor: default;
+        }
+
+        .modal-footer {
+            padding: 16px 24px;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .btn-cancel {
+            background: #eee;
+            color: #444;
+        }
+
+        .btn-save {
+            background: #1a1a1a;
+            color: white;
+        }
+
+        .btn-save:hover {
+            background: #333;
+        }
+
+        .err-msg {
+            color: #dc3545;
+            font-size: 0.82rem;
+            margin-bottom: 10px;
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                margin-left: 0;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin-container">
+        <aside class="sidebar" id="sidebar"></aside>
+        <div class="main-content">
+            <div class="top-header">
+                <h2><i class="fas fa-user-circle" style="margin-right:10px;color:var(--school-primary);"></i>My Profile</h2>
+            </div>
+
+            <div class="content-area">
+
+                <!-- Hero Banner -->
+                <div class="profile-hero">
+                    <div class="hero-avatar" id="heroAvatar" onclick="triggerPhotoUpload()">
+                        <span id="heroInitials">AD</span>
+                        <img id="heroPhoto" src="" alt="" style="display:none;">
+                        <div class="cam-overlay"><i class="fas fa-camera"></i></div>
+                    </div>
+                    <input type="file" id="photoInput" accept="image/*">
+
+                    <div class="hero-info">
+                        <div class="hero-name" id="heroName">Loading…</div>
+                        <div class="hero-username" id="heroUsername">@username</div>
+                        <div class="hero-badges">
+                            <span class="badge badge-primary"><i class="fas fa-shield-alt"></i> Admin</span>
+                            <span class="badge badge-secondary" id="heroBadgeRole">—</span>
+                            <span class="badge badge-dept" id="heroBadgeDept" style="display:none;"></span>
+                        </div>
+                    </div>
+
+                    <div class="hero-actions">
+                        <button class="btn btn-edit" onclick="openEditModal()">
+                            <i class="fas fa-edit"></i> Edit Profile
+                        </button>
+                        <button class="btn btn-photo" onclick="triggerPhotoUpload()">
+                            <i class="fas fa-camera"></i> Change Photo
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Cards Grid -->
+                <div class="profile-grid">
+
+                    <!-- Personal Info -->
+                    <div class="info-card">
+                        <div class="card-header">
+                            <i class="fas fa-user"></i>
+                            <h3>Personal Information</h3>
+                        </div>
+                        <div class="card-body" id="personalCard">
+                            <!-- populated by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Contact Info -->
+                    <div class="info-card">
+                        <div class="card-header">
+                            <i class="fas fa-address-book"></i>
+                            <h3>Contact Details</h3>
+                        </div>
+                        <div class="card-body" id="contactCard"></div>
+                    </div>
+
+                    <!-- Role Info -->
+                    <div class="info-card">
+                        <div class="card-header">
+                            <i class="fas fa-shield-alt"></i>
+                            <h3>Role & Department</h3>
+                        </div>
+                        <div class="card-body" id="roleCard"></div>
+                    </div>
+
+                    <!-- Identification -->
+                    <div class="info-card">
+                        <div class="card-header">
+                            <i class="fas fa-id-card"></i>
+                            <h3>Identification</h3>
+                        </div>
+                        <div class="card-body" id="idCard"></div>
+                    </div>
+
+                    <!-- Spouse -->
+                    <div class="info-card">
+                        <div class="card-header">
+                            <i class="fas fa-ring"></i>
+                            <h3>Spouse Details</h3>
+                        </div>
+                        <div class="card-body" id="spouseCard"></div>
+                    </div>
+
+                    <!-- Next of Kin -->
+                    <div class="info-card">
+                        <div class="card-header">
+                            <i class="fas fa-people-arrows"></i>
+                            <h3>Next of Kin</h3>
+                        </div>
+                        <div class="card-body" id="nokCard"></div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ─── Edit Profile Modal ─────────────────────────────── -->
+    <div class="modal-overlay" id="editModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3><i class="fas fa-edit" style="margin-right:8px;"></i>Edit Profile</h3>
+                <button class="modal-close" onclick="closeEditModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="err-msg" id="editErr"></div>
+
+                <!-- Basic -->
+                <div class="modal-section">
+                    <h4><i class="fas fa-user" style="margin-right:6px;"></i>Basic Information</h4>
+                    <div class="form-row">
+                        <div class="form-group"><label>First Name *</label><input type="text" id="eFirstName"></div>
+                        <div class="form-group"><label>Last Name *</label><input type="text" id="eLastName"></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Date of Birth</label><input type="date" id="eDob"></div>
+                        <div class="form-group"><label>Gender</label>
+                            <select id="eGender">
+                                <option value="">— Select —</option>
+                                <option>Male</option>
+                                <option>Female</option>
+                                <option>Prefer not to say</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contact -->
+                <div class="modal-section">
+                    <h4><i class="fas fa-address-book" style="margin-right:6px;"></i>Contact Details</h4>
+                    <div class="form-row">
+                        <div class="form-group"><label>Email *</label><input type="email" id="eEmail"></div>
+                        <div class="form-group"><label>Phone</label><input type="tel" id="ePhone"></div>
+                    </div>
+                    <div class="form-group"><label>Home Address</label><input type="text" id="eAddress"></div>
+                </div>
+
+                <!-- Identification -->
+                <div class="modal-section">
+                    <h4><i class="fas fa-id-card" style="margin-right:6px;"></i>Identification</h4>
+                    <div class="form-row">
+                        <div class="form-group"><label>National ID</label><input type="text" id="eNationalId"></div>
+                        <div class="form-group"><label>Username</label><input type="text" id="eUsername"></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Religion</label>
+                            <select id="eReligion">
+                                <option value="">— Select —</option>
+                                <option>Christianity</option>
+                                <option>Islam</option>
+                                <option>Hinduism</option>
+                                <option>Buddhism</option>
+                                <option>Judaism</option>
+                                <option>African Traditional</option>
+                                <option>Other</option>
+                                <option>Prefer not to say</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Role & Dept -->
+                <div class="modal-section">
+                    <h4><i class="fas fa-shield-alt" style="margin-right:6px;"></i>Role & Department</h4>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Primary Role (System-assigned)</label>
+                            <input type="text" class="role-read-only" value="Admin" readonly>
+                        </div>
+                        <div class="form-group"><label>Secondary Role *</label>
+                            <select id="eAdminRole">
+                                <option value="">— Select —</option>
+                                <option value="Super Administrator">Super Administrator</option>
+                                <option value="Academic Administrator">Academic Administrator</option>
+                                <option value="Financial Administrator">Financial Administrator</option>
+                                <option value="System Administrator">System Administrator</option>
+                                <option value="HR Administrator">HR Administrator</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group"><label>Department</label>
+                        <select id="eDepartment">
+                            <option value="">— Select —</option>
+                            <option>Administration</option>
+                            <option>ICT</option>
+                            <option>Finance</option>
+                            <option>HR</option>
+                            <option>Academic Affairs</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Spouse -->
+                <div class="modal-section">
+                    <h4><i class="fas fa-ring" style="margin-right:6px;"></i>Spouse Details</h4>
+                    <div class="form-row">
+                        <div class="form-group"><label>Spouse Full Name</label><input type="text" id="eSpouseName">
+                        </div>
+                        <div class="form-group"><label>Spouse Phone</label><input type="tel" id="eSpousePhone"></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Spouse Occupation</label><input type="text"
+                                id="eSpouseOccupation" placeholder="Occupation"></div>
+                        <div class="form-group"><label>Number of Children</label><input type="number" id="eNumChildren"
+                                placeholder="0" min="0"></div>
+                    </div>
+                </div>
+
+                <!-- Next of Kin -->
+                <div class="modal-section">
+                    <h4><i class="fas fa-people-arrows" style="margin-right:6px;"></i>Next of Kin</h4>
+                    <div class="form-row">
+                        <div class="form-group"><label>NOK Full Name</label><input type="text" id="eNokName"></div>
+                        <div class="form-group"><label>Relationship</label>
+                            <select id="eNokRelationship">
+                                <option value="">— Select —</option>
+                                <option>Parent</option>
+                                <option>Sibling</option>
+                                <option>Child</option>
+                                <option>Friend</option>
+                                <option>Colleague</option>
+                                <option>Other</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>NOK Phone</label><input type="tel" id="eNokPhone"></div>
+                        <div class="form-group"><label>NOK Email</label><input type="email" id="eNokEmail"></div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-cancel" onclick="closeEditModal()">Cancel</button>
+                <button class="btn btn-save" onclick="saveProfile()"><i class="fas fa-save"></i> Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let adminData = {};
+
+        function val(v) {
+            return (v && String(v).trim()) ? String(v).trim() : null;
+        }
+
+        function row(label, value) {
+            const empty = !val(value);
+            return `<div class="info-row">
+        <span class="info-label">${label}</span>
+        <span class="info-value ${empty ? 'empty' : ''}">${val(value) || 'Not set'}</span>
+    </div>`;
+        }
+
+        function loadProfile() {
+            // 1. Try direct session record
+            let stored = sessionStorage.getItem('adminUser');
+
+            // 2. Resolve via username if missing
+            if (!stored) {
+                const username = sessionStorage.getItem('adminUsername');
+                if (username) {
+                    const admins = getTenantData('adminUsers', []);
+                    const found = admins.find(a => a.username === username || a.email === username);
+                    if (found) {
+                        stored = JSON.stringify(found);
+                        sessionStorage.setItem('adminUser', stored);
+                    }
+                }
+            }
+
+            // 3. Fallback to currentUser
+            if (!stored) {
+                stored = sessionStorage.getItem('currentUser');
+            }
+
+            adminData = stored ? JSON.parse(stored) : {};
+
+            // Normalize basic properties for display
+            adminData.name = adminData.name || ((adminData.firstName || '') + ' ' + (adminData.lastName || '')).trim() || adminData.username || 'Admin';
+            adminData.adminRole = adminData.adminRole || adminData.role || 'Admin';
+
+            renderHero();
+            renderCards();
+        }
+
+        function renderHero() {
+            document.getElementById('heroName').textContent = adminData.name || 'Admin';
+            document.getElementById('heroUsername').textContent = '@' + (adminData.username || '—');
+            document.getElementById('heroBadgeRole').textContent = adminData.adminRole || '—';
+
+            const deptEl = document.getElementById('heroBadgeDept');
+            if (adminData.department) {
+                deptEl.textContent = adminData.department;
+                deptEl.style.display = '';
+            } else {
+                deptEl.style.display = 'none';
+            }
+
+            // Avatar
+            if (adminData.photo) {
+                document.getElementById('heroPhoto').src = adminData.photo;
+                document.getElementById('heroPhoto').style.display = 'block';
+                document.getElementById('heroInitials').style.display = 'none';
+            } else {
+                const n = adminData.name || 'AD';
+                const parts = n.trim().split(' ');
+                const ini = (parts.length > 1 ? parts[0][0] + parts[parts.length - 1][0] : n.substring(0, 2)).toUpperCase();
+                document.getElementById('heroInitials').textContent = ini;
+                document.getElementById('heroInitials').style.display = '';
+                document.getElementById('heroPhoto').style.display = 'none';
+            }
+        }
+
+        function renderCards() {
+            document.getElementById('personalCard').innerHTML =
+                row('Full Name', adminData.name) +
+                row('First Name', adminData.firstName) +
+                row('Last Name', adminData.lastName) +
+                row('Date of Birth', adminData.dob) +
+                row('Gender', adminData.gender) +
+                row('Religion', adminData.religion) +
+                row('Registered', adminData.createdAt ? new Date(adminData.createdAt).toLocaleDateString() : null);
+
+            document.getElementById('contactCard').innerHTML =
+                row('Email', adminData.email) +
+                row('Phone', adminData.phone) +
+                row('Home Address', adminData.address);
+
+            document.getElementById('roleCard').innerHTML =
+                `<div class="info-row"><span class="info-label">Primary Role</span><span class="info-value"><span class="badge" style="background:rgba(220,53,69,.12);color:#dc3545;">Admin</span></span></div>` +
+                `<div class="info-row"><span class="info-label">Secondary Role</span><span class="info-value">${adminData.adminRole || '<span class="empty">Not set</span>'}</span></div>` +
+                row('Department', adminData.department) +
+                row('Username', '@' + (adminData.username || '—'));
+
+            document.getElementById('idCard').innerHTML =
+                row('Admin ID', adminData.id) +
+                row('National ID', adminData.nationalId) +
+                row('Username', adminData.username);
+
+            document.getElementById('spouseCard').innerHTML =
+                row('Spouse Name', adminData.spouseName) +
+                row('Spouse Phone', adminData.spousePhone) +
+                row('Spouse Occupation', adminData.spouseOccupation) +
+                row('No. of Children', adminData.numChildren !== undefined && adminData.numChildren !== '' ? adminData.numChildren : null);
+
+            document.getElementById('nokCard').innerHTML =
+                row('NOK Full Name', adminData.nokName) +
+                row('Relationship', adminData.nokRelationship) +
+                row('NOK Phone', adminData.nokPhone) +
+                row('NOK Email', adminData.nokEmail);
+        }
+
+        // ─── Edit Modal ────────────────────────────────────────
+        function openEditModal() {
+            document.getElementById('eFirstName').value = adminData.firstName || adminData.name?.split(' ')[0] || '';
+            document.getElementById('eLastName').value = adminData.lastName || adminData.name?.split(' ').slice(1).join(' ') || '';
+            document.getElementById('eDob').value = adminData.dob || '';
+            document.getElementById('eGender').value = adminData.gender || '';
+            document.getElementById('eEmail').value = adminData.email || '';
+            document.getElementById('ePhone').value = adminData.phone || '';
+            document.getElementById('eAddress').value = adminData.address || '';
+            document.getElementById('eNationalId').value = adminData.nationalId || '';
+            document.getElementById('eUsername').value = adminData.username || '';
+            document.getElementById('eReligion').value = adminData.religion || '';
+            document.getElementById('eAdminRole').value = adminData.adminRole || '';
+            document.getElementById('eDepartment').value = adminData.department || '';
+            document.getElementById('eSpouseName').value = adminData.spouseName || '';
+            document.getElementById('eSpousePhone').value = adminData.spousePhone || '';
+            document.getElementById('eSpouseOccupation').value = adminData.spouseOccupation || '';
+            document.getElementById('eNumChildren').value = adminData.numChildren || '';
+            document.getElementById('eNokName').value = adminData.nokName || '';
+            document.getElementById('eNokRelationship').value = adminData.nokRelationship || '';
+            document.getElementById('eNokPhone').value = adminData.nokPhone || '';
+            document.getElementById('eNokEmail').value = adminData.nokEmail || '';
+            document.getElementById('editErr').style.display = 'none';
+
+            // Role Restriction Logic
+            const isSuper = adminData.adminRole === 'Super Administrator';
+            document.getElementById('eAdminRole').disabled = !isSuper;
+            document.getElementById('eDepartment').disabled = !isSuper;
+
+            document.getElementById('editModal').classList.add('open');
+        }
+
+        function closeEditModal() {
+            document.getElementById('editModal').classList.remove('open');
+        }
+
+        function saveProfile() {
+            const firstName = document.getElementById('eFirstName').value.trim();
+            const lastName = document.getElementById('eLastName').value.trim();
+            const email = document.getElementById('eEmail').value.trim();
+            const errEl = document.getElementById('editErr');
+
+            if (!firstName || !lastName || !email) {
+                errEl.textContent = 'First name, last name and email are required.';
+                errEl.style.display = 'block'; return;
+            }
+            errEl.style.display = 'none';
+
+            // Merge updates into adminData
+            Object.assign(adminData, {
+                firstName: firstName,
+                lastName: lastName,
+                name: firstName + ' ' + lastName,
+                dob: document.getElementById('eDob').value,
+                gender: document.getElementById('eGender').value,
+                religion: document.getElementById('eReligion').value,
+                email: email,
+                phone: document.getElementById('ePhone').value.trim(),
+                address: document.getElementById('eAddress').value.trim(),
+                nationalId: document.getElementById('eNationalId').value.trim(),
+                username: document.getElementById('eUsername').value.trim() || adminData.username,
+                adminRole: document.getElementById('eAdminRole').value,
+                department: document.getElementById('eDepartment').value,
+                spouseName: document.getElementById('eSpouseName').value.trim(),
+                spousePhone: document.getElementById('eSpousePhone').value.trim(),
+                spouseOccupation: document.getElementById('eSpouseOccupation').value.trim(),
+                numChildren: document.getElementById('eNumChildren').value,
+                nokName: document.getElementById('eNokName').value.trim(),
+                nokRelationship: document.getElementById('eNokRelationship').value,
+                nokPhone: document.getElementById('eNokPhone').value.trim(),
+                nokEmail: document.getElementById('eNokEmail').value.trim(),
+            });
+
+            // Persist to sessionStorage
+            sessionStorage.setItem('adminUser', JSON.stringify(adminData));
+            sessionStorage.setItem('adminUsername', adminData.username);
+
+            // Also update in adminUsers array in tenant storage
+            const admins = getTenantData('adminUsers', []);
+            const idx = admins.findIndex(a => a.id === adminData.id || a.username === adminData.username);
+            if (idx > -1) {
+                admins[idx] = adminData;
+            } else {
+                admins.push(adminData);
+            }
+            saveTenantData('adminUsers', admins);
+
+            closeEditModal();
+            renderHero();
+            renderCards();
+        }
+
+        // ─── Photo Upload ───────────────────────────────────────
+        function triggerPhotoUpload() {
+            document.getElementById('photoInput').click();
+        }
+
+        document.getElementById('photoInput').addEventListener('change', function (e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function (ev) {
+                adminData.photo = ev.target.result;
+                saveProfile(); // this also persists the photo
+                renderHero();
+            };
+            reader.readAsDataURL(file);
+        });
+
+        // Close modal on outside click
+        document.getElementById('editModal').addEventListener('click', e => {
+            if (e.target === document.getElementById('editModal')) closeEditModal();
+        });
+
+        // Init
+        loadProfile();
+    </script>
+    <!-- ACADEX: Core and Tenant scripts must load first -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+    <script src="../js/admin-sidebar.js"></script>
+
+</body>
+
+</html>
+

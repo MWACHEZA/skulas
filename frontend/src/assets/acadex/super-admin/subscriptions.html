@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Subscriptions — ACADEX Super Admin</title>
+  <link rel="stylesheet" href="../css/acadex.css" />
+  <style>
+    body { background: var(--acadex-navy); }
+    .page-title { font-family: var(--font-display); font-size: 1.5rem; font-weight: 700; }
+    .page-sub { font-size: 0.875rem; color: var(--acadex-gray-400); margin-top: 2px; }
+    .content-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 16px; padding: 1.5rem; margin-bottom: 1.5rem; }
+    .stats-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 1.25rem; margin-bottom: 2rem; }
+    @media (max-width: 900px) { .stats-grid { grid-template-columns: repeat(2,1fr); } }
+    .sc { padding: 1.5rem; border-radius: 16px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); }
+    .sc-num { font-family: var(--font-display); font-size: 2rem; font-weight: 800; margin-bottom: 4px; }
+    .sc-label { font-size: 0.8rem; color: var(--acadex-gray-400); }
+    .plan-card { padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.03); }
+    .plan-bar { height: 10px; border-radius: 999px; margin: 10px 0 6px; }
+    .status-pill { display: inline-flex; padding: 3px 10px; border-radius: 999px; font-size: 0.72rem; font-weight: 700; }
+    .s-active { background: rgba(16,185,129,0.12); color: #34d399; }
+    .s-trial { background: rgba(37,99,235,0.12); color: #60a5fa; }
+    .s-suspended { background: rgba(239,68,68,0.12); color: #f87171; }
+    .plan-chip { display: inline-block; font-size: 0.7rem; font-weight: 700; padding: 2px 8px; border-radius: 999px; }
+    .plan-starter { background: rgba(100,116,139,0.15); color: #94a3b8; }
+    .plan-professional { background: rgba(37,99,235,0.15); color: #60a5fa; }
+    .plan-enterprise { background: rgba(245,158,11,0.15); color: #fcd34d; }
+    .action-btn { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; padding: 5px 10px; font-size: 0.75rem; font-weight: 600; color: var(--acadex-gray-300); cursor: pointer; transition: var(--transition); }
+    .action-btn:hover { background: rgba(255,255,255,0.12); color: white; }
+  </style>
+</head>
+<body>
+<div class="sa-layout">
+  <!-- SIDEBAR -->
+  <div class="sa-sidebar">
+    <div class="sa-sidebar-logo">
+      <a href="../index.html" style="display:flex;align-items:center;gap:8px;">
+        <div class="nav-logo-icon" style="width:32px;height:32px;font-size:0.9rem;">A</div>
+        <div style="font-family:var(--font-display);font-size:1.1rem;font-weight:800;">ACAD<span style="color:var(--acadex-gold);">EX</span></div>
+      </a>
+      <div style="font-size:0.65rem;color:var(--acadex-gray-600);margin-top:4px;letter-spacing:0.08em;text-transform:uppercase;">Super Admin</div>
+    </div>
+    <div class="sa-nav-section">Platform</div>
+    <a href="dashboard.html" class="sa-nav-item">📊 Dashboard</a>
+    <a href="schools.html" class="sa-nav-item">🏫 Schools</a>
+    <a href="subscriptions.html" class="sa-nav-item active">💳 Subscriptions</a>
+    <div class="sa-nav-section">System</div>
+    <a href="#" class="sa-nav-item">📢 Announcements</a>
+    <a href="#" class="sa-nav-item">🔒 Security</a>
+    <a href="#" class="sa-nav-item">📋 Audit Logs</a>
+    <div style="flex:1;"></div>
+    <div style="padding:1rem 1.25rem;border-top:1px solid rgba(255,255,255,0.07);">
+      <a href="../index.html" class="sa-nav-item" style="border:none;padding:8px 0;color:var(--acadex-gray-500);font-size:0.8rem;">← Back to ACADEX Site</a>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <main class="sa-main">
+    <div class="sa-header">
+      <div>
+        <div class="page-title">Subscriptions & Revenue</div>
+        <div class="page-sub">Monitor plans, billing status, and platform revenue.</div>
+      </div>
+    </div>
+
+    <!-- REVENUE STATS -->
+    <div class="stats-grid">
+      <div class="sc">
+        <div style="font-size:1.25rem;margin-bottom:8px;">💰</div>
+        <div class="sc-num" id="mrr" style="color:#fcd34d;">$0</div>
+        <div class="sc-label">Monthly Recurring Revenue</div>
+      </div>
+      <div class="sc">
+        <div style="font-size:1.25rem;margin-bottom:8px;">📅</div>
+        <div class="sc-num" id="arr" style="color:#34d399;">$0</div>
+        <div class="sc-label">Annualised Revenue (ARR)</div>
+      </div>
+      <div class="sc">
+        <div style="font-size:1.25rem;margin-bottom:8px;">🏫</div>
+        <div class="sc-num" id="payingSchools">0</div>
+        <div class="sc-label">Paying Schools</div>
+      </div>
+      <div class="sc">
+        <div style="font-size:1.25rem;margin-bottom:8px;">⏳</div>
+        <div class="sc-num" id="trialSchools" style="color:#60a5fa;">0</div>
+        <div class="sc-label">On Free Trial</div>
+      </div>
+    </div>
+
+    <!-- PLAN BREAKDOWN CARDS -->
+    <div class="grid-3" style="margin-bottom:2rem;">
+      <div class="plan-card" style="border-color:rgba(100,116,139,0.25);">
+        <div style="font-size:0.72rem;color:#94a3b8;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.5rem;">Starter · $29/mo</div>
+        <div style="font-family:var(--font-display);font-size:1.75rem;font-weight:800;" id="pc-starter">0 schools</div>
+        <div class="plan-bar" style="background:rgba(100,116,139,0.15);">
+          <div style="height:100%;border-radius:999px;background:linear-gradient(135deg,#64748b,#94a3b8);transition:width 0.5s ease;" id="bar-starter"></div>
+        </div>
+        <div style="font-size:0.8rem;color:var(--acadex-gray-400);">Revenue: <strong id="rev-starter" style="color:white;">$0/mo</strong></div>
+      </div>
+      <div class="plan-card" style="border-color:rgba(37,99,235,0.35);background:rgba(37,99,235,0.04);">
+        <div style="font-size:0.72rem;color:#60a5fa;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.5rem;">Professional · $79/mo</div>
+        <div style="font-family:var(--font-display);font-size:1.75rem;font-weight:800;color:#60a5fa;" id="pc-pro">0 schools</div>
+        <div class="plan-bar" style="background:rgba(37,99,235,0.12);">
+          <div style="height:100%;border-radius:999px;background:var(--grad-blue);transition:width 0.5s ease;" id="bar-pro"></div>
+        </div>
+        <div style="font-size:0.8rem;color:var(--acadex-gray-400);">Revenue: <strong id="rev-pro" style="color:#60a5fa;">$0/mo</strong></div>
+      </div>
+      <div class="plan-card" style="border-color:rgba(245,158,11,0.3);background:rgba(245,158,11,0.03);">
+        <div style="font-size:0.72rem;color:#fcd34d;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.5rem;">Enterprise · $199/mo</div>
+        <div style="font-family:var(--font-display);font-size:1.75rem;font-weight:800;color:#fcd34d;" id="pc-ent">0 schools</div>
+        <div class="plan-bar" style="background:rgba(245,158,11,0.1);">
+          <div style="height:100%;border-radius:999px;background:var(--grad-gold);transition:width 0.5s ease;" id="bar-ent"></div>
+        </div>
+        <div style="font-size:0.8rem;color:var(--acadex-gray-400);">Revenue: <strong id="rev-ent" style="color:#fcd34d;">$0/mo</strong></div>
+      </div>
+    </div>
+
+    <!-- SUBSCRIPTIONS TABLE -->
+    <div class="content-card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;">
+        <div style="font-weight:700;">All Subscriptions</div>
+        <input type="text" placeholder="Search…" class="form-control" style="width:200px;padding:7px 12px;font-size:0.82rem;" id="subSearch" oninput="renderSubTable()" />
+      </div>
+      <div style="overflow-x:auto;">
+        <table class="acadex-table">
+          <thead>
+            <tr>
+              <th>School</th>
+              <th>Plan</th>
+              <th>Status</th>
+              <th>Monthly Value</th>
+              <th>Trial Ends</th>
+              <th>Joined</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="subTbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="../js/acadex-core.js"></script>
+<script src="../js/acadex-subscription.js"></script>
+<script>
+  function loadStats() {
+    const schools = AcadexCore.getAllSchools();
+    const stats = AcadexCore.getPlatformStats();
+
+    document.getElementById('mrr').textContent = '$' + stats.monthlyRevenue.toLocaleString();
+    document.getElementById('arr').textContent = '$' + (stats.monthlyRevenue * 12).toLocaleString();
+    document.getElementById('payingSchools').textContent = stats.active;
+    document.getElementById('trialSchools').textContent = stats.trial;
+
+    const total = Math.max(stats.totalSchools, 1);
+    const rev = { starter: stats.starter * 29, professional: stats.professional * 79, enterprise: stats.enterprise * 199 };
+
+    document.getElementById('pc-starter').textContent = stats.starter + ' school' + (stats.starter !== 1 ? 's' : '');
+    document.getElementById('pc-pro').textContent = stats.professional + ' school' + (stats.professional !== 1 ? 's' : '');
+    document.getElementById('pc-ent').textContent = stats.enterprise + ' school' + (stats.enterprise !== 1 ? 's' : '');
+    document.getElementById('bar-starter').style.width = (stats.starter / total * 100) + '%';
+    document.getElementById('bar-pro').style.width = (stats.professional / total * 100) + '%';
+    document.getElementById('bar-ent').style.width = (stats.enterprise / total * 100) + '%';
+    document.getElementById('rev-starter').textContent = '$' + rev.starter + '/mo';
+    document.getElementById('rev-pro').textContent = '$' + rev.professional + '/mo';
+    document.getElementById('rev-ent').textContent = '$' + rev.enterprise + '/mo';
+
+    renderSubTable();
+  }
+
+  function renderSubTable() {
+    const search = (document.getElementById('subSearch').value || '').toLowerCase();
+    const schools = AcadexCore.getAllSchools().filter(s =>
+      !search || s.name.toLowerCase().includes(search) || s.code.toLowerCase().includes(search)
+    );
+    const parents = schools.filter(s => s.isParent);
+    const children = schools.filter(s => !s.isParent);
+    const sortedList = [];
+
+    parents.forEach(p => {
+      sortedList.push(p);
+      const kids = children.filter(c => c.parentId === p.id);
+      sortedList.push(...kids);
+    });
+
+    const tbody = document.getElementById('subTbody');
+    if (sortedList.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:var(--acadex-gray-600);padding:2rem;">No records found.</td></tr>`;
+      return;
+    }
+    
+    tbody.innerHTML = sortedList.map(s => {
+      const isChild = !s.isParent && s.parentId;
+      const rowStyle = isChild ? 'background:rgba(255,255,255,0.015);' : '';
+      const namePrefix = isChild ? '<span style="color:var(--acadex-gray-500);margin-right:8px;">↳</span>' : '';
+      
+      const planConfig = ACADEX_PLANS[s.plan] || {};
+      const value = isChild ? 'Included' : (s.status === 'active' ? `$${planConfig.price}/mo` : s.status === 'trial' ? `$0 (trial)` : '$0');
+      const sClass = { active:'s-active', trial:'s-trial', suspended:'s-suspended' }[s.status] || 's-trial';
+      const trialEnds = s.trialEnds && !isChild ? new Date(s.trialEnds).toLocaleDateString() : '—';
+      const joinedAt = !isChild ? new Date(s.joinedAt).toLocaleDateString() : '—';
+      
+      return `<tr style="${rowStyle}">
+        <td style="${isChild ? 'padding-left:24px;' : ''}">
+          <div style="font-weight:700;">${namePrefix}${s.name}</div>
+          <div style="font-size:0.72rem;color:var(--acadex-gray-500);${isChild ? 'margin-left:20px;' : ''}">${s.code}</div>
+        </td>
+        <td><span class="${isChild ? '' : 'plan-chip plan-' + s.plan}" style="${isChild ? 'font-size:0.75rem;color:var(--acadex-gray-500);' : ''}">${isChild ? 'Included' : (planConfig.name||s.plan)}</span></td>
+        <td><span class="status-pill ${sClass}">${s.status}</span></td>
+        <td style="font-weight:700;color:${isChild?'var(--acadex-gray-500)':(s.status==='active'?'#34d399':s.status==='trial'?'#60a5fa':'#f87171')};">${value}</td>
+        <td style="font-size:0.8rem;color:var(--acadex-gray-400);">${trialEnds}</td>
+        <td style="font-size:0.8rem;color:var(--acadex-gray-400);">${joinedAt}</td>
+        <td><div style="display:flex;gap:5px;">
+          ${!isChild && s.status !== 'active' ? `<button class="action-btn" onclick="activateSub('${s.id}')">✅ Activate</button>` : (!isChild && s.status === 'active' ? `<span style="font-size:0.75rem;color:#34d399;font-weight:600;padding:5px 10px;">✓ Active</span>` : '')}
+          ${!isChild ? `<button class="action-btn" onclick="changePlan('${s.id}')">🔄 Change Plan</button>` : ''}
+        </div></td>
+      </tr>`;
+    }).join('');
+  }
+
+  function activateSub(id) {
+    const parent = AcadexCore.getSchoolById(id);
+    if (!parent) return;
+
+    // Update parent
+    AcadexCore.updateSchool(id, { status: 'active' });
+
+    // Update children
+    const all = AcadexCore.getAllSchools();
+    all.filter(child => child.parentId === id).forEach(child => {
+      AcadexCore.updateSchool(child.id, { status: 'active' });
+    });
+
+    loadStats();
+  }
+
+  function changePlan(id) {
+    const s = AcadexCore.getSchoolById(id);
+    if (!s) return;
+    const plan = prompt(`Change plan for "${s.name}":\n\nEnter: starter / professional / enterprise`);
+    if (plan && ['starter','professional','enterprise'].includes(plan.toLowerCase().trim())) {
+      // Update parent
+      AcadexCore.updateSchool(id, { plan: plan.toLowerCase().trim() });
+      
+      // We don't change child's plan field because they are set to 'included', but we may want to ensure they stay active
+      // or inherit any specific features in future versions based on this parent update.
+
+      loadStats();
+    } else if (plan !== null) alert('Invalid plan.');
+  }
+
+  document.addEventListener('DOMContentLoaded', loadStats);
+</script>
+</body>
+</html>
+

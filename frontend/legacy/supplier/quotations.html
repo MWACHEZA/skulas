@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Quotations - Your School</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/supplier-portal.css">
+    <link rel="stylesheet" href="../css/toast.css">
+</head>
+
+<body>
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <div class="brand-icon"><i class="fas fa-truck-loading"></i></div>
+            <h3>Supplier Portal</h3>
+            <p>Your School</p>
+        </div>
+        <div class="sidebar-menu">
+            <div class="sidebar-section-label">Procurement</div>
+            <ul>
+                <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                <li><a href="tenders.html"><i class="fas fa-file-contract"></i> Available Tenders</a></li>
+                <li><a href="quotations.html" class="active"><i class="fas fa-file-invoice-dollar"></i> My Quotations</a></li>
+                <li><a href="orders.html"><i class="fas fa-shopping-cart"></i> Purchase Orders</a></li>
+            </ul>
+            <div class="sidebar-section-label">Finance</div>
+            <ul>
+                <li><a href="invoices.html"><i class="fas fa-receipt"></i> Invoices & Payments</a></li>
+            </ul>
+            <div class="sidebar-section-label">Compliance</div>
+            <ul>
+                <li><a href="compliance.html"><i class="fas fa-shield-alt"></i> Compliance Status</a></li>
+                <li><a href="policies.html"><i class="fas fa-book"></i> Policies & Processes</a></li>
+            </ul>
+            <div class="sidebar-section-label">Account</div>
+            <ul>
+                <li><a href="messages.html"><i class="fas fa-bell"></i> Messages</a></li>
+                <li><a href="profile.html"><i class="fas fa-user-circle"></i> Profile Settings</a></li>
+                <li><a href="contact.html"><i class="fas fa-headset"></i> Contact Us</a></li>
+            </ul>
+        </div>
+        <div class="sidebar-footer">
+            <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </div>
+    </aside>
+
+    <div class="main-content">
+        <div class="top-header">
+            <div style="display:flex;align-items:center;gap:14px;">
+                <button class="mobile-menu-btn" id="menuBtn"><i class="fas fa-bars"></i></button>
+                <h2>My Quotations</h2>
+            </div>
+            <a href="tenders.html" class="btn btn-primary btn-sm">
+                <i class="fas fa-plus"></i> Submit New Quotation
+            </a>
+        </div>
+
+        <div class="content-area">
+            <!-- Summary Stats -->
+            <div class="stats-grid" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr));margin-bottom:24px;">
+                <div class="stat-card blue">
+                    <div class="stat-icon"><i class="fas fa-file-invoice-dollar"></i></div>
+                    <div class="stat-info"><h4>Total Submitted</h4><div class="value" id="totalCount">0</div></div>
+                </div>
+                <div class="stat-card orange">
+                    <div class="stat-icon"><i class="fas fa-hourglass-half"></i></div>
+                    <div class="stat-info"><h4>Pending Review</h4><div class="value" id="pendingCount">0</div></div>
+                </div>
+                <div class="stat-card green">
+                    <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+                    <div class="stat-info"><h4>Approved</h4><div class="value" id="approvedCount">0</div></div>
+                </div>
+                <div class="stat-card red">
+                    <div class="stat-icon"><i class="fas fa-times-circle"></i></div>
+                    <div class="stat-info"><h4>Rejected</h4><div class="value" id="rejectedCount">0</div></div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-header">
+                    <h3><i class="fas fa-list" style="color:var(--school-primary, #0056b3);margin-right:8px;"></i> Quotation History</h3>
+                </div>
+                <div class="table-wrapper">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Quotation ID</th>
+                                <th>Tender</th>
+                                <th>Amount (USD)</th>
+                                <th>Delivery Time</th>
+                                <th>Submitted</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="quotationTableBody">
+                            <!-- populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/toast.js"></script>
+    <script>
+        document.getElementById('menuBtn').addEventListener('click', function () {
+            document.getElementById('sidebar').classList.toggle('open');
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            if (!sessionStorage.getItem('supplierLoggedIn')) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            const supplierId = sessionStorage.getItem('supplierId');
+            const quotations = getTenantData('school_quotations', '[]');
+            const tenders = getTenantData('school_tenders', '[]');
+            const myQuotes = quotations.filter(q => q.supplierId === supplierId)
+                .sort((a, b) => new Date(b.submittedAt) - new Date(a.submittedAt));
+
+            document.getElementById('totalCount').textContent = myQuotes.length;
+            document.getElementById('pendingCount').textContent = myQuotes.filter(q => q.status === 'Pending Review').length;
+            document.getElementById('approvedCount').textContent = myQuotes.filter(q => q.status === 'Approved').length;
+            document.getElementById('rejectedCount').textContent = myQuotes.filter(q => q.status === 'Rejected').length;
+
+            const tbody = document.getElementById('quotationTableBody');
+            if (myQuotes.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="empty-state">
+                    <i class="fas fa-file-invoice-dollar" style="font-size:2rem;display:block;margin-bottom:10px;color:#ddd;"></i>
+                    No quotations submitted yet.<br>
+                    <a href="tenders.html" style="color:var(--school-primary, #0056b3);font-weight:600;font-size:0.9rem;margin-top:8px;display:inline-block;">Browse available tenders ?</a>
+                </td></tr>`;
+                return;
+            }
+
+            myQuotes.forEach(q => {
+                const tender = tenders.find(t => t.id === q.tenderId);
+                let badgeClass = 'badge-warning';
+                let statusText = q.status;
+
+                if (tender && tender.status === 'Awarded' && tender.awardedTo === supplierId) {
+                    badgeClass = 'badge-success'; statusText = 'Awarded & Contracted';
+                } else if (q.status === 'Approved') {
+                    badgeClass = 'badge-success';
+                } else if (q.status === 'Rejected') {
+                    badgeClass = 'badge-danger';
+                }
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="font-weight:600;color:var(--school-primary, #0056b3);">${q.id}</td>
+                    <td>${q.tenderTitle}</td>
+                    <td style="font-weight:600;">$${parseFloat(q.amount).toLocaleString()}</td>
+                    <td>${q.deliveryTime || '-'}</td>
+                    <td>${new Date(q.submittedAt).toLocaleDateString()}</td>
+                    <td><span class="badge ${badgeClass}">${statusText}</span></td>`;
+                tbody.appendChild(tr);
+            });
+        });
+
+        function logout() { sessionStorage.clear(); window.location.href = 'login.html'; }
+    </script>
+    <!-- ACADEX: Powered-by footer and school branding -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+
+</body>
+</html>
+
+

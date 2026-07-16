@@ -1,0 +1,86 @@
+/* Shared Announcement Styles */
+#announcements-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.announcement-item {
+    background: white;
+    border: 1px solid #edf2f7;
+    border-radius: 8px;
+    padding: 15px;
+    position: relative;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.announcement-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.announcement-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 0.7rem;
+    padding: 2px 8px;
+    background: rgba(var(--school-primary-rgb, 0, 86, 179), 0.08);
+    color: var(--school-primary, #2b6cb0);
+    border-radius: 12px;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+.announcement-main h4 {
+    margin: 0 0 8px 0;
+    color: #2d3748;
+    font-size: 1rem;
+    padding-right: 60px;
+}
+
+.announcement-main p {
+    margin: 0 0 12px 0;
+    color: #4a5568;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.announcement-footer {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    color: #718096;
+    border-top: 1px solid #f7fafc;
+    padding-top: 8px;
+}
+
+.announcement-footer span {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.announcement-attachment {
+    margin-top: 10px;
+    font-size: 0.8rem;
+}
+
+.announcement-attachment a {
+    color: var(--school-primary, #3182ce);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.announcement-attachment a:hover {
+    text-decoration: underline;
+}
+
+.no-announcements {
+    text-align: center;
+    padding: 30px;
+    color: #a0aec0;
+    font-style: italic;
+}

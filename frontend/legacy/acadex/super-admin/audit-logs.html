@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Audit Logs — Super Admin</title>
+  <link rel="stylesheet" href="../css/acadex.css" />
+  <style>
+    body { background: var(--acadex-navy); padding: 0; }
+    .sa-layout { display: flex; min-height: 100vh; }
+    .page-title { font-family: var(--font-display); font-size: 1.5rem; font-weight: 700; }
+    .page-sub { font-size: 0.875rem; color: var(--acadex-gray-400); margin-top: 2px; }
+    .content-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 16px; padding: 1.5rem; margin-bottom: 1.5rem; }
+    .content-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; }
+    .content-card-title { font-weight: 700; font-size: 1.1rem; }
+    
+    .log-table { width: 100%; border-collapse: separate; border-spacing: 0; }
+    .log-table th { text-align: left; padding: 12px 1rem; color: var(--acadex-gray-500); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid rgba(255,255,255,0.08); }
+    .log-table td { padding: 14px 1rem; border-bottom: 1px solid rgba(255,255,255,0.04); font-size: 0.85rem; vertical-align: middle; }
+    .log-row:hover td { background: rgba(255,255,255,0.02); }
+    
+    .log-type { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 999px; font-size: 0.7rem; font-weight: 700; }
+    .type-system { background: rgba(30,58,138,0.2); color: #60a5fa; }
+    .type-security { background: rgba(153,27,27,0.2); color: #f87171; }
+    .type-subscription { background: rgba(245,158,11,0.2); color: #fbbf24; }
+    .type-announcement { background: rgba(16,185,129,0.2); color: #34d399; }
+    
+    .log-time { font-family: monospace; font-size: 0.75rem; color: var(--acadex-gray-500); }
+    .log-user { font-weight: 600; color: white; }
+    .log-msg { color: var(--acadex-gray-300); }
+    
+    .filter-bar { display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+    .filter-group { display: flex; flex-direction: column; gap: 5px; }
+    .filter-group label { font-size: 0.72rem; color: var(--acadex-gray-500); font-weight: 600; }
+  </style>
+</head>
+<body>
+<div class="sa-layout">
+  <!-- SIDEBAR -->
+  <div class="sa-sidebar">
+    <div class="sa-sidebar-logo">
+      <a href="../index.html" style="display:flex;align-items:center;gap:8px;">
+        <div class="nav-logo-icon" style="width:32px;height:32px;font-size:0.9rem;">A</div>
+        <div style="font-family:var(--font-display);font-size:1.1rem;font-weight:800;">ACAD<span style="color:var(--acadex-gold);">EX</span></div>
+      </a>
+      <div style="font-size:0.65rem;color:var(--acadex-gray-600);margin-top:4px;letter-spacing:0.08em;text-transform:uppercase;">Super Admin</div>
+    </div>
+    <div class="sa-nav-section">Platform</div>
+    <a href="dashboard.html" class="sa-nav-item">📊 Dashboard</a>
+    <a href="schools.html" class="sa-nav-item">🏫 Schools</a>
+    <a href="subscriptions.html" class="sa-nav-item">💳 Subscriptions</a>
+    <div class="sa-nav-section">System</div>
+    <a href="announcements.html" class="sa-nav-item">📢 Announcements</a>
+    <a href="security.html" class="sa-nav-item">🔒 Security</a>
+    <a href="audit-logs.html" class="sa-nav-item active">📋 Audit Logs</a>
+  </div>
+
+  <main class="sa-main">
+    <div class="sa-header">
+      <div>
+        <div class="page-title">Platform Audit Logs</div>
+        <div class="page-sub">Comprehensive tracking of all system-level administrative actions.</div>
+      </div>
+      <button class="btn btn-ghost" onclick="exportLogs()">📥 Export CSV</button>
+    </div>
+
+    <div class="content-card">
+      <div class="filter-bar">
+        <div class="filter-group">
+          <label>Search Actions</label>
+          <input type="text" id="logSearch" class="form-control" style="width:240px;" placeholder="Search logs…" oninput="renderLogs()" />
+        </div>
+        <div class="filter-group">
+          <label>Event Type</label>
+          <select id="filterType" class="form-control" style="width:160px;" onchange="renderLogs()">
+            <option value="all">All Events</option>
+            <option value="SYSTEM">System</option>
+            <option value="SECURITY">Security</option>
+            <option value="SUBSCRIPTION">Subscription</option>
+            <option value="ANNOUNCEMENT">Announcement</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>Time Range</label>
+          <select id="filterTime" class="form-control" style="width:160px;" onchange="renderLogs()">
+            <option value="all">Anytime</option>
+            <option value="24h">Last 24 Hours</option>
+            <option value="7d">Last 7 Days</option>
+            <option value="30d">Last 30 Days</option>
+          </select>
+        </div>
+        <div style="flex:1;"></div>
+        <button class="btn btn-ghost" style="align-self: flex-end;" onclick="clearLogs()">🗑 Clear Logs</button>
+      </div>
+
+      <div style="overflow-x:auto;">
+        <table class="log-table">
+          <thead>
+            <tr>
+              <th>Timestamp</th>
+              <th>Action / Event</th>
+              <th>User</th>
+              <th>Type</th>
+              <th>Details</th>
+            </tr>
+          </thead>
+          <tbody id="logTbody">
+            <!-- Logs populated by JS -->
+          </tbody>
+        </table>
+      </div>
+      <div id="noLogs" style="text-align:center;padding:4rem;color:var(--acadex-gray-600);display:none;">
+        <div style="font-size:2.5rem;margin-bottom:1rem;">📋</div>
+        <div>No audit logs found matching your criteria.</div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="../js/acadex-core.js"></script>
+<script>
+  function renderLogs() {
+    const search = document.getElementById('logSearch').value.toLowerCase();
+    const type = document.getElementById('filterType').value;
+    const timeFrame = document.getElementById('filterTime').value;
+    const tbody = document.getElementById('logTbody');
+    const empty = document.getElementById('noLogs');
+
+    let logs = AcadexCore.getPlatformLogs();
+    
+    // Reverse for latest first
+    logs.sort((a,b) => b.timestamp.localeCompare(a.timestamp));
+
+    // Filter by type
+    if (type !== 'all') {
+      logs = logs.filter(l => l.type.includes(type));
+    }
+
+    // Filter by search
+    if (search) {
+      logs = logs.filter(l => 
+        l.message.toLowerCase().includes(search) || 
+        l.user.toLowerCase().includes(search) ||
+        l.type.toLowerCase().includes(search)
+      );
+    }
+
+    // Filter by time
+    if (timeFrame !== 'all') {
+      const now = Date.now();
+      const limits = { '24h': 24*3600*1000, '7d': 7*24*3600*1000, '30d': 30*24*3600*1000 };
+      logs = logs.filter(l => (now - new Date(l.timestamp).getTime()) < limits[timeFrame]);
+    }
+
+    if (logs.length === 0) {
+      tbody.innerHTML = '';
+      empty.style.display = 'block';
+      return;
+    }
+
+    empty.style.display = 'none';
+    tbody.innerHTML = logs.map(l => {
+      const time = new Date(l.timestamp);
+      const displayTime = time.toLocaleDateString() + ' ' + time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      
+      let typeClass = 'type-system';
+      if(l.type.includes('SECURITY')) typeClass = 'type-security';
+      if(l.type.includes('SUBSCRIPTION')) typeClass = 'type-subscription';
+      if(l.type.includes('ANNOUNCEMENT')) typeClass = 'type-announcement';
+
+      return `
+        <tr class="log-row">
+          <td class="log-time">${displayTime}</td>
+          <td class="log-msg"><div style="font-weight:700;margin-bottom:2px;">${l.type}</div>${l.message}</td>
+          <td class="log-user">${l.user}</td>
+          <td><span class="log-type ${typeClass}">${l.type.split('_')[0]}</span></td>
+          <td style="color:var(--acadex-gray-500);font-size:0.75rem;">${l.schoolId || 'Platform'}</td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  function clearLogs() {
+    if(!confirm('This will wipe ALL platform audit logs. History will be lost. Proceed?')) return;
+    localStorage.setItem('acadex_platform_audit_logs', '[]');
+    renderLogs();
+  }
+
+  function exportLogs() {
+    const logs = AcadexCore.getPlatformLogs();
+    if(logs.length === 0) return alert('No logs to export.');
+    
+    let csv = 'Timestamp,Type,User,Message,Details\n';
+    logs.forEach(l => {
+      csv += `"${l.timestamp}","${l.type}","${l.user}","${l.message.replace(/"/g, '""')}","${l.schoolId || 'Platform'}"\n`;
+    });
+    
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.setAttribute('href', url);
+    a.setAttribute('download', 'acadex_audit_logs.csv');
+    a.click();
+  }
+
+  // Pre-seed some logs if empty for demo
+  if (AcadexCore.getPlatformLogs().length === 0) {
+    AcadexCore.logPlatformEvent('SYSTEM_BOOT', 'ACADEX Platform initialized successfully.');
+    AcadexCore.logPlatformEvent('SECURITY_CONFIG', 'Platform-wide 2FA requirements enforced for all school admins.');
+    AcadexCore.logPlatformEvent('SUBSCRIPTION_UPDATE', 'School "Sunrise Secondary" upgraded to Professional Plan.', 'SCH-1711545000000');
+  }
+
+  document.addEventListener('DOMContentLoaded', renderLogs);
+</script>
+</body>
+</html>

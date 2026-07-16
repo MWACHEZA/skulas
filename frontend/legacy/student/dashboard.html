@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../css/student.css">
+    <link rel="stylesheet" href="../css/announcements.css">
+    <script src="../js/audit-logger.js"></script>
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <img src="../images/logo.png" alt="School Logo" class="acadex-school-logo">
+                <h3>Student Portal</h3>
+            </div>
+
+            <div class="sidebar-menu">
+                <ul>
+                    <li><a href="dashboard.html" class="active"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                    <li><a href="profile.html"><i class="fas fa-user"></i> Profile</a></li>
+                    <li><a href="grades.html"><i class="fas fa-chart-line"></i> Grades</a></li>
+                    <li><a href="timetable.html"><i class="fas fa-calendar-alt"></i> Timetable</a></li>
+                    <li><a href="fees.html"><i class="fas fa-money-bill-wave"></i> Fees</a></li>
+                    <li><a href="assignments.html"><i class="fas fa-tasks"></i> Assignments</a></li>
+                    <li><a href="attendance.html"><i class="fas fa-clipboard-check"></i> Attendance</a></li>
+                    <li><a href="library.html"><i class="fas fa-book"></i> Library</a></li>
+                    <li><a href="my-books.html"><i class="fas fa-book-reader"></i> My Books</a></li>
+                    <li><a href="events.html"><i class="fas fa-calendar-day"></i> Events</a></li>
+                    <li><a href="it-support.html"><i class="fas fa-headset"></i> IT Support</a></li>
+                    <li><a href="settings.html"><i class="fas fa-cog"></i> Settings</a></li>
+                </ul>
+            </div>
+
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="user-details">
+                        <h4 id="studentName">Student Name</h4>
+                        <p id="studentClass">Loading...</p>
+                    </div>
+                </div>
+                <a href="#" class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </div>
+        </aside>
+
+        <!-- Sidebar Overlay -->
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Mobile Header -->
+            <div class="mobile-header">
+                <button class="menu-toggle" id="menuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="mobile-logo">
+                    <img src="../images/logo.png" alt="School Logo" class="acadex-school-logo">
+                    <span class="acadex-school-name">Student Portal</span>
+                </div>
+            </div>
+
+            <!-- Dashboard Content -->
+            <div class="dashboard-header">
+                <h2>Dashboard</h2>
+                <div class="breadcrumb">
+                    <span>Home</span>
+                    <i class="fas fa-chevron-right"></i>
+                    <span>Dashboard</span>
+                </div>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="dashboard-stats">
+                <div class="stat-card">
+                    <div class="stat-icon attendance">
+                        <i class="fas fa-user-check"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>95%</h3>
+                        <p>Attendance Rate</p>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon grades">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>B+</h3>
+                        <p>Average Grade</p>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon assignments">
+                        <i class="fas fa-clipboard-list"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>3</h3>
+                        <p>Pending Assignments</p>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon events">
+                        <i class="fas fa-calendar"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>2</h3>
+                        <p>Upcoming Events</p>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: rgba(255, 193, 7, 0.1); color: #ffc107;">
+                        <i class="fas fa-money-bill-wave"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="balanceDisplay">$0.00</h3>
+                        <p>Fees Balance</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Dashboard Content -->
+            <div class="dashboard-content">
+                <div class="content-left">
+                    <!-- Today's Timetable -->
+                    <div class="content-card">
+                        <div class="card-header">
+                            <h3>Today's Timetable</h3>
+                            <a href="timetable.html" class="view-all">View Full Timetable</a>
+                        </div>
+                        <div class="card-body">
+                            <table class="timetable">
+                                <thead>
+                                    <tr>
+                                        <th>Time</th>
+                                        <th>Subject</th>
+                                        <th>Teacher</th>
+                                        <th>Room</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="time">08:00 - 09:00</td>
+                                        <td class="subject">Mathematics</td>
+                                        <td class="teacher">Mr. Johnson</td>
+                                        <td>Room 101</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="time">09:00 - 10:00</td>
+                                        <td class="subject">English Language</td>
+                                        <td class="teacher">Mrs. Smith</td>
+                                        <td>Room 203</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="time">10:00 - 10:30</td>
+                                        <td colspan="3" class="subject">Break Time</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="time">10:30 - 11:30</td>
+                                        <td class="subject">Physics</td>
+                                        <td class="teacher">Mr. Thompson</td>
+                                        <td>Lab 2</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="time">11:30 - 12:30</td>
+                                        <td class="subject">History</td>
+                                        <td class="teacher">Ms. Davis</td>
+                                        <td>Room 105</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Assignments -->
+                    <div class="content-card">
+                        <div class="card-header">
+                            <h3>Recent Assignments</h3>
+                            <a href="assignments.html" class="view-all">View All</a>
+                        </div>
+                        <div class="card-body">
+                            <ul class="assignment-list">
+                                <li class="assignment-item">
+                                    <div class="assignment-icon">
+                                        <i class="fas fa-book"></i>
+                                    </div>
+                                    <div class="assignment-details">
+                                        <h4>English Essay - "The Great Gatsby"</h4>
+                                        <div class="assignment-meta">
+                                            <span><i class="fas fa-user"></i> Mrs. Smith</span>
+                                            <span><i class="fas fa-calendar"></i> Due: Oct 15, 2023</span>
+                                            <span class="assignment-status status-pending">Pending</span>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li class="assignment-item">
+                                    <div class="assignment-icon">
+                                        <i class="fas fa-calculator"></i>
+                                    </div>
+                                    <div class="assignment-details">
+                                        <h4>Mathematics - Calculus Problems</h4>
+                                        <div class="assignment-meta">
+                                            <span><i class="fas fa-user"></i> Mr. Johnson</span>
+                                            <span><i class="fas fa-calendar"></i> Due: Oct 12, 2023</span>
+                                            <span class="assignment-status status-pending">Pending</span>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li class="assignment-item">
+                                    <div class="assignment-icon">
+                                        <i class="fas fa-flask"></i>
+                                    </div>
+                                    <div class="assignment-details">
+                                        <h4>Chemistry Lab Report</h4>
+                                        <div class="assignment-meta">
+                                            <span><i class="fas fa-user"></i> Dr. Wilson</span>
+                                            <span><i class="fas fa-calendar"></i> Due: Oct 10, 2023</span>
+                                            <span class="assignment-status status-completed">Completed</span>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li class="assignment-item">
+                                    <div class="assignment-icon">
+                                        <i class="fas fa-globe"></i>
+                                    </div>
+                                    <div class="assignment-details">
+                                        <h4>Geography Project</h4>
+                                        <div class="assignment-meta">
+                                            <span><i class="fas fa-user"></i> Mrs. Brown</span>
+                                            <span><i class="fas fa-calendar"></i> Due: Oct 5, 2023</span>
+                                            <span class="assignment-status status-overdue">Overdue</span>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="content-right">
+                    <!-- Announcements -->
+                    <div class="content-card">
+                        <div class="card-header">
+                            <h3>General Announcements</h3>
+                            <a href="#" class="view-all">View All</a>
+                        </div>
+                        <div class="card-body">
+                            <div id="announcements-container">
+                                <div style="text-align:center; padding: 20px; color:#666;">Loading announcements...
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Calendar -->
+                    <div class="content-card">
+                        <div class="card-header">
+                            <h3>October 2023</h3>
+                        </div>
+                        <div class="card-body">
+                            <table class="calendar">
+                                <thead>
+                                    <tr>
+                                        <th>Mon</th>
+                                        <th>Tue</th>
+                                        <th>Wed</th>
+                                        <th>Thu</th>
+                                        <th>Fri</th>
+                                        <th>Sat</th>
+                                        <th>Sun</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>1</td>
+                                        <td>2</td>
+                                        <td>3</td>
+                                        <td>4</td>
+                                        <td>5</td>
+                                        <td>6</td>
+                                        <td>7</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="today">8</td>
+                                        <td class="event">9</td>
+                                        <td>10</td>
+                                        <td>11</td>
+                                        <td class="event">12</td>
+                                        <td>13</td>
+                                        <td>14</td>
+                                    </tr>
+                                    <tr>
+                                        <td>15</td>
+                                        <td>16</td>
+                                        <td>17</td>
+                                        <td>18</td>
+                                        <td>19</td>
+                                        <td class="event">20</td>
+                                        <td>21</td>
+                                    </tr>
+                                    <tr>
+                                        <td>22</td>
+                                        <td>23</td>
+                                        <td>24</td>
+                                        <td>25</td>
+                                        <td>26</td>
+                                        <td>27</td>
+                                        <td>28</td>
+                                    </tr>
+                                    <tr>
+                                        <td>29</td>
+                                        <td>30</td>
+                                        <td>31</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/script.js"></script>
+    <script src="js/student-common.js"></script>
+    <script src="../js/announcements-loader.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Set balance from localStorage
+            const balance = getTenantData('studentBalance', 'null') || '0.00';
+            const balanceDisplay = document.getElementById('balanceDisplay');
+            if (balanceDisplay) {
+                balanceDisplay.textContent = '$' + parseFloat(balance).toFixed(2);
+            }
+        });
+    </script>
+    <!-- ACADEX: Powered-by footer and school branding -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+
+</body>
+
+</html>
+

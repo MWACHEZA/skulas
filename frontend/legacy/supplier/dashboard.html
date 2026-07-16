@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supplier Dashboard - Your School</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/supplier-portal.css">
+    <link rel="stylesheet" href="../css/toast.css">
+</head>
+
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <div class="brand-icon"><i class="fas fa-truck-loading"></i></div>
+            <h3>Supplier Portal</h3>
+            <p>Your School</p>
+        </div>
+        <div class="sidebar-menu">
+            <div class="sidebar-section-label">Procurement</div>
+            <ul>
+                <li><a href="dashboard.html" class="active"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                <li><a href="tenders.html"><i class="fas fa-file-contract"></i> Available Tenders</a></li>
+                <li><a href="quotations.html"><i class="fas fa-file-invoice-dollar"></i> My Quotations</a></li>
+                <li><a href="orders.html"><i class="fas fa-shopping-cart"></i> Purchase Orders</a></li>
+            </ul>
+            <div class="sidebar-section-label">Finance</div>
+            <ul>
+                <li><a href="invoices.html"><i class="fas fa-receipt"></i> Invoices & Payments</a></li>
+            </ul>
+            <div class="sidebar-section-label">Compliance</div>
+            <ul>
+                <li><a href="compliance.html"><i class="fas fa-shield-alt"></i> Compliance Status</a></li>
+                <li><a href="policies.html"><i class="fas fa-book"></i> Policies & Processes</a></li>
+            </ul>
+            <div class="sidebar-section-label">Account</div>
+            <ul>
+                <li><a href="messages.html"><i class="fas fa-bell"></i> Messages <span id="sidebarUnread" style="background:#dc3545;color:#fff;border-radius:99px;padding:1px 7px;font-size:0.72rem;margin-left:4px;display:none;"></span></a></li>
+                <li><a href="profile.html"><i class="fas fa-user-circle"></i> Profile Settings</a></li>
+                <li><a href="contact.html"><i class="fas fa-headset"></i> Contact Us</a></li>
+            </ul>
+        </div>
+        <div class="sidebar-footer">
+            <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="top-header">
+            <div style="display:flex;align-items:center;gap:14px;">
+                <button class="mobile-menu-btn" id="menuBtn"><i class="fas fa-bars"></i></button>
+                <h2>Dashboard</h2>
+            </div>
+            <div class="header-user">
+                <div class="header-user">
+                    <div class="user-avatar" id="initialsDisplay">S</div>
+                    <div class="user-details">
+                        <div class="name" id="userDisplay">Supplier</div>
+                        <div class="sub">
+                            <span id="idDisplay">SUP-XXXXXX</span>
+                            <span id="statusBadge" class="badge" style="margin-left:6px; font-size:0.65rem; padding: 2px 6px;"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-area">
+
+            <!-- Compliance Alert -->
+            <div id="complianceAlert" class="alert-banner danger" style="display:none;">
+                <div class="alert-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                <div>
+                    <h4>Compliance Documents Expiring!</h4>
+                    <p>Your Tax Clearance (ITF263) expires in <strong id="daysLeft">X</strong> days. Please update it on the <a href="compliance.html" style="color:#dc3545;font-weight:600;">Compliance page</a> to remain a valid supplier.</p>
+                </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="stats-grid">
+                <div class="stat-card blue">
+                    <div class="stat-icon"><i class="fas fa-file-contract"></i></div>
+                    <div class="stat-info">
+                        <h4>Open Tenders</h4>
+                        <div class="value" id="openTendersCount">0</div>
+                    </div>
+                </div>
+                <div class="stat-card green">
+                    <div class="stat-icon"><i class="fas fa-paper-plane"></i></div>
+                    <div class="stat-info">
+                        <h4>Quotations Sent</h4>
+                        <div class="value" id="quotationsSentCount">0</div>
+                    </div>
+                </div>
+                <div class="stat-card purple">
+                    <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+                    <div class="stat-info">
+                        <h4>Approved Quotes</h4>
+                        <div class="value" id="approvedQuotesCount">0</div>
+                    </div>
+                </div>
+                <div class="stat-card orange">
+                    <div class="stat-icon"><i class="fas fa-shopping-cart"></i></div>
+                    <div class="stat-info">
+                        <h4>Active Orders</h4>
+                        <div class="value" id="activeOrdersCount">0</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Awarded Contracts & Recent Tenders -->
+            <div id="tendersList"></div>
+
+            <!-- Recent Activity -->
+            <div class="panel">
+                <div class="panel-header">
+                    <h3><i class="fas fa-history" style="color:var(--school-primary, #0056b3);margin-right:8px;"></i> Recent Activity</h3>
+                </div>
+                <div class="panel-body" id="activityFeed">
+                    <div class="activity-item">
+                        <div class="activity-dot green"></div>
+                        <div class="act-text">Registered as a supplier on Your School portal.</div>
+                        <div class="act-time">Today</div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-dot"></div>
+                        <div class="act-text">Browse available tenders and submit your first quotation.</div>
+                        <div class="act-time"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/toast.js"></script>
+    <script>
+        // Mobile sidebar toggle
+        document.getElementById('menuBtn').addEventListener('click', function () {
+            document.getElementById('sidebar').classList.toggle('open');
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            if (!sessionStorage.getItem('supplierLoggedIn')) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            const supplierName = sessionStorage.getItem('supplierName');
+            const supplierId = sessionStorage.getItem('supplierId');
+
+            document.getElementById('userDisplay').textContent = supplierName;
+            document.getElementById('idDisplay').textContent = supplierId;
+            document.getElementById('initialsDisplay').textContent = (supplierName || 'S').charAt(0).toUpperCase();
+
+            // Unread messages badge
+            const messages = getTenantData('school_supplier_messages', '[]');
+            const unreadCount = messages.filter(m => m.to === supplierId && !m.read).length;
+            if (unreadCount > 0) {
+                const badge = document.getElementById('sidebarUnread');
+                badge.textContent = unreadCount;
+                badge.style.display = 'inline';
+            }
+
+            // Compliance & Status check
+            const suppliers = getTenantData('school_suppliers', '[]');
+            const supplier = suppliers.find(s => s.id === supplierId);
+            
+            if (supplier) {
+                // Populate Account Status Badge
+                const sBadge = document.getElementById('statusBadge');
+                if (sBadge) {
+                    sBadge.textContent = supplier.status || 'Pending Verification';
+                    sBadge.className = 'badge ' + (supplier.status === 'Approved' ? 'badge-success' : (supplier.status === 'Rejected' ? 'badge-danger' : 'badge-warning'));
+                }
+
+                if (supplier.taxExpiry) {
+                    const diffDays = Math.ceil((new Date(supplier.taxExpiry) - new Date()) / 86400000);
+                    if (diffDays <= 30) {
+                        document.getElementById('complianceAlert').style.display = 'flex';
+                        document.getElementById('daysLeft').textContent = Math.max(0, diffDays);
+                    }
+                }
+            }
+
+            // Tenders
+            let tenders = getTenantData('school_tenders', '[]');
+            if (tenders.length === 0) {
+                tenders = [
+                    { id: 'TND-2026-001', title: 'Supply of Science Laboratory Chemicals', category: 'Science', deadline: '2026-04-15', status: 'Open', description: 'High-quality science chemicals for new laboratory facilities.' },
+                    { id: 'TND-2026-002', title: 'Provision of School Bus Maintenance Services', category: 'Transport', deadline: '2026-04-20', status: 'Open', description: 'Maintenance and servicing for a fleet of school buses.' }
+                ];
+                saveTenantData('school_tenders', tenders);
+            }
+
+            const openTenders = tenders.filter(t => t.status === 'Open' || !t.status);
+            document.getElementById('openTendersCount').textContent = openTenders.length;
+
+            // Quotations
+            const quotations = getTenantData('school_quotations', '[]');
+            const supplierQuotes = quotations.filter(q => q.supplierId === supplierId);
+            document.getElementById('quotationsSentCount').textContent = supplierQuotes.length;
+            document.getElementById('approvedQuotesCount').textContent = supplierQuotes.filter(q => q.status === 'Approved').length;
+
+            // Orders
+            const orders = getTenantData('school_orders', '[]');
+            document.getElementById('activeOrdersCount').textContent = orders.filter(o => o.supplierId === supplierId && o.status !== 'Delivered').length;
+
+            // Render tenders panel
+            const tendersList = document.getElementById('tendersList');
+
+            // Awarded contracts section
+            const awardedToMe = tenders.filter(t => t.awardedTo === supplierId);
+            if (awardedToMe.length > 0) {
+                const awardPanel = document.createElement('div');
+                awardPanel.className = 'panel';
+                awardPanel.style.borderTop = '4px solid #28a745';
+                awardPanel.innerHTML = `
+                    <div class="panel-header">
+                        <h3 style="color:#28a745;"><i class="fas fa-trophy" style="margin-right:8px;"></i> Awarded Contracts</h3>
+                    </div>
+                    <div class="panel-body">
+                        ${awardedToMe.map(t => `
+                            <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #f0f4ff;">
+                                <div>
+                                    <div style="font-weight:600;color:var(--school-primary-dark, #1a1a2e);">${t.title}</div>
+                                    <div style="font-size:0.82rem;color:#64748b;margin-top:3px;">
+                                        <i class="fas fa-tag"></i> ${t.category} &nbsp;&nbsp;
+                                        <i class="fas fa-dollar-sign"></i> $${parseFloat(t.awardedAmount || 0).toLocaleString()}
+                                    </div>
+                                </div>
+                                <span class="badge badge-success">Awarded</span>
+                            </div>
+                        `).join('')}
+                    </div>`;
+                tendersList.appendChild(awardPanel);
+            }
+
+            // Recent open tenders
+            const recentPanel = document.createElement('div');
+            recentPanel.className = 'panel';
+            recentPanel.innerHTML = `
+                <div class="panel-header">
+                    <h3><i class="fas fa-file-contract" style="color:var(--school-primary, #0056b3);margin-right:8px;"></i> Recent Available Tenders</h3>
+                    <a href="tenders.html" class="btn btn-outline btn-sm">View All</a>
+                </div>
+                <div class="panel-body" id="recentTendersBody"></div>`;
+            tendersList.appendChild(recentPanel);
+
+            const recentBody = document.getElementById('recentTendersBody');
+            if (openTenders.length === 0) {
+                recentBody.innerHTML = '<p style="color:#888;text-align:center;padding:20px;">No open tenders at the moment.</p>';
+            } else {
+                openTenders.slice(0, 3).forEach(t => {
+                    const daysLeft = Math.ceil((new Date(t.deadline) - new Date()) / 86400000);
+                    recentBody.innerHTML += `
+                        <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid #f0f4ff;">
+                            <div style="flex:1;min-width:0;">
+                                <div style="font-weight:600;color:var(--school-primary-dark, #1a1a2e);">${t.title}</div>
+                                <div style="font-size:0.82rem;color:#64748b;margin-top:3px;">
+                                    <i class="fas fa-tag"></i> ${t.category} &nbsp;
+                                    <i class="fas fa-calendar-alt"></i> Deadline: ${t.deadline} &nbsp;
+                                    <i class="fas fa-barcode"></i> ${t.id}
+                                </div>
+                            </div>
+                            <div style="display:flex;align-items:center;gap:10px;flex-shrink:0;margin-left:16px;">
+                                <span class="badge ${daysLeft <= 7 ? 'badge-danger' : 'badge-success'}">${daysLeft} days left</span>
+                                <a href="tenders.html" class="btn btn-primary btn-sm">View</a>
+                            </div>
+                        </div>`;
+                });
+            }
+        });
+
+        function logout() {
+            sessionStorage.clear();
+            window.location.href = 'login.html';
+        }
+    </script>
+    <!-- ACADEX: Powered-by footer and school branding -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+
+</body>
+
+</html>
+
+

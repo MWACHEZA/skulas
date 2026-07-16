@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fee Payment - Your School</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        /* Payment page styles */
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            min-height: calc(100vh - 70px);
+        }
+
+        .sidebar {
+            background-color: var(--school-primary, #0056b3);
+            color: #fff;
+            padding: 30px 0;
+        }
+
+        .user-info {
+            text-align: center;
+            padding: 0 20px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .user-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background-color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            font-size: 2rem;
+            color: var(--school-primary, #0056b3);
+        }
+
+        .user-name {
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+        }
+
+        .user-email {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 5px;
+        }
+
+        .sidebar-menu a {
+            display: block;
+            padding: 12px 20px;
+            color: #fff;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-menu i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .main-content {
+            padding: 30px;
+            background-color: #f9f9f9;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .dashboard-title {
+            font-size: 1.8rem;
+            color: var(--school-primary, #0056b3);
+        }
+
+        .payment-container {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            padding: 30px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .payment-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .payment-header h2 {
+            font-size: 1.8rem;
+            color: var(--school-primary, #0056b3);
+            margin-bottom: 10px;
+        }
+
+        .payment-header p {
+            color: #666;
+        }
+
+        .payment-details {
+            background-color: #f9f9f9;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .payment-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .payment-item:last-child {
+            border-bottom: none;
+        }
+
+        .payment-label {
+            font-weight: 500;
+            color: #333;
+        }
+
+        .payment-value {
+            color: var(--school-primary, #0056b3);
+            font-weight: 500;
+        }
+
+        .payment-total {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .payment-form {
+            margin-top: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: var(--school-primary, #0056b3);
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(var(--school-primary-rgb, 0, 86, 179), 0.2);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--school-primary, #0056b3);
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .btn-submit:hover {
+            background-color: var(--school-primary-dark, #003d82);
+        }
+
+        .payment-methods {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .payment-method {
+            margin: 0 10px;
+            padding: 10px 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .payment-method.active {
+            border-color: var(--school-primary, #0056b3);
+            background-color: rgba(var(--school-primary-rgb, 0, 86, 179), 0.05);
+        }
+
+        .payment-method img {
+            height: 30px;
+        }
+
+        @media (max-width: 992px) {
+            .dashboard-container {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                display: none;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Dashboard Section -->
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="user-info">
+                <div class="user-avatar">
+                    <i class="fas fa-user"></i>
+                    <div class="avatar-edit">
+                        <i class="fas fa-camera"></i>
+                    </div>
+                </div>
+                <h3 class="user-name">Alumni User</h3>
+                <p class="user-email" id="userEmail">alumni@example.com</p>
+            </div>
+            <ul class="sidebar-menu">
+                <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                <li><a href="school-updates.html"><i class="fas fa-newspaper"></i> School Updates</a></li>
+                <li><a href="fee-information.html"><i class="fas fa-money-bill-wave"></i> Fee Information</a></li>
+                <li><a href="fee-history.html"><i class="fas fa-history"></i> Fee History</a></li>
+                <li><a href="payment.html" class="active"><i class="fas fa-credit-card"></i> Payment</a></li>
+                <li><a href="network.html"><i class="fas fa-users"></i> Alumni Network</a></li>
+                <li><a href="events.html"><i class="fas fa-calendar-alt"></i> Events</a></li>
+                <li><a href="profile-settings.html"><i class="fas fa-user-cog"></i> Profile Settings</a></li>
+                <li><a href="login.html" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="dashboard-header">
+                <h2 class="dashboard-title">Fee Payment</h2>
+                <div class="dashboard-actions">
+                    <button onclick="window.location.href='dashboard.html'"><i class="fas fa-arrow-left"></i> Back to
+                        Dashboard</button>
+                </div>
+            </div>
+
+            <div class="payment-container">
+                <div class="payment-header">
+                    <h2>Complete Your Payment</h2>
+                    <p>Please review your payment details and complete the transaction</p>
+                </div>
+
+                <div class="payment-details">
+                    <div class="payment-item">
+                        <span class="payment-label">Fee Type:</span>
+                        <span class="payment-value" id="feeType">Reunion Event Fee</span>
+                    </div>
+                    <div class="payment-item">
+                        <span class="payment-label">Due Date:</span>
+                        <span class="payment-value" id="dueDate">Jul 10, 2023</span>
+                    </div>
+                    <div class="payment-item">
+                        <span class="payment-label">Status:</span>
+                        <span class="payment-value" id="feeStatus">Overdue</span>
+                    </div>
+                    <div class="payment-item">
+                        <span class="payment-label">Amount:</span>
+                        <span class="payment-value" id="feeAmount">$75.00</span>
+                    </div>
+                    <div class="payment-item">
+                        <span class="payment-label">Late Fee:</span>
+                        <span class="payment-value" id="lateFee">$5.00</span>
+                    </div>
+                    <div class="payment-item payment-total">
+                        <span class="payment-label">Total Amount:</span>
+                        <span class="payment-value" id="totalAmount">$80.00</span>
+                    </div>
+                </div>
+
+                <div class="payment-methods">
+                    <div class="payment-method active" data-method="card" onclick="showPaymentForm('card')">
+                        <img src="../images/credit-card.svg" alt="Credit Card">
+                        <span>Card</span>
+                    </div>
+                    <div class="payment-method" data-method="bank" onclick="showPaymentForm('bank')">
+                        <img src="../images/bank-transfer.svg" alt="Bank Transfer">
+                        <span>Bank Deposit</span>
+                    </div>
+                </div>
+
+                <style>
+                    .payment-form-content {
+                        display: none;
+                    }
+
+                    .payment-form-content.active {
+                        display: block;
+                    }
+                </style>
+
+                <!-- Card Payment Form -->
+                <div id="form-card" class="payment-form-content active">
+                    <div class="payment-form">
+                        <form id="cardPaymentForm" onsubmit="return processPayment(event, 'card')">
+                            <div class="form-group">
+                                <label for="cardName">Cardholder Name</label>
+                                <input type="text" id="cardName" name="cardName" required>
+                            </div>
+                            <!-- ... existing card fields ... -->
+                            <div class="form-group">
+                                <label for="cardNumber">Card Number</label>
+                                <input type="text" id="cardNumber" name="cardNumber" placeholder="XXXX XXXX XXXX XXXX"
+                                    required>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="expiryDate">Expiry Date</label>
+                                    <input type="text" id="expiryDate" name="expiryDate" placeholder="MM/YY" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="cvv">CVV</label>
+                                    <input type="text" id="cvv" name="cvv" placeholder="XXX" required>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn-submit">Pay Now</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Bank Deposit Form -->
+                <div id="form-bank" class="payment-form-content">
+                    <div class="payment-form">
+                        <form id="bankPaymentForm" onsubmit="return processPayment(event, 'bank')">
+                            <div class="form-group">
+                                <label>Amount Paid</label>
+                                <input type="number" id="bankAmount" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Transaction Reference</label>
+                                <input type="text" id="bankRef" required placeholder="e.g. REF-123456">
+                            </div>
+                            <div class="form-group">
+                                <label>Upload Receipt</label>
+                                <input type="file" id="bankReceiptImage" accept="image/*,.pdf" required>
+                            </div>
+                            <button type="submit" class="btn-submit">Submit for Verification</button>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Check if user is logged in
+            const loggedIn = sessionStorage.getItem('loggedIn');
+            if (!loggedIn || loggedIn !== 'true') {
+                window.location.href = 'login.html';
+            }
+            // Display user email
+            const userEmail = sessionStorage.getItem('userEmail');
+            if (userEmail) document.getElementById('userEmail').textContent = userEmail;
+
+            // Logout
+            document.getElementById('logoutBtn').addEventListener('click', function (e) {
+                e.preventDefault();
+                sessionStorage.clear();
+                window.location.href = 'login.html';
+            });
+        });
+
+        function showPaymentForm(method) {
+            document.querySelectorAll('.payment-method').forEach(m => m.classList.remove('active'));
+            document.querySelector(`.payment-method[data-method="${method}"]`).classList.add('active');
+
+            document.querySelectorAll('.payment-form-content').forEach(c => c.classList.remove('active'));
+            document.getElementById(`form-${method}`).classList.add('active');
+        }
+
+        function processPayment(event, method) {
+            event.preventDefault();
+
+            if (method === 'bank') {
+                const amount = document.getElementById('bankAmount').value;
+                const ref = document.getElementById('bankRef').value;
+                const fileInput = document.getElementById('bankReceiptImage');
+
+                const submitBankReceipt = (imageData) => {
+                    const newReceipt = {
+                        id: Date.now(),
+                        type: 'Alumni',
+                        name: 'Alumni User', // Mock name
+                        studentId: 'AL001',
+                        amount: amount,
+                        ref: ref,
+                        date: new Date().toISOString(),
+                        status: 'pending',
+                        receiptImage: imageData
+                    };
+
+                    const existing = JSON.parse(getTenantData('pendingReceipts', 'null')) || [];
+                    existing.push(newReceipt);
+                    saveTenantData('pendingReceipts', existing);
+
+                    alert('Receipt submitted for verification!');
+                    window.location.href = 'fee-history.html';
+                };
+
+                if (fileInput && fileInput.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        submitBankReceipt(e.target.result);
+                    };
+                    reader.readAsDataURL(fileInput.files[0]);
+                } else {
+                    submitBankReceipt(null);
+                }
+            } else {
+                alert('Card payment processed successfully!');
+                window.location.href = 'dashboard.html';
+            }
+            return false;
+        }
+    </script>
+    <!-- ACADEX: Powered-by footer and school branding -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+
+</body>
+
+</html>
+

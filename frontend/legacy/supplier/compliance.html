@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compliance Status - Your School</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/supplier-portal.css">
+    <link rel="stylesheet" href="../css/toast.css">
+</head>
+
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <div class="brand-icon"><i class="fas fa-truck-loading"></i></div>
+            <h3>Supplier Portal</h3>
+            <p>Your School</p>
+        </div>
+        <div class="sidebar-menu">
+            <div class="sidebar-section-label">Procurement</div>
+            <ul>
+                <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                <li><a href="tenders.html"><i class="fas fa-file-contract"></i> Available Tenders</a></li>
+                <li><a href="quotations.html"><i class="fas fa-file-invoice-dollar"></i> My Quotations</a></li>
+                <li><a href="orders.html"><i class="fas fa-shopping-cart"></i> Purchase Orders</a></li>
+            </ul>
+            <div class="sidebar-section-label">Finance</div>
+            <ul>
+                <li><a href="invoices.html"><i class="fas fa-receipt"></i> Invoices & Payments</a></li>
+            </ul>
+            <div class="sidebar-section-label">Compliance</div>
+            <ul>
+                <li><a href="compliance.html" class="active"><i class="fas fa-shield-alt"></i> Compliance Status</a></li>
+                <li><a href="policies.html"><i class="fas fa-book"></i> Policies & Processes</a></li>
+            </ul>
+            <div class="sidebar-section-label">Account</div>
+            <ul>
+                <li><a href="messages.html"><i class="fas fa-bell"></i> Messages</a></li>
+                <li><a href="profile.html"><i class="fas fa-user-circle"></i> Profile Settings</a></li>
+                <li><a href="contact.html"><i class="fas fa-headset"></i> Contact Us</a></li>
+            </ul>
+        </div>
+        <div class="sidebar-footer">
+            <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="top-header">
+            <div style="display:flex;align-items:center;gap:14px;">
+                <button class="mobile-menu-btn" id="menuBtn"><i class="fas fa-bars"></i></button>
+                <h2>Compliance Management</h2>
+            </div>
+            <div id="overallStatus" class="badge badge-success">Compliant Supplier</div>
+        </div>
+
+        <div class="content-area">
+            
+            <!-- Overall Compliance Score -->
+            <div class="compliance-score-wrap">
+                <div class="compliance-ring">
+                    <svg width="80" height="80">
+                        <circle cx="40" cy="40" r="34" fill="transparent" stroke="#eef0f6" stroke-width="6"/>
+                        <circle id="scoreRing" cx="40" cy="40" r="34" fill="transparent" stroke="#28a745" stroke-width="6" stroke-dasharray="213.6" stroke-dashoffset="0" stroke-linecap="round" style="transition: stroke-dashoffset 1s;"/>
+                    </svg>
+                    <div class="ring-text">
+                        <span id="scoreVal">100%</span>
+                        <small>Score</small>
+                    </div>
+                </div>
+                <div>
+                    <h3>Overall Compliance Health</h3>
+                    <p>Your standing as a registered supplier for the current fiscal term.</p>
+                </div>
+            </div>
+
+            <div class="stats-grid" id="complianceGrid">
+                <!-- Tax Clearance -->
+                <div class="panel">
+                    <div class="panel-header">
+                        <h3><i class="fas fa-file-invoice-dollar" style="color:var(--school-primary, #0056b3);margin-right:8px;"></i> Tax Clearance (ITF263)</h3>
+                        <span id="taxStatus" class="badge">Status</span>
+                    </div>
+                    <div class="panel-body">
+                        <div class="expiry-bar-wrap">
+                            <div class="expiry-bar-label">
+                                <span>Expiry: <strong id="taxExpiryDisplay">-</strong></span>
+                                <span id="taxDaysRemainingText">0 days left</span>
+                            </div>
+                            <div class="expiry-bar">
+                                <div id="taxBar" class="expiry-bar-fill good" style="width: 100%;"></div>
+                            </div>
+                        </div>
+                        <button class="btn btn-outline btn-sm btn-block" style="margin-top:20px;" onclick="openModal('tax')">
+                            <i class="fas fa-upload"></i> Update Document
+                        </button>
+                    </div>
+                </div>
+
+                <!-- PRAZ -->
+                <div class="panel">
+                    <div class="panel-header">
+                        <h3><i class="fas fa-stamp" style="color:var(--school-primary, #0056b3);margin-right:8px;"></i> PRAZ Registration</h3>
+                        <span id="prazStatus" class="badge">Status</span>
+                    </div>
+                    <div class="panel-body">
+                        <div style="margin-bottom:15px; font-size:0.85rem; color:#64748b;">
+                            PRAZ Number: <strong id="prazNoDisplay" style="color:var(--school-primary-dark, #1a1a2e);">-</strong>
+                        </div>
+                        <div class="expiry-bar-wrap">
+                            <div class="expiry-bar-label">
+                                <span>Expiry: <strong id="prazExpiryDisplay">-</strong></span>
+                                <span id="prazDaysRemainingText">0 days left</span>
+                            </div>
+                            <div class="expiry-bar">
+                                <div id="prazBar" class="expiry-bar-fill good" style="width: 100%;"></div>
+                            </div>
+                        </div>
+                        <button class="btn btn-outline btn-sm btn-block" style="margin-top:20px;" onclick="openModal('praz')">
+                            <i class="fas fa-upload"></i> Update Document
+                        </button>
+                    </div>
+                </div>
+
+                <!-- NSSA -->
+                <div class="panel">
+                    <div class="panel-header">
+                        <h3><i class="fas fa-shield-alt" style="color:var(--school-primary, #0056b3);margin-right:8px;"></i> NSSA Clearance</h3>
+                        <span id="nssaStatus" class="badge badge-success">Valid</span>
+                    </div>
+                    <div class="panel-body">
+                        <div class="expiry-bar-wrap">
+                            <div class="expiry-bar-label">
+                                <span>Expiry: <strong>2026-12-31</strong></span>
+                                <span>280 days left</span>
+                            </div>
+                            <div class="expiry-bar">
+                                <div class="expiry-bar-fill good" style="width: 90%;"></div>
+                            </div>
+                        </div>
+                        <button class="btn btn-outline btn-sm btn-block" style="margin-top:20px;" onclick="showToast('Feature coming soon: Automated NSSA verification', 'info')">
+                            <i class="fas fa-upload"></i> Update Document
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Vendor Number -->
+                <div class="panel">
+                    <div class="panel-header">
+                        <h3><i class="fas fa-barcode" style="color:var(--school-primary, #0056b3);margin-right:8px;"></i> Govt Vendor No</h3>
+                        <span id="vendorStatus" class="badge badge-success">Registered</span>
+                    </div>
+                    <div class="panel-body">
+                        <div style="margin-bottom:15px; font-size:0.85rem; color:#64748b;">
+                            Number: <strong id="vendorNoDisplay" style="color:var(--school-primary-dark, #1a1a2e);">-</strong>
+                        </div>
+                        <p style="font-size:0.82rem; color:#888; margin-bottom:10px;">Verification status: <span style="color:#28a745;font-weight:600;">Verified</span></p>
+                        <button class="btn btn-outline btn-sm btn-block" style="margin-top:20px;" onclick="openModal('vendor')">
+                            <i class="fas fa-edit"></i> Update Number
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Cert of Incorp -->
+                <div class="panel">
+                    <div class="panel-header">
+                        <h3><i class="fas fa-file-contract" style="color:var(--school-primary, #0056b3);margin-right:8px;"></i> Cert of Incorporation</h3>
+                        <span id="certStatus" class="badge">Status</span>
+                    </div>
+                    <div class="panel-body">
+                        <div style="margin-bottom:15px; font-size:0.85rem; color:#64748b;">
+                            Verification: <strong id="certStatusText" style="color:var(--school-primary-dark, #1a1a2e);">-</strong>
+                        </div>
+                        <p style="font-size:0.82rem; color:#888; margin-bottom:10px;">Required for valid supplier status.</p>
+                        <button class="btn btn-outline btn-sm btn-block" style="margin-top:20px;" onclick="openModal('cert')">
+                            <i class="fas fa-upload"></i> Update Document
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Update Modal -->
+    <div class="sp-modal-overlay" id="updateModal">
+        <div class="sp-modal">
+            <div class="sp-modal-header">
+                <h3 id="modalTitle">Update Document</h3>
+                <button class="close-btn" onclick="closeModal()"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="sp-modal-body">
+                <form id="updateForm">
+                    <input type="hidden" id="docType">
+                    <div id="fieldContainer">
+                        <!-- Dynamic fields -->
+                    </div>
+                    <div class="form-group" style="margin-top:15px;">
+                        <label>Upload New Document (PDF or Image) <span class="required">*</span></label>
+                        <input type="file" id="newDocFile" class="form-control" accept=".pdf,image/*" required>
+                    </div>
+                    <button type="submit" id="updateDocSubmitBtn" class="btn btn-primary btn-block" style="margin-top:10px;">
+                        <i class="fas fa-save"></i> Save Changes
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/toast.js"></script>
+    <script>
+        let currentSupplier = null;
+
+        document.getElementById('menuBtn').addEventListener('click', function () {
+            document.getElementById('sidebar').classList.toggle('open');
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!sessionStorage.getItem('supplierLoggedIn')) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            loadComplianceData();
+        });
+
+        function loadComplianceData() {
+            const supplierId = sessionStorage.getItem('supplierId');
+            const suppliers = getTenantData('school_suppliers', '[]');
+            currentSupplier = suppliers.find(s => s.id === supplierId);
+
+            if (!currentSupplier) return;
+
+            // Tax Clearance
+            updateDocDisplay('tax', currentSupplier.taxExpiry);
+            
+            // PRAZ
+            document.getElementById('prazNoDisplay').textContent = currentSupplier.prazNo || 'Not Provided';
+            updateDocDisplay('praz', currentSupplier.prazExpiry);
+            
+            // Vendor No
+            document.getElementById('vendorNoDisplay').textContent = currentSupplier.vendorNo || 'Not Provided';
+
+            // Cert of Incorporation
+            const certStatusBadge = document.getElementById('certStatus');
+            const certStatusText = document.getElementById('certStatusText');
+            if (currentSupplier.certDoc) {
+                certStatusBadge.textContent = 'Uploaded';
+                certStatusBadge.className = 'badge badge-success';
+                certStatusText.textContent = 'Document available';
+            } else {
+                certStatusBadge.textContent = 'Missing';
+                certStatusBadge.className = 'badge badge-danger';
+                certStatusText.textContent = 'No document uploaded';
+            }
+
+            calculateScore();
+        }
+
+        function updateDocDisplay(type, expiry) {
+            const expiryEl = document.getElementById(`${type}ExpiryDisplay`);
+            const statusBadge = document.getElementById(`${type}Status`);
+            const daysText = document.getElementById(`${type}DaysRemainingText`);
+            const bar = document.getElementById(`${type}Bar`);
+
+            if (expiryEl) expiryEl.textContent = expiry || 'Not Provided';
+            
+            if (expiry) {
+                const diffDays = Math.ceil((new Date(expiry) - new Date()) / 86400000);
+                const safeDays = Math.max(0, diffDays);
+                
+                if (daysText) daysText.textContent = `${safeDays} days left`;
+
+                // Update Bar UI
+                if (bar) {
+                    const percent = Math.min(100, (safeDays / 365) * 100);
+                    bar.style.width = `${percent}%`;
+                    bar.className = 'expiry-bar-fill ' + (diffDays <= 0 ? 'danger' : (diffDays <= 30 ? 'warning' : 'good'));
+                }
+
+                if (diffDays <= 0) {
+                    statusBadge.textContent = 'Expired';
+                    statusBadge.className = 'badge badge-danger';
+                } else if (diffDays <= 30) {
+                    statusBadge.textContent = 'Expiring Soon';
+                    statusBadge.className = 'badge badge-warning';
+                } else {
+                    statusBadge.textContent = 'Valid';
+                    statusBadge.className = 'badge badge-success';
+                }
+            } else {
+                statusBadge.textContent = 'Missing';
+                statusBadge.className = 'badge badge-danger';
+                if (daysText) daysText.textContent = '-';
+                if (bar) { bar.style.width = '0%'; bar.className = 'expiry-bar-fill danger'; }
+            }
+        }
+
+        function calculateScore() {
+            const badges = document.querySelectorAll('.badge:not(#overallStatus)');
+            let total = badges.length;
+            let valid = 0;
+            
+            badges.forEach(b => {
+                if (b.textContent === 'Valid' || b.textContent === 'Registered') valid++;
+                else if (b.textContent === 'Expiring Soon') valid += 0.5;
+            });
+
+            const score = Math.round((valid / total) * 100);
+            document.getElementById('scoreVal').textContent = `${score}%`;
+            
+            // Update circular ring
+            const circle = document.getElementById('scoreRing');
+            const circumference = 2 * Math.PI * 34; // r=34
+            const offset = circumference - (score / 100) * circumference;
+            circle.style.strokeDashoffset = offset;
+            circle.style.stroke = score < 50 ? '#dc3545' : (score < 80 ? '#ffc107' : '#28a745');
+
+            const overall = document.getElementById('overallStatus');
+            if (score === 100) {
+                overall.textContent = 'Fully Compliant';
+                overall.className = 'badge badge-success';
+            } else if (score >= 70) {
+                overall.textContent = 'Compliant';
+                overall.className = 'badge badge-success';
+            } else {
+                overall.textContent = 'Action Required';
+                overall.className = 'badge badge-danger';
+            }
+        }
+
+        function openModal(type) {
+            const modal = document.getElementById('updateModal');
+            const title = document.getElementById('modalTitle');
+            const fieldContainer = document.getElementById('fieldContainer');
+            document.getElementById('docType').value = type;
+            
+            fieldContainer.innerHTML = '';
+            
+            if (type === 'tax') {
+                title.textContent = 'Update Tax Clearance';
+                fieldContainer.innerHTML = `
+                    <div class="form-group">
+                        <label>New Expiry Date <span class="required">*</span></label>
+                        <input type="date" class="form-control" id="newExpiry" required value="${currentSupplier.taxExpiry || ''}">
+                    </div>
+                `;
+            } else if (type === 'praz') {
+                title.textContent = 'Update PRAZ Registration';
+                fieldContainer.innerHTML = `
+                    <div class="form-group">
+                        <label>PRAZ Registration Number <span class="required">*</span></label>
+                        <input type="text" class="form-control" id="newPrazNo" required value="${currentSupplier.prazNo || ''}">
+                    </div>
+                    <div class="form-group">
+                        <label>New Expiry Date <span class="required">*</span></label>
+                        <input type="date" class="form-control" id="newExpiry" required value="${currentSupplier.prazExpiry || ''}">
+                    </div>
+                `;
+            } else if (type === 'vendor') {
+                title.textContent = 'Update Vendor Number';
+                fieldContainer.innerHTML = `
+                    <div class="form-group">
+                        <label>Government Vendor Number <span class="required">*</span></label>
+                        <input type="text" class="form-control" id="newVendorNo" required value="${currentSupplier.vendorNo || ''}">
+                    </div>
+                `;
+            } else if (type === 'cert') {
+                title.textContent = 'Update Certificate of Incorporation';
+                fieldContainer.innerHTML = `
+                    <p style="font-size:0.85rem; color:#64748b; margin-bottom:15px;">Please upload a clear PDF or Image of your Certificate of Incorporation.</p>
+                `;
+            }
+
+            modal.classList.add('open');
+        }
+
+        function closeModal() {
+            document.getElementById('updateModal').classList.remove('open');
+        }
+
+        // Helper to convert file to base64
+        function getBase64(file) {
+            return new Promise((resolve, reject) => {
+                if (!file) return resolve(null);
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+            });
+        }
+
+        document.getElementById('updateForm').onsubmit = async function(e) {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('updateDocSubmitBtn');
+            const originalBtnText = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+            
+            try {
+                const type = document.getElementById('docType').value;
+                const suppliers = getTenantData('school_suppliers', '[]');
+                const idx = suppliers.findIndex(s => s.id === currentSupplier.id);
+                
+                if (idx > -1) {
+                    const docFile = document.getElementById('newDocFile').files[0];
+                    const docData = await getBase64(docFile);
+
+                    if (type === 'tax') {
+                        suppliers[idx].taxExpiry = document.getElementById('newExpiry').value;
+                        if (docData) suppliers[idx].taxDoc = docData;
+                    } else if (type === 'praz') {
+                        suppliers[idx].prazNo = document.getElementById('newPrazNo').value;
+                        suppliers[idx].prazExpiry = document.getElementById('newExpiry').value;
+                        if (docData) suppliers[idx].prazDoc = docData;
+                    } else if (type === 'vendor') {
+                        suppliers[idx].vendorNo = document.getElementById('newVendorNo').value;
+                        // vendor documents not currently managed in admin preview, but can be scaled later
+                        if (docData) suppliers[idx].vendorDoc = docData;
+                    } else if (type === 'cert') {
+                        if (docData) suppliers[idx].certDoc = docData;
+                    }
+
+                    // Audit Log Update
+                    if (docData || type === 'vendor') {
+                        const audits = getTenantData('school_audit_logs', '[]');
+                        audits.push({
+                            id: 'AUD-' + Math.random().toString(36).substr(2, 9).toUpperCase(),
+                            timestamp: new Date().toISOString(),
+                            user: currentSupplier.companyName,
+                            role: 'Supplier',
+                            action: 'Document Update',
+                            details: `Supplier updated their ${type.toUpperCase()} compliance document.`,
+                            module: 'Compliance',
+                            ipAddress: '192.168.1.' + Math.floor(Math.random() * 255)
+                        });
+                        saveTenantData('school_audit_logs', audits);
+                    }
+                    
+                    saveTenantData('school_suppliers', suppliers);
+                    loadComplianceData();
+                    closeModal();
+                    showToast('Compliance details updated successfully!', 'success');
+                }
+            } catch (err) {
+                console.error('Update Error:', err);
+                showToast('Error uploading document.', 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnText;
+            }
+        };
+
+        function logout() {
+            sessionStorage.clear();
+            window.location.href = 'login.html';
+        }
+    </script>
+    <!-- ACADEX: Powered-by footer and school branding -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+
+</body>
+</html>
+
+

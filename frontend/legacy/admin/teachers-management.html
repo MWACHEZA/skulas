@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Management - Admin Portal</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+
+        .admin-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 260px;
+            background-color: var(--school-primary-dark, #1a1a2e);
+            color: white;
+            position: fixed;
+            height: 100%;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+
+        .sidebar-header img {
+            width: 50px;
+            margin-bottom: 10px;
+        }
+
+        .sidebar-header h3 {
+            margin: 0;
+            font-size: 1.1rem;
+        }
+
+        .sidebar-menu {
+            padding: 20px 0;
+        }
+
+        .menu-section {
+            margin-bottom: 20px;
+        }
+
+        .menu-section-title {
+            padding: 10px 20px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: #888;
+            font-weight: 600;
+        }
+
+        .sidebar-menu ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 2px;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            background-color: rgba(var(--school-primary-rgb, 0, 86, 179), 0.2);
+            color: white;
+            border-left: 3px solid var(--school-primary, #0056b3);
+        }
+
+        .sidebar-menu i {
+            margin-right: 12px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: 250px;
+            width: calc(100% - 250px);
+        }
+
+        .top-header {
+            background-color: white;
+            padding: 15px 30px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-left h2 {
+            margin: 0;
+            color: #333;
+            font-size: 1.5rem;
+        }
+
+        .content-area {
+            padding: 30px;
+        }
+
+        .page-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .search-filter {
+            display: flex;
+            gap: 10px;
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-box input {
+            padding: 10px 15px 10px 40px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            width: 300px;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+        }
+
+        select {
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background-color: var(--school-primary, #0056b3);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--school-primary-dark, #003d82);
+        }
+
+        .data-table {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background-color: #f8f9fa;
+        }
+
+        th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .teacher-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .teacher-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #28a745;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-weight: 600;
+        }
+
+        .status-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .status-active {
+            background-color: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+        }
+
+        .status-inactive {
+            background-color: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-icon {
+            width: 35px;
+            height: 35px;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-view {
+            background-color: rgba(0, 123, 255, 0.1);
+            color: #007bff;
+        }
+
+        .btn-edit {
+            background-color: rgba(255, 193, 7, 0.1);
+            color: #ffc107;
+        }
+
+        .btn-delete {
+            background-color: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+        }
+
+        .btn-delete:hover {
+            background-color: rgba(220, 53, 69, 0.2);
+        }
+
+        /* Detail Panel Styles */
+        .detail-panel {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 400px;
+            height: 100%;
+            background: white;
+            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+            z-index: 1050;
+            transition: right 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        .detail-panel.open {
+            right: 0;
+        }
+
+        .detail-header {
+            padding: 25px 20px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #eee;
+            position: relative;
+        }
+
+        .close-detail {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            color: #888;
+        }
+
+        .detail-profile {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .dp-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #28a745;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .dp-info h3 {
+            margin: 0;
+            font-size: 1.1rem;
+        }
+
+        .dp-info p {
+            margin: 0;
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .detail-body {
+            flex: 1;
+            padding: 20px;
+        }
+
+        .detail-section {
+            margin-bottom: 25px;
+        }
+
+        .detail-section h4 {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            color: #999;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+            border-bottom: 1px solid #f0f0f0;
+            padding-bottom: 5px;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+
+        .detail-label {
+            color: #777;
+        }
+
+        .detail-value {
+            font-weight: 500;
+            color: #333;
+            text-align: right;
+        }
+
+        .badge-teacher {
+            background: rgba(40, 167, 69, 0.15);
+            color: #28a745;
+        }
+
+        .badge {
+            padding: 3px 10px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar"></aside>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Top Header -->
+            <div class="top-header">
+                <div class="header-left">
+                    <h2>Teacher Management</h2>
+                </div>
+            </div>
+
+            <!-- Content Area -->
+            <div class="content-area">
+                <!-- Page Actions -->
+                <div class="page-actions">
+                    <div class="search-filter">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="teacherSearch" placeholder="Search teachers...">
+                        </div>
+                        <select id="departmentFilter">
+                            <option>All Departments</option>
+                            <option>Mathematics</option>
+                            <option>Science</option>
+                            <option>Languages</option>
+                            <option>Humanities</option>
+                            <option>History</option>
+                        </select>
+                        <select id="statusFilter">
+                            <option>All Status</option>
+                            <option>Active</option>
+                            <option>Inactive</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" onclick="openModal('addTeacherModal')">
+                        <i class="fas fa-plus"></i> Add New Teacher
+                    </button>
+                </div>
+
+                <!-- Data Table -->
+                <div class="data-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Employee ID</th>
+                                <th>Name</th>
+                                <th>Primary Role</th>
+                                <th>Secondary Role</th>
+                                <th>Subject</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="teachersTableBody">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <div class="pagination" id="teacherPagination" style="margin-top: 20px;">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/admin-common.js"></script>
+    <script src="../js/page-enhancer.js"></script>
+    <script>
+        const menuToggle = document.getElementById('menuToggle');
+        const sidebar = document.getElementById('sidebar');
+
+        if (menuToggle) {
+            menuToggle.addEventListener('click', function () {
+                sidebar.classList.toggle('active');
+            });
+        }
+    </script>
+
+    <!-- Add Teacher Modal -->
+    <div id="addTeacherModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add New Teacher</h3>
+                <span class="close-modal" onclick="closeModal('addTeacherModal')">&times;</span>
+            </div>
+            <form id="addTeacherForm">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Employee ID *</label>
+                        <input type="text" id="newTeacherId" placeholder="e.g., EMP-2024-001" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Full Name *</label>
+                        <input type="text" id="newTeacherName" placeholder="Enter full name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Department *</label>
+                        <select id="newTeacherDept" required>
+                            <option value="">Select Department</option>
+                            <option value="Mathematics">Mathematics</option>
+                            <option value="Science">Science</option>
+                            <option value="English">English</option>
+                            <option value="History">History</option>
+                            <option value="Languages">Languages</option>
+                            <option value="Humanities">Humanities</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Primary Role *</label>
+                        <input type="text" id="newTeacherPrimaryRole" value="Teacher" readonly required>
+                    </div>
+                    <div class="form-group">
+                        <label>Secondary Roles</label>
+                        <div id="secondaryRolesContainer" style="display: flex; flex-direction: column; gap: 10px;">
+                            <!-- Dynamic rows -->
+                        </div>
+                        <button type="button" class="btn-outline" id="addRoleBtn"
+                            style="margin-top: 10px; padding: 8px 15px; font-size: 0.85rem; border: 1px dashed #0056b3; border-radius: 5px; color: #0056b3; background: none; cursor: pointer; width: 100%;">
+                            <i class="fas fa-plus"></i> Add Another Role
+                        </button>
+                    </div>
+                    <div class="form-group">
+                        <label>Subjects *</label>
+                        <div id="subjectsContainer" style="display: flex; flex-direction: column; gap: 10px;">
+                            <!-- Dynamic rows -->
+                        </div>
+                        <button type="button" class="btn-outline" id="addSubjectBtn"
+                            style="margin-top: 10px; padding: 8px 15px; font-size: 0.85rem; border: 1px dashed #0056b3; border-radius: 5px; color: #0056b3; background: none; cursor: pointer; width: 100%;">
+                            <i class="fas fa-plus"></i> Add Another Subject
+                        </button>
+                    </div>
+                    <div class="form-group">
+                        <label>Email *</label>
+                        <input type="email" id="newTeacherEmail" placeholder="email@example.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Phone *</label>
+                        <input type="tel" id="newTeacherPhone" placeholder="+263 77 XXX XXXX" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Password *</label>
+                        <input type="password" id="newTeacherPassword" placeholder="Enter password" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Employer / Fund Source *</label>
+                        <select id="newTeacherEmployer" required>
+                            <option value="SDC">SDC Fund</option>
+                            <option value="Government">Government</option>
+                        </select>
+                    </div>
+                    <div class="form-group payroll-fields">
+                        <label>Base Salary (USD) *</label>
+                        <input type="number" id="newTeacherBaseSalary" placeholder="e.g. 2500" value="0">
+                    </div>
+                    <div class="form-group payroll-fields">
+                        <label>Allowances (USD)</label>
+                        <input type="number" id="newTeacherAllowances" placeholder="e.g. 200" value="0">
+                    </div>
+                    <div class="form-group payroll-fields">
+                        <label>Deductions (USD)</label>
+                        <input type="number" id="newTeacherDeductions" placeholder="e.g. 150" value="0">
+                    </div>
+
+                    <div style="border-top: 1px solid #eee; margin: 15px 0; padding-top: 10px;">
+                        <h4 style="margin: 0 0 10px; font-size: 0.85rem; color: #555;">Personal Details</h4>
+                        <div class="form-row">
+                            <div class="form-group"><label>Date of Birth</label><input type="date" id="newTeacherDob">
+                            </div>
+                            <div class="form-group">
+                                <label>Gender</label>
+                                <select id="newTeacherGender">
+                                    <option value="">Select Gender</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group"><label>Religion</label><input type="text" id="newTeacherReligion"
+                                    placeholder="Religion"></div>
+                            <div class="form-group"><label>National ID</label><input type="text"
+                                    id="newTeacherNationalId" placeholder="ID Number"></div>
+                        </div>
+                        <div class="form-group"><label>Address</label><input type="text" id="newTeacherAddress"
+                                placeholder="Home Address"></div>
+                    </div>
+
+                    <div style="border-top: 1px solid #eee; margin: 15px 0; padding-top: 10px;">
+                        <h4 style="margin: 0 0 10px; font-size: 0.85rem; color: #555;">Spouse Details</h4>
+                        <div class="form-row">
+                            <div class="form-group"><label>Spouse Name</label><input type="text"
+                                    id="newTeacherSpouseName" placeholder="Name"></div>
+                            <div class="form-group"><label>Spouse Phone</label><input type="tel"
+                                    id="newTeacherSpousePhone" placeholder="Phone"></div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group"><label>Occupation</label><input type="text"
+                                    id="newTeacherSpouseOccupation" placeholder="Occupation"></div>
+                            <div class="form-group"><label>Children</label><input type="number"
+                                    id="newTeacherNumChildren" placeholder="0" min="0"></div>
+                        </div>
+                    </div>
+
+                    <div style="border-top: 1px solid #eee; margin: 15px 0; padding-top: 10px;">
+                        <h4 style="margin: 0 0 10px; font-size: 0.85rem; color: #555;">Next of Kin</h4>
+                        <div class="form-row">
+                            <div class="form-group"><label>NOK Name</label><input type="text" id="newTeacherNokName"
+                                    placeholder="Name"></div>
+                            <div class="form-group"><label>Relationship</label><input type="text"
+                                    id="newTeacherNokRelationship" placeholder="Relationship"></div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group"><label>NOK Phone</label><input type="tel" id="newTeacherNokPhone"
+                                    placeholder="Phone"></div>
+                            <div class="form-group"><label>NOK Email</label><input type="email" id="newTeacherNokEmail"
+                                    placeholder="Email"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Status *</label>
+                        <select id="newTeacherStatus" required>
+                            <option value="Active">Active</option>
+                            <option value="Inactive">Inactive</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-cancel" onclick="closeModal('addTeacherModal')">Cancel</button>
+                    <button type="submit" class="btn-submit">Add Teacher</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- View Teacher Modal (Deprecated in favor of Detail Panel) -->
+    <div id="viewTeacherModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Teacher Details</h3>
+                <span class="close-modal" onclick="closeModal('viewTeacherModal')">&times;</span>
+            </div>
+            <div class="modal-body" id="viewTeacherContent">
+                <!-- Populated by JS -->
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn-primary" onclick="closeModal('viewTeacherModal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Teacher Modal -->
+    <div id="editTeacherModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit Teacher</h3>
+                <span class="close-modal" onclick="closeModal('editTeacherModal')">&times;</span>
+            </div>
+            <form id="editTeacherForm">
+                <input type="hidden" id="editTeacherId">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="editTeacherName" required>
+                </div>
+                <div class="form-group">
+                    <label>Department</label>
+                    <select id="editTeacherDept" required>
+                        <option value="Mathematics">Mathematics</option>
+                        <option value="Science">Science</option>
+                        <option value="English">English</option>
+                        <option value="History">History</option>
+                        <option value="Languages">Languages</option>
+                        <option value="Humanities">Humanities</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Primary Role</label>
+                    <input type="text" id="editTeacherPrimaryRole" value="Teacher" readonly required>
+                </div>
+                <div class="form-group">
+                    <label>Secondary Roles</label>
+                    <div id="editSecondaryRolesContainer" style="display: flex; flex-direction: column; gap: 10px;">
+                        <!-- Dynamic rows -->
+                    </div>
+                    <button type="button" class="btn-outline" id="editAddRoleBtn"
+                        style="margin-top: 10px; padding: 8px 15px; font-size: 0.85rem; border: 1px dashed #0056b3; border-radius: 5px; color: #0056b3; background: none; cursor: pointer; width: 100%;">
+                        <i class="fas fa-plus"></i> Add Another Role
+                    </button>
+                </div>
+                <div class="form-group">
+                    <label>Subjects *</label>
+                    <div id="editSubjectsContainer" style="display: flex; flex-direction: column; gap: 10px;">
+                        <!-- Dynamic rows -->
+                    </div>
+                    <button type="button" class="btn-outline" id="editAddSubjectBtn"
+                        style="margin-top: 10px; padding: 8px 15px; font-size: 0.85rem; border: 1px dashed #0056b3; border-radius: 5px; color: #0056b3; background: none; cursor: pointer; width: 100%;">
+                        <i class="fas fa-plus"></i> Add Another Subject
+                    </button>
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="editTeacherEmail" required>
+                </div>
+                <div class="form-group">
+                    <label>Phone</label>
+                    <input type="text" id="editTeacherPhone" required>
+                </div>
+                <div class="form-group">
+                    <label>Employer / Fund Source *</label>
+                    <select id="editTeacherEmployer" required>
+                        <option value="SDC">SDC Fund</option>
+                        <option value="Government">Government</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Base Salary (USD)</label>
+                    <input type="number" id="editTeacherBaseSalary">
+                </div>
+                <div class="form-group">
+                    <label>Allowances (USD)</label>
+                    <input type="number" id="editTeacherAllowances">
+                </div>
+                <div class="form-group">
+                    <label>Deductions (USD)</label>
+                    <input type="number" id="editTeacherDeductions">
+                </div>
+
+                <div style="border-top: 1px solid #eee; margin: 15px 0; padding-top: 10px;">
+                    <h4 style="margin: 0 0 10px; font-size: 0.85rem; color: #555;">Personal Details</h4>
+                    <div class="form-row">
+                        <div class="form-group"><label>Date of Birth</label><input type="date" id="editTeacherDob">
+                        </div>
+                        <div class="form-group">
+                            <label>Gender</label>
+                            <select id="editTeacherGender">
+                                <option value="">Select Gender</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Religion</label><input type="text" id="editTeacherReligion"
+                                placeholder="Religion"></div>
+                        <div class="form-group"><label>National ID</label><input type="text"
+                                id="editTeacherNationalId" placeholder="ID Number"></div>
+                    </div>
+                    <div class="form-group"><label>Address</label><input type="text" id="editTeacherAddress"
+                            placeholder="Home Address"></div>
+                </div>
+
+                <div style="border-top: 1px solid #eee; margin: 15px 0; padding-top: 10px;">
+                    <h4 style="margin: 0 0 10px; font-size: 0.85rem; color: #555;">Spouse Details</h4>
+                    <div class="form-row">
+                        <div class="form-group"><label>Spouse Name</label><input type="text"
+                                id="editTeacherSpouseName" placeholder="Name"></div>
+                        <div class="form-group"><label>Spouse Phone</label><input type="tel"
+                                id="editTeacherSpousePhone" placeholder="Phone"></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Occupation</label><input type="text"
+                                id="editTeacherSpouseOccupation" placeholder="Occupation"></div>
+                        <div class="form-group"><label>Children</label><input type="number"
+                                id="editTeacherNumChildren" placeholder="0" min="0"></div>
+                    </div>
+                </div>
+
+                <div style="border-top: 1px solid #eee; margin: 15px 0; padding-top: 10px;">
+                    <h4 style="margin: 0 0 10px; font-size: 0.85rem; color: #555;">Next of Kin</h4>
+                    <div class="form-row">
+                        <div class="form-group"><label>NOK Name</label><input type="text" id="editTeacherNokName"
+                                placeholder="Name"></div>
+                        <div class="form-group"><label>Relationship</label><input type="text"
+                                id="editTeacherNokRelationship" placeholder="Relationship"></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>NOK Phone</label><input type="tel" id="editTeacherNokPhone"
+                                placeholder="Phone"></div>
+                        <div class="form-group"><label>NOK Email</label><input type="email" id="editTeacherNokEmail"
+                                placeholder="Email"></div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Status</label>
+                    <select id="editTeacherStatus" required>
+                        <option value="Active">Active</option>
+                        <option value="Inactive">Inactive</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-cancel" onclick="closeModal('editTeacherModal')">Cancel</button>
+                    <button type="submit" class="btn-submit">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteTeacherModal" class="modal">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header">
+                <h3>Confirm Delete</h3>
+                <span class="close-modal" onclick="closeModal('deleteTeacherModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this teacher? This action cannot be undone.</p>
+                <div class="form-actions" style="margin-top: 20px;">
+                    <button type="button" class="btn-cancel" onclick="closeModal('deleteTeacherModal')">Cancel</button>
+                    <button type="button" class="btn-delete" id="confirmDeleteBtn"
+                        style="padding: 12px 25px; border-radius: 5px; border:none; cursor:pointer;">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Detail Panel -->
+    <div id="detailPanel" class="detail-panel">
+        <div class="detail-header">
+            <span class="close-detail" onclick="closeDetail()">&times;</span>
+            <div class="detail-profile">
+                <div class="dp-avatar" id="dpAvatar">JS</div>
+                <div class="dp-info">
+                    <h3 id="dpName">Staff Name</h3>
+                    <p id="dpRole">Staff Role</p>
+                </div>
+            </div>
+        </div>
+        <div class="detail-body" id="dpBody">
+    <script src="../js/toast.js"></script>
+    <!-- ACADEX: Powered-by footer and school branding -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+    <script src="../js/admin-teachers.js"></script>
+    <script src="../js/admin-sidebar.js"></script>
+</body>
+</html>

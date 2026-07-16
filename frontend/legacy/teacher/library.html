@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library Catalog</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/ancillary-portal.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        .library-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .icon-borrowed {
+            background: #eef2ff;
+            color: #4f46e5;
+        }
+
+        .icon-overdue {
+            background: #fef2f2;
+            color: #ef4444;
+        }
+
+        .icon-reserved {
+            background: #ecfdf5;
+            color: #10b981;
+        }
+
+        .stat-info h3 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: var(--school-primary-dark, #1e293b);
+        }
+
+        .stat-info p {
+            margin: 0;
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        .search-container {
+            background: white;
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+        }
+
+        .search-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .search-input {
+            flex: 2;
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1rem;
+        }
+
+        .search-select {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1rem;
+            background: white;
+        }
+
+        .book-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 25px;
+        }
+
+        .book-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s;
+            border: 1px solid #f1f5f9;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .book-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .book-cover {
+            height: 200px;
+            background: #f8fafc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .book-icon {
+            font-size: 4rem;
+            color: #cbd5e1;
+        }
+
+        .status-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: white;
+        }
+
+        .status-available {
+            background: #10b981;
+        }
+
+        .status-borrowed {
+            background: #f59e0b;
+        }
+
+        .status-reserved {
+            background: #3b82f6;
+        }
+
+        .book-details {
+            padding: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .book-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--school-primary-dark, #1e293b);
+            margin: 0 0 5px 0;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .book-author {
+            color: #64748b;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+
+        .book-meta {
+            font-size: 0.8rem;
+            color: #94a3b8;
+            margin-top: auto;
+            margin-bottom: 15px;
+        }
+
+        .btn-action {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            border: none;
+        }
+
+        .btn-reserve {
+            background: var(--school-primary, #0056b3);
+            color: white;
+        }
+
+        .btn-reserve:hover {
+            background: var(--school-primary-dark, #003d82);
+        }
+
+        .btn-disabled {
+            background: #e2e8f0;
+            color: #94a3b8;
+            cursor: not-allowed;
+        }
+
+        .category-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+        }
+
+        .tab-btn {
+            padding: 8px 20px;
+            border: 2px solid #e2e8f0;
+            background: white;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            white-space: nowrap;
+            color: #64748b;
+            transition: all 0.3s;
+        }
+
+        .tab-btn.active {
+            background: var(--school-primary, #0056b3);
+            color: white;
+            border-color: var(--school-primary, #0056b3);
+        }
+    </style>
+</head>
+
+<body>
+    <button class="mobile-toggle" id="mobile-toggle">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <div class="dashboard-container">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <img src="../images/logo.png" alt="School Logo" class="acadex-school-logo">
+                <h3>Teacher Portal</h3>
+            </div>
+            <div class="sidebar-menu">
+                <div class="sidebar-section-title">Teacher System</div>
+                <ul>
+                    <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a></li>
+                    <li><a href="classes.html"><i class="fas fa-chalkboard"></i> <span>Classes</span></a></li>
+                    <li><a href="assignments.html"><i class="fas fa-tasks"></i> <span>Assignments</span></a></li>
+                    <li><a href="attendance.html"><i class="fas fa-clipboard-check"></i> <span>Attendance</span></a>
+                    </li>
+                    <li><a href="grades.html"><i class="fas fa-chart-line"></i> <span>Grades</span></a></li>
+                    <li><a href="timetable.html"><i class="fas fa-calendar-alt"></i> <span>Timetable</span></a></li>
+                    <li><a href="students.html"><i class="fas fa-users"></i> <span>Students</span></a></li>
+                    <li><a href="textbooks.html"><i class="fas fa-book"></i> <span>Textbooks</span></a></li>
+                    <li><a href="library.html" class="active"><i class="fas fa-book-open"></i> <span>Library
+                                Catalog</span></a></li>
+                    <li><a href="digital-resources.html"><i class="fas fa-laptop-code"></i> <span>Digital
+                                Resources</span></a></li>
+                    <li><a href="reports.html"><i class="fas fa-file-alt"></i> <span>System Reports</span></a></li>
+                    <li><a href="messages.html"><i class="fas fa-envelope"></i> <span>Messages</span></a></li>
+                </ul>
+
+                <div class="sidebar-section-title">Operations</div>
+                <ul>
+                    <li><a href="staff-directory.html"><i class="fas fa-users"></i> <span>Staff Directory</span></a>
+                    </li>
+                    <li><a href="procurement.html"><i class="fas fa-shopping-cart"></i> <span>Procurement</span></a>
+                    </li>
+                    <li><a href="assets.html"><i class="fas fa-boxes"></i> <span>Asset Management</span></a></li>
+                    <li><a href="schedules.html"><i class="fas fa-calendar-check"></i> <span>Schedules &
+                                Shifts</span></a></li>
+                </ul>
+
+                <div class="sidebar-section-title">Staff HR & Support</div>
+                <ul>
+                    <li><a href="sdc-portal.html"><i class="fas fa-file-invoice-dollar"></i> <span>SDC Staff
+                                Portal</span></a></li>
+                    <li><a href="hr-services.html"><i class="fas fa-user-shield"></i> <span>HR Services</span></a></li>
+                    <li><a href="profile.html"><i class="fas fa-id-card"></i> <span>My Profile</span></a></li>
+                    <li><a href="resources.html"><i class="fas fa-folder-open"></i> <span>Resources & Docs</span></a>
+                    </li>
+                    <li><a href="it-support.html"><i class="fas fa-headset"></i> <span>IT Support</span></a></li>
+                </ul>
+
+                <div class="sidebar-section-title">Communication</div>
+                <ul>
+                    <li><a href="news.html"><i class="fas fa-newspaper"></i> <span>News & Updates</span></a></li>
+                    <li><a href="announcements.html"><i class="fas fa-bullhorn"></i> <span>General Notices</span></a>
+                    </li>
+                    <li><a href="contact.html"><i class="fas fa-address-book"></i> <span>Contact Us</span></a></li>
+                    <li><a href="settings.html"><i class="fas fa-cog"></i> <span>Settings</span></a></li>
+                </ul>
+            </div>
+            <div class="sidebar-footer">
+                <a href="login.html"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <h1 style="margin-bottom: 10px; color: var(--school-primary-dark, #1e293b);">Library Catalog</h1>
+            <p style="margin-bottom: 30px; color: #64748b;">Browse, reserve, and manage your library books.</p>
+
+            <!-- My Library Stats -->
+            <div class="library-stats">
+                <div class="stat-card">
+                    <div class="stat-icon icon-borrowed"><i class="fas fa-book-reader"></i></div>
+                    <div class="stat-info">
+                        <h3>2</h3>
+                        <p>Currently Borrowed</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon icon-overdue"><i class="fas fa-exclamation-circle"></i></div>
+                    <div class="stat-info">
+                        <h3>0</h3>
+                        <p>Overdue Books</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon icon-reserved"><i class="fas fa-bookmark"></i></div>
+                    <div class="stat-info">
+                        <h3>1</h3>
+                        <p>Reserved</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Search Area -->
+            <div class="search-container">
+                <div class="search-row">
+                    <input type="text" class="search-input" placeholder="Search by title, author, or ISBN...">
+                    <button class="btn btn-primary"><i class="fas fa-search"></i> Search</button>
+                </div>
+                <div class="search-row" style="margin-bottom: 0;">
+                    <select class="search-select">
+                        <option value="">All Categories</option>
+                        <option value="fiction">Fiction</option>
+                        <option value="science">Science</option>
+                        <option value="history">History</option>
+                        <option value="reference">Reference</option>
+                    </select>
+                    <select class="search-select">
+                        <option value="">Availability</option>
+                        <option value="available">Available Now</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Category Tabs -->
+            <div class="category-tabs">
+                <button class="tab-btn active">New Arrivals</button>
+                <button class="tab-btn">Teaching Resources</button>
+                <button class="tab-btn">Novels</button>
+                <button class="tab-btn">Science & Tech</button>
+                <button class="tab-btn">History & Geo</button>
+            </div>
+
+            <!-- Books Grid -->
+            <div class="book-grid">
+                <!-- Book Card 1 -->
+                <div class="book-card">
+                    <div class="book-cover">
+                        <span class="status-badge status-available">Available</span>
+                        <i class="fas fa-book book-icon"></i>
+                    </div>
+                    <div class="book-details">
+                        <h4 class="book-title">Advanced Mathematics: Pure & Applied</h4>
+                        <div class="book-author">by J.F. Talbert</div>
+                        <div class="book-meta">
+                            <div><i class="fas fa-barcode"></i> ISBN: 978-058206</div>
+                            <div><i class="fas fa-layer-group"></i> Ref: MAT-402</div>
+                        </div>
+                        <button class="btn-action btn-reserve"
+                            onclick="showNotification('Book reserved successfully!', 'success')">Reserve Now</button>
+                    </div>
+                </div>
+
+                <!-- Book Card 2 -->
+                <div class="book-card">
+                    <div class="book-cover">
+                        <span class="status-badge status-borrowed">Borrowed</span>
+                        <i class="fas fa-atlas book-icon"></i>
+                    </div>
+                    <div class="book-details">
+                        <h4 class="book-title">World Atlas: 10th Edition</h4>
+                        <div class="book-author">by National Geographic</div>
+                        <div class="book-meta">
+                            <div><i class="fas fa-barcode"></i> ISBN: 978-142621</div>
+                            <div><i class="fas fa-layer-group"></i> Ref: GEO-101</div>
+                        </div>
+                        <button class="btn-action btn-disabled" disabled>Due: Jan 15</button>
+                    </div>
+                </div>
+
+                <!-- Book Card 3 -->
+                <div class="book-card">
+                    <div class="book-cover">
+                        <span class="status-badge status-available">Available</span>
+                        <i class="fas fa-flask book-icon"></i>
+                    </div>
+                    <div class="book-details">
+                        <h4 class="book-title">Principles of Chemistry</h4>
+                        <div class="book-author">by Nivaldo J. Tro</div>
+                        <div class="book-meta">
+                            <div><i class="fas fa-barcode"></i> ISBN: 978-032125</div>
+                            <div><i class="fas fa-layer-group"></i> Ref: SCI-205</div>
+                        </div>
+                        <button class="btn-action btn-reserve"
+                            onclick="showNotification('Book reserved successfully!', 'success')">Reserve Now</button>
+                    </div>
+                </div>
+
+                <!-- Book Card 4 -->
+                <div class="book-card">
+                    <div class="book-cover">
+                        <span class="status-badge status-available">Available</span>
+                        <i class="fas fa-book-open book-icon"></i>
+                    </div>
+                    <div class="book-details">
+                        <h4 class="book-title">Teaching Strategies for Modern Classrooms</h4>
+                        <div class="book-author">by K. Moore</div>
+                        <div class="book-meta">
+                            <div><i class="fas fa-barcode"></i> ISBN: 978-123456</div>
+                            <div><i class="fas fa-layer-group"></i> Ref: EDU-500</div>
+                        </div>
+                        <button class="btn-action btn-reserve"
+                            onclick="showNotification('Book reserved successfully!', 'success')">Reserve Now</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../js/ancillary-common.js"></script>
+    <!-- ACADEX: Powered-by footer and school branding -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+
+</body>
+
+</html>
+

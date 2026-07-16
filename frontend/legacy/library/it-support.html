@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IT Support - ACADEX</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/library-portal.css">
+    <link rel="stylesheet" href="../css/ancillary-portal.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        /* IT SUPPORT SPECIFIC STYLES */
+        .ticket-form {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group label {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #475569;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 0.95rem;
+        }
+
+        .form-full {
+            grid-column: span 2;
+        }
+
+        .btn-submit {
+            background: var(--school-primary);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-submit:hover {
+            background: var(--school-primary-dark);
+        }
+
+        .ticket-item {
+            padding: 15px;
+            background: #f8fafc;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .ticket-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .ticket-id {
+            font-size: 0.75rem;
+            font-family: monospace;
+            color: #64748b;
+            font-weight: 600;
+        }
+
+        .ticket-status {
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .status-open {
+            background: rgba(var(--school-primary-rgb), 0.1);
+            color: var(--school-primary);
+        }
+
+        .status-resolved {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-in-review {
+            background: #fff7ed;
+            color: #c2410c;
+        }
+
+        .status-rejected {
+            background: #fef2f2;
+            color: #991b1b;
+        }
+
+        .ticket-title {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--school-primary-dark, #1e293b);
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .ticket-meta {
+            font-size: 0.8rem;
+            color: #888;
+            display: flex;
+            gap: 15px;
+        }
+
+        .kb-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px;
+            border-radius: 10px;
+            text-decoration: none;
+            color: #475569;
+            transition: 0.3s;
+        }
+
+        .kb-item:hover {
+            background: #f1f5f9;
+            color: var(--school-primary);
+        }
+
+        .kb-icon {
+            width: 35px;
+            height: 35px;
+            background: rgba(var(--school-primary-rgb), 0.1);
+            color: var(--school-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            margin-bottom: 25px;
+        }
+
+        @media (max-width: 768px) {
+            .ticket-form {
+                grid-template-columns: 1fr;
+            }
+
+            .form-full {
+                grid-column: span 1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <img src="../images/logo.png" alt="Logo" class="acadex-school-logo">
+                <h3>Library Portal</h3>
+            </div>
+            <div class="sidebar-menu">
+                <div class="sidebar-section-title">Library System</div>
+                <ul>
+                    <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
+                    <li><a href="books.html"><i class="fas fa-book"></i><span>Catalog Management</span></a></li>
+                    <li><a href="issue.html"><i class="fas fa-exchange-alt"></i><span>Circulation Desk</span></a></li>
+                    <li><a href="digital.html"><i class="fas fa-laptop-code"></i><span>Digital Resources</span></a></li>
+                    <li><a href="reports.html"><i class="fas fa-file-invoice"></i><span>Reports & Inventory</span></a>
+                    </li>
+                </ul>
+                <div class="sidebar-section-title">Operations</div>
+                <ul>
+                    <li><a href="staff-directory.html"><i class="fas fa-users"></i><span>Staff Directory</span></a></li>
+                    <li><a href="procurement.html"><i class="fas fa-shopping-cart"></i><span>Procurement</span></a></li>
+                    <li><a href="assets.html"><i class="fas fa-boxes"></i><span>Asset Management</span></a></li>
+                    <li><a href="schedules.html"><i class="fas fa-calendar-check"></i><span>Schedules &
+                                Shifts</span></a></li>
+                </ul>
+                <div class="sidebar-section-title">Staff HR & Support</div>
+                <ul>
+                    <li><a href="hr-services.html"><i class="fas fa-user-shield"></i><span>HR Services</span></a></li>
+                    <li><a href="profile.html"><i class="fas fa-id-card"></i><span>My Profile</span></a></li>
+                    <li><a href="resources.html"><i class="fas fa-folder-open"></i><span>Resources & Docs</span></a>
+                    </li>
+                    <li><a href="it-support.html" class="active"><i class="fas fa-headset"></i><span>IT
+                                Support</span></a></li>
+                </ul>
+                <div class="sidebar-section-title">Communication</div>
+                <ul>
+                    <li><a href="news.html"><i class="fas fa-newspaper"></i><span>News & Updates</span></a></li>
+                    <li><a href="announcements.html"><i class="fas fa-bullhorn"></i><span>General Notices</span></a>
+                    </li>
+                    <li><a href="contact.html"><i class="fas fa-address-book"></i><span>Contact Us</span></a></li>
+                    <li><a href="settings.html"><i class="fas fa-cog"></i><span>System Settings</span></a></li>
+                </ul>
+            </div>
+            <div class="sidebar-footer">
+                <a href="login.html"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="top-header">
+                <h2>IT Support Hub</h2>
+                <div class="user-profile">
+                    <div style="text-align: right; margin-right: 10px;">
+                        <div style="font-weight: 600; font-size: 0.9rem;">Librarian Admin</div>
+                        <div style="font-size: 0.75rem; color: #888;">Library Services</div>
+                    </div>
+                    <img src="../images/admin-avatar.png" alt="Admin">
+                </div>
+            </div>
+
+            <div class="content-area">
+                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 30px;">
+                    <div class="content-left">
+                        <!-- Ticket Submission -->
+                        <div class="glass-card" style="padding: 30px;">
+                            <h3
+                                style="margin: 0 0 25px 0; color: var(--school-primary-dark, #1a1a2e); display: flex; align-items: center; gap: 10px;">
+                                <i class="fas fa-ticket-alt" style="color: var(--school-primary);"></i> Submit Support Ticket
+                            </h3>
+                            <form class="ticket-form" id="itTicketForm">
+                                <div class="form-group">
+                                    <label>Issue Category</label>
+                                    <select id="category" required>
+                                        <option value="">Select Category</option>
+                                        <option>Hardware (Computer/Printer)</option>
+                                        <option>Software/LMS Glitch</option>
+                                        <option>Network & Internet</option>
+                                        <option>Email & Communication</option>
+                                        <option>Cataloging Equipment</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Urgency</label>
+                                    <select id="urgency" required>
+                                        <option value="Normal">Normal</option>
+                                        <option value="High">High (Immediate attention)</option>
+                                        <option value="Low">Low/General Inquiry</option>
+                                    </select>
+                                </div>
+                                <div class="form-group form-full">
+                                    <label>Subject</label>
+                                    <input type="text" id="subject" placeholder="Brief summary of the issue" required>
+                                </div>
+                                <div class="form-group form-full">
+                                    <label>Detailed Description</label>
+                                    <textarea id="description" rows="4"
+                                        placeholder="Please provide as much detail as possible..." required></textarea>
+                                </div>
+                                <div class="form-group form-full">
+                                    <button type="submit" class="btn-submit">Submit Ticket</button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Ticket History -->
+                        <div class="glass-card" style="padding: 30px;">
+                            <h3 style="margin: 0 0 20px 0; color: var(--school-primary-dark, #1a1a2e);"><i class="fas fa-history"></i> Recent
+                                Tickets</h3>
+                            <div id="ticketList">
+                                <!-- Populated by JS -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="content-right">
+                        <!-- Knowledge Base -->
+                        <div class="glass-card" style="padding: 25px;">
+                            <h3 style="margin: 0 0 20px 0; font-size: 1.1rem;"><i class="fas fa-book"></i> Knowledge
+                                Base</h3>
+                            <div id="kbListContainer">
+                                <!-- Populated by JS -->
+                            </div>
+                        </div>
+
+                        <!-- Support Status -->
+                        <div class="glass-card" style="padding: 25px; text-align: center;">
+                            <div
+                                style="width: 15px; height: 15px; background: #10b981; border-radius: 50%; display: inline-block; margin-right: 5px;">
+                            </div>
+                            <span style="font-weight: 600; color: #166534;">IT Staff Online</span>
+                            <p style="font-size: 0.8rem; color: #64748b; margin-top: 10px;">Estimated response: < 15
+                                    mins</p>
+                                    <button id="msgSupport"
+                                        style="width: 100%; border: 1px solid var(--school-primary); background: white; color: var(--school-primary); padding: 10px; border-radius: 8px; font-weight: 600; cursor: pointer; margin-top: 10px;">Message
+                                        Support</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/library-auth.js"></script>
+    <script src="../js/library-admin.js"></script>
+    <script src="../js/it-support-shared.js"></script>
+    <script>
+        function loadTickets() {
+            const tickets = getTenantData('itTickets', '[]');
+            // Try to get library user data, fallback to placeholder
+            const user = JSON.parse(sessionStorage.getItem('libraryUser') || '{"name": "Librarian"}');
+            const list = document.getElementById('ticketList');
+
+            const myTickets = tickets.filter(t => t.userName === user.name || t.portal === 'Library');
+
+            if (myTickets.length > 0) {
+                list.innerHTML = '';
+                myTickets.forEach(t => {
+                    const ticketEl = document.createElement('div');
+                    ticketEl.className = 'ticket-item';
+                    ticketEl.style.borderLeft = `4px solid ${getStatusColor(t.status)}`;
+                    ticketEl.innerHTML = `
+                        <div class="ticket-header">
+                            <span class="ticket-id">#${t.id}</span>
+                            <span class="ticket-status ${getStatusClass(t.status)}">${t.status}</span>
+                        </div>
+                        <span class="ticket-title">${t.subject}</span>
+                        <div class="ticket-meta">
+                            <span><i class="fas fa-calendar-day"></i> ${new Date(t.date).toLocaleDateString()}</span>
+                            <span><i class="fas fa-user-cog"></i> ${t.assigned || 'Pending'}</span>
+                        </div>
+                    `;
+                    list.appendChild(ticketEl);
+                });
+            } else {
+                list.innerHTML = '<p style="text-align:center; color:#94a3b8; font-size:0.85rem; padding:20px;">No tickets found.</p>';
+            }
+        }
+
+        function getStatusColor(status) {
+            switch (status.toLowerCase()) {
+                case 'completed': return '#10b981';
+                case 'denied': return '#ef4444';
+                case 'in review': return '#f59e0b';
+                case 'pending': return '#64748b';
+                default: return 'var(--school-primary)';
+            }
+        }
+
+        function getStatusClass(status) {
+            switch (status.toLowerCase()) {
+                case 'completed': return 'status-resolved';
+                case 'denied': return 'status-rejected';
+                case 'in review': return 'status-in-review';
+                default: return 'status-open';
+            }
+        }
+
+        function renderKB(filter = '') {
+            const kbContainer = 'kbListContainer';
+            const kbList = document.getElementById(kbContainer);
+            if (!kbList) return;
+
+            if (!document.getElementById('kbSearch')) {
+                const searchDiv = document.createElement('div');
+                searchDiv.style.marginBottom = '15px';
+                searchDiv.innerHTML = `
+                    <div style="position:relative;">
+                        <i class="fas fa-search" style="position:absolute; left:12px; top:12px; color:#94a3b8;"></i>
+                        <input type="text" id="kbSearch" placeholder="Search knowledge base..." 
+                            style="width:100%; padding:10px 10px 10px 35px; border:1px solid #e2e8f0; border-radius:10px; font-size:0.85rem;">
+                    </div>
+                `;
+                kbList.parentElement.insertBefore(searchDiv, kbList);
+                document.getElementById('kbSearch').addEventListener('input', (e) => {
+                    renderSharedKB(kbContainer, e.target.value);
+                });
+            }
+            renderSharedKB(kbContainer, filter);
+        }
+
+        function showKBArticle(item) {
+            let modal = document.getElementById('kbArticleModal');
+            if (!modal) {
+                modal = document.createElement('div');
+                modal.id = 'kbArticleModal';
+                modal.className = 'modal';
+                modal.innerHTML = `
+                    <div class="modal-content" style="max-width:500px; background:white; padding:30px; border-radius:20px; box-shadow:0 20px 50px rgba(0,0,0,0.1); position:relative; margin:auto; top:10%;">
+                        <div class="modal-header" style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #eee; padding-bottom:15px; margin-bottom:15px;">
+                            <h3 id="kbModalTitle" style="margin:0; color:var(--school-primary-dark, #1a1a2e);">Article</h3>
+                            <span class="close-modal" style="cursor:pointer; font-size:1.5rem; color:#64748b;" onclick="closeModal('kbArticleModal')">&times;</span>
+                        </div>
+                        <div class="modal-body" id="kbModalBody" style="line-height:1.6; color:#475569;">
+                        </div>
+                        <div class="form-actions" style="margin-top:20px; text-align:right;">
+                            <button class="btn-submit" onclick="closeModal('kbArticleModal')" style="padding:10px 20px; width:auto;">Close</button>
+                        </div>
+                    </div>
+                `;
+                modal.style.cssText = "display:none; position:fixed; z-index:9999; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.5); align-items:center; justify-content:center;";
+                document.body.appendChild(modal);
+            }
+            document.getElementById('kbModalTitle').innerHTML = `<i class="fas ${item.icon || 'fa-info-circle'}"></i> ${item.title}`;
+            document.getElementById('kbModalBody').innerHTML = `
+                <div style="margin-bottom:15px; font-weight:600; color: var(--school-primary);">Category: ${item.category}</div>
+                <div>${item.content || 'No detailed content available.'}</div>
+            `;
+            openModal('kbArticleModal');
+        }
+
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+        document.getElementById('itTicketForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const user = JSON.parse(sessionStorage.getItem('libraryUser') || '{"name": "Librarian"}');
+            const newTicket = {
+                id: `TKT-${Date.now().toString().slice(-6)}`,
+                userName: user.name,
+                portal: 'Library',
+                category: document.getElementById('category').value,
+                urgency: document.getElementById('urgency').value,
+                subject: document.getElementById('subject').value,
+                description: document.getElementById('description').value,
+                status: 'Pending',
+                date: new Date().toISOString(),
+                assigned: null
+            };
+            const tickets = getTenantData('itTickets', '[]');
+            tickets.unshift(newTicket);
+            saveTenantData('itTickets', tickets);
+            if (typeof showNotification === 'function') showNotification(`Ticket Submitted: ${newTicket.subject}`);
+            else alert('Ticket submitted!');
+            loadTickets();
+            this.reset();
+        });
+
+        document.getElementById('msgSupport').addEventListener('click', function () {
+            if (typeof showNotification === 'function') showNotification('Connecting to IT Live Chat...', 'info');
+            else alert('Connecting to IT Live Chat...');
+        });
+
+        loadTickets();
+        renderKB();
+    </script>
+    <!-- ACADEX: Powered-by footer and school branding -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+
+</body>
+
+</html>
+

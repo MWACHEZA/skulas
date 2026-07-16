@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Applications Management - Admin Portal</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+
+        .admin-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 260px;
+            background-color: var(--school-primary-dark, #1a1a2e);
+            color: white;
+            position: fixed;
+            height: 100%;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+
+        .sidebar-header img {
+            width: 50px;
+            margin-bottom: 10px;
+        }
+
+        .sidebar-header h3 {
+            margin: 0;
+            font-size: 1.1rem;
+        }
+
+        .sidebar-menu {
+            padding: 20px 0;
+        }
+
+        .menu-section {
+            margin-bottom: 20px;
+        }
+
+        .menu-section-title {
+            padding: 10px 20px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: #888;
+            font-weight: 600;
+        }
+
+        .sidebar-menu ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 2px;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            background-color: rgba(var(--school-primary-rgb, 0, 86, 179), 0.2);
+            color: white;
+            border-left: 3px solid var(--school-primary, #0056b3);
+        }
+
+        .sidebar-menu i {
+            margin-right: 12px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: 250px;
+            width: calc(100% - 250px);
+        }
+
+        .top-header {
+            background-color: white;
+            padding: 15px 30px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-left h2 {
+            margin: 0;
+            color: #333;
+            font-size: 1.5rem;
+        }
+
+        .content-area {
+            padding: 30px;
+        }
+
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            text-align: center;
+        }
+
+        .stat-card h3 {
+            margin: 0 0 10px;
+            font-size: 2rem;
+            color: var(--school-primary, #0056b3);
+        }
+
+        .stat-card p {
+            margin: 0;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .table-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .page-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table th,
+        .table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .table th {
+            font-weight: 600;
+            color: #444;
+            background-color: #f8f9fa;
+        }
+
+        .badge {
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .bg-warning {
+            background-color: #ffc107;
+            color: #333;
+        }
+
+        .bg-success {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .bg-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .bg-primary {
+            background-color: var(--school-primary, #0056b3);
+            color: white;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1001;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 0;
+            border-radius: 10px;
+            width: 600px;
+            max-width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .modal-footer {
+            padding: 20px;
+            border-top: 1px solid #eee;
+            text-align: right;
+            background: #f8f9fa;
+        }
+
+        .detail-section h4 {
+            color: var(--school-primary, #0056b3);
+            margin-bottom: 15px;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 5px;
+        }
+
+        .detail-section p {
+            margin: 5px 0;
+        }
+
+        .type-badge {
+            font-size: 0.75rem;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .type-f1 {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .type-al {
+            background: #f3e5f5;
+            color: #7b1fa2;
+        }
+
+        .type-tr {
+            background: #fff3e0;
+            color: #ef6c00;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar"></aside>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Top Header -->
+            <div class="top-header">
+                <div class="header-left">
+                    <h2>Applications Management</h2>
+                </div>
+                <div class="header-right">
+                    <div class="user-profile">
+                        <div class="user-avatar"
+                            style="background-color: var(--school-primary, #0056b3); width: 40px; height: 40px; border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; font-weight: 600;">
+                            AD</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content Area -->
+            <div class="content-area">
+                <!-- Stats Cards -->
+                <div class="stats-cards">
+                    <div class="stat-card">
+                        <h3 id="totalApps">0</h3>
+                        <p>Total Applications</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 id="pendingApps" style="color: #ffc107;">0</h3>
+                        <p>Pending Review</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 id="approvedApps" style="color: #28a745;">0</h3>
+                        <p>Approved</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 id="rejectedApps" style="color: #dc3545;">0</h3>
+                        <p>Rejected</p>
+                    </div>
+                </div>
+
+                <!-- Applications Table -->
+                <div class="table-container">
+                    <div class="page-actions">
+                        <h3>Submitted Applications</h3>
+                        <div class="filter-group">
+                            <div class="search-box" style="margin-right: 15px;">
+                                <i class="fas fa-search" style="position: absolute; margin: 10px; color: #999;"></i>
+                                <input type="text" id="appSearch" oninput="filterApplications()"
+                                    placeholder="Search applicants..."
+                                    style="padding: 8px 8px 8px 30px; border-radius: 5px; border: 1px solid #ddd; width: 200px;">
+                            </div>
+                            <select id="typeFilter" onchange="filterApplications()"
+                                style="padding: 8px; border-radius: 5px; border: 1px solid #ddd;">
+                                <option value="all">All Types</option>
+                                <option value="Form 1">Form 1</option>
+                                <option value="A-Level">A-Level</option>
+                                <option value="Transfer">Transfer</option>
+                            </select>
+                            <select id="statusFilter" onchange="filterApplications()"
+                                style="padding: 8px; border-radius: 5px; border: 1px solid #ddd;">
+                                <option value="all">All Status</option>
+                                <option value="Pending">Pending</option>
+                                <option value="In Review">In Review</option>
+                                <option value="Interview Scheduled">Interview Stage</option>
+                                <option value="Approved">Approved</option>
+                                <option value="Rejected">Rejected</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>App ID</th>
+                                <th>Type</th>
+                                <th>Applicant</th>
+                                <th>Details</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="applicationsTableBody">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <div class="pagination" id="appPagination" style="margin-top: 20px;">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Application Details Modal -->
+    <div id="appDetailsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Application Details</h3>
+                <button onclick="closeAppModal()"
+                    style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Content injected by JS -->
+            </div>
+            <div class="modal-footer" id="modalFooter">
+                <div id="decisionActions">
+                    <button class="btn bg-info" id="reviewBtn" style="margin-right: 10px;">Move to Review</button>
+                    <button class="btn bg-primary" id="scheduleBtn" style="margin-right: 10px;">Schedule
+                        Interview</button>
+                    <button class="btn bg-danger" id="rejectBtn" style="margin-right: 10px;">Reject Application</button>
+                    <button class="btn bg-success" id="approveBtn">Approve Application</button>
+                </div>
+                <div id="interviewForm"
+                    style="display: none; text-align: left; padding: 20px; border-top: 1px solid #eee;">
+                    <h4>Schedule Interview</h4>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px;">
+                        <div class="form-group">
+                            <label>Date</label>
+                            <input type="date" id="intDate" class="form-control"
+                                style="width: 100%; padding: 8px; border-radius: 5px; border: 1px solid #ddd;">
+                        </div>
+                        <div class="form-group">
+                            <label>Time</label>
+                            <input type="time" id="intTime" class="form-control"
+                                style="width: 100%; padding: 8px; border-radius: 5px; border: 1px solid #ddd;">
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin: 15px 0;">
+                        <label>Venue / Link</label>
+                        <input type="text" id="intVenue" class="form-control" placeholder="Room 4 or Zoom Link"
+                            style="width: 100%; padding: 8px; border-radius: 5px; border: 1px solid #ddd;">
+                    </div>
+                    <div style="text-align: right;">
+                        <button class="btn bg-secondary" onclick="hideInterviewForm()">Cancel</button>
+                        <button class="btn bg-primary" id="confirmScheduleBtn">Confirm Schedule</button>
+                    </div>
+                </div>
+                <div id="closeAction" style="display: none;">
+                    <button class="btn bg-primary" onclick="closeAppModal()">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Document Preview Modal -->
+    <div id="docPreviewModal" class="modal">
+        <div class="modal-content" style="width: 800px; height: 90vh; display: flex; flex-direction: column;">
+            <div class="modal-header">
+                <h3 id="docPreviewTitle">Document Preview</h3>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <button class="btn bg-info" id="printDocBtn" style="padding: 8px 15px;">
+                        <i class="fas fa-print"></i> Print
+                    </button>
+                    <button class="btn bg-primary" id="downloadDocBtn" style="padding: 8px 15px;">
+                        <i class="fas fa-download"></i> Download
+                    </button>
+                    <button onclick="closeDocPreview()"
+                        style="background: none; border: none; font-size: 1.5rem; cursor: pointer; margin-left:10px;">&times;</button>
+                </div>
+            </div>
+            <div class="modal-body" id="docPreviewBody"
+                style="flex: 1; overflow: auto; padding: 0; background: #525659; display: flex; justify-content: center; align-items: center;">
+                <!-- Preview content (img or iframe) -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../js/app-utils.js"></script>
+    <script src="../js/admin-common.js"></script>
+    <script src="../js/audit-logger.js"></script>
+    <script src="../js/applications-admin.js"></script>
+    <script src="../js/admin-sidebar.js"></script>
+    <!-- ACADEX: Powered-by footer and school branding -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+
+</body>
+
+</html>

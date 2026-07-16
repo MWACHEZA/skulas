@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IT Support Management - Admin Portal</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+
+        .admin-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 260px;
+            background-color: var(--school-primary-dark, #1a1a2e);
+            color: white;
+            position: fixed;
+            height: 100%;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+
+        .sidebar-header img {
+            width: 50px;
+            margin-bottom: 10px;
+        }
+
+        .sidebar-header h3 {
+            margin: 0;
+            font-size: 1.1rem;
+        }
+
+        .sidebar-menu {
+            padding: 20px 0;
+        }
+
+        .menu-section {
+            margin-bottom: 20px;
+        }
+
+        .menu-section-title {
+            padding: 10px 20px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: #888;
+            font-weight: 600;
+        }
+
+        .sidebar-menu ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: 0.3s;
+        }
+
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            background-color: rgba(var(--school-primary-rgb, 0, 86, 179), 0.2);
+            color: white;
+            border-left: 3px solid var(--school-primary, #0056b3);
+        }
+
+        .sidebar-menu i {
+            margin-right: 12px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: 250px;
+            width: calc(100% - 250px);
+        }
+
+        .top-header {
+            background-color: white;
+            padding: 15px 30px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .content-area {
+            padding: 30px;
+        }
+
+        /* TICKET MANAGEMENT STYLES */
+        .ticket-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 10px 20px;
+            border: none;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #64748b;
+            transition: 0.3s;
+        }
+
+        .tab-btn.active {
+            background: var(--school-primary, #0056b3);
+            color: white;
+        }
+
+        .tab-btn span {
+            background: rgba(0, 0, 0, 0.1);
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            margin-left: 8px;
+        }
+
+        .ticket-card,
+        .kb-article-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+            border: 1px solid #f1f5f9;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 20px;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .ticket-info h4,
+        .kb-info h4 {
+            margin: 0 0 8px;
+            color: var(--school-primary-dark, #1e293b);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .ticket-info p,
+        .kb-info p {
+            margin: 0;
+            color: #64748b;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .ticket-meta,
+        .kb-meta {
+            margin-top: 15px;
+            display: flex;
+            gap: 20px;
+            font-size: 0.8rem;
+            color: #94a3b8;
+        }
+
+        .ticket-meta span,
+        .kb-meta span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .ticket-actions,
+        .kb-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .action-btn {
+            padding: 8px 15px;
+            border-radius: 6px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.2s;
+        }
+
+        .btn-approve {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .btn-approve:hover {
+            background: #166534;
+            color: white;
+        }
+
+        .btn-deny {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .btn-deny:hover {
+            background: #991b1b;
+            color: white;
+        }
+
+        .btn-complete {
+            background: #e0f2fe;
+            color: #0369a1;
+        }
+
+        .btn-complete:hover {
+            background: #0369a1;
+            color: white;
+        }
+
+        .badge-portal {
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .portal-ancillary {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .portal-student {
+            background: #e0f2fe;
+            color: #0369a1;
+        }
+
+        .portal-teacher {
+            background: #f3e8ff;
+            color: #6b21a8;
+        }
+
+        .portal-bursar {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-pill {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .status-in-review {
+            background: #fff7ed;
+            color: #c2410c;
+            border: 1px solid #fdba74;
+        }
+
+        .status-pending {
+            background: #f8fafc;
+            color: #64748b;
+            border: 1px solid #e2e8f0;
+        }
+
+        .status-completed {
+            background: #f0fdf4;
+            color: #166534;
+        }
+
+        .status-rejected {
+            background: #fef2f2;
+            color: #991b1b;
+        }
+
+        /* Modal Action Buttons */
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+
+        .btn-submit {
+            background-color: var(--school-primary, #0056b3);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .btn-delete {
+            background-color: #dc3545;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .btn-cancel {
+            background-color: #6c757d;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .btn-submit:hover {
+            background-color: #004494;
+        }
+
+        .btn-delete:hover {
+            background-color: #c82333;
+        }
+
+        .btn-cancel:hover {
+            background-color: #5a6268;
+        }
+
+        /* KB Article Management */
+        .kb-manager-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .kb-search-bar {
+            position: relative;
+            flex: 1;
+            margin-right: 20px;
+        }
+
+        .kb-search-bar input {
+            width: 100%;
+            padding: 12px 15px 12px 40px;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            font-family: inherit;
+        }
+
+        .kb-search-bar i {
+            position: absolute;
+            left: 15px;
+            top: 15px;
+            color: #94a3b8;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin-container">
+        <aside class="sidebar" id="sidebar"></aside>
+
+        <main class="main-content">
+            <div class="top-header">
+                <div class="header-left">
+                    <h2>IT Support & Knowledge Base</h2>
+                </div>
+                <div class="user-profile">
+                    <div class="user-avatar"
+                        style="width:35px;height:35px;background:var(--school-primary, #0056b3);color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;">
+                        AD</div><span>Admin</span>
+                </div>
+            </div>
+
+            <div class="content-area">
+                <div class="ticket-tabs">
+                    <button class="tab-btn active" id="tab-tickets" onclick="switchView('tickets')">Ticket
+                        Management</button>
+                    <button class="tab-btn" id="tab-kb" onclick="switchView('kb')">Knowledge Base Articles</button>
+                    <div id="ticket-filters" style="display: flex; gap: 10px; margin-left: auto;">
+                        <button class="btn-cancel" style="padding: 5px 12px; font-size: 0.8rem;"
+                            onclick="filterTickets('all')">All <span id="count-all">0</span></button>
+                        <button class="btn-cancel" style="padding: 5px 12px; font-size: 0.8rem;"
+                            onclick="filterTickets('Pending')">Pending <span id="count-pending">0</span></button>
+                        <button class="btn-cancel" style="padding: 5px 12px; font-size: 0.8rem;"
+                            onclick="filterTickets('In Review')">In Review <span id="count-review">0</span></button>
+                        <button class="btn-cancel" style="padding: 5px 12px; font-size: 0.8rem;"
+                            onclick="filterTickets('Completed')">Done <span id="count-completed">0</span></button>
+                    </div>
+                </div>
+
+                <div id="ticketView">
+                    <div id="ticketContainer">
+                        <!-- Tickets will be loaded here -->
+                    </div>
+                </div>
+
+                <div id="kbView" style="display: none;">
+                    <div class="kb-manager-header">
+                        <div class="kb-search-bar">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="kbSearchInput" placeholder="Search KB articles..."
+                                oninput="loadArticles(this.value)">
+                        </div>
+                        <button class="btn-submit" onclick="openKBModal()">
+                            <i class="fas fa-plus"></i> New Article
+                        </button>
+                    </div>
+                    <div id="kbContainer">
+                        <!-- KB Articles will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- View Ticket Modal -->
+    <div id="viewTicketModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Ticket Details</h3>
+                <span class="close-modal" onclick="closeModal('viewTicketModal')">&times;</span>
+            </div>
+            <div class="modal-body" id="ticketModalContent">
+                <!-- Content loaded dynamically -->
+            </div>
+            <div class="form-actions" id="ticketModalActions">
+                <!-- Actions loaded dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- KB Article Modal -->
+    <div id="kbArticleModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="kbModalHeader">New KB Article</h3>
+                <span class="close-modal" onclick="closeModal('kbArticleModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="kbArticleForm">
+                    <input type="hidden" id="kbId">
+                    <div class="form-group">
+                        <label>Article Title</label>
+                        <input type="text" id="kbTitle" required placeholder="e.g., How to reset portal password">
+                    </div>
+                    <div class="form-group"
+                        style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px;">
+                        <div>
+                            <label>Category</label>
+                            <select id="kbCategory" required>
+                                <option value="Software">Software</option>
+                                <option value="Hardware">Hardware</option>
+                                <option value="Network">Network</option>
+                                <option value="Security">Security</option>
+                                <option value="AV">AV/Projectors</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label>Icon (FontAwesome)</label>
+                            <input type="text" id="kbIcon" value="fa-book" placeholder="fa-wifi, fa-print...">
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-top: 15px;">
+                        <label>Search Tags (comma separated)</label>
+                        <input type="text" id="kbTags" placeholder="internet, connection, speed...">
+                    </div>
+                    <div class="form-group" style="margin-top: 15px;">
+                        <label>Article content</label>
+                        <textarea id="kbContent" rows="6" required
+                            placeholder="Provide step-by-step instructions..."></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn-cancel" onclick="closeModal('kbArticleModal')">Cancel</button>
+                <button type="button" class="btn-submit" onclick="saveKBArticle()">Save Article</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/admin-common.js"></script>
+    <script src="../js/it-support-shared.js"></script>
+    <script>
+        let currentFilter = 'all';
+        let currentView = 'tickets';
+
+        function switchView(view) {
+            currentView = view;
+            document.getElementById('ticketView').style.display = view === 'tickets' ? 'block' : 'none';
+            document.getElementById('kbView').style.display = view === 'kb' ? 'block' : 'none';
+            document.getElementById('ticket-filters').style.display = view === 'tickets' ? 'flex' : 'none';
+
+            document.getElementById('tab-tickets').classList.toggle('active', view === 'tickets');
+            document.getElementById('tab-kb').classList.toggle('active', view === 'kb');
+
+            if (view === 'tickets') loadTickets();
+            else loadArticles();
+        }
+
+        // TICKET LOGIC
+        function loadTickets() {
+            const tickets = getTenantData('itTickets', []);
+            const container = document.getElementById('ticketContainer');
+
+            // Update Counts
+            document.getElementById('count-all').textContent = tickets.length;
+            document.getElementById('count-pending').textContent = tickets.filter(t => t.status === 'Pending').length;
+            document.getElementById('count-review').textContent = tickets.filter(t => t.status === 'In Review').length;
+            document.getElementById('count-completed').textContent = tickets.filter(t => t.status === 'Completed').length;
+
+            const filtered = currentFilter === 'all' ? tickets : tickets.filter(t => t.status === currentFilter);
+
+            container.innerHTML = filtered.length === 0 ? '<div style="text-align:center; padding:50px; color:#64748b;">No tickets found.</div>' : '';
+
+            filtered.forEach(t => {
+                const card = document.createElement('div');
+                card.className = 'ticket-card';
+                card.innerHTML = `
+                    <div class="ticket-info">
+                        <h4>
+                            <span class="status-pill status-${t.status.replace(/\s+/g, '-').toLowerCase()}">${t.status}</span>
+                            ${t.subject}
+                            <span class="badge-portal portal-${t.portal.toLowerCase()}">${t.portal}</span>
+                        </h4>
+                        <p>${t.description.substring(0, 100)}${t.description.length > 100 ? '...' : ''}</p>
+                        <div class="ticket-meta">
+                            <span><i class="fas fa-user"></i> ${t.userName}</span>
+                            <span><i class="fas fa-hashtag"></i> ${t.id}</span>
+                            <span><i class="fas fa-calendar"></i> ${new Date(t.date).toLocaleString()}</span>
+                            <span><i class="fas fa-exclamation-circle"></i> ${t.urgency}</span>
+                        </div>
+                    </div>
+                    <div class="ticket-actions">
+                        <button class="action-btn" style="background:#e2e8f0; color:#475569;" onclick="openTicket('${t.id}')">
+                            <i class="fas fa-eye"></i> View Details
+                        </button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function openTicket(id) {
+            const tickets = getTenantData('itTickets', []);
+            const ticket = tickets.find(t => t.id === id);
+            if (!ticket) return;
+
+            const content = document.getElementById('ticketModalContent');
+            const actions = document.getElementById('ticketModalActions');
+
+            content.innerHTML = `
+                <div style="display: grid; gap: 15px;">
+                    <div class="form-group">
+                        <label>Status</label>
+                        <span class="status-pill status-${ticket.status.replace(/\s+/g, '-').toLowerCase()}">${ticket.status}</span>
+                    </div>
+                    <div class="form-group">
+                        <label>Submitted By</label>
+                        <div style="font-weight:600;">${ticket.userName} (${ticket.portal})</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Category</label>
+                        <div>${ticket.category}</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Subject</label>
+                        <div style="font-weight:600;">${ticket.subject}</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <div style="background:#f8f9fa; padding:15px; border-radius:5px;">${ticket.description}</div>
+                    </div>
+                    ${ticket.resolution ? `
+                    <div class="form-group">
+                        <label>Resolution/Fix</label>
+                        <div style="background:#f0f9ff; padding:15px; border-radius:5px; border-left:4px solid #0369a1;">${ticket.resolution}</div>
+                    </div>` : ''}
+                </div>
+            `;
+
+            let actionButtons = `<button type="button" class="btn-cancel" onclick="closeModal('viewTicketModal')">Close</button>`;
+
+            if (ticket.status === 'Pending') {
+                actionButtons += `
+                    <button type="button" class="btn-submit" onclick="updateStatus('${ticket.id}', 'In Review')">Review</button>
+                    <button type="button" class="btn-delete" onclick="updateStatus('${ticket.id}', 'Rejected')">Reject</button>
+                `;
+            } else if (ticket.status === 'In Review') {
+                actionButtons += `
+                    <button type="button" class="btn-submit" onclick="promptResolution('${ticket.id}')">Resolve Ticket</button>
+                    <button type="button" class="btn-delete" onclick="updateStatus('${ticket.id}', 'Rejected')">Reject</button>
+                `;
+            } else if (ticket.status === 'Completed') {
+                actionButtons += `
+                    <button type="button" class="btn-submit" style="background:#10b981;" onclick="promoteToKB('${ticket.id}')">
+                        <i class="fas fa-plus"></i> Promote to KB
+                    </button>
+                `;
+            }
+
+            actions.innerHTML = actionButtons;
+            openModal('viewTicketModal');
+        }
+
+        function promptResolution(id) {
+            const resolution = prompt("Enter the resolution details for this ticket:");
+            if (resolution) {
+                const tickets = getTenantData('itTickets', []);
+                const idx = tickets.findIndex(t => t.id === id);
+                if (idx > -1) {
+                    tickets[idx].resolution = resolution;
+                    saveTenantData('itTickets', tickets);
+                    updateStatus(id, 'Completed');
+                }
+            }
+        }
+
+        function promoteToKB(id) {
+            const tickets = getTenantData('itTickets', []);
+            const t = tickets.find(it => it.id === id);
+            if (!t) return;
+
+            openKBModal();
+            document.getElementById('kbTitle').value = t.subject;
+            document.getElementById('kbCategory').value = t.category.split(' ')[0] || 'Software';
+            document.getElementById('kbContent').value = `Issue Description:\n${t.description}\n\nResolution:\n${t.resolution || 'No resolution logged.'}`;
+            document.getElementById('kbTags').value = t.portal.toLowerCase() + ", " + t.category.toLowerCase();
+
+            closeModal('viewTicketModal');
+        }
+
+        function updateStatus(id, newStatus) {
+            const tickets = getTenantData('itTickets', []);
+            const index = tickets.findIndex(t => t.id === id);
+
+            if (index !== -1) {
+                const oldStatus = tickets[index].status;
+                tickets[index].status = newStatus;
+                saveTenantData('itTickets', tickets);
+
+                if (typeof logAudit === 'function') {
+                    logAudit(`Ticket Update: ${newStatus}`, `Ticket #${id} changed from ${oldStatus} to ${newStatus}`);
+                }
+
+                closeModal('viewTicketModal');
+                loadTickets();
+                showSuccessMessage(`Ticket ${id} marked as ${newStatus}`);
+            }
+        }
+
+        function filterTickets(filter) {
+            currentFilter = filter;
+            loadTickets();
+        }
+
+        // KNOWLEDGE BASE LOGIC
+        function loadArticles(search = '') {
+            const container = document.getElementById('kbContainer');
+            const articles = getTenantData('itKnowledgeBase', []);
+
+            const filtered = articles.filter(a =>
+                a.title.toLowerCase().includes(search.toLowerCase()) ||
+                a.content.toLowerCase().includes(search.toLowerCase()) ||
+                a.category.toLowerCase().includes(search.toLowerCase())
+            );
+
+            container.innerHTML = filtered.length === 0 ? '<div style="text-align:center; padding:50px; color:#64748b;">No KB articles found.</div>' : '';
+
+            filtered.forEach(a => {
+                const card = document.createElement('div');
+                card.className = 'kb-article-card';
+                card.innerHTML = `
+                    <div class="kb-info">
+                        <h4>
+                            <i class="fas ${a.icon || 'fa-book'}" style="color:var(--school-primary, #0056b3);"></i>
+                            ${a.title}
+                        </h4>
+                        <p>${a.content.substring(0, 150)}${a.content.length > 150 ? '...' : ''}</p>
+                        <div class="kb-meta">
+                            <span><i class="fas fa-folder"></i> ${a.category}</span>
+                            <span><i class="fas fa-tags"></i> ${a.tags ? a.tags.join(', ') : 'No tags'}</span>
+                        </div>
+                    </div>
+                    <div class="kb-actions">
+                        <button class="action-btn" style="background:#e0f2fe; color:#0369a1;" onclick="editKBArticle(${a.id})">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button class="action-btn" style="background:#fee2e2; color:#991b1b;" onclick="deleteKBArticle(${a.id})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function openKBModal() {
+            document.getElementById('kbArticleForm').reset();
+            document.getElementById('kbId').value = '';
+            document.getElementById('kbModalHeader').textContent = 'New KB Article';
+            openModal('kbArticleModal');
+        }
+
+        function editKBArticle(id) {
+            const articles = getTenantData('itKnowledgeBase', []);
+            const a = articles.find(it => it.id === id);
+            if (!a) return;
+
+            document.getElementById('kbId').value = a.id;
+            document.getElementById('kbTitle').value = a.title;
+            document.getElementById('kbCategory').value = a.category;
+            document.getElementById('kbIcon').value = a.icon || 'fa-book';
+            document.getElementById('kbTags').value = a.tags ? a.tags.join(', ') : '';
+            document.getElementById('kbContent').value = a.content;
+
+            document.getElementById('kbModalHeader').textContent = 'Edit KB Article';
+            openModal('kbArticleModal');
+        }
+
+        function saveKBArticle() {
+            const id = document.getElementById('kbId').value;
+            const articles = getTenantData('itKnowledgeBase', []);
+
+            const article = {
+                id: id ? parseInt(id) : Date.now(),
+                title: document.getElementById('kbTitle').value,
+                category: document.getElementById('kbCategory').value,
+                icon: document.getElementById('kbIcon').value,
+                tags: document.getElementById('kbTags').value.split(',').map(s => s.trim()).filter(s => s),
+                content: document.getElementById('kbContent').value
+            };
+
+            if (id) {
+                const idx = articles.findIndex(a => a.id === parseInt(id));
+                articles[idx] = article;
+                showSuccessMessage("Article updated successfully");
+            } else {
+                articles.push(article);
+                showSuccessMessage("Article created successfully");
+            }
+
+            saveTenantData('itKnowledgeBase', articles);
+            closeModal('kbArticleModal');
+            loadArticles();
+        }
+
+        function deleteKBArticle(id) {
+            if (confirm("Are you sure you want to delete this article?")) {
+                const articles = getTenantData('itKnowledgeBase', []);
+                const filtered = articles.filter(a => a.id !== id);
+                saveTenantData('itKnowledgeBase', filtered);
+                loadArticles();
+                showSuccessMessage("Article deleted");
+            }
+        }
+
+        // Initialize view
+        switchView('tickets');
+    </script>
+    <script src="../js/admin-sidebar.js"></script>
+    <!-- ACADEX: Powered-by footer and school branding -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+
+</body>
+
+</html>
+

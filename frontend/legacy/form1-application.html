@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<script>window.location.href='apply.html?type=Form 1';</script>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form 1 Application - Embakwe High School</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        /* Reusing application styles */
+        .application-container {
+            max-width: 800px;
+            margin: 50px auto;
+            background: #fff;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-step {
+            display: none;
+        }
+
+        .form-step.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+
+        .step-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .step-indicator::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: #eee;
+            z-index: 0;
+        }
+
+        .step {
+            width: 30px;
+            height: 30px;
+            background: #eee;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #777;
+            font-weight: 600;
+            z-index: 1;
+            position: relative;
+        }
+
+        .step.active {
+            background: #0056b3;
+            color: white;
+        }
+
+        .step.completed {
+            background: #28a745;
+            color: white;
+        }
+
+        .form-section-title {
+            margin-bottom: 25px;
+            color: #0056b3;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <div class="container">
+            <div class="contact-info">
+                <span><i class="fas fa-phone"></i> +263 123 456 789</span>
+                <span><i class="fas fa-envelope"></i> info@embakwe.ac.zw</span>
+            </div>
+            <div class="portal-links">
+                <a href="student/login.html"><i class="fas fa-user-graduate"></i> Student Portal</a>
+                <a href="teacher/login.html"><i class="fas fa-chalkboard-teacher"></i> Teacher Portal</a>
+                <a href="alumni/login.html"><i class="fas fa-user-tie"></i> Alumni Portal</a>
+                <a href="admin/login.html"><i class="fas fa-lock"></i> Admin</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="logo">
+                <h1>Embakwe High School</h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="departments.html">Departments</a></li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle active">Applications</a>
+                        <div class="dropdown-content">
+                            <a href="form1-application.html" style="color: #0056b3 !important;">Form 1 Admission</a>
+                            <a href="alevel-application.html">A-Level Admission</a>
+                        </div>
+                    </li>
+                    <li><a href="gallery.html">Gallery</a></li>
+                    <li><a href="news.html">News</a></li>
+                    <li><a href="sports.html">Sports</a></li>
+                    <li><a href="clubs.html">Clubs</a></li>
+                    <li><a href="check-status.html" class="btn-track">Track Application</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+            </nav>
+            <div class="menu-toggle"><i class="fas fa-bars"></i></div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="application-container">
+            <h2 style="text-align: center; margin-bottom: 30px;">Form 1 Application (2026 Intake)</h2>
+
+            <div class="step-indicator">
+                <div class="step active" data-step="1">1</div>
+                <div class="step" data-step="2">2</div>
+                <div class="step" data-step="3">3</div>
+            </div>
+
+            <form id="form1AppForm">
+                <!-- Step 1: Personal Details -->
+                <div class="form-step active" id="step1">
+                    <h3 class="form-section-title">Personal Details</h3>
+                    <div class="form-group">
+                        <label class="form-label">Full Name</label>
+                        <input type="text" class="form-control" name="fullName" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Date of Birth</label>
+                        <input type="date" class="form-control" name="dob" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email Address</label>
+                        <input type="email" class="form-control" name="email" placeholder="Required for login" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Gender</label>
+                        <select class="form-control" name="gender" required>
+                            <option value="">Select Gender</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Current Primary School</label>
+                        <input type="text" class="form-control" name="primarySchool" required>
+                    </div>
+                    <button type="button" class="btn" onclick="nextStep(2)">Next: Grade 7 Results</button>
+                </div>
+
+                <!-- Step 2: Grade 7 Results -->
+                <div class="form-step" id="step2">
+                    <h3 class="form-section-title">Grade 7 Examination Results (Units)</h3>
+                    <p style="margin-bottom: 20px; font-size: 0.9rem; color: #666;">Please enter your Grade 7 Units
+                        (1-9) for each subject.</p>
+
+                    <div class="results-grid">
+                        <div class="form-group">
+                            <label class="form-label">Mathematics</label>
+                            <input type="number" class="form-control" name="maths" min="1" max="9" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">English</label>
+                            <input type="number" class="form-control" name="english" min="1" max="9" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">General Paper</label>
+                            <input type="number" class="form-control" name="general" min="1" max="9" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Indigenous Language</label>
+                            <input type="number" class="form-control" name="language" min="1" max="9" required>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 20px;">
+                        <button type="button" class="btn" style="background: #6c757d;"
+                            onclick="prevStep(1)">Previous</button>
+                        <button type="button" class="btn" onclick="nextStep(3)">Next: Review</button>
+                    </div>
+                </div>
+
+                <!-- Step 3: Review & Submit -->
+                <div class="form-step" id="step3">
+                    <h3 class="form-section-title">Review Application</h3>
+                    <div id="reviewContent"
+                        style="background: #f8f9fa; padding: 20px; border-radius: 5px; margin-bottom: 20px;">
+                        <!-- JS populated -->
+                    </div>
+
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" required> I certify that the information provided is true and
+                            correct.
+                        </label>
+                    </div>
+
+                    <div>
+                        <button type="button" class="btn" style="background: #6c757d;"
+                            onclick="prevStep(2)">Previous</button>
+                        <button type="submit" class="btn" style="background: #28a745;">Submit Application</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-bottom">
+                <p>&copy; 2023 Embakwe High School. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Success Modal -->
+    <div id="successModal" class="modal">
+        <div class="modal-content" style="text-align: center; max-width: 500px;">
+            <div style="color: #28a745; font-size: 3rem; margin-bottom: 20px;"><i class="fas fa-check-circle"></i></div>
+            <h2 style="color: #003d82; margin-bottom: 10px;">Application Submitted!</h2>
+            <p>Please save these credentials immediately. You will need them to log in.</p>
+
+            <div
+                style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin: 20px 0; border: 2px dashed #0056b3;">
+                <p style="margin-bottom: 5px; font-size: 0.9rem; color: #666;">Application ID</p>
+                <h3 id="modalAppId"
+                    style="color: #003d82; font-size: 1.5rem; letter-spacing: 1px; margin-bottom: 15px;">F1-XXXXXX</h3>
+
+                <p style="margin-bottom: 5px; font-size: 0.9rem; color: #666;">Password</p>
+                <h3 id="modalAppPass" style="color: #003d82; font-size: 1.5rem; letter-spacing: 1px;">XXXXXX</h3>
+            </div>
+
+            <button onclick="window.location.href='check-status.html'" class="btn btn-primary"
+                style="width: 100%; padding: 15px; font-size: 1.1rem;">
+                <i class="fas fa-sign-in-alt"></i> Proceed to Tracking Portal
+            </button>
+        </div>
+    </div>
+
+    <style>
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+    </style>
+
+    <script src="js/app-utils.js"></script>
+    <script src="js/form1-application.js"></script>
+</body>
+
+</html>

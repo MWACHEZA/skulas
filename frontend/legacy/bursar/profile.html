@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bursar Profile - ACADEX</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        .profile-hero {
+            background: linear-gradient(135deg, var(--sidebar-bg) 0%, #1f2937 100%);
+            height: 120px;
+            border-radius: 16px 16px 0 0;
+        }
+
+        .profile-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: var(--card-shadow);
+            overflow: hidden;
+            text-align: center;
+        }
+
+        .profile-card-body {
+            padding: 0 24px 28px;
+        }
+
+        .profile-avatar-wrap {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 5px solid white;
+            background: #e8f0fe;
+            margin: -60px auto 16px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .profile-avatar-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-avatar-wrap .initials-avatar {
+            width: 100%;
+            height: 100%;
+            background: var(--school-primary, var(--school-primary, #0056b3));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        .profile-name {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #1a2035;
+            margin-bottom: 4px;
+        }
+
+        .profile-role {
+            color: var(--school-primary, var(--school-primary, #0056b3));
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+        }
+
+        .profile-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            text-align: left;
+            padding: 18px;
+            background: rgba(var(--school-primary-rgb, 0, 86, 179), 0.04);
+            border-radius: 10px;
+        }
+
+        .profile-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.85rem;
+            color: #555;
+        }
+
+        .profile-meta-item i {
+            width: 18px;
+            color: var(--school-primary, var(--school-primary, #0056b3));
+        }
+
+        .info-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: var(--card-shadow);
+            padding: 28px;
+            margin-bottom: 20px;
+        }
+
+        .info-card h3 {
+            margin: 0 0 20px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #1a2035;
+            border-bottom: 2px solid #e8f0fe;
+            padding-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .info-row {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .info-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #9aacca;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-value {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #2d3748;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin-container">
+        <!-- Sidebar — pulled from existing bursar pages -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <img src="../images/logo.png" alt="School Logo" class="acadex-school-logo">
+                <h3>Finance Portal</h3>
+            </div>
+            <div class="sidebar-menu">
+                <div class="sidebar-section-title">Finance</div>
+                <ul>
+                    <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
+                    <li><a href="fees-management.html"><i class="fas fa-money-bill-wave"></i><span>Fees
+                                Management</span></a></li>
+                    <li><a href="reports.html"><i class="fas fa-chart-bar"></i><span>Financial Reports</span></a></li>
+                    <li><a href="payroll.html"><i class="fas fa-file-invoice-dollar"></i><span>Payroll</span></a></li>
+                    <li><a href="procurement.html"><i class="fas fa-shopping-cart"></i><span>Procurement</span></a></li>
+                </ul>
+                <div class="sidebar-section-title">Operations</div>
+                <ul>
+                    <li><a href="tuckshop-expenses.html"><i class="fas fa-store"></i><span>Tuckshop Expenses</span></a>
+                    </li>
+                    <li><a href="bank-management.html"><i class="fas fa-university"></i><span>Bank Management</span></a>
+                    </li>
+                    <li><a href="receipt-verification.html"><i class="fas fa-receipt"></i><span>Receipt
+                                Verification</span></a></li>
+                </ul>
+                <div class="sidebar-section-title">Account</div>
+                <ul>
+                    <li><a href="profile.html" class="active"><i class="fas fa-id-card"></i><span>My Profile</span></a>
+                    </li>
+                    <li><a href="settings.html"><i class="fas fa-cog"></i><span>Settings</span></a></li>
+                </ul>
+            </div>
+            <div class="sidebar-footer">
+                <a href="login.html"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="top-header">
+                <h2>My Profile</h2>
+                <div class="user-profile">
+                    <div style="text-align:right;margin-right:10px;">
+                        <div style="font-weight:600;font-size:0.9rem;" id="headerName">Bursar</div>
+                        <div style="font-size:0.75rem;color:#888;" id="headerRole">Finance Officer</div>
+                    </div>
+                    <img src="../images/admin-avatar.png" alt="Avatar" id="headerAvatar"
+                        style="width:40px;height:40px;border-radius:50%;object-fit:cover;">
+                </div>
+            </div>
+
+            <div class="content-area">
+                <div style="display:grid;grid-template-columns:280px 1fr;gap:24px;align-items:start;">
+
+                    <!-- Profile Card -->
+                    <div class="profile-card">
+                        <div class="profile-hero"></div>
+                        <div class="profile-card-body">
+                            <div class="profile-avatar-wrap" id="profileAvatarWrap">
+                                <div class="initials-avatar" id="initialsAvatar">BS</div>
+                            </div>
+                            <div class="profile-name" id="profileName">Bursar</div>
+                            <div class="profile-role" id="profileRoleTitle">Finance Officer</div>
+                            <div class="profile-meta">
+                                <div class="profile-meta-item"><i class="fas fa-envelope"></i><span
+                                        id="profileEmailMeta">—</span></div>
+                                <div class="profile-meta-item"><i class="fas fa-phone"></i><span
+                                        id="profilePhoneMeta">—</span></div>
+                                <div class="profile-meta-item"><i class="fas fa-building"></i><span
+                                        id="profileDeptMeta">—</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Details -->
+                    <div>
+
+                        <!-- Personal -->
+                        <div class="info-card">
+                            <h3><i class="fas fa-user" style="color: var(--school-primary, var(--school-primary, #0056b3))"></i> Personal Information</h3>
+                            <div class="info-grid">
+                                <div class="info-row"><span class="info-label">Full Name</span><span class="info-value"
+                                        id="displayFullName">—</span></div>
+                                <div class="info-row"><span class="info-label">Date of Birth</span><span
+                                        class="info-value" id="displayDOB">—</span></div>
+                                <div class="info-row"><span class="info-label">Gender</span><span class="info-value"
+                                        id="displayGender">—</span></div>
+                                <div class="info-row"><span class="info-label">National ID</span><span
+                                        class="info-value" id="displayNationalId">—</span></div>
+                                <div class="info-row"><span class="info-label">Phone</span><span class="info-value"
+                                        id="displayPhone">—</span></div>
+                                <div class="info-row" style="grid-column:1/-1;"><span
+                                        class="info-label">Address</span><span class="info-value"
+                                        id="displayAddress">—</span></div>
+                            </div>
+                        </div>
+
+                        <!-- Employment -->
+                        <div class="info-card">
+                            <h3><i class="fas fa-coins" style="color: var(--school-primary, var(--school-primary, #0056b3))"></i> Employment Details</h3>
+                            <div class="info-grid">
+                                <div class="info-row"><span class="info-label">Employee ID</span><span
+                                        class="info-value" id="displayEmployeeId">—</span></div>
+                                <div class="info-row"><span class="info-label">Department</span><span class="info-value"
+                                        id="displayDepartment">—</span></div>
+                                <div class="info-row"><span class="info-label">Role</span><span class="info-value"
+                                        id="displayRole">—</span></div>
+                                <div class="info-row"><span class="info-label">Qualification</span><span
+                                        class="info-value" id="displayQualification">—</span></div>
+                                <div class="info-row"><span class="info-label">Email</span><span class="info-value"
+                                        id="displayEmail">—</span></div>
+                                <div class="info-row"><span class="info-label">Join Date</span><span class="info-value"
+                                        id="displayJoinDate">—</span></div>
+                            </div>
+                        </div>
+
+                        <!-- Family & NOK -->
+                        <div class="info-card">
+                            <h3><i class="fas fa-users" style="color: var(--school-primary, var(--school-primary, #0056b3))"></i> Family &amp; Next of Kin</h3>
+                            <div class="info-grid">
+                                <div class="info-row"><span class="info-label">Marital Status</span><span
+                                        class="info-value" id="displayMarital">—</span></div>
+                                <div class="info-row"><span class="info-label">Spouse's Name</span><span
+                                        class="info-value" id="displaySpouseName">—</span></div>
+                                <div class="info-row"><span class="info-label">Spouse's Phone</span><span
+                                        class="info-value" id="displaySpousePhone">—</span></div>
+                                <div class="info-row"><span class="info-label">Spouse's Occupation</span><span
+                                        class="info-value" id="displaySpouseOccupation">—</span></div>
+                            </div>
+                            <hr style="margin:18px 0;border:none;border-top:1px solid #e8f0fe;">
+                            <div class="info-grid">
+                                <div class="info-row"><span class="info-label">Next of Kin</span><span
+                                        class="info-value" id="displayNokName">—</span></div>
+                                <div class="info-row"><span class="info-label">Relationship</span><span
+                                        class="info-value" id="displayNokRelation">—</span></div>
+                                <div class="info-row"><span class="info-label">NOK Phone</span><span class="info-value"
+                                        id="displayNokPhone">—</span></div>
+                                <div class="info-row"><span class="info-label">NOK Address</span><span
+                                        class="info-value" id="displayNokAddress">—</span></div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/audit-logger.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const email = sessionStorage.getItem('bursarEmail');
+            if (!email) return;
+
+            const bursars = getTenantData('bursars', '[]');
+            const user = bursars.find(b => b.email === email);
+            if (!user) return;
+
+            const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val || '—'; };
+
+            // Header
+            set('headerName', user.name);
+            set('headerRole', user.role || 'Bursar');
+
+            // Profile card
+            set('profileName', user.name);
+            set('profileRoleTitle', user.role || 'Finance Officer');
+            set('profileEmailMeta', user.email);
+            set('profilePhoneMeta', user.phone || '—');
+            set('profileDeptMeta', user.department || '—');
+
+            // Avatar
+            const wrap = document.getElementById('profileAvatarWrap');
+            if (user.profilePic) {
+                wrap.innerHTML = `<img src="${user.profilePic}" alt="Profile">`;
+                document.getElementById('headerAvatar').src = user.profilePic;
+            } else {
+                const initials = (user.firstName || user.name || 'B').charAt(0).toUpperCase() +
+                    (user.lastName ? user.lastName.charAt(0).toUpperCase() : 'S');
+                wrap.innerHTML = `<div class="initials-avatar">${initials}</div>`;
+            }
+
+            // Personal
+            set('displayFullName', user.name);
+            set('displayDOB', user.dob ? new Date(user.dob).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : null);
+            set('displayGender', user.gender);
+            set('displayNationalId', user.nationalId);
+            set('displayPhone', user.phone);
+            set('displayAddress', user.address);
+
+            // Employment
+            set('displayEmployeeId', user.employeeId);
+            set('displayDepartment', user.department);
+            set('displayRole', user.role);
+            set('displayQualification', user.qualification);
+            set('displayEmail', user.email);
+            set('displayJoinDate', user.joinDate ? new Date(user.joinDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : null);
+
+            // Family
+            set('displayMarital', user.maritalStatus);
+            const isMarried = user.maritalStatus === 'Married';
+            set('displaySpouseName', isMarried ? user.spouseName : 'N/A');
+            set('displaySpousePhone', isMarried ? user.spousePhone : 'N/A');
+            set('displaySpouseOccupation', isMarried ? user.spouseOccupation : 'N/A');
+            set('displayNokName', user.nokName);
+            set('displayNokRelation', user.nokRelation);
+            set('displayNokPhone', user.nokPhone);
+            set('displayNokAddress', user.nokAddress);
+        });
+    </script>
+    <!-- ACADEX: Powered-by footer and school branding -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+
+</body>
+
+</html>
+

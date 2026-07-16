@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory - Tuckshop Portal</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/library-portal.css">
+    <link rel="stylesheet" href="../css/ancillary-portal.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <img src="../images/logo.png" alt="Logo" class="acadex-school-logo">
+                <h3>ANCILLARY PORTAL</h3>
+            </div>
+            <div class="sidebar-menu">
+                <ul>
+                    <li><a href="dashboard.html"><i class="fas fa-th-large"></i>
+                            <span>Dashboard</span></a></li>
+                </ul>
+
+                <div id="tuckshop-sidebar-section" style="display: none;">
+                    <div class="sidebar-section-title">Tuckshop System</div>
+                    <ul>
+                        <li><a href="tuckshop-dashboard.html"><i class="fas fa-tachometer-alt"></i>
+                                <span>TS Dashboard</span></a></li>
+                        <li><a href="tuckshop-sales.html"><i class="fas fa-cash-register"></i> <span>Point of
+                                    Sale</span></a>
+                        </li>
+                        <li><a href="tuckshop-inventory.html" class="active"><i class="fas fa-boxes"></i>
+                                <span>Inventory</span></a>
+                        </li>
+                        <li><a href="tuckshop-orders.html"><i class="fas fa-truck"></i> <span>Supplier Orders</span></a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="sidebar-section-title">Operations</div>
+                <ul>
+                    <li><a href="staff-directory.html"><i class="fas fa-users"></i> <span>Staff
+                                Directory</span></a>
+                    </li>
+                    <li><a href="procurement.html"><i class="fas fa-shopping-cart"></i>
+                            <span>Procurement</span></a>
+                    </li>
+                    <li><a href="assets.html"><i class="fas fa-boxes"></i> <span>Asset
+                                Management</span></a></li>
+                    <li><a href="schedules.html"><i class="fas fa-calendar-alt"></i> <span>Schedules &
+                                Shifts</span></a>
+                    </li>
+                </ul>
+
+                <div class="sidebar-section-title">Support & HR</div>
+                <ul>
+                    <li><a href="sdc-portal.html"><i class="fas fa-file-invoice-dollar"></i> <span>SDC
+                                Staff
+                                Portal</span></a></li>
+                    <li><a href="hr-services.html"><i class="fas fa-user-shield"></i> <span>HR
+                                Services</span></a></li>
+                    <li><a href="profile.html"><i class="fas fa-id-card"></i> <span>My Profile</span></a>
+                    </li>
+                    <li><a href="resources.html"><i class="fas fa-folder-open"></i> <span>Resources &
+                                Docs</span></a>
+                    </li>
+                    <li><a href="it-support.html"><i class="fas fa-headset"></i> <span>IT
+                                Support</span></a>
+                    </li>
+                </ul>
+
+                <div class="sidebar-section-title">Communication</div>
+                <ul>
+                    <li><a href="news.html"><i class="fas fa-newspaper"></i> <span>News &
+                                Updates</span></a></li>
+                    <li><a href="training.html"><i class="fas fa-graduation-cap"></i> <span>Training &
+                                Dev</span></a>
+                    </li>
+                    <li><a href="feedback.html"><i class="fas fa-comment-dots"></i>
+                            <span>Feedback</span></a></li>
+                    <li><a href="contact.html"><i class="fas fa-address-book"></i> <span>Contact
+                                Us</span></a></li>
+                </ul>
+            </div>
+            <div class="sidebar-footer">
+                <a href="login.html"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="top-header">
+                <h2>Inventory Management</h2>
+                <div class="user-profile">
+                    <div style="text-align: right; margin-right: 10px;">
+                        <div style="font-weight: 600; font-size: 0.9rem;">Tuckshop Manager</div>
+                        <div style="font-size: 0.75rem; color: #888;">Ancillary Staff</div>
+                    </div>
+                    <img src="../images/admin-avatar.png" alt="Admin">
+                </div>
+            </div>
+
+            <div class="content-area">
+                <div class="glass-card" style="padding: 25px;">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <div class="search-box" style="width: 300px;">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="invSearch" placeholder="Search products..."
+                                style="border: 1px solid #ddd; padding: 8px 10px 8px 35px; border-radius: 6px; width: 100%;">
+                        </div>
+                        <button class="btn btn-primary" onclick="openModal('addProductModal')"><i
+                                class="fas fa-plus"></i> Add Product</button>
+                    </div>
+
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Item Name</th>
+                                <th>Category</th>
+                                <th>Price</th>
+                                <th>Stock Level</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inventoryTableBody">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Product Modal -->
+    <div id="addProductModal" class="modal">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h3><i class="fas fa-box-open"></i> Add New Product</h3>
+                <span class="close-modal" onclick="closeModal('addProductModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="addProductForm">
+                    <div class="form-group" style="margin-bottom: 15px;">
+                        <label class="form-label"
+                            style="display: block; margin-bottom: 5px; font-weight: 600; color: #4b5563;">Product
+                            Name</label>
+                        <input type="text" id="prodName" class="form-control" placeholder="e.g. Cheese Puffs" required
+                            style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px;">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 15px;">
+                        <label class="form-label"
+                            style="display: block; margin-bottom: 5px; font-weight: 600; color: #4b5563;">Category</label>
+                        <div style="display: flex; gap: 10px;">
+                            <select id="prodCat" class="form-control" required
+                                style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 8px;">
+                                <!-- Populated by JS -->
+                                <option value="Snacks">Snacks</option>
+                                <option value="Drinks">Drinks</option>
+                                <option value="Hot Food">Hot Food</option>
+                                <option value="Sweets">Sweets</option>
+                                <option value="Stationery">Stationery</option>
+                            </select>
+                            <button type="button" class="btn btn-outline" onclick="openAddCategoryModal('prodCat')"
+                                style="padding: 0 15px; border-radius: 8px; border: 1px dashed var(--school-primary); color: var(--school-primary);">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px;">
+                        <div class="form-group" style="margin-bottom: 15px;">
+                            <label class="form-label"
+                                style="display: block; margin-bottom: 5px; font-weight: 600; color: #4b5563;">Price
+                                (USD)</label>
+                            <input type="number" id="prodPrice" step="0.01" class="form-control" placeholder="0.50"
+                                required
+                                style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px;">
+                        </div>
+                        <div class="form-group" style="margin-bottom: 15px;">
+                            <label class="form-label"
+                                style="display: block; margin-bottom: 5px; font-weight: 600; color: #4b5563;">Price
+                                (ZAR)</label>
+                            <input type="number" id="prodPriceZAR" step="0.01" class="form-control" placeholder="10.00"
+                                required
+                                style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px;">
+                        </div>
+                        <div class="form-group" style="margin-bottom: 15px;">
+                            <label class="form-label"
+                                style="display: block; margin-bottom: 5px; font-weight: 600; color: #4b5563;">Price
+                                (ZiG)</label>
+                            <input type="number" id="prodPriceZiG" step="0.01" class="form-control" placeholder="15.00"
+                                required
+                                style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px;">
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 15px;">
+                        <label class="form-label"
+                            style="display: block; margin-bottom: 5px; font-weight: 600; color: #4b5563;">Opening
+                            Stock</label>
+                        <input type="number" id="prodStock" class="form-control" placeholder="50" required
+                            style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px;">
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Save Product</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Product Modal -->
+    <div id="editProductModal" class="modal">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h3><i class="fas fa-edit"></i> Edit Product</h3>
+                <span class="close-modal" onclick="closeModal('editProductModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="editProductForm">
+                    <input type="hidden" id="editProdId">
+                    <div class="form-group" style="margin-bottom: 15px;">
+                        <label class="form-label"
+                            style="display: block; margin-bottom: 5px; font-weight: 600; color: #4b5563;">Product
+                            Name</label>
+                        <input type="text" id="editProdName" class="form-control" placeholder="e.g. Cheese Puffs"
+                            required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px;">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 15px;">
+                        <label class="form-label"
+                            style="display: block; margin-bottom: 5px; font-weight: 600; color: #4b5563;">Category</label>
+                        <div style="display: flex; gap: 10px;">
+                            <select id="editProdCat" class="form-control" required
+                                style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 8px;">
+                                <!-- Populated by JS -->
+                            </select>
+                            <button type="button" class="btn btn-outline" onclick="openAddCategoryModal('editProdCat')"
+                                style="padding: 0 15px; border-radius: 8px; border: 1px dashed var(--school-primary); color: var(--school-primary);">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px;">
+                        <div class="form-group" style="margin-bottom: 15px;">
+                            <label class="form-label"
+                                style="display: block; margin-bottom: 5px; font-weight: 600; color: #4b5563;">Price
+                                (USD)</label>
+                            <input type="number" id="editProdPrice" step="0.01" class="form-control" placeholder="0.50"
+                                required
+                                style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px;">
+                        </div>
+                        <div class="form-group" style="margin-bottom: 15px;">
+                            <label class="form-label"
+                                style="display: block; margin-bottom: 5px; font-weight: 600; color: #4b5563;">Price
+                                (ZAR)</label>
+                            <input type="number" id="editProdPriceZAR" step="0.01" class="form-control"
+                                placeholder="10.00" required
+                                style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px;">
+                        </div>
+                        <div class="form-group" style="margin-bottom: 15px;">
+                            <label class="form-label"
+                                style="display: block; margin-bottom: 5px; font-weight: 600; color: #4b5563;">Price
+                                (ZiG)</label>
+                            <input type="number" id="editProdPriceZiG" step="0.01" class="form-control"
+                                placeholder="15.00" required
+                                style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px;">
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 15px;">
+                        <label class="form-label"
+                            style="display: block; margin-bottom: 5px; font-weight: 600; color: #4b5563;">Stock
+                            Level</label>
+                        <input type="number" id="editProdStock" class="form-control" placeholder="0" required
+                            style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px;">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 15px;">
+                        <label class="form-label"
+                            style="display: block; margin-bottom: 5px; font-weight: 600; color: #4b5563;">Low Stock
+                            Threshold</label>
+                        <input type="number" id="editProdThreshold" class="form-control" placeholder="5" required
+                            style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px;">
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Update Product</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteConfirmModal" class="modal">
+        <div class="modal-content" style="max-width: 400px; text-align: center;">
+            <div class="modal-header" style="justify-content: center;">
+                <h3 style="color: #ef4444;"><i class="fas fa-exclamation-triangle"></i> Confirm Delete</h3>
+            </div>
+            <div class="modal-body" style="padding: 20px;">
+                <p>Are you sure you want to delete <strong id="deleteItemName">this item</strong>?</p>
+                <p style="font-size: 0.85rem; color: #888; margin-top: 10px;">This action cannot be undone.</p>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 25px;">
+                    <button class="btn btn-outline" onclick="closeModal('deleteConfirmModal')">Cancel</button>
+                    <button class="btn btn-danger" id="confirmDeleteBtn">Delete Item</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dynamic Category Modal -->
+    <div id="addCategoryModal" class="modal">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header">
+                <h3><i class="fas fa-plus-circle"></i> Add New Category</h3>
+                <span class="close-modal" onclick="closeModal('addCategoryModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="addCategoryForm">
+                    <input type="hidden" id="targetSelectId">
+                    <div class="form-group" style="margin-bottom: 20px;">
+                        <label class="form-label"
+                            style="display: block; margin-bottom: 8px; font-weight: 600; color: #4b5563;">Category
+                            Name</label>
+                        <input type="text" id="newCategoryName" class="form-control" placeholder="e.g. Toiletries"
+                            required style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px;">
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px;">Save
+                        Category</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    </script>
+    <script src="../js/ancillary-common.js"></script>
+    <script src="../js/tuckshop.js"></script>
+    <!-- ACADEX: Powered-by footer and school branding -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asset Management - ACADEX</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/ancillary-portal.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        /* ASSET SPECIFIC STYLES */
+        .asset-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .astat-box {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+            text-align: center;
+        }
+
+        .astat-box .val {
+            display: block;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .astat-box .lab {
+            display: block;
+            font-size: 0.8rem;
+            color: #64748b;
+            margin-top: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .asset-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .asset-table th {
+            text-align: left;
+            background: #f8fafc;
+            padding: 15px;
+            font-size: 0.85rem;
+            color: #64748b;
+            border-bottom: 2px solid #f1f5f9;
+        }
+
+        .asset-table td {
+            padding: 15px;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 0.9rem;
+        }
+
+        .asset-id {
+            font-family: monospace;
+            font-weight: 600;
+            color: var(--school-primary);
+            background: #f0f9ff;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .asset-status {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.75rem;
+        }
+
+        .status-active {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-maint {
+            background: #fef9c3;
+            color: #854d0e;
+        }
+
+        .status-lost {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .filter-bar {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            align-items: center;
+            background: white;
+            padding: 15px 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+        }
+
+        .filter-bar input,
+        .filter-bar select {
+            padding: 10px 15px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.9rem;
+        }
+
+        .search-input {
+            flex: 1;
+        }
+
+        .report-form {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .form-full {
+            grid-column: span 2;
+        }
+
+        .report-form input,
+        .report-form textarea,
+        .report-form select {
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            font-family: inherit;
+        }
+
+        .btn-action {
+            width: 100%;
+            background: var(--school-primary);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 10px;
+        }
+
+        .btn-action:hover {
+            background: var(--school-primary-dark, #003d82);
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            margin-bottom: 25px;
+        }
+
+        .card-header {
+            padding: 20px 25px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-header h3 {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--school-primary-dark, #003d82);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-body {
+            padding: 25px;
+        }
+
+        .content-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 25px;
+        }
+
+        @media (max-width: 1024px) {
+            .content-row {
+                grid-template-columns: 1fr;
+            }
+
+            .asset-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Mobile Toggle Button -->
+    <button class="mobile-toggle" id="mobile-toggle">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <div class="dashboard-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <img src="../images/logo.png" alt="Logo" class="acadex-school-logo">
+                <h3>ANCILLARY PORTAL</h3>
+            </div>
+            <div class="sidebar-menu">
+                <ul>
+                    <li><a href="dashboard.html"><i class="fas fa-th-large"></i> <span>Dashboard</span></a></li>
+                </ul>
+
+                <div id="tuckshop-sidebar-section" style="display: none;">
+                    <div class="sidebar-section-title">Tuckshop System</div>
+                    <ul>
+                        <li><a href="tuckshop-dashboard.html"><i class="fas fa-tachometer-alt"></i> <span>TS
+                                    Dashboard</span></a></li>
+                        <li><a href="tuckshop-sales.html"><i class="fas fa-cash-register"></i> <span>Point of
+                                    Sale</span></a></li>
+                        <li><a href="tuckshop-inventory.html"><i class="fas fa-boxes"></i> <span>Inventory</span></a>
+                        </li>
+                        <li><a href="tuckshop-orders.html"><i class="fas fa-truck"></i> <span>Supplier
+                                    Orders</span></a></li>
+                    </ul>
+                </div>
+
+                <div class="sidebar-section-title">Operations</div>
+                <ul>
+                    <li><a href="staff-directory.html"><i class="fas fa-users"></i> <span>Staff Directory</span></a>
+                    </li>
+                    <li><a href="procurement.html"><i class="fas fa-shopping-cart"></i> <span>Procurement</span></a>
+                    </li>
+                    <li><a href="assets.html" class="active"><i class="fas fa-boxes"></i> <span>Asset
+                                Management</span></a></li>
+                    <li><a href="schedules.html"><i class="fas fa-calendar-alt"></i> <span>Schedules & Shifts</span></a>
+                    </li>
+                </ul>
+
+                <div class="sidebar-section-title">Support & HR</div>
+                <ul>
+                    <li><a href="sdc-portal.html"><i class="fas fa-file-invoice-dollar"></i> <span>SDC Staff
+                                Portal</span></a></li>
+                    <li><a href="hr-services.html"><i class="fas fa-user-shield"></i> <span>HR Services</span></a></li>
+                    <li><a href="profile.html"><i class="fas fa-id-card"></i> <span>My Profile</span></a></li>
+                    <li><a href="resources.html"><i class="fas fa-folder-open"></i> <span>Resources & Docs</span></a>
+                    </li>
+                    <li><a href="it-support.html"><i class="fas fa-headset"></i> <span>IT Support</span></a></li>
+                </ul>
+
+                <div class="sidebar-section-title">Communication</div>
+                <ul>
+                    <li><a href="news.html"><i class="fas fa-newspaper"></i> <span>News & Updates</span></a></li>
+                    <li><a href="feedback.html"><i class="fas fa-comment-dots"></i> <span>Feedback</span></a></li>
+                    <li><a href="contact.html"><i class="fas fa-address-book"></i> <span>Contact Us</span></a></li>
+                </ul>
+            </div>
+            <div class="sidebar-footer">
+                <a href="login.html"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <h1 style="margin-bottom: 10px; color: #1e293b;">Asset Management</h1>
+            <p style="margin-bottom: 30px; color: #64748b;">Centralized register and tracking for school assets and
+                equipment.</p>
+
+            <div class="asset-stats">
+                <div class="astat-box">
+                    <span class="val" id="totalAssets">0</span>
+                    <span class="lab">My Assets</span>
+                </div>
+                <div class="astat-box">
+                    <span class="val" id="maintAssets">0</span>
+                    <span class="lab">In Maintenance</span>
+                </div>
+                <div class="astat-box">
+                    <span class="val" id="reportedIssues">0</span>
+                    <span class="lab">Reported Issues</span>
+                </div>
+                <div class="astat-box" id="assetValueBox">
+                    <span class="val" id="totalValue">$0</span>
+                    <span class="lab">Asset Value</span>
+                </div>
+            </div>
+
+            <div class="filter-bar">
+                <input type="text" id="assetSearch" placeholder="Search by Asset ID or Name..." class="search-input">
+                <select id="categoryFilter">
+                    <option value="all">All Categories</option>
+                    <option value="ict equipment">ICT Equipment</option>
+                    <option value="vehicles">Vehicles</option>
+                    <option value="kitchen equipment">Kitchen Equipment</option>
+                    <option value="maintenance tools">Maintenance Tools</option>
+                    <option value="furniture">Furniture</option>
+                </select>
+                <select id="statusFilter">
+                    <option value="all">All Statuses</option>
+                    <option value="excellent">Excellent</option>
+                    <option value="good">Good</option>
+                    <option value="fair">Fair</option>
+                    <option value="damaged">Damaged</option>
+                </select>
+            </div>
+
+            <div class="content-row" style="display: grid; grid-template-columns: 2fr 1fr; gap: 25px;">
+                <div class="content-left">
+                    <!-- Asset Register -->
+                    <section class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-list"></i> My Assigned Assets</h3>
+                            <div style="display: flex; gap: 10px;">
+                                <button class="btn-action" id="exportBtn"
+                                    style="padding: 8px 15px; margin-top:0; background: #10b981;"><i
+                                        class="fas fa-file-export"></i> Export</button>
+                                <button class="btn-action" id="addNewAssetBtn"
+                                    style="padding: 8px 15px; margin-top:0;"><i class="fas fa-plus"></i> Add
+                                    New</button>
+                            </div>
+                        </div>
+                        <div class="card-body" style="padding: 0;">
+                            <table class="asset-table">
+                                <thead>
+                                    <tr>
+                                        <th>Asset ID</th>
+                                        <th>Asset Name</th>
+                                        <th>Location</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="assetsTableBody">
+                                    <!-- Populated by JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+
+                    <!-- User Incident History -->
+                    <section class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-history"></i> My Incident History</h3>
+                        </div>
+                        <div class="card-body" style="padding: 0;">
+                            <table class="asset-table">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Asset ID</th>
+                                        <th>Issue Type</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="userIncidentHistoryBody">
+                                    <!-- Populated by JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+                </div>
+
+                <div class="content-right">
+                    <!-- Report Lost/Damaged -->
+                    <section class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-exclamation-circle"></i> Incident Reporting</h3>
+                        </div>
+                        <div class="card-body">
+                            <p style="font-size: 0.85rem; color: #666; margin-bottom: 20px;">Use this form to report
+                                lost, damaged, or stolen school property immediately.</p>
+                            <form class="report-form" id="incidentForm">
+                                <div class="form-full" style="display: flex; flex-direction: column; gap: 5px;">
+                                    <label style="font-size: 0.85rem; font-weight: 500;">Asset ID / Serial
+                                        Number</label>
+                                    <input type="text" id="reportAssetId" placeholder="e.g., EHS-ICT-123" required>
+                                </div>
+                                <div class="form-full" style="display: flex; flex-direction: column; gap: 5px;">
+                                    <label style="font-size: 0.85rem; font-weight: 500;">Issue Type</label>
+                                    <select id="incidentType" required>
+                                        <option value="">Select Incident Type</option>
+                                        <option>Accidental Damage</option>
+                                        <option>Technical Malfunction</option>
+                                        <option>Loss of Equipment</option>
+                                        <option>Theft/Vandalism</option>
+                                    </select>
+                                </div>
+                                <div class="form-full" style="display: flex; flex-direction: column; gap: 5px;">
+                                    <label style="font-size: 0.85rem; font-weight: 500;">Details of Incident</label>
+                                    <textarea id="incidentDetails" rows="4"
+                                        placeholder="Describe what happened..."></textarea>
+                                </div>
+                                <button type="submit" class="btn-action">Submit Incident Report</button>
+                            </form>
+                        </div>
+                    </section>
+
+                    <!-- Maintenance Schedule -->
+                    <section class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-wrench"></i> Upcoming Maintenance</h3>
+                        </div>
+                        <div class="card-body" id="maintenanceHub">
+                            <!-- Populated by JS -->
+                        </div>
+                    </section>
+
+                    <!-- Asset Policies -->
+                    <section class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-shield-alt"></i> Asset Policies</h3>
+                        </div>
+                        <div class="card-body" style="padding-top: 15px;">
+                            <a href="#"
+                                style="display: flex; align-items: center; gap: 15px; text-decoration: none; color: #334155; margin-bottom: 15px;">
+                                <i class="fas fa-file-pdf" style="color: #ef4444; font-size: 1.2rem;"></i>
+                                <span style="font-size: 0.9rem;">Acceptable Use Policy</span>
+                            </a>
+                            <a href="#"
+                                style="display: flex; align-items: center; gap: 15px; text-decoration: none; color: #334155;">
+                                <i class="fas fa-file-pdf" style="color: #ef4444; font-size: 1.2rem;"></i>
+                                <span style="font-size: 0.9rem;">Asset Care & Security</span>
+                            </a>
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+            <!-- ADD NEW ASSET MODAL -->
+            <div id="assetModal" class="modal">
+                <div class="modal-content" style="max-width: 500px;">
+                    <div class="modal-header">
+                        <h3><i class="fas fa-plus-circle"></i> Add New Asset</h3>
+                        <span class="close-modal">&times;</span>
+                    </div>
+                    <div class="modal-body">
+                        <form id="addNewAssetForm" class="report-form"
+                            style="display: flex; flex-direction: column; gap: 15px;">
+                            <div class="form-group" style="display: flex; flex-direction: column; gap: 5px;">
+                                <label style="font-size: 0.85rem; font-weight: 500;">Asset Name</label>
+                                <input type="text" id="newName" placeholder="e.g., Office Desk" required>
+                            </div>
+                            <div class="form-group" style="display: flex; flex-direction: column; gap: 5px;">
+                                <label style="font-size: 0.85rem; font-weight: 500;">Category</label>
+                                <select id="newCategory" required>
+                                    <option value="ict equipment">ICT Equipment</option>
+                                    <option value="vehicles">Vehicles</option>
+                                    <option value="kitchen equipment">Kitchen Equipment</option>
+                                    <option value="maintenance tools">Maintenance Tools</option>
+                                    <option value="furniture">Furniture</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="display: flex; flex-direction: column; gap: 5px;">
+                                <label style="font-size: 0.85rem; font-weight: 500;">Location</label>
+                                <input type="text" id="newLocation" placeholder="e.g., Admin Block" required>
+                            </div>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                                <div class="form-group" style="display: flex; flex-direction: column; gap: 5px;">
+                                    <label style="font-size: 0.85rem; font-weight: 500;">Cost (USD)</label>
+                                    <input type="number" id="newCost" placeholder="0.00" step="0.01" required>
+                                </div>
+                                <div class="form-group" style="display: flex; flex-direction: column; gap: 5px;">
+                                    <label style="font-size: 0.85rem; font-weight: 500;">Maint. Date</label>
+                                    <input type="date" id="newMaintDate" required>
+                                </div>
+                            </div>
+                            <div class="form-group" style="display: flex; flex-direction: column; gap: 5px;">
+                                <label style="font-size: 0.85rem; font-weight: 500;">Initial Status</label>
+                                <select id="newStatus">
+                                    <option value="excellent">Excellent</option>
+                                    <option value="good">Good</option>
+                                    <option value="fair">Fair</option>
+                                    <option value="damaged">Damaged</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn-action" style="background:var(--school-primary);">Register Asset</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Resolution Modal -->
+            <div id="resolutionModal" class="modal"
+                style="display:none; position:fixed; z-index:2000; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.5); align-items:center; justify-content:center;">
+                <div class="modal-content"
+                    style="background:white; padding:25px; border-radius:12px; width:90%; max-width:500px; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
+                    <div
+                        style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; border-bottom:1px solid #f1f5f9; padding-bottom:12px;">
+                        <h3 style="margin:0; color:#1e293b;"><i class="fas fa-tools" style="color:#10b981;"></i> Resolve
+                            Incident</h3>
+                        <button type="button" onclick="closeResModal()"
+                            style="border:none; background:none; font-size:1.5rem; cursor:pointer; color:#64748b;">&times;</button>
+                    </div>
+                    <form id="resForm">
+                        <input type="hidden" id="resIncidentId">
+                        <div style="margin-bottom:16px;">
+                            <label
+                                style="display:block; font-size:0.85rem; font-weight:600; color:#475569; margin-bottom:6px;">Discovery
+                                Method</label>
+                            <input type="text" id="resDiscovery" placeholder="How was the issue identified?" required
+                                style="width:100%; padding:10px; border:1px solid #e2e8f0; border-radius:8px; font-size:0.9rem;">
+                        </div>
+                        <div style="margin-bottom:16px;">
+                            <label
+                                style="display:block; font-size:0.85rem; font-weight:600; color:#475569; margin-bottom:6px;">Action
+                                Taken</label>
+                            <input type="text" id="resAction" placeholder="Brief summary of steps taken" required
+                                style="width:100%; padding:10px; border:1px solid #e2e8f0; border-radius:8px; font-size:0.9rem;">
+                        </div>
+                        <div style="margin-bottom:16px;">
+                            <label
+                                style="display:block; font-size:0.85rem; font-weight:600; color:#475569; margin-bottom:6px;">Technical
+                                Fix Details</label>
+                            <textarea id="resFixDetails" rows="3"
+                                placeholder="Explain the specific parts or software fixed..." required
+                                style="width:100%; padding:10px; border:1px solid #e2e8f0; border-radius:8px; font-size:0.9rem; font-family:inherit;"></textarea>
+                        </div>
+                        <div style="margin-bottom:24px;">
+                            <label
+                                style="display:block; font-size:0.85rem; font-weight:600; color:#475569; margin-bottom:6px;">Final
+                                Property Status</label>
+                            <select id="resStatus"
+                                style="width:100%; padding:10px; border:1px solid #e2e8f0; border-radius:8px; font-size:0.9rem; background:white;">
+                                <option value="excellent">Excellent</option>
+                                <option value="good">Good</option>
+                                <option value="fair">Fair (Usable)</option>
+                                <option value="damaged">Damaged (Needs monitoring)</option>
+                                <option value="unusable">Unusable (Scrap/Decommission)</option>
+                            </select>
+                        </div>
+                        <div style="display:flex; justify-content:flex-end; gap:12px;">
+                            <button type="button" onclick="closeResModal()"
+                                style="padding:10px 24px; border:1px solid #e2e8f0; background:#f8fafc; color:#64748b; border-radius:8px; cursor:pointer; font-weight:500;">Cancel</button>
+                            <button type="submit"
+                                style="padding:10px 24px; border:none; background:#10b981; color:white; border-radius:8px; cursor:pointer; font-weight:600;">Complete
+                                Resolution</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <script src="../js/ancillary-common.js"></script>
+            <script src="../js/asset-manager.js"></script>
+            <script src="../js/audit-logger.js"></script>
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    // Get current user info from session
+                    const userJson = sessionStorage.getItem('ancillaryUser');
+                    if (!userJson) {
+                        alert('Session expired. Please log in again.');
+                        window.location.href = 'login.html';
+                        return;
+                    }
+                    const user = JSON.parse(userJson);
+                    const userEmail = user.email || 'staff@acadex.com';
+                    const isWorkshopManager = user.secondaryRole === 'Workshop Manager';
+
+                    let currentViewMode = 'personal'; // 'personal' or 'global'
+
+                    // UI Elements
+                    const assetsTableBody = document.getElementById('assetsTableBody');
+                    const searchInput = document.getElementById('assetSearch');
+                    const categoryFilter = document.getElementById('categoryFilter');
+                    const statusFilter = document.getElementById('statusFilter');
+                    const maintenanceHub = document.getElementById('maintenanceHub');
+
+                    // Statistics Elements
+                    const totalAssetsEl = document.getElementById('totalAssets');
+                    const maintAssetsEl = document.getElementById('maintAssets');
+                    const reportedIssuesEl = document.getElementById('reportedIssues');
+                    const totalValueEl = document.getElementById('totalValue');
+
+                    // Inject Workshop Manager UI if applicable
+                    if (isWorkshopManager) {
+                        const headerActions = document.querySelector('.header-actions');
+                        const toggleContainer = document.createElement('div');
+                        toggleContainer.style.cssText = 'display: flex; gap: 10px; align-items: center; margin-right: 20px;';
+                        toggleContainer.innerHTML = `
+                            <label style="font-size: 0.85rem; font-weight: 500; color: #64748b;">View Mode:</label>
+                            <select id="viewModeToggle" style="padding: 5px 10px; border-radius: 5px; border: 1px solid #e2e8f0; font-size: 0.85rem;">
+                                <option value="personal">My Assets</option>
+                                <option value="global">Global Oversight</option>
+                            </select>
+                        `;
+                        headerActions.insertBefore(toggleContainer, headerActions.firstChild);
+
+                        document.getElementById('viewModeToggle').addEventListener('change', function (e) {
+                            currentViewMode = e.target.value;
+                            updateDisplay();
+                        });
+                    }
+
+                    function updateDisplay() {
+                        const query = searchInput.value.toLowerCase();
+                        const category = categoryFilter.value.toLowerCase();
+                        const status = statusFilter.value.toLowerCase();
+
+                        const sourceAssets = currentViewMode === 'global' ? AssetManager.getAssets() : AssetManager.getUserAssets(userEmail);
+
+                        const filtered = sourceAssets.filter(asset => {
+                            const matchesSearch = asset.name.toLowerCase().includes(query) || asset.id.toLowerCase().includes(query);
+                            const matchesCategory = category === 'all' || asset.category.toLowerCase() === category;
+                            const matchesStatus = status === 'all' || asset.status.toLowerCase() === status;
+                            return matchesSearch && matchesCategory && matchesStatus;
+                        });
+
+                        assetsTableBody.innerHTML = '';
+
+                        if (filtered.length === 0) {
+                            assetsTableBody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 20px; color: #64748b;">No assets found matching your criteria.</td></tr>';
+                        } else {
+                            filtered.forEach(asset => {
+                                const tr = document.createElement('tr');
+                                tr.innerHTML = `
+                            <td><span class="asset-id">${asset.id}</span></td>
+                            <td>${asset.name}${currentViewMode === 'global' ? `<br><small style="color:#64748b;">${asset.custodian}</small>` : ''}</td>
+                            <td>${asset.location}</td>
+                            <td><span class="asset-status status-${asset.status === 'damaged' ? 'lost' : (asset.status === 'fair' ? 'maint' : 'active')}">${asset.status.toUpperCase()}</span></td>
+                            <td>
+                                <button class="btn-action" style="padding: 5px 10px; font-size: 0.8rem; margin: 0; background: #64748b;" onclick="reportIssue('${asset.id}', '${asset.name}')">Report Issue</button>
+                            </td>
+                        `;
+                                assetsTableBody.appendChild(tr);
+                            });
+                        }
+
+                        // Update Stats
+                        totalAssetsEl.textContent = sourceAssets.length;
+                        maintAssetsEl.textContent = sourceAssets.filter(a => a.status === 'fair').length;
+
+                        const incidents = AssetManager.getIncidents();
+                        reportedIssuesEl.textContent = currentViewMode === 'global' ?
+                            incidents.filter(i => i.status === 'Pending').length :
+                            incidents.filter(i => i.reporterEmail === userEmail).length;
+
+                        const totalVal = sourceAssets.reduce((sum, a) => sum + (a.cost || 0), 0);
+                        totalValueEl.textContent = '$' + totalVal.toLocaleString();
+
+                        // Update Maintenance Hub
+                        renderMaintenance(sourceAssets);
+
+                        if (currentViewMode === 'global') {
+                            renderGlobalIncidents();
+                        } else {
+                            renderPersonalIncidents();
+                            renderUserIncidentHistory();
+                        }
+                    }
+
+                    function renderUserIncidentHistory() {
+                        const tbody = document.getElementById('userIncidentHistoryBody');
+                        if (!tbody) return;
+
+                        const incidents = AssetManager.getIncidents()
+                            .filter(i => i.reporterEmail === userEmail)
+                            .reverse();
+
+                        if (incidents.length === 0) {
+                            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding: 20px; color: #64748b;">No issues reported by you.</td></tr>';
+                            return;
+                        }
+
+                        tbody.innerHTML = '';
+                        incidents.forEach(i => {
+                            const dateStr = new Date(i.timestamp || Date.now()).toLocaleDateString();
+                            const tr = document.createElement('tr');
+                            tr.innerHTML = `
+                                <td>${dateStr}</td>
+                                <td><span class="asset-id">${i.assetId}</span></td>
+                                <td>${i.issueType}</td>
+                                <td><span class="asset-status status-${i.status === 'Pending' ? 'lost' : 'active'}">${i.status.toUpperCase()}</span></td>
+                            `;
+                            tbody.appendChild(tr);
+                        });
+                    }
+
+                    function renderPersonalIncidents() {
+                        const incidentList = document.querySelector('.incident-list');
+                        if (!incidentList) return;
+                        incidentList.innerHTML = '';
+                        const incidents = AssetManager.getIncidents().filter(i => i.reporterEmail === userEmail).reverse().slice(0, 5);
+                        if (incidents.length === 0) {
+                            incidentList.innerHTML = '<p style="text-align:center; color:#64748b; font-size:0.8rem;">No incidents reported.</p>';
+                        } else {
+                            incidents.forEach(i => {
+                                const div = document.createElement('div');
+                                div.style.cssText = 'padding: 8px; border-bottom: 1px solid #eee;';
+                                div.innerHTML = `<div style="display:flex; justify-content:space-between; font-size:0.85rem;"><strong>${i.assetId}</strong><span style="color:${i.status === 'Pending' ? '#ef4444' : '#10b981'}">${i.status}</span></div>`;
+                                incidentList.appendChild(div);
+                            });
+                        }
+                    }
+
+                    function renderGlobalIncidents() {
+                        const incidentList = document.querySelector('.incident-list');
+                        if (!incidentList) return;
+                        incidentList.innerHTML = '';
+                        const incidents = AssetManager.getIncidents().reverse().slice(0, 5);
+                        if (incidents.length === 0) {
+                            incidentList.innerHTML = '<p style="text-align:center; color:#64748b; font-size:0.8rem;">No global incidents.</p>';
+                        } else {
+                            incidents.forEach(i => {
+                                const div = document.createElement('div');
+                                div.style.cssText = 'padding: 8px; border-bottom: 1px solid #eee;';
+                                div.innerHTML = `
+                                    <div style="display:flex; justify-content:space-between; font-size:0.85rem;">
+                                        <strong>${i.assetId}</strong>
+                                        <span style="color:${i.status === 'Pending' ? '#ef4444' : '#10b981'}">${i.status}</span>
+                                    </div>
+                                    <div style="font-size:0.75rem; color:#666; margin-top:2px;">${i.issueType}</div>
+                                    ${i.status === 'Pending' ? `<button onclick="resolveByWorkshop('${i.id}')" style="margin-top:5px; padding:2px 8px; font-size:0.75rem; background:#10b981; color:white; border:none; border-radius:3px; cursor:pointer;">Resolve</button>` : ''}
+                                `;
+                                incidentList.appendChild(div);
+                            });
+                        }
+                    }
+
+                    const resModal = document.getElementById('resolutionModal');
+                    const resForm = document.getElementById('resForm');
+
+                    window.resolveByWorkshop = function (id) {
+                        document.getElementById('resIncidentId').value = id;
+                        resForm.reset();
+                        resModal.style.display = 'flex';
+                    };
+
+                    window.closeResModal = function () {
+                        resModal.style.display = 'none';
+                    };
+
+                    resForm.onsubmit = function (e) {
+                        e.preventDefault();
+                        const id = document.getElementById('resIncidentId').value;
+                        const resolverInfo = {
+                            name: user.name + ' (Workshop Manager)',
+                            discoveryMethod: document.getElementById('resDiscovery').value,
+                            actionTaken: document.getElementById('resAction').value,
+                            fixDetails: document.getElementById('resFixDetails').value,
+                            details: document.getElementById('resAction').value,
+                            newStatus: document.getElementById('resStatus').value
+                        };
+
+                        if (AssetManager.resolveIncident(id, resolverInfo)) {
+                            showNotification('Incident resolved successfully.', 'success');
+                            closeResModal();
+                            updateDisplay();
+                        } else {
+                            showNotification('Error recording resolution.', 'error');
+                        }
+                    };
+
+                    function renderMaintenance(assets) {
+                        maintenanceHub.innerHTML = '';
+                        const upcoming = assets
+                            .filter(a => a.nextMaintenance && a.nextMaintenance.trim() !== '')
+                            .sort((a, b) => new Date(a.nextMaintenance) - new Date(b.nextMaintenance))
+                            .slice(0, 3);
+
+                        if (upcoming.length === 0) {
+                            maintenanceHub.innerHTML = '<p style="text-align:center; color:#64748b; font-size:0.9rem;">No upcoming maintenance scheduled.</p>';
+                            return;
+                        }
+
+                        upcoming.forEach(asset => {
+                            const div = document.createElement('div');
+                            div.style.cssText = 'border-left: 4px solid var(--school-primary); padding: 12px; background: #f0f7ff; border-radius: 8px; margin-bottom: 12px;';
+                            div.innerHTML = `
+                        <p style="margin: 0; font-weight: 600; font-size: 0.9rem;">${asset.name}</p>
+                        <p style="margin: 3px 0 0; font-size: 0.8rem; color: #555;">Next Service: ${asset.nextMaintenance}</p>
+                        <p style="margin: 5px 0 0; font-size: 0.75rem; color: var(--school-primary); font-weight: 600;">Due in ${Math.ceil((new Date(asset.nextMaintenance) - new Date()) / (1000 * 60 * 60 * 24))} days</p>
+                    `;
+                            maintenanceHub.appendChild(div);
+                        });
+                    }
+
+                    // Global functions
+                    window.reportIssue = function (id, name) {
+                        document.getElementById('reportAssetId').value = id;
+                        document.getElementById('incidentType').focus();
+                        showNotification(`Reporting issue for ${name}`, 'info');
+                    };
+
+                    // Event Listeners
+                    searchInput.addEventListener('input', updateDisplay);
+                    categoryFilter.addEventListener('change', updateDisplay);
+                    statusFilter.addEventListener('change', updateDisplay);
+
+                    // Add Asset Logic
+                    const modal = document.getElementById('assetModal');
+                    const addBtn = document.getElementById('addNewAssetBtn');
+                    const closeModalBtn = document.querySelector('.close-modal');
+
+                    addBtn.onclick = () => modal.style.display = "flex";
+                    closeModalBtn.onclick = () => modal.style.display = "none";
+                    window.onclick = (e) => { if (e.target == modal) modal.style.display = "none"; }
+
+                    document.getElementById('addNewAssetForm').onsubmit = function (e) {
+                        e.preventDefault();
+                        const newAsset = {
+                            id: 'EHS-' + Math.random().toString(36).substr(2, 6).toUpperCase(),
+                            name: document.getElementById('newName').value,
+                            category: document.getElementById('newCategory').value,
+                            location: document.getElementById('newLocation').value,
+                            cost: parseFloat(document.getElementById('newCost').value) || 0,
+                            nextMaintenance: document.getElementById('newMaintDate').value,
+                            status: document.getElementById('newStatus').value,
+                            custodian: user.name,
+                            email: userEmail
+                        };
+
+                        AssetManager.addAsset(newAsset);
+                        showNotification(`Asset "${newAsset.name}" registered successfully.`, 'success');
+                        modal.style.display = "none";
+                        this.reset();
+                        updateDisplay();
+                    };
+
+                    // Incident Reporting
+                    document.getElementById('incidentForm').onsubmit = function (e) {
+                        e.preventDefault();
+                        const incident = {
+                            assetId: document.getElementById('reportAssetId').value,
+                            issueType: document.getElementById('incidentType').value,
+                            details: document.getElementById('incidentDetails').value,
+                            reporterName: user.name,
+                            reporterEmail: userEmail
+                        };
+
+                        AssetManager.addIncident(incident);
+                        showNotification(`Incident report submitted for ${incident.assetId}`, 'success');
+                        this.reset();
+                        updateDisplay();
+                    };
+
+                    // Export logic
+                    document.getElementById('exportBtn').onclick = () => {
+                        const assets = AssetManager.getUserAssets(userEmail);
+                        if (assets.length === 0) {
+                            showNotification('No assets to export.', 'error');
+                            return;
+                        }
+
+                        let csv = 'Asset ID,Asset Name,Category,Location,Status,Cost,Next Maintenance\n';
+                        assets.forEach(a => {
+                            csv += `${a.id},${a.name},${a.category},${a.location},${a.status},${a.cost},${a.nextMaintenance}\n`;
+                        });
+
+                        showNotification('Exporting asset list to CSV...', 'info');
+                        if (typeof simulateDownload === 'function') {
+                            simulateDownload('my-assets-export.csv', csv, 'text/csv');
+                        } else {
+                            const blob = new Blob([csv], { type: 'text/csv' });
+                            const url = URL.createObjectURL(blob);
+                            const a = document.createElement('a');
+                            a.href = url;
+                            a.download = 'my-assets-export.csv';
+                            document.body.appendChild(a);
+                            a.click();
+                            document.body.removeChild(a);
+                        }
+                    };
+
+                    // Initial Load
+                    updateDisplay();
+                });
+            </script>
+    <!-- ACADEX: Powered-by footer and school branding -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+
+</body>
+    <!-- ACADEX: Powered-by footer and school branding -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+
+</body>
+
+</html>

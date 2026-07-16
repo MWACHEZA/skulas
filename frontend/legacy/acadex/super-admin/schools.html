@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Schools — ACADEX Super Admin</title>
+  <link rel="stylesheet" href="../css/acadex.css" />
+  <style>
+    body { background: var(--acadex-navy); }
+    .page-title { font-family: var(--font-display); font-size: 1.5rem; font-weight: 700; }
+    .page-sub { font-size: 0.875rem; color: var(--acadex-gray-400); margin-top: 2px; }
+    .content-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 16px; padding: 1.5rem; margin-bottom: 1.5rem; }
+    .status-pill { display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 999px; font-size: 0.72rem; font-weight: 700; }
+    .s-active { background: rgba(16,185,129,0.12); color: #34d399; }
+    .s-trial { background: rgba(37,99,235,0.12); color: #60a5fa; }
+    .s-suspended { background: rgba(239,68,68,0.12); color: #f87171; }
+    .plan-chip { display: inline-block; font-size: 0.7rem; font-weight: 700; padding: 2px 8px; border-radius: 999px; }
+    .plan-starter { background: rgba(100,116,139,0.15); color: #94a3b8; }
+    .plan-professional { background: rgba(37,99,235,0.15); color: #60a5fa; }
+    .plan-enterprise { background: rgba(245,158,11,0.15); color: #fcd34d; }
+    .action-btn { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; padding: 5px 10px; font-size: 0.75rem; font-weight: 600; color: var(--acadex-gray-300); cursor: pointer; transition: var(--transition); }
+    .action-btn:hover { background: rgba(255,255,255,0.12); color: white; }
+    .filter-bar { display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap; }
+    .filter-chip { padding: 6px 14px; border-radius: 999px; font-size: 0.8rem; font-weight: 600; border: 1px solid rgba(255,255,255,0.12); background: transparent; color: var(--acadex-gray-400); cursor: pointer; transition: var(--transition); }
+    .filter-chip.active, .filter-chip:hover { border-color: var(--acadex-blue-light); color: var(--acadex-blue-light); background: rgba(37,99,235,0.08); }
+    /* Modal */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 9000; display: none; align-items: center; justify-content: center; padding: 1rem; }
+    .modal-overlay.show { display: flex; }
+    .modal-box { background: var(--acadex-navy-800); border: 1px solid rgba(255,255,255,0.12); border-radius: 20px; padding: 2rem; max-width: 520px; width: 100%; max-height: 90vh; overflow-y: auto; }
+    .modal-title { font-family: var(--font-display); font-size: 1.2rem; font-weight: 700; margin-bottom: 1.25rem; }
+    .detail-row { display: flex; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.875rem; }
+    .detail-label { color: var(--acadex-gray-500); width: 140px; flex-shrink: 0; }
+    .detail-value { font-weight: 600; }
+  </style>
+</head>
+<body>
+<div class="sa-layout">
+  <!-- SIDEBAR -->
+  <div class="sa-sidebar">
+    <div class="sa-sidebar-logo">
+      <a href="../index.html" style="display:flex;align-items:center;gap:8px;">
+        <div class="nav-logo-icon" style="width:32px;height:32px;font-size:0.9rem;">A</div>
+        <div style="font-family:var(--font-display);font-size:1.1rem;font-weight:800;">ACAD<span style="color:var(--acadex-gold);">EX</span></div>
+      </a>
+      <div style="font-size:0.65rem;color:var(--acadex-gray-600);margin-top:4px;letter-spacing:0.08em;text-transform:uppercase;">Super Admin</div>
+    </div>
+    <div class="sa-nav-section">Platform</div>
+    <a href="dashboard.html" class="sa-nav-item">📊 Dashboard</a>
+    <a href="schools.html" class="sa-nav-item active">🏫 Schools</a>
+    <a href="subscriptions.html" class="sa-nav-item">💳 Subscriptions</a>
+    <div class="sa-nav-section">System</div>
+    <a href="#" class="sa-nav-item">📢 Announcements</a>
+    <a href="#" class="sa-nav-item">🔒 Security</a>
+    <a href="#" class="sa-nav-item">📋 Audit Logs</a>
+    <div style="flex:1;"></div>
+    <div style="padding:1rem 1.25rem;border-top:1px solid rgba(255,255,255,0.07);">
+      <a href="../index.html" class="sa-nav-item" style="border:none;padding:8px 0;color:var(--acadex-gray-500);font-size:0.8rem;">← Back to ACADEX Site</a>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <main class="sa-main">
+    <div class="sa-header">
+      <div>
+        <div class="page-title">School Management</div>
+        <div class="page-sub">View, edit, suspend, or remove registered schools.</div>
+      </div>
+      <a href="../onboard.html" class="btn btn-primary btn-sm">+ Register New School</a>
+    </div>
+
+    <!-- FILTERS -->
+    <div class="content-card" style="padding:1rem 1.5rem;">
+      <div class="filter-bar">
+        <input type="text" placeholder="Search by name, code, or country…" class="form-control" style="flex:1;min-width:200px;padding:8px 14px;font-size:0.85rem;" id="searchInput" oninput="renderTable()" />
+        <button class="filter-chip active" onclick="setFilter('all',this)">All</button>
+        <button class="filter-chip" onclick="setFilter('trial',this)">Trial</button>
+        <button class="filter-chip" onclick="setFilter('active',this)">Active</button>
+        <button class="filter-chip" onclick="setFilter('suspended',this)">Suspended</button>
+        <select class="form-control" style="width:auto;padding:8px 12px;font-size:0.82rem;" id="planFilter" onchange="renderTable()">
+          <option value="">All Plans</option>
+          <option value="starter">Starter</option>
+          <option value="professional">Professional</option>
+          <option value="enterprise">Enterprise</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- SCHOOLS TABLE -->
+    <div class="content-card">
+      <div class="content-card-header" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
+        <div style="font-weight:700;">Schools <span id="countBadge" class="badge badge-blue" style="margin-left:6px;"></span></div>
+      </div>
+      <div style="overflow-x:auto;">
+        <table class="acadex-table">
+          <thead>
+            <tr>
+              <th>School</th>
+              <th>Type</th>
+              <th>Country</th>
+              <th>Plan</th>
+              <th>Status</th>
+              <th>Students</th>
+              <th>Admin</th>
+              <th>Trial Ends</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="schoolsTbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- VIEW MODAL -->
+<div class="modal-overlay" id="viewModal">
+  <div class="modal-box">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;">
+      <div class="modal-title" id="modalTitle">School Details</div>
+      <button class="action-btn" onclick="closeModal()">✕ Close</button>
+    </div>
+    <div id="modalContent"></div>
+    <div style="display:flex;gap:0.75rem;margin-top:1.5rem;" id="modalActions"></div>
+  </div>
+</div>
+
+<script src="../js/acadex-core.js"></script>
+<script src="../js/acadex-subscription.js"></script>
+<script>
+  let currentFilter = 'all';
+  let allSchools = [];
+
+  function setFilter(f, el) {
+    currentFilter = f;
+    document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    renderTable();
+  }
+
+  function renderTable() {
+    allSchools = AcadexCore.getAllSchools();
+    const search = document.getElementById('searchInput').value.toLowerCase();
+    const plan = document.getElementById('planFilter').value;
+    
+    // Base filter
+    const filtered = allSchools.filter(s => {
+      if (currentFilter !== 'all' && s.status !== currentFilter) return false;
+      if (plan && s.plan !== plan) return false;
+      if (search) return s.name.toLowerCase().includes(search) || s.code.toLowerCase().includes(search) || (s.country || '').toLowerCase().includes(search);
+      return true;
+    });
+
+    // Group parents and children visually
+    const parents = filtered.filter(s => s.isParent);
+    const children = filtered.filter(s => !s.isParent);
+    const sortedList = [];
+
+    parents.forEach(p => {
+      sortedList.push(p);
+      const kids = children.filter(c => c.parentId === p.id);
+      sortedList.push(...kids);
+    });
+    
+    // Add any orphans (just in case they exist from old data)
+    children.forEach(c => {
+      if (!parents.find(p => p.id === c.parentId) && !sortedList.includes(c)) {
+        sortedList.push(c);
+      }
+    });
+
+    document.getElementById('countBadge').textContent = sortedList.length;
+    const tbody = document.getElementById('schoolsTbody');
+    if (sortedList.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;color:var(--acadex-gray-600);padding:2.5rem;">No schools match your filter.</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = sortedList.map(s => {
+      const isChild = !s.isParent && s.parentId;
+      const rowStyle = isChild ? 'background:rgba(255,255,255,0.015);' : '';
+      const namePrefix = isChild ? '<span style="color:var(--acadex-gray-500);margin-right:8px;">↳</span>' : '';
+      
+      const planConfig = ACADEX_PLANS[s.plan] || {};
+      const statusClass = { active:'s-active', trial:'s-trial', suspended:'s-suspended' }[s.status] || 's-trial';
+      const trialDate = s.trialEnds && !isChild ? new Date(s.trialEnds).toLocaleDateString() : '—';
+      const students = s.students || (isChild ? 'Included' : 0);
+      const admin = isChild ? 'Managed by Parent' : (s.adminName||'—');
+
+      return `<tr style="${rowStyle}">
+        <td style="${isChild ? 'padding-left:24px;' : ''}">
+          <div style="font-weight:700;font-size:0.9rem;">${namePrefix}${s.name}</div>
+          <div style="font-size:0.72rem;color:var(--acadex-gray-500);${isChild ? 'margin-left:20px;' : ''}">${s.code}</div>
+        </td>
+        <td style="font-size:0.82rem;color:var(--acadex-gray-400);text-transform:capitalize;">${s.type||'—'}</td>
+        <td style="font-size:0.82rem;">${s.country||'—'}</td>
+        <td><span class="${isChild ? '' : 'plan-chip plan-' + s.plan}" style="${isChild ? 'font-size:0.75rem;color:var(--acadex-gray-500);' : ''}">${isChild ? 'Included' : (planConfig.name||s.plan)}</span></td>
+        <td><span class="status-pill ${statusClass}">${s.status}</span></td>
+        <td style="font-size:0.88rem;color:${isChild?'var(--acadex-gray-500)':'inherit'}">${students}</td>
+        <td style="font-size:0.8rem;color:${isChild?'var(--acadex-gray-500)':'inherit'}">${admin}</td>
+        <td style="font-size:0.78rem;color:var(--acadex-gray-400);">${trialDate}</td>
+        <td><div style="display:flex;gap:5px;flex-wrap:wrap;">
+          <button class="action-btn" onclick="viewSchool('${s.id}')">👁 View</button>
+          <button class="action-btn" onclick="editSchool('${s.id}')">✏️ Edit</button>
+          ${!isChild ? `<button class="action-btn" onclick="toggleStatus('${s.id}','${s.status}')">${s.status==='suspended'?'▶ Activate':'⏸ Suspend'}</button>` : ''}
+          ${!isChild ? `<button class="action-btn" onclick="changePlan('${s.id}')">🔄 Plan</button>` : ''}
+          ${!isChild ? `<button class="action-btn" onclick="deleteSchool('${s.id}')" style="color:#f87171;">🗑</button>` : ''}
+        </div></td>
+      </tr>`;
+    }).join('');
+  }
+
+  function viewSchool(id) {
+    const s = AcadexCore.getSchoolById(id);
+    if (!s) return;
+    const plan = ACADEX_PLANS[s.plan] || {};
+    document.getElementById('modalTitle').textContent = s.name;
+    document.getElementById('modalContent').innerHTML = `
+      <div class="detail-row"><div class="detail-label">School Code</div><div class="detail-value" style="color:var(--acadex-blue-light);font-family:monospace;">${s.code}</div></div>
+      <div class="detail-row"><div class="detail-label">Type</div><div class="detail-value">${s.type||'—'}</div></div>
+      <div class="detail-row"><div class="detail-label">Country</div><div class="detail-value">${s.country||'—'}</div></div>
+      <div class="detail-row"><div class="detail-label">Address</div><div class="detail-value">${s.address||'—'}</div></div>
+      <div class="detail-row"><div class="detail-label">Email</div><div class="detail-value">${s.email||'—'}</div></div>
+      <div class="detail-row"><div class="detail-label">Phone</div><div class="detail-value">${s.phone||'—'}</div></div>
+      <div class="detail-row"><div class="detail-label">Students</div><div class="detail-value">${s.students||0}</div></div>
+      <div class="detail-row"><div class="detail-label">Plan</div><div class="detail-value" style="color:${plan.color||'#60a5fa'};">${plan.name||s.plan} — $${plan.price||0}/mo</div></div>
+      <div class="detail-row"><div class="detail-label">Status</div><div class="detail-value">${s.status}</div></div>
+      <div class="detail-row"><div class="detail-label">Admin</div><div class="detail-value">${s.adminName} (${s.adminEmail})</div></div>
+      <div class="detail-row" style="border:none;"><div class="detail-label">Registered</div><div class="detail-value">${new Date(s.joinedAt).toLocaleDateString()}</div></div>
+    `;
+    document.getElementById('modalActions').innerHTML = `
+      <button class="btn btn-ghost btn-sm" onclick="toggleStatus('${s.id}','${s.status}');closeModal();">${s.status==='suspended'?'▶ Activate':'⏸ Suspend'}</button>
+      <button class="btn btn-primary btn-sm" onclick="editSchool('${s.id}');" style="margin-left:auto;">✏️ Edit</button>
+      <button class="btn btn-ghost btn-sm" onclick="deleteSchool('${s.id}');closeModal();" style="color:#f87171;">🗑 Delete</button>
+    `;
+    document.getElementById('viewModal').classList.add('show');
+  }
+
+  function editSchool(id) {
+    const s = AcadexCore.getSchoolById(id);
+    if (!s) return;
+    document.getElementById('modalTitle').textContent = 'Edit School: ' + s.name;
+    document.getElementById('modalContent').innerHTML = `
+      <div style="margin-bottom:12px;">
+        <label style="display:block;font-size:0.8rem;margin-bottom:4px;color:var(--acadex-gray-400);">School Name</label>
+        <input type="text" id="edit-name" class="form-control" style="width:100%;padding:8px;font-size:0.9rem;" value="${s.name || ''}" />
+      </div>
+      <div style="margin-bottom:12px;">
+        <label style="display:block;font-size:0.8rem;margin-bottom:4px;color:var(--acadex-gray-400);">Email Address</label>
+        <input type="email" id="edit-email" class="form-control" style="width:100%;padding:8px;font-size:0.9rem;" value="${s.email || ''}" />
+      </div>
+      <div style="margin-bottom:12px;">
+        <label style="display:block;font-size:0.8rem;margin-bottom:4px;color:var(--acadex-gray-400);">Phone Number</label>
+        <input type="text" id="edit-phone" class="form-control" style="width:100%;padding:8px;font-size:0.9rem;" value="${s.phone || ''}" />
+      </div>
+      <div style="margin-bottom:12px;">
+        <label style="display:block;font-size:0.8rem;margin-bottom:4px;color:var(--acadex-gray-400);">Address</label>
+        <textarea id="edit-address" class="form-control" style="width:100%;padding:8px;font-size:0.9rem;min-height:60px;">${s.address || ''}</textarea>
+      </div>
+      <div style="margin-bottom:12px;">
+        <label style="display:block;font-size:0.8rem;margin-bottom:4px;color:var(--acadex-gray-400);">Country</label>
+        <input type="text" id="edit-country" class="form-control" style="width:100%;padding:8px;font-size:0.9rem;" value="${s.country || ''}" />
+      </div>
+    `;
+    document.getElementById('modalActions').innerHTML = `
+      <button class="btn btn-primary btn-sm" onclick="saveSchoolEdit('${s.id}')">💾 Save Changes</button>
+      <button class="btn btn-ghost btn-sm" onclick="closeModal()">Cancel</button>
+    `;
+    document.getElementById('viewModal').classList.add('show');
+  }
+
+  function saveSchoolEdit(id) {
+    const updates = {
+      name: document.getElementById('edit-name').value.trim(),
+      email: document.getElementById('edit-email').value.trim(),
+      phone: document.getElementById('edit-phone').value.trim(),
+      address: document.getElementById('edit-address').value.trim(),
+      country: document.getElementById('edit-country').value.trim()
+    };
+    AcadexCore.updateSchool(id, updates);
+    closeModal();
+    renderTable();
+  }
+
+  function closeModal() { document.getElementById('viewModal').classList.remove('show'); }
+
+  function toggleStatus(id, current) {
+    const parent = AcadexCore.getSchoolById(id);
+    if (!parent) return;
+    
+    const newStatus = current === 'suspended' ? 'active' : 'suspended';
+    
+    // Update parent
+    AcadexCore.updateSchool(parentId=id, { status: newStatus });
+    
+    // Cascade to children
+    const all = AcadexCore.getAllSchools();
+    all.filter(s => s.parentId === id).forEach(child => {
+      AcadexCore.updateSchool(child.id, { status: newStatus });
+    });
+    
+    renderTable();
+  }
+
+  function changePlan(id) {
+    const s = AcadexCore.getSchoolById(id);
+    if (!s) return;
+    const plan = prompt(`Change plan for "${s.name}"\nCurrent: ${s.plan}\n\nEnter new plan (starter / professional / enterprise):`);
+    if (plan && ['starter','professional','enterprise'].includes(plan.toLowerCase().trim())) {
+      AcadexCore.updateSchool(id, { plan: plan.toLowerCase().trim() });
+      renderTable();
+    } else if (plan !== null) {
+      alert('Invalid plan. Use: starter, professional, or enterprise');
+    }
+  }
+
+  function deleteSchool(id) {
+    const s = AcadexCore.getSchoolById(id);
+    if (!s) return;
+    if (!confirm(`Permanently delete "${s.name}"? This will also delete any linked sub-schools. All data will be lost.`)) return;
+    
+    // Delete parent
+    AcadexCore.deleteSchool(id);
+    
+    // Cascade delete children
+    const all = AcadexCore.getAllSchools();
+    all.filter(child => child.parentId === id).forEach(child => {
+      AcadexCore.deleteSchool(child.id);
+    });
+
+    renderTable();
+  }
+
+  document.getElementById('viewModal').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+  });
+
+  document.addEventListener('DOMContentLoaded', renderTable);
+</script>
+</body>
+</html>
+

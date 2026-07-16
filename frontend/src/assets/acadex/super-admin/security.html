@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Security — Super Admin</title>
+  <link rel="stylesheet" href="../css/acadex.css" />
+  <style>
+    body { background: var(--acadex-navy); padding: 0; }
+    .sa-layout { display: flex; min-height: 100vh; }
+    .page-title { font-family: var(--font-display); font-size: 1.5rem; font-weight: 700; }
+    .page-sub { font-size: 0.875rem; color: var(--acadex-gray-400); margin-top: 2px; }
+    
+    .settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 1rem; }
+    .settings-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 20px; padding: 1.75rem; }
+    .settings-title { font-weight: 700; font-size: 1.1rem; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 10px; }
+    .settings-desc { font-size: 0.82rem; color: var(--acadex-gray-500); margin-bottom: 1.5rem; line-height: 1.4; }
+    
+    .setting-item { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+    .setting-item:last-child { border: none; }
+    .setting-info { flex: 1; }
+    .setting-label { font-weight: 600; font-size: 0.9rem; margin-bottom: 2px; }
+    .setting-hint { font-size: 0.72rem; color: var(--acadex-gray-500); }
+    
+    /* Premium Toggle */
+    .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider { position: absolute; cursor: pointer; inset: 0; background-color: rgba(255,255,255,0.1); transition: .3s; border-radius: 24px; }
+    .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%; }
+    input:checked + .slider { background-color: var(--acadex-blue); }
+    input:checked + .slider:before { transform: translateX(20px); }
+    
+    .status-badge { font-size: 0.65rem; font-weight: 800; padding: 2px 8px; border-radius: 4px; text-transform: uppercase; }
+    .badge-secure { background: rgba(16,185,129,0.15); color: #34d399; }
+
+    .danger-zone { border: 1px solid rgba(239,68,68,0.2); background: rgba(239,68,68,0.03); margin-top: 2rem; }
+  </style>
+</head>
+<body>
+<div class="sa-layout">
+  <!-- SIDEBAR -->
+  <div class="sa-sidebar">
+    <div class="sa-sidebar-logo">
+      <a href="../index.html" style="display:flex;align-items:center;gap:8px;">
+        <div class="nav-logo-icon" style="width:32px;height:32px;font-size:0.9rem;">A</div>
+        <div style="font-family:var(--font-display);font-size:1.1rem;font-weight:800;">ACAD<span style="color:var(--acadex-gold);">EX</span></div>
+      </a>
+      <div style="font-size:0.65rem;color:var(--acadex-gray-600);margin-top:4px;letter-spacing:0.08em;text-transform:uppercase;">Super Admin</div>
+    </div>
+    <div class="sa-nav-section">Platform</div>
+    <a href="dashboard.html" class="sa-nav-item">📊 Dashboard</a>
+    <a href="schools.html" class="sa-nav-item">🏫 Schools</a>
+    <a href="subscriptions.html" class="sa-nav-item">💳 Subscriptions</a>
+    <div class="sa-nav-section">System</div>
+    <a href="announcements.html" class="sa-nav-item">📢 Announcements</a>
+    <a href="security.html" class="sa-nav-item active">🔒 Security</a>
+    <a href="audit-logs.html" class="sa-nav-item">📋 Audit Logs</a>
+  </div>
+
+  <main class="sa-main">
+    <div class="sa-header">
+      <div>
+        <div class="page-title">Security & Policies</div>
+        <div class="page-sub">Global platform security configurations and access controls.</div>
+      </div>
+      <div class="status-badge badge-secure">System Shield Active</div>
+    </div>
+
+    <div class="settings-grid">
+      <!-- POLICY CONTROL -->
+      <div class="settings-card">
+        <div class="settings-title">🛡️ Authentication Policies</div>
+        <div class="settings-desc">Enforce high-security standards across all school management accounts.</div>
+        
+        <div class="setting-item">
+          <div class="setting-info">
+            <div class="setting-label">Multi-Factor Authentication (MFA)</div>
+            <div class="setting-hint">Require MFA for all School Super-Admins.</div>
+          </div>
+          <label class="switch"><input type="checkbox" checked onchange="saveSec('mfa', this.checked)"><span class="slider"></span></label>
+        </div>
+        
+        <div class="setting-item">
+          <div class="setting-info">
+            <div class="setting-label">Password Rotation</div>
+            <div class="setting-hint">Force password changes every 90 days.</div>
+          </div>
+          <label class="switch"><input type="checkbox" onchange="saveSec('rotation', this.checked)"><span class="slider"></span></label>
+        </div>
+        
+        <div class="setting-item">
+          <div class="setting-info">
+            <div class="setting-label">Session Timeout</div>
+            <div class="setting-hint">Auto-logout inactive users after 15 minutes.</div>
+          </div>
+          <select class="form-control" style="width:100px;padding:4px;font-size:0.8rem;" onchange="saveSec('timeout', this.value)">
+             <option value="15">15m</option>
+             <option value="30">30m</option>
+             <option value="60">1h</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- PLATFORM ACCESS -->
+      <div class="settings-card">
+        <div class="settings-title">🌐 Platform Runtime</div>
+        <div class="settings-desc">Control global platform availability and network restrictions.</div>
+        
+        <div class="setting-item">
+          <div class="setting-info">
+            <div class="setting-label">Self-Registration (Onboarding)</div>
+            <div class="setting-hint">Allow new schools to register via public site.</div>
+          </div>
+          <label class="switch"><input type="checkbox" checked onchange="saveSec('onboard', this.checked)"><span class="slider"></span></label>
+        </div>
+        
+        <div class="setting-item">
+          <div class="setting-info">
+            <div class="setting-label">IP Whitelisting</div>
+            <div class="setting-hint">Restrict Super-Admin access to specific IP ranges.</div>
+          </div>
+          <button class="action-btn" onclick="alert('Configuration restricted to Shell Access.')">Configure</button>
+        </div>
+
+        <div class="setting-item">
+          <div class="setting-info">
+            <div class="setting-label">Platform API Key</div>
+            <div class="setting-hint">Active key for cross-service communication.</div>
+          </div>
+          <div style="font-family:monospace;font-size:0.75rem;background:rgba(0,0,0,0.2);padding:4px 8px;border-radius:4px;">**********</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DANGER ZONE -->
+    <div class="settings-card danger-zone">
+      <div class="settings-title" style="color:#f87171;">⚠️ Critical Controls</div>
+      <div class="settings-desc">Actions here can affect entire platform uptime and stability.</div>
+
+      <div class="setting-item">
+        <div class="setting-info">
+          <div class="setting-label">Global Maintenance Mode</div>
+          <div class="setting-hint">Redirect all traffic to a maintenance page. Existing sessions remain.</div>
+        </div>
+        <button class="btn btn-sm" id="maintBtn" style="background:#f87171;color:white;border:none;" onclick="toggleMaintenance()">Enable Maintenance</button>
+      </div>
+      
+      <div class="setting-item" style="border:none;">
+        <div class="setting-info">
+          <div class="setting-label">Database Garbage Collection</div>
+          <div class="setting-hint">Purge orphaned and legacy tenant data (cannot be undone).</div>
+        </div>
+        <button class="action-btn" onclick="alert('Scanning for orphans...')">Run Cleanup</button>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="../js/acadex-core.js"></script>
+<script>
+  function saveSec(key, val) {
+    AcadexCore.logPlatformEvent('SECURITY_CONFIG', `Updated security policy: ${key} to ${val}`);
+    // In real app, persist to a platform_config table
+  }
+
+  function toggleMaintenance() {
+    const active = document.getElementById('maintBtn').textContent.includes('Disable');
+    if (active) {
+      document.getElementById('maintBtn').textContent = 'Enable Maintenance';
+      document.getElementById('maintBtn').style.background = '#f87171';
+      AcadexCore.logPlatformEvent('SYSTEM_CONFIG', 'Maintenance mode DISABLED.');
+    } else {
+      if(!confirm('This will immediately enable Maintenance Mode for the entire platform. Schools will be notified. Proceed?')) return;
+      document.getElementById('maintBtn').textContent = 'Disable Maintenance';
+      document.getElementById('maintBtn').style.background = '#64748b';
+      AcadexCore.logPlatformEvent('SYSTEM_CONFIG', 'Maintenance mode ENABLED.');
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    // Sync UI with config if needed
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,893 @@
+/* 
+  Acadex Admin Portal Management Styles 
+  High-fidelity restoration of legacy management UI
+*/
+
+:root {
+  --portal-primary: #0056b3;
+  --portal-primary-dark: #1a1a2e;
+  --portal-bg: #f5f5f5;
+  --portal-success: #28a745;
+  --portal-danger: #dc3545;
+  --portal-warning: #ffc107;
+  --portal-info: #17a2b8;
+}
+
+/* Management Table & Content Cards */
+.management-table-card {
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+  border: 1px solid #f1f5f9;
+  overflow: hidden;
+  margin-top: 24px;
+}
+
+.portal-card {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 32px;
+  border: 1px solid #f1f5f9;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.portal-card:hover {
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  border-color: #e2e8f0;
+}
+
+.portal-card-header {
+  padding: 0 0 24px 0;
+  border-bottom: 1px solid #f1f5f9;
+  margin-bottom: 24px;
+}
+
+.portal-card-header h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 900;
+  color: #1e293b;
+}
+
+.portal-card-header p {
+  margin: 4px 0 0 0;
+  font-size: 0.9rem;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.management-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.management-table th {
+  padding: 15px;
+  text-align: left;
+  font-weight: 600;
+  color: #333;
+  background-color: #f8f9fa;
+  border-bottom: 2px solid #dee2e6;
+  font-size: 0.9rem;
+}
+
+.management-table td {
+  padding: 12px 15px;
+  border-bottom: 1px solid #dee2e6;
+  vertical-align: middle;
+  font-size: 0.9rem;
+}
+
+.management-table tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+/* Row Components */
+.user-info-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  background-color: #eee;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  color: white;
+  flex-shrink: 0;
+}
+
+.user-avatar.student { background-color: #3182ce; }
+.user-avatar.teacher { background-color: #38a169; }
+.user-avatar.librarian { background-color: #6f42c1; }
+.user-avatar.bursar { background-color: #d69e2e; }
+.user-avatar.admin { background-color: #e53e3e; }
+
+.role-badges-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 5px;
+}
+
+.role-badge {
+  padding: 3px 10px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.role-student { background-color: rgba(49, 130, 206, 0.1); color: #3182ce; }
+.role-teacher { background-color: rgba(56, 161, 105, 0.1); color: #38a169; }
+.role-admin { background-color: rgba(229, 62, 62, 0.1); color: #e53e3e; }
+.role-bursar { background-color: rgba(214, 158, 46, 0.1); color: #d69e2e; }
+
+.secondary-role-badge {
+  background-color: #f0f4f8;
+  color: #4a5568;
+  padding: 3px 10px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  border: 1px solid #d1d5db;
+}
+
+.dp-subtitle {
+  margin-top: 10px !important;
+  font-family: 'Courier New', Courier, monospace;
+  background: #edf2f7;
+  padding: 2px 8px;
+  display: inline-block;
+  border-radius: 4px;
+}
+
+.panel-actions {
+  margin-top: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.btn-block {
+  width: 100%;
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.user-name-wrap {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-name {
+  font-weight: 600;
+  color: #2d3748;
+}
+
+.user-subtext {
+  font-size: 0.75rem;
+  color: #718096;
+}
+
+/* Action Buttons (Legacy Parity) */
+.action-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.85rem;
+}
+
+.btn-view {
+  background-color: rgba(0, 123, 255, 0.1);
+  color: #007bff;
+}
+
+.btn-view:hover {
+  background-color: #007bff;
+  color: white;
+}
+
+.btn-edit {
+  background-color: rgba(255, 193, 7, 0.1);
+  color: #ffc107;
+}
+
+.btn-edit:hover {
+  background-color: #ffc107;
+  color: white;
+}
+
+.btn-lock {
+  background-color: rgba(108, 117, 125, 0.1);
+  color: #6c757d;
+}
+
+.btn-lock:hover {
+  background-color: #6c757d;
+  color: white;
+}
+
+.btn-delete {
+  background-color: rgba(220, 53, 69, 0.1);
+  color: #dc3545;
+}
+
+.btn-delete:hover {
+  background-color: #dc3545;
+  color: white;
+}
+
+/* Detail Panel (Slide-in) */
+.detail-panel-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: 1040;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+
+.detail-panel-overlay.open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.detail-panel {
+  position: fixed;
+  top: 0;
+  right: -450px;
+  width: 450px;
+  height: 100%;
+  background: white;
+  box-shadow: -5px 0 25px rgba(0, 0, 0, 0.1);
+  z-index: 1050;
+  transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+}
+
+.detail-panel.open {
+  right: 0;
+}
+
+.detail-header {
+  padding: 30px 25px;
+  background: #f8f9fa;
+  border-bottom: 1px solid #eee;
+  position: relative;
+}
+
+.close-panel {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  cursor: pointer;
+  font-size: 1.4rem;
+  color: #a0aec0;
+  transition: color 0.2s;
+  background: none;
+  border: none;
+}
+
+.close-panel:hover {
+  color: #4a5568;
+}
+
+.dp-profile {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.dp-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: var(--portal-primary);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.dp-info h3 {
+  margin: 0;
+  font-size: 1.4rem;
+  color: #2d3748;
+}
+
+.dp-info p {
+  margin: 4px 0 0;
+  font-size: 0.9rem;
+  color: #718096;
+}
+
+.detail-body {
+  flex: 1;
+  padding: 25px;
+  overflow-y: auto;
+}
+
+.detail-section {
+  margin-bottom: 30px;
+}
+
+.detail-section h4 {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  color: #a0aec0;
+  letter-spacing: 1.5px;
+  margin-bottom: 15px;
+  border-bottom: 1px solid #edf2f7;
+  padding-bottom: 8px;
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.95rem;
+}
+
+.detail-label {
+  color: #718096;
+}
+
+.detail-value {
+  font-weight: 600;
+  color: #2d3748;
+}
+
+/* Modals & Forms */
+.portal-modal {
+  background: white;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 700px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-header {
+  padding: 20px 25px;
+  border-bottom: 1px solid #edf2f7;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-titles h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  color: #1a202c;
+}
+
+.header-titles span {
+  font-size: 0.8rem;
+  color: #718096;
+}
+
+.modal-tabs {
+  padding: 0 25px;
+  display: flex;
+  gap: 20px;
+  border-bottom: 1px solid #edf2f7;
+  background: #f8fafc;
+}
+
+.tab-btn {
+  padding: 15px 5px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: #718096;
+  font-weight: 500;
+  border-bottom: 3px solid transparent;
+  transition: all 0.2s;
+}
+
+.tab-btn.active {
+  color: var(--portal-primary);
+  border-bottom-color: var(--portal-primary);
+}
+
+.modal-body {
+  padding: 25px;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.modal-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #4a5568;
+}
+
+.form-control {
+  padding: 10px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  transition: border-color 0.2s;
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: var(--portal-primary);
+}
+
+.form-control.disabled {
+  background: #f7fafc;
+  cursor: not-allowed;
+}
+
+.modal-footer {
+  padding: 20px 25px;
+  border-top: 1px solid #edf2f7;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+/* Avatar Upload */
+.avatar-upload-section {
+  grid-column: span 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.avatar-preview-large {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: #edf2f7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  color: #a0aec0;
+  overflow: hidden;
+  position: relative;
+  cursor: pointer;
+  border: 4px solid white;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.upload-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.avatar-preview-large:hover .upload-overlay {
+  opacity: 1;
+}
+
+.avatar-preview-large img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Roles Management */
+.roles-management-section {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.info-alert {
+  padding: 12px;
+  background: #ebf8ff;
+  border: 1px solid #bee3f8;
+  border-radius: 6px;
+  display: flex;
+  gap: 10px;
+  color: #2b6cb0;
+  font-size: 0.85rem;
+}
+
+.secondary-roles-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 15px;
+  background: #f8fafc;
+  border-radius: 8px;
+}
+
+.btn-add-role {
+  font-size: 0.75rem;
+  background: var(--portal-success);
+  color: white;
+  border: none;
+  padding: 4px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.role-input-row {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-remove-role {
+  background: #fee2e2;
+  color: #ef4444;
+  border: none;
+  width: 38px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.form-section-header {
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: #2d3748;
+  border-left: 4px solid var(--portal-primary);
+  padding-left: 10px;
+  margin: 15px 0 5px;
+}
+
+/* ══════════ PREMIUM UI UTILITIES ══════════ */
+
+.portal-link-btn {
+  background: none;
+  border: none;
+  color: var(--portal-primary);
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.portal-link-btn:hover {
+  background: rgba(0, 86, 179, 0.05);
+  text-decoration: underline;
+}
+
+.portal-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(12px);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.portal-modal-card {
+  background: white;
+  border-radius: 24px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: modalScaleUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.portal-modal-header {
+  padding: 24px 32px !important;
+  border-bottom: 1px solid #f1f5f9;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.portal-modal-body {
+  padding: 32px !important;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.portal-modal-footer {
+  padding: 20px 32px;
+  border-top: 1px solid #f1f5f9;
+  background: #f8fafc;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.portal-label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #64748b;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.portal-input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  color: #1e293b;
+  background: #ffffff;
+  transition: all 0.2s;
+}
+
+.portal-input:focus {
+  outline: none;
+  border-color: var(--portal-primary);
+  box-shadow: 0 0 0 4px rgba(0, 86, 179, 0.1);
+}
+
+.portal-btn-primary {
+  background: var(--portal-primary);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.portal-btn-primary:hover {
+  background: #004494;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 86, 179, 0.25);
+}
+
+.portal-btn-neutral {
+  background: #f1f5f9;
+  color: #475569;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.portal-btn-danger {
+  background: #ef4444;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+/* Tab & Navigation Components */
+.portal-tab-container {
+  display: flex;
+  background: #f1f5f9;
+  padding: 4px;
+  border-radius: 14px;
+  width: fit-content;
+}
+
+.portal-tab-item {
+  padding: 8px 20px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  border: none;
+  background: transparent;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.portal-tab-item.active {
+  background: #fff;
+  color: #1e293b;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.portal-btn-ghost {
+  background: transparent;
+  border: none;
+  color: #64748b;
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.portal-btn-ghost:hover:not(:disabled) {
+  background: #f1f5f9;
+  color: #1e293b;
+}
+
+.portal-btn-ghost:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Dark Preview Card */
+.portal-preview-dark {
+  background: #0f172a;
+  border-radius: 24px;
+  padding: 32px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  position: relative;
+  overflow: hidden;
+  color: white;
+}
+
+.preview-step-badge {
+  width: 32px;
+  height: 32px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+@keyframes modalScaleUp {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@media print {
+  .no-print,
+  .portal-sidebar,
+  .portal-topbar,
+  .portal-page-header,
+  .portal-btn-primary,
+  .portal-btn-ghost,
+  .portal-btn-secondary,
+  .portal-modal-overlay,
+  .action-buttons,
+  .portal-card-header div:last-child {
+    display: none !important;
+  }
+  .portal-main {
+    margin-left: 0 !important;
+    padding-left: 0 !important;
+  }
+  .portal-root, .portal-main, .portal-content, .portal-container {
+    margin: 0 !important;
+    padding: 0 !important;
+    max-width: 100% !important;
+    background: transparent !important;
+    width: 100% !important;
+  }
+  .management-table-card, .portal-card {
+    box-shadow: none !important;
+    border: none !important;
+    background: transparent !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+  }
+  th, td {
+    border: 1px solid #e2e8f0 !important;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Modal Class Aliases
+   Clinic pages (Immunization, Referrals, Emergencies, Appointments,
+   HealthComplaints) use .portal-modal-backdrop / .portal-modal-content.
+   These are aliases of the canonical .portal-modal-overlay / .portal-modal-card.
+───────────────────────────────────────────────────────────────────────────── */
+.portal-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(12px);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.portal-modal-content {
+  background: white;
+  border-radius: 24px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: modalScaleUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes modalScaleUp {
+  from { opacity: 0; transform: scale(0.96) translateY(8px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+

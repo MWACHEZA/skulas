@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Attendance</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../css/student.css">
+    <style>
+        .page-title {
+            margin-bottom: 30px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .page-title h2 {
+            margin: 0;
+            color: #333;
+            font-size: 24px;
+        }
+
+        /* Attendance Summary */
+        .attendance-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .summary-card {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            text-align: center;
+        }
+
+        .summary-card h3 {
+            margin: 0 0 15px;
+            color: #333;
+            font-size: 18px;
+        }
+
+        .summary-value {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .summary-label {
+            font-size: 14px;
+            color: #6c757d;
+        }
+
+        .present-card .summary-value {
+            color: #28a745;
+        }
+
+        .absent-card .summary-value {
+            color: #dc3545;
+        }
+
+        .late-card .summary-value {
+            color: #ffc107;
+        }
+
+        .percentage-card .summary-value {
+            color: var(--school-primary, #0056b3);
+        }
+
+        /* Monthly Attendance */
+        .monthly-attendance {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .monthly-header {
+            background-color: var(--school-primary, #0056b3);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .monthly-header h3 {
+            margin: 0;
+            font-size: 18px;
+        }
+
+        .month-selector {
+            display: flex;
+            align-items: center;
+        }
+
+        .month-selector label {
+            margin-right: 10px;
+            font-size: 14px;
+        }
+
+        .month-selector select {
+            padding: 5px 10px;
+            border-radius: 4px;
+            border: none;
+            font-size: 14px;
+        }
+
+        .calendar-container {
+            padding: 20px;
+        }
+
+        .calendar {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .calendar th,
+        .calendar td {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #eee;
+        }
+
+        .calendar th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .calendar .day-present {
+            background-color: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+        }
+
+        .calendar .day-absent {
+            background-color: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+        }
+
+        .calendar .day-late {
+            background-color: rgba(255, 193, 7, 0.1);
+            color: #ffc107;
+        }
+
+        .calendar .day-holiday {
+            background-color: rgba(108, 117, 125, 0.1);
+            color: #6c757d;
+        }
+
+        .calendar .day-weekend {
+            background-color: rgba(108, 117, 125, 0.05);
+            color: #6c757d;
+        }
+
+        .calendar .day-future {
+            background-color: #fff;
+            color: #adb5bd;
+        }
+
+        /* Attendance Details */
+        .attendance-details {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .details-header {
+            background-color: var(--school-primary, #0056b3);
+            color: white;
+            padding: 15px 20px;
+        }
+
+        .details-header h3 {
+            margin: 0;
+            font-size: 18px;
+        }
+
+        .details-content {
+            padding: 20px;
+        }
+
+        .details-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .details-table th,
+        .details-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .details-table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .details-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .status-present {
+            color: #28a745;
+            font-weight: 600;
+        }
+
+        .status-absent {
+            color: #dc3545;
+            font-weight: 600;
+        }
+
+        .status-late {
+            color: #ffc107;
+            font-weight: 600;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .monthly-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .month-selector {
+                margin-top: 10px;
+            }
+
+            .attendance-summary {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <img src="../images/logo.png" alt="School Logo" class="acadex-school-logo">
+                <h3>Student Portal</h3>
+            </div>
+
+            <div class="sidebar-menu">
+                <ul>
+                    <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                    <li><a href="profile.html"><i class="fas fa-user"></i> Profile</a></li>
+                    <li><a href="grades.html"><i class="fas fa-chart-line"></i> Grades</a></li>
+                    <li><a href="timetable.html"><i class="fas fa-calendar-alt"></i> Timetable</a></li>
+                    <li><a href="fees.html"><i class="fas fa-money-bill-wave"></i> Fees</a></li>
+                    <li><a href="assignments.html"><i class="fas fa-tasks"></i> Assignments</a></li>
+                    <li><a href="attendance.html" class="active"><i class="fas fa-clipboard-check"></i> Attendance</a>
+                    </li>
+                    <li><a href="library.html"><i class="fas fa-book"></i> Library</a></li>
+                    <li><a href="my-books.html"><i class="fas fa-book-reader"></i> My Books</a></li>
+                    <li><a href="events.html"><i class="fas fa-calendar-day"></i> Events</a></li>
+                    <li><a href="it-support.html"><i class="fas fa-headset"></i> IT Support</a></li>
+                    <li><a href="settings.html"><i class="fas fa-cog"></i> Settings</a></li>
+                </ul>
+            </div>
+
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="user-details">
+                        <h4 id="studentName">Student Name</h4>
+                        <p id="studentClass">Loading...</p>
+                    </div>
+                </div>
+                <a href="#" class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </div>
+        </aside>
+
+        <!-- Sidebar Overlay -->
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Mobile Header -->
+            <div class="mobile-header">
+                <button class="menu-toggle" id="menuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="mobile-logo">
+                    <img src="../images/logo.png" alt="School Logo" class="acadex-school-logo">
+                    <span>Student Portal</span>
+                </div>
+            </div>
+
+            <div class="page-title">
+                <h2><i class="fas fa-clipboard-check"></i> Attendance Record</h2>
+            </div>
+
+            <!-- Attendance Summary -->
+            <div class="attendance-summary">
+                <div class="summary-card present-card">
+                    <h3>Present Days</h3>
+                    <div class="summary-value">42</div>
+                    <div class="summary-label">This Term</div>
+                </div>
+
+                <div class="summary-card absent-card">
+                    <h3>Absent Days</h3>
+                    <div class="summary-value">3</div>
+                    <div class="summary-label">This Term</div>
+                </div>
+
+                <div class="summary-card late-card">
+                    <h3>Late Arrivals</h3>
+                    <div class="summary-value">5</div>
+                    <div class="summary-label">This Term</div>
+                </div>
+
+                <div class="summary-card percentage-card">
+                    <h3>Attendance Rate</h3>
+                    <div class="summary-value">93.3%</div>
+                    <div class="summary-label">This Term</div>
+                </div>
+            </div>
+
+            <!-- Monthly Attendance Calendar -->
+            <div class="monthly-attendance">
+                <div class="monthly-header">
+                    <h3>Monthly Attendance</h3>
+                    <div class="month-selector">
+                        <label for="month-select">Select Month:</label>
+                        <select id="month-select">
+                            <option value="january">January 2023</option>
+                            <option value="february">February 2023</option>
+                            <option value="march">March 2023</option>
+                            <option value="april">April 2023</option>
+                            <option value="may" selected>May 2023</option>
+                            <option value="june">June 2023</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="calendar-container">
+                    <table class="calendar">
+                        <thead>
+                            <tr>
+                                <th>Mon</th>
+                                <th>Tue</th>
+                                <th>Wed</th>
+                                <th>Thu</th>
+                                <th>Fri</th>
+                                <th>Sat</th>
+                                <th>Sun</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="day-holiday">1<br><small>Holiday</small></td>
+                                <td class="day-present">2</td>
+                                <td class="day-present">3</td>
+                                <td class="day-present">4</td>
+                                <td class="day-present">5</td>
+                                <td class="day-weekend">6</td>
+                                <td class="day-weekend">7</td>
+                            </tr>
+                            <tr>
+                                <td class="day-present">8</td>
+                                <td class="day-present">9</td>
+                                <td class="day-late">10<br><small>Late</small></td>
+                                <td class="day-present">11</td>
+                                <td class="day-present">12</td>
+                                <td class="day-weekend">13</td>
+                                <td class="day-weekend">14</td>
+                            </tr>
+                            <tr>
+                                <td class="day-present">15</td>
+                                <td class="day-absent">16<br><small>Absent</small></td>
+                                <td class="day-present">17</td>
+                                <td class="day-present">18</td>
+                                <td class="day-late">19<br><small>Late</small></td>
+                                <td class="day-weekend">20</td>
+                                <td class="day-weekend">21</td>
+                            </tr>
+                            <tr>
+                                <td class="day-present">22</td>
+                                <td class="day-present">23</td>
+                                <td class="day-present">24</td>
+                                <td class="day-present">25</td>
+                                <td class="day-present">26</td>
+                                <td class="day-weekend">27</td>
+                                <td class="day-weekend">28</td>
+                            </tr>
+                            <tr>
+                                <td class="day-present">29</td>
+                                <td class="day-present">30</td>
+                                <td class="day-present">31</td>
+                                <td class="day-future">1</td>
+                                <td class="day-future">2</td>
+                                <td class="day-future">3</td>
+                                <td class="day-future">4</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Attendance Details -->
+            <div class="attendance-details">
+                <div class="details-header">
+                    <h3>Attendance Details</h3>
+                </div>
+                <div class="details-content">
+                    <table class="details-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Time In</th>
+                                <th>Time Out</th>
+                                <th>Remarks</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>31 May 2023</td>
+                                <td><span class="status-present">Present</span></td>
+                                <td>07:45 AM</td>
+                                <td>03:30 PM</td>
+                                <td>-</td>
+                            </tr>
+                            <tr>
+                                <td>30 May 2023</td>
+                                <td><span class="status-present">Present</span></td>
+                                <td>07:50 AM</td>
+                                <td>03:30 PM</td>
+                                <td>-</td>
+                            </tr>
+                            <tr>
+                                <td>29 May 2023</td>
+                                <td><span class="status-present">Present</span></td>
+                                <td>07:40 AM</td>
+                                <td>03:30 PM</td>
+                                <td>-</td>
+                            </tr>
+                            <tr>
+                                <td>26 May 2023</td>
+                                <td><span class="status-present">Present</span></td>
+                                <td>07:45 AM</td>
+                                <td>03:30 PM</td>
+                                <td>-</td>
+                            </tr>
+                            <tr>
+                                <td>25 May 2023</td>
+                                <td><span class="status-present">Present</span></td>
+                                <td>07:55 AM</td>
+                                <td>03:30 PM</td>
+                                <td>-</td>
+                            </tr>
+                            <tr>
+                                <td>24 May 2023</td>
+                                <td><span class="status-present">Present</span></td>
+                                <td>07:45 AM</td>
+                                <td>03:30 PM</td>
+                                <td>-</td>
+                            </tr>
+                            <tr>
+                                <td>23 May 2023</td>
+                                <td><span class="status-present">Present</span></td>
+                                <td>07:40 AM</td>
+                                <td>03:30 PM</td>
+                                <td>-</td>
+                            </tr>
+                            <tr>
+                                <td>22 May 2023</td>
+                                <td><span class="status-present">Present</span></td>
+                                <td>07:45 AM</td>
+                                <td>03:30 PM</td>
+                                <td>-</td>
+                            </tr>
+                            <tr>
+                                <td>19 May 2023</td>
+                                <td><span class="status-late">Late</span></td>
+                                <td>08:15 AM</td>
+                                <td>03:30 PM</td>
+                                <td>Traffic delay</td>
+                            </tr>
+                            <tr>
+                                <td>18 May 2023</td>
+                                <td><span class="status-present">Present</span></td>
+                                <td>07:50 AM</td>
+                                <td>03:30 PM</td>
+                                <td>-</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/student-common.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Month selector functionality
+            const monthSelect = document.getElementById('month-select');
+            if (monthSelect) {
+                monthSelect.addEventListener('change', function () {
+                    // In a real application, this would fetch data for the selected month
+                    alert('Loading attendance data for ' + monthSelect.options[monthSelect.selectedIndex].text);
+                });
+            }
+        });
+    </script>
+    <!-- ACADEX: Powered-by footer and school branding -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+
+</body>
+
+</html>
+

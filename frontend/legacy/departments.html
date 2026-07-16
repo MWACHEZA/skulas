@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Academic Departments - Embakwe High School</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        /* Reusing common styles, specific department styles */
+        .page-header {
+            background: linear-gradient(rgba(0, 86, 179, 0.9), rgba(0, 50, 100, 0.9)), url('images/departments-bg.jpg');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 100px 0 60px;
+            text-align: center;
+        }
+
+        .page-header h1 {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+
+        .page-header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .department-section {
+            padding: 60px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .department-section:last-child {
+            border-bottom: none;
+        }
+
+        .dept-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .dept-icon {
+            width: 60px;
+            height: 60px;
+            background-color: #0056b3;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            margin-right: 20px;
+        }
+
+        .dept-title h2 {
+            margin: 0;
+            color: #333;
+            font-size: 2rem;
+        }
+
+        .dept-title p {
+            margin: 5px 0 0;
+            color: #666;
+        }
+
+        .dept-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 40px;
+        }
+
+        .staff-hierarchy {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .staff-hierarchy h3 {
+            margin-top: 0;
+            color: #0056b3;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .hierarchy-tree {
+            list-style: none;
+            padding: 0;
+        }
+
+        .role-group {
+            margin-bottom: 20px;
+        }
+
+        .role-title {
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 10px;
+            display: block;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+        }
+
+        .staff-card {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            border-left: 4px solid #0056b3;
+        }
+
+        .staff-name {
+            font-weight: 600;
+            color: #333;
+            margin-right: 10px;
+        }
+
+        .staff-qual {
+            font-size: 0.85rem;
+            color: #777;
+            font-style: italic;
+        }
+
+        .services-list {
+            background: white;
+            padding: 30px;
+            border: 1px solid #eee;
+            border-radius: 10px;
+        }
+
+        .services-list h3 {
+            margin-top: 0;
+            color: #333;
+        }
+
+        .services-list ul {
+            padding-left: 20px;
+        }
+
+        .services-list li {
+            margin-bottom: 10px;
+            color: #555;
+        }
+
+        @media (max-width: 768px) {
+            .dept-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <div class="container">
+            <div class="contact-info">
+                <span><i class="fas fa-phone"></i> +263 123 456 789</span>
+                <span><i class="fas fa-envelope"></i> info@embakwe.ac.zw</span>
+            </div>
+            <div class="portal-links">
+                <a href="library/login.html"><i class="fas fa-book"></i> Librarian</a>
+                <a href="bursar/login.html"><i class="fas fa-money-check-alt"></i> Bursar</a>
+                <a href="student/login.html"><i class="fas fa-user-graduate"></i> Student Portal</a>
+                <a href="teacher/login.html"><i class="fas fa-chalkboard-teacher"></i> Teacher Portal</a>
+                <a href="alumni/login.html"><i class="fas fa-user-tie"></i> Alumni Portal</a>
+                <a href="ancillary/login.html"><i class="fas fa-tools"></i> Ancillary Portal</a>
+                <a href="admin/login.html"><i class="fas fa-lock"></i> Admin</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header Section -->
+    <header>
+        <div class="container">
+            <div class="logo">
+                <h1 class="acadex-school-name">Embakwe High School</h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="departments.html" class="active">Departments</a></li>
+                    <li><a href="apply.html">Applications</a></li>
+                    <li><a href="check-status.html">Track Application</a></li>
+                    <li><a href="gallery.html">Gallery</a></li>
+                    <li><a href="news.html">News</a></li>
+                    <li><a href="sports.html">Sports</a></li>
+                    <li><a href="clubs.html">Clubs</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+            </nav>
+            <div class="menu-toggle">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </header>
+
+    <div class="page-header">
+        <div class="container">
+            <h1>Academic Departments</h1>
+            <p>Our academic structure is built on excellence, led by dedicated professionals committed to holistic
+                education.</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Sciences Department -->
+        <section class="department-section">
+            <div class="dept-header">
+                <div class="dept-icon"><i class="fas fa-flask"></i></div>
+                <div class="dept-title">
+                    <h2>Sciences Department</h2>
+                    <p>Fostering innovation and analytical thinking</p>
+                </div>
+            </div>
+            <div class="dept-grid">
+                <div class="staff-hierarchy">
+                    <h3>Staff Hierarchy</h3>
+                    <div class="hierarchy-tree">
+                        <div class="role-group">
+                            <span class="role-title">Head of Department (HOD)</span>
+                            <div class="staff-card">
+                                <span class="staff-name">Mr. T. Zhou</span>
+                                <span class="staff-qual">MSc Physics, BEd Science</span>
+                            </div>
+                        </div>
+                        <div class="role-group">
+                            <span class="role-title">Senior Teachers</span>
+                            <div class="staff-card">
+                                <span class="staff-name">Mrs. A. Moyo</span>
+                                <span class="staff-qual">BSc Biology</span>
+                            </div>
+                            <div class="staff-card">
+                                <span class="staff-name">Mr. P. Ndlovu</span>
+                                <span class="staff-qual">BSc Chemistry</span>
+                            </div>
+                        </div>
+                        <div class="role-group">
+                            <span class="role-title">Laboratory Technicians</span>
+                            <div class="staff-card">
+                                <span class="staff-name">Ms. S. Dube</span>
+                                <span class="staff-qual">Dip. Lab Tech</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="services-list">
+                    <h3>Services & Facilities</h3>
+                    <ul>
+                        <li>Fully equipped Physics, Chemistry, and Biology Labs</li>
+                        <li>Advanced Level Practical Preparation</li>
+                        <li>Science Fair & Innovation Hub</li>
+                        <li>STEM Club Mentorship</li>
+                        <li>National Science Olympiad Training</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Humanities Department -->
+        <section class="department-section">
+            <div class="dept-header">
+                <div class="dept-icon"><i class="fas fa-book-reader"></i></div>
+                <div class="dept-title">
+                    <h2>Humanities Department</h2>
+                    <p>Cultivating critical thought and cultural awareness</p>
+                </div>
+            </div>
+            <div class="dept-grid">
+                <div class="staff-hierarchy">
+                    <h3>Staff Hierarchy</h3>
+                    <div class="hierarchy-tree">
+                        <div class="role-group">
+                            <span class="role-title">Head of Department (HOD)</span>
+                            <div class="staff-card">
+                                <span class="staff-name">Mrs. R. Ncube</span>
+                                <span class="staff-qual">MA History, BA Ed</span>
+                            </div>
+                        </div>
+                        <div class="role-group">
+                            <span class="role-title">Senior Teachers</span>
+                            <div class="staff-card">
+                                <span class="staff-name">Mr. G. Sibanda</span>
+                                <span class="staff-qual">BA Divinity</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="services-list">
+                    <h3>Services & Facilities</h3>
+                    <ul>
+                        <li>Rich Historical Archives Access</li>
+                        <li>Debate & Public Speaking Coaching</li>
+                        <li>Cultural Exchange Programs</li>
+                        <li>Geography Weather Station</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- ICT & Technicals -->
+        <section class="department-section">
+            <div class="dept-header">
+                <div class="dept-icon"><i class="fas fa-laptop-code"></i></div>
+                <div class="dept-title">
+                    <h2>ICT & Technical Department</h2>
+                    <p>Equipping students with modern skills</p>
+                </div>
+            </div>
+            <div class="dept-grid">
+                <div class="staff-hierarchy">
+                    <h3>Staff Hierarchy</h3>
+                    <div class="hierarchy-tree">
+                        <div class="role-group">
+                            <span class="role-title">Head of Department (HOD)</span>
+                            <div class="staff-card">
+                                <span class="staff-name">Mr. K. Phiri</span>
+                                <span class="staff-qual">BSc Computer Science</span>
+                            </div>
+                        </div>
+                        <div class="role-group">
+                            <span class="role-title">Instructors</span>
+                            <div class="staff-card">
+                                <span class="staff-name">Mr. J. Maphosa</span>
+                                <span class="staff-qual">Dip. IT</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="services-list">
+                    <h3>Services & Facilities</h3>
+                    <ul>
+                        <li>Two Modern Computer Labs</li>
+                        <li>Coding & Robotics Club</li>
+                        <li>Digital Library Access Points</li>
+                        <li>Computer Driving License (ICDL) Centre</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Dynamic Departments Container -->
+        <div id="departments-container" class="departments-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin-top: 40px;">
+            <!-- Injected by acadex-tenant.js -->
+        </div>
+    </div>
+
+    <!-- Footer (Simplified) -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <h2>Embakwe High School</h2>
+                    <p>Fide et Labore - Faith and Hard Work</p>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-column">
+                        <h3>Quick Links</h3>
+                        <ul>
+                            <li><a href="index.html">Home</a></li>
+                            <li><a href="departments.html">Departments</a></li>
+                            <li><a href="contact.html">Contact</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h3>Contact</h3>
+                        <ul>
+                            <li><i class="fas fa-phone"></i> +263 123 456 789</li>
+                            <li><i class="fas fa-envelope"></i> info@embakwehigh.edu.zw</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2023 Embakwe High School. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+    <script src="acadex/js/acadex-core.js"></script>
+    <script src="acadex/js/acadex-tenant.js"></script>
+    <script src="js/script.js"></script>
+</body>
+
+</html>

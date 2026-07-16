@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supplier Login - Your School</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/supplier-portal.css">
+    <link rel="stylesheet" href="../css/toast.css">
+</head>
+
+<body class="auth-page" style="display:block; background: linear-gradient(135deg, var(--school-primary-dark, var(--school-primary-dark, #1a1a2e)) 0%, var(--school-primary, #0f3460) 50%, var(--school-primary-dark, var(--school-primary-dark, #1a1a2e)) 100%); min-height:100vh;">
+    <div class="auth-wrapper">
+        <div class="auth-card">
+            <div class="auth-header">
+                <div class="auth-icon">
+                    <i class="fas fa-truck-loading"></i>
+                </div>
+                <h2>Supplier Login</h2>
+                <p>Your School Procurement Portal</p>
+            </div>
+
+            <div class="auth-body">
+                <form id="supplierLoginForm">
+                    <div class="form-group">
+                        <label>School Access Code <span class="required">*</span></label>
+                        <input type="text" id="schoolCode" class="form-control" placeholder="e.g. AX-P12345" required style="text-transform:uppercase">
+                    </div>
+                    <div class="form-group">
+                        <label>Email Address <span class="required">*</span></label>
+                        <input type="email" id="email" class="form-control" placeholder="company@email.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Password <span class="required">*</span></label>
+                        <div class="input-icon-wrap">
+                            <input type="password" id="password" class="form-control" placeholder="Enter your password" required>
+                            <button type="button" class="toggle-pw" id="togglePw" title="Show/Hide Password">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block" style="margin-top:8px;">
+                        <i class="fas fa-sign-in-alt"></i> Login to Portal
+                    </button>
+                </form>
+
+                <div class="auth-link" style="margin-top:22px;">
+                    New supplier? <a href="register.html">Register here</a>
+                </div>
+                <div class="auth-back">
+                    <a href="../index.html"><i class="fas fa-arrow-left"></i> Back to School Home</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/toast.js"></script>
+    <script>
+        // Toggle password visibility
+        document.getElementById('togglePw').addEventListener('click', function () {
+            const pw = document.getElementById('password');
+            const icon = this.querySelector('i');
+            if (pw.type === 'password') {
+                pw.type = 'text';
+                icon.className = 'fas fa-eye-slash';
+            } else {
+                pw.type = 'password';
+                icon.className = 'fas fa-eye';
+            }
+        });
+
+        document.getElementById('supplierLoginForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const schoolCode = document.getElementById('schoolCode').value.trim().toUpperCase();
+
+            // Validate School Code
+            if (window.AcadexCore) {
+                const school = AcadexCore.getSchoolByCode(schoolCode);
+                if (!school) {
+                    showToast('Invalid School Access Code. Please check and try again.', 'error');
+                    return;
+                }
+                sessionStorage.setItem('activeSchoolCode', schoolCode);
+            }
+
+            const suppliers = getTenantData('school_suppliers', '[]');
+            const supplier = suppliers.find(s => s.email === email && s.password === password);
+
+            if (supplier) {
+                sessionStorage.setItem('supplierLoggedIn', 'true');
+                sessionStorage.setItem('supplierName', supplier.companyName);
+                sessionStorage.setItem('supplierId', supplier.id);
+                showToast('Login successful! Welcome back.', 'success');
+                setTimeout(() => window.location.href = 'dashboard.html', 1200);
+            } else {
+                showToast('Invalid email or password. Please try again.', 'error');
+            }
+        });
+    </script>
+    <!-- ACADEX: Powered-by footer and school branding -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+
+</body>
+
+</html>
+
+

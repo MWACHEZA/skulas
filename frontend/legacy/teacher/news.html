@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>News & Updates - Teacher Portal</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/ancillary-portal.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        .news-filters {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 8px 20px;
+            border: 2px solid #e2e8f0;
+            background: white;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            color: #64748b;
+        }
+
+        .filter-btn.active {
+            background: var(--school-primary, #0056b3);
+            color: white;
+            border-color: var(--school-primary, #0056b3);
+        }
+
+        .filter-btn:hover {
+            border-color: var(--school-primary, #0056b3);
+        }
+
+        .news-article {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border-left: 5px solid var(--school-primary, #0056b3);
+            transition: all 0.3s;
+        }
+
+        .news-article:hover {
+            transform: translateX(5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .news-article.academic {
+            border-left-color: #10b981;
+        }
+
+        .news-article.hr {
+            border-left-color: #f59e0b;
+        }
+
+        .news-article.general {
+            border-left-color: #8b5cf6;
+        }
+
+        .news-meta {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 15px;
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+
+        .news-meta span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .news-category {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .category-school {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .category-academic {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .category-hr {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .category-general {
+            background: #ede9fe;
+            color: #6b21a8;
+        }
+
+        .news-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--school-primary-dark, #1e293b);
+            margin: 10px 0;
+        }
+
+        .news-content {
+            color: #475569;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .read-more {
+            color: var(--school-primary, #0056b3);
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .read-more:hover {
+            text-decoration: underline;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            margin-bottom: 25px;
+        }
+
+        .card-header {
+            padding: 20px 25px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-header h3 {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--school-primary-dark, #003d82);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-body {
+            padding: 25px;
+        }
+    </style>
+</head>
+
+<body>
+    <button class="mobile-toggle" id="mobile-toggle">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <div class="dashboard-container">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <img src="../images/logo.png" alt="Logo">
+                <h3>Teacher Portal</h3>
+            </div>
+            <div class="sidebar-menu">
+                <div class="sidebar-section-title">Teacher System</div>
+                <ul>
+                    <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a></li>
+                    <li><a href="classes.html"><i class="fas fa-chalkboard"></i> <span>Classes</span></a></li>
+                    <li><a href="assignments.html"><i class="fas fa-tasks"></i> <span>Assignments</span></a></li>
+                    <li><a href="attendance.html"><i class="fas fa-clipboard-check"></i> <span>Attendance</span></a>
+                    </li>
+                    <li><a href="grades.html"><i class="fas fa-chart-line"></i> <span>Grades</span></a></li>
+                    <li><a href="timetable.html"><i class="fas fa-calendar-alt"></i> <span>Timetable</span></a></li>
+                    <li><a href="students.html"><i class="fas fa-users"></i> <span>Students</span></a></li>
+                    <li><a href="textbooks.html"><i class="fas fa-book"></i> <span>Textbooks</span></a></li>
+                    <li><a href="library.html"><i class="fas fa-book-open"></i> <span>Library Catalog</span></a></li>
+                    <li><a href="digital-resources.html"><i class="fas fa-laptop-code"></i> <span>Digital
+                                Resources</span></a></li>
+                    <li><a href="reports.html"><i class="fas fa-file-alt"></i> <span>System Reports</span></a></li>
+                    <li><a href="messages.html"><i class="fas fa-envelope"></i> <span>Messages</span></a></li>
+                </ul>
+
+                <div class="sidebar-section-title">Operations</div>
+                <ul>
+                    <li><a href="staff-directory.html"><i class="fas fa-users"></i> <span>Staff Directory</span></a>
+                    </li>
+                    <li><a href="procurement.html"><i class="fas fa-shopping-cart"></i> <span>Procurement</span></a>
+                    </li>
+                    <li><a href="assets.html"><i class="fas fa-boxes"></i> <span>Asset Management</span></a></li>
+                    <li><a href="schedules.html"><i class="fas fa-calendar-check"></i> <span>Schedules &
+                                Shifts</span></a></li>
+                </ul>
+
+                <div class="sidebar-section-title">Staff HR & Support</div>
+                <ul>
+                    <li><a href="sdc-portal.html"><i class="fas fa-file-invoice-dollar"></i> <span>SDC Staff
+                                Portal</span></a></li>
+                    <li><a href="hr-services.html"><i class="fas fa-user-shield"></i> <span>HR Services</span></a></li>
+                    <li><a href="profile.html"><i class="fas fa-id-card"></i> <span>My Profile</span></a></li>
+                    <li><a href="resources.html"><i class="fas fa-folder-open"></i> <span>Resources & Docs</span></a>
+                    </li>
+                    <li><a href="it-support.html"><i class="fas fa-headset"></i> <span>IT Support</span></a></li>
+                </ul>
+
+                <div class="sidebar-section-title">Communication</div>
+                <ul>
+                    <li><a href="news.html" class="active"><i class="fas fa-newspaper"></i> <span>News &
+                                Updates</span></a></li>
+                    <li><a href="announcements.html"><i class="fas fa-bullhorn"></i> <span>General Notices</span></a>
+                    </li>
+                    <li><a href="contact.html"><i class="fas fa-address-book"></i> <span>Contact Us</span></a></li>
+                    <li><a href="settings.html"><i class="fas fa-cog"></i> <span>Settings</span></a></li>
+                </ul>
+            </div>
+            <div class="sidebar-footer">
+                <a href="login.html"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <h1 style="margin-bottom: 10px; color: var(--school-primary-dark, #1e293b);">News & Updates</h1>
+            <p style="margin-bottom: 30px; color: #64748b;">Stay informed about school news, academic updates, and
+                important announcements.</p>
+
+            <!-- Filters -->
+            <div class="news-filters">
+                <button class="filter-btn active" data-category="all">All News</button>
+                <button class="filter-btn" data-category="school">School News</button>
+                <button class="filter-btn" data-category="academic">Academic</button>
+                <button class="filter-btn" data-category="hr">HR Updates</button>
+                <button class="filter-btn" data-category="general">General</button>
+            </div>
+
+            <!-- News Articles -->
+            <div id="newsContainer">
+                <article class="news-article academic" data-category="academic">
+                    <span class="news-category category-academic">Academic</span>
+                    <div class="news-meta">
+                        <span><i class="fas fa-calendar"></i> January 8, 2026</span>
+                        <span><i class="fas fa-user"></i> Academic Director</span>
+                    </div>
+                    <h2 class="news-title">Term 1 2026 Curriculum Updates</h2>
+                    <p class="news-content">
+                        Several updates have been made to the Term 1 curriculum for mathematics and science subjects.
+                        Teachers are requested to review the new syllabus documents available in the Digital Resources
+                        section. Departmental meetings will be held next week to discuss implementation strategies.
+                    </p>
+                    <span class="read-more" onclick="showNotification('Opening full article...', 'info')">
+                        Read More <i class="fas fa-arrow-right"></i>
+                    </span>
+                </article>
+
+                <article class="news-article" data-category="school">
+                    <span class="news-category category-school">School News</span>
+                    <div class="news-meta">
+                        <span><i class="fas fa-calendar"></i> January 6, 2026</span>
+                        <span><i class="fas fa-user"></i> Administration</span>
+                    </div>
+                    <h2 class="news-title">New Portal System Features for Teachers</h2>
+                    <p class="news-content">
+                        We are pleased to announce the launch of upgraded features in the teacher portal. You can now
+                        manage assignments, grades, and attendance more efficiently. The interface has been streamlined
+                        for better usability on both desktop and mobile devices.
+                    </p>
+                    <span class="read-more" onclick="showNotification('Opening full article...', 'info')">
+                        Read More <i class="fas fa-arrow-right"></i>
+                    </span>
+                </article>
+
+                <article class="news-article hr" data-category="hr">
+                    <span class="news-category category-hr">HR Updates</span>
+                    <div class="news-meta">
+                        <span><i class="fas fa-calendar"></i> January 5, 2026</span>
+                        <span><i class="fas fa-user"></i> Human Resources</span>
+                    </div>
+                    <h2 class="news-title">Professional Development Opportunities</h2>
+                    <p class="news-content">
+                        The school is offering new professional development workshops for staff interested in advanced
+                        teaching methodologies. Sessions will begin in February. Please visit the HR Services page for
+                        more details and to register your interest.
+                    </p>
+                    <span class="read-more" onclick="showNotification('Opening full article...', 'info')">
+                        Read More <i class="fas fa-arrow-right"></i>
+                    </span>
+                </article>
+
+                <article class="news-article general" data-category="general">
+                    <span class="news-category category-general">General</span>
+                    <div class="news-meta">
+                        <span><i class="fas fa-calendar"></i> January 3, 2026</span>
+                        <span><i class="fas fa-user"></i> ICT Department</span>
+                    </div>
+                    <h2 class="news-title">WiFi Network Upgrade</h2>
+                    <p class="news-content">
+                        We are upgrading the school's WiFi network to improve coverage and speed in the staff rooms and
+                        classrooms. There might be intermittent connectivity on Saturday, January 10. We appreciate your
+                        patience as we improve our digital infrastructure.
+                    </p>
+                    <span class="read-more" onclick="showNotification('Opening full article...', 'info')">
+                        Read More <i class="fas fa-arrow-right"></i>
+                    </span>
+                </article>
+
+                <article class="news-article academic" data-category="academic">
+                    <span class="news-category category-academic">Academic</span>
+                    <div class="news-meta">
+                        <span><i class="fas fa-calendar"></i> December 28, 2025</span>
+                        <span><i class="fas fa-user"></i> Exam Board</span>
+                    </div>
+                    <h2 class="news-title">Examination Schedules Finalized</h2>
+                    <p class="news-content">
+                        The examination schedules for the end of Term 1 have been finalized. Please ensure that all
+                        students are aware of their exam dates. The detailed timetable has been circulated to all
+                        departments and is also available on the student portal.
+                    </p>
+                    <span class="read-more" onclick="showNotification('Opening full article...', 'info')">
+                        Read More <i class="fas fa-arrow-right"></i>
+                    </span>
+                </article>
+            </div>
+        </main>
+    </div>
+
+    <script src="../js/ancillary-common.js"></script>
+    <script>
+        // Filter functionality
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                // Update active button
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+
+                // Filter articles
+                const category = this.dataset.category;
+                document.querySelectorAll('.news-article').forEach(article => {
+                    if (category === 'all' || article.dataset.category === category) {
+                        article.style.display = 'block';
+                    } else {
+                        article.style.display = 'none';
+                    }
+                });
+            });
+        });
+    </script>
+    <!-- ACADEX: Powered-by footer and school branding -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+
+</body>
+
+</html>
+

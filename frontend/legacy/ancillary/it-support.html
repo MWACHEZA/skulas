@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IT Support - ACADEX</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/ancillary-portal.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        /* IT SUPPORT SPECIFIC STYLES */
+        .ticket-form {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group label {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #475569;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 0.95rem;
+        }
+
+        .form-full {
+            grid-column: span 2;
+        }
+
+        .btn-submit {
+            background: var(--school-primary);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-submit:hover {
+            background: var(--school-primary-dark);
+        }
+
+        .ticket-item {
+            padding: 15px;
+            background: #f8fafc;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .ticket-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .ticket-id {
+            font-size: 0.75rem;
+            font-family: monospace;
+            color: #64748b;
+            font-weight: 600;
+        }
+
+        .ticket-status {
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .status-open {
+            background: #eef2ff;
+            color: var(--school-primary);
+        }
+
+        .status-resolved {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-in-review {
+            background: #fff7ed;
+            color: #c2410c;
+        }
+
+        .status-rejected {
+            background: #fef2f2;
+            color: #991b1b;
+        }
+
+        .ticket-title {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: #1e293b;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .ticket-meta {
+            font-size: 0.8rem;
+            color: #888;
+            display: flex;
+            gap: 15px;
+        }
+
+        .kb-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px;
+            border-radius: 10px;
+            text-decoration: none;
+            color: #475569;
+            transition: 0.3s;
+        }
+
+        .kb-item:hover {
+            background: #f1f5f9;
+            color: var(--school-primary);
+        }
+
+        .kb-icon {
+            width: 35px;
+            height: 35px;
+            background: #eef2ff;
+            color: var(--school-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            margin-bottom: 25px;
+        }
+
+        .card-header {
+            padding: 20px 25px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-header h3 {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--school-primary-dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-body {
+            padding: 25px;
+        }
+
+        @media (max-width: 768px) {
+            .ticket-form {
+                grid-template-columns: 1fr;
+            }
+
+            .form-full {
+                grid-column: span 1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Mobile Toggle Button -->
+    <button class="mobile-toggle" id="mobile-toggle">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <div class="dashboard-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <img src="../images/logo.png" alt="Logo" class="acadex-school-logo">
+                <h3>ANCILLARY PORTAL</h3>
+            </div>
+            <div class="sidebar-menu">
+                <ul>
+                    <li><a href="dashboard.html"><i class="fas fa-th-large"></i> <span>Dashboard</span></a></li>
+                </ul>
+
+                <div id="tuckshop-sidebar-section" style="display: none;">
+                    <div class="sidebar-section-title">Tuckshop System</div>
+                    <ul>
+                        <li><a href="tuckshop-dashboard.html"><i class="fas fa-tachometer-alt"></i> <span>TS
+                                    Dashboard</span></a></li>
+                        <li><a href="tuckshop-sales.html"><i class="fas fa-cash-register"></i> <span>Point of
+                                    Sale</span></a></li>
+                        <li><a href="tuckshop-inventory.html"><i class="fas fa-boxes"></i> <span>Inventory</span></a>
+                        </li>
+                        <li><a href="tuckshop-orders.html"><i class="fas fa-truck"></i> <span>Supplier
+                                    Orders</span></a></li>
+                    </ul>
+                </div>
+
+                <div class="sidebar-section-title">Operations</div>
+                <ul>
+                    <li><a href="staff-directory.html"><i class="fas fa-users"></i> <span>Staff Directory</span></a>
+                    </li>
+                    <li><a href="procurement.html"><i class="fas fa-shopping-cart"></i> <span>Procurement</span></a>
+                    </li>
+                    <li><a href="assets.html"><i class="fas fa-boxes"></i> <span>Asset Management</span></a></li>
+                    <li><a href="schedules.html"><i class="fas fa-calendar-alt"></i> <span>Schedules & Shifts</span></a>
+                    </li>
+                </ul>
+
+                <div class="sidebar-section-title">Support & HR</div>
+                <ul>
+                    <li><a href="sdc-portal.html"><i class="fas fa-file-invoice-dollar"></i> <span>SDC Staff
+                                Portal</span></a></li>
+                    <li><a href="hr-services.html"><i class="fas fa-user-shield"></i> <span>HR Services</span></a></li>
+                    <li><a href="profile.html"><i class="fas fa-id-card"></i> <span>My Profile</span></a></li>
+                    <li><a href="resources.html"><i class="fas fa-folder-open"></i> <span>Resources & Docs</span></a>
+                    </li>
+                    <li><a href="it-support.html" class="active"><i class="fas fa-headset"></i> <span>IT
+                                Support Hub</span></a></li>
+                </ul>
+
+                <div class="sidebar-section-title">Communication</div>
+                <ul>
+                    <li><a href="news.html"><i class="fas fa-newspaper"></i> <span>News & Updates</span></a></li>
+                    <li><a href="feedback.html"><i class="fas fa-comment-dots"></i> <span>Feedback</span></a></li>
+                    <li><a href="contact.html"><i class="fas fa-address-book"></i> <span>Contact Us</span></a></li>
+                </ul>
+            </div>
+            <div class="sidebar-footer">
+                <a href="login.html"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <h1 style="margin-bottom: 10px; color: #1e293b;">IT Support Hub</h1>
+            <p style="margin-bottom: 30px; color: #64748b;">Report system issues, request equipment, and access tech
+                support.</p>
+
+            <div class="content-row" style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 30px;">
+                <div class="content-left">
+                    <!-- Ticket Submission -->
+                    <section class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-ticket-alt"></i> Submit Support Ticket</h3>
+                        </div>
+                        <div class="card-body">
+                            <form class="ticket-form" id="itTicketForm">
+                                <div class="form-group">
+                                    <label>Issue Category</label>
+                                    <select id="category" required>
+                                        <option value="">Select Category</option>
+                                        <option>Hardware (Computer/Printer)</option>
+                                        <option>Software/Portal Access</option>
+                                        <option>Network & Internet</option>
+                                        <option>Email & Communication</option>
+                                        <option>Smartboard/AV Equipment</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Urgency</label>
+                                    <select id="urgency" required>
+                                        <option value="Normal">Normal</option>
+                                        <option value="High">High (Needs immediate attention)</option>
+                                        <option value="Low">Low/General Inquiry</option>
+                                    </select>
+                                </div>
+                                <div class="form-group form-full">
+                                    <label>Subject</label>
+                                    <input type="text" id="subject" placeholder="Brief summary of the issue" required>
+                                </div>
+                                <div class="form-group form-full">
+                                    <label>Detailed Description</label>
+                                    <textarea id="description" rows="4"
+                                        placeholder="Please provide as much detail as possible (e.g., error messages, location of device)..."
+                                        required></textarea>
+                                </div>
+                                <div class="form-group form-full">
+                                    <button type="submit" class="btn-submit">Submit Ticket</button>
+                                </div>
+                            </form>
+                        </div>
+                    </section>
+
+                    <!-- Recent Tickets -->
+                    <section class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-history"></i> My Recent Tickets</h3>
+                        </div>
+                        <div class="card-body" id="ticketList">
+                            <div class="ticket-item">
+                                <div class="ticket-header">
+                                    <span class="ticket-id">#TKT-2026-0045</span>
+                                    <span class="ticket-status status-open">Open</span>
+                                </div>
+                                <span class="ticket-title">Portal login showing 'error 500' on mobile</span>
+                                <div class="ticket-meta">
+                                    <span><i class="fas fa-calendar-day"></i> Jan 06, 2026</span>
+                                    <span><i class="fas fa-user-cog"></i> Assigned: Alex (ICT)</span>
+                                </div>
+                            </div>
+                            <div class="ticket-item">
+                                <div class="ticket-header">
+                                    <span class="ticket-id">#TKT-2025-1282</span>
+                                    <span class="ticket-status status-resolved">Resolved</span>
+                                </div>
+                                <span class="ticket-title">Reset password for staff email</span>
+                                <div class="ticket-meta">
+                                    <span><i class="fas fa-calendar-day"></i> Dec 28, 2025</span>
+                                    <span><i class="fas fa-check-circle"></i> Resolved by ICT Team</span>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <div class="content-right">
+                    <!-- Knowledge Base -->
+                    <section class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-book"></i> Knowledge Base</h3>
+                        </div>
+                        <div class="card-body" style="padding: 15px;">
+                            <a href="#" class="kb-item">
+                                <div class="kb-icon"><i class="fas fa-wifi"></i></div>
+                                <span>Wifi Connection Guide</span>
+                            </a>
+                            <a href="#" class="kb-item">
+                                <div class="kb-icon"><i class="fas fa-print"></i></div>
+                                <span>Common Printer Hub Fixes</span>
+                            </a>
+                            <a href="#" class="kb-item">
+                                <div class="kb-icon"><i class="fas fa-key"></i></div>
+                                <span>Accessing External Files</span>
+                            </a>
+                            <a href="#" class="kb-item">
+                                <div class="kb-icon"><i class="fas fa-mobile-alt"></i></div>
+                                <span>Portal App Setup</span>
+                            </a>
+                        </div>
+                    </section>
+
+                    <!-- Live Chat Status -->
+                    <section class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-comments"></i> Support Status</h3>
+                        </div>
+                        <div class="card-body">
+                            <div style="text-align: center; padding: 10px;">
+                                <div
+                                    style="width: 15px; height: 15px; background: #10b981; border-radius: 50%; display: inline-block; margin-right: 5px;">
+                                </div>
+                                <span style="font-weight: 600; color: #166534;">IT Staff Online</span>
+                                <p style="font-size: 0.8rem; color: #64748b; margin-top: 10px;">Estimated response: < 15
+                                        mins</p>
+                                        <button id="msgSupport"
+                                            style="width: 100%; border: 1px solid var(--school-primary); background: white; color: var(--school-primary); padding: 10px; border-radius: 8px; font-weight: 600; cursor: pointer; margin-top: 10px;">Message
+                                            Support</button>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Security Alert -->
+                    <div style="background: #fff7ed; border: 1px solid #f59e0b; padding: 20px; border-radius: 20px;">
+                        <div style="display: flex; gap: 15px; align-items: flex-start;">
+                            <i class="fas fa-shield-alt" style="font-size: 1.5rem; color: #f59e0b;"></i>
+                            <div>
+                                <h4 style="margin: 0; color: #92400e; font-size: 0.95rem;">Security Reminder</h4>
+                                <p style="margin: 5px 0 0; font-size: 0.8rem; color: #b45309; line-height: 1.4;">Never
+                                    share your portal password with anyone. ICT staff will never ask for your password
+                                    via email or SMS.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../js/ancillary-common.js"></script>
+    <script src="../js/it-support-shared.js"></script>
+    <script>
+        // Helper: User data from localStorage
+        const currentUser = JSON.parse(getTenantData('currentUser', 'null')) || { name: 'Staff Member', role: 'ancillary', dept: 'Facilities & Maintenance', email: 'staff@acadex.co.zw' };
+        const userEmail = currentUser.email;
+
+        // KB Data
+        const kbData = [
+            { id: 1, title: "Wifi Connection Guide", category: "Network", icon: "fa-wifi", tags: ["internet", "wifi", "connect"] },
+            { id: 2, title: "Common Printer Hub Fixes", category: "Hardware", icon: "fa-print", tags: ["printing", "toner", "paper jam"] },
+            { id: 3, title: "Accessing External Files", category: "Software", icon: "fa-key", tags: ["vpn", "sharepoint", "files"] },
+            { id: 4, title: "Portal App Setup", category: "Software", icon: "fa-mobile-alt", tags: ["mobile", "app", "install"] },
+            { id: 5, title: "Smartboard Calibration", category: "AV", icon: "fa-chalkboard", tags: ["classroom", "projector", "calibration"] }
+        ];
+
+        // Load and render KB
+        function renderKB(filter = '') {
+            const kbContainer = 'kbListContainer';
+            let kbList = document.getElementById(kbContainer);
+
+            if (!kbList) {
+                const target = document.querySelector('.card:has(.fa-book) .card-body');
+                if (!target) return;
+                target.id = kbContainer;
+                kbList = target;
+            }
+
+            // Add search bar if not exists
+            if (!document.getElementById('kbSearch')) {
+                const searchDiv = document.createElement('div');
+                searchDiv.style.marginBottom = '15px';
+                searchDiv.innerHTML = `
+                    <div style="position:relative;">
+                        <i class="fas fa-search" style="position:absolute; left:12px; top:12px; color:#94a3b8;"></i>
+                        <input type="text" id="kbSearch" placeholder="Search knowledge base..." 
+                            style="width:100%; padding:10px 10px 10px 35px; border:1px solid #e2e8f0; border-radius:10px; font-size:0.85rem;">
+                    </div>
+                `;
+                kbList.parentElement.insertBefore(searchDiv, kbList);
+
+                document.getElementById('kbSearch').addEventListener('input', (e) => {
+                    renderSharedKB(kbContainer, e.target.value);
+                });
+            }
+
+            renderSharedKB(kbContainer, filter);
+        }
+
+        // Article Viewer
+        function showKBArticle(item) {
+            // Check if modal exists, if not create it
+            let modal = document.getElementById('kbArticleModal');
+            if (!modal) {
+                modal = document.createElement('div');
+                modal.id = 'kbArticleModal';
+                modal.className = 'modal';
+                modal.innerHTML = `
+                    <div class="modal-content" style="max-width:500px;">
+                        <div class="modal-header">
+                            <h3 id="kbModalTitle">Article</h3>
+                            <span class="close-modal" onclick="closeModal('kbArticleModal')">&times;</span>
+                        </div>
+                        <div class="modal-body" id="kbModalBody" style="padding:20px; line-height:1.6; color:#475569;">
+                        </div>
+                        <div class="form-actions">
+                            <button class="btn-submit" onclick="closeModal('kbArticleModal')">Close</button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+            }
+
+            document.getElementById('kbModalTitle').innerHTML = `<i class="fas ${item.icon || 'fa-info-circle'}"></i> ${item.title}`;
+            document.getElementById('kbModalBody').innerHTML = `
+                <div style="margin-bottom:15px; font-weight:600; color:var(--school-primary);">Category: ${item.category}</div>
+                <div>${item.content || 'No detailed content available for this article.'}</div>
+            `;
+            openModal('kbArticleModal');
+        }
+
+        // Fallback open/close modal if not defined in ancillary-common
+        if (typeof openModal !== 'function') {
+            window.openModal = function (id) {
+                const m = document.getElementById(id);
+                if (m) m.style.display = 'flex';
+            };
+            window.closeModal = function (id) {
+                const m = document.getElementById(id);
+                if (m) m.style.display = 'none';
+            };
+        }
+
+        // Load tickets from shared storage
+        function loadTickets() {
+            const tickets = getTenantData('itTickets', '[]');
+            const list = document.getElementById('ticketList');
+
+            // Render only current user's tickets
+            const myTickets = tickets.filter(t => t.userEmail === userEmail || t.userName === currentUser.name);
+
+            if (myTickets.length > 0) {
+                list.innerHTML = '';
+                myTickets.forEach(t => {
+                    const ticketEl = document.createElement('div');
+                    ticketEl.className = 'ticket-item';
+                    ticketEl.style.borderLeft = `4px solid ${getStatusColor(t.status)}`;
+                    ticketEl.innerHTML = `
+                        <div class="ticket-header">
+                            <span class="ticket-id">#${t.id}</span>
+                            <span class="ticket-status ${getStatusClass(t.status)}">${t.status}</span>
+                        </div>
+                        <span class="ticket-title">${t.subject}</span>
+                        <div class="ticket-meta">
+                            <span><i class="fas fa-calendar-day"></i> ${new Date(t.date).toLocaleDateString()}</span>
+                            <span><i class="fas fa-user-cog"></i> ${t.assigned || 'Pending Assignment'}</span>
+                        </div>
+                    `;
+                    list.appendChild(ticketEl);
+                });
+            } else {
+                list.innerHTML = '<p style="text-align:center; color:#94a3b8; font-size:0.85rem; padding:20px;">No support tickets found.</p>';
+            }
+        }
+
+        function getStatusColor(status) {
+            switch (status?.toLowerCase()) {
+                case 'completed': case 'resolved': return '#10b981';
+                case 'denied': case 'rejected': return '#ef4444';
+                case 'in review': return '#f59e0b';
+                case 'pending': return '#64748b';
+                default: return 'var(--school-primary)';
+            }
+        }
+
+        function getStatusClass(status) {
+            switch (status?.toLowerCase()) {
+                case 'completed': case 'resolved': return 'status-resolved';
+                case 'denied': case 'rejected': return 'status-rejected';
+                case 'in review': return 'status-in-review';
+                default: return 'status-open';
+            }
+        }
+
+        document.getElementById('itTicketForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const newTicket = {
+                id: `TKT-${Date.now().toString().slice(-6)}`,
+                userEmail: userEmail,
+                userName: currentUser.name,
+                portal: 'Ancillary',
+                category: document.getElementById('category').value,
+                urgency: document.getElementById('urgency').value,
+                subject: document.getElementById('subject').value,
+                description: document.getElementById('description').value,
+                status: 'Open',
+                date: new Date().toISOString(),
+                assigned: null
+            };
+
+            const tickets = getTenantData('itTickets', '[]');
+            tickets.unshift(newTicket);
+            saveTenantData('itTickets', tickets);
+
+            showNotification(`Ticket Submitted: ${newTicket.subject}`, 'success');
+            loadTickets();
+            this.reset();
+        });
+
+        document.getElementById('msgSupport').addEventListener('click', function () {
+            showNotification('Connecting to IT Live Chat...', 'info');
+        });
+
+        // Initialize
+        loadTickets();
+        renderKB();
+    </script>
+    <!-- ACADEX: Powered-by footer and school branding -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+
+</body>
+
+</html>

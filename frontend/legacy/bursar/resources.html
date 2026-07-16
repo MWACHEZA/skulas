@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resources & Documents - Bursar Portal</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/ancillary-portal.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        /* RESOURCE SPECIFIC STYLES */
+        .resource-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .document-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid #f1f5f9;
+            transition: all 0.3s;
+            margin-bottom: 12px;
+        }
+
+        .document-item:hover {
+            transform: translateX(5px);
+            background: #f8fafc;
+            border-color: var(--school-primary, var(--school-primary, #0056b3));
+        }
+
+        .doc-icon {
+            font-size: 1.5rem;
+            width: 40px;
+        }
+
+        .icon-pdf {
+            color: #ef4444;
+        }
+
+        .icon-doc {
+            color: #3b82f6;
+        }
+
+        .icon-xls {
+            color: #10b981;
+        }
+
+        .doc-details {
+            flex: 1;
+        }
+
+        .doc-name {
+            display: block;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .doc-meta {
+            display: block;
+            font-size: 0.75rem;
+            color: #888;
+        }
+
+        .btn-download,
+        .btn-delete {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #64748b;
+            text-decoration: none;
+            transition: 0.3s;
+            border: none;
+            cursor: pointer;
+            margin-left: 5px;
+        }
+
+        .btn-download:hover {
+            background: var(--school-primary, var(--school-primary, #0056b3));
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background: #ef4444;
+            color: white;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            margin-bottom: 25px;
+        }
+
+        .card-header {
+            padding: 20px 25px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-header h3 {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--school-primary-dark, var(--school-primary-dark, #003d82));
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-body {
+            padding: 25px;
+        }
+
+        .btn-upload {
+            background: var(--school-primary, var(--school-primary, #0056b3));
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .btn-upload:hover {
+            background: var(--school-primary-dark, var(--school-primary-dark, #003d82));
+        }
+
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            background-color: rgba(var(--school-primary-rgb, 0, 86, 179), 0.2);
+            color: white;
+            border-left: 3px solid var(--school-primary, var(--school-primary, #0056b3));
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 500px;
+            position: relative;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .close-modal {
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #64748b;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #475569;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 0.95rem;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Mobile Toggle Button -->
+    <button class="mobile-toggle" id="mobile-toggle">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <div class="dashboard-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-menu">
+                <div class="sidebar-section-title">Bursar System</div>
+                <ul>
+                    <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i>
+                            <span>Dashboard</span></a></li>
+                    <li><a href="fees-management.html"><i class="fas fa-money-bill-wave"></i> <span>Fees
+                                Management</span></a></li>
+                    <li><a href="payments.html"><i class="fas fa-credit-card"></i> <span>Payments</span></a></li>
+                    <li><a href="expenses.html"><i class="fas fa-file-invoice-dollar"></i> <span>Expenses</span></a>
+                    </li>
+                    <li><a href="payroll.html"><i class="fas fa-users-cog"></i> <span>Payroll</span></a></li>
+                    <li><a href="tuckshop.html"><i class="fas fa-store"></i> <span>Tuckshop</span></a></li>
+                    <li><a href="reports.html"><i class="fas fa-chart-pie"></i> <span>Reports</span></a></li>
+                </ul>
+
+                <div class="sidebar-section-title">Operations</div>
+                <ul>
+                    <li><a href="staff-directory.html"><i class="fas fa-users"></i> <span>Staff Directory</span></a>
+                    </li>
+                    <li><a href="procurement.html"><i class="fas fa-shopping-cart"></i> <span>Procurement</span></a>
+                    </li>
+                    <li><a href="assets.html"><i class="fas fa-boxes"></i> <span>Asset Management</span></a></li>
+                    <li><a href="schedules.html"><i class="fas fa-calendar-check"></i> <span>Schedules &
+                                Shifts</span></a></li>
+                </ul>
+
+                <div class="sidebar-section-title">Staff HR & Support</div>
+                <ul>
+                    <li><a href="sdc-portal.html"><i class="fas fa-file-invoice-dollar"></i> <span>SDC Staff
+                                Portal</span></a></li>
+                    <li><a href="hr-services.html"><i class="fas fa-user-shield"></i> <span>HR Services</span></a></li>
+                    <li><a href="profile-settings.html"><i class="fas fa-id-card"></i> <span>My Profile</span></a></li>
+                    <li><a href="resources.html" class="active"><i class="fas fa-folder-open"></i> <span>Resources &
+                                Docs</span></a>
+                    </li>
+                    <li><a href="it-support.html"><i class="fas fa-headset"></i> <span>IT Support</span></a></li>
+                </ul>
+
+                <div class="sidebar-section-title">Communication</div>
+                <ul>
+                    <li><a href="news.html"><i class="fas fa-newspaper"></i> <span>News & Updates</span></a></li>
+                    <li><a href="contact.html"><i class="fas fa-address-book"></i> <span>Contact Us</span></a></li>
+                    <li><a href="settings.html"><i class="fas fa-cog"></i> <span>Settings</span></a></li>
+                </ul>
+            </div>
+            <div class="sidebar-footer">
+                <a href="login.html"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <h1 style="margin-bottom: 10px; color: var(--school-primary-dark, #1e293b);">Resources & Documents</h1>
+            <p style="margin-bottom: 30px; color: #64748b;">Manage financial documents and access IT manuals.</p>
+
+            <div class="resource-grid">
+                <!-- Financial Documents (Bursar can upload) -->
+                <section class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-money-bill-wave"></i> Finance & Procurement</h3>
+                        <button class="btn-upload" id="uploadFinanceBtn"><i class="fas fa-plus"></i> Upload</button>
+                    </div>
+                    <div class="card-body" id="financeDocsList">
+                        <!-- Populated by JS -->
+                    </div>
+                </section>
+
+                <!-- IT & Technical Support (Read-only for Bursar) -->
+                <section class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-laptop-code"></i> IT & Technical Manuals</h3>
+                        <span style="font-size: 0.75rem; color: #64748b;">(Admin managed)</span>
+                    </div>
+                    <div class="card-body" id="itDocsList">
+                        <!-- Populated by JS -->
+                    </div>
+                </section>
+            </div>
+
+            <!-- Upload Modal -->
+            <div id="uploadModal" class="modal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3><i class="fas fa-upload"></i> Upload Document</h3>
+                        <span class="close-modal" id="closeUpload">&times;</span>
+                    </div>
+                    <form id="uploadForm">
+                        <div class="form-group">
+                            <label>Document Name</label>
+                            <input type="text" id="docName" required placeholder="e.g. Budget Report 2026">
+                        </div>
+                        <div class="form-group">
+                            <label>File Type</label>
+                            <select id="docType" required>
+                                <option value="pdf">PDF</option>
+                                <option value="docx">Word Document</option>
+                                <option value="xlsx">Excel Spreadsheet</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Description (Optional)</label>
+                            <textarea id="docDesc" rows="3" placeholder="Brief description..."></textarea>
+                        </div>
+                        <button type="submit" class="btn-upload" style="width: 100%; padding: 12px;">Upload
+                            Document</button>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../js/ancillary-common.js"></script>
+    <script>
+        // Document storage keys
+        const FINANCE_DOCS_KEY = 'financeDocuments';
+        const IT_DOCS_KEY = 'itDocuments';
+
+        // Load documents
+        function loadDocuments() {
+            const financeDocs = getTenantData(FINANCE_DOCS_KEY, '[]');
+            const itDocs = getTenantData(IT_DOCS_KEY, '[]');
+
+            renderDocuments('financeDocsList', financeDocs, true); // true = can delete
+            renderDocuments('itDocsList', itDocs, false); // false = read-only
+        }
+
+        function renderDocuments(containerId, docs, canDelete) {
+            const container = document.getElementById(containerId);
+
+            if (docs.length === 0) {
+                container.innerHTML = '<p style="color: #94a3b8; text-align: center; padding: 20px;">No documents available.</p>';
+                return;
+            }
+
+            container.innerHTML = '';
+            docs.forEach((doc, index) => {
+                const iconClass = doc.type === 'pdf' ? 'icon-pdf' : (doc.type === 'xlsx' ? 'icon-xls' : 'icon-doc');
+                const iconType = doc.type === 'pdf' ? 'fa-file-pdf' : (doc.type === 'xlsx' ? 'fa-file-excel' : 'fa-file-word');
+
+                const docEl = document.createElement('div');
+                docEl.className = 'document-item';
+                docEl.innerHTML = `
+                    <i class="fas ${iconType} doc-icon ${iconClass}"></i>
+                    <div class="doc-details">
+                        <span class="doc-name">${doc.name}</span>
+                        <span class="doc-meta">${doc.type.toUpperCase()} • ${doc.date}</span>
+                    </div>
+                    <div style="display: flex;">
+                        <button class="btn-download" onclick="downloadDoc('${doc.name}', '${doc.type}')"><i class="fas fa-download"></i></button>
+                        ${canDelete ? `<button class="btn-delete" onclick="deleteDoc('${containerId}', ${index})"><i class="fas fa-trash"></i></button>` : ''}
+                    </div>
+                `;
+                container.appendChild(docEl);
+            });
+        }
+
+        // Upload modal
+        const uploadModal = document.getElementById('uploadModal');
+        document.getElementById('uploadFinanceBtn').onclick = () => uploadModal.style.display = 'flex';
+        document.getElementById('closeUpload').onclick = () => uploadModal.style.display = 'none';
+        window.onclick = (e) => { if (e.target == uploadModal) uploadModal.style.display = 'none'; }
+
+        // Upload form
+        document.getElementById('uploadForm').onsubmit = (e) => {
+            e.preventDefault();
+
+            const newDoc = {
+                name: document.getElementById('docName').value,
+                type: document.getElementById('docType').value,
+                description: document.getElementById('docDesc').value,
+                date: new Date().toLocaleDateString(),
+                uploadedBy: 'Bursar'
+            };
+
+            const docs = getTenantData(FINANCE_DOCS_KEY, '[]');
+            docs.unshift(newDoc);
+            saveTenantData(FINANCE_DOCS_KEY, docs);
+
+            loadDocuments();
+            uploadModal.style.display = 'none';
+            e.target.reset();
+            showNotification(`Document "${newDoc.name}" uploaded successfully.`, 'success');
+        };
+
+        // Download document
+        window.downloadDoc = function (name, type) {
+            showNotification(`Downloading: ${name}.${type}`, 'info');
+        };
+
+        // Delete document
+        window.deleteDoc = function (containerId, index) {
+            if (!confirm('Delete this document?')) return;
+
+            const docs = getTenantData(FINANCE_DOCS_KEY, '[]');
+            const deleted = docs.splice(index, 1)[0];
+            saveTenantData(FINANCE_DOCS_KEY, docs);
+
+            loadDocuments();
+            showNotification(`Document "${deleted.name}" deleted.`, 'success');
+        };
+
+        // Initialize
+        loadDocuments();
+
+        // Seed IT docs if empty (admin would do this)
+        if (!getTenantData(IT_DOCS_KEY, 'null')) {
+            const defaultITDocs = [
+                { name: 'Smartboard Setup Guide', type: 'pdf', date: '01/05/2026', uploadedBy: 'Admin' },
+                { name: 'Staff Email Setup (Mobile)', type: 'pdf', date: '12/20/2025', uploadedBy: 'Admin' },
+                { name: 'System Access Request Form', type: 'docx', date: '11/15/2025', uploadedBy: 'Admin' }
+            ];
+            saveTenantData(IT_DOCS_KEY, defaultITDocs);
+            loadDocuments();
+        }
+    </script>
+    <!-- ACADEX: Powered-by footer and school branding -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+
+</body>
+
+</html>
+

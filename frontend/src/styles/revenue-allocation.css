@@ -1,0 +1,77 @@
+/* Revenue Allocation Styles */
+.revenue-alloc-form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+.revenue-alloc-breakdown-section, .revenue-alloc-fee-groups-section {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 12px;
+}
+.revenue-alloc-breakdown-row {
+  display: grid;
+  grid-template-columns: 1fr 120px 40px;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+  align-items: center;
+}
+.revenue-alloc-percentage-input {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 0 0.5rem;
+  border-radius: 8px;
+}
+.revenue-alloc-percentage-input input {
+  background: transparent;
+  border: none;
+  padding: 0.5rem;
+  width: 60px;
+  text-align: right;
+}
+.revenue-alloc-checkbox-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+.revenue-alloc-checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  transition: 0.2s;
+}
+.revenue-alloc-checkbox-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+.revenue-alloc-badge-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+.revenue-alloc-badge {
+  font-size: 0.7rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 100px;
+}
+.revenue-alloc-badge.secondary {
+  background: rgba(255, 255, 255, 0.1);
+}
+.revenue-alloc-mini-breakdown {
+  font-size: 0.75rem;
+}
+.revenue-alloc-mini-item {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px dotted rgba(255, 255, 255, 0.1);
+}
+.revenue-alloc-status-pill.active { color: #10b981; background: rgba(16, 185, 129, 0.1); padding: 0.2rem 0.5rem; border-radius: 4px; }
+.revenue-alloc-status-pill.inactive { color: #9ca3af; background: rgba(156, 163, 175, 0.1); padding: 0.2rem 0.5rem; border-radius: 4px; }

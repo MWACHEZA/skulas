@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schedules & Shifts - Bursar Portal</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/ancillary-portal.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        .schedule-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #f1f5f9;
+        }
+
+        .tab-btn {
+            padding: 12px 25px;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            font-weight: 600;
+            color: #64748b;
+            transition: all 0.3s;
+        }
+
+        .tab-btn.active {
+            color: var(--school-primary, var(--school-primary, #0056b3));
+            border-bottom-color: var(--school-primary, var(--school-primary, #0056b3));
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .schedule-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .schedule-card {
+            background: white;
+            border: 1px solid #f1f5f9;
+            border-left: 4px solid var(--school-primary, var(--school-primary, #0056b3));
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s;
+        }
+
+        .schedule-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .schedule-card.admin-schedule {
+            border-left-color: #10b981;
+        }
+
+        .schedule-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .schedule-date {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .schedule-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--school-primary-dark, #1e293b);
+            margin: 5px 0;
+        }
+
+        .schedule-details {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .schedule-detail {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.85rem;
+            color: #475569;
+        }
+
+        .schedule-detail i {
+            width: 16px;
+            color: #94a3b8;
+        }
+
+        .schedule-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #f1f5f9;
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-edit {
+            background: #f1f5f9;
+            color: #475569;
+        }
+
+        .btn-edit:hover {
+            background: var(--school-primary, #0056b3);
+            color: white;
+        }
+
+        .btn-delete {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .btn-delete:hover {
+            background: #ef4444;
+            color: white;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            margin-bottom: 25px;
+        }
+
+        .card-header {
+            padding: 20px 25px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-header h3 {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--school-primary-dark, var(--school-primary-dark, #003d82));
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-body {
+            padding: 25px;
+        }
+
+        .btn-primary {
+            background: var(--school-primary, var(--school-primary, #0056b3));
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .btn-primary:hover {
+            background: var(--school-primary-dark, var(--school-primary-dark, #003d82));
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 500px;
+            position: relative;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .close-modal {
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #64748b;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #475569;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 0.95rem;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Mobile Toggle Button -->
+    <button class="mobile-toggle" id="mobile-toggle">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-menu">
+                <div class="sidebar-section-title">Bursar System</div>
+                <ul>
+                    <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i>
+                            <span>Dashboard</span></a></li>
+                    <li><a href="fees-management.html"><i class="fas fa-money-bill-wave"></i> <span>Fees
+                                Management</span></a></li>
+                    <li><a href="payments.html"><i class="fas fa-credit-card"></i> <span>Payments</span></a></li>
+                    <li><a href="expenses.html"><i class="fas fa-file-invoice-dollar"></i> <span>Expenses</span></a>
+                    </li>
+                    <li><a href="payroll.html"><i class="fas fa-users-cog"></i> <span>Payroll</span></a></li>
+                    <li><a href="tuckshop.html"><i class="fas fa-store"></i> <span>Tuckshop</span></a></li>
+                    <li><a href="reports.html"><i class="fas fa-chart-pie"></i> <span>Reports</span></a></li>
+                </ul>
+
+                <div class="sidebar-section-title">Operations</div>
+                <ul>
+                    <li><a href="staff-directory.html"><i class="fas fa-users"></i> <span>Staff Directory</span></a>
+                    </li>
+                    <li><a href="procurement.html"><i class="fas fa-shopping-cart"></i> <span>Procurement</span></a>
+                    </li>
+                    <li><a href="assets.html"><i class="fas fa-boxes"></i> <span>Asset Management</span></a></li>
+                    <li><a href="schedules.html" class="active"><i class="fas fa-calendar-check"></i> <span>Schedules &
+                                Shifts</span></a></li>
+                </ul>
+
+                <div class="sidebar-section-title">Staff HR & Support</div>
+                <ul>
+                    <li><a href="sdc-portal.html"><i class="fas fa-file-invoice-dollar"></i> <span>SDC Staff
+                                Portal</span></a></li>
+                    <li><a href="hr-services.html"><i class="fas fa-user-shield"></i> <span>HR Services</span></a></li>
+                    <li><a href="profile-settings.html"><i class="fas fa-id-card"></i> <span>My Profile</span></a></li>
+                    <li><a href="resources.html"><i class="fas fa-folder-open"></i> <span>Resources & Docs</span></a>
+                    </li>
+                    <li><a href="it-support.html"><i class="fas fa-headset"></i> <span>IT Support</span></a></li>
+                </ul>
+
+                <div class="sidebar-section-title">Communication</div>
+                <ul>
+                    <li><a href="news.html"><i class="fas fa-newspaper"></i> <span>News & Updates</span></a></li>
+                    <li><a href="contact.html"><i class="fas fa-address-book"></i> <span>Contact Us</span></a></li>
+                    <li><a href="settings.html"><i class="fas fa-cog"></i> <span>Settings</span></a></li>
+                </ul>
+            </div>
+            <div class="sidebar-footer">
+                <a href="login.html"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <h1 style="margin-bottom: 10px; color: var(--school-primary-dark, #1e293b);">Schedules & Shifts</h1>
+            <p style="margin-bottom: 30px; color: #64748b;">Manage your personal schedule and view admin-created
+                schedules.</p>
+
+            <!-- Tabs -->
+            <div class="schedule-tabs">
+                <button class="tab-btn active" data-tab="my-schedule">My Schedule</button>
+                <button class="tab-btn" data-tab="admin-schedule">Admin Schedules</button>
+            </div>
+
+            <!-- My Schedule Tab -->
+            <div id="my-schedule" class="tab-content active">
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-calendar-alt"></i> My Schedule</h3>
+                        <button class="btn-primary" id="addScheduleBtn"><i class="fas fa-plus"></i> Add Event</button>
+                    </div>
+                    <div class="card-body">
+                        <div class="schedule-grid" id="myScheduleGrid">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin Schedule Tab -->
+            <div id="admin-schedule" class="tab-content">
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-calendar-check"></i> School-wide Schedules</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="schedule-grid" id="adminScheduleGrid">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add/Edit Schedule Modal -->
+            <div id="scheduleModal" class="modal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3><i class="fas fa-calendar-plus"></i> <span id="modalTitle">Add Schedule</span></h3>
+                        <span class="close-modal" id="closeSchedule">&times;</span>
+                    </div>
+                    <form id="scheduleForm">
+                        <input type="hidden" id="scheduleId">
+                        <div class="form-group">
+                            <label>Event Title</label>
+                            <input type="text" id="scheduleTitle" required placeholder="e.g. Budget Meeting">
+                        </div>
+                        <div class="form-group">
+                            <label>Date</label>
+                            <input type="date" id="scheduleDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Time</label>
+                            <input type="time" id="scheduleTime" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Location</label>
+                            <input type="text" id="scheduleLocation" placeholder="e.g. Bursar Office">
+                        </div>
+                        <div class="form-group">
+                            <label>Notes (Optional)</label>
+                            <textarea id="scheduleNotes" rows="3" placeholder="Additional details..."></textarea>
+                        </div>
+                        <button type="submit" class="btn-primary" style="width: 100%;">Save Schedule</button>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../js/ancillary-common.js"></script>
+    <script>
+        // Tab switching
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                this.classList.add('active');
+                document.getElementById(this.dataset.tab).classList.add('active');
+            });
+        });
+
+        // Data management
+        const MY_SCHEDULES_KEY = 'bursarSchedules';
+        const ADMIN_SCHEDULES_KEY = 'adminSchedules';
+
+        function loadSchedules() {
+            const mySchedules = getTenantData(MY_SCHEDULES_KEY, '[]');
+            const adminSchedules = getTenantData(ADMIN_SCHEDULES_KEY, '[]');
+
+            renderSchedules('myScheduleGrid', mySchedules, true);
+            renderSchedules('adminScheduleGrid', adminSchedules, false);
+        }
+
+        function renderSchedules(containerId, schedules, canEdit) {
+            const container = document.getElementById(containerId);
+
+            if (schedules.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #94a3b8; padding: 40px;">No schedules available.</p>';
+                return;
+            }
+
+            container.innerHTML = '';
+            schedules.forEach((schedule, index) => {
+                const card = document.createElement('div');
+                card.className = `schedule-card ${!canEdit ? 'admin-schedule' : ''}`;
+                card.innerHTML = `
+                    <div class="schedule-header">
+                        <div>
+                            <div class="schedule-date">${new Date(schedule.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}</div>
+                            <div class="schedule-title">${schedule.title}</div>
+                        </div>
+                    </div>
+                    <div class="schedule-details">
+                        <div class="schedule-detail">
+                            <i class="fas fa-clock"></i>
+                            <span>${schedule.time}</span>
+                        </div>
+                        ${schedule.location ? `
+                        <div class="schedule-detail">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>${schedule.location}</span>
+                        </div>` : ''}
+                        ${schedule.notes ? `
+                        <div class="schedule-detail">
+                            <i class="fas fa-sticky-note"></i>
+                            <span>${schedule.notes}</span>
+                        </div>` : ''}
+                    </div>
+                    ${canEdit ? `
+                    <div class="schedule-actions">
+                        <button class="btn-small btn-edit" onclick="editSchedule(${index})"><i class="fas fa-edit"></i> Edit</button>
+                        <button class="btn-small btn-delete" onclick="deleteSchedule(${index})"><i class="fas fa-trash"></i> Delete</button>
+                    </div>` : ''}
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // Modal management
+        const modal = document.getElementById('scheduleModal');
+        const closeBtn = document.getElementById('closeSchedule');
+
+        document.getElementById('addScheduleBtn').onclick = () => {
+            document.getElementById('modalTitle').textContent = 'Add Schedule';
+            document.getElementById('scheduleForm').reset();
+            document.getElementById('scheduleId').value = '';
+            modal.style.display = 'flex';
+        };
+
+        closeBtn.onclick = () => modal.style.display = 'none';
+        window.onclick = (e) => { if (e.target == modal) modal.style.display = 'none'; };
+
+        // Form submission
+        document.getElementById('scheduleForm').onsubmit = (e) => {
+            e.preventDefault();
+
+            const scheduleData = {
+                title: document.getElementById('scheduleTitle').value,
+                date: document.getElementById('scheduleDate').value,
+                time: document.getElementById('scheduleTime').value,
+                location: document.getElementById('scheduleLocation').value,
+                notes: document.getElementById('scheduleNotes').value
+            };
+
+            let schedules = getTenantData(MY_SCHEDULES_KEY, '[]');
+            const id = document.getElementById('scheduleId').value;
+
+            if (id) {
+                // Edit existing
+                schedules[parseInt(id)] = scheduleData;
+                showNotification('Schedule updated successfully.', 'success');
+            } else {
+                // Add new
+                schedules.push(scheduleData);
+                showNotification('Schedule added successfully.', 'success');
+            }
+
+            saveTenantData(MY_SCHEDULES_KEY, schedules);
+            loadSchedules();
+            modal.style.display = 'none';
+        };
+
+        // Edit schedule
+        window.editSchedule = function (index) {
+            const schedules = getTenantData(MY_SCHEDULES_KEY, '[]');
+            const schedule = schedules[index];
+
+            document.getElementById('modalTitle').textContent = 'Edit Schedule';
+            document.getElementById('scheduleId').value = index;
+            document.getElementById('scheduleTitle').value = schedule.title;
+            document.getElementById('scheduleDate').value = schedule.date;
+            document.getElementById('scheduleTime').value = schedule.time;
+            document.getElementById('scheduleLocation').value = schedule.location || '';
+            document.getElementById('scheduleNotes').value = schedule.notes || '';
+
+            modal.style.display = 'flex';
+        };
+
+        // Delete schedule
+        window.deleteSchedule = function (index) {
+            if (!confirm('Delete this schedule?')) return;
+
+            let schedules = getTenantData(MY_SCHEDULES_KEY, '[]');
+            schedules.splice(index, 1);
+            saveTenantData(MY_SCHEDULES_KEY, schedules);
+
+            loadSchedules();
+            showNotification('Schedule deleted.', 'success');
+        };
+
+        // Initialize
+        loadSchedules();
+
+        // Seed admin schedules if empty
+        if (!getTenantData(ADMIN_SCHEDULES_KEY, 'null')) {
+            const defaultAdminSchedules = [
+                { title: 'Staff Meeting', date: '2026-01-15', time: '09:00', location: 'Main Hall', notes: 'Monthly staff briefing' },
+                { title: 'Financial Year Planning', date: '2026-01-20', time: '14:00', location: 'Admin Block', notes: 'Budget review session' }
+            ];
+            saveTenantData(ADMIN_SCHEDULES_KEY, defaultAdminSchedules);
+            loadSchedules();
+        }
+    </script>
+    <!-- ACADEX: Powered-by footer and school branding -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+
+</body>
+
+</html>
+

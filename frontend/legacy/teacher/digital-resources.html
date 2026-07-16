@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Resources - Teacher Portal</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/ancillary-portal.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        .search-bar-container {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+            display: flex;
+            gap: 15px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1rem;
+            outline: none;
+        }
+
+        .search-btn {
+            background: var(--school-primary, #0056b3);
+            color: white;
+            border: none;
+            padding: 0 25px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .resource-section {
+            margin-bottom: 40px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            color: var(--school-primary-dark, #1e293b);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .view-all {
+            color: var(--school-primary, #0056b3);
+            font-weight: 500;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .resource-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .resource-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s;
+            border: 1px solid #f1f5f9;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .resource-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .resource-thumb {
+            height: 160px;
+            background: #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: #cbd5e1;
+            position: relative;
+        }
+
+        .resource-type-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: white;
+        }
+
+        .type-pdf {
+            background: #ef4444;
+        }
+
+        .type-video {
+            background: #ef4444;
+        }
+
+        .type-link {
+            background: #3b82f6;
+        }
+
+        .type-ppt {
+            background: #f97316;
+        }
+
+        .resource-content {
+            padding: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .resource-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--school-primary-dark, #1e293b);
+            margin: 0 0 10px 0;
+            line-height: 1.4;
+        }
+
+        .resource-desc {
+            font-size: 0.9rem;
+            color: #64748b;
+            margin-bottom: 15px;
+            flex: 1;
+        }
+
+        .resource-meta {
+            font-size: 0.8rem;
+            color: #94a3b8;
+            margin-bottom: 15px;
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn-access {
+            width: 100%;
+            padding: 10px;
+            background: #f8fafc;
+            color: var(--school-primary, #0056b3);
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .btn-access:hover {
+            background: var(--school-primary, #0056b3);
+            color: white;
+            border-color: var(--school-primary, #0056b3);
+        }
+    </style>
+</head>
+
+<body>
+    <button class="mobile-toggle" id="mobile-toggle">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <div class="dashboard-container">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <img src="../images/logo.png" alt="Logo">
+                <h3>Teacher Portal</h3>
+            </div>
+            <div class="sidebar-menu">
+                <div class="sidebar-section-title">Teacher System</div>
+                <ul>
+                    <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a></li>
+                    <li><a href="classes.html"><i class="fas fa-chalkboard"></i> <span>Classes</span></a></li>
+                    <li><a href="assignments.html"><i class="fas fa-tasks"></i> <span>Assignments</span></a></li>
+                    <li><a href="attendance.html"><i class="fas fa-clipboard-check"></i> <span>Attendance</span></a>
+                    </li>
+                    <li><a href="grades.html"><i class="fas fa-chart-line"></i> <span>Grades</span></a></li>
+                    <li><a href="timetable.html"><i class="fas fa-calendar-alt"></i> <span>Timetable</span></a></li>
+                    <li><a href="students.html"><i class="fas fa-users"></i> <span>Students</span></a></li>
+                    <li><a href="textbooks.html"><i class="fas fa-book"></i> <span>Textbooks</span></a></li>
+                    <li><a href="library.html"><i class="fas fa-book-open"></i> <span>Library Catalog</span></a></li>
+                    <li><a href="digital-resources.html" class="active"><i class="fas fa-laptop-code"></i> <span>Digital
+                                Resources</span></a></li>
+                    <li><a href="reports.html"><i class="fas fa-file-alt"></i> <span>System Reports</span></a></li>
+                    <li><a href="messages.html"><i class="fas fa-envelope"></i> <span>Messages</span></a></li>
+                </ul>
+
+                <div class="sidebar-section-title">Operations</div>
+                <ul>
+                    <li><a href="staff-directory.html"><i class="fas fa-users"></i> <span>Staff Directory</span></a>
+                    </li>
+                    <li><a href="procurement.html"><i class="fas fa-shopping-cart"></i> <span>Procurement</span></a>
+                    </li>
+                    <li><a href="assets.html"><i class="fas fa-boxes"></i> <span>Asset Management</span></a></li>
+                    <li><a href="schedules.html"><i class="fas fa-calendar-check"></i> <span>Schedules &
+                                Shifts</span></a></li>
+                </ul>
+
+                <div class="sidebar-section-title">Staff HR & Support</div>
+                <ul>
+                    <li><a href="sdc-portal.html"><i class="fas fa-file-invoice-dollar"></i> <span>SDC Staff
+                                Portal</span></a></li>
+                    <li><a href="hr-services.html"><i class="fas fa-user-shield"></i> <span>HR Services</span></a></li>
+                    <li><a href="profile.html"><i class="fas fa-id-card"></i> <span>My Profile</span></a></li>
+                    <li><a href="resources.html"><i class="fas fa-folder-open"></i> <span>Resources & Docs</span></a>
+                    </li>
+                    <li><a href="it-support.html"><i class="fas fa-headset"></i> <span>IT Support</span></a></li>
+                </ul>
+
+                <div class="sidebar-section-title">Communication</div>
+                <ul>
+                    <li><a href="news.html"><i class="fas fa-newspaper"></i> <span>News & Updates</span></a></li>
+                    <li><a href="announcements.html"><i class="fas fa-bullhorn"></i> <span>General Notices</span></a>
+                    </li>
+                    <li><a href="contact.html"><i class="fas fa-address-book"></i> <span>Contact Us</span></a></li>
+                    <li><a href="settings.html"><i class="fas fa-cog"></i> <span>Settings</span></a></li>
+                </ul>
+            </div>
+            <div class="sidebar-footer">
+                <a href="login.html"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <h1 style="margin-bottom: 10px; color: var(--school-primary-dark, #1e293b);">Digital Resources</h1>
+            <p style="margin-bottom: 30px; color: #64748b;">Access teaching aids, past papers, and educational videos.
+            </p>
+
+            <!-- Search Bar -->
+            <div class="search-bar-container">
+                <input type="text" class="search-input"
+                    placeholder="Search for resources (e.g. 'math calculus', 'biology past papers')...">
+                <button class="search-btn"><i class="fas fa-search"></i> Search</button>
+            </div>
+
+            <!-- Teaching Materials -->
+            <section class="resource-section">
+                <div class="section-header">
+                    <h3 class="section-title"><i class="fas fa-chalkboard-teacher text-blue-500"></i> Teaching Materials
+                    </h3>
+                    <a href="#" class="view-all">View All</a>
+                </div>
+                <div class="resource-grid">
+                    <div class="resource-card">
+                        <div class="resource-thumb">
+                            <span class="resource-type-badge type-ppt">PPT</span>
+                            <i class="fas fa-file-powerpoint" style="color: #f97316;"></i>
+                        </div>
+                        <div class="resource-content">
+                            <h4 class="resource-title">Algebra Fundamentals: Lesson Plan & Slides</h4>
+                            <p class="resource-desc">Comprehensive slide deck for introducing algebra concepts to Form 3
+                                students.</p>
+                            <div class="resource-meta">
+                                <span><i class="fas fa-download"></i> 124</span>
+                                <span><i class="fas fa-file-alt"></i> 2.4 MB</span>
+                            </div>
+                            <a href="#" class="btn-access"
+                                onclick="simulateDownload('Algebra_Fundamentals.pptx')">Download</a>
+                        </div>
+                    </div>
+
+                    <div class="resource-card">
+                        <div class="resource-thumb">
+                            <span class="resource-type-badge type-pdf">PDF</span>
+                            <i class="fas fa-file-pdf" style="color: #ef4444;"></i>
+                        </div>
+                        <div class="resource-content">
+                            <h4 class="resource-title">Form 4 History Worksheet: World War II</h4>
+                            <p class="resource-desc">Printable worksheets with answer keys for classroom activity.</p>
+                            <div class="resource-meta">
+                                <span><i class="fas fa-download"></i> 89</span>
+                                <span><i class="fas fa-file-alt"></i> 1.1 MB</span>
+                            </div>
+                            <a href="#" class="btn-access"
+                                onclick="simulateDownload('History_WW2_Worksheet.pdf')">Download</a>
+                        </div>
+                    </div>
+
+                    <div class="resource-card">
+                        <div class="resource-thumb">
+                            <span class="resource-type-badge type-link">LINK</span>
+                            <i class="fas fa-link" style="color: #3b82f6;"></i>
+                        </div>
+                        <div class="resource-content">
+                            <h4 class="resource-title">Interactive Periodic Table</h4>
+                            <p class="resource-desc">Web-based interactive tool for chemistry students to explore
+                                elements.</p>
+                            <div class="resource-meta">
+                                <span><i class="fas fa-eye"></i> 450 views</span>
+                            </div>
+                            <a href="#" class="btn-access" target="_blank">Open Link</a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Past Exam Papers -->
+            <section class="resource-section">
+                <div class="section-header">
+                    <h3 class="section-title"><i class="fas fa-scroll text-green-500"></i> Past Exam Papers</h3>
+                    <a href="#" class="view-all">View All</a>
+                </div>
+                <div class="resource-grid">
+                    <div class="resource-card">
+                        <div class="resource-thumb">
+                            <span class="resource-type-badge type-pdf">PDF</span>
+                            <i class="fas fa-file-pdf" style="color: #ef4444;"></i>
+                        </div>
+                        <div class="resource-content">
+                            <h4 class="resource-title">Mathematics Paper 1 - Nov 2024</h4>
+                            <p class="resource-desc">National Examination Board past paper for Ordinary Level
+                                Mathematics.</p>
+                            <div class="resource-meta">
+                                <span><i class="fas fa-download"></i> 312</span>
+                                <span><i class="fas fa-clock"></i> Nov 2024</span>
+                            </div>
+                            <a href="#" class="btn-access"
+                                onclick="simulateDownload('Maths_Paper1_Nov24.pdf')">Download</a>
+                        </div>
+                    </div>
+
+                    <div class="resource-card">
+                        <div class="resource-thumb">
+                            <span class="resource-type-badge type-pdf">PDF</span>
+                            <i class="fas fa-file-pdf" style="color: #ef4444;"></i>
+                        </div>
+                        <div class="resource-content">
+                            <h4 class="resource-title">Geography Paper 2 - Nov 2024</h4>
+                            <p class="resource-desc">Map reading and interpretation paper. Includes color map insert.
+                            </p>
+                            <div class="resource-meta">
+                                <span><i class="fas fa-download"></i> 156</span>
+                                <span><i class="fas fa-clock"></i> Nov 2024</span>
+                            </div>
+                            <a href="#" class="btn-access"
+                                onclick="simulateDownload('Geo_Paper2_Nov24.pdf')">Download</a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="../js/ancillary-common.js"></script>
+    <!-- ACADEX: Powered-by footer and school branding -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+
+</body>
+
+</html>
+

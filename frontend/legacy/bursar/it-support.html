@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IT Support Hub - Bursar Portal</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/ancillary-portal.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        .ticket-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #475569;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 12px;
+            border: 2px solid #f1f5f9;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 0.95rem;
+        }
+
+        .form-full {
+            grid-column: span 2;
+        }
+
+        .btn-submit {
+            background: var(--school-primary, var(--school-primary, #0056b3));
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            width: 100%;
+            transition: all 0.3s;
+        }
+
+        .btn-submit:hover {
+            background: var(--school-primary-dark, var(--school-primary-dark, #003d82));
+            transform: translateY(-2px);
+        }
+
+        .ticket-item {
+            padding: 15px;
+            background: #f8fafc;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .ticket-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .ticket-id {
+            font-size: 0.75rem;
+            font-family: monospace;
+            color: #64748b;
+            font-weight: 600;
+        }
+
+        .ticket-status {
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .status-open {
+            color: var(--school-primary, var(--school-primary, #0056b3));
+            font-weight: 600;
+        }
+
+        .status-resolved {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-in-review {
+            background: #fff7ed;
+            color: #c2410c;
+        }
+
+        .status-rejected {
+            background: #fef2f2;
+            color: #991b1b;
+        }
+
+        .ticket-title {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--school-primary-dark, #1e293b);
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .ticket-meta {
+            font-size: 0.8rem;
+            color: #888;
+            display: flex;
+            gap: 15px;
+        }
+
+        .kb-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px;
+            border-radius: 10px;
+            text-decoration: none;
+            color: #475569;
+            transition: 0.3s;
+        }
+
+        .kb-item:hover {
+            background: #f1f5f9;
+            color: var(--school-primary, var(--school-primary, #0056b3));
+            transform: translateX(5px);
+        }
+
+        .kb-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(var(--school-primary-rgb, 0, 86, 179), 0.1);
+            color: var(--school-primary, var(--school-primary, #0056b3));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            margin-bottom: 25px;
+        }
+
+        .card-header {
+            padding: 20px 25px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-header h3 {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--school-primary-dark, var(--school-primary-dark, #003d82));
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-body {
+            padding: 25px;
+        }
+
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            background-color: rgba(var(--school-primary-rgb, 0, 86, 179), 0.2);
+            color: white;
+            border-left: 3px solid var(--school-primary, var(--school-primary, #0056b3));
+        }
+
+        @media (max-width: 768px) {
+            .ticket-form {
+                grid-template-columns: 1fr;
+            }
+
+            .form-full {
+                grid-column: span 1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Mobile Toggle Button -->
+    <button class="mobile-toggle" id="mobile-toggle">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <div class="dashboard-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-menu">
+                <div class="sidebar-section-title">Bursar System</div>
+                <ul>
+                    <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i>
+                            <span>Dashboard</span></a></li>
+                    <li><a href="fees-management.html"><i class="fas fa-money-bill-wave"></i> <span>Fees
+                                Management</span></a></li>
+                    <li><a href="payments.html"><i class="fas fa-credit-card"></i> <span>Payments</span></a></li>
+                    <li><a href="expenses.html"><i class="fas fa-file-invoice-dollar"></i> <span>Expenses</span></a>
+                    </li>
+                    <li><a href="payroll.html"><i class="fas fa-users-cog"></i> <span>Payroll</span></a></li>
+                    <li><a href="tuckshop.html"><i class="fas fa-store"></i> <span>Tuckshop</span></a></li>
+                    <li><a href="reports.html"><i class="fas fa-chart-pie"></i> <span>Reports</span></a></li>
+                </ul>
+
+                <div class="sidebar-section-title">Operations</div>
+                <ul>
+                    <li><a href="staff-directory.html"><i class="fas fa-users"></i> <span>Staff Directory</span></a>
+                    </li>
+                    <li><a href="procurement.html"><i class="fas fa-shopping-cart"></i> <span>Procurement</span></a>
+                    </li>
+                    <li><a href="assets.html"><i class="fas fa-boxes"></i> <span>Asset Management</span></a></li>
+                    <li><a href="schedules.html"><i class="fas fa-calendar-check"></i> <span>Schedules &
+                                Shifts</span></a></li>
+                </ul>
+
+                <div class="sidebar-section-title">Staff HR & Support</div>
+                <ul>
+                    <li><a href="sdc-portal.html"><i class="fas fa-file-invoice-dollar"></i> <span>SDC Staff
+                                Portal</span></a></li>
+                    <li><a href="hr-services.html"><i class="fas fa-user-shield"></i> <span>HR Services</span></a></li>
+                    <li><a href="profile-settings.html"><i class="fas fa-id-card"></i> <span>My Profile</span></a></li>
+                    <li><a href="resources.html"><i class="fas fa-folder-open"></i> <span>Resources & Docs</span></a>
+                    </li>
+                    <li><a href="it-support.html" class="active"><i class="fas fa-headset"></i> <span>IT
+                                Support</span></a></li>
+                </ul>
+
+                <div class="sidebar-section-title">Communication</div>
+                <ul>
+                    <li><a href="news.html"><i class="fas fa-newspaper"></i> <span>News & Updates</span></a></li>
+                    <li><a href="contact.html"><i class="fas fa-address-book"></i> <span>Contact Us</span></a></li>
+                    <li><a href="settings.html"><i class="fas fa-cog"></i> <span>Settings</span></a></li>
+                </ul>
+            </div>
+            <div class="sidebar-footer">
+                <a href="login.html"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <h1 style="margin-bottom: 10px; color: var(--school-primary-dark, #1e293b);">IT Support Hub</h1>
+            <p style="margin-bottom: 30px; color: #64748b;">Report system issues, request equipment, and access tech
+                support.</p>
+
+            <div class="content-row" style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 30px;">
+                <div class="content-left">
+                    <!-- Ticket Submission -->
+                    <section class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-ticket-alt"></i> Submit Support Ticket</h3>
+                        </div>
+                        <div class="card-body">
+                            <form class="ticket-form" id="itTicketForm">
+                                <div class="form-group">
+                                    <label>Issue Category</label>
+                                    <select id="category" required>
+                                        <option value="">Select Category</option>
+                                        <option>Hardware (Computer/Printer)</option>
+                                        <option>Software/Portal Access</option>
+                                        <option>Network & Internet</option>
+                                        <option>Email & Communication</option>
+                                        <option>Smartboard/AV Equipment</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Urgency</label>
+                                    <select id="urgency" required>
+                                        <option value="Normal">Normal</option>
+                                        <option value="High">High (Needs immediate attention)</option>
+                                        <option value="Low">Low/General Inquiry</option>
+                                    </select>
+                                </div>
+                                <div class="form-group form-full">
+                                    <label>Subject</label>
+                                    <input type="text" id="subject" placeholder="Brief summary of the issue" required>
+                                </div>
+                                <div class="form-group form-full">
+                                    <label>Detailed Description</label>
+                                    <textarea id="description" rows="4"
+                                        placeholder="Please provide as much detail as possible (e.g., error messages, location of device)..."
+                                        required></textarea>
+                                </div>
+                                <div class="form-group form-full">
+                                    <button type="submit" class="btn-submit">Submit Ticket</button>
+                                </div>
+                            </form>
+                        </div>
+                    </section>
+
+                    <!-- Recent Tickets -->
+                    <section class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-history"></i> My Recent Tickets</h3>
+                        </div>
+                        <div class="card-body" id="ticketList">
+                            <!-- Populated by JS -->
+                        </div>
+                    </section>
+                </div>
+
+                <div class="content-right">
+                    <!-- Knowledge Base -->
+                    <section class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-book"></i> Knowledge Base</h3>
+                        </div>
+                        <div class="card-body" id="kbListContainer" style="padding: 15px;">
+                            <!-- Populated by JS -->
+                        </div>
+                    </section>
+
+                    <!-- Live Chat Status -->
+                    <section class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-comments"></i> Support Status</h3>
+                        </div>
+                        <div class="card-body">
+                            <div style="text-align: center; padding: 10px;">
+                                <div
+                                    style="width: 15px; height: 15px; background: #10b981; border-radius: 50%; display: inline-block; margin-right: 5px;">
+                                </div>
+                                <span style="font-weight: 600; color: #166534;">IT Staff Online</span>
+                                <p style="font-size: 0.8rem; color: #64748b; margin-top: 10px;">Estimated response: < 15
+                                        mins</p>
+                                <div id="msgSupport"
+                                    style="padding: 15px; background: rgba(var(--school-primary-rgb, 0, 86, 179), 0.05); border: 1px dashed var(--school-primary, var(--school-primary, #0056b3)); border-radius: 8px; text-align: center;">
+                                    <p style="margin: 0; font-size: 0.85rem; color: #64748b;">Our IT support team is
+                                        available Mon-Fri
+                                        08:00 - 16:30. For urgent hardware issues, please visit the IT office.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Security Alert -->
+                    <div style="background: #fff7ed; border: 1px solid #f59e0b; padding: 20px; border-radius: 20px;">
+                        <div style="display: flex; gap: 15px; align-items: flex-start;">
+                            <i class="fas fa-shield-alt" style="font-size: 1.5rem; color: #f59e0b;"></i>
+                            <div>
+                                <h4 style="margin: 0; color: #92400e; font-size: 0.95rem;">Security Reminder</h4>
+                                <p style="margin: 5px 0 0; font-size: 0.8rem; color: #b45309; line-height: 1.4;">Never
+                                    share your portal password with anyone. ICT staff will never ask for your password
+                                    via email or SMS.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../js/it-support-hub.js"></script>
+    <script src="../js/ancillary-common.js"></script>
+    <!-- ACADEX: Powered-by footer and school branding -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+
+</body>
+
+</html>
+

@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messages - Teacher Portal</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/toast.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../css/ancillary-portal.css">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: var(--school-primary, var(--school-primary, #0056b3));
+            color: white;
+            padding: 0;
+            position: fixed;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s ease-in-out;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+        }
+
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            display: none;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+        }
+
+        .sidebar-header {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+
+        .sidebar-header img {
+            width: 60px;
+            margin-bottom: 10px;
+        }
+
+        .sidebar-header h3 {
+            margin: 0;
+            font-size: 1.2rem;
+        }
+
+        .sidebar-menu {
+            padding: 20px 0;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .sidebar-menu ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 5px;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .sidebar-menu i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .sidebar-footer {
+            padding: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            width: 100%;
+            box-sizing: border-box;
+            background-color: var(--school-primary, var(--school-primary, #0056b3));
+            z-index: 10;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--school-primary-dark, var(--school-primary-dark, #003d7a));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+        }
+
+        .user-avatar i {
+            font-size: 1.2rem;
+        }
+
+        .user-details {
+            flex: 1;
+        }
+
+        .user-details h4 {
+            margin: 0;
+            font-size: 0.9rem;
+        }
+
+        .user-details p {
+            margin: 0;
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+
+        .logout-btn {
+            display: block;
+            margin-top: 10px;
+            padding: 8px 12px;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: background-color 0.3s;
+        }
+
+        .logout-btn:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            margin-left: 250px;
+            width: calc(100% - 250px);
+        }
+
+        .messages-container {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 20px;
+            height: calc(100vh - 100px);
+        }
+
+        .messages-sidebar {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+
+        .messages-header {
+            padding: 20px;
+            background-color: var(--school-primary, var(--school-primary, #0056b3));
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .messages-header h3 {
+            margin: 0;
+            font-size: 1.1rem;
+        }
+
+        .compose-btn {
+            background-color: white;
+            color: var(--school-primary, var(--school-primary, #0056b3));
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .messages-tabs {
+            display: flex;
+            border-bottom: 1px solid #eee;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .tab.active {
+            border-bottom-color: var(--school-primary, var(--school-primary, #0056b3));
+            color: var(--school-primary, var(--school-primary, #0056b3));
+            font-weight: 600;
+        }
+
+        .messages-list {
+            overflow-y: auto;
+            max-height: calc(100vh - 250px);
+        }
+
+        .message-item {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .message-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .message-item.active {
+            background-color: rgba(var(--school-primary-rgb, 0, 86, 179), 0.1);
+        }
+
+        .message-item.unread {
+            background-color: #f0f7ff;
+        }
+
+        .message-sender {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .message-subject {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .message-time {
+            font-size: 0.8rem;
+            color: #999;
+        }
+
+        .message-content-area {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .message-header {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .message-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #333;
+            margin: 0 0 10px;
+        }
+
+        .message-meta {
+            display: flex;
+            gap: 20px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .message-body {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .message-body p {
+            line-height: 1.6;
+            color: #555;
+        }
+
+        .message-actions {
+            padding: 15px 20px;
+            border-top: 1px solid #eee;
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background-color: var(--school-primary, var(--school-primary, #0056b3));
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--school-primary-dark, var(--school-primary-dark, #003d82));
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+
+        .mobile-header {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                z-index: 1000;
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding-top: 70px;
+                width: 100%;
+            }
+
+            .mobile-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 15px 20px;
+                background-color: white;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                z-index: 100;
+            }
+
+            .menu-toggle {
+                background: none;
+                border: none;
+                font-size: 1.5rem;
+                color: var(--school-primary, #0056b3);
+                cursor: pointer;
+            }
+
+            .messages-container {
+                grid-template-columns: 1fr;
+            }
+
+            .messages-sidebar {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <img src="../images/logo.png" alt="School Logo" class="acadex-school-logo">
+                <h3>Teacher Portal</h3>
+            </div>
+            <div class="sidebar-menu">
+                <div class="sidebar-section-title">Teacher System</div>
+                <ul>
+                    <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i>
+                            <span>Dashboard</span></a></li>
+                    <li><a href="classes.html"><i class="fas fa-chalkboard"></i> <span>Classes</span></a></li>
+                    <li><a href="assignments.html"><i class="fas fa-tasks"></i> <span>Assignments</span></a></li>
+                    <li><a href="attendance.html"><i class="fas fa-clipboard-check"></i> <span>Attendance</span></a>
+                    </li>
+                    <li><a href="grades.html"><i class="fas fa-chart-line"></i> <span>Grades</span></a></li>
+                    <li><a href="timetable.html"><i class="fas fa-calendar-alt"></i> <span>Timetable</span></a></li>
+                    <li><a href="students.html"><i class="fas fa-users"></i> <span>Students</span></a></li>
+                    <li><a href="textbooks.html"><i class="fas fa-book"></i> <span>Textbooks</span></a></li>
+                    <li><a href="library.html"><i class="fas fa-book-open"></i> <span>Library Catalog</span></a></li>
+                    <li><a href="digital-resources.html"><i class="fas fa-laptop-code"></i> <span>Digital
+                                Resources</span></a></li>
+                    <li><a href="reports.html"><i class="fas fa-file-alt"></i> <span>System Reports</span></a></li>
+                    <li><a href="messages.html" class="active"><i class="fas fa-envelope"></i> <span>Messages</span></a>
+                    </li>
+                </ul>
+
+                <div class="sidebar-section-title">Operations</div>
+                <ul>
+                    <li><a href="staff-directory.html"><i class="fas fa-users"></i> <span>Staff Directory</span></a>
+                    </li>
+                    <li><a href="procurement.html"><i class="fas fa-shopping-cart"></i> <span>Procurement</span></a>
+                    </li>
+                    <li><a href="assets.html"><i class="fas fa-boxes"></i> <span>Asset Management</span></a></li>
+                    <li><a href="schedules.html"><i class="fas fa-calendar-check"></i> <span>Schedules &
+                                Shifts</span></a></li>
+                </ul>
+
+                <div class="sidebar-section-title">Staff HR & Support</div>
+                <ul>
+                    <li><a href="sdc-portal.html"><i class="fas fa-file-invoice-dollar"></i> <span>SDC Staff
+                                Portal</span></a></li>
+                    <li><a href="hr-services.html"><i class="fas fa-user-shield"></i> <span>HR Services</span></a></li>
+                    <li><a href="profile.html"><i class="fas fa-id-card"></i> <span>My Profile</span></a></li>
+                    <li><a href="resources.html"><i class="fas fa-folder-open"></i> <span>Resources & Docs</span></a>
+                    </li>
+                    <li><a href="it-support.html"><i class="fas fa-headset"></i> <span>IT Support</span></a></li>
+                </ul>
+
+                <div class="sidebar-section-title">Communication</div>
+                <ul>
+                    <li><a href="news.html"><i class="fas fa-newspaper"></i> <span>News & Updates</span></a></li>                    <li><a href="announcements.html"><i class="fas fa-bullhorn"></i> <span>General Notices</span></a>
+                    </li>                    <li><a href="contact.html"><i class="fas fa-address-book"></i> <span>Contact Us</span></a></li>
+                    <li><a href="settings.html"><i class="fas fa-cog"></i> <span>Settings</span></a></li>
+                </ul>
+            </div>
+            <div class="sidebar-footer">
+                <a href="login.html"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a>
+            </div>
+        </aside>
+
+        <!-- Sidebar Overlay -->
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Mobile Header -->
+            <div class="mobile-header">
+                <button class="menu-toggle" id="menuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="mobile-logo">
+                    <span>Messages</span>
+                </div>
+            </div>
+
+            <!-- Messages Container -->
+            <div class="messages-container">
+                <!-- Messages Sidebar -->
+                <div class="messages-sidebar">
+                    <div class="messages-header">
+                        <h3>Messages</h3>
+                        <button class="compose-btn" onclick="openComposeModal()">
+                            <i class="fas fa-pen"></i> Compose
+                        </button>
+                    </div>
+
+                    <div class="messages-tabs">
+                        <div class="tab active" onclick="switchFolder('inbox')" id="tabInbox">Inbox</div>
+                        <div class="tab" onclick="switchFolder('sent')" id="tabSent">Sent</div>
+                    </div>
+
+                    <div class="messages-list" id="messagesList">
+                        <!-- Messages populated by JS -->
+                    </div>
+                </div>
+
+                <!-- Message Content Area -->
+                <div class="message-content-area" id="messageView" style="display: none;">
+                    <div class="message-header">
+                        <h3 class="message-title" id="viewSubject">Subject</h3>
+                        <div class="message-meta">
+                            <span id="viewSender"><i class="fas fa-user"></i> From: Sender</span>
+                            <span id="viewDate"><i class="fas fa-calendar"></i> Date</span>
+                        </div>
+                    </div>
+
+                    <div class="message-body" id="viewContent">
+                        <!-- Content -->
+                    </div>
+
+                    <div class="message-actions" id="viewActions">
+                        <!-- Actions injected by JS -->
+                    </div>
+                </div>
+
+                <!-- Empty State -->
+                <div class="message-content-area" id="emptyState"
+                    style="display: flex; align-items: center; justify-content: center; text-align: center; color: #666;">
+                    <div>
+                        <i class="fas fa-envelope" style="font-size: 3rem; margin-bottom: 20px; color: #ddd;"></i>
+                        <h3>Select a message to read</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Compose Modal -->
+    <div class="modal" id="composeModal"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; align-items: center; justify-content: center;">
+        <div class="modal-content"
+            style="background: white; width: 90%; max-width: 600px; border-radius: 10px; overflow: hidden; box-shadow: 0 5px 30px rgba(0,0,0,0.3);">
+            <div class="modal-header"
+                style="padding: 20px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;">
+                <h3 style="margin: 0;">Compose Message</h3>
+                <button onclick="closeComposeModal()"
+                    style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
+            </div>
+            <div class="modal-body" style="padding: 20px;">
+                <form id="composeForm">
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 500;">To</label>
+                        <select id="composeTo"
+                            style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;" required>
+                            <option value="">Select Recipient</option>
+                            <option value="Administrator">Administrator</option>
+                            <option value="Principal Johnson">Principal Johnson</option>
+                            <option value="Department Head">Department Head</option>
+                            <option value="Parent - Mrs. Smith">Parent - Mrs. Smith</option>
+                            <option value="Student - Emily Davis">Student - Emily Davis</option>
+                        </select>
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 500;">Subject</label>
+                        <input type="text" id="composeSubject"
+                            style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box;"
+                            required>
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 500;">Message</label>
+                        <textarea id="composeBody"
+                            style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; min-height: 150px; resize: vertical; box-sizing: border-box;"
+                            required></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer"
+                style="padding: 20px; border-top: 1px solid #eee; display: flex; justify-content: flex-end; gap: 10px;">
+                <button onclick="closeComposeModal()" class="btn btn-secondary">Cancel</button>
+                <button onclick="sendMessage()" class="btn btn-primary">Send Message</button>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <script src="../js/toast.js"></script>
+    <script>
+        // Mobile menu toggle
+        const menuToggle = document.getElementById('menuToggle');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+        if (menuToggle) {
+            menuToggle.addEventListener('click', function () {
+                sidebar.classList.toggle('active');
+                if (sidebarOverlay) sidebarOverlay.classList.toggle('active');
+            });
+        }
+
+        if (sidebarOverlay) {
+            sidebarOverlay.addEventListener('click', function () {
+                sidebar.classList.remove('active');
+                sidebarOverlay.classList.remove('active');
+            });
+        }
+
+        // Load teacher name
+        const teacherName = getTenantData('teacherName', 'null');
+        if (teacherName) {
+            document.getElementById('teacherName').textContent = teacherName;
+        }
+
+        // Logout
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+                saveTenantData('teacherLoggedIn', []);
+                window.location.href = 'login.html';
+            });
+        }
+
+        // --- Messaging System Logic ---
+
+        const STORAGE_KEY = 'teacherMessages';
+        let currentFolder = 'inbox';
+        let currentMessageId = null;
+
+        // Initialize messages
+        function getMessages() {
+            const stored = getTenantData(STORAGE_KEY, 'null');
+            if (stored) {
+                return JSON.parse(stored);
+            }
+            // Dummy Data
+            const dummyData = [
+                {
+                    id: 'msg_1',
+                    sender: 'Principal Johnson',
+                    recipient: 'Teacher',
+                    subject: 'Staff Meeting Tomorrow',
+                    content: `<p>Dear Teachers,</p>
+            <p>This is a reminder about the staff meeting scheduled for tomorrow at 3:00 PM.</p>
+            <p>Agenda: Term 1 Performance Review.</p>
+            <p>Best,<br>Principal Johnson</p>`,
+                    timestamp: new Date(Date.now() - 7200000).toISOString(), // 2 hours ago
+                    read: false,
+                    folder: 'inbox'
+                },
+                {
+                    id: 'msg_2',
+                    sender: 'Parent - Mrs. Smith',
+                    recipient: 'Teacher',
+                    subject: "Question about John's grades",
+                    content: `<p>Hello,</p><p>I noticed John's math grade has dropped. Can we schedule a call?</p>`,
+                    timestamp: new Date(Date.now() - 86400000).toISOString(), // 1 day ago
+                    read: true,
+                    folder: 'inbox'
+                },
+                {
+                    id: 'msg_3',
+                    sender: 'Teacher',
+                    recipient: 'Department Head',
+                    subject: 'Curriculum Proposal',
+                    content: `<p>Attached is the proposed curriculum for next term.</p>`,
+                    timestamp: new Date(Date.now() - 172800000).toISOString(), // 2 days ago
+                    read: true,
+                    folder: 'sent'
+                }
+            ];
+            saveMessages(dummyData);
+            return dummyData;
+        }
+
+        function saveMessages(messages) {
+            saveTenantData(STORAGE_KEY, messages);
+        }
+
+        // Render Message List
+        function renderMessageList(folder = 'inbox') {
+            currentFolder = folder;
+            const messages = getMessages();
+            const listContainer = document.getElementById('messagesList');
+            listContainer.innerHTML = '';
+
+            // Filter and Sort
+            let filtered = messages.filter(m => m.folder === folder);
+            if (folder === 'inbox') {
+                // For inbox, we receive messages. In this simple system, all 'inbox' messages are 'received'.
+                // Ideally, we'd check recipient, but we assume local user is the recipient for inbox items.
+            } else {
+                // For sent, we check folder 'sent'
+            }
+
+            // Sort by newest first
+            filtered.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+            if (filtered.length === 0) {
+                listContainer.innerHTML = `<div style="padding: 20px; text-align: center; color: #999;">No messages in ${folder}</div>`;
+                return;
+            }
+
+            filtered.forEach(msg => {
+                const item = document.createElement('div');
+                item.className = `message-item ${!msg.read && folder === 'inbox' ? 'unread' : ''} ${currentMessageId === msg.id ? 'active' : ''}`;
+                item.onclick = () => viewMessage(msg.id);
+
+                // Display logic
+                const displayName = folder === 'inbox' ? msg.sender : `To: ${msg.recipient}`;
+                const timeStr = formatTime(msg.timestamp);
+
+                item.innerHTML = `
+            <div class="message-sender">${displayName}</div>
+            <div class="message-subject">${msg.subject}</div>
+            <div class="message-time">${timeStr}</div>
+            `;
+                listContainer.appendChild(item);
+            });
+
+            // Update Tabs UI
+            document.getElementById('tabInbox').className = `tab ${folder === 'inbox' ? 'active' : ''}`;
+            document.getElementById('tabSent').className = `tab ${folder === 'sent' ? 'active' : ''}`;
+        }
+
+        function switchFolder(folder) {
+            renderMessageList(folder);
+            // Reset view
+            document.getElementById('messageView').style.display = 'none';
+            document.getElementById('emptyState').style.display = 'flex';
+            currentMessageId = null;
+        }
+
+        // View Message
+        function viewMessage(id) {
+            const messages = getMessages();
+            const msgIndex = messages.findIndex(m => m.id === id);
+            if (msgIndex === -1) return;
+
+            const msg = messages[msgIndex];
+            currentMessageId = id;
+
+            // Mark as read if in inbox
+            if (!msg.read && msg.folder === 'inbox') {
+                messages[msgIndex].read = true;
+                saveMessages(messages);
+                // Re-render list to update unread status, but keep selection
+            }
+            renderMessageList(currentFolder); // Re-render list
+
+            // Populate View
+            document.getElementById('viewSubject').textContent = msg.subject;
+            document.getElementById('viewSender').innerHTML = `<i class="fas fa-user"></i> ${currentFolder === 'inbox' ? 'From: ' + msg.sender : 'To: ' + msg.recipient}`;
+            document.getElementById('viewDate').innerHTML = `<i class="fas fa-calendar"></i> ${new Date(msg.timestamp).toLocaleString()}`;
+            document.getElementById('viewContent').innerHTML = msg.content; // Allow HTML content
+
+            // Actions
+            const actionsDiv = document.getElementById('viewActions');
+            actionsDiv.innerHTML = '';
+
+            if (currentFolder === 'inbox') {
+                actionsDiv.innerHTML += `<button class="btn btn-primary" onclick="replyMessage('${msg.id}')"><i class="fas fa-reply"></i> Reply</button>`;
+            }
+            actionsDiv.innerHTML += `<button class="btn btn-secondary" onclick="deleteMessage('${msg.id}')" style="margin-left: 10px;"><i class="fas fa-trash"></i> Delete</button>`;
+
+            // Toggle Visibility
+            document.getElementById('emptyState').style.display = 'none';
+            document.getElementById('messageView').style.display = 'flex'; // It's flex column
+            document.getElementById('messageView').style.flexDirection = 'column';
+        }
+
+        // Compose / Reply
+        function openComposeModal(to = '', subject = '') {
+            document.getElementById('composeForm').reset();
+            if (to) document.getElementById('composeTo').value = to;
+            if (subject) document.getElementById('composeSubject').value = subject;
+
+            document.getElementById('composeModal').style.display = 'flex';
+        }
+
+        function closeComposeModal() {
+            document.getElementById('composeModal').style.display = 'none';
+        }
+
+        function replyMessage(id) {
+            const messages = getMessages();
+            const msg = messages.find(m => m.id === id);
+            if (msg) {
+                openComposeModal(msg.sender, `Re: ${msg.subject}`);
+            }
+        }
+
+        function sendMessage() {
+            const to = document.getElementById('composeTo').value;
+            const subject = document.getElementById('composeSubject').value;
+            const body = document.getElementById('composeBody').value;
+
+            if (!to || !subject || !body) {
+                Toast.error('Please fill in all fields');
+                return;
+            }
+
+            const messages = getMessages();
+            const newMessage = {
+                id: 'msg_' + Date.now(),
+                sender: 'Teacher', // Self
+                recipient: to,
+                subject: subject,
+                content: body.replace(/\n/g, '<br>'), // Simple formatting
+                timestamp: new Date().toISOString(),
+                read: true,
+                folder: 'sent'
+            };
+
+            messages.push(newMessage);
+            saveMessages(messages);
+
+            closeComposeModal();
+            Toast.success('Message sent successfully!');
+
+            if (currentFolder === 'sent') {
+                renderMessageList('sent');
+            }
+        }
+
+        function deleteMessage(id) {
+            if (!confirm('Are you sure you want to delete this message?')) return;
+
+            let messages = getMessages();
+            messages = messages.filter(m => m.id !== id);
+            saveMessages(messages);
+
+            Toast.success('Message deleted');
+            renderMessageList(currentFolder);
+
+            // Return to empty state
+            document.getElementById('messageView').style.display = 'none';
+            document.getElementById('emptyState').style.display = 'flex';
+        }
+
+        // Helper: Format Time (e.g., "10:30 AM", "Yesterday", "Dec 15")
+        function formatTime(isoString) {
+            const date = new Date(isoString);
+            const now = new Date();
+            const diffMs = now - date;
+            const oneDay = 86400000;
+
+            if (diffMs < oneDay && now.getDate() === date.getDate()) {
+                return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            } else if (diffMs < oneDay * 2) {
+                return 'Yesterday';
+            } else {
+                return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
+            }
+        }
+
+        // Init
+        document.addEventListener('DOMContentLoaded', () => {
+            renderMessageList('inbox');
+        });
+
+        // Close modal on outside click
+        window.onclick = function (event) {
+            const modal = document.getElementById('composeModal');
+            if (event.target === modal) {
+                closeComposeModal();
+            }
+        }
+    </script>
+    <!-- ACADEX: Powered-by footer and school branding -->
+    <script src="../acadex/js/acadex-core.js"></script>
+    <script src="../acadex/js/acadex-tenant.js"></script>
+
+</body>
+
+</html>
+
