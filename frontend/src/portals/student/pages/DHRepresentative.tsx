@@ -238,20 +238,20 @@ export default function DHRepresentative() {
                   <i className="fas fa-utensils"></i> Today's Menu
                 </h2>
                 {canModifyMenu && (
-                  <div style={{ display: 'flex', gap: '8px' }}>
                     <button 
                       onClick={() => setShowAddMenuItemModal(true)}
                       className="portal-btn-primary" 
-                      style={{ fontSize: '0.8rem', padding: '8px 12px', borderRadius: '8px', background: primaryColor, border: 'none', color: 'white', cursor: 'pointer' }}
+                      style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px', background: primaryColor, border: 'none', color: 'white', cursor: 'pointer' }}
                     >
-                      <i className="fas fa-plus mr-1"></i> Add Item
+                      <i className="fas fa-plus"></i> ADD ITEM
                     </button>
                     <button 
                       onClick={() => setShowMenuEditModal(true)}
                       className="portal-btn-ghost" 
-                      style={{ fontSize: '0.8rem', padding: '8px 12px', borderRadius: '8px' }}
+                      style={{ padding: '8px', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                      title="Edit Week"
                     >
-                      <i className="fas fa-edit mr-1"></i> Edit Week
+                      <i className="fas fa-edit"></i>
                     </button>
                   </div>
                 )}
@@ -313,17 +313,9 @@ export default function DHRepresentative() {
                 <button 
                   onClick={() => setShowReportModal(true)} 
                   className="portal-btn-primary" 
-                  style={{ 
-                    background: primaryColor, 
-                    border: 'none', 
-                    padding: '16px 36px', 
-                    borderRadius: '16px', 
-                    fontWeight: 800, 
-                    fontSize: '1.1rem', 
-                    boxShadow: `0 10px 25px ${primaryColor}33` 
-                  }}
+                  style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'inline-flex', alignItems: 'center', gap: '12px', background: primaryColor, border: 'none', boxShadow: `0 10px 25px ${primaryColor}33` }}
                 >
-                  <i className="fas fa-paper-plane mr-2"></i> Submit Service Report
+                  <i className="fas fa-paper-plane"></i> SUBMIT SERVICE REPORT
                 </button>
               </div>
             )}
@@ -465,9 +457,9 @@ export default function DHRepresentative() {
                 </p>
               </div>
 
-              <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
-                <button type="button" className="portal-btn-ghost" onClick={() => setShowReportModal(false)}>Cancel</button>
-                <button type="submit" className="portal-btn-primary" style={{ background: primaryColor }}>Submit Report</button>
+                <button type="submit" className="portal-btn-primary" style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px', background: primaryColor, border: 'none' }}>
+                  <i className="fas fa-paper-plane"></i> SUBMIT REPORT
+                </button>
               </div>
             </form>
           </div>
@@ -529,9 +521,9 @@ export default function DHRepresentative() {
                 ))}
               </div>
 
-              <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end', marginTop: '30px' }}>
-                <button type="button" className="portal-btn-ghost" onClick={() => setShowMenuEditModal(false)}>Cancel</button>
-                <button type="submit" className="portal-btn-primary" style={{ background: primaryColor }}>Publish Menu</button>
+                <button type="submit" className="portal-btn-primary" style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px', background: primaryColor, border: 'none' }}>
+                  <i className="fas fa-save"></i> PUBLISH MENU
+                </button>
               </div>
             </form>
           </div>
@@ -588,9 +580,9 @@ export default function DHRepresentative() {
                 </div>
               </div>
 
-              <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end', marginTop: '30px' }}>
-                <button type="button" className="portal-btn-ghost" onClick={() => setShowAddMenuItemModal(false)}>Cancel</button>
-                <button type="submit" className="portal-btn-primary" style={{ background: primaryColor }}>Add to Menu</button>
+                <button type="submit" className="portal-btn-primary" style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px', background: primaryColor, border: 'none' }}>
+                  <i className="fas fa-plus"></i> ADD TO MENU
+                </button>
               </div>
             </form>
           </div>

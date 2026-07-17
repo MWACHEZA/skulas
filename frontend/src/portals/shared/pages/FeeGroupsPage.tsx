@@ -354,9 +354,9 @@ export default function FeeGroupsPage() {
 
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', borderTop: '1px solid #f1f5f9', paddingTop: '16px' }}>
                 <button type="button" onClick={handleReset} className="portal-btn-ghost" style={{ padding: '10px 20px', fontWeight: 800 }}>Abort</button>
-                <button type="submit" className="portal-btn-primary" disabled={saving} style={{ padding: '10px 24px', fontWeight: 900 }}>
-                  {saving ? <i className="fas fa-spinner fa-spin mr-2"></i> : <i className={`fas fa-${formData.id ? 'check-circle' : 'plus-circle'} mr-2`}></i>}
-                  {formData.id ? 'Authorize Updates' : 'Archive Strategic Fee Structure'}
+                <button type="submit" className="portal-btn-primary" disabled={saving} style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  {saving ? <i className="fas fa-spinner fa-spin"></i> : <i className={`fas fa-${formData.id ? 'check-circle' : 'plus-circle'}`}></i>}
+                  {formData.id ? 'AUTHORIZE UPDATES' : 'ARCHIVE STRATEGIC FEE STRUCTURE'}
                 </button>
               </div>
             </form>
@@ -403,9 +403,9 @@ export default function FeeGroupsPage() {
               <button 
                   onClick={() => { handleReset(); setIsModalOpen(true); }}
                   className="portal-btn-primary"
-                  style={{ padding: '8px 16px', fontSize: '0.85rem', background: '#2563eb', borderColor: '#2563eb', fontWeight: 900, height: '44px' }}
+                  style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}
               >
-                <i className="fas fa-plus mr-1"></i> Define Fee Group
+                <i className="fas fa-plus"></i> DEFINE FEE GROUP
               </button>
               <button 
                   onClick={() => {
@@ -513,12 +513,12 @@ export default function FeeGroupsPage() {
                   </td>
                   <td style={{ textAlign: 'right', paddingRight: '40px' }}>
                     <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
-                      <button onClick={() => handleEdit(group)} className="portal-btn-ghost" title="Modify Structure" style={{ padding: '8px', minWidth: '36px', height: '36px', color: '#2563eb' }}><i className="fas fa-pencil-alt"></i></button>
+                      <button onClick={() => handleEdit(group)} className="portal-btn-ghost" title="Modify Structure" style={{ padding: '8px', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#2563eb' }}><i className="fas fa-pencil-alt"></i></button>
                       <button 
                         onClick={() => handleDelete(group.id)} 
                         className="portal-btn-ghost" 
                         title="Purge Group Record"
-                        style={{ padding: '8px', minWidth: '36px', height: '36px', color: '#dc2626' }}
+                        style={{ padding: '8px', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#dc2626' }}
                         disabled={(group._count?.fees || 0) > 0}
                       >
                         <i className="fas fa-trash-alt"></i>

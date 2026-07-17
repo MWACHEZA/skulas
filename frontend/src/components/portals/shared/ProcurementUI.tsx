@@ -312,8 +312,8 @@ const ProcurementUI: React.FC<Props> = ({ mode }) => {
                       department: user?.dept?.name || 'Central Administration'
                     });
                     setShowModal(true);
-                  }} style={{ padding: '8px 16px', fontSize: '0.85rem' }}>
-                    <i className="fas fa-plus" style={{ marginRight: 6 }}></i>Raise Requisition
+                  }} style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <i className="fas fa-plus"></i> RAISE REQUISITION
                   </button>
                 )}
               </div>
@@ -393,7 +393,7 @@ const ProcurementUI: React.FC<Props> = ({ mode }) => {
                   </div>
                   <div className="portal-modal-footer">
                     <button type="button" className="portal-btn-secondary" onClick={() => setShowModal(false)}>Cancel</button>
-                    <button type="submit" className="portal-btn-primary">Submit for Approval</button>
+                    <button type="submit" className="portal-btn-primary" style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}>SUBMIT FOR APPROVAL</button>
                   </div>
                 </form>
               </div>
@@ -449,11 +449,11 @@ const ProcurementUI: React.FC<Props> = ({ mode }) => {
                   </div>
                 </div>
                 <div className="portal-modal-footer">
-                  <button className="portal-btn-danger" onClick={() => handleAction(selectedReq.id, 'REJECT')}>Reject Request</button>
+                  <button className="portal-btn-danger" style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }} onClick={() => handleAction(selectedReq.id, 'REJECT')}>REJECT REQUEST</button>
                   {canApprove(selectedReq) ? (
-                    <button className="portal-btn-primary" onClick={() => handleAction(selectedReq.id, 'APPROVE')}>Approve Stage</button>
+                    <button className="portal-btn-primary" style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }} onClick={() => handleAction(selectedReq.id, 'APPROVE')}>APPROVE STAGE</button>
                   ) : (
-                    <button className="portal-btn-neutral" disabled>Approval Not Possible</button>
+                    <button className="portal-btn-neutral" style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }} disabled>APPROVAL NOT POSSIBLE</button>
                   )}
                 </div>
               </div>
@@ -472,9 +472,9 @@ const ProcurementUI: React.FC<Props> = ({ mode }) => {
             <button 
               onClick={() => setShowRestockModal(true)}
               className="portal-btn-primary" 
-              style={{ padding: '12px 32px', fontWeight: 900, background: '#059669' }}
+              style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px', background: '#059669' }}
             >
-              <i className="fas fa-truck-loading mr-2"></i>Authorize Restock
+              <i className="fas fa-truck-loading"></i> AUTHORIZE RESTOCK
             </button>
           </div>
           {uniformsLoading ? (

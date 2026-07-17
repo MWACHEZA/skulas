@@ -634,11 +634,11 @@ export default function ManagePaymentPlans() {
                   />
                 </div>
                 <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
-                  <button type="button" className="portal-btn-secondary" onClick={() => setShowTemplateModal(false)}>
+                  <button type="button" className="portal-btn-ghost" onClick={() => setShowTemplateModal(false)}>
                     Cancel
                   </button>
                   <button type="submit" className="portal-btn-primary" style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px', background: '#2563eb', borderColor: '#2563eb' }}>
-                    SAVE TEMPLATE
+                    <i className="fas fa-save"></i> SAVE TEMPLATE
                   </button>
                 </div>
               </form>

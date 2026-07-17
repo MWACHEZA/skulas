@@ -426,8 +426,9 @@ export default function ManageInvoicesPage() {
                 </div>
                 <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
                   <button type="button" className="portal-btn-ghost" onClick={() => setIsPaymentModalOpen(false)}>Cancel</button>
-                  <button type="submit" className="portal-btn-primary" disabled={processingPayment}>
-                    {processingPayment ? 'Processing...' : 'Confirm Payment'}
+                  <button type="submit" className="portal-btn-primary" disabled={processingPayment} style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    {processingPayment ? <i className="fas fa-spinner fa-spin"></i> : <i className="fas fa-check"></i>}
+                    {processingPayment ? 'PROCESSING...' : 'CONFIRM PAYMENT'}
                   </button>
                 </div>
               </form>
@@ -600,7 +601,7 @@ export default function ManageInvoicesPage() {
             </div>
             <div className="modal-footer" style={{ padding: '20px', borderTop: '1px solid #e2e8f0', display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
               <button className="portal-btn-ghost" onClick={() => setIsPrintModalOpen(false)}>Close</button>
-              <button className="portal-btn-primary" onClick={handlePrint}><i className="fas fa-print mr-2"></i> Print Invoice</button>
+              <button className="portal-btn-primary" onClick={handlePrint} style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}><i className="fas fa-print"></i> PRINT INVOICE</button>
             </div>
           </div>
         </div>

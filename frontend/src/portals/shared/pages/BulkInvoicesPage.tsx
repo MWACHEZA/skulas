@@ -150,9 +150,9 @@ export default function BulkInvoicesPage() {
                 type="button"
                 onClick={() => setShowModal(true)}
                 className="portal-btn-primary"
-                style={{ padding: '8px 16px', fontSize: '0.85rem', background: '#2563eb', borderColor: '#2563eb', fontWeight: 900, height: '38px', display: 'flex', alignItems: 'center', gap: '6px' }}
+                style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}
               >
-                <i className="fas fa-plus-circle"></i> Initiate Mass Billing
+                <i className="fas fa-plus-circle"></i> INITIATE MASS BILLING
               </button>
               <button 
                 onClick={() => {
@@ -368,7 +368,7 @@ export default function BulkInvoicesPage() {
               </div>
               <div className="portal-modal-footer" style={{ padding: '32px 40px', background: '#f8fafc', borderTop: '1px solid #f1f5f9' }}>
                 <button type="button" onClick={() => setShowModal(false)} className="portal-btn-ghost" style={{ padding: '14px 32px', fontWeight: 800 }}>Abort Process</button>
-                <button type="submit" className="portal-btn-primary" style={{ padding: '14px 40px', fontWeight: 900 }}>Authorize Mass Billing Cycle</button>
+                <button type="submit" className="portal-btn-primary" style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}><i className="fas fa-check"></i> AUTHORIZE MASS BILLING CYCLE</button>
               </div>
             </form>
           </div>

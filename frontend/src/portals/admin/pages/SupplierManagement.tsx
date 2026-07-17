@@ -139,8 +139,8 @@ export default function SupplierManagement() {
             <button className="portal-btn-secondary" onClick={() => setIsManageCategoriesOpen(true)}>
               <i className="fas fa-tags" style={{ marginRight: 8 }}></i>Manage Categories
             </button>
-            <button className="portal-btn-primary" onClick={() => setIsCreateModalOpen(true)}>
-              <i className="fas fa-truck-loading" style={{ marginRight: 8 }}></i>Add Supplier
+            <button className="portal-btn-primary" onClick={() => setIsCreateModalOpen(true)} style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <i className="fas fa-truck-loading"></i> ADD SUPPLIER
             </button>
           </div>
         </div>
@@ -198,32 +198,31 @@ export default function SupplierManagement() {
                     </td>
                     <td>
                       <div className="action-buttons">
-                        <button className="btn-icon btn-view" title="View Profile" onClick={() => openDetail(s)}>
+                        <button className="portal-btn-ghost" title="View Profile" onClick={() => openDetail(s)} style={{ padding: '8px', width: '36px', height: '36px', color: '#1e40af', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                           <i className="fas fa-eye"></i>
                         </button>
                         {activeTab === 'PENDING' ? (
-                          <button className="btn-icon" title="Approve Verification" style={{ background: '#c6f6d5', color: '#22c55e' }} onClick={() => handleApprove(s)}>
+                          <button className="portal-btn-ghost" title="Approve Verification" style={{ padding: '8px', width: '36px', height: '36px', color: '#10b981', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => handleApprove(s)}>
                              <i className="fas fa-check"></i>
                           </button>
                         ) : (
                           <>
-                            <button className="btn-icon btn-edit" title="Edit Vendor" onClick={() => openEdit(s)}>
+                            <button className="portal-btn-ghost" title="Edit Vendor" onClick={() => openEdit(s)} style={{ padding: '8px', width: '36px', height: '36px', color: '#eab308', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                               <i className="fas fa-pencil-alt"></i>
                             </button>
-                            <button className="btn-icon btn-lock" title={s.isLocked ? "Unlock Access" : "Lock Access"} onClick={() => handleLockToggle(s)}>
+                            <button className="portal-btn-ghost" title={s.isLocked ? "Unlock Access" : "Lock Access"} onClick={() => handleLockToggle(s)} style={{ padding: '8px', width: '36px', height: '36px', color: s.isLocked ? '#10b981' : '#dc2626', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                               <i className={`fas fa-${s.isLocked ? 'unlock' : 'lock'}`}></i>
                             </button>
-                            <button className="btn-icon btn-view" title="Purchase History" style={{ background: 'rgba(49, 130, 206, 0.1)', color: 'var(--school-primary, #3182ce)' }} onClick={() => alert('This feature is currently under development or disabled.')}>
+                            <button className="portal-btn-ghost" title="Purchase History" style={{ padding: '8px', width: '36px', height: '36px', color: '#3182ce', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => alert('This feature is currently under development or disabled.')}>
                               <i className="fas fa-file-invoice-dollar"></i>
                             </button>
                           </>
                         )}
-                        <button className="btn-icon btn-delete" title={activeTab === 'PENDING' ? "Reject" : "Delete Permanent"} onClick={async () => {
+                        <button className="portal-btn-ghost" title={activeTab === 'PENDING' ? "Reject" : "Delete Permanent"} onClick={async () => {
                           if (await toastConfirm(activeTab === 'PENDING' ? `Reject connection request from ${s.name}?` : `Permanently delete ${s.name}?`)) {
-                            // Can call reject api here later
                             api.delete(`/api/users/${s.id}`).then(() => fetchSuppliers());
                           }
-                        }}>
+                        }} style={{ padding: '8px', width: '36px', height: '36px', color: '#dc2626', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                           <i className={`fas ${activeTab === 'PENDING' ? 'fa-times' : 'fa-trash'}`}></i>
                         </button>
                       </div>

@@ -157,9 +157,9 @@ export default function FeeReminderLogsPage() {
           <button
             onClick={loadLogs}
             className="portal-btn-primary"
-            style={{ height: '56px', fontWeight: 900, padding: '0 32px' }}
+            style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px', justifyContent: 'center' }}
           >
-            <i className="fas fa-sync-alt mr-2"></i> Refresh Audit
+            <i className="fas fa-sync-alt"></i> REFRESH AUDIT
           </button>
         </div>
       </div>
@@ -296,9 +296,9 @@ export default function FeeReminderLogsPage() {
                         <button
                           onClick={() => handleRetry(log.id)}
                           className="portal-btn-primary"
-                          style={{ padding: '8px 20px', fontSize: '0.75rem', fontWeight: 900, background: '#2563eb' }}
+                          style={{ padding: '0 16px', height: '36px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8rem', fontWeight: 900 }}
                         >
-                          <i className="fas fa-redo mr-1"></i> Authorize Retry
+                          <i className="fas fa-redo"></i> AUTHORIZE RETRY
                         </button>
                       )}
                       <button className="portal-btn-ghost" style={{ padding: '8px', color: '#2563eb' }} title="View Detailed Trace" onClick={() => setSelectedLog(log)}><i className="fas fa-eye"></i></button>
@@ -344,7 +344,7 @@ export default function FeeReminderLogsPage() {
               )}
             </div>
             <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '32px' }}>
-              <button onClick={() => setSelectedLog(null)} className="portal-btn-secondary" style={{ padding: '8px 24px' }}>Close</button>
+              <button onClick={() => setSelectedLog(null)} className="portal-btn-ghost">Close</button>
             </div>
           </div>
         </div>

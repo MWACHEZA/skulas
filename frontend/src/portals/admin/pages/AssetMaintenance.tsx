@@ -127,7 +127,9 @@ export default function AdminAssetMaintenance() {
       <div className="portal-card animate-in">
         <div className="portal-card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <h2><i className="fas fa-tools" style={{ marginRight: 8, color: 'var(--portal-danger)' }}></i>Maintenance Pipeline</h2>
-          <button className="portal-btn-primary" onClick={() => setShowModal(true)}>+ Schedule Task</button>
+          <button className="portal-btn-primary" onClick={() => setShowModal(true)} style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <i className="fas fa-plus"></i> SCHEDULE TASK
+          </button>
         </div>
         <div className="portal-card-body" style={{ padding: 0 }}>
           {loading ? (
@@ -169,14 +171,15 @@ export default function AdminAssetMaintenance() {
                     <td>
                       {!task.performedDate ? (
                         <button 
-                          className="portal-btn-secondary" 
-                          style={{ padding: '6px 12px', fontSize: '0.8rem' }}
+                          className="portal-btn-ghost" 
+                          style={{ padding: '8px', width: '36px', height: '36px', color: '#10b981', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                          title="Complete Task"
                           onClick={() => {
                             setCompleteForm({ ...completeForm, taskId: task.id, condition: 'good' });
                             setShowCompleteModal(true);
                           }}
                         >
-                          Complete
+                          <i className="fas fa-check"></i>
                         </button>
                       ) : (
                         <span style={{ fontSize: '0.8rem', color: '#94a3b8', fontStyle: 'italic' }}>Done</span>
@@ -253,9 +256,9 @@ export default function AdminAssetMaintenance() {
               </div>
               <div className="portal-modal-footer">
                 <button type="button" className="portal-btn-neutral" onClick={() => setShowModal(false)}>Cancel</button>
-                <button type="submit" className="portal-btn-primary" disabled={saving}>
-                  {saving ? <i className="fas fa-spinner fa-spin mr-2"></i> : null}
-                  Schedule Task
+                <button type="submit" className="portal-btn-primary" style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }} disabled={saving}>
+                  {saving ? <i className="fas fa-spinner fa-spin"></i> : <i className="fas fa-calendar-plus"></i>}
+                  SCHEDULE TASK
                 </button>
               </div>
             </form>
@@ -301,9 +304,9 @@ export default function AdminAssetMaintenance() {
               </div>
               <div className="portal-modal-footer">
                 <button type="button" className="portal-btn-neutral" onClick={() => setShowCompleteModal(false)}>Cancel</button>
-                <button type="submit" className="portal-btn-primary" disabled={saving}>
-                  {saving ? <i className="fas fa-spinner fa-spin mr-2"></i> : null}
-                  Mark as Completed
+                <button type="submit" className="portal-btn-primary" style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }} disabled={saving}>
+                  {saving ? <i className="fas fa-spinner fa-spin"></i> : <i className="fas fa-check-circle"></i>}
+                  MARK AS COMPLETED
                 </button>
               </div>
             </form>

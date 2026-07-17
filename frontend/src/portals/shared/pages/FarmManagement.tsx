@@ -278,9 +278,9 @@ export default function FarmManagement() {
                     <button 
                       onClick={() => setShowBatchModal(true)} 
                       className="portal-btn-primary"
-                      style={{ background: primaryColor, border: 'none', boxShadow: `0 4px 12px ${primaryColor}33`, display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 24px', borderRadius: '12px' }}
+                      style={{ background: primaryColor, padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}
                     >
-                      <i className="fas fa-plus"></i> Add Batch
+                      <i className="fas fa-plus"></i> ADD BATCH
                     </button>
                   )}
                 </div>
@@ -362,9 +362,9 @@ export default function FarmManagement() {
                     <button 
                       onClick={() => setShowCropModal(true)} 
                       className="portal-btn-primary"
-                      style={{ background: primaryColor, border: 'none', boxShadow: `0 4px 12px ${primaryColor}33`, display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 24px', borderRadius: '12px' }}
+                      style={{ background: primaryColor, padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}
                     >
-                      <i className="fas fa-plus"></i> Add Crop Event
+                      <i className="fas fa-plus"></i> ADD CROP EVENT
                     </button>
                   )}
                 </div>
@@ -420,9 +420,9 @@ export default function FarmManagement() {
                     <button 
                       onClick={() => setShowInventoryModal(true)} 
                       className="portal-btn-primary"
-                      style={{ background: primaryColor, border: 'none', boxShadow: `0 4px 12px ${primaryColor}33`, display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 24px', borderRadius: '12px' }}
+                      style={{ background: primaryColor, padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}
                     >
-                      <i className="fas fa-plus"></i> Add Supply / Tool
+                      <i className="fas fa-plus"></i> ADD SUPPLY / TOOL
                     </button>
                   )}
                 </div>
@@ -527,7 +527,7 @@ export default function FarmManagement() {
               </div>
               <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end', marginTop: '30px' }}>
                 <button type="button" className="portal-btn-ghost" onClick={() => setShowBatchModal(false)}>Cancel</button>
-                <button type="submit" className="portal-btn-primary" style={{ background: primaryColor }}>Save Batch</button>
+                <button type="submit" className="portal-btn-primary" style={{ background: primaryColor, padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}>SAVE BATCH</button>
               </div>
             </form>
           </div>
@@ -582,7 +582,7 @@ export default function FarmManagement() {
               </div>
               <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end', marginTop: '30px' }}>
                 <button type="button" className="portal-btn-ghost" onClick={() => setShowCropModal(false)}>Cancel</button>
-                <button type="submit" className="portal-btn-primary" style={{ background: primaryColor }}>Schedule Crop</button>
+                <button type="submit" className="portal-btn-primary" style={{ background: primaryColor, padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}>SCHEDULE CROP</button>
               </div>
             </form>
           </div>
@@ -641,7 +641,7 @@ export default function FarmManagement() {
               </div>
               <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end', marginTop: '30px' }}>
                 <button type="button" className="portal-btn-ghost" onClick={() => setShowInventoryModal(false)}>Cancel</button>
-                <button type="submit" className="portal-btn-primary" style={{ background: primaryColor }}>Add to Inventory</button>
+                <button type="submit" className="portal-btn-primary" style={{ background: primaryColor, padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}>ADD TO INVENTORY</button>
               </div>
             </form>
           </div>

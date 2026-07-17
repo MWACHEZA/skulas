@@ -287,9 +287,9 @@ export default function GroceriesPage() {
                     <button
                       onClick={openAddModal}
                       className="portal-btn-primary"
-                      style={{ padding: '8px 16px', fontSize: '0.85rem', background: '#2563eb', borderColor: '#2563eb', fontWeight: 900, height: '38px', display: 'flex', alignItems: 'center', gap: '6px' }}
+                      style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}
                     >
-                      <i className="fas fa-plus-circle"></i> Record Inventory Asset
+                      <i className="fas fa-plus-circle"></i> RECORD INVENTORY ASSET
                     </button>
                     <button
                       onClick={() => {
@@ -501,9 +501,9 @@ export default function GroceriesPage() {
                   </div>
                   <div className="portal-modal-footer" style={{ padding: '32px 40px', background: '#f8fafc', borderTop: '1px solid #f1f5f9' }}>
                     <button type="button" onClick={() => setShowAddModal(false)} className="portal-btn-ghost" style={{ padding: '14px 32px', fontWeight: 800 }}>Abort Process</button>
-                    <button type="submit" className="portal-btn-primary" style={{ padding: '14px 40px', fontWeight: 900 }} disabled={processing}>
-                      {processing ? <i className="fas fa-spinner fa-spin mr-2"></i> : <i className="fas fa-save mr-2"></i>}
-                      Finalize Registry
+                    <button type="submit" className="portal-btn-primary" style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }} disabled={processing}>
+                      {processing ? <i className="fas fa-spinner fa-spin"></i> : <i className="fas fa-save"></i>}
+                      FINALIZE REGISTRY
                     </button>
                   </div>
                 </form>
@@ -605,10 +605,10 @@ export default function GroceriesPage() {
                   onClick={handleProcessBilling}
                   disabled={processing}
                   className="portal-btn-primary"
-                  style={{ padding: '0 80px', height: '60px', fontSize: '1.1rem', fontWeight: 900, borderRadius: '16px', boxShadow: '0 10px 15px -3px rgba(37, 99, 235, 0.2)' }}
+                  style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px', justifyContent: 'center' }}
                 >
-                  {processing ? <i className="fas fa-spinner fa-spin mr-3"></i> : <i className="fas fa-rocket mr-3"></i>}
-                  Execute Batch Billing Manifest
+                  {processing ? <i className="fas fa-spinner fa-spin"></i> : <i className="fas fa-rocket"></i>}
+                  EXECUTE BATCH BILLING MANIFEST
                 </button>
               </div>
             </div>
@@ -674,9 +674,9 @@ export default function GroceriesPage() {
                 </div>
                 <div className="portal-modal-footer" style={{ padding: '32px 40px', background: '#f8fafc', borderTop: '1px solid #f1f5f9', display: 'flex', gap: '12px' }}>
                   <button type="button" onClick={() => setShowConsumptionModal(false)} className="portal-btn-ghost" style={{ flex: 1, padding: '14px', fontWeight: 800 }}>Cancel</button>
-                  <button type="button" onClick={handleSaveConsumption} className="portal-btn-primary" style={{ flex: 2, padding: '14px', fontWeight: 900, background: '#059669', border: '1px solid #047857' }} disabled={processing}>
-                    {processing ? <i className="fas fa-spinner fa-spin mr-2"></i> : <i className="fas fa-save mr-2"></i>}
-                    Authorize Consumption
+                  <button type="button" onClick={handleSaveConsumption} className="portal-btn-primary" style={{ flex: 2, padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', background: '#059669', border: '1px solid #047857' }} disabled={processing}>
+                    {processing ? <i className="fas fa-spinner fa-spin"></i> : <i className="fas fa-save"></i>}
+                    AUTHORIZE CONSUMPTION
                   </button>
                 </div>
               </div>
@@ -695,9 +695,9 @@ export default function GroceriesPage() {
                     <button
                       onClick={() => setShowConsumptionModal(true)}
                       className="portal-btn-primary"
-                      style={{ padding: '8px 16px', fontSize: '0.85rem', background: '#2563eb', borderColor: '#2563eb', fontWeight: 900, height: '38px', display: 'flex', alignItems: 'center', gap: '6px' }}
+                      style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}
                     >
-                      <i className="fas fa-hand-holding"></i> Capture Utilization
+                      <i className="fas fa-hand-holding"></i> CAPTURE UTILIZATION
                     </button>
                     <button
                       onClick={() => {

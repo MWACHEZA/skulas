@@ -466,9 +466,9 @@ export default function FeesBillingPage() {
                   onClick={activeTab === 'standard' ? handleProcessStandard : handleProcessCustom}
                   disabled={processing}
                   className="portal-btn-primary"
-                  style={{ flex: 2, height: '56px', fontSize: '1rem', fontWeight: 900, background: '#059669', border: 'none', borderRadius: '14px', boxShadow: '0 8px 20px rgba(5, 150, 105, 0.2)' }}
+                  style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px', background: '#059669', border: 'none', boxShadow: '0 8px 20px rgba(5, 150, 105, 0.2)' }}
                 >
-                  {processing ? <i className="fas fa-spinner fa-spin mr-2"></i> : <i className="fas fa-check-double mr-2"></i>}
+                  {processing ? <i className="fas fa-spinner fa-spin"></i> : <i className="fas fa-check-double"></i>}
                   {processing ? 'AUTHORIZING BATCH...' : 'AUTHORIZE INVOICES'}
                 </button>
               </div>
@@ -491,9 +491,9 @@ export default function FeesBillingPage() {
               <button
                 onClick={() => setIsModalOpen(true)}
                 className="portal-btn-primary"
-                style={{ padding: '8px 16px', fontSize: '0.85rem', background: '#2563eb', borderColor: '#2563eb', fontWeight: 900, height: '38px', display: 'flex', alignItems: 'center', gap: '6px' }}
+                style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}
               >
-                <i className="fas fa-sliders-h"></i> Configure Parameters
+                <i className="fas fa-sliders-h"></i> CONFIGURE PARAMETERS
               </button>
               <button 
                   onClick={(e) => {

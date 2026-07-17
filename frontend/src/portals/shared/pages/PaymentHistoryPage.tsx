@@ -161,8 +161,8 @@ export default function PaymentHistoryPage() {
               </select>
             </div>
             <div className="form-group">
-              <button className="portal-btn-primary" onClick={fetchPayments} style={{ width: '100%', height: '48px', fontWeight: 900 }}>
-                <i className="fas fa-filter mr-2"></i> Load Report
+              <button className="portal-btn-primary" onClick={fetchPayments} style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px', width: '100%', justifyContent: 'center' }}>
+                <i className="fas fa-filter"></i> LOAD REPORT
               </button>
             </div>
           </div>

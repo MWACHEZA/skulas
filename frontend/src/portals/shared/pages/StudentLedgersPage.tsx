@@ -223,9 +223,9 @@ export default function StudentLedgersPage() {
             <button 
               onClick={() => setIsCreateModalOpen(true)}
               className="portal-btn-primary"
-              style={{ padding: '8px 16px', fontSize: '0.85rem', background: '#22c55e', borderColor: '#22c55e', fontWeight: 900 }}
+              style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}
             >
-              <i className="fas fa-plus mr-1"></i> Create Ledger
+              <i className="fas fa-plus"></i> CREATE LEDGER
             </button>
             <button 
               onClick={() => {
@@ -353,9 +353,9 @@ export default function StudentLedgersPage() {
               <button 
                 onClick={() => window.print()} 
                 className="portal-btn-primary" 
-                style={{ padding: '8px 24px', background: '#2563eb', border: 'none', fontWeight: 900 }}
+                style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}
               >
-                <i className="fas fa-print mr-2"></i> Print Invoice
+                <i className="fas fa-print"></i> PRINT INVOICE
               </button>
               <button 
                 onClick={() => setIsModalOpen(false)} 
@@ -553,8 +553,9 @@ export default function StudentLedgersPage() {
                 <button type="button" onClick={() => setIsCreateModalOpen(false)} className="portal-btn-ghost" style={{ padding: '10px 20px', fontWeight: 800 }}>
                   Cancel
                 </button>
-                <button type="submit" className="portal-btn-primary" disabled={isSubmitting} style={{ padding: '10px 24px', background: '#22c55e', borderColor: '#22c55e', fontWeight: 900 }}>
-                  {isSubmitting ? 'Saving...' : '+ Save Ledger'}
+                <button type="submit" className="portal-btn-primary" disabled={isSubmitting} style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  {isSubmitting ? <i className="fas fa-spinner fa-spin"></i> : <i className="fas fa-save"></i>}
+                  {isSubmitting ? 'SAVING...' : 'SAVE LEDGER'}
                 </button>
               </div>
             </form>

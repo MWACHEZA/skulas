@@ -99,8 +99,8 @@ export default function AssetManagement() {
         <div className="portal-card">
           <div className="portal-card-header">
             <h2><i className="fas fa-list-ul" style={{ marginRight: 8 }}></i>Asset Register</h2>
-            <button className="portal-btn-primary" onClick={() => setIsRegisterModalOpen(true)}>
-                <i className="fas fa-plus" style={{ marginRight: 6 }}></i>Register Asset
+            <button className="portal-btn-primary" onClick={() => setIsRegisterModalOpen(true)} style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <i className="fas fa-plus"></i> REGISTER ASSET
             </button>
           </div>
           <div className="portal-card-body" style={{ padding: 0 }}>
@@ -281,7 +281,7 @@ export default function AssetManagement() {
                       </div>
                       <div className="portal-modal-footer">
                           <button type="button" className="portal-btn-neutral" onClick={() => setIsResolveModalOpen(false)}>Cancel</button>
-                          <button type="submit" className="portal-btn-primary">Resolve Incident</button>
+                          <button type="submit" className="portal-btn-primary" style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}>RESOLVE INCIDENT</button>
                       </div>
                   </form>
               </div>
@@ -354,7 +354,7 @@ export default function AssetManagement() {
                       </div>
                       <div className="portal-modal-footer">
                           <button type="button" className="portal-btn-neutral" onClick={() => setIsRegisterModalOpen(false)}>Cancel</button>
-                          <button type="submit" className="portal-btn-primary">Register Asset</button>
+                          <button type="submit" className="portal-btn-primary" style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}>REGISTER ASSET</button>
                       </div>
                   </form>
               </div>
