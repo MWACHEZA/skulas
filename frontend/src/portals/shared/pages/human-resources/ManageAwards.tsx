@@ -225,7 +225,7 @@ export default function ManageAwards() {
                       <td>{award.date ? format(new Date(award.date), 'dd/MM/yyyy') : 'N/A'}</td>
                       <td style={{ textAlign: 'center' }}>
                         <div style={{ display: 'flex', justifyContent: 'center', gap: '5px' }}>
-                          <button className="portal-btn-ghost" style={{ padding: '8px', width: '36px', height: '36px', color: '#2563eb', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => showToast('This feature is currently under development or disabled.', 'info')} title="Edit">
+                          <button className="portal-btn-ghost" style={{ padding: '8px', width: '36px', height: '36px', color: '#eab308', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => showToast('This feature is currently under development or disabled.', 'info')} title="Edit">
                             <i className="fas fa-edit"></i>
                           </button>
                           <button className="portal-btn-ghost" style={{ padding: '8px', width: '36px', height: '36px', color: '#dc2626', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => showToast('This feature is currently under development or disabled.', 'info')} title="Delete">
@@ -299,8 +299,8 @@ export default function ManageAwards() {
                   <button type="button" onClick={() => setShowAddModal(false)} className="portal-btn-neutral">
                     Cancel
                   </button>
-                  <button disabled={submitting} type="submit" className="portal-btn-primary" style={{ background: 'var(--school-primary, #0056b3)', borderColor: 'var(--school-primary, #0056b3)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-                    {submitting ? <i className="fas fa-spinner fa-spin"></i> : <i className="fas fa-plus"></i>} Save Award
+                  <button disabled={submitting} type="submit" className="portal-btn-primary" style={{ height: '52px', borderRadius: '16px', fontWeight: 900, background: 'var(--school-primary, #0056b3)', borderColor: 'var(--school-primary, #0056b3)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                    {submitting ? <i className="fas fa-spinner fa-spin"></i> : <i className="fas fa-plus"></i>} SAVE AWARD
                   </button>
                 </div>
               </form>

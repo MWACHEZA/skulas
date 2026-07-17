@@ -142,7 +142,7 @@ export default function SchoolTransportation() {
               setShowModal(true);
             }}
           >
-            <i className="fas fa-plus"></i>Create Assignment
+            <i className="fas fa-plus-circle"></i> CREATE ASSIGNMENT
           </button>
         </div>
         <div style={{ padding: '20px' }}>
@@ -174,7 +174,7 @@ export default function SchoolTransportation() {
                   <td style={{ fontWeight: 700 }}>${(t.routeFare || 0).toFixed(2)}</td>
                   <td style={{ textAlign: 'right' }}>
                     <div style={{ display: 'flex', gap: '5px', justifyContent: 'flex-end' }}>
-                      <button className="portal-btn-ghost" style={{ padding: '8px', width: '36px', height: '36px', color: '#2563eb', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Edit" onClick={() => handleEdit(t)}>
+                      <button className="portal-btn-ghost" style={{ padding: '8px', width: '36px', height: '36px', color: '#eab308', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Edit" onClick={() => handleEdit(t)}>
                         <i className="fas fa-edit"></i>
                       </button>
                       <button className="portal-btn-ghost" style={{ padding: '8px', width: '36px', height: '36px', color: '#dc2626', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Delete" onClick={() => handleDelete(t.id)}>

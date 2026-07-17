@@ -87,9 +87,9 @@ export default function PayrollList() {
             onClick={getInfo}
             disabled={loading}
             className="portal-btn-primary" 
-            style={{ flex: 1, background: 'var(--portal-success)', borderColor: 'var(--portal-success)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+            style={{ flex: 1, background: 'var(--portal-success)', borderColor: 'var(--portal-success)', height: '52px', borderRadius: '16px', fontWeight: 900, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
           >
-            {loading ? <i className="fas fa-spinner fa-spin"></i> : <i className="fas fa-search"></i>} Get Info
+            {loading ? <i className="fas fa-spinner fa-spin"></i> : <i className="fas fa-search"></i>} GET INFO
           </button>
           
           <button 
@@ -109,9 +109,9 @@ export default function PayrollList() {
             }}
             disabled={loading}
             className="portal-btn-primary" 
-            style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+            style={{ flex: 1, height: '52px', borderRadius: '16px', fontWeight: 900, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
           >
-            <i className="fas fa-cog"></i> Generate
+            <i className="fas fa-cog"></i> GENERATE
           </button>
         </div>
       </div>

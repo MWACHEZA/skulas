@@ -109,7 +109,7 @@ export default function TransportRoute() {
               setShowModal(true);
             }}
           >
-            <i className="fas fa-plus"></i>Add Route
+            <i className="fas fa-plus-circle"></i> ADD ROUTE
           </button>
         </div>
         <div style={{ padding: '20px' }}>
@@ -134,7 +134,7 @@ export default function TransportRoute() {
                   <td>{new Date(r.createdAt).toLocaleDateString()}</td>
                   <td style={{ textAlign: 'right' }}>
                     <div style={{ display: 'flex', gap: '5px', justifyContent: 'flex-end' }}>
-                      <button className="portal-btn-ghost" style={{ padding: '8px', width: '36px', height: '36px', color: '#2563eb', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Edit" onClick={() => handleEdit(r)}>
+                      <button className="portal-btn-ghost" style={{ padding: '8px', width: '36px', height: '36px', color: '#eab308', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Edit" onClick={() => handleEdit(r)}>
                         <i className="fas fa-edit"></i>
                       </button>
                       <button className="portal-btn-ghost" style={{ padding: '8px', width: '36px', height: '36px', color: '#dc2626', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Delete" onClick={() => handleDelete(r.id)}>

@@ -288,7 +288,7 @@ export default function ManagePaymentPlans() {
               className="portal-btn-primary"
               style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}
             >
-              <i className="fas fa-plus"></i> Add Offered Plan
+              <i className="fas fa-plus"></i> ADD OFFERED PLAN
             </button>
           </div>
           <div className="portal-card-body" style={{ padding: 0 }}>
@@ -326,7 +326,7 @@ export default function ManagePaymentPlans() {
                         <div style={{ display: 'flex', gap: 8 }}>
                           <button
                             className="portal-btn-ghost"
-                            style={{ padding: '8px', width: '36px', height: '36px', color: '#2563eb', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                            style={{ padding: '8px', width: '36px', height: '36px', color: '#eab308', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                             title="Edit"
                             onClick={() => openEditTemplate(tmpl)}
                           >
@@ -637,8 +637,8 @@ export default function ManagePaymentPlans() {
                   <button type="button" className="portal-btn-secondary" onClick={() => setShowTemplateModal(false)}>
                     Cancel
                   </button>
-                  <button type="submit" className="portal-btn-primary" style={{ background: '#2563eb', borderColor: '#2563eb' }}>
-                    Save Template
+                  <button type="submit" className="portal-btn-primary" style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px', background: '#2563eb', borderColor: '#2563eb' }}>
+                    SAVE TEMPLATE
                   </button>
                 </div>
               </form>

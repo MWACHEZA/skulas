@@ -218,7 +218,7 @@ export default function ListLeaves() {
                       <div style={{ display: 'flex', justifyContent: 'center', gap: '5px' }}>
                         <button 
                           className="portal-btn-ghost" 
-                          style={{ padding: '8px', width: '36px', height: '36px', color: '#2563eb', display: 'flex', alignItems: 'center', justifyContent: 'center' }} 
+                          style={{ padding: '8px', width: '36px', height: '36px', color: '#eab308', display: 'flex', alignItems: 'center', justifyContent: 'center' }} 
                           title="Edit" 
                           onClick={() => {
                             setSelectedLeave(leave);
@@ -285,9 +285,9 @@ export default function ListLeaves() {
             </div>
             <div className="portal-modal-footer">
               <button type="button" className="portal-btn-neutral" onClick={() => setShowEditModal(false)}>Cancel</button>
-              <button type="button" className="portal-btn-primary" onClick={handleUpdateStatus} disabled={saving}>
-                {saving ? <i className="fas fa-spinner fa-spin mr-2"></i> : null}
-                Save Changes
+              <button type="button" className="portal-btn-primary" style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }} onClick={handleUpdateStatus} disabled={saving}>
+                {saving ? <i className="fas fa-spinner fa-spin"></i> : null}
+                SAVE CHANGES
               </button>
             </div>
           </div>

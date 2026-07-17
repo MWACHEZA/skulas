@@ -158,8 +158,8 @@ export default function CreatePayslip() {
             </select>
           </div>
           <div>
-            <button type="button" onClick={getInfo} className="portal-btn-primary" style={{ background: 'var(--portal-success)', borderColor: 'var(--portal-success)', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-              <i className="fas fa-search"></i> Get Info
+            <button type="button" onClick={getInfo} className="portal-btn-primary" style={{ background: 'var(--portal-success)', borderColor: 'var(--portal-success)', width: '100%', height: '52px', borderRadius: '16px', fontWeight: 900, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+              <i className="fas fa-search"></i> GET INFO
             </button>
           </div>
         </div>
@@ -194,8 +194,8 @@ export default function CreatePayslip() {
               </div>
             ))}
 
-            <button type="button" onClick={calculateTotalAllowance} className="portal-btn-primary" style={{ background: 'var(--portal-success)', borderColor: 'var(--portal-success)', display: 'flex', alignItems: 'center', gap: '8px', marginTop: '20px', padding: '10px 16px', fontSize: '0.85rem' }}>
-              <i className="fas fa-calculator"></i> Calculate Allowance
+            <button type="button" onClick={calculateTotalAllowance} className="portal-btn-primary" style={{ background: 'var(--portal-success)', borderColor: 'var(--portal-success)', display: 'flex', alignItems: 'center', gap: '8px', marginTop: '20px', padding: '0 32px', height: '52px', borderRadius: '16px', fontWeight: 900, fontSize: '0.85rem' }}>
+              <i className="fas fa-calculator"></i> CALCULATE ALLOWANCE
             </button>
           </div>
 
@@ -226,8 +226,8 @@ export default function CreatePayslip() {
               </div>
             ))}
 
-            <button type="button" onClick={calculateTotalDeduction} className="portal-btn-danger" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '20px', padding: '10px 16px', fontSize: '0.85rem' }}>
-              <i className="fas fa-calculator"></i> Calculate Deduction
+            <button type="button" onClick={calculateTotalDeduction} className="portal-btn-danger" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '20px', padding: '0 32px', height: '52px', borderRadius: '16px', fontWeight: 900, fontSize: '0.85rem' }}>
+              <i className="fas fa-calculator"></i> CALCULATE DEDUCTION
             </button>
           </div>
 
@@ -263,7 +263,7 @@ export default function CreatePayslip() {
         </div>
 
         <button disabled={loading} type="submit" className="portal-btn-primary" style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', marginTop: '10px' }}>
-          {loading ? <i className="fas fa-spinner fa-spin"></i> : <i className="fas fa-check-circle"></i>} Save Payroll Entry
+          {loading ? <i className="fas fa-spinner fa-spin"></i> : <i className="fas fa-check-circle"></i>} SAVE PAYROLL ENTRY
         </button>
 
       </form>
