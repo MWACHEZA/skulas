@@ -567,7 +567,7 @@ export default function SportsManagement() {
                   <button
                     className="portal-btn-primary"
                     onClick={handleOpenAddSportModal}
-                    style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
+                    style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}
                   >
                     <i className="fas fa-plus"></i> Register Sport
                   </button>
@@ -645,10 +645,10 @@ export default function SportsManagement() {
 
                         {isAdmin && (
                           <div style={{ background: '#f8fafc', padding: '12px 20px', display: 'flex', gap: '8px', justifyContent: 'flex-end', borderTop: '1px solid #e2e8f0' }}>
-                            <button onClick={() => handleOpenEditSportModal(sport)} className="portal-btn-action edit" title="Edit Sport">
-                              <i className="fas fa-pencil-alt"></i>
+                            <button onClick={() => handleOpenEditSportModal(sport)} className="portal-btn-ghost" style={{ padding: '8px', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#eab308' }} title="Edit Sport">
+                              <i className="fas fa-edit"></i>
                             </button>
-                            <button onClick={() => handleSportDelete(sport.id)} className="portal-btn-action delete" title="Delete Sport">
+                            <button onClick={() => handleSportDelete(sport.id)} className="portal-btn-ghost" style={{ padding: '8px', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#dc2626' }} title="Delete Sport">
                               <i className="fas fa-trash"></i>
                             </button>
                           </div>
@@ -675,7 +675,7 @@ export default function SportsManagement() {
                   <button
                     className="portal-btn-primary"
                     onClick={handleOpenAddHouseModal}
-                    style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
+                    style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}
                   >
                     <i className="fas fa-plus"></i> Add House
                   </button>
@@ -739,10 +739,10 @@ export default function SportsManagement() {
 
                         {isAdmin && (
                           <div style={{ background: '#f8fafc', padding: '12px 20px', display: 'flex', gap: '8px', justifyContent: 'flex-end', borderTop: '1px solid #e2e8f0' }}>
-                            <button onClick={() => handleOpenEditHouseModal(house)} className="portal-btn-action edit" title="Edit House">
-                              <i className="fas fa-pencil-alt"></i>
+                            <button onClick={() => handleOpenEditHouseModal(house)} className="portal-btn-ghost" style={{ padding: '8px', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#eab308' }} title="Edit House">
+                              <i className="fas fa-edit"></i>
                             </button>
-                            <button onClick={() => handleHouseDelete(house.id)} className="portal-btn-action delete" title="Delete House">
+                            <button onClick={() => handleHouseDelete(house.id)} className="portal-btn-ghost" style={{ padding: '8px', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#dc2626' }} title="Delete House">
                               <i className="fas fa-trash"></i>
                             </button>
                           </div>
@@ -765,7 +765,7 @@ export default function SportsManagement() {
               <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800 }}><i className="fas fa-boxes mr-2"></i>Sporting Assets &amp; Kit Log</h3>
               {isAdmin && (
                 <div style={{ display: 'flex', gap: '12px' }}>
-                  <button className="portal-btn-primary" onClick={handleOpenAddEquipmentModal}><i className="fas fa-plus mr-2"></i> Add Equipment</button>
+                  <button className="portal-btn-primary" onClick={handleOpenAddEquipmentModal} style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}><i className="fas fa-plus"></i> Add Equipment</button>
                 </div>
               )}
             </div>
@@ -817,10 +817,10 @@ export default function SportsManagement() {
                           {isAdmin && (
                             <td style={{ textAlign: 'right' }}>
                               <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
-                                <button onClick={() => handleOpenEditEquipmentModal(item)} className="portal-btn-action edit" title="Edit Item">
-                                  <i className="fas fa-pencil-alt"></i>
+                                <button onClick={() => handleOpenEditEquipmentModal(item)} className="portal-btn-ghost" style={{ padding: '8px', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#eab308' }} title="Edit Item">
+                                  <i className="fas fa-edit"></i>
                                 </button>
-                                <button onClick={() => handleEquipmentDelete(item.id)} className="portal-btn-action delete" title="Delete Item">
+                                <button onClick={() => handleEquipmentDelete(item.id)} className="portal-btn-ghost" style={{ padding: '8px', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#dc2626' }} title="Delete Item">
                                   <i className="fas fa-trash"></i>
                                 </button>
                               </div>
@@ -1024,11 +1024,11 @@ export default function SportsManagement() {
                   </div>
                 </div>
 
-                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, marginTop: '10px' }}>
-                  <button type="button" className="portal-btn-neutral" onClick={() => setShowSportModal(false)}>Cancel</button>
-                  <button type="submit" className="portal-btn-primary" disabled={savingSport}>
-                    {savingSport ? <i className="fas fa-spinner fa-spin mr-2"></i> : <i className="fas fa-save mr-2"></i>}
-                    {editingSportId ? 'Update' : 'Save'} Sport
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '10px' }}>
+                  <button type="button" className="portal-btn-ghost" onClick={() => setShowSportModal(false)}>Cancel</button>
+                  <button type="submit" className="portal-btn-primary" disabled={savingSport} style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    {savingSport ? <i className="fas fa-spinner fa-spin"></i> : <i className="fas fa-save"></i>}
+                    {editingSportId ? 'UPDATE' : 'SAVE'} SPORT
                   </button>
                 </div>
               </form>
@@ -1127,11 +1127,11 @@ export default function SportsManagement() {
                   ></textarea>
                 </div>
 
-                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, marginTop: '10px' }}>
-                  <button type="button" className="portal-btn-neutral" onClick={() => setShowHouseModal(false)}>Cancel</button>
-                  <button type="submit" className="portal-btn-primary" disabled={savingHouse}>
-                    {savingHouse ? <i className="fas fa-spinner fa-spin mr-2"></i> : <i className="fas fa-save mr-2"></i>}
-                    {editingHouseId ? 'Update' : 'Save'} {t('house')}
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '10px' }}>
+                  <button type="button" className="portal-btn-ghost" onClick={() => setShowHouseModal(false)}>Cancel</button>
+                  <button type="submit" className="portal-btn-primary" disabled={savingHouse} style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    {savingHouse ? <i className="fas fa-spinner fa-spin"></i> : <i className="fas fa-save"></i>}
+                    {editingHouseId ? 'UPDATE' : 'SAVE'} {t('house').toUpperCase()}
                   </button>
                 </div>
               </form>
@@ -1226,11 +1226,11 @@ export default function SportsManagement() {
                   </select>
                 </div>
 
-                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, marginTop: '10px' }}>
-                  <button type="button" className="portal-btn-neutral" onClick={() => setShowEquipmentModal(false)}>Cancel</button>
-                  <button type="submit" className="portal-btn-primary" disabled={savingEquipment}>
-                    {savingEquipment ? <i className="fas fa-spinner fa-spin mr-2"></i> : <i className="fas fa-save mr-2"></i>}
-                    {editingEquipmentId ? 'Update' : 'Save'} Equipment
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '10px' }}>
+                  <button type="button" className="portal-btn-ghost" onClick={() => setShowEquipmentModal(false)}>Cancel</button>
+                  <button type="submit" className="portal-btn-primary" disabled={savingEquipment} style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    {savingEquipment ? <i className="fas fa-spinner fa-spin"></i> : <i className="fas fa-save"></i>}
+                    {editingEquipmentId ? 'UPDATE' : 'SAVE'} EQUIPMENT
                   </button>
                 </div>
               </form>

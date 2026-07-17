@@ -165,7 +165,7 @@ export default function StudentClub() {
               <button 
                 className="portal-btn-primary" 
                 onClick={handleOpenAddModal}
-                style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
+                style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}
               >
                 <i className="fas fa-plus"></i> Register {t('club')}
               </button>
@@ -212,10 +212,10 @@ export default function StudentClub() {
                       <td>{new Date(club.date).toLocaleDateString()}</td>
                       <td style={{ textAlign: 'right' }}>
                         <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
-                          <button onClick={() => handleOpenEditModal(club)} className="portal-btn-action edit" title={`Edit ${t('club')}`}>
-                            <i className="fas fa-pencil-alt"></i>
+                          <button onClick={() => handleOpenEditModal(club)} className="portal-btn-ghost" style={{ padding: '8px', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#eab308' }} title={`Edit ${t('club')}`}>
+                            <i className="fas fa-edit"></i>
                           </button>
-                          <button onClick={() => handleDelete(club.id)} className="portal-btn-action delete" title={`Delete ${t('club')}`}>
+                          <button onClick={() => handleDelete(club.id)} className="portal-btn-ghost" style={{ padding: '8px', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#dc2626' }} title={`Delete ${t('club')}`}>
                             <i className="fas fa-trash"></i>
                           </button>
                         </div>
@@ -339,11 +339,11 @@ export default function StudentClub() {
                     </select>
                   </div>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, marginTop: '10px' }}>
-                  <button type="button" className="portal-btn-neutral" onClick={() => setShowModal(false)}>Cancel</button>
-                  <button type="submit" className="portal-btn-primary" disabled={saving}>
-                    {saving ? <i className="fas fa-spinner fa-spin mr-2"></i> : <i className="fas fa-save mr-2"></i>}
-                    {editingClubId ? 'Update' : 'Save'} {t('club')}
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '10px' }}>
+                  <button type="button" className="portal-btn-ghost" onClick={() => setShowModal(false)}>Cancel</button>
+                  <button type="submit" className="portal-btn-primary" disabled={saving} style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    {saving ? <i className="fas fa-spinner fa-spin"></i> : <i className="fas fa-save"></i>}
+                    {editingClubId ? 'UPDATE' : 'SAVE'} {t('club').toUpperCase()}
                   </button>
                 </div>
               </form>
