@@ -238,6 +238,7 @@ export default function DHRepresentative() {
                   <i className="fas fa-utensils"></i> Today's Menu
                 </h2>
                 {canModifyMenu && (
+                  <div style={{ display: 'flex', gap: '8px' }}>
                     <button 
                       onClick={() => setShowAddMenuItemModal(true)}
                       className="portal-btn-primary" 
@@ -457,6 +458,7 @@ export default function DHRepresentative() {
                 </p>
               </div>
 
+              <div style={{ marginTop: '24px', display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
                 <button type="submit" className="portal-btn-primary" style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px', background: primaryColor, border: 'none' }}>
                   <i className="fas fa-paper-plane"></i> SUBMIT REPORT
                 </button>
@@ -521,6 +523,7 @@ export default function DHRepresentative() {
                 ))}
               </div>
 
+              <div style={{ marginTop: '24px', display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
                 <button type="submit" className="portal-btn-primary" style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px', background: primaryColor, border: 'none' }}>
                   <i className="fas fa-save"></i> PUBLISH MENU
                 </button>
@@ -580,6 +583,7 @@ export default function DHRepresentative() {
                 </div>
               </div>
 
+              <div style={{ marginTop: '24px', display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
                 <button type="submit" className="portal-btn-primary" style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px', background: primaryColor, border: 'none' }}>
                   <i className="fas fa-plus"></i> ADD TO MENU
                 </button>
