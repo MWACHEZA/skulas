@@ -101,9 +101,9 @@ export default function HealthComplaints() {
         <button 
           className="portal-btn-primary" 
           onClick={() => setShowModal(true)}
-          style={{ background: 'var(--school-primary, #0056b3)' }}
+          style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px', background: 'var(--school-primary, #0056b3)' }}
         >
-          <i className="fas fa-plus mr-2"></i>Add Complaint
+          <i className="fas fa-plus"></i> ADD COMPLAINT
         </button>
       </div>
 
@@ -145,9 +145,10 @@ export default function HealthComplaints() {
                       <td>{c.medicine || '-'}</td>
                       <td style={{ textAlign: 'center' }}>
                         <button 
-                          className="portal-btn-secondary" 
-                          style={{ padding: '6px 12px', fontSize: '0.8rem', color: 'var(--portal-danger)', borderColor: '#feb2b2' }} 
+                          className="portal-btn-ghost" 
+                          style={{ padding: '8px', width: '36px', height: '36px', color: '#dc2626', display: 'flex', alignItems: 'center', justifyContent: 'center' }} 
                           onClick={() => handleDelete(c.id)}
+                          title="Delete"
                         >
                           <i className="fas fa-trash"></i>
                         </button>
@@ -235,8 +236,8 @@ export default function HealthComplaints() {
               </div>
               <div className="portal-modal-footer">
                 <button type="button" className="portal-btn-secondary" onClick={() => setShowModal(false)}>Cancel</button>
-                <button type="submit" className="portal-btn-primary" style={{ background: 'var(--school-primary, #0056b3)' }} disabled={saving}>
-                  {saving ? 'Saving...' : 'Save Complaint'}
+                <button type="submit" className="portal-btn-primary" style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', background: 'var(--school-primary, #0056b3)' }} disabled={saving}>
+                  {saving ? <i className="fas fa-spinner fa-spin"></i> : <i className="fas fa-save"></i>} SAVE COMPLAINT
                 </button>
               </div>
             </form>

@@ -111,9 +111,9 @@ export default function Referrals() {
           <button 
             className="portal-btn-primary" 
             onClick={() => setShowModal(true)}
-            style={{ background: 'var(--school-primary, #0056b3)' }}
+            style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px', background: 'var(--school-primary, #0056b3)' }}
           >
-            <i className="fas fa-plus mr-2"></i>Create Referral
+            <i className="fas fa-plus"></i> CREATE REFERRAL
           </button>
         )}
       </div>
@@ -159,11 +159,12 @@ export default function Referrals() {
                       {isNurseOrHealthCoordinator && (
                         <td style={{ textAlign: 'center' }}>
                           <button 
-                            className="portal-btn-secondary" 
-                            style={{ padding: '6px 12px', fontSize: '0.8rem', color: 'var(--portal-danger)', borderColor: '#feb2b2' }} 
+                            className="portal-btn-ghost" 
+                            style={{ padding: '8px', width: '36px', height: '36px', color: '#dc2626', display: 'flex', alignItems: 'center', justifyContent: 'center' }} 
                             onClick={() => handleDelete(r.id)}
+                            title="Delete"
                           >
-                            <i className="fas fa-trash-alt"></i>
+                            <i className="fas fa-trash"></i>
                           </button>
                         </td>
                       )}
@@ -260,8 +261,8 @@ export default function Referrals() {
               </div>
               <div className="portal-modal-footer">
                 <button type="button" className="portal-btn-secondary" onClick={() => setShowModal(false)}>Cancel</button>
-                <button type="submit" className="portal-btn-primary" style={{ background: 'var(--school-primary, #0056b3)' }} disabled={saving}>
-                  {saving ? 'Creating...' : 'Create Referral'}
+                <button type="submit" className="portal-btn-primary" style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', background: 'var(--school-primary, #0056b3)' }} disabled={saving}>
+                  {saving ? <i className="fas fa-spinner fa-spin"></i> : <i className="fas fa-plus"></i>} CREATE REFERRAL
                 </button>
               </div>
             </form>

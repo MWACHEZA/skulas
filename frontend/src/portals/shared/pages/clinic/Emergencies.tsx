@@ -86,9 +86,9 @@ export default function Emergencies() {
           <button 
             className="portal-btn-primary" 
             onClick={() => setShowModal(true)}
-            style={{ background: 'var(--school-primary, #0056b3)' }}
+            style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px', background: 'var(--school-primary, #0056b3)' }}
           >
-            <i className="fas fa-ambulance mr-2"></i>Report Emergency
+            <i className="fas fa-ambulance"></i> REPORT EMERGENCY
           </button>
         )}
       </div>
@@ -131,11 +131,11 @@ export default function Emergencies() {
                         <td style={{ textAlign: 'center' }}>
                           <button 
                             onClick={() => handleDelete(e.id)}
-                            className="portal-btn-secondary" 
-                            style={{ padding: '4px 8px', color: 'var(--portal-danger)', borderColor: '#feb2b2' }}
+                            className="portal-btn-ghost" 
+                            style={{ padding: '8px', width: '36px', height: '36px', color: '#dc2626', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                             title="Delete Record"
                           >
-                            <i className="fas fa-trash-alt"></i>
+                            <i className="fas fa-trash"></i>
                           </button>
                         </td>
                       )}
@@ -202,8 +202,8 @@ export default function Emergencies() {
               </div>
               <div className="portal-modal-footer">
                 <button type="button" className="portal-btn-secondary" onClick={() => setShowModal(false)}>Cancel</button>
-                <button type="submit" className="portal-btn-primary" style={{ background: 'var(--school-primary, #0056b3)' }} disabled={saving}>
-                  {saving ? 'Submitting...' : 'Submit Report'}
+                <button type="submit" className="portal-btn-primary" style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', background: 'var(--school-primary, #0056b3)' }} disabled={saving}>
+                  {saving ? <i className="fas fa-spinner fa-spin"></i> : <i className="fas fa-plus"></i>} SUBMIT REPORT
                 </button>
               </div>
             </form>

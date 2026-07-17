@@ -156,9 +156,9 @@ export default function Appointments() {
         <button 
           className="portal-btn-primary" 
           onClick={() => setShowModal(true)}
-          style={{ background: 'var(--school-primary, #0056b3)' }}
+          style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px', background: 'var(--school-primary, #0056b3)' }}
         >
-          <i className="fas fa-plus mr-2"></i>Book Visit
+          <i className="fas fa-plus"></i> BOOK VISIT
         </button>
       </div>
 
@@ -201,19 +201,21 @@ export default function Appointments() {
                       <td style={{ textAlign: 'center' }}>
                         <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
                           <button 
-                            className="portal-btn-secondary" 
-                            style={{ padding: '6px 12px', fontSize: '0.8rem', color: 'var(--school-primary, #0056b3)', borderColor: 'var(--school-primary, #0056b3)' }} 
+                            className="portal-btn-ghost" 
+                            style={{ padding: '8px', width: '36px', height: '36px', color: '#1e40af', display: 'flex', alignItems: 'center', justifyContent: 'center' }} 
                             onClick={() => setPrintNoteAppointment(a)}
+                            title="Print Note"
                           >
-                            <i className="fas fa-print mr-1"></i> Print Note
+                            <i className="fas fa-print"></i>
                           </button>
                           {isStaff && (
                             <button 
-                              className="portal-btn-secondary" 
-                              style={{ padding: '6px 12px', fontSize: '0.8rem', color: 'var(--portal-danger)', borderColor: '#feb2b2' }} 
+                              className="portal-btn-ghost" 
+                              style={{ padding: '8px', width: '36px', height: '36px', color: '#dc2626', display: 'flex', alignItems: 'center', justifyContent: 'center' }} 
                               onClick={() => handleDelete(a.id)}
+                              title="Delete"
                             >
-                              <i className="fas fa-trash-alt"></i>
+                              <i className="fas fa-trash"></i>
                             </button>
                           )}
                         </div>
@@ -303,8 +305,8 @@ export default function Appointments() {
               </div>
               <div className="portal-modal-footer">
                 <button type="button" className="portal-btn-secondary" onClick={() => setShowModal(false)}>Cancel</button>
-                <button type="submit" className="portal-btn-primary" style={{ background: 'var(--school-primary, #0056b3)' }} disabled={saving}>
-                  {saving ? 'Saving...' : 'Book Appointment'}
+                <button type="submit" className="portal-btn-primary" style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', background: 'var(--school-primary, #0056b3)' }} disabled={saving}>
+                  {saving ? <i className="fas fa-spinner fa-spin"></i> : <i className="fas fa-plus"></i>} BOOK APPOINTMENT
                 </button>
               </div>
             </form>
@@ -320,10 +322,10 @@ export default function Appointments() {
               <div style={{ display: 'flex', gap: '8px' }}>
                 <button 
                   className="portal-btn-primary" 
-                  style={{ background: 'var(--school-primary, #0056b3)', border: 'none', padding: '6px 16px' }}
+                  style={{ background: 'var(--school-primary, #0056b3)', border: 'none', padding: '0 32px', height: '52px', borderRadius: '16px', fontWeight: 900, display: 'flex', alignItems: 'center', gap: '12px' }}
                   onClick={() => window.print()}
                 >
-                  <i className="fas fa-print mr-2"></i> Print Note
+                  <i className="fas fa-print"></i> PRINT NOTE
                 </button>
                 <button 
                   className="portal-btn-secondary" 
