@@ -168,8 +168,8 @@ export default function StudyMaterial() {
           <h1>Study Material Explorer</h1>
           <p>Organize, manage, and share subject-based resources with your classes.</p>
         </div>
-        <button className="portal-btn-primary" style={{ background: 'var(--portal-success)', borderColor: 'var(--portal-success)', display: 'flex', alignItems: 'center', gap: '8px' }} onClick={() => setIsModalOpen(true)}>
-          <i className="fas fa-plus"></i> Add study material
+        <button className="portal-btn-primary" style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }} onClick={() => setIsModalOpen(true)}>
+          <i className="fas fa-plus-circle"></i> ADD STUDY MATERIAL
         </button>
       </div>
 
@@ -339,18 +339,17 @@ export default function StudyMaterial() {
                         <td style={{ fontWeight: 600 }}>{m.class?.name}</td>
                         <td>{m.teacher?.name}</td>
                         <td style={{ fontSize: '0.85rem', color: '#64748b' }}>{m.description}</td>
-                        <td>
+                        <td style={{ textAlign: 'center' }}>
                           {m.documentUrl ? (
-                            <button className="portal-btn-primary" style={{ padding: '6px 12px', fontSize: '0.8rem', background: 'var(--school-primary, #3182ce)', borderColor: 'var(--school-primary, #3182ce)', display: 'flex', alignItems: 'center', gap: '6px' }} onClick={() => setPreviewMaterial(m)}>
+                            <button className="portal-btn-ghost" style={{ padding: '8px', width: '36px', height: '36px', color: '#2563eb', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto' }} onClick={() => setPreviewMaterial(m)} title={m.documentUrl.includes('youtube') || m.documentUrl.includes('youtu.be') || m.documentUrl.endsWith('.mp4') ? 'Play Media' : 'Open Document'}>
                               <i className={m.documentUrl.includes('youtube') || m.documentUrl.includes('youtu.be') || m.documentUrl.endsWith('.mp4') ? 'fas fa-play' : 'fas fa-eye'}></i>
-                              {m.documentUrl.includes('youtube') || m.documentUrl.includes('youtu.be') || m.documentUrl.endsWith('.mp4') ? 'Play Media' : 'Open Document'}
                             </button>
                           ) : (
                             <span style={{ color: '#cbd5e1', fontSize: '0.85rem' }}>No file</span>
                           )}
                         </td>
-                        <td>
-                          <button className="portal-btn-secondary" style={{ padding: '6px 12px', color: 'white', background: 'var(--portal-danger)', border: 'none', borderRadius: '6px', cursor: 'pointer' }} onClick={() => handleDelete(m.id)}>
+                        <td style={{ textAlign: 'center' }}>
+                          <button className="portal-btn-ghost" style={{ padding: '8px', width: '36px', height: '36px', color: '#dc2626', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto' }} onClick={() => handleDelete(m.id)} title="Delete">
                             <i className="fas fa-trash"></i>
                           </button>
                         </td>

@@ -269,10 +269,10 @@ export default function TeacherLessonPlan() {
         </div>
         <button 
           className="portal-btn-primary" 
-          style={{ background: 'var(--portal-success)', borderColor: 'var(--portal-success)', display: 'flex', alignItems: 'center', gap: '8px' }} 
+          style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }} 
           onClick={() => setIsModalOpen(true)}
         >
-          <i className="fas fa-plus"></i> Add Lesson Breakdown
+          <i className="fas fa-plus-circle"></i> ADD LESSON BREAKDOWN
         </button>
       </div>
 
@@ -358,8 +358,8 @@ export default function TeacherLessonPlan() {
                          <div style={{ fontSize: '0.9rem', color: '#4a5568', whiteSpace: 'pre-wrap', marginBottom: 10 }}>
                            {lp.content}
                          </div>
-                         <button className="portal-btn-secondary" style={{ padding: '4px 12px', fontSize: '0.8rem', background: 'var(--portal-danger)', color: 'white', borderColor: 'var(--portal-danger)', borderRadius: '6px', cursor: 'pointer' }} onClick={() => handleDelete(lp.id)}>
-                            Delete
+                         <button className="portal-btn-ghost" style={{ padding: '8px', width: '36px', height: '36px', color: '#dc2626', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => handleDelete(lp.id)} title="Delete">
+                            <i className="fas fa-trash"></i>
                          </button>
                        </td>
                      </tr>
