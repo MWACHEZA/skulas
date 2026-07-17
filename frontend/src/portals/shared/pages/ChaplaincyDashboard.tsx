@@ -174,9 +174,9 @@ export default function ChaplaincyDashboard() {
                  <button 
                    className="portal-btn-primary" 
                    onClick={() => setShowServiceModal(true)}
-                   style={{ background: 'rgba(255,255,255,0.2)', border: '1px solid rgba(255,255,255,0.3)', color: 'white', borderRadius: '12px', padding: '8px 16px', fontWeight: 600 }}
+                   style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}
                  >
-                   <i className="fas fa-plus mr-2"></i> Schedule Service
+                   <i className="fas fa-plus-circle"></i> SCHEDULE SERVICE
                  </button>
                )}
             </div>
@@ -332,9 +332,9 @@ export default function ChaplaincyDashboard() {
                 <button 
                   onClick={() => setShowReflectionModal(true)}
                   className="portal-btn-primary" 
-                  style={{ background: primaryColor, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', padding: '14px', borderRadius: '12px', fontWeight: 700, width: '100%' }}
+                  style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', width: '100%' }}
                 >
-                  <i className="fas fa-broadcast-tower"></i> Create Reflection & Broadcast
+                  <i className="fas fa-broadcast-tower"></i> CREATE REFLECTION & BROADCAST
                 </button>
               ) : (
                 <div style={{ padding: '12px', background: '#f8fafc', borderRadius: '12px', display: 'flex', gap: '10px', alignItems: 'center' }}>

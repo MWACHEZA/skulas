@@ -227,11 +227,11 @@ export default function AdminClasses() {
           <p>Organize your institution into manageable academic cohorts.</p>
         </div>
         <div className="header-actions" style={{ display: 'flex', gap: '10px' }}>
-          <button className="portal-btn-primary" style={{ background: '#6366f1' }} onClick={() => setIsSectionModalOpen(true)}>
-            <i className="fas fa-layer-group mr-2"></i> Manage Sections
+          <button className="portal-btn-primary" style={{ background: '#6366f1', padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }} onClick={() => setIsSectionModalOpen(true)}>
+            <i className="fas fa-layer-group"></i> MANAGE SECTIONS
           </button>
-          <label className="portal-btn-primary" style={{ background: '#059669', cursor: 'pointer', padding: '10px 20px', borderRadius: '12px', fontWeight: 800 }}>
-            <i className="fas fa-file-excel mr-2"></i> {uploading ? 'Uploading...' : 'Bulk Upload'}
+          <label className="portal-btn-primary" style={{ background: '#059669', cursor: 'pointer', padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <i className="fas fa-file-excel"></i> {uploading ? 'UPLOADING...' : 'BULK UPLOAD'}
             <input type="file" accept=".xlsx, .xls" style={{ display: 'none' }} onChange={handleBulkUpload} disabled={uploading} />
           </label>
         </div>
@@ -261,10 +261,10 @@ export default function AdminClasses() {
                       <h3 style={{ fontSize: '1.25rem', marginBottom: '4px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '160px' }} title={c.name}>{c.name}</h3>
                       <div className="portal-badge" style={{ background: 'var(--portal-bg)', color: 'var(--portal-primary)', padding: '4px 12px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 700, display: 'inline-block' }}>Level: {c.level}</div>
                     </div>
-                    <div className="action-buttons">
-                      <button className="btn-icon" style={{ color: '#10b981', background: 'rgba(16, 185, 129, 0.1)', marginRight: '4px' }} onClick={() => handleOpenMigrateModal(c)} title="Migrate Cohort"><i className="fas fa-random"></i></button>
-                      <button className="btn-icon btn-edit" onClick={() => handleOpenModal(c)} title="Edit Class"><i className="fas fa-edit"></i></button>
-                      <button className="btn-icon btn-delete" title="Delete Class" onClick={async () => {
+                    <div className="action-buttons" style={{ display: 'flex', gap: '8px' }}>
+                      <button className="portal-btn-ghost" style={{ padding: '8px', width: '36px', height: '36px', color: '#10b981', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => handleOpenMigrateModal(c)} title="Migrate Cohort"><i className="fas fa-random"></i></button>
+                      <button className="portal-btn-ghost" style={{ padding: '8px', width: '36px', height: '36px', color: '#eab308', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => handleOpenModal(c)} title="Edit Class"><i className="fas fa-edit"></i></button>
+                      <button className="portal-btn-ghost" style={{ padding: '8px', width: '36px', height: '36px', color: '#dc2626', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Delete Class" onClick={async () => {
                           if (await toastConfirm(`Delete class ${c.name}?`)) {
                             try {
                               await api.delete(`/api/classes/${c.id}`);
@@ -272,8 +272,7 @@ export default function AdminClasses() {
                               fetchData();
                             } catch (err) {
                               showToast('Failed to delete class', 'error');
-                            
-    }
+                            }
                           }
                         }}>
                         <i className="fas fa-trash"></i>

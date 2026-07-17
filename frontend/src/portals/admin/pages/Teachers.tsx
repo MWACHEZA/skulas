@@ -109,8 +109,8 @@ export default function AdminTeachers() {
             />
             <i className="fas fa-search" style={{ position: 'absolute', left: 14, top: 14, color: '#a0aec0' }}></i>
           </div>
-          <button className="portal-btn-primary" onClick={() => setIsCreateModalOpen(true)}>
-            <i className="fas fa-user-plus" style={{ marginRight: 8 }}></i>Add Teacher
+          <button className="portal-btn-primary" onClick={() => setIsCreateModalOpen(true)} style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <i className="fas fa-plus-circle"></i> ADD TEACHER
           </button>
         </div>
 
@@ -185,20 +185,20 @@ export default function AdminTeachers() {
                           </span>
                         </td>
                         <td>
-                          <div className="action-buttons">
-                            <button className="btn-icon btn-view" title="View Profile" onClick={() => openDetail(t)}>
+                          <div className="action-buttons" style={{ display: 'flex', gap: '8px' }}>
+                            <button className="portal-btn-ghost" title="View Profile" style={{ padding: '8px', width: '36px', height: '36px', color: '#2563eb', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => openDetail(t)}>
                               <i className="fas fa-eye"></i>
                             </button>
-                            <button className="btn-icon btn-edit" title="Edit Teacher" onClick={() => openEdit(t)}>
+                            <button className="portal-btn-ghost" title="Edit Teacher" style={{ padding: '8px', width: '36px', height: '36px', color: '#eab308', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => openEdit(t)}>
                               <i className="fas fa-pencil-alt"></i>
                             </button>
-                            <button className="btn-icon btn-lock" title={t.user?.isLocked ? "Unlock Account" : "Lock Account"} onClick={() => handleLockToggle(t)}>
+                            <button className="portal-btn-ghost" title={t.user?.isLocked ? "Unlock Account" : "Lock Account"} style={{ padding: '8px', width: '36px', height: '36px', color: '#f97316', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => handleLockToggle(t)}>
                               <i className={`fas fa-${t.user?.isLocked ? 'unlock' : 'lock'}`}></i>
                             </button>
-                            <button className="btn-icon btn-view" title="Teaching Load" style={{ background: 'rgba(56, 161, 105, 0.1)', color: 'var(--portal-success)' }} onClick={() => window.location.href = `/admin/teacher-load?id=${t.id}`}>
+                            <button className="portal-btn-ghost" title="Teaching Load" style={{ padding: '8px', width: '36px', height: '36px', color: '#10b981', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => window.location.href = `/admin/teacher-load?id=${t.id}`}>
                               <i className="fas fa-book"></i>
                             </button>
-                            <button className="btn-icon btn-delete" title="Delete Permanent" onClick={async () => {
+                            <button className="portal-btn-ghost" title="Delete Permanent" style={{ padding: '8px', width: '36px', height: '36px', color: '#dc2626', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={async () => {
                               if (await toastConfirm('Delete this teacher and their user account?')) {
                                 api.delete(`/api/teachers/${t.id}`).then(() => fetchTeachers());
                               }

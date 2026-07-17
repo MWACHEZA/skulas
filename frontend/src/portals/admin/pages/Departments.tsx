@@ -189,9 +189,10 @@ export default function AdminDepartments() {
           <h2><i className="fas fa-building" style={{ marginRight: 8, color: '#ed8936' }}></i>All Departments</h2>
           <button 
             onClick={() => handleOpenModal()}
-            style={{ padding: '8px 16px', background: 'var(--portal-primary)', color: 'white', border: 'none', borderRadius: 8, fontWeight: 600, cursor: 'pointer' }}
+            className="portal-btn-primary"
+            style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}
           >
-            <i className="fas fa-plus" style={{ marginRight: 6 }}></i>Add Department
+            <i className="fas fa-plus-circle"></i> ADD DEPARTMENT
           </button>
         </div>
         <div className="portal-card-body" style={{ padding: 0 }}>
@@ -276,7 +277,7 @@ export default function AdminDepartments() {
                           style={{ width: 36, height: 36, padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                           onClick={() => handleOpenModal(d)}
                         >
-                          <i className="fas fa-edit" style={{ color: '#2563eb' }}></i>
+                          <i className="fas fa-edit" style={{ color: '#eab308' }}></i>
                         </button>
                         <button 
                           className="portal-btn-ghost" 

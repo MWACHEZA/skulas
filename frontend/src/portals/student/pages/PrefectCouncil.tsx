@@ -256,9 +256,9 @@ export default function PrefectCouncil() {
                     <button 
                       onClick={() => setShowDutyModal(true)}
                       className="portal-btn-primary" 
-                      style={{ background: primaryColor, borderRadius: '12px', padding: '12px 25px', border: 'none', boxShadow: `0 4px 12px ${primaryColor}33` }}
+                      style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}
                     >
-                      <i className="fas fa-edit mr-2"></i> Add Duty Slot
+                      <i className="fas fa-plus-circle"></i> ADD DUTY SLOT
                     </button>
                   )}
                 </div>
@@ -331,9 +331,9 @@ export default function PrefectCouncil() {
                     <button 
                       onClick={() => setShowMeetingModal(true)}
                       className="portal-btn-primary" 
-                      style={{ background: primaryColor, borderRadius: '12px', padding: '12px 25px', border: 'none', boxShadow: `0 4px 12px ${primaryColor}33` }}
+                      style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}
                     >
-                      <i className="fas fa-plus mr-2"></i> New Minutes
+                      <i className="fas fa-plus-circle"></i> NEW MINUTES
                     </button>
                   )}
                 </div>
@@ -377,9 +377,9 @@ export default function PrefectCouncil() {
                     <button 
                       onClick={() => setShowReportModal(true)}
                       className="portal-btn-primary" 
-                      style={{ background: primaryColor, borderRadius: '12px', padding: '12px 25px', border: 'none', boxShadow: `0 4px 12px ${primaryColor}33` }}
+                      style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}
                     >
-                      <i className="fas fa-plus mr-2"></i> {isTertiary ? 'Log Incident' : 'File Conduct Report'}
+                      <i className="fas fa-plus-circle"></i> {isTertiary ? 'LOG INCIDENT' : 'FILE CONDUCT REPORT'}
                     </button>
                   )}
                 </div>

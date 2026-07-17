@@ -123,8 +123,8 @@ export default function AdminStudents() {
             />
             <i className="fas fa-search" style={{ position: 'absolute', left: 14, top: 14, color: '#a0aec0' }}></i>
           </div>
-          <button className="portal-btn-primary" onClick={() => setIsCreateModalOpen(true)}>
-            <i className="fas fa-plus" style={{ marginRight: 8 }}></i>New Student
+          <button className="portal-btn-primary" onClick={() => setIsCreateModalOpen(true)} style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <i className="fas fa-plus-circle"></i> NEW STUDENT
           </button>
         </div>
         
@@ -198,23 +198,23 @@ export default function AdminStudents() {
                           </span>
                         </td>
                         <td>
-                          <div className="action-buttons">
-                            <button className="btn-icon btn-view" title="View Profile" onClick={() => openDetail(s)}>
+                          <div className="action-buttons" style={{ display: 'flex', gap: '8px' }}>
+                            <button className="portal-btn-ghost" title="View Profile" style={{ padding: '8px', width: '36px', height: '36px', color: '#2563eb', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => openDetail(s)}>
                               <i className="fas fa-eye"></i>
                             </button>
-                            <button className="btn-icon btn-edit" title="Edit Student" onClick={() => openEdit(s)}>
+                            <button className="portal-btn-ghost" title="Edit Student" style={{ padding: '8px', width: '36px', height: '36px', color: '#eab308', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => openEdit(s)}>
                               <i className="fas fa-pencil-alt"></i>
                             </button>
-                            <button className="btn-icon btn-lock" title={s.user?.isLocked ? "Unlock Access" : "Lock Access"} onClick={() => handleLockToggle(s)}>
+                            <button className="portal-btn-ghost" title={s.user?.isLocked ? "Unlock Access" : "Lock Access"} style={{ padding: '8px', width: '36px', height: '36px', color: '#f97316', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => handleLockToggle(s)}>
                               <i className={`fas fa-${s.user?.isLocked ? 'unlock' : 'lock'}`}></i>
                             </button>
-                            <button className="btn-icon btn-view" title="Academic History" style={{ background: 'rgba(111, 66, 193, 0.1)', color: '#6f42c1' }} onClick={() => window.location.href = `/admin/student-history?id=${s.id}`}>
+                            <button className="portal-btn-ghost" title="Academic History" style={{ padding: '8px', width: '36px', height: '36px', color: '#8b5cf6', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => window.location.href = `/admin/student-history?id=${s.id}`}>
                               <i className="fas fa-history"></i>
                             </button>
-                            <button className="btn-icon btn-edit" title="Generate Report Card" style={{ background: 'rgba(235, 68, 90, 0.1)', color: '#eb445a' }} onClick={() => navigate(`/admin/reports?studentId=${s.user?.id || s.id}`)}>
+                            <button className="portal-btn-ghost" title="Generate Report Card" style={{ padding: '8px', width: '36px', height: '36px', color: '#ec4899', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => navigate(`/admin/reports?studentId=${s.user?.id || s.id}`)}>
                               <i className="fas fa-file-pdf"></i>
                             </button>
-                            <button className="btn-icon btn-delete" title="Delete Permanent" onClick={() => handleDelete(s)}>
+                            <button className="portal-btn-ghost" title="Delete Permanent" style={{ padding: '8px', width: '36px', height: '36px', color: '#dc2626', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => handleDelete(s)}>
                               <i className="fas fa-trash"></i>
                             </button>
                           </div>

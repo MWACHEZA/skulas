@@ -252,9 +252,10 @@ export default function AdminTimetable() {
                 onClick={handleSave} 
                 disabled={saving || !selectedClass}
                 className="portal-btn-primary"
+                style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}
             >
-              <i className="fas fa-save" style={{ marginRight: 6 }}></i>
-              {saving ? 'Saving...' : 'Save Changes'}
+              <i className="fas fa-save"></i>
+              {saving ? 'SAVING...' : 'SAVE CHANGES'}
             </button>
           </div>
         </div>

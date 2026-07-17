@@ -122,8 +122,9 @@ export default function AdminSubjects() {
           <button 
             onClick={() => handleOpenModal()}
             className="portal-btn-primary"
+            style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}
           >
-            <i className="fas fa-plus" style={{ marginRight: 6 }}></i>Add Subject
+            <i className="fas fa-plus-circle"></i> ADD SUBJECT
           </button>
         </div>
         <div className="portal-card-body" style={{ padding: 0 }}>
@@ -141,9 +142,23 @@ export default function AdminSubjects() {
                     <td><span className="portal-badge neutral">{s.dept?.name || s.department || 'General'}</span></td>
                     <td>{s._count?.teachers || 0}</td>
                     <td>
-                      <div style={{ display: 'flex', gap: 10 }}>
-                        <button onClick={() => handleOpenModal(s)} style={{ background: 'none', border: 'none', color: 'var(--portal-primary)', cursor: 'pointer', fontWeight: 600 }}>Edit</button>
-                        <button onClick={() => handleDelete(s.id)} style={{ background: 'none', border: 'none', color: 'var(--portal-danger)', cursor: 'pointer', fontWeight: 600 }}>Delete</button>
+                      <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-start' }}>
+                        <button 
+                          onClick={() => handleOpenModal(s)} 
+                          className="portal-btn-ghost" 
+                          title="Edit"
+                          style={{ width: 36, height: 36, padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#eab308' }}
+                        >
+                          <i className="fas fa-edit"></i>
+                        </button>
+                        <button 
+                          onClick={() => handleDelete(s.id)} 
+                          className="portal-btn-ghost" 
+                          title="Delete"
+                          style={{ width: 36, height: 36, padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#dc2626' }}
+                        >
+                          <i className="fas fa-trash-alt"></i>
+                        </button>
                       </div>
                     </td>
                   </tr>

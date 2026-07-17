@@ -165,9 +165,9 @@ export default function AncillarySchedules() {
               <button 
                 onClick={() => setShowAssignModal(true)}
                 className="portal-btn-primary"
-                style={{ background: primaryColor, border: 'none', padding: '10px 20px', borderRadius: '12px', color: 'white', fontWeight: 700, boxShadow: `0 4px 12px ${primaryColor}33` }}
+                style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}
               >
-                <i className="fas fa-plus mr-2"></i> Assign Shift
+                <i className="fas fa-plus-circle"></i> ASSIGN SHIFT
               </button>
             )}
           </div>
@@ -222,7 +222,8 @@ export default function AncillarySchedules() {
                           <td className="no-print">
                             <button 
                               onClick={() => handleDeleteShift(shift.id)}
-                              style={{ background: 'none', border: 'none', color: 'var(--portal-danger)', cursor: 'pointer', fontSize: '1rem' }}
+                              className="portal-btn-ghost"
+                              style={{ padding: '8px', width: '36px', height: '36px', color: '#dc2626', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                               title="Delete shift assignment"
                             >
                               <i className="fas fa-trash-alt"></i>

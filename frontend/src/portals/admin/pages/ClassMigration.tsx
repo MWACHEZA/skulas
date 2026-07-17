@@ -339,10 +339,10 @@ export default function ClassMigration() {
               onClick={loadStudents}
               disabled={loading}
               className="portal-btn-primary"
-              style={{ height: '56px', padding: '0 40px', fontWeight: 900 }}
+              style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px' }}
             >
-              {loading ? <i className="fas fa-spinner fa-spin mr-2"></i> : <i className="fas fa-search mr-2"></i>}
-              Load Student Registry
+              {loading ? <i className="fas fa-spinner fa-spin"></i> : <i className="fas fa-search"></i>}
+              LOAD STUDENT REGISTRY
             </button>
           </div>
 
@@ -442,10 +442,10 @@ export default function ClassMigration() {
                     <button 
                       onClick={handleMigrate}
                       className="portal-btn-primary"
-                      style={{ background: '#059669', height: '50px', width: '100%', fontWeight: 900, marginTop: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                      style={{ background: '#059669', padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', marginTop: '10px', width: '100%' }}
                     >
-                      <i className="fas fa-exchange-alt mr-2" style={{ marginRight: '8px' }}></i>
-                      Authorize Migration
+                      <i className="fas fa-exchange-alt"></i>
+                      AUTHORIZE MIGRATION
                     </button>
                   </div>
                 </div>
@@ -523,11 +523,11 @@ export default function ClassMigration() {
             <button
               onClick={handleBulkMigrate}
               className="portal-btn-primary"
-              style={{ background: '#059669', height: '50px', padding: '0 32px', fontWeight: 900 }}
+              style={{ background: '#059669', padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}
               disabled={loading || Object.values(bulkMappings).every(m => !m.targetClassId)}
             >
-              {loading ? <i className="fas fa-spinner fa-spin mr-2"></i> : <i className="fas fa-exchange-alt mr-2"></i>}
-              Execute Bulk Class Mapping
+              {loading ? <i className="fas fa-spinner fa-spin"></i> : <i className="fas fa-exchange-alt"></i>}
+              EXECUTE BULK CLASS MAPPING
             </button>
           </div>
         </div>

@@ -168,9 +168,9 @@ export default function StudentHouse() {
               <button 
                 className="portal-btn-primary" 
                 onClick={handleOpenAddModal}
-                style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
+                style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}
               >
-                <i className="fas fa-plus"></i> Add {t('house')}
+                <i className="fas fa-plus-circle"></i> ADD {t('house').toUpperCase()}
               </button>
             </div>
           </div>
@@ -222,10 +222,10 @@ export default function StudentHouse() {
                         </td>
                         <td style={{ textAlign: 'right' }}>
                           <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
-                            <button onClick={() => handleOpenEditModal(house)} className="portal-btn-action edit" title={`Edit ${t('house')}`}>
+                            <button onClick={() => handleOpenEditModal(house)} className="portal-btn-ghost" title={`Edit ${t('house')}`} style={{ padding: '8px', width: '36px', height: '36px', color: '#eab308', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                               <i className="fas fa-pencil-alt"></i>
                             </button>
-                            <button onClick={() => handleDelete(house.id)} className="portal-btn-action delete" title={`Delete ${t('house')}`}>
+                            <button onClick={() => handleDelete(house.id)} className="portal-btn-ghost" title={`Delete ${t('house')}`} style={{ padding: '8px', width: '36px', height: '36px', color: '#dc2626', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                               <i className="fas fa-trash"></i>
                             </button>
                           </div>
