@@ -346,19 +346,41 @@ const UserEditModal: React.FC<UserEditModalProps> = ({
               <label>Date of Leaving</label>
               <input type="date" name="dateOfLeaving" value={formData.dateOfLeaving ? new Date(formData.dateOfLeaving).toISOString().split('T')[0] : ''} onChange={handleInputChange} className="form-control" />
             </div>
-            <div className="form-group"><label>Bank Name</label><input name="bankName" value={formData.bankName || ''} onChange={handleInputChange} className="form-control" /></div>
-            <div className="form-group"><label>Bank Branch</label><input name="bankBranch" value={formData.bankBranch || ''} onChange={handleInputChange} className="form-control" /></div>
-            <div className="form-group"><label>Branch Code</label><input name="branchCode" value={formData.branchCode || ''} onChange={handleInputChange} className="form-control" /></div>
-            <div className="form-group">
-              <label>Account Currency / Type</label>
+            {/* ─── USD Account ─── */}
+            <div className="form-section-header col-span-2" style={{ background: '#eff6ff', color: '#1d4ed8', borderLeft: '4px solid #3b82f6', padding: '8px 12px', borderRadius: '6px', fontWeight: 800 }}>
+              <i className="fas fa-dollar-sign" style={{ marginRight: '8px' }}></i>USD Bank Account
+            </div>
+            <div className="form-group"><label>Bank Name (USD)</label><input name="bankName" value={formData.bankName || ''} onChange={handleInputChange} className="form-control" placeholder="e.g. CBZ Bank" /></div>
+            <div className="form-group"><label>Bank Branch (USD)</label><input name="bankBranch" value={formData.bankBranch || ''} onChange={handleInputChange} className="form-control" /></div>
+            <div className="form-group"><label>Branch Code (USD)</label><input name="branchCode" value={formData.branchCode || ''} onChange={handleInputChange} className="form-control" /></div>
+            <div className="form-group"><label>Account Type (USD)</label>
               <select name="accountType" value={formData.accountType || ''} onChange={handleInputChange} className="form-control">
-                <option value="">Select Currency...</option>
-                <option value="USD">USD</option>
-                <option value="ZiG">ZiG</option>
+                <option value="">Select type...</option>
+                <option value="Savings">Savings</option>
+                <option value="Current">Current</option>
+                <option value="Nostro">Nostro / RTGS</option>
               </select>
             </div>
-            <div className="form-group"><label>Account Number</label><input name="accountNumber" value={formData.accountNumber || ''} onChange={handleInputChange} className="form-control" /></div>
-            <div className="form-group"><label>Account Holder Name</label><input name="accountHolderName" value={formData.accountHolderName || ''} onChange={handleInputChange} className="form-control" /></div>
+            <div className="form-group"><label>Account Number (USD)</label><input name="accountNumber" value={formData.accountNumber || ''} onChange={handleInputChange} className="form-control" /></div>
+            <div className="form-group"><label>Account Holder Name (USD)</label><input name="accountHolderName" value={formData.accountHolderName || ''} onChange={handleInputChange} className="form-control" /></div>
+
+            {/* ─── ZiG Account ─── */}
+            <div className="form-section-header col-span-2" style={{ background: '#fefce8', color: '#92400e', borderLeft: '4px solid #f59e0b', padding: '8px 12px', borderRadius: '6px', fontWeight: 800 }}>
+              <i className="fas fa-coins" style={{ marginRight: '8px' }}></i>ZiG Bank Account
+            </div>
+            <div className="form-group"><label>Bank Name (ZiG)</label><input name="bankNameZig" value={formData.bankNameZig || ''} onChange={handleInputChange} className="form-control" placeholder="e.g. CBZ Bank" /></div>
+            <div className="form-group"><label>Bank Branch (ZiG)</label><input name="bankBranchZig" value={formData.bankBranchZig || ''} onChange={handleInputChange} className="form-control" /></div>
+            <div className="form-group"><label>Branch Code (ZiG)</label><input name="branchCodeZig" value={formData.branchCodeZig || ''} onChange={handleInputChange} className="form-control" /></div>
+            <div className="form-group"><label>Account Type (ZiG)</label>
+              <select name="accountTypeZig" value={formData.accountTypeZig || ''} onChange={handleInputChange} className="form-control">
+                <option value="">Select type...</option>
+                <option value="Savings">Savings</option>
+                <option value="Current">Current</option>
+              </select>
+            </div>
+            <div className="form-group"><label>Account Number (ZiG)</label><input name="accountNumberZig" value={formData.accountNumberZig || ''} onChange={handleInputChange} className="form-control" /></div>
+            <div className="form-group"><label>Account Holder Name (ZiG)</label><input name="accountHolderNameZig" value={formData.accountHolderNameZig || ''} onChange={handleInputChange} className="form-control" /></div>
+
 
             <div className="form-section-header col-span-2">Social & Documents</div>
             <div className="form-group"><label>Facebook</label><input name="facebookLink" value={formData.facebookLink || ''} onChange={handleInputChange} className="form-control" /></div>

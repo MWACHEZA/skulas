@@ -50,6 +50,13 @@ export const EmployeeProfileSchema = z.object({
   bankBranch: z.string().optional(),
   branchCode: z.string().optional(),
   accountType: z.string().optional(),
+  // ZiG Account
+  accountNumberZig: z.string().optional(),
+  accountHolderNameZig: z.string().optional(),
+  bankNameZig: z.string().optional(),
+  bankBranchZig: z.string().optional(),
+  branchCodeZig: z.string().optional(),
+  accountTypeZig: z.string().optional(),
   facebookLink: z.string().optional(),
   linkedinLink: z.string().optional(),
   twitterLink: z.string().optional(),
