@@ -13,14 +13,25 @@ export default function AdminAcademicHistory() {
   const [loading, setLoading] = useState(true);
   const [student, setStudent] = useState<any>(null);
   const [showTranscript, setShowTranscript] = useState(false);
+  const [reportTemplate, setReportTemplate] = useState<any>(null);
   const { showToast } = useToast();
   const { user } = useAuth();
 
   useEffect(() => {
+    fetchTemplate();
     if (studentId) {
       fetchStudentHistory();
     }
   }, [studentId]);
+
+  const fetchTemplate = async () => {
+    try {
+      const res = await api.get('/api/reports/template');
+      setReportTemplate(res.data);
+    } catch (err) {
+      console.error('Failed to load report template');
+    }
+  };
 
   const fetchStudentHistory = async () => {
     try {
@@ -70,29 +81,54 @@ export default function AdminAcademicHistory() {
     }
   };
 
+  // Compute attendance summary from student record
+  const computeAttendance = () => {
+    const att = student.attendance || student.student?.attendance;
+    if (!Array.isArray(att) || att.length === 0) return null;
+    const present = att.filter((a: any) => a.status === 'present' || a.present === true).length;
+    const total   = att.length;
+    return { present, absent: total - present, total, rate: Math.round((present / total) * 100) };
+  };
+
   const reportData = {
     id: student.id,
     studentId: student.studentId,
     type: 'ACADEMIC',
     name: student.name,
-    student: student,
-    term: 'ALL',
+    dob: student.student?.dob || student.dob,
+    gender: student.student?.gender || student.gender,
+    student: student.student || student,
+    class: student.student?.class || student.class,
+    term: 'Full Record',
     year: new Date().getFullYear().toString(),
+    attendanceSummary: computeAttendance() || undefined,
+    principalComment: student.student?.principalComment || student.principalComment,
+    classTeacherComment: student.student?.classTeacherComment || student.classTeacherComment,
     grades: grades.map((g: any) => ({
-      subject: g.subject?.name,
+      subject: g.subject?.name || g.subjectName,
       grade: g.score >= 75 ? 'A' : g.score >= 60 ? 'B' : g.score >= 50 ? 'C' : g.score >= 40 ? 'D' : 'U',
       score: g.score,
-      comment: g.comment
+      comment: g.comment,
+      teacher: g.teacher
     }))
   };
 
+  const primaryColor = reportTemplate?.config?.primaryColor || user?.schoolBranding?.primaryColor || '#2563eb';
+  const logoUrl = reportTemplate?.school?.logoUrl ||
+    (user?.schoolBranding?.logo
+      ? (user.schoolBranding.logo.startsWith('http') ? user.schoolBranding.logo
+        : `${window.location.origin}/api/storage/media/global/${user.schoolBranding.logo}`)
+      : undefined);
+
   const template = {
-    config: { primaryColor: user?.schoolBranding?.primaryColor || '#2563eb' },
-    signatureUrl: user?.schoolBranding?.logo ? (
-      user.schoolBranding.logo.startsWith('http') ? user.schoolBranding.logo
-      : user.schoolBranding.logo.startsWith('/api') ? `${window.location.origin}${user.schoolBranding.logo}`
-      : `${window.location.origin}/api/storage/media/global/${user.schoolBranding.logo}`
-    ) : undefined
+    config: { primaryColor },
+    signatureUrl: reportTemplate?.signatureUrl
+      ? `${window.location.origin}${reportTemplate.signatureUrl}`
+      : logoUrl,
+    school: reportTemplate?.school || {
+      name: user?.school?.name || 'School',
+      logoUrl
+    }
   };
 
   return (

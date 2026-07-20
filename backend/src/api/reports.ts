@@ -338,14 +338,49 @@ router.post('/template', requireAuth, requireRole('SCHOOL_ADMIN'), signatureUplo
 
 /**
  * @route   GET /api/reports/template
- * @desc    Get school report template
+ * @desc    Get school report template + school branding info
  */
 router.get('/template', requireAuth, async (req: AuthRequest, res: Response) => {
   try {
-    const template = await prisma.reportTemplate.findFirst({
-      where: { schoolId: String(req.user!.schoolId!) }
-    });
-    res.json(template || { config: { primaryColor: '#3182ce' } });
+    const schoolId = String(req.user!.schoolId!);
+
+    const [template, school] = await Promise.all([
+      prisma.reportTemplate.findFirst({ where: { schoolId } }),
+      prisma.school.findUnique({
+        where: { id: schoolId },
+        select: {
+          name: true,
+          address: true,
+          type: true,
+          phone: true,
+          email: true,
+          website: true,
+          branding: true,
+          customContent: true
+        }
+      })
+    ]);
+
+    const branding = school?.branding as any;
+    const customContent = school?.customContent as any;
+
+    const enriched = {
+      ...(template || { config: { primaryColor: '#3182ce' } }),
+      school: {
+        name: school?.name || 'School',
+        address: school?.address || '',
+        type: school?.type || 'secondary',
+        phone: school?.phone || '',
+        email: school?.email || '',
+        website: school?.website || '',
+        motto: customContent?.motto || '',
+        logoUrl: branding?.logo
+          ? (branding.logo.startsWith('http') ? branding.logo : `/api/storage/media/global/${branding.logo}`)
+          : null
+      }
+    };
+
+    res.json(enriched);
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch template' });
   }
