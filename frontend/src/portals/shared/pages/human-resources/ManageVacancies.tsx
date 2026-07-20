@@ -272,7 +272,7 @@ export default function ManageVacancies() {
                           onClick={() => {
                             setEditingId(vacancy.id);
                             // Set form values
-                            const requiredFields = vacancy.requiredFields ? JSON.parse(vacancy.requiredFields as any) : [];
+                            const requiredFields = (vacancy as any).requiredFields ? JSON.parse((vacancy as any).requiredFields) : [];
                             reset({
                               ...vacancy,
                               startDate: vacancy.startDate ? format(new Date(vacancy.startDate), 'yyyy-MM-dd') : '',
