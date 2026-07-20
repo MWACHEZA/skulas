@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, BorderStyle } from 'docx';
+import { saveAs } from 'file-saver';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../../../contexts/AuthContext';
 import { useToast } from '../../../../context/ToastContext';
@@ -83,120 +85,309 @@ export default function ManageCBT() {
     } catch (e) { console.error(e); }
   };
 
-  const handlePrintExam = () => {
-    if (!previewData) return;
-
+  // ─── Shared: build the exam HTML for print/PDF ───────────────────────────
+  const buildExamHtml = (forPrint = false): string => {
     const pBuiltin = PAPER_BUILTIN.find(p => p.id === templateConfig?.paperDesign) || PAPER_BUILTIN[0];
     const pColor = pBuiltin.color;
-    const logoUrl = templateConfig?.paperLogo || templateConfig?.consultationLogo || previewData.school?.logo;
-    const resolvedLogo = logoUrl
-      ? (logoUrl.startsWith('/api') || logoUrl.startsWith('http') ? logoUrl : `/api/storage/file/${logoUrl}`)
+
+    // School logo: try branding JSON first, then templateConfig overrides
+    const branding = previewData.school?.branding as any;
+    const rawLogo = templateConfig?.paperLogo || templateConfig?.consultationLogo
+      || branding?.logo || previewData.school?.logo || null;
+    const logoSrc = rawLogo
+      ? (rawLogo.startsWith('http') ? rawLogo
+        : rawLogo.startsWith('/api') ? `${window.location.origin}${rawLogo}`
+        : `${window.location.origin}/api/storage/file/${rawLogo}`)
       : null;
 
-    // Build question rows
-    const questionsHtml = (previewData.questions || []).map((q: any, idx: number) => {
-      const optionsHtml = q.options && q.options.length > 0
-        ? `<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-left:1rem;margin-top:8px">
-            ${q.options.map((opt: string, i: number) =>
-              `<div>${String.fromCharCode(65 + i)}) ${opt || '_________'}</div>`
-            ).join('')}
-           </div>`
-        : (q.type !== 'True or false'
-            ? `<div style="border-bottom:1px dotted #ccc;height:80px;margin:10px 0"></div>`
-            : '');
+    // Group questions by page number (as set during exam creation)
+    const questions: any[] = previewData.questions || [];
+    const pageMap: Record<number, any[]> = {};
+    questions.forEach(q => {
+      const pg = q.page || 1;
+      if (!pageMap[pg]) pageMap[pg] = [];
+      pageMap[pg].push(q);
+    });
+    const pageNumbers = Object.keys(pageMap).map(Number).sort((a, b) => a - b);
+    const totalPages = pageNumbers.length;
 
-      const imageHtml = q.imageUrl
-        ? `<div style="margin-bottom:12px"><img src="${q.imageUrl}" alt="figure" style="max-width:100%;max-height:260px" /></div>`
-        : '';
+    // Build each printed page
+    const pagesHtml = pageNumbers.map((pageNum, pageIdx) => {
+      const pageQuestions = pageMap[pageNum];
 
-      return `
-        <div style="margin-bottom:1.8rem;display:flex;gap:14px;page-break-inside:avoid">
-          <div style="font-weight:800;min-width:24px">${idx + 1}.</div>
-          <div style="flex:1">
-            <p style="white-space:pre-wrap;margin:0 0 8px;font-size:1.05rem">${q.question || '____________________________________________________?'}</p>
-            ${imageHtml}
-            ${optionsHtml}
-            <div style="text-align:right;font-weight:700;font-style:italic;font-size:0.9rem;margin-top:6px">[${q.mark} mark${q.mark > 1 ? 's' : ''}]</div>
+      // Group by section within this page
+      const sectionMap: Record<string, any[]> = {};
+      pageQuestions.forEach((q: any) => {
+        const sec = q.section || '';
+        if (!sectionMap[sec]) sectionMap[sec] = [];
+        sectionMap[sec].push(q);
+      });
+
+      const sectionsHtml = Object.entries(sectionMap).map(([sectionName, qs]) => {
+        const sectionHeader = sectionName
+          ? `<div style="text-align:center;font-weight:800;font-size:1.15rem;text-decoration:underline;margin:1.2rem 0 1rem;text-transform:uppercase">${sectionName}</div>`
+          : '';
+
+        const questionsHtml = qs.map((q: any) => {
+          const globalIdx = questions.findIndex((gq: any) => gq.id === q.id) + 1;
+          const optionsHtml = q.options && q.options.length > 0
+            ? `<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-left:1rem;margin-top:8px">${
+                q.options.map((opt: string, i: number) =>
+                  `<div>${String.fromCharCode(65 + i)}) ${opt || '_________'}</div>`
+                ).join('')}</div>`
+            : (q.type !== 'True or false'
+                ? `<div style="border-bottom:1px dotted #ccc;height:70px;margin:10px 0"></div>`
+                : `<div style="margin-top:8px;display:flex;gap:2rem"><span>A) True</span><span>B) False</span></div>`);
+
+          const imageHtml = q.imageUrl
+            ? `<div style="margin-bottom:12px"><img src="${q.imageUrl}" alt="figure" style="max-width:100%;max-height:260px"/></div>`
+            : '';
+
+          return `<div style="margin-bottom:1.8rem;display:flex;gap:14px;page-break-inside:avoid">
+            <div style="font-weight:800;min-width:28px">${globalIdx}.</div>
+            <div style="flex:1">
+              <p style="white-space:pre-wrap;margin:0 0 8px;font-size:1.05rem">${q.question}</p>
+              ${imageHtml}${optionsHtml}
+              <div style="text-align:right;font-weight:700;font-style:italic;font-size:0.85rem;margin-top:6px">[${q.mark} mark${q.mark > 1 ? 's' : ''}]</div>
+            </div>
+          </div>`;
+        }).join('');
+
+        return sectionHeader + questionsHtml;
+      }).join('');
+
+      // Page 1 includes the cover header + instructions
+      const isCoverPage = pageIdx === 0;
+      const coverHtml = isCoverPage ? `
+        <div style="text-align:center;margin-bottom:2rem;border-top:8px solid ${pColor};padding-top:1.5rem;border-bottom:2px solid ${pColor};padding-bottom:1.5rem">
+          ${logoSrc ? `<img src="${logoSrc}" alt="Logo" style="height:90px;margin-bottom:12px;display:block;margin-left:auto;margin-right:auto" crossorigin="anonymous"/>` : ''}
+          <h1 style="font-size:2.2rem;text-transform:uppercase;letter-spacing:1px;color:${pColor};margin-bottom:8px">${previewData.school?.name || 'SCHOOL NAME'}</h1>
+          <h2 style="font-size:1.6rem;text-transform:uppercase;margin-bottom:16px">${previewData.title || 'Untitled CBT Exam'}</h2>
+          <div style="display:flex;justify-content:center;gap:3rem;font-size:1rem;font-weight:600">
+            <span>SUBJECT: ${previewData.subject?.name || '_________'}</span>
+            <span>DATE: ${new Date(previewData.date).toLocaleDateString()}</span>
+            <span>TIME: ${previewData.time}</span>
           </div>
-        </div>`;
+          <div style="margin-top:0.8rem;font-weight:800">PASSING PERCENT: ${previewData.passingPercent}%</div>
+        </div>
+        <div style="margin-bottom:1.5rem">
+          <h3 style="font-size:1rem;font-weight:800;text-decoration:underline;margin-bottom:6px">INSTRUCTIONS TO CANDIDATES</h3>
+          ${previewData.instructions
+            ? `<p style="font-size:0.98rem;white-space:pre-wrap;line-height:1.6">${previewData.instructions}</p>`
+            : `<ul style="padding-left:20px;line-height:1.8;font-size:0.98rem">
+                 <li>Read each question carefully before answering.</li>
+                 <li>For multiple-choice questions, select the best possible option.</li>
+                 <li>Total questions: ${questions.length}</li>
+               </ul>`}
+        </div>
+        <hr style="border:none;border-bottom:1px dashed #999;margin:1rem 0"/>
+      ` : `
+        <div style="text-align:center;margin-bottom:1rem;border-bottom:1px solid ${pColor};padding-bottom:0.5rem">
+          <strong>${previewData.school?.name || 'SCHOOL NAME'}</strong> &bull;
+          <em>${previewData.title}</em> &bull; Page ${pageNum} of ${totalPages}
+        </div>
+      `;
+
+      const isLastPage = pageIdx === pageNumbers.length - 1;
+      const pageBreak = !isLastPage ? 'page-break-after:always;' : '';
+
+      return `<div style="${pageBreak}">${coverHtml}${sectionsHtml}</div>`;
     }).join('');
 
-    const html = `<!DOCTYPE html>
+    const endFooter = `
+      <div style="text-align:center;margin-top:3rem;font-weight:800;border-top:1px solid #000;padding-top:1rem">--- END OF EXAMINATION ---</div>
+      <div style="text-align:center;font-size:0.78rem;color:#555;margin-top:1rem">
+        ${[previewData.school?.name, previewData.school?.address, previewData.school?.phone, previewData.school?.email].filter(Boolean).join(' \u2022 ')}
+      </div>`;
+
+    return `<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <title>${previewData.title || 'Exam'}</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: "Times New Roman", Times, serif; color: #000; background: #fff; padding: 2cm; }
-    h1, h2, h3, h4 { font-family: "Times New Roman", Times, serif; }
-    @page { margin: 2cm; }
-    @media print {
-      body { padding: 0; }
-    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:"Times New Roman",Times,serif;color:#000;background:#fff;${forPrint ? '' : 'padding:2cm'}}
+    @page{margin:2cm}
+    @media print{body{padding:0}}
   </style>
 </head>
-<body>
-  <!-- HEADER -->
-  <div style="text-align:center;margin-bottom:2.5rem;border-top:8px solid ${pColor};padding-top:1.5rem;border-bottom:2px solid ${pColor};padding-bottom:1.5rem">
-    ${resolvedLogo ? `<img src="${window.location.origin}${resolvedLogo.startsWith('/') ? resolvedLogo : '/' + resolvedLogo}" alt="Logo" style="height:90px;margin-bottom:12px;display:block;margin-left:auto;margin-right:auto" />` : ''}
-    <h1 style="font-size:2.2rem;text-transform:uppercase;letter-spacing:1px;color:${pColor};margin-bottom:8px">${previewData.school?.name || 'SCHOOL NAME'}</h1>
-    <h2 style="font-size:1.6rem;text-transform:uppercase;margin-bottom:16px">${previewData.title || 'Untitled CBT Exam'}</h2>
-    <div style="display:flex;justify-content:center;gap:3rem;font-size:1.05rem;font-weight:600">
-      <span>SUBJECT: ${previewData.subject?.name || '_________'}</span>
-      <span>DATE: ${new Date(previewData.date).toLocaleDateString()}</span>
-      <span>TIME: ${previewData.time}</span>
-    </div>
-    <div style="margin-top:1rem;font-weight:800;font-size:1.1rem">PASSING PERCENT: ${previewData.passingPercent}%</div>
-  </div>
-
-  <!-- INSTRUCTIONS -->
-  <div style="margin-bottom:1.8rem">
-    <h3 style="font-size:1rem;font-weight:800;text-decoration:underline;margin-bottom:8px">INSTRUCTIONS TO CANDIDATES</h3>
-    ${previewData.instructions
-      ? `<p style="font-size:1rem;white-space:pre-wrap;line-height:1.6">${previewData.instructions}</p>`
-      : `<ul style="padding-left:20px;line-height:1.8;font-size:1rem">
-           <li>Read each question carefully before answering.</li>
-           <li>For multiple-choice questions, select the best possible option.</li>
-           <li>Total questions: ${previewData.questions?.length || 0}</li>
-         </ul>`
-    }
-  </div>
-
-  <hr style="border:none;border-bottom:1px dashed #aaa;margin:1.5rem 0" />
-
-  <!-- QUESTIONS -->
-  ${questionsHtml}
-
-  <!-- END -->
-  <div style="text-align:center;margin-top:3rem;font-weight:800;border-top:1px solid #000;padding-top:1rem">--- END OF EXAMINATION ---</div>
-
-  <!-- FOOTER -->
-  <div style="text-align:center;font-size:0.8rem;color:#555;margin-top:2rem">
-    ${[previewData.school?.name, previewData.school?.address, previewData.school?.phone, previewData.school?.email].filter(Boolean).join(' | ')}
-  </div>
-</body>
+<body>${pagesHtml}${endFooter}</body>
 </html>`;
+  };
 
+  // ─── Print ────────────────────────────────────────────────────────────────
+  const handlePrintExam = () => {
+    if (!previewData) return;
+    const html = buildExamHtml(true);
     const printWin = window.open('', '_blank', 'width=900,height=700');
-    if (!printWin) {
-      alert('Pop-up was blocked. Please allow pop-ups for this site and try again.');
-      return;
-    }
+    if (!printWin) { alert('Pop-up blocked. Please allow pop-ups for this site.'); return; }
     printWin.document.write(html);
     printWin.document.close();
     printWin.focus();
-    // Give images time to load before printing
-    printWin.onload = () => {
-      setTimeout(() => {
-        printWin.print();
-        printWin.close();
-      }, 300);
+    printWin.onload = () => setTimeout(() => { printWin.print(); printWin.close(); }, 400);
+    setTimeout(() => { try { printWin.print(); printWin.close(); } catch (_) {} }, 1200);
+  };
+
+  // ─── Download PDF ─────────────────────────────────────────────────────────
+  const [generatingPdf, setGeneratingPdf] = useState(false);
+  const handleDownloadPDF = () => {
+    if (!previewData || generatingPdf) return;
+    const html = buildExamHtml(false);
+    const printWin = window.open('', '_blank', 'width=900,height=700');
+    if (!printWin) { alert('Pop-up blocked. Please allow pop-ups for this site.'); return; }
+    setGeneratingPdf(true);
+    printWin.document.write(html);
+    printWin.document.close();
+    printWin.focus();
+    const cleanup = () => { setGeneratingPdf(false); };
+    const doPrint = () => {
+      // Trigger browser Save as PDF dialog
+      printWin.print();
+      setTimeout(() => { try { printWin.close(); } catch (_) {} cleanup(); }, 1000);
     };
-    // Fallback if onload doesn't fire (no images)
-    setTimeout(() => {
-      try { printWin.print(); printWin.close(); } catch (_) {}
-    }, 800);
+    printWin.onload = () => setTimeout(doPrint, 400);
+    setTimeout(doPrint, 1500);
+  };
+
+  // ─── Download Word (.docx) ────────────────────────────────────────────────
+  const [generatingWord, setGeneratingWord] = useState(false);
+  const handleDownloadWord = async () => {
+    if (!previewData || generatingWord) return;
+    setGeneratingWord(true);
+    try {
+      const questions: any[] = previewData.questions || [];
+      const branding = previewData.school?.branding as any;
+      const schoolName = previewData.school?.name || 'SCHOOL NAME';
+
+      // Group by page then section (same logic as HTML builder)
+      const pageMap: Record<number, any[]> = {};
+      questions.forEach((q: any) => {
+        const pg = q.page || 1;
+        if (!pageMap[pg]) pageMap[pg] = [];
+        pageMap[pg].push(q);
+      });
+      const pageNumbers = Object.keys(pageMap).map(Number).sort((a, b) => a - b);
+
+      const children: any[] = [];
+
+      // Cover info
+      children.push(
+        new Paragraph({ text: schoolName, heading: HeadingLevel.HEADING_1, alignment: AlignmentType.CENTER }),
+        new Paragraph({ text: previewData.title || 'Untitled Exam', heading: HeadingLevel.HEADING_2, alignment: AlignmentType.CENTER }),
+        new Paragraph({
+          children: [
+            new TextRun({ text: `Subject: ${previewData.subject?.name || ''}   `, bold: true }),
+            new TextRun({ text: `Date: ${new Date(previewData.date).toLocaleDateString()}   `, bold: true }),
+            new TextRun({ text: `Time: ${previewData.time}`, bold: true }),
+          ],
+          alignment: AlignmentType.CENTER,
+          spacing: { after: 200 },
+        }),
+        new Paragraph({
+          children: [new TextRun({ text: `Passing Percentage: ${previewData.passingPercent}%`, bold: true })],
+          alignment: AlignmentType.CENTER,
+          spacing: { after: 300 },
+        }),
+        new Paragraph({ text: 'INSTRUCTIONS TO CANDIDATES', heading: HeadingLevel.HEADING_3, spacing: { before: 200, after: 100 } }),
+      );
+
+      if (previewData.instructions) {
+        children.push(new Paragraph({ text: previewData.instructions, spacing: { after: 300 } }));
+      } else {
+        ['Read each question carefully before answering.',
+         'For multiple-choice questions, select the best possible option.',
+         `Total questions: ${questions.length}`
+        ].forEach(line => children.push(new Paragraph({ text: `• ${line}`, spacing: { after: 80 } })));
+        children.push(new Paragraph({ spacing: { after: 200 } }));
+      }
+
+      // Pages
+      pageNumbers.forEach((pageNum, pageIdx) => {
+        if (pageIdx > 0) {
+          // Page break before each new exam page
+          children.push(new Paragraph({ pageBreakBefore: true }));
+          children.push(new Paragraph({
+            children: [new TextRun({ text: `${schoolName}  •  ${previewData.title}  •  Page ${pageNum} of ${pageNumbers.length}`, italics: true, size: 18 })],
+            alignment: AlignmentType.CENTER,
+            spacing: { after: 200 },
+            border: { bottom: { style: BorderStyle.SINGLE, size: 6, color: '000000' } },
+          }));
+        }
+
+        const pageQuestions = pageMap[pageNum];
+        const sectionMap: Record<string, any[]> = {};
+        pageQuestions.forEach((q: any) => {
+          const sec = q.section || '';
+          if (!sectionMap[sec]) sectionMap[sec] = [];
+          sectionMap[sec].push(q);
+        });
+
+        Object.entries(sectionMap).forEach(([sectionName, qs]) => {
+          if (sectionName) {
+            children.push(new Paragraph({
+              children: [new TextRun({ text: sectionName.toUpperCase(), bold: true, underline: {} })],
+              alignment: AlignmentType.CENTER,
+              spacing: { before: 200, after: 160 },
+            }));
+          }
+
+          qs.forEach((q: any) => {
+            const globalIdx = questions.findIndex((gq: any) => gq.id === q.id) + 1;
+            // Question text
+            children.push(new Paragraph({
+              children: [
+                new TextRun({ text: `${globalIdx}. `, bold: true }),
+                new TextRun({ text: q.question || '' }),
+                new TextRun({ text: `  [${q.mark} mark${q.mark > 1 ? 's' : ''}]`, italics: true, color: '555555' }),
+              ],
+              spacing: { before: 160, after: 80 },
+            }));
+
+            // Options
+            if (q.options && q.options.length > 0) {
+              q.options.forEach((opt: string, i: number) => {
+                children.push(new Paragraph({
+                  children: [new TextRun({ text: `    ${String.fromCharCode(65 + i)}) ${opt || '_________'}` })],
+                  spacing: { after: 40 },
+                }));
+              });
+              children.push(new Paragraph({ spacing: { after: 80 } }));
+            } else if (q.type === 'True or false') {
+              children.push(new Paragraph({ children: [new TextRun({ text: '    A) True          B) False' })], spacing: { after: 120 } }));
+            } else {
+              // Answer line
+              children.push(new Paragraph({ children: [new TextRun({ text: '    Answer: _______________________________' })], spacing: { after: 120 } }));
+            }
+          });
+        });
+      });
+
+      // End
+      children.push(
+        new Paragraph({ text: '--- END OF EXAMINATION ---', alignment: AlignmentType.CENTER, spacing: { before: 400 }, border: { top: { style: BorderStyle.SINGLE, size: 6, color: '000000' } } }),
+        new Paragraph({
+          children: [new TextRun({ text: [previewData.school?.name, previewData.school?.address, previewData.school?.phone, previewData.school?.email].filter(Boolean).join(' • '), size: 16, color: '555555' })],
+          alignment: AlignmentType.CENTER,
+          spacing: { before: 120 },
+        })
+      );
+
+      const doc = new Document({
+        sections: [{ properties: {}, children }],
+        creator: schoolName,
+        title: previewData.title || 'Exam',
+        description: `CBT Exam - ${previewData.subject?.name}`,
+      });
+
+      const blob = await Packer.toBlob(doc);
+      saveAs(blob, `${(previewData.title || 'exam').replace(/\s+/g, '_')}.docx`);
+    } catch (err) {
+      console.error('Word export error:', err);
+      alert('Failed to generate Word document. Please try again.');
+    } finally {
+      setGeneratingWord(false);
+    }
   };
 
   useEffect(() => {
@@ -568,9 +759,15 @@ export default function ManageCBT() {
               <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 900, color: '#1e293b' }}>
                 <i className="fas fa-eye mr-2"></i> Exam Preview
               </h2>
-              <div style={{ display: 'flex', gap: '12px' }}>
-                <button onClick={handlePrintExam} className="portal-btn-secondary" style={{ padding: '8px 16px', fontSize: '0.9rem' }}>
-                  <i className="fas fa-print mr-2"></i> Print
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <button onClick={handlePrintExam} className="portal-btn-secondary" style={{ padding: '7px 14px', fontSize: '0.85rem' }} title="Print exam">
+                  <i className="fas fa-print mr-1"></i> Print
+                </button>
+                <button onClick={handleDownloadPDF} disabled={generatingPdf} className="portal-btn-secondary" style={{ padding: '7px 14px', fontSize: '0.85rem', background: '#dc2626', borderColor: '#dc2626', color: 'white' }} title="Download as PDF">
+                  {generatingPdf ? <><i className="fas fa-spinner fa-spin mr-1"></i> PDF…</> : <><i className="fas fa-file-pdf mr-1"></i> PDF</>}
+                </button>
+                <button onClick={handleDownloadWord} disabled={generatingWord} className="portal-btn-secondary" style={{ padding: '7px 14px', fontSize: '0.85rem', background: '#2563eb', borderColor: '#2563eb', color: 'white' }} title="Download as Word (.docx)">
+                  {generatingWord ? <><i className="fas fa-spinner fa-spin mr-1"></i> Word…</> : <><i className="fas fa-file-word mr-1"></i> Word</>}
                 </button>
                 <button onClick={() => setPreviewExamId(null)} className="portal-btn-ghost" style={{ padding: '8px', fontSize: '1.2rem', color: '#64748b' }}>
                   <i className="fas fa-times"></i>
