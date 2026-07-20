@@ -1,10 +1,13 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../../../lib/api';
 import { toast } from 'react-hot-toast';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import { createRoot } from 'react-dom/client';
+import { flushSync } from 'react-dom';
 import '../../../styles/portal.css';
+import InstitutionalReportDocument from '../../../components/portals/shared/InstitutionalReportDocument';
 
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
@@ -19,6 +22,7 @@ export default function ReportViewerPage() {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
+  const [reportTemplate, setReportTemplate] = useState<any>(null);
   const itemsPerPage = 10;
   const [filters, setFilters] = useState({ 
     from: '', to: '', categoryId: '', paymentMode: '', allocationId: '', classId: '',
@@ -39,6 +43,7 @@ export default function ReportViewerPage() {
   useEffect(() => {
     fetchData();
     fetchOptions();
+    api.get('/api/reports/template').then(r => setReportTemplate(r.data)).catch(() => {});
   }, [type]);
 
   const fetchOptions = async () => {
@@ -173,28 +178,391 @@ export default function ReportViewerPage() {
     const a = document.createElement('a'); a.href = url; a.download = `${type}-report.doc`; a.click();
   };
 
+  const getColumns = () => {
+    const fmt$ = (v: any) => v != null ? `$${Number(v).toLocaleString()}` : '$0';
+    const fmtDate = (v: any) => v ? new Date(v).toLocaleDateString() : 'â€”';
+    switch (type) {
+      case 'student-balances': return [
+        { label: 'Student', key: 'name' },
+        { label: 'Class', key: 'className' },
+        { label: 'Total Balance', key: 'totalBalance', align: 'right', format: fmt$ }
+      ];
+      case 'single-fee-group': return [
+        { label: 'Student', key: 'name' },
+        { label: 'Class', key: 'className' },
+        { label: 'Allocated', key: 'amount', align: 'right', format: fmt$ },
+        { label: 'Paid', key: 'paid', align: 'right', format: fmt$ },
+        { label: 'Balance', key: 'balance', align: 'right', format: fmt$ }
+      ];
+      case 'balances-summary': return [
+        { label: 'Fee Group', key: 'name' },
+        { label: 'Students', key: 'students', align: 'center' },
+        { label: 'Allocated', key: 'allocated', align: 'right', format: fmt$ },
+        { label: 'Paid', key: 'paid', align: 'right', format: fmt$ },
+        { label: 'Outstanding', key: 'collectible', align: 'right', format: fmt$ }
+      ];
+      case 'student-debtors': return [
+        { label: 'Student', key: 'name' },
+        { label: 'Class', key: 'className' },
+        { label: 'Phone', key: 'phone' },
+        { label: 'Outstanding', key: 'balance', align: 'right', format: fmt$ }
+      ];
+      case 'fees-takings': return [
+        { label: 'Student', key: 'studentName' },
+        { label: 'Class', key: 'className' },
+        { label: 'Mode', key: 'mode' },
+        { label: 'Amount', key: 'amount', align: 'right', format: fmt$ },
+        { label: 'Captured By', key: 'capturedBy' }
+      ];
+      case 'fees-payments': return [
+        { label: 'Date', key: 'date', format: fmtDate },
+        { label: 'Student', key: 'studentName' },
+        { label: 'Class', key: 'className' },
+        { label: 'Fee Group', key: 'feeGroup' },
+        { label: 'Mode', key: 'mode' },
+        { label: 'Amount', key: 'amount', align: 'right', format: fmt$ }
+      ];
+      case 'payments-analytics': return [
+        { label: 'Receipt', key: 'receipt' },
+        { label: 'Fee Group', key: 'group' },
+        { label: 'Date', key: 'date', format: fmtDate },
+        { label: 'Mode', key: 'mode' },
+        { label: 'Amount', key: 'usd', align: 'right', format: fmt$ }
+      ];
+      case 'payroll-runs': return [
+        { label: 'Run ID', key: 'id', format: (v: any) => v?.slice(-8) || 'â€”' },
+        { label: 'Date', key: 'runDate', format: fmtDate },
+        { label: 'Period', key: 'month', format: (_: any, row: any) => `${row?.month}/${row?.year}` },
+        { label: 'Employees', key: 'employeesCount', align: 'center' },
+        { label: 'Total Net', key: 'totalNet', align: 'right', format: fmt$ }
+      ];
+      case 'employee-payslips': return [
+        { label: 'Employee', key: 'employeeName' },
+        { label: 'Period', key: 'payrollRun', format: (_: any, row: any) => `${row?.payrollRun?.month}/${row?.payrollRun?.year}` },
+        { label: 'Gross', key: 'grossSalary', align: 'right', format: fmt$ },
+        { label: 'Tax', key: 'taxAmount', align: 'right', format: fmt$ },
+        { label: 'Net', key: 'netSalary', align: 'right', format: fmt$ }
+      ];
+      case 'tax-contributions': return [
+        { label: 'Period', key: 'period' },
+        { label: 'Employees', key: 'employees', align: 'center' },
+        { label: 'PAYE', key: 'totalPAYE', align: 'right', format: fmt$ },
+        { label: 'Aids Levy', key: 'totalAidsLevy', align: 'right', format: fmt$ }
+      ];
+      case 'detailed-expenses': return [
+        { label: 'Description', key: 'description' },
+        { label: 'Category', key: 'category.name' },
+        { label: 'Mode', key: 'paymentMode' },
+        { label: 'Amount', key: 'amount', align: 'right', format: fmt$ },
+        { label: 'Date', key: 'date', format: fmtDate }
+      ];
+      case 'profit-loss': return [
+        { label: 'Narrative', key: 'description' },
+        { label: 'Income', key: 'income', align: 'right', format: fmt$ },
+        { label: 'Expense', key: 'expense', align: 'right', format: fmt$ },
+        { label: 'Balance', key: 'balance', align: 'right', format: fmt$ }
+      ];
+      case 'enrollment-grouped': return [
+        { label: 'Name', key: 'name' },
+        { label: 'Surname', key: 'surname' },
+        { label: 'Gender', key: 'gender' },
+        { label: 'Class', key: 'className' },
+        { label: 'Category', key: 'category' }
+      ];
+      case 'grocery-consumption': return [
+        { label: 'Item', key: 'product.name' },
+        { label: 'Date', key: 'date', format: fmtDate },
+        { label: 'Quantity', key: 'quantity', align: 'center' },
+        { label: 'Unit', key: 'unit' },
+        { label: 'Recorded By', key: 'recordedBy' }
+      ];
+      case 'uniforms-analytics': return [
+        { label: 'Date', key: 'date', format: fmtDate },
+        { label: 'Customer', key: 'student' },
+        { label: 'Mode', key: 'paymentMode' },
+        { label: 'Items', key: 'itemsCount', format: (v: any) => `${v} items` },
+        { label: 'Total', key: 'total', align: 'right', format: fmt$ }
+      ];
+      case 'audit-logs': return [
+        { label: 'Action', key: 'action' },
+        { label: 'Actor', key: 'actor.name' },
+        { label: 'Time', key: 'createdAt', format: (v: any) => v ? new Date(v).toLocaleString() : 'â€”' }
+      ];
+      case 'communication-logs': return [
+        { label: 'Time', key: 'createdAt', format: (v: any) => v ? new Date(v).toLocaleString() : 'â€”' },
+        { label: 'Student', key: 'student.name' },
+        { label: 'Channel', key: 'type' },
+        { label: 'Status', key: 'status' }
+      ];
+      case 'fee-reminders': return [
+        { label: 'Time', key: 'createdAt', format: (v: any) => v ? new Date(v).toLocaleString() : 'â€”' },
+        { label: 'Student', key: 'student.name' },
+        { label: 'Channel', key: 'type' },
+        { label: 'Status', key: 'status' }
+      ];
+      case 'revenue-allocation': return [
+        { label: 'Target', key: 'label' },
+        { label: 'Percentage', key: 'percentage', align: 'center', format: (v: any) => `${v}%` },
+        { label: 'Allocated', key: 'allocatedAmount', align: 'right', format: fmt$ }
+      ];
+      default: {
+        const rows = Array.isArray(data) ? data : (data?.records || data?.list || []);
+        if (!rows.length) return [];
+        return Object.keys(rows[0]).filter(k => typeof rows[0][k] !== 'object').map(k => ({ label: k, key: k }));
+      }
+    }
+  };
+
+
+  const renderVisualizations = (isExport: boolean = false) => {
+    if (!(['student-balances','single-fee-group','balances-summary','student-debtors','fees-payments','fees-takings',
+             'enrollment-grouped','profit-loss','detailed-expenses','revenue-allocation','grocery-consumption',
+             'payroll-runs','employee-payslips','uniforms-analytics','fee-reminders'].includes(type || ''))) return null;
+    if (!data) return null;
+
+            const records = Array.isArray(data) ? data : (data?.records || data?.list || data?.breakdown || data?.detailed || []);
+            const CC = ['#2563eb','#10b981','var(--portal-danger)','#8b5cf6','#f59e0b','#06b6d4','#ec4899','#f97316'];
+            const ttStyle = { borderRadius: '12px', border: '1px solid #f1f5f9' };
+            const chartCard = (title: string, children: React.ReactNode) => (
+              <div style={{ background: 'transparent', padding: '24px' }}>
+                <p style={{ margin: '0 0 16px', fontWeight: 900, fontSize: '0.85rem', color: '#475569', textTransform: 'uppercase', letterSpacing: '1px' }}>{title}</p>
+                <div style={{ height: '260px' }}>{children}</div>
+              </div>
+            );
+            const gradDef = (id: string, color: string) => <defs><linearGradient id={id} x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={color} stopOpacity={0.18} /><stop offset="95%" stopColor={color} stopOpacity={0} /></linearGradient></defs>;
+            const vizWrap = (icon: string, color: string, title: string, children: React.ReactNode) => (
+              <div style={{ padding: '32px', background: 'transparent' }}>
+                <h3 style={{ marginBottom: '28px', fontSize:'1.1rem', fontWeight:900, color:'#1e293b' }}>
+                  <i className={`fas ${icon} mr-3`} style={{color}} /> {title}
+                </h3>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '24px' }}>{children}</div>
+              </div>
+            );
+
+            const byClass: Record<string,{paid:number,balance:number,count:number}> = {};
+            records.forEach((r: any) => {
+              const cls = r.className || r.class || 'Unknown';
+              if (!byClass[cls]) byClass[cls] = { paid:0, balance:0, count:0 };
+              byClass[cls].paid += r.paid || r.amount || 0;
+              byClass[cls].balance += r.balance || r.collectible || r.outstanding || 0;
+              byClass[cls].count += 1;
+            });
+            const classData = Object.entries(byClass).map(([name,v]) => ({ name, ...v }));
+            const totalPaid = records.reduce((s: number, r: any) => s + (r.paid || r.amount || 0), 0);
+            const totalBalance = records.reduce((s: number, r: any) => s + (r.balance || r.collectible || r.outstanding || 0), 0);
+            const donutData = [
+              { name: 'Paid', value: totalPaid },
+              { name: 'Outstanding', value: totalBalance }
+            ];
+            const top10 = [...records].sort((a:any,b:any) => (b.balance||b.collectible||b.outstanding||0) - (a.balance||a.collectible||a.outstanding||0)).slice(0,10);
+            const top10Data = top10.map((r:any) => ({ name: r.studentName||r.name||r.feeGroup||'?', value: r.balance||r.collectible||r.outstanding||r.amount||0 }));
+            // Group by fee group or date for trend
+            const trendMap: Record<string,number> = {};
+            records.forEach((r:any) => { const k = r.feeGroup||r.name||r.date?.slice(0,7)||'?'; trendMap[k] = (trendMap[k]||0) + (r.amount||r.paid||r.collectible||0); });
+            const trendData = Object.entries(trendMap).map(([name,value]) => ({ name, value })).slice(0,12);
+            // â”€â”€â”€ Enrollment Grouped â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+            if (type === 'enrollment-grouped') {
+              const byClass: Record<string,{male:number,female:number}> = {};
+              records.forEach((r:any) => { const cls = r.className||'Unknown'; if (!byClass[cls]) byClass[cls]={male:0,female:0}; if(r.gender==='Male') byClass[cls].male++; else byClass[cls].female++; });
+              const cd = Object.entries(byClass).map(([name,v]) => ({name,...v}));
+              const gd = [{name:'Male',value:records.filter((r:any)=>r.gender==='Male').length},{name:'Female',value:records.filter((r:any)=>r.gender==='Female').length}];
+              const t10 = Object.entries(byClass).map(([name,v])=>({name,value:v.male+v.female})).sort((a,b)=>b.value-a.value).slice(0,10);
+              const catM: Record<string,number>={}; records.forEach((r:any)=>{ const k=r.category||'Unknown'; catM[k]=(catM[k]||0)+1; });
+              const catD = Object.entries(catM).map(([name,value])=>({name,value}));
+              return vizWrap('fa-users','#10b981','Enrollment Visualizations',<>
+                {chartCard('By Class (M/F)',<ResponsiveContainer width="100%" height="100%"><BarChart data={cd} margin={{top:4,right:8,bottom:0,left:0}}><CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" /><XAxis dataKey="name" fontSize={9} tick={{fill:'#94a3b8'}} /><YAxis fontSize={10} tick={{fill:'#94a3b8'}} /><Tooltip contentStyle={ttStyle} /><Legend /><Bar isAnimationActive={!isExport} dataKey="male" name="Male" fill="#3b82f6" radius={[4,4,0,0]} /><Bar isAnimationActive={!isExport} dataKey="female" name="Female" fill="#ec4899" radius={[4,4,0,0]} /></BarChart></ResponsiveContainer>)}
+                {chartCard('Gender Ratio',<ResponsiveContainer width="100%" height="100%"><PieChart><Pie isAnimationActive={!isExport} data={gd} dataKey="value" nameKey="name" innerRadius={70} outerRadius={110} paddingAngle={4}><Cell fill="#3b82f6" /><Cell fill="#ec4899" /></Pie><Tooltip contentStyle={ttStyle} /><Legend /></PieChart></ResponsiveContainer>)}
+                {chartCard('Top 10 Classes',<ResponsiveContainer width="100%" height="100%"><BarChart data={t10} layout="vertical" margin={{top:0,right:16,bottom:0,left:0}}><CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f1f5f9" /><XAxis type="number" fontSize={10} tick={{fill:'#94a3b8'}} /><YAxis type="category" dataKey="name" fontSize={9} tick={{fill:'#64748b'}} width={80} /><Tooltip contentStyle={ttStyle} /><Bar isAnimationActive={!isExport} dataKey="value" name="Students" fill="#10b981" radius={[0,4,4,0]}>{t10.map((_: any, i: number)=><Cell key={i} fill={CC[i%CC.length]} />)}</Bar></BarChart></ResponsiveContainer>)}
+                {chartCard('By Category',<ResponsiveContainer width="100%" height="100%"><AreaChart data={catD} margin={{top:4,right:8,bottom:0,left:0}}>{gradDef('cGr','#10b981')}<CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" /><XAxis dataKey="name" fontSize={10} tick={{fill:'#94a3b8'}} /><YAxis fontSize={10} tick={{fill:'#94a3b8'}} /><Tooltip contentStyle={ttStyle} /><Area isAnimationActive={!isExport} type="monotone" dataKey="value" name="Students" stroke="#10b981" strokeWidth={2.5} fill="url(#cGr)" dot={{r:4,fill:'#10b981'}} /></AreaChart></ResponsiveContainer>)}
+              </>);
+            }
+            // â”€â”€â”€ Profit & Loss â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+            if (type === 'profit-loss') {
+              const bk = Array.isArray(data?.breakdown) ? data.breakdown : records;
+              const bd = bk.map((r:any)=>({name:(r.description||'?').slice(0,14),income:r.income||r.usd||0,expense:r.expense||0}));
+              const pp = [{name:'Income',value:data?.summary?.totalIncome||0},{name:'Expenses',value:data?.summary?.totalExpenses||0}];
+              const nd = bk.map((r:any)=>({name:(r.description||'?').slice(0,14),value:(r.income||r.usd||0)-(r.expense||0)}));
+              const td = bk.map((r:any)=>({name:(r.description||'?').slice(0,12),value:r.income||r.usd||r.expense||0}));
+              return vizWrap('fa-balance-scale','var(--portal-danger)','Financial Visualizations',<>
+                {chartCard('Income vs Expenses',<ResponsiveContainer width="100%" height="100%"><BarChart data={bd} margin={{top:4,right:8,bottom:0,left:0}}><CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" /><XAxis dataKey="name" fontSize={9} tick={{fill:'#94a3b8'}} /><YAxis fontSize={10} tick={{fill:'#94a3b8'}} /><Tooltip contentStyle={ttStyle} formatter={(v:any)=>`$${Number(v).toLocaleString()}`} /><Legend /><Bar isAnimationActive={!isExport} dataKey="income" name="Income" fill="#10b981" radius={[4,4,0,0]} /><Bar isAnimationActive={!isExport} dataKey="expense" name="Expense" fill='var(--portal-danger)' radius={[4,4,0,0]} /></BarChart></ResponsiveContainer>)}
+                {chartCard('Income vs Expenses Ratio',<ResponsiveContainer width="100%" height="100%"><PieChart><Pie isAnimationActive={!isExport} data={pp} dataKey="value" nameKey="name" innerRadius={70} outerRadius={110} paddingAngle={4}><Cell fill="#10b981" /><Cell fill='var(--portal-danger)' /></Pie><Tooltip contentStyle={ttStyle} formatter={(v:any)=>`$${Number(v).toLocaleString()}`} /><Legend /></PieChart></ResponsiveContainer>)}
+                {chartCard('Net Impact per Category',<ResponsiveContainer width="100%" height="100%"><BarChart data={nd} layout="vertical" margin={{top:0,right:16,bottom:0,left:0}}><CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f1f5f9" /><XAxis type="number" fontSize={10} tick={{fill:'#94a3b8'}} /><YAxis type="category" dataKey="name" fontSize={9} tick={{fill:'#64748b'}} width={90} /><Tooltip contentStyle={ttStyle} formatter={(v:any)=>`$${Number(v).toLocaleString()}`} /><Bar isAnimationActive={!isExport} dataKey="value" name="Net" radius={[0,4,4,0]}>{nd.map((e:any,i:number)=><Cell key={i} fill={e.value>=0?'#10b981':'var(--portal-danger)'} />)}</Bar></BarChart></ResponsiveContainer>)}
+                {chartCard('Revenue & Expense Trend',<ResponsiveContainer width="100%" height="100%"><AreaChart data={td} margin={{top:4,right:8,bottom:0,left:0}}>{gradDef('pGr','var(--portal-danger)')}<CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" /><XAxis dataKey="name" fontSize={9} tick={{fill:'#94a3b8'}} /><YAxis fontSize={10} tick={{fill:'#94a3b8'}} /><Tooltip contentStyle={ttStyle} formatter={(v:any)=>`$${Number(v).toLocaleString()}`} /><Area isAnimationActive={!isExport} type="monotone" dataKey="value" name="Amount" stroke='var(--portal-danger)' strokeWidth={2.5} fill="url(#pGr)" dot={{r:4,fill:'var(--portal-danger)'}} /></AreaChart></ResponsiveContainer>)}
+              </>);
+            }
+            // â”€â”€â”€ Detailed Expenses â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+            if (type === 'detailed-expenses') {
+              const catM: Record<string,number>={}; const modeM: Record<string,number>={};
+              records.forEach((r:any)=>{ const c=r.category?.name||'Other'; catM[c]=(catM[c]||0)+(r.amount||0); const m=r.paymentMode||'Unknown'; modeM[m]=(modeM[m]||0)+(r.amount||0); });
+              const cd = Object.entries(catM).map(([name,value])=>({name,value}));
+              const md = Object.entries(modeM).map(([name,value])=>({name,value}));
+              const t10 = [...records].sort((a:any,b:any)=>(b.amount||0)-(a.amount||0)).slice(0,10).map((r:any)=>({name:(r.description||r.title||'?').slice(0,20),value:r.amount||0}));
+              const tM: Record<string,number>={}; records.forEach((r:any)=>{ const k=(r.date||'').slice(0,7)||'?'; tM[k]=(tM[k]||0)+(r.amount||0); });
+              const td = Object.entries(tM).map(([name,value])=>({name,value}));
+              return vizWrap('fa-file-invoice-dollar','var(--portal-danger)','Expense Visualizations',<>
+                {chartCard('By Category',<ResponsiveContainer width="100%" height="100%"><BarChart data={cd} margin={{top:4,right:8,bottom:0,left:0}}><CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" /><XAxis dataKey="name" fontSize={9} tick={{fill:'#94a3b8'}} /><YAxis fontSize={10} tick={{fill:'#94a3b8'}} /><Tooltip contentStyle={ttStyle} formatter={(v:any)=>`$${Number(v).toLocaleString()}`} /><Bar isAnimationActive={!isExport} dataKey="value" name="Amount" radius={[4,4,0,0]}>{cd.map((_: any, i: number)=><Cell key={i} fill={CC[i%CC.length]} />)}</Bar></BarChart></ResponsiveContainer>)}
+                {chartCard('By Payment Mode',<ResponsiveContainer width="100%" height="100%"><PieChart><Pie isAnimationActive={!isExport} data={md} dataKey="value" nameKey="name" innerRadius={65} outerRadius={105} paddingAngle={4}>{md.map((_: any, i: number)=><Cell key={i} fill={CC[i%CC.length]} />)}</Pie><Tooltip contentStyle={ttStyle} formatter={(v:any)=>`$${Number(v).toLocaleString()}`} /><Legend /></PieChart></ResponsiveContainer>)}
+                {chartCard('Top 10 Expenses',<ResponsiveContainer width="100%" height="100%"><BarChart data={t10} layout="vertical" margin={{top:0,right:16,bottom:0,left:0}}><CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f1f5f9" /><XAxis type="number" fontSize={10} tick={{fill:'#94a3b8'}} /><YAxis type="category" dataKey="name" fontSize={9} tick={{fill:'#64748b'}} width={100} /><Tooltip contentStyle={ttStyle} formatter={(v:any)=>`$${Number(v).toLocaleString()}`} /><Bar isAnimationActive={!isExport} dataKey="value" name="Amount" fill='var(--portal-danger)' radius={[0,4,4,0]}>{t10.map((_: any, i: number)=><Cell key={i} fill={CC[i%CC.length]} />)}</Bar></BarChart></ResponsiveContainer>)}
+                {chartCard('Expense Trend',<ResponsiveContainer width="100%" height="100%"><AreaChart data={td} margin={{top:4,right:8,bottom:0,left:0}}>{gradDef('eGr','var(--portal-danger)')}<CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" /><XAxis dataKey="name" fontSize={10} tick={{fill:'#94a3b8'}} /><YAxis fontSize={10} tick={{fill:'#94a3b8'}} /><Tooltip contentStyle={ttStyle} formatter={(v:any)=>`$${Number(v).toLocaleString()}`} /><Area isAnimationActive={!isExport} type="monotone" dataKey="value" name="Amount" stroke='var(--portal-danger)' strokeWidth={2.5} fill="url(#eGr)" dot={{r:4,fill:'var(--portal-danger)'}} /></AreaChart></ResponsiveContainer>)}
+              </>);
+            }
+            // â”€â”€â”€ Revenue Allocation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+            if (type === 'revenue-allocation') {
+              const bk = Array.isArray(data?.breakdown) ? data.breakdown : records;
+              const pd = bk.map((r:any)=>({name:r.label||'?',value:r.percentage||0}));
+              const bd = bk.map((r:any)=>({name:(r.label||'?').slice(0,16),value:r.allocatedAmount||0}));
+              const cd = bk.map((r:any)=>({name:(r.label||'?').slice(0,14),pct:r.percentage||0,amount:r.allocatedAmount||0}));
+              const tot = data?.totalRevenue||0; const alloc = bk.reduce((s:number,r:any)=>s+(r.allocatedAmount||0),0);
+              const rp = [{name:'Allocated',value:alloc},{name:'Remaining',value:Math.max(0,tot-alloc)}];
+              return vizWrap('fa-chart-pie','var(--portal-danger)','Revenue Allocation Visualizations',<>
+                {chartCard('Allocation Share (%)',<ResponsiveContainer width="100%" height="100%"><PieChart><Pie isAnimationActive={!isExport} data={pd} dataKey="value" nameKey="name" outerRadius={110} paddingAngle={3}>{pd.map((_: any, i: number)=><Cell key={i} fill={CC[i%CC.length]} />)}</Pie><Tooltip contentStyle={ttStyle} formatter={(v:any)=>`${Number(v).toFixed(1)}%`} /><Legend /></PieChart></ResponsiveContainer>)}
+                {chartCard('Allocated Amount',<ResponsiveContainer width="100%" height="100%"><BarChart data={bd} margin={{top:4,right:8,bottom:0,left:0}}><CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" /><XAxis dataKey="name" fontSize={9} tick={{fill:'#94a3b8'}} /><YAxis fontSize={10} tick={{fill:'#94a3b8'}} /><Tooltip contentStyle={ttStyle} formatter={(v:any)=>`$${Number(v).toLocaleString()}`} /><Bar isAnimationActive={!isExport} dataKey="value" name="Amount" radius={[4,4,0,0]}>{bd.map((_: any, i: number)=><Cell key={i} fill={CC[i%CC.length]} />)}</Bar></BarChart></ResponsiveContainer>)}
+                {chartCard('Allocated vs Remaining',<ResponsiveContainer width="100%" height="100%"><PieChart><Pie isAnimationActive={!isExport} data={rp} dataKey="value" nameKey="name" innerRadius={65} outerRadius={105} paddingAngle={4}><Cell fill="#10b981" /><Cell fill="#94a3b8" /></Pie><Tooltip contentStyle={ttStyle} formatter={(v:any)=>`$${Number(v).toLocaleString()}`} /><Legend /></PieChart></ResponsiveContainer>)}
+                {chartCard('% vs Amount',<ResponsiveContainer width="100%" height="100%"><ComposedChart data={cd} margin={{top:4,right:8,bottom:0,left:0}}><CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" /><XAxis dataKey="name" fontSize={9} tick={{fill:'#94a3b8'}} /><YAxis yAxisId="p" orientation="left" fontSize={10} tick={{fill:'#94a3b8'}} /><YAxis yAxisId="a" orientation="right" fontSize={10} tick={{fill:'#94a3b8'}} /><Tooltip contentStyle={ttStyle} /><Legend /><Bar yAxisId="a" dataKey="amount" name="Amount $" fill="#10b981" radius={[4,4,0,0]} opacity={0.7} /><Line isAnimationActive={!isExport} yAxisId="p" type="monotone" dataKey="pct" name="%" stroke='var(--portal-danger)' strokeWidth={2} dot={{r:4}} /></ComposedChart></ResponsiveContainer>)}
+              </>);
+            }
+            // â”€â”€â”€ Grocery Consumption â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+            if (type === 'grocery-consumption') {
+              const iM: Record<string,number>={}; const tM: Record<string,number>={};
+              records.forEach((r:any)=>{ const it=r.product?.name||r.item||'Unknown'; iM[it]=(iM[it]||0)+(r.quantity||0); const k=(r.date||'').slice(0,7)||'?'; tM[k]=(tM[k]||0)+(r.quantity||0); });
+              const id = Object.entries(iM).map(([name,value])=>({name,value}));
+              const td = Object.entries(tM).map(([name,value])=>({name,value}));
+              const t10 = [...id].sort((a,b)=>b.value-a.value).slice(0,10);
+              return vizWrap('fa-shopping-basket','#f59e0b','Grocery Visualizations',<>
+                {chartCard('Quantity by Item',<ResponsiveContainer width="100%" height="100%"><BarChart data={id} margin={{top:4,right:8,bottom:0,left:0}}><CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" /><XAxis dataKey="name" fontSize={9} tick={{fill:'#94a3b8'}} /><YAxis fontSize={10} tick={{fill:'#94a3b8'}} /><Tooltip contentStyle={ttStyle} /><Bar isAnimationActive={!isExport} dataKey="value" name="Qty" radius={[4,4,0,0]}>{id.map((_: any, i: number)=><Cell key={i} fill={CC[i%CC.length]} />)}</Bar></BarChart></ResponsiveContainer>)}
+                {chartCard('Share by Product',<ResponsiveContainer width="100%" height="100%"><PieChart><Pie isAnimationActive={!isExport} data={id.slice(0,8)} dataKey="value" nameKey="name" outerRadius={110} paddingAngle={3}>{id.slice(0,8).map((_: any, i: number)=><Cell key={i} fill={CC[i%CC.length]} />)}</Pie><Tooltip contentStyle={ttStyle} /><Legend /></PieChart></ResponsiveContainer>)}
+                {chartCard('Top 10 Consumed',<ResponsiveContainer width="100%" height="100%"><BarChart data={t10} layout="vertical" margin={{top:0,right:16,bottom:0,left:0}}><CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f1f5f9" /><XAxis type="number" fontSize={10} tick={{fill:'#94a3b8'}} /><YAxis type="category" dataKey="name" fontSize={9} tick={{fill:'#64748b'}} width={90} /><Tooltip contentStyle={ttStyle} /><Bar isAnimationActive={!isExport} dataKey="value" name="Qty" fill="#f59e0b" radius={[0,4,4,0]}>{t10.map((_: any, i: number)=><Cell key={i} fill={CC[i%CC.length]} />)}</Bar></BarChart></ResponsiveContainer>)}
+                {chartCard('Consumption Trend',<ResponsiveContainer width="100%" height="100%"><AreaChart data={td} margin={{top:4,right:8,bottom:0,left:0}}>{gradDef('gGr','#f59e0b')}<CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" /><XAxis dataKey="name" fontSize={10} tick={{fill:'#94a3b8'}} /><YAxis fontSize={10} tick={{fill:'#94a3b8'}} /><Tooltip contentStyle={ttStyle} /><Area isAnimationActive={!isExport} type="monotone" dataKey="value" name="Quantity" stroke="#f59e0b" strokeWidth={2.5} fill="url(#gGr)" dot={{r:4,fill:'#f59e0b'}} /></AreaChart></ResponsiveContainer>)}
+              </>);
+            }
+            // â”€â”€â”€ Payroll Runs â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+            if (type === 'payroll-runs') {
+              const bd = records.map((r:any)=>({name:`${r.month}/${r.year}`,net:r.totalNet||0,employees:r.employeesCount||0}));
+              const ld = [...bd].reverse();
+              const ep = records.slice(0,6).map((r:any)=>({name:`${r.month}/${r.year}`,value:r.employeesCount||0}));
+              return vizWrap('fa-history','#8b5cf6','Payroll Visualizations',<>
+                {chartCard('Net Pay per Run',<ResponsiveContainer width="100%" height="100%"><BarChart data={bd} margin={{top:4,right:8,bottom:0,left:0}}><CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" /><XAxis dataKey="name" fontSize={9} tick={{fill:'#94a3b8'}} /><YAxis fontSize={10} tick={{fill:'#94a3b8'}} /><Tooltip contentStyle={ttStyle} formatter={(v:any)=>`$${Number(v).toLocaleString()}`} /><Bar isAnimationActive={!isExport} dataKey="net" name="Net Pay" fill="#8b5cf6" radius={[4,4,0,0]} /></BarChart></ResponsiveContainer>)}
+                {chartCard('Payroll Trend',<ResponsiveContainer width="100%" height="100%"><AreaChart data={ld} margin={{top:4,right:8,bottom:0,left:0}}>{gradDef('pyGr','#8b5cf6')}<CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" /><XAxis dataKey="name" fontSize={9} tick={{fill:'#94a3b8'}} /><YAxis fontSize={10} tick={{fill:'#94a3b8'}} /><Tooltip contentStyle={ttStyle} formatter={(v:any)=>`$${Number(v).toLocaleString()}`} /><Area isAnimationActive={!isExport} type="monotone" dataKey="net" name="Net Pay" stroke="#8b5cf6" strokeWidth={2.5} fill="url(#pyGr)" dot={{r:4,fill:'#8b5cf6'}} /></AreaChart></ResponsiveContainer>)}
+                {chartCard('Employees per Run',<ResponsiveContainer width="100%" height="100%"><PieChart><Pie isAnimationActive={!isExport} data={ep} dataKey="value" nameKey="name" outerRadius={110} paddingAngle={3}>{ep.map((_:any,i:number)=><Cell key={i} fill={CC[i%CC.length]} />)}</Pie><Tooltip contentStyle={ttStyle} /><Legend /></PieChart></ResponsiveContainer>)}
+                {chartCard('Net vs Employees',<ResponsiveContainer width="100%" height="100%"><ComposedChart data={bd} margin={{top:4,right:8,bottom:0,left:0}}><CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" /><XAxis dataKey="name" fontSize={9} tick={{fill:'#94a3b8'}} /><YAxis yAxisId="n" orientation="left" fontSize={10} tick={{fill:'#94a3b8'}} /><YAxis yAxisId="e" orientation="right" fontSize={10} tick={{fill:'#94a3b8'}} /><Tooltip contentStyle={ttStyle} /><Legend /><Bar yAxisId="n" dataKey="net" name="Net Pay $" fill="#8b5cf6" radius={[4,4,0,0]} opacity={0.8} /><Line isAnimationActive={!isExport} yAxisId="e" type="monotone" dataKey="employees" name="Employees" stroke="#f59e0b" strokeWidth={2} dot={{r:4}} /></ComposedChart></ResponsiveContainer>)}
+              </>);
+            }
+            // â”€â”€â”€ Employee Payslips â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+            if (type === 'employee-payslips') {
+              const bd = records.slice(0,20).map((r:any)=>({name:(r.employeeName||'?').split(' ')[0],gross:r.grossSalary||0,tax:r.taxAmount||0,net:r.netSalary||0}));
+              const tp = [{name:'Net Pay',value:records.reduce((s:number,r:any)=>s+(r.netSalary||0),0)},{name:'Tax',value:records.reduce((s:number,r:any)=>s+(r.taxAmount||0),0)}];
+              const t10 = [...records].sort((a:any,b:any)=>(b.grossSalary||0)-(a.grossSalary||0)).slice(0,10).map((r:any)=>({name:(r.employeeName||'?').slice(0,18),value:r.grossSalary||0}));
+              const tM: Record<string,number>={}; records.forEach((r:any)=>{ const k=`${r.payrollRun?.month||'?'}/${r.payrollRun?.year||''}`; tM[k]=(tM[k]||0)+(r.netSalary||0); });
+              const td = Object.entries(tM).map(([name,value])=>({name,value}));
+              return vizWrap('fa-user-tag','#8b5cf6','Payslip Visualizations',<>
+                {chartCard('Gross vs Net',<ResponsiveContainer width="100%" height="100%"><BarChart data={bd} margin={{top:4,right:8,bottom:0,left:0}}><CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" /><XAxis dataKey="name" fontSize={9} tick={{fill:'#94a3b8'}} /><YAxis fontSize={10} tick={{fill:'#94a3b8'}} /><Tooltip contentStyle={ttStyle} formatter={(v:any)=>`$${Number(v).toLocaleString()}`} /><Legend /><Bar isAnimationActive={!isExport} dataKey="gross" name="Gross" fill="#8b5cf6" radius={[4,4,0,0]} opacity={0.7} /><Bar isAnimationActive={!isExport} dataKey="net" name="Net" fill="#10b981" radius={[4,4,0,0]} /></BarChart></ResponsiveContainer>)}
+                {chartCard('Tax vs Net Split',<ResponsiveContainer width="100%" height="100%"><PieChart><Pie isAnimationActive={!isExport} data={tp} dataKey="value" nameKey="name" innerRadius={65} outerRadius={105} paddingAngle={4}><Cell fill="#10b981" /><Cell fill='var(--portal-danger)' /></Pie><Tooltip contentStyle={ttStyle} formatter={(v:any)=>`$${Number(v).toLocaleString()}`} /><Legend /></PieChart></ResponsiveContainer>)}
+                {chartCard('Top 10 by Gross',<ResponsiveContainer width="100%" height="100%"><BarChart data={t10} layout="vertical" margin={{top:0,right:16,bottom:0,left:0}}><CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f1f5f9" /><XAxis type="number" fontSize={10} tick={{fill:'#94a3b8'}} /><YAxis type="category" dataKey="name" fontSize={9} tick={{fill:'#64748b'}} width={100} /><Tooltip contentStyle={ttStyle} formatter={(v:any)=>`$${Number(v).toLocaleString()}`} /><Bar isAnimationActive={!isExport} dataKey="value" name="Gross" fill="#8b5cf6" radius={[0,4,4,0]}>{t10.map((_: any, i: number)=><Cell key={i} fill={CC[i%CC.length]} />)}</Bar></BarChart></ResponsiveContainer>)}
+                {chartCard('Salary Trend',<ResponsiveContainer width="100%" height="100%"><AreaChart data={td} margin={{top:4,right:8,bottom:0,left:0}}>{gradDef('slGr','#8b5cf6')}<CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" /><XAxis dataKey="name" fontSize={10} tick={{fill:'#94a3b8'}} /><YAxis fontSize={10} tick={{fill:'#94a3b8'}} /><Tooltip contentStyle={ttStyle} formatter={(v:any)=>`$${Number(v).toLocaleString()}`} /><Area isAnimationActive={!isExport} type="monotone" dataKey="value" name="Net Pay" stroke="#8b5cf6" strokeWidth={2.5} fill="url(#slGr)" dot={{r:4,fill:'#8b5cf6'}} /></AreaChart></ResponsiveContainer>)}
+              </>);
+            }
+            // â”€â”€â”€ Uniforms Analytics â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+            if (type === 'uniforms-analytics') {
+              const mM: Record<string,number>={}; const tM: Record<string,number>={};
+              records.forEach((r:any)=>{ const m=r.paymentMode||'Unknown'; mM[m]=(mM[m]||0)+(r.total||0); const k=(r.date||'').slice(0,7)||'?'; tM[k]=(tM[k]||0)+(r.total||0); });
+              const md = Object.entries(mM).map(([name,value])=>({name,value}));
+              const td = Object.entries(tM).map(([name,value])=>({name,value}));
+              const t10 = [...records].sort((a:any,b:any)=>(b.total||0)-(a.total||0)).slice(0,10).map((r:any)=>({name:(r.student||'?').slice(0,18),value:r.total||0}));
+              return vizWrap('fa-tshirt','#14b8a6','Uniform Analytics Visualizations',<>
+                {chartCard('Sales by Mode',<ResponsiveContainer width="100%" height="100%"><BarChart data={md} margin={{top:4,right:8,bottom:0,left:0}}><CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" /><XAxis dataKey="name" fontSize={10} tick={{fill:'#94a3b8'}} /><YAxis fontSize={10} tick={{fill:'#94a3b8'}} /><Tooltip contentStyle={ttStyle} formatter={(v:any)=>`$${Number(v).toLocaleString()}`} /><Bar isAnimationActive={!isExport} dataKey="value" name="Revenue" radius={[4,4,0,0]}>{md.map((_: any, i: number)=><Cell key={i} fill={CC[i%CC.length]} />)}</Bar></BarChart></ResponsiveContainer>)}
+                {chartCard('Revenue Share',<ResponsiveContainer width="100%" height="100%"><PieChart><Pie isAnimationActive={!isExport} data={md} dataKey="value" nameKey="name" outerRadius={110} paddingAngle={3}>{md.map((_: any, i: number)=><Cell key={i} fill={CC[i%CC.length]} />)}</Pie><Tooltip contentStyle={ttStyle} formatter={(v:any)=>`$${Number(v).toLocaleString()}`} /><Legend /></PieChart></ResponsiveContainer>)}
+                {chartCard('Top 10 by Spend',<ResponsiveContainer width="100%" height="100%"><BarChart data={t10} layout="vertical" margin={{top:0,right:16,bottom:0,left:0}}><CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f1f5f9" /><XAxis type="number" fontSize={10} tick={{fill:'#94a3b8'}} /><YAxis type="category" dataKey="name" fontSize={9} tick={{fill:'#64748b'}} width={100} /><Tooltip contentStyle={ttStyle} formatter={(v:any)=>`$${Number(v).toLocaleString()}`} /><Bar isAnimationActive={!isExport} dataKey="value" name="Spend" fill="#14b8a6" radius={[0,4,4,0]}>{t10.map((_: any, i: number)=><Cell key={i} fill={CC[i%CC.length]} />)}</Bar></BarChart></ResponsiveContainer>)}
+                {chartCard('Sales Trend',<ResponsiveContainer width="100%" height="100%"><AreaChart data={td} margin={{top:4,right:8,bottom:0,left:0}}>{gradDef('uGr','#14b8a6')}<CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" /><XAxis dataKey="name" fontSize={10} tick={{fill:'#94a3b8'}} /><YAxis fontSize={10} tick={{fill:'#94a3b8'}} /><Tooltip contentStyle={ttStyle} formatter={(v:any)=>`$${Number(v).toLocaleString()}`} /><Area isAnimationActive={!isExport} type="monotone" dataKey="value" name="Revenue" stroke="#14b8a6" strokeWidth={2.5} fill="url(#uGr)" dot={{r:4,fill:'#14b8a6'}} /></AreaChart></ResponsiveContainer>)}
+              </>);
+            }
+            // â”€â”€â”€ Fee Reminders â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+            if (type === 'fee-reminders') {
+              const cM: Record<string,number>={}; const sM: Record<string,number>={}; const tM: Record<string,number>={}; const stuM: Record<string,number>={};
+              records.forEach((r:any)=>{ const c=r.type||r.channel||'Unknown'; cM[c]=(cM[c]||0)+1; const s=r.status||'Unknown'; sM[s]=(sM[s]||0)+1; const k=(r.createdAt||'').slice(0,7)||'?'; tM[k]=(tM[k]||0)+1; const st=r.student?.name||'Unknown'; stuM[st]=(stuM[st]||0)+1; });
+              const cd = Object.entries(cM).map(([name,value])=>({name,value}));
+              const sd = Object.entries(sM).map(([name,value])=>({name,value}));
+              const td = Object.entries(tM).map(([name,value])=>({name,value}));
+              const t10 = Object.entries(stuM).sort((a,b)=>b[1]-a[1]).slice(0,10).map(([name,value])=>({name,value}));
+              return vizWrap('fa-bell','#f59e0b','Reminder Visualizations',<>
+                {chartCard('By Channel',<ResponsiveContainer width="100%" height="100%"><BarChart data={cd} margin={{top:4,right:8,bottom:0,left:0}}><CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" /><XAxis dataKey="name" fontSize={10} tick={{fill:'#94a3b8'}} /><YAxis fontSize={10} tick={{fill:'#94a3b8'}} /><Tooltip contentStyle={ttStyle} /><Bar isAnimationActive={!isExport} dataKey="value" name="Reminders" radius={[4,4,0,0]}>{cd.map((_: any, i: number)=><Cell key={i} fill={CC[i%CC.length]} />)}</Bar></BarChart></ResponsiveContainer>)}
+                {chartCard('Delivery Status',<ResponsiveContainer width="100%" height="100%"><PieChart><Pie isAnimationActive={!isExport} data={sd} dataKey="value" nameKey="name" innerRadius={65} outerRadius={105} paddingAngle={4}>{sd.map((_: any, i: number)=><Cell key={i} fill={CC[i%CC.length]} />)}</Pie><Tooltip contentStyle={ttStyle} /><Legend /></PieChart></ResponsiveContainer>)}
+                {chartCard('Top 10 Students',<ResponsiveContainer width="100%" height="100%"><BarChart data={t10} layout="vertical" margin={{top:0,right:16,bottom:0,left:0}}><CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f1f5f9" /><XAxis type="number" fontSize={10} tick={{fill:'#94a3b8'}} /><YAxis type="category" dataKey="name" fontSize={9} tick={{fill:'#64748b'}} width={100} /><Tooltip contentStyle={ttStyle} /><Bar isAnimationActive={!isExport} dataKey="value" name="Count" fill="#f59e0b" radius={[0,4,4,0]}>{t10.map((_: any, i: number)=><Cell key={i} fill={CC[i%CC.length]} />)}</Bar></BarChart></ResponsiveContainer>)}
+                {chartCard('Reminder Trend',<ResponsiveContainer width="100%" height="100%"><AreaChart data={td} margin={{top:4,right:8,bottom:0,left:0}}>{gradDef('rGr','#f59e0b')}<CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" /><XAxis dataKey="name" fontSize={10} tick={{fill:'#94a3b8'}} /><YAxis fontSize={10} tick={{fill:'#94a3b8'}} /><Tooltip contentStyle={ttStyle} /><Area isAnimationActive={!isExport} type="monotone" dataKey="value" name="Reminders" stroke="#f59e0b" strokeWidth={2.5} fill="url(#rGr)" dot={{r:4,fill:'#f59e0b'}} /></AreaChart></ResponsiveContainer>)}
+              </>);
+            }
+            return null;
+          
+  };
+
   const exportToPDF = async () => {
-    const element = document.getElementById('report-export-area');
-    if (!element) return toast.error('Could not find report area to export');
-    
-    const loadingToast = toast.loading('Generating PDF with visualizations...');
+    if (!data) return toast.error('No data to export');
+    const loadingToast = toast.loading('Generating professional PDF...');
+    const container = document.createElement('div');
+    container.style.cssText = 'position:absolute;left:-9999px;top:0;';
+    document.body.appendChild(container);
+    const wrapper = document.createElement('div');
+    container.appendChild(wrapper);
     try {
-      const canvas = await html2canvas(element, { scale: 2, useCORS: true });
+      const root = createRoot(wrapper);
+      flushSync(() => {
+        root.render(
+          <InstitutionalReportDocument
+            title={getTitle()}
+            reportType={type || ''}
+            filters={filters}
+            data={data}
+            template={reportTemplate || { config: { primaryColor: '#2563eb' } }}
+            columns={getColumns()}
+            visualizations={renderVisualizations(true)}
+            visualizations={renderVisualizations(true)}
+          />
+        );
+      });
+      await new Promise(r => setTimeout(r, 200));
+      const canvas = await html2canvas(wrapper.firstChild as HTMLElement, { scale: 2, useCORS: true });
       const imgData = canvas.toDataURL('image/png');
       const pdf = new jsPDF('p', 'mm', 'a4');
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-      
       pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-      pdf.save(`${type}-report.pdf`);
+      pdf.save(`${getTitle().replace(/\s+/g, '_')}.pdf`);
       toast.success('PDF Export successful', { id: loadingToast });
+      root.unmount();
     } catch (err) {
       console.error(err);
       toast.error('Failed to generate PDF', { id: loadingToast });
+    } finally {
+      container.remove();
     }
   };
 
-  const handlePrint = () => window.print();
+  const handlePrint = () => {
+    if (!data) return;
+    const printContainer = document.createElement('div');
+    printContainer.id = 'print-report-doc';
+    printContainer.style.cssText = 'position:fixed;top:0;left:0;width:100%;z-index:99999;background:white;';
+    document.body.appendChild(printContainer);
+    const root = createRoot(printContainer);
+    flushSync(() => {
+      root.render(
+        <InstitutionalReportDocument
+          title={getTitle()}
+          reportType={type || ''}
+          filters={filters}
+          data={data}
+          template={reportTemplate || { config: { primaryColor: '#2563eb' } }}
+          columns={getColumns()}
+            visualizations={renderVisualizations(true)}
+            visualizations={renderVisualizations(true)}
+        />
+      );
+    });
+    setTimeout(() => {
+      window.print();
+      root.unmount();
+      printContainer.remove();
+    }, 300);
+  };
 
   return (
     <div id="report-export-area" className="portal-container printable-area" style={{ minHeight: '100vh', padding: '0 24px 40px', position: 'relative' }}>
@@ -210,7 +578,7 @@ export default function ReportViewerPage() {
         </div>
       </div>
 
-      {/* ── Summary Cards ── */}
+      {/* â”€â”€ Summary Cards â”€â”€ */}
       {data?.summary && (
         <div className={`animate-in fade-in slide-in-from-top-4 duration-500`} style={{ marginBottom: '32px', display: 'flex', flexWrap: 'wrap', gap: '16px' }}>
           {type === 'uniforms-analytics' && (
@@ -248,7 +616,7 @@ export default function ReportViewerPage() {
         </div>
       )}
 
-      {/* ── Parameters ── */}
+      {/* â”€â”€ Parameters â”€â”€ */}
       <div className="portal-card" style={{ marginBottom: '32px' }}>
         <div className="portal-card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <h3 style={{ margin: 0 }}>Audit Parameters</h3>
@@ -298,7 +666,7 @@ export default function ReportViewerPage() {
         </div>
       </div>
 
-      {/* ── Main Data View ── */}
+      {/* â”€â”€ Main Data View â”€â”€ */}
       {data && (
         <div className="management-table-card">
           <div className="table-responsive">
@@ -391,181 +759,7 @@ export default function ReportViewerPage() {
           </div>
 
           {/* ── Visualizations ── */}
-          {(['student-balances','single-fee-group','balances-summary','student-debtors','fees-payments','fees-takings',
-             'enrollment-grouped','profit-loss','detailed-expenses','revenue-allocation','grocery-consumption',
-             'payroll-runs','employee-payslips','uniforms-analytics','fee-reminders'].includes(type || '')) && data && (() => {
-            const records = Array.isArray(data) ? data : (data?.records || data?.list || data?.breakdown || data?.detailed || []);
-            const CC = ['#2563eb','#10b981','var(--portal-danger)','#8b5cf6','#f59e0b','#06b6d4','#ec4899','#f97316'];
-            const ttStyle = { borderRadius: '12px', border: '1px solid #f1f5f9' };
-            const chartCard = (title: string, children: React.ReactNode) => (
-              <div style={{ background: 'transparent', padding: '24px' }}>
-                <p style={{ margin: '0 0 16px', fontWeight: 900, fontSize: '0.85rem', color: '#475569', textTransform: 'uppercase', letterSpacing: '1px' }}>{title}</p>
-                <div style={{ height: '260px' }}>{children}</div>
-              </div>
-            );
-            const gradDef = (id: string, color: string) => <defs><linearGradient id={id} x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={color} stopOpacity={0.18} /><stop offset="95%" stopColor={color} stopOpacity={0} /></linearGradient></defs>;
-            const vizWrap = (icon: string, color: string, title: string, children: React.ReactNode) => (
-              <div style={{ padding: '32px', background: 'transparent' }}>
-                <h3 style={{ marginBottom: '28px', fontSize:'1.1rem', fontWeight:900, color:'#1e293b' }}>
-                  <i className={`fas ${icon} mr-3`} style={{color}} /> {title}
-                </h3>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '24px' }}>{children}</div>
-              </div>
-            );
-
-            const byClass: Record<string,{paid:number,balance:number,count:number}> = {};
-            records.forEach((r: any) => {
-              const cls = r.className || r.class || 'Unknown';
-              if (!byClass[cls]) byClass[cls] = { paid:0, balance:0, count:0 };
-              byClass[cls].paid += r.paid || r.amount || 0;
-              byClass[cls].balance += r.balance || r.collectible || r.outstanding || 0;
-              byClass[cls].count += 1;
-            });
-            const classData = Object.entries(byClass).map(([name,v]) => ({ name, ...v }));
-            const totalPaid = records.reduce((s: number, r: any) => s + (r.paid || r.amount || 0), 0);
-            const totalBalance = records.reduce((s: number, r: any) => s + (r.balance || r.collectible || r.outstanding || 0), 0);
-            const donutData = [
-              { name: 'Paid', value: totalPaid },
-              { name: 'Outstanding', value: totalBalance }
-            ];
-            const top10 = [...records].sort((a:any,b:any) => (b.balance||b.collectible||b.outstanding||0) - (a.balance||a.collectible||a.outstanding||0)).slice(0,10);
-            const top10Data = top10.map((r:any) => ({ name: r.studentName||r.name||r.feeGroup||'?', value: r.balance||r.collectible||r.outstanding||r.amount||0 }));
-            // Group by fee group or date for trend
-            const trendMap: Record<string,number> = {};
-            records.forEach((r:any) => { const k = r.feeGroup||r.name||r.date?.slice(0,7)||'?'; trendMap[k] = (trendMap[k]||0) + (r.amount||r.paid||r.collectible||0); });
-            const trendData = Object.entries(trendMap).map(([name,value]) => ({ name, value })).slice(0,12);
-            // ─── Enrollment Grouped ────────────────────────────────────────
-            if (type === 'enrollment-grouped') {
-              const byClass: Record<string,{male:number,female:number}> = {};
-              records.forEach((r:any) => { const cls = r.className||'Unknown'; if (!byClass[cls]) byClass[cls]={male:0,female:0}; if(r.gender==='Male') byClass[cls].male++; else byClass[cls].female++; });
-              const cd = Object.entries(byClass).map(([name,v]) => ({name,...v}));
-              const gd = [{name:'Male',value:records.filter((r:any)=>r.gender==='Male').length},{name:'Female',value:records.filter((r:any)=>r.gender==='Female').length}];
-              const t10 = Object.entries(byClass).map(([name,v])=>({name,value:v.male+v.female})).sort((a,b)=>b.value-a.value).slice(0,10);
-              const catM: Record<string,number>={}; records.forEach((r:any)=>{ const k=r.category||'Unknown'; catM[k]=(catM[k]||0)+1; });
-              const catD = Object.entries(catM).map(([name,value])=>({name,value}));
-              return vizWrap('fa-users','#10b981','Enrollment Visualizations',<>
-                {chartCard('By Class (M/F)',<ResponsiveContainer width="100%" height="100%"><BarChart data={cd} margin={{top:4,right:8,bottom:0,left:0}}><CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" /><XAxis dataKey="name" fontSize={9} tick={{fill:'#94a3b8'}} /><YAxis fontSize={10} tick={{fill:'#94a3b8'}} /><Tooltip contentStyle={ttStyle} /><Legend /><Bar dataKey="male" name="Male" fill="#3b82f6" radius={[4,4,0,0]} /><Bar dataKey="female" name="Female" fill="#ec4899" radius={[4,4,0,0]} /></BarChart></ResponsiveContainer>)}
-                {chartCard('Gender Ratio',<ResponsiveContainer width="100%" height="100%"><PieChart><Pie data={gd} dataKey="value" nameKey="name" innerRadius={70} outerRadius={110} paddingAngle={4}><Cell fill="#3b82f6" /><Cell fill="#ec4899" /></Pie><Tooltip contentStyle={ttStyle} /><Legend /></PieChart></ResponsiveContainer>)}
-                {chartCard('Top 10 Classes',<ResponsiveContainer width="100%" height="100%"><BarChart data={t10} layout="vertical" margin={{top:0,right:16,bottom:0,left:0}}><CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f1f5f9" /><XAxis type="number" fontSize={10} tick={{fill:'#94a3b8'}} /><YAxis type="category" dataKey="name" fontSize={9} tick={{fill:'#64748b'}} width={80} /><Tooltip contentStyle={ttStyle} /><Bar dataKey="value" name="Students" fill="#10b981" radius={[0,4,4,0]}>{t10.map((_: any, i: number)=><Cell key={i} fill={CC[i%CC.length]} />)}</Bar></BarChart></ResponsiveContainer>)}
-                {chartCard('By Category',<ResponsiveContainer width="100%" height="100%"><AreaChart data={catD} margin={{top:4,right:8,bottom:0,left:0}}>{gradDef('cGr','#10b981')}<CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" /><XAxis dataKey="name" fontSize={10} tick={{fill:'#94a3b8'}} /><YAxis fontSize={10} tick={{fill:'#94a3b8'}} /><Tooltip contentStyle={ttStyle} /><Area type="monotone" dataKey="value" name="Students" stroke="#10b981" strokeWidth={2.5} fill="url(#cGr)" dot={{r:4,fill:'#10b981'}} /></AreaChart></ResponsiveContainer>)}
-              </>);
-            }
-            // ─── Profit & Loss ─────────────────────────────────────────────
-            if (type === 'profit-loss') {
-              const bk = Array.isArray(data?.breakdown) ? data.breakdown : records;
-              const bd = bk.map((r:any)=>({name:(r.description||'?').slice(0,14),income:r.income||r.usd||0,expense:r.expense||0}));
-              const pp = [{name:'Income',value:data?.summary?.totalIncome||0},{name:'Expenses',value:data?.summary?.totalExpenses||0}];
-              const nd = bk.map((r:any)=>({name:(r.description||'?').slice(0,14),value:(r.income||r.usd||0)-(r.expense||0)}));
-              const td = bk.map((r:any)=>({name:(r.description||'?').slice(0,12),value:r.income||r.usd||r.expense||0}));
-              return vizWrap('fa-balance-scale','var(--portal-danger)','Financial Visualizations',<>
-                {chartCard('Income vs Expenses',<ResponsiveContainer width="100%" height="100%"><BarChart data={bd} margin={{top:4,right:8,bottom:0,left:0}}><CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" /><XAxis dataKey="name" fontSize={9} tick={{fill:'#94a3b8'}} /><YAxis fontSize={10} tick={{fill:'#94a3b8'}} /><Tooltip contentStyle={ttStyle} formatter={(v:any)=>`$${Number(v).toLocaleString()}`} /><Legend /><Bar dataKey="income" name="Income" fill="#10b981" radius={[4,4,0,0]} /><Bar dataKey="expense" name="Expense" fill='var(--portal-danger)' radius={[4,4,0,0]} /></BarChart></ResponsiveContainer>)}
-                {chartCard('Income vs Expenses Ratio',<ResponsiveContainer width="100%" height="100%"><PieChart><Pie data={pp} dataKey="value" nameKey="name" innerRadius={70} outerRadius={110} paddingAngle={4}><Cell fill="#10b981" /><Cell fill='var(--portal-danger)' /></Pie><Tooltip contentStyle={ttStyle} formatter={(v:any)=>`$${Number(v).toLocaleString()}`} /><Legend /></PieChart></ResponsiveContainer>)}
-                {chartCard('Net Impact per Category',<ResponsiveContainer width="100%" height="100%"><BarChart data={nd} layout="vertical" margin={{top:0,right:16,bottom:0,left:0}}><CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f1f5f9" /><XAxis type="number" fontSize={10} tick={{fill:'#94a3b8'}} /><YAxis type="category" dataKey="name" fontSize={9} tick={{fill:'#64748b'}} width={90} /><Tooltip contentStyle={ttStyle} formatter={(v:any)=>`$${Number(v).toLocaleString()}`} /><Bar dataKey="value" name="Net" radius={[0,4,4,0]}>{nd.map((e:any,i:number)=><Cell key={i} fill={e.value>=0?'#10b981':'var(--portal-danger)'} />)}</Bar></BarChart></ResponsiveContainer>)}
-                {chartCard('Revenue & Expense Trend',<ResponsiveContainer width="100%" height="100%"><AreaChart data={td} margin={{top:4,right:8,bottom:0,left:0}}>{gradDef('pGr','var(--portal-danger)')}<CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" /><XAxis dataKey="name" fontSize={9} tick={{fill:'#94a3b8'}} /><YAxis fontSize={10} tick={{fill:'#94a3b8'}} /><Tooltip contentStyle={ttStyle} formatter={(v:any)=>`$${Number(v).toLocaleString()}`} /><Area type="monotone" dataKey="value" name="Amount" stroke='var(--portal-danger)' strokeWidth={2.5} fill="url(#pGr)" dot={{r:4,fill:'var(--portal-danger)'}} /></AreaChart></ResponsiveContainer>)}
-              </>);
-            }
-            // ─── Detailed Expenses ─────────────────────────────────────────
-            if (type === 'detailed-expenses') {
-              const catM: Record<string,number>={}; const modeM: Record<string,number>={};
-              records.forEach((r:any)=>{ const c=r.category?.name||'Other'; catM[c]=(catM[c]||0)+(r.amount||0); const m=r.paymentMode||'Unknown'; modeM[m]=(modeM[m]||0)+(r.amount||0); });
-              const cd = Object.entries(catM).map(([name,value])=>({name,value}));
-              const md = Object.entries(modeM).map(([name,value])=>({name,value}));
-              const t10 = [...records].sort((a:any,b:any)=>(b.amount||0)-(a.amount||0)).slice(0,10).map((r:any)=>({name:(r.description||r.title||'?').slice(0,20),value:r.amount||0}));
-              const tM: Record<string,number>={}; records.forEach((r:any)=>{ const k=(r.date||'').slice(0,7)||'?'; tM[k]=(tM[k]||0)+(r.amount||0); });
-              const td = Object.entries(tM).map(([name,value])=>({name,value}));
-              return vizWrap('fa-file-invoice-dollar','var(--portal-danger)','Expense Visualizations',<>
-                {chartCard('By Category',<ResponsiveContainer width="100%" height="100%"><BarChart data={cd} margin={{top:4,right:8,bottom:0,left:0}}><CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" /><XAxis dataKey="name" fontSize={9} tick={{fill:'#94a3b8'}} /><YAxis fontSize={10} tick={{fill:'#94a3b8'}} /><Tooltip contentStyle={ttStyle} formatter={(v:any)=>`$${Number(v).toLocaleString()}`} /><Bar dataKey="value" name="Amount" radius={[4,4,0,0]}>{cd.map((_: any, i: number)=><Cell key={i} fill={CC[i%CC.length]} />)}</Bar></BarChart></ResponsiveContainer>)}
-                {chartCard('By Payment Mode',<ResponsiveContainer width="100%" height="100%"><PieChart><Pie data={md} dataKey="value" nameKey="name" innerRadius={65} outerRadius={105} paddingAngle={4}>{md.map((_: any, i: number)=><Cell key={i} fill={CC[i%CC.length]} />)}</Pie><Tooltip contentStyle={ttStyle} formatter={(v:any)=>`$${Number(v).toLocaleString()}`} /><Legend /></PieChart></ResponsiveContainer>)}
-                {chartCard('Top 10 Expenses',<ResponsiveContainer width="100%" height="100%"><BarChart data={t10} layout="vertical" margin={{top:0,right:16,bottom:0,left:0}}><CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f1f5f9" /><XAxis type="number" fontSize={10} tick={{fill:'#94a3b8'}} /><YAxis type="category" dataKey="name" fontSize={9} tick={{fill:'#64748b'}} width={100} /><Tooltip contentStyle={ttStyle} formatter={(v:any)=>`$${Number(v).toLocaleString()}`} /><Bar dataKey="value" name="Amount" fill='var(--portal-danger)' radius={[0,4,4,0]}>{t10.map((_: any, i: number)=><Cell key={i} fill={CC[i%CC.length]} />)}</Bar></BarChart></ResponsiveContainer>)}
-                {chartCard('Expense Trend',<ResponsiveContainer width="100%" height="100%"><AreaChart data={td} margin={{top:4,right:8,bottom:0,left:0}}>{gradDef('eGr','var(--portal-danger)')}<CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" /><XAxis dataKey="name" fontSize={10} tick={{fill:'#94a3b8'}} /><YAxis fontSize={10} tick={{fill:'#94a3b8'}} /><Tooltip contentStyle={ttStyle} formatter={(v:any)=>`$${Number(v).toLocaleString()}`} /><Area type="monotone" dataKey="value" name="Amount" stroke='var(--portal-danger)' strokeWidth={2.5} fill="url(#eGr)" dot={{r:4,fill:'var(--portal-danger)'}} /></AreaChart></ResponsiveContainer>)}
-              </>);
-            }
-            // ─── Revenue Allocation ────────────────────────────────────────
-            if (type === 'revenue-allocation') {
-              const bk = Array.isArray(data?.breakdown) ? data.breakdown : records;
-              const pd = bk.map((r:any)=>({name:r.label||'?',value:r.percentage||0}));
-              const bd = bk.map((r:any)=>({name:(r.label||'?').slice(0,16),value:r.allocatedAmount||0}));
-              const cd = bk.map((r:any)=>({name:(r.label||'?').slice(0,14),pct:r.percentage||0,amount:r.allocatedAmount||0}));
-              const tot = data?.totalRevenue||0; const alloc = bk.reduce((s:number,r:any)=>s+(r.allocatedAmount||0),0);
-              const rp = [{name:'Allocated',value:alloc},{name:'Remaining',value:Math.max(0,tot-alloc)}];
-              return vizWrap('fa-chart-pie','var(--portal-danger)','Revenue Allocation Visualizations',<>
-                {chartCard('Allocation Share (%)',<ResponsiveContainer width="100%" height="100%"><PieChart><Pie data={pd} dataKey="value" nameKey="name" outerRadius={110} paddingAngle={3}>{pd.map((_: any, i: number)=><Cell key={i} fill={CC[i%CC.length]} />)}</Pie><Tooltip contentStyle={ttStyle} formatter={(v:any)=>`${Number(v).toFixed(1)}%`} /><Legend /></PieChart></ResponsiveContainer>)}
-                {chartCard('Allocated Amount',<ResponsiveContainer width="100%" height="100%"><BarChart data={bd} margin={{top:4,right:8,bottom:0,left:0}}><CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" /><XAxis dataKey="name" fontSize={9} tick={{fill:'#94a3b8'}} /><YAxis fontSize={10} tick={{fill:'#94a3b8'}} /><Tooltip contentStyle={ttStyle} formatter={(v:any)=>`$${Number(v).toLocaleString()}`} /><Bar dataKey="value" name="Amount" radius={[4,4,0,0]}>{bd.map((_: any, i: number)=><Cell key={i} fill={CC[i%CC.length]} />)}</Bar></BarChart></ResponsiveContainer>)}
-                {chartCard('Allocated vs Remaining',<ResponsiveContainer width="100%" height="100%"><PieChart><Pie data={rp} dataKey="value" nameKey="name" innerRadius={65} outerRadius={105} paddingAngle={4}><Cell fill="#10b981" /><Cell fill="#94a3b8" /></Pie><Tooltip contentStyle={ttStyle} formatter={(v:any)=>`$${Number(v).toLocaleString()}`} /><Legend /></PieChart></ResponsiveContainer>)}
-                {chartCard('% vs Amount',<ResponsiveContainer width="100%" height="100%"><ComposedChart data={cd} margin={{top:4,right:8,bottom:0,left:0}}><CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" /><XAxis dataKey="name" fontSize={9} tick={{fill:'#94a3b8'}} /><YAxis yAxisId="p" orientation="left" fontSize={10} tick={{fill:'#94a3b8'}} /><YAxis yAxisId="a" orientation="right" fontSize={10} tick={{fill:'#94a3b8'}} /><Tooltip contentStyle={ttStyle} /><Legend /><Bar yAxisId="a" dataKey="amount" name="Amount $" fill="#10b981" radius={[4,4,0,0]} opacity={0.7} /><Line yAxisId="p" type="monotone" dataKey="pct" name="%" stroke='var(--portal-danger)' strokeWidth={2} dot={{r:4}} /></ComposedChart></ResponsiveContainer>)}
-              </>);
-            }
-            // ─── Grocery Consumption ───────────────────────────────────────
-            if (type === 'grocery-consumption') {
-              const iM: Record<string,number>={}; const tM: Record<string,number>={};
-              records.forEach((r:any)=>{ const it=r.product?.name||r.item||'Unknown'; iM[it]=(iM[it]||0)+(r.quantity||0); const k=(r.date||'').slice(0,7)||'?'; tM[k]=(tM[k]||0)+(r.quantity||0); });
-              const id = Object.entries(iM).map(([name,value])=>({name,value}));
-              const td = Object.entries(tM).map(([name,value])=>({name,value}));
-              const t10 = [...id].sort((a,b)=>b.value-a.value).slice(0,10);
-              return vizWrap('fa-shopping-basket','#f59e0b','Grocery Visualizations',<>
-                {chartCard('Quantity by Item',<ResponsiveContainer width="100%" height="100%"><BarChart data={id} margin={{top:4,right:8,bottom:0,left:0}}><CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" /><XAxis dataKey="name" fontSize={9} tick={{fill:'#94a3b8'}} /><YAxis fontSize={10} tick={{fill:'#94a3b8'}} /><Tooltip contentStyle={ttStyle} /><Bar dataKey="value" name="Qty" radius={[4,4,0,0]}>{id.map((_: any, i: number)=><Cell key={i} fill={CC[i%CC.length]} />)}</Bar></BarChart></ResponsiveContainer>)}
-                {chartCard('Share by Product',<ResponsiveContainer width="100%" height="100%"><PieChart><Pie data={id.slice(0,8)} dataKey="value" nameKey="name" outerRadius={110} paddingAngle={3}>{id.slice(0,8).map((_: any, i: number)=><Cell key={i} fill={CC[i%CC.length]} />)}</Pie><Tooltip contentStyle={ttStyle} /><Legend /></PieChart></ResponsiveContainer>)}
-                {chartCard('Top 10 Consumed',<ResponsiveContainer width="100%" height="100%"><BarChart data={t10} layout="vertical" margin={{top:0,right:16,bottom:0,left:0}}><CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f1f5f9" /><XAxis type="number" fontSize={10} tick={{fill:'#94a3b8'}} /><YAxis type="category" dataKey="name" fontSize={9} tick={{fill:'#64748b'}} width={90} /><Tooltip contentStyle={ttStyle} /><Bar dataKey="value" name="Qty" fill="#f59e0b" radius={[0,4,4,0]}>{t10.map((_: any, i: number)=><Cell key={i} fill={CC[i%CC.length]} />)}</Bar></BarChart></ResponsiveContainer>)}
-                {chartCard('Consumption Trend',<ResponsiveContainer width="100%" height="100%"><AreaChart data={td} margin={{top:4,right:8,bottom:0,left:0}}>{gradDef('gGr','#f59e0b')}<CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" /><XAxis dataKey="name" fontSize={10} tick={{fill:'#94a3b8'}} /><YAxis fontSize={10} tick={{fill:'#94a3b8'}} /><Tooltip contentStyle={ttStyle} /><Area type="monotone" dataKey="value" name="Quantity" stroke="#f59e0b" strokeWidth={2.5} fill="url(#gGr)" dot={{r:4,fill:'#f59e0b'}} /></AreaChart></ResponsiveContainer>)}
-              </>);
-            }
-            // ─── Payroll Runs ──────────────────────────────────────────────
-            if (type === 'payroll-runs') {
-              const bd = records.map((r:any)=>({name:`${r.month}/${r.year}`,net:r.totalNet||0,employees:r.employeesCount||0}));
-              const ld = [...bd].reverse();
-              const ep = records.slice(0,6).map((r:any)=>({name:`${r.month}/${r.year}`,value:r.employeesCount||0}));
-              return vizWrap('fa-history','#8b5cf6','Payroll Visualizations',<>
-                {chartCard('Net Pay per Run',<ResponsiveContainer width="100%" height="100%"><BarChart data={bd} margin={{top:4,right:8,bottom:0,left:0}}><CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" /><XAxis dataKey="name" fontSize={9} tick={{fill:'#94a3b8'}} /><YAxis fontSize={10} tick={{fill:'#94a3b8'}} /><Tooltip contentStyle={ttStyle} formatter={(v:any)=>`$${Number(v).toLocaleString()}`} /><Bar dataKey="net" name="Net Pay" fill="#8b5cf6" radius={[4,4,0,0]} /></BarChart></ResponsiveContainer>)}
-                {chartCard('Payroll Trend',<ResponsiveContainer width="100%" height="100%"><AreaChart data={ld} margin={{top:4,right:8,bottom:0,left:0}}>{gradDef('pyGr','#8b5cf6')}<CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" /><XAxis dataKey="name" fontSize={9} tick={{fill:'#94a3b8'}} /><YAxis fontSize={10} tick={{fill:'#94a3b8'}} /><Tooltip contentStyle={ttStyle} formatter={(v:any)=>`$${Number(v).toLocaleString()}`} /><Area type="monotone" dataKey="net" name="Net Pay" stroke="#8b5cf6" strokeWidth={2.5} fill="url(#pyGr)" dot={{r:4,fill:'#8b5cf6'}} /></AreaChart></ResponsiveContainer>)}
-                {chartCard('Employees per Run',<ResponsiveContainer width="100%" height="100%"><PieChart><Pie data={ep} dataKey="value" nameKey="name" outerRadius={110} paddingAngle={3}>{ep.map((_:any,i:number)=><Cell key={i} fill={CC[i%CC.length]} />)}</Pie><Tooltip contentStyle={ttStyle} /><Legend /></PieChart></ResponsiveContainer>)}
-                {chartCard('Net vs Employees',<ResponsiveContainer width="100%" height="100%"><ComposedChart data={bd} margin={{top:4,right:8,bottom:0,left:0}}><CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" /><XAxis dataKey="name" fontSize={9} tick={{fill:'#94a3b8'}} /><YAxis yAxisId="n" orientation="left" fontSize={10} tick={{fill:'#94a3b8'}} /><YAxis yAxisId="e" orientation="right" fontSize={10} tick={{fill:'#94a3b8'}} /><Tooltip contentStyle={ttStyle} /><Legend /><Bar yAxisId="n" dataKey="net" name="Net Pay $" fill="#8b5cf6" radius={[4,4,0,0]} opacity={0.8} /><Line yAxisId="e" type="monotone" dataKey="employees" name="Employees" stroke="#f59e0b" strokeWidth={2} dot={{r:4}} /></ComposedChart></ResponsiveContainer>)}
-              </>);
-            }
-            // ─── Employee Payslips ─────────────────────────────────────────
-            if (type === 'employee-payslips') {
-              const bd = records.slice(0,20).map((r:any)=>({name:(r.employeeName||'?').split(' ')[0],gross:r.grossSalary||0,tax:r.taxAmount||0,net:r.netSalary||0}));
-              const tp = [{name:'Net Pay',value:records.reduce((s:number,r:any)=>s+(r.netSalary||0),0)},{name:'Tax',value:records.reduce((s:number,r:any)=>s+(r.taxAmount||0),0)}];
-              const t10 = [...records].sort((a:any,b:any)=>(b.grossSalary||0)-(a.grossSalary||0)).slice(0,10).map((r:any)=>({name:(r.employeeName||'?').slice(0,18),value:r.grossSalary||0}));
-              const tM: Record<string,number>={}; records.forEach((r:any)=>{ const k=`${r.payrollRun?.month||'?'}/${r.payrollRun?.year||''}`; tM[k]=(tM[k]||0)+(r.netSalary||0); });
-              const td = Object.entries(tM).map(([name,value])=>({name,value}));
-              return vizWrap('fa-user-tag','#8b5cf6','Payslip Visualizations',<>
-                {chartCard('Gross vs Net',<ResponsiveContainer width="100%" height="100%"><BarChart data={bd} margin={{top:4,right:8,bottom:0,left:0}}><CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" /><XAxis dataKey="name" fontSize={9} tick={{fill:'#94a3b8'}} /><YAxis fontSize={10} tick={{fill:'#94a3b8'}} /><Tooltip contentStyle={ttStyle} formatter={(v:any)=>`$${Number(v).toLocaleString()}`} /><Legend /><Bar dataKey="gross" name="Gross" fill="#8b5cf6" radius={[4,4,0,0]} opacity={0.7} /><Bar dataKey="net" name="Net" fill="#10b981" radius={[4,4,0,0]} /></BarChart></ResponsiveContainer>)}
-                {chartCard('Tax vs Net Split',<ResponsiveContainer width="100%" height="100%"><PieChart><Pie data={tp} dataKey="value" nameKey="name" innerRadius={65} outerRadius={105} paddingAngle={4}><Cell fill="#10b981" /><Cell fill='var(--portal-danger)' /></Pie><Tooltip contentStyle={ttStyle} formatter={(v:any)=>`$${Number(v).toLocaleString()}`} /><Legend /></PieChart></ResponsiveContainer>)}
-                {chartCard('Top 10 by Gross',<ResponsiveContainer width="100%" height="100%"><BarChart data={t10} layout="vertical" margin={{top:0,right:16,bottom:0,left:0}}><CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f1f5f9" /><XAxis type="number" fontSize={10} tick={{fill:'#94a3b8'}} /><YAxis type="category" dataKey="name" fontSize={9} tick={{fill:'#64748b'}} width={100} /><Tooltip contentStyle={ttStyle} formatter={(v:any)=>`$${Number(v).toLocaleString()}`} /><Bar dataKey="value" name="Gross" fill="#8b5cf6" radius={[0,4,4,0]}>{t10.map((_: any, i: number)=><Cell key={i} fill={CC[i%CC.length]} />)}</Bar></BarChart></ResponsiveContainer>)}
-                {chartCard('Salary Trend',<ResponsiveContainer width="100%" height="100%"><AreaChart data={td} margin={{top:4,right:8,bottom:0,left:0}}>{gradDef('slGr','#8b5cf6')}<CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" /><XAxis dataKey="name" fontSize={10} tick={{fill:'#94a3b8'}} /><YAxis fontSize={10} tick={{fill:'#94a3b8'}} /><Tooltip contentStyle={ttStyle} formatter={(v:any)=>`$${Number(v).toLocaleString()}`} /><Area type="monotone" dataKey="value" name="Net Pay" stroke="#8b5cf6" strokeWidth={2.5} fill="url(#slGr)" dot={{r:4,fill:'#8b5cf6'}} /></AreaChart></ResponsiveContainer>)}
-              </>);
-            }
-            // ─── Uniforms Analytics ────────────────────────────────────────
-            if (type === 'uniforms-analytics') {
-              const mM: Record<string,number>={}; const tM: Record<string,number>={};
-              records.forEach((r:any)=>{ const m=r.paymentMode||'Unknown'; mM[m]=(mM[m]||0)+(r.total||0); const k=(r.date||'').slice(0,7)||'?'; tM[k]=(tM[k]||0)+(r.total||0); });
-              const md = Object.entries(mM).map(([name,value])=>({name,value}));
-              const td = Object.entries(tM).map(([name,value])=>({name,value}));
-              const t10 = [...records].sort((a:any,b:any)=>(b.total||0)-(a.total||0)).slice(0,10).map((r:any)=>({name:(r.student||'?').slice(0,18),value:r.total||0}));
-              return vizWrap('fa-tshirt','#14b8a6','Uniform Analytics Visualizations',<>
-                {chartCard('Sales by Mode',<ResponsiveContainer width="100%" height="100%"><BarChart data={md} margin={{top:4,right:8,bottom:0,left:0}}><CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" /><XAxis dataKey="name" fontSize={10} tick={{fill:'#94a3b8'}} /><YAxis fontSize={10} tick={{fill:'#94a3b8'}} /><Tooltip contentStyle={ttStyle} formatter={(v:any)=>`$${Number(v).toLocaleString()}`} /><Bar dataKey="value" name="Revenue" radius={[4,4,0,0]}>{md.map((_: any, i: number)=><Cell key={i} fill={CC[i%CC.length]} />)}</Bar></BarChart></ResponsiveContainer>)}
-                {chartCard('Revenue Share',<ResponsiveContainer width="100%" height="100%"><PieChart><Pie data={md} dataKey="value" nameKey="name" outerRadius={110} paddingAngle={3}>{md.map((_: any, i: number)=><Cell key={i} fill={CC[i%CC.length]} />)}</Pie><Tooltip contentStyle={ttStyle} formatter={(v:any)=>`$${Number(v).toLocaleString()}`} /><Legend /></PieChart></ResponsiveContainer>)}
-                {chartCard('Top 10 by Spend',<ResponsiveContainer width="100%" height="100%"><BarChart data={t10} layout="vertical" margin={{top:0,right:16,bottom:0,left:0}}><CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f1f5f9" /><XAxis type="number" fontSize={10} tick={{fill:'#94a3b8'}} /><YAxis type="category" dataKey="name" fontSize={9} tick={{fill:'#64748b'}} width={100} /><Tooltip contentStyle={ttStyle} formatter={(v:any)=>`$${Number(v).toLocaleString()}`} /><Bar dataKey="value" name="Spend" fill="#14b8a6" radius={[0,4,4,0]}>{t10.map((_: any, i: number)=><Cell key={i} fill={CC[i%CC.length]} />)}</Bar></BarChart></ResponsiveContainer>)}
-                {chartCard('Sales Trend',<ResponsiveContainer width="100%" height="100%"><AreaChart data={td} margin={{top:4,right:8,bottom:0,left:0}}>{gradDef('uGr','#14b8a6')}<CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" /><XAxis dataKey="name" fontSize={10} tick={{fill:'#94a3b8'}} /><YAxis fontSize={10} tick={{fill:'#94a3b8'}} /><Tooltip contentStyle={ttStyle} formatter={(v:any)=>`$${Number(v).toLocaleString()}`} /><Area type="monotone" dataKey="value" name="Revenue" stroke="#14b8a6" strokeWidth={2.5} fill="url(#uGr)" dot={{r:4,fill:'#14b8a6'}} /></AreaChart></ResponsiveContainer>)}
-              </>);
-            }
-            // ─── Fee Reminders ─────────────────────────────────────────────
-            if (type === 'fee-reminders') {
-              const cM: Record<string,number>={}; const sM: Record<string,number>={}; const tM: Record<string,number>={}; const stuM: Record<string,number>={};
-              records.forEach((r:any)=>{ const c=r.type||r.channel||'Unknown'; cM[c]=(cM[c]||0)+1; const s=r.status||'Unknown'; sM[s]=(sM[s]||0)+1; const k=(r.createdAt||'').slice(0,7)||'?'; tM[k]=(tM[k]||0)+1; const st=r.student?.name||'Unknown'; stuM[st]=(stuM[st]||0)+1; });
-              const cd = Object.entries(cM).map(([name,value])=>({name,value}));
-              const sd = Object.entries(sM).map(([name,value])=>({name,value}));
-              const td = Object.entries(tM).map(([name,value])=>({name,value}));
-              const t10 = Object.entries(stuM).sort((a,b)=>b[1]-a[1]).slice(0,10).map(([name,value])=>({name,value}));
-              return vizWrap('fa-bell','#f59e0b','Reminder Visualizations',<>
-                {chartCard('By Channel',<ResponsiveContainer width="100%" height="100%"><BarChart data={cd} margin={{top:4,right:8,bottom:0,left:0}}><CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" /><XAxis dataKey="name" fontSize={10} tick={{fill:'#94a3b8'}} /><YAxis fontSize={10} tick={{fill:'#94a3b8'}} /><Tooltip contentStyle={ttStyle} /><Bar dataKey="value" name="Reminders" radius={[4,4,0,0]}>{cd.map((_: any, i: number)=><Cell key={i} fill={CC[i%CC.length]} />)}</Bar></BarChart></ResponsiveContainer>)}
-                {chartCard('Delivery Status',<ResponsiveContainer width="100%" height="100%"><PieChart><Pie data={sd} dataKey="value" nameKey="name" innerRadius={65} outerRadius={105} paddingAngle={4}>{sd.map((_: any, i: number)=><Cell key={i} fill={CC[i%CC.length]} />)}</Pie><Tooltip contentStyle={ttStyle} /><Legend /></PieChart></ResponsiveContainer>)}
-                {chartCard('Top 10 Students',<ResponsiveContainer width="100%" height="100%"><BarChart data={t10} layout="vertical" margin={{top:0,right:16,bottom:0,left:0}}><CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f1f5f9" /><XAxis type="number" fontSize={10} tick={{fill:'#94a3b8'}} /><YAxis type="category" dataKey="name" fontSize={9} tick={{fill:'#64748b'}} width={100} /><Tooltip contentStyle={ttStyle} /><Bar dataKey="value" name="Count" fill="#f59e0b" radius={[0,4,4,0]}>{t10.map((_: any, i: number)=><Cell key={i} fill={CC[i%CC.length]} />)}</Bar></BarChart></ResponsiveContainer>)}
-                {chartCard('Reminder Trend',<ResponsiveContainer width="100%" height="100%"><AreaChart data={td} margin={{top:4,right:8,bottom:0,left:0}}>{gradDef('rGr','#f59e0b')}<CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" /><XAxis dataKey="name" fontSize={10} tick={{fill:'#94a3b8'}} /><YAxis fontSize={10} tick={{fill:'#94a3b8'}} /><Tooltip contentStyle={ttStyle} /><Area type="monotone" dataKey="value" name="Reminders" stroke="#f59e0b" strokeWidth={2.5} fill="url(#rGr)" dot={{r:4,fill:'#f59e0b'}} /></AreaChart></ResponsiveContainer>)}
-              </>);
-            }
-            return null;
-          })()}
+          {renderVisualizations(false)}
         </div>
       )}
 
@@ -580,3 +774,6 @@ export default function ReportViewerPage() {
     </div>
   );
 }
+
+
+
