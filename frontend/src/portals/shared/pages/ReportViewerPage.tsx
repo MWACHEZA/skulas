@@ -379,7 +379,7 @@ export default function ReportViewerPage() {
             );
             const gradDef = (id: string, color: string) => <defs><linearGradient id={id} x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={color} stopOpacity={0.18} /><stop offset="95%" stopColor={color} stopOpacity={0} /></linearGradient></defs>;
             const vizWrap = (icon: string, color: string, title: string, children: React.ReactNode) => (
-              <div style={{ padding: '32px', background: '#f8fafc', borderTop: '1px solid #f1f5f9' }}>
+              <div style={{ padding: '32px', background: 'transparent' }}>
                 <h3 style={{ marginBottom: '28px', fontSize:'1.1rem', fontWeight:900, color:'#1e293b' }}>
                   <i className={`fas ${icon} mr-3`} style={{color}} /> {title}
                 </h3>

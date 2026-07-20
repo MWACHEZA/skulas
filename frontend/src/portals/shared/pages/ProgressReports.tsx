@@ -167,7 +167,7 @@ export default function ProgressReports() {
                   </div>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '40px', background: '#f8fafc', padding: '32px', borderRadius: '20px', marginBottom: '40px', border: '1px solid #f1f5f9' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '40px', background: 'transparent', padding: '32px', borderRadius: '20px', marginBottom: '40px', border: '1px solid #f1f5f9' }}>
                   <div>
                     <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', marginBottom: '8px' }}>RECIPIENT IDENTITY</label>
                     <div style={{ fontWeight: 900, fontSize: '1.25rem', color: '#1e293b' }}>{selectedReport.data?.name || selectedReport.student?.name}</div>
@@ -188,7 +188,7 @@ export default function ProgressReports() {
                   </thead>
                   <tbody>
                     {(selectedReport.data?.grades || []).map((g: any, i: number) => (
-                      <tr key={i} style={{ background: '#f8fafc' }}>
+                      <tr key={i} style={{ background: 'transparent' }}>
                         <td style={{ padding: '20px 24px', borderRadius: '12px 0 0 12px', fontWeight: 800, color: '#1e293b' }}>{g.subject}</td>
                         <td style={{ padding: '20px 24px', textAlign: 'center', fontWeight: 900, color: '#2563eb', fontSize: '1.1rem' }}>{g.score}%</td>
                         <td style={{ padding: '20px 24px', textAlign: 'right', borderRadius: '0 12px 12px 0' }}>

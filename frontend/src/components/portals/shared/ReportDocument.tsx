@@ -178,7 +178,7 @@ const ReportDocument: React.FC<Props> = ({ data, template }) => {
     return (
       <>
         {/* Student Info Bar */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '15px', background: '#f7fafc', padding: '15px', borderRadius: '8px', marginBottom: '30px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '15px', background: 'transparent', padding: '15px', borderRadius: '8px', marginBottom: '30px' }}>
           {[
             { label: 'STUDENT NAME', value: data.name || data.student?.name },
             { label: 'STUDENT ID', value: data.studentId || data.student?.studentId },

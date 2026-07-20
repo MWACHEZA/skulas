@@ -94,7 +94,7 @@ export default function AdminAcademicHistory() {
     <h2 style="margin: 10px 0 0 0; font-weight: 400; color: #4a5568;">OFFICIAL ACADEMIC TRANSCRIPT</h2>
   </div>
 
-  <div style="display: flex; justify-content: space-between; margin-bottom: 30px; background: #f7fafc; padding: 20px; border-radius: 8px;">
+  <div style="display: flex; justify-content: space-between; margin-bottom: 30px; background: transparent; padding: 20px; border-radius: 8px;">
     <div>
       <div style="margin-bottom: 8px;"><strong>STUDENT NAME:</strong> <span style="font-size: 1.1rem;">${student.name}</span></div>
       <div style="margin-bottom: 8px;"><strong>STUDENT ID:</strong> ${student.studentId}</div>
