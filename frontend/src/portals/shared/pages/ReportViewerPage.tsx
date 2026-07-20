@@ -372,7 +372,7 @@ export default function ReportViewerPage() {
             const CC = ['#2563eb','#10b981','var(--portal-danger)','#8b5cf6','#f59e0b','#06b6d4','#ec4899','#f97316'];
             const ttStyle = { borderRadius: '12px', border: '1px solid #f1f5f9' };
             const chartCard = (title: string, children: React.ReactNode) => (
-              <div style={{ background: 'white', borderRadius: '16px', padding: '24px', border: '1px solid #f1f5f9', boxShadow: '0 1px 8px rgba(0,0,0,0.04)' }}>
+              <div style={{ background: 'transparent', padding: '24px' }}>
                 <p style={{ margin: '0 0 16px', fontWeight: 900, fontSize: '0.85rem', color: '#475569', textTransform: 'uppercase', letterSpacing: '1px' }}>{title}</p>
                 <div style={{ height: '260px' }}>{children}</div>
               </div>
