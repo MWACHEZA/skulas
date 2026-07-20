@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../../../lib/api';
 import { toast } from 'react-hot-toast';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 import '../../../styles/portal.css';
 
 import { 
@@ -171,10 +173,31 @@ export default function ReportViewerPage() {
     const a = document.createElement('a'); a.href = url; a.download = `${type}-report.doc`; a.click();
   };
 
+  const exportToPDF = async () => {
+    const element = document.getElementById('report-export-area');
+    if (!element) return toast.error('Could not find report area to export');
+    
+    const loadingToast = toast.loading('Generating PDF with visualizations...');
+    try {
+      const canvas = await html2canvas(element, { scale: 2, useCORS: true });
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+      
+      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+      pdf.save(`${type}-report.pdf`);
+      toast.success('PDF Export successful', { id: loadingToast });
+    } catch (err) {
+      console.error(err);
+      toast.error('Failed to generate PDF', { id: loadingToast });
+    }
+  };
+
   const handlePrint = () => window.print();
 
   return (
-    <div className="portal-container printable-area" style={{ minHeight: '100vh', padding: '0 24px 40px', position: 'relative' }}>
+    <div id="report-export-area" className="portal-container printable-area" style={{ minHeight: '100vh', padding: '0 24px 40px', position: 'relative' }}>
       <div className="portal-page-header">
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
           <button onClick={() => navigate(-1)} className="portal-btn-ghost" style={{ padding: '8px', width: '40px', height: '40px', borderRadius: '10px' }}>
@@ -235,6 +258,9 @@ export default function ReportViewerPage() {
             </button>
             <button onClick={exportToWord} className="portal-btn-ghost" style={{ padding: '8px 16px', fontWeight: 900, fontSize: '0.8rem', border: '1px solid #e2e8f0' }} title="Export Word">
               <i className="fas fa-file-word mr-2" style={{ color: '#2563eb' }}></i>Word
+            </button>
+            <button onClick={exportToPDF} className="portal-btn-ghost" style={{ padding: '8px 16px', fontWeight: 900, fontSize: '0.8rem', border: '1px solid #e2e8f0' }} title="Export PDF">
+              <i className="fas fa-file-pdf mr-2" style={{ color: '#dc2626' }}></i>PDF
             </button>
             <button onClick={handlePrint} className="portal-btn-ghost" style={{ padding: '8px 16px', fontWeight: 900, fontSize: '0.8rem', border: '1px solid #e2e8f0' }} title="Print">
               <i className="fas fa-print mr-2" style={{ color: '#64748b' }}></i>Print
