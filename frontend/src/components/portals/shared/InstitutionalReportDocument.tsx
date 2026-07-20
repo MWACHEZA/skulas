@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 
 interface Props {
   title: string;
@@ -10,7 +10,7 @@ interface Props {
   columns?: { label: string; key: string; align?: string; format?: (v: any, row?: any) => string }[];
 }
 
-const InstitutionalReportDocument: React.FC<Props> = ({ title, reportType, filters, data, template, columns }) => {
+const InstitutionalReportDocument: React.FC<Props> = ({ title, reportType, filters, data, template, columns, visualizations }) => {
   const primaryColor = template?.config?.primaryColor || '#2563eb';
   const school = template?.school;
   const signatureUrl = template?.signatureUrl;

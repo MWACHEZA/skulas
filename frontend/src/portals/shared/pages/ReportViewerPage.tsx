@@ -514,7 +514,6 @@ export default function ReportViewerPage() {
             template={reportTemplate || { config: { primaryColor: '#2563eb' } }}
             columns={getColumns()}
             visualizations={renderVisualizations(true)}
-            visualizations={renderVisualizations(true)}
           />
         );
       });
@@ -552,7 +551,6 @@ export default function ReportViewerPage() {
           data={data}
           template={reportTemplate || { config: { primaryColor: '#2563eb' } }}
           columns={getColumns()}
-            visualizations={renderVisualizations(true)}
             visualizations={renderVisualizations(true)}
         />
       );
