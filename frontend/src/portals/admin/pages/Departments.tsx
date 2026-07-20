@@ -203,8 +203,8 @@ export default function AdminDepartments() {
               <thead>
                 <tr>
                   <th>Dept Code</th>
-                  {isUniversity && <th>Admin Prefix</th>}
-                  {isUniversity && <th>Duration</th>}
+                  <th>Admin Prefix</th>
+                  <th>Duration</th>
                   <th>Department Name</th>
                   <th>Picture</th>
                   <th>Department Head</th>
@@ -227,8 +227,8 @@ export default function AdminDepartments() {
                   return filtered.length > 0 ? currentItems.map(d => (
                   <tr key={d.id}>
                     <td style={{ fontFamily: 'monospace', color: '#718096' }}>{d.code}</td>
-                    {isUniversity && <td style={{ fontWeight: 700, color: 'var(--portal-primary)' }}>{d.deptCode || '---'}</td>}
-                    {isUniversity && <td>{d.duration} Years</td>}
+                    <td style={{ fontWeight: 700, color: 'var(--portal-primary)' }}>{d.deptCode || '---'}</td>
+                    <td>{d.duration} Years</td>
                     <td style={{ fontWeight: 600 }}>{d.name}</td>
                     <td>
                       {(() => {
@@ -371,7 +371,6 @@ export default function AdminDepartments() {
                 </select>
               </div>
 
-              {isUniversity && (
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 15, marginBottom: 20 }}>
                   <div className="form-group">
                     <label>Department Admin Code</label>
@@ -397,10 +396,7 @@ export default function AdminDepartments() {
                     </select>
                   </div>
                 </div>
-              )}
 
-              {!isUniversity && (
-                <>
                   <div className="form-group" style={{ marginBottom: 15 }}>
                     <label>Services (Comma-separated)</label>
                     <textarea 
@@ -454,8 +450,6 @@ export default function AdminDepartments() {
                     />
                     {uploading && <div style={{ fontSize: 12, color: '#718096', marginTop: 4 }}><i className="fas fa-spinner fa-spin"></i> Uploading images...</div>}
                   </div>
-                </>
-              )}
 
               <div className="form-group" style={{ marginBottom: 20 }}>
                 <label>Department Code (System Generated)</label>

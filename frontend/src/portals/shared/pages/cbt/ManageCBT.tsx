@@ -90,14 +90,13 @@ export default function ManageCBT() {
     const pBuiltin = PAPER_BUILTIN.find(p => p.id === templateConfig?.paperDesign) || PAPER_BUILTIN[0];
     const pColor = pBuiltin.color;
 
-    // School logo: try branding JSON first, then templateConfig overrides
-    const branding = previewData.school?.branding as any;
-    const rawLogo = templateConfig?.paperLogo || templateConfig?.consultationLogo
-      || branding?.logo || previewData.school?.logo || null;
+    // School logo: use active user's branding logo first, then fallbacks
+    const branding = user?.schoolBranding || previewData.school?.branding as any;
+    const rawLogo = branding?.logo || templateConfig?.paperLogo || templateConfig?.consultationLogo || previewData.school?.logo || null;
     const logoSrc = rawLogo
       ? (rawLogo.startsWith('http') ? rawLogo
         : rawLogo.startsWith('/api') ? `${window.location.origin}${rawLogo}`
-        : `${window.location.origin}/api/storage/file/${rawLogo}`)
+        : `${window.location.origin}/api/storage/media/global/${rawLogo}`)
       : null;
 
     // Group questions by page number (as set during exam creation)
@@ -189,9 +188,9 @@ export default function ManageCBT() {
       `;
 
       const isLastPage = pageIdx === pageNumbers.length - 1;
-      const pageBreak = !isLastPage ? 'page-break-after:always;' : '';
+      const pageBreak = !isLastPage ? 'break-after: page; page-break-after: always;' : '';
 
-      return `<div style="${pageBreak}">${coverHtml}${sectionsHtml}</div>`;
+      return `<div class="exam-page" style="margin-bottom: 20px; ${pageBreak}">${coverHtml}${sectionsHtml}</div>`;
     }).join('');
 
     const endFooter = `
@@ -249,6 +248,8 @@ export default function ManageCBT() {
     printWin.onload = () => setTimeout(doPrint, 400);
     setTimeout(doPrint, 1500);
   };
+
+
 
   // ─── Download Word (.docx) ────────────────────────────────────────────────
   const [generatingWord, setGeneratingWord] = useState(false);

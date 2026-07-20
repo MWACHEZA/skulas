@@ -39,8 +39,8 @@ export default function AncillarySchedules() {
   const totalPages = Math.ceil(shifts.length / itemsPerPage);
   const paginatedShifts = shifts.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
-  // Modal State
   const [showAssignModal, setShowAssignModal] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     userId: '',
     dayOfWeek: 1,
@@ -98,9 +98,15 @@ export default function AncillarySchedules() {
     }
 
     try {
-      await api.post('/api/schedules', formData);
-      showToast('Shift assigned successfully', 'success');
+      if (editingId) {
+        await api.put(`/api/schedules/${editingId}`, formData);
+        showToast('Shift updated successfully', 'success');
+      } else {
+        await api.post('/api/schedules', formData);
+        showToast('Shift assigned successfully', 'success');
+      }
       setShowAssignModal(false);
+      setEditingId(null);
       setFormData({
         userId: '',
         dayOfWeek: 1,
@@ -111,9 +117,22 @@ export default function AncillarySchedules() {
       });
       fetchSchedules();
     } catch (error: any) {
-      showToast(error.response?.data?.error || 'Failed to assign shift', 'error');
+      showToast(error.response?.data?.error || 'Failed to save shift', 'error');
     
     }
+  };
+
+  const handleEditClick = (shift: ShiftAssignment) => {
+    setEditingId(shift.id);
+    setFormData({
+      userId: shift.userId,
+      dayOfWeek: shift.dayOfWeek,
+      startTime: shift.startTime,
+      endTime: shift.endTime,
+      location: shift.location || '',
+      task: shift.task || ''
+    });
+    setShowAssignModal(true);
   };
 
   const handleDeleteShift = async (id: string) => {
@@ -163,7 +182,11 @@ export default function AncillarySchedules() {
             </button>
             {isManager && (
               <button 
-                onClick={() => setShowAssignModal(true)}
+                onClick={() => {
+                  setEditingId(null);
+                  setFormData({ userId: '', dayOfWeek: 1, startTime: '08:00', endTime: '16:00', location: '', task: '' });
+                  setShowAssignModal(true);
+                }}
                 className="portal-btn-primary"
                 style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}
               >
@@ -220,14 +243,24 @@ export default function AncillarySchedules() {
                           <td style={{ color: '#475569', fontWeight: 600 }}>{shift.location || '-'}</td>
                           <td style={{ color: '#475569' }}>{shift.task}</td>
                           <td className="no-print">
-                            <button 
-                              onClick={() => handleDeleteShift(shift.id)}
-                              className="portal-btn-ghost"
-                              style={{ padding: '8px', width: '36px', height: '36px', color: '#dc2626', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                              title="Delete shift assignment"
-                            >
-                              <i className="fas fa-trash-alt"></i>
-                            </button>
+                            <div style={{ display: 'flex', gap: '8px' }}>
+                              <button 
+                                onClick={() => handleEditClick(shift)}
+                                className="portal-btn-ghost"
+                                style={{ padding: '8px', width: '36px', height: '36px', color: '#2563eb', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                                title="Edit shift assignment"
+                              >
+                                <i className="fas fa-edit"></i>
+                              </button>
+                              <button 
+                                onClick={() => handleDeleteShift(shift.id)}
+                                className="portal-btn-ghost"
+                                style={{ padding: '8px', width: '36px', height: '36px', color: '#dc2626', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                                title="Delete shift assignment"
+                              >
+                                <i className="fas fa-trash-alt"></i>
+                              </button>
+                            </div>
                           </td>
                         </tr>
                       ))
@@ -327,7 +360,7 @@ export default function AncillarySchedules() {
         <div className="no-print" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
           <div className="portal-card" style={{ width: '95%', maxWidth: '500px', padding: '35px', borderRadius: '24px', background: 'white' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-              <h3 style={{ margin: 0, fontSize: '1.4rem', fontWeight: 800, color: '#1e293b' }}>Assign Work Schedule</h3>
+              <h3 style={{ margin: 0, fontSize: '1.4rem', fontWeight: 800, color: '#1e293b' }}>{editingId ? 'Edit Work Schedule' : 'Assign Work Schedule'}</h3>
               <button onClick={() => setShowAssignModal(false)} style={{ background: 'none', border: 'none', fontSize: '1.2rem', cursor: 'pointer', color: '#94a3b8' }}>
                 <i className="fas fa-times"></i>
               </button>
@@ -400,7 +433,7 @@ export default function AncillarySchedules() {
 
               <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end', marginTop: '30px' }}>
                 <button type="button" className="portal-btn-ghost" onClick={() => setShowAssignModal(false)}>Cancel</button>
-                <button type="submit" className="portal-btn-primary" style={{ background: primaryColor }}>Assign Shift</button>
+                <button type="submit" className="portal-btn-primary" style={{ background: primaryColor }}>{editingId ? 'Save Changes' : 'Assign Shift'}</button>
               </div>
             </form>
           </div>

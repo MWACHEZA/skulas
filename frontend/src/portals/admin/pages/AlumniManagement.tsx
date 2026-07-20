@@ -167,7 +167,7 @@ export default function AlumniManagement() {
                         <button className="portal-btn-ghost" style={{ padding: '8px', width: '36px', height: '36px', color: s.isLocked ? '#059669' : '#dc2626', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title={s.isLocked ? "Unlock Access" : "Lock Access"} onClick={() => handleLockToggle(s)}>
                           <i className={`fas fa-${s.isLocked ? 'unlock' : 'user-lock'}`}></i>
                         </button>
-                        <button className="portal-btn-ghost" style={{ padding: '8px', width: '36px', height: '36px', color: '#ed89be', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(237, 137, 189, 0.1)' }} title="Donation History" onClick={() => alert('This feature is currently under development or disabled.')}>
+                        <button className="portal-btn-ghost" style={{ padding: '8px', width: '36px', height: '36px', color: '#ed89be', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(237, 137, 189, 0.1)' }} title="Donation History" onClick={() => showToast('This feature is currently under development or disabled.', 'info')}>
                           <i className="fas fa-hand-holding-heart"></i>
                         </button>
                         <button className="portal-btn-ghost" style={{ padding: '8px', width: '36px', height: '36px', color: '#dc2626', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Delete Permanent" onClick={async () => {
