@@ -16,7 +16,7 @@ interface Asset {
 }
 
 export default function AdminAssetMaintenance() {
-  const { showToast } = useToast();
+  const { showToast, toastConfirm } = useToast();
   const [assets, setAssets] = useState<Asset[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -92,13 +92,13 @@ export default function AdminAssetMaintenance() {
   };
 
   const handleDelete = async (id: string) => {
-    if (window.confirm('Are you sure you want to delete this maintenance task?')) {
+    if (await toastConfirm('Are you sure you want to delete this maintenance task?')) {
       try {
         await api.delete(`/api/assets/maintenance/${id}`);
         showToast('Maintenance task deleted successfully', 'success');
         fetchAssets();
       } catch (err: any) {
-        showToast(err.response?.data?.error || 'Failed to delete maintenance task', 'error');
+        showToast(err.response?.data?.error || 'Failed to delete task', 'error');
       }
     }
   };
@@ -231,18 +231,18 @@ export default function AdminAssetMaintenance() {
                             >
                               <i className="fas fa-edit"></i>
                             </button>
-                            <button 
-                              className="portal-btn-ghost" 
-                              style={{ padding: '8px', width: '36px', height: '36px', color: '#ef4444', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                              title="Delete Task"
-                              onClick={() => handleDelete(task.id)}
-                            >
-                              <i className="fas fa-trash"></i>
-                            </button>
                           </>
                         ) : (
                           <span style={{ fontSize: '0.8rem', color: '#94a3b8', fontStyle: 'italic', display: 'flex', alignItems: 'center', height: '36px', padding: '0 8px' }}>Done</span>
                         )}
+                        <button 
+                          className="portal-btn-ghost" 
+                          style={{ padding: '8px', width: '36px', height: '36px', color: '#ef4444', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                          title="Delete Task"
+                          onClick={() => handleDelete(task.id)}
+                        >
+                          <i className="fas fa-trash"></i>
+                        </button>
                       </div>
                     </td>
                   </tr>

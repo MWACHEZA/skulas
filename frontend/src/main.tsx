@@ -7,9 +7,7 @@ import './assets/css/portal.css'
 import './i18n'
 
 // Global utility for confirm dialogs that return a promise
-(window as any).toastConfirm = async (message: string) => {
-  return window.confirm(message);
-};
+// toastConfirm is now bound to window inside ToastProvider
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>

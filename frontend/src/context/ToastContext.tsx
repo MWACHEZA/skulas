@@ -11,6 +11,7 @@ interface Toast {
 
 interface ToastContextType {
   showToast: (message: string, type?: ToastType) => void;
+  toastConfirm: (message: string) => Promise<boolean>;
 }
 
 const ToastContext = createContext<ToastContextType | undefined>(undefined);
@@ -21,8 +22,23 @@ export const useToast = () => {
   return context;
 };
 
+// We will also export a global helper so it can be used outside React components or easily imported without hooks
+export let globalToastConfirm: (message: string) => Promise<boolean> = () => Promise.resolve(false);
+
 export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [toasts, setToasts] = useState<Toast[]>([]);
+  const [confirmDialog, setConfirmDialog] = useState<{ message: string; resolve: (val: boolean) => void } | null>(null);
+
+  const toastConfirm = useCallback((message: string) => {
+    return new Promise<boolean>((resolve) => {
+      setConfirmDialog({ message, resolve });
+    });
+  }, []);
+
+  React.useEffect(() => {
+    globalToastConfirm = toastConfirm;
+    (window as any).toastConfirm = toastConfirm;
+  }, [toastConfirm]);
 
   const showToast = useCallback((message: string, type: ToastType = 'info') => {
     const id = Math.random().toString(36).substr(2, 9);
@@ -80,7 +96,7 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   }, [showToast]);
 
   return (
-    <ToastContext.Provider value={{ showToast }}>
+    <ToastContext.Provider value={{ showToast, toastConfirm }}>
       {children}
       <div className="toast-container">
         {toasts.map((toast) => (
@@ -98,6 +114,43 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
           </div>
         ))}
       </div>
+      
+      {/* Global Confirm Dialog Modal */}
+      {confirmDialog && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          background: 'rgba(0,0,0,0.5)', zIndex: 9999,
+          display: 'flex', alignItems: 'center', justifyContent: 'center'
+        }}>
+          <div style={{
+            background: 'white', padding: '24px', borderRadius: '12px',
+            maxWidth: '400px', width: '90%', boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
+          }}>
+            <h3 style={{ marginTop: 0, marginBottom: '16px', color: '#1e293b', fontSize: '1.2rem', fontWeight: 600 }}>Confirm Action</h3>
+            <p style={{ color: '#475569', marginBottom: '24px' }}>{confirmDialog.message}</p>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
+              <button 
+                onClick={() => { confirmDialog.resolve(false); setConfirmDialog(null); }}
+                style={{
+                  padding: '8px 16px', background: '#f1f5f9', color: '#475569',
+                  border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 500
+                }}
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={() => { confirmDialog.resolve(true); setConfirmDialog(null); }}
+                style={{
+                  padding: '8px 16px', background: '#2563eb', color: 'white',
+                  border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 500
+                }}
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </ToastContext.Provider>
   );
 };

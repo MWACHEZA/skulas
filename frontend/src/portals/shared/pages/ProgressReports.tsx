@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import api from '../../../lib/api';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import ReportDocument from '../../../components/portals/shared/ReportDocument';
 import '../../../styles/portal.css';
 
 export default function ProgressReports() {
@@ -38,7 +39,7 @@ export default function ProgressReports() {
   };
 
   const handleDownload = async (report: any) => {
-    const element = document.getElementById(`report-viewer-${report.id}`);
+    const element = document.getElementById(`report-${report.id || report.studentId}`);
     if (!element) return;
 
     try {
@@ -148,65 +149,16 @@ export default function ProgressReports() {
             </div>
             
             <div className="portal-modal-body" style={{ padding: '40px', background: 'transparent' }}>
-              <div id={`report-viewer-${selectedReport.id}`} style={{ 
-                background: 'transparent', 
-                color: '#1e293b', 
-                padding: '60px', 
-                borderRadius: '16px',
-                border: '1px solid #f1f5f9',
-                fontFamily: 'system-ui, -apple-system, sans-serif' 
-              }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: `4px solid ${template?.config?.primaryColor || '#2563eb'}`, paddingBottom: '32px', marginBottom: '40px' }}>
-                  <div>
-                    <h1 style={{ color: template?.config?.primaryColor || '#2563eb', margin: 0, fontSize: '2.5rem', fontWeight: 900, letterSpacing: '-1px' }}>ACADEX ECOSYSTEM</h1>
-                    <p style={{ margin: '4px 0 0 0', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '2px' }}>Institutional Performance Report</p>
-                  </div>
-                  <div style={{ textAlign: 'right' }}>
-                    <div style={{ fontWeight: 900, fontSize: '1.25rem', color: '#1e293b' }}>OFFICIAL TRANSCRIPT</div>
-                    <div style={{ color: '#64748b', fontWeight: 700, marginTop: '4px' }}>{selectedReport.term} | Academic Cycle {selectedReport.year}</div>
-                  </div>
-                </div>
-
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '40px', background: 'transparent', padding: '32px', borderRadius: '20px', marginBottom: '40px', border: '1px solid #f1f5f9' }}>
-                  <div>
-                    <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', marginBottom: '8px' }}>RECIPIENT IDENTITY</label>
-                    <div style={{ fontWeight: 900, fontSize: '1.25rem', color: '#1e293b' }}>{selectedReport.data?.name || selectedReport.student?.name}</div>
-                  </div>
-                  <div style={{ textAlign: 'right' }}>
-                    <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', marginBottom: '8px' }}>ACADEMIC CLASSIFICATION</label>
-                    <div style={{ fontWeight: 900, fontSize: '1.25rem', color: '#1e293b' }}>{selectedReport.data?.student?.class?.name || 'UNDEFINED'}</div>
-                  </div>
-                </div>
-
-                <table style={{ width: '100%', borderCollapse: 'separate', borderSpacing: '0 8px' }}>
-                  <thead>
-                    <tr>
-                      <th style={{ textAlign: 'left', padding: '16px 24px', fontSize: '0.8rem', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase' }}>Subject Discipline</th>
-                      <th style={{ textAlign: 'center', padding: '16px 24px', fontSize: '0.8rem', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase' }}>Weighted Score</th>
-                      <th style={{ textAlign: 'right', padding: '16px 24px', fontSize: '0.8rem', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase' }}>Strategic Grade</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {(selectedReport.data?.grades || []).map((g: any, i: number) => (
-                      <tr key={i} style={{ background: 'transparent' }}>
-                        <td style={{ padding: '20px 24px', borderRadius: '12px 0 0 12px', fontWeight: 800, color: '#1e293b' }}>{g.subject}</td>
-                        <td style={{ padding: '20px 24px', textAlign: 'center', fontWeight: 900, color: '#2563eb', fontSize: '1.1rem' }}>{g.score}%</td>
-                        <td style={{ padding: '20px 24px', textAlign: 'right', borderRadius: '0 12px 12px 0' }}>
-                          <span className="status-badge" style={{ background: '#fff', color: '#1e293b', fontWeight: 900, fontSize: '1.1rem', border: '1px solid #f1f5f9', padding: '8px 20px' }}>{g.grade}</span>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-
-                <div style={{ marginTop: '60px', display: 'flex', justifyContent: 'flex-end', borderTop: '2px dashed #f1f5f9', paddingTop: '40px' }}>
-                    <div style={{ textAlign: 'center' }}>
-                      {template?.signatureUrl ? <img src={template.signatureUrl} style={{ maxHeight: '80px', marginBottom: '12px' }} /> : <div style={{ height: '80px' }}></div>}
-                      <div style={{ borderTop: '2px solid #1e293b', paddingTop: '12px', fontWeight: 900, color: '#1e293b', fontSize: '0.9rem', width: '240px', textTransform: 'uppercase' }}>Institutional Principal</div>
-                      <div style={{ color: '#94a3b8', fontWeight: 800, fontSize: '0.75rem', marginTop: '4px' }}>ELECTRONICALLY AUTHORIZED</div>
-                    </div>
-                </div>
-              </div>
+              <ReportDocument 
+                data={{
+                  ...selectedReport.data,
+                  id: selectedReport.id,
+                  term: selectedReport.term,
+                  year: selectedReport.year,
+                  student: selectedReport.student || selectedReport.data?.student
+                }}
+                template={template}
+              />
             </div>
           </div>
         </div>

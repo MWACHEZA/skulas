@@ -3,12 +3,16 @@ import { useSearchParams } from 'react-router-dom';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { useAuth } from '../../../contexts/AuthContext';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
+import ReportDocument from '../../../components/portals/shared/ReportDocument';
 
 export default function AdminAcademicHistory() {
   const [searchParams] = useSearchParams();
   const studentId = searchParams.get('id');
   const [loading, setLoading] = useState(true);
   const [student, setStudent] = useState<any>(null);
+  const [showTranscript, setShowTranscript] = useState(false);
   const { showToast } = useToast();
   const { user } = useAuth();
 
@@ -24,7 +28,6 @@ export default function AdminAcademicHistory() {
       setStudent(data);
     } catch (err) {
       showToast('Failed to load student history', 'error');
-    
     } finally {
       setLoading(false);
     }
@@ -49,100 +52,47 @@ export default function AdminAcademicHistory() {
     );
   }
 
-  // ── Group grades by term/year ──────────────────────────────────────────────
-  // (In a real system, you'd calculate average per term. For now we show subjects)
   const grades = student.grades || [];
 
-  const handlePrintTranscript = () => {
-    if (!student) return;
-    
-    const school = user?.schoolBranding;
-    const logoSrc = school?.logo 
-      ? (school.logo.startsWith('http') ? school.logo
-        : school.logo.startsWith('/api') ? `${window.location.origin}${school.logo}`
-        : `${window.location.origin}/api/storage/media/global/${school.logo}`)
-      : null;
+  const handleDownloadPDF = async () => {
+    const element = document.getElementById('academic-history-viewer');
+    if (!element) return;
+    try {
+      const canvas = await html2canvas(element, { scale: 2, useCORS: true });
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+      pdf.save(`${student.name}_Academic_History.pdf`);
+    } catch (err) {
+      showToast('Failed to generate PDF', 'error');
+    }
+  };
 
-    const gradesHtml = grades.map((g: any) => `
-      <tr>
-        <td style="padding: 10px; border-bottom: 1px solid #e2e8f0;">${g.subject?.code || ''}</td>
-        <td style="padding: 10px; border-bottom: 1px solid #e2e8f0; font-weight: bold;">${g.subject?.name || ''}</td>
-        <td style="padding: 10px; border-bottom: 1px solid #e2e8f0; text-align: center;">${g.score}%</td>
-        <td style="padding: 10px; border-bottom: 1px solid #e2e8f0; text-align: center; font-weight: bold;">
-          ${g.score >= 75 ? 'A' : g.score >= 60 ? 'B' : g.score >= 50 ? 'C' : g.score >= 40 ? 'D' : 'U'}
-        </td>
-        <td style="padding: 10px; border-bottom: 1px solid #e2e8f0;">${g.comment || '—'}</td>
-      </tr>
-    `).join('');
+  const reportData = {
+    id: student.id,
+    studentId: student.studentId,
+    type: 'ACADEMIC',
+    name: student.name,
+    student: student,
+    term: 'ALL',
+    year: new Date().getFullYear().toString(),
+    grades: grades.map((g: any) => ({
+      subject: g.subject?.name,
+      grade: g.score >= 75 ? 'A' : g.score >= 60 ? 'B' : g.score >= 50 ? 'C' : g.score >= 40 ? 'D' : 'U',
+      score: g.score,
+      comment: g.comment
+    }))
+  };
 
-    const html = `<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8"/>
-  <title>${student.name} - Official Transcript</title>
-  <style>
-    body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #1a202c; padding: 40px; margin: 0; }
-    @media print { body { padding: 0; margin: 20px; } }
-    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-    th { background: #f7fafc; padding: 12px 10px; text-align: left; border-bottom: 2px solid #cbd5e0; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px; }
-  </style>
-</head>
-<body>
-  <div style="text-align: center; margin-bottom: 40px; border-bottom: 4px solid #2b6cb0; padding-bottom: 20px;">
-    ${logoSrc ? `<img src="${logoSrc}" alt="Logo" style="height: 100px; margin-bottom: 15px;" crossorigin="anonymous"/>` : ''}
-    <h1 style="margin: 0; text-transform: uppercase; letter-spacing: 2px; color: #2b6cb0;">${user?.schoolName || 'ACADEMIC INSTITUTION'}</h1>
-    <h2 style="margin: 10px 0 0 0; font-weight: 400; color: #4a5568;">OFFICIAL ACADEMIC TRANSCRIPT</h2>
-  </div>
-
-  <div style="display: flex; justify-content: space-between; margin-bottom: 30px; background: transparent; padding: 20px; border-radius: 8px;">
-    <div>
-      <div style="margin-bottom: 8px;"><strong>STUDENT NAME:</strong> <span style="font-size: 1.1rem;">${student.name}</span></div>
-      <div style="margin-bottom: 8px;"><strong>STUDENT ID:</strong> ${student.studentId}</div>
-      <div><strong>CURRENT CLASS:</strong> ${student.class?.name || 'N/A'}</div>
-    </div>
-    <div style="text-align: right;">
-      <div style="margin-bottom: 8px;"><strong>DATE OF ISSUE:</strong> ${new Date().toLocaleDateString()}</div>
-      <div style="margin-bottom: 8px;"><strong>CUMULATIVE AVERAGE:</strong> ${student.avgScore || '—'}%</div>
-      <div><strong>ATTENDANCE RATE:</strong> ${student.attendanceRate || 0}%</div>
-    </div>
-  </div>
-
-  <h3 style="margin-bottom: 10px; border-bottom: 1px solid #e2e8f0; padding-bottom: 5px;">ACADEMIC RECORD</h3>
-  <table>
-    <thead>
-      <tr>
-        <th>Subject Code</th>
-        <th>Subject Name</th>
-        <th style="text-align: center;">Score</th>
-        <th style="text-align: center;">Grade</th>
-        <th>Remarks</th>
-      </tr>
-    </thead>
-    <tbody>
-      ${gradesHtml || '<tr><td colspan="5" style="text-align:center; padding: 20px; color: #718096;">No academic records found</td></tr>'}
-    </tbody>
-  </table>
-
-  <div style="margin-top: 80px; display: flex; justify-content: space-between;">
-    <div style="width: 250px; text-align: center;">
-      <div style="border-bottom: 1px solid #000; height: 40px;"></div>
-      <div style="margin-top: 8px; font-weight: bold; font-size: 0.9rem;">Registrar / Principal</div>
-    </div>
-    <div style="width: 250px; text-align: center;">
-      <div style="border-bottom: 1px solid #000; height: 40px;"></div>
-      <div style="margin-top: 8px; font-weight: bold; font-size: 0.9rem;">Official School Seal</div>
-    </div>
-  </div>
-</body>
-</html>`;
-
-    const printWin = window.open('', '_blank', 'width=900,height=700');
-    if (!printWin) { alert('Pop-up blocked. Please allow pop-ups.'); return; }
-    printWin.document.write(html);
-    printWin.document.close();
-    printWin.focus();
-    printWin.onload = () => setTimeout(() => { printWin.print(); printWin.close(); }, 400);
-    setTimeout(() => { try { printWin.print(); printWin.close(); } catch (_) {} }, 1200);
+  const template = {
+    config: { primaryColor: user?.schoolBranding?.primaryColor || '#2563eb' },
+    signatureUrl: user?.schoolBranding?.logo ? (
+      user.schoolBranding.logo.startsWith('http') ? user.schoolBranding.logo
+      : user.schoolBranding.logo.startsWith('/api') ? `${window.location.origin}${user.schoolBranding.logo}`
+      : `${window.location.origin}/api/storage/media/global/${user.schoolBranding.logo}`
+    ) : undefined
   };
 
   return (
@@ -153,7 +103,7 @@ export default function AdminAcademicHistory() {
           <button className="portal-btn-secondary" onClick={() => window.history.back()}>
             <i className="fas fa-arrow-left" style={{ marginRight: 8 }}></i>Back
           </button>
-          <button className="portal-btn-primary" onClick={handlePrintTranscript}>
+          <button className="portal-btn-primary" onClick={() => setShowTranscript(true)}>
             <i className="fas fa-file-pdf" style={{ marginRight: 8 }}></i>Full Transcript
           </button>
         </div>
@@ -224,6 +174,33 @@ export default function AdminAcademicHistory() {
           </table>
         </div>
       </div>
+
+      {showTranscript && (
+        <div className="portal-modal-overlay">
+          <div className="portal-modal-card animate-in zoom-in duration-200" style={{ maxWidth: '960px' }}>
+            <div className="portal-modal-header" style={{ padding: '24px 32px', background: '#fff', borderBottom: '1px solid #f1f5f9' }}>
+              <div>
+                <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 900 }}>Academic Transcript Preview</h3>
+                <p style={{ margin: '4px 0 0 0', fontSize: '0.85rem', color: '#64748b', fontWeight: 600 }}>Archived Performance Metrics</p>
+              </div>
+              <div style={{ display: 'flex', gap: '12px' }}>
+                <button className="portal-btn-primary" onClick={handleDownloadPDF} style={{ padding: '12px 24px', fontWeight: 900 }}>
+                  <i className="fas fa-download mr-2"></i> Download PDF
+                </button>
+                <button className="portal-btn-ghost" onClick={() => setShowTranscript(false)} style={{ padding: '12px 24px', fontWeight: 800 }}>
+                  Dismiss
+                </button>
+              </div>
+            </div>
+            
+            <div className="portal-modal-body" style={{ padding: '40px', background: 'transparent' }}>
+              <div id="academic-history-viewer">
+                <ReportDocument data={reportData} template={template} />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

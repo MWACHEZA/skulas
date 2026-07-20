@@ -312,9 +312,14 @@ export default function AdminApplications() {
                           className="portal-btn-ghost" 
                           title="Review Application"
                           style={{ width: 36, height: 36, padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                          onClick={() => {
-                            setSelectedApp(a);
-                            setSelectedClassId(a.assignedClassId || '');
+                          onClick={async () => {
+                            try {
+                              const { data } = await api.get(`/api/applications/${a.id}`);
+                              setSelectedApp(data);
+                              setSelectedClassId(data.assignedClassId || '');
+                            } catch (err) {
+                              showToast('Failed to load application details', 'error');
+                            }
                           }}
                         >
                           <i className="fas fa-eye" style={{ color: '#4338ca' }}></i>
@@ -402,6 +407,24 @@ export default function AdminApplications() {
                   <label style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: '#718096' }}>Tracking Info</label>
                   <p style={{ margin: '2px 0' }}><strong>ID:</strong> {selectedApp.applicationNumber || selectedApp.id}</p>
                   <p style={{ margin: '2px 0' }}><strong>{isUniversity ? 'Entry Category' : 'Type'}:</strong> {isUniversity ? selectedApp.entryCategory : selectedApp.appType}</p>
+                </div>
+              </div>
+
+              <div style={{ background: '#f8fafc', padding: 15, borderRadius: 12, border: '1px solid #e2e8f0', marginBottom: 20 }}>
+                <h4 style={{ fontSize: '0.85rem', color: '#4a5568', margin: '0 0 10px 0' }}><i className="fas fa-info-circle" style={{ marginRight: 6 }}></i>Personal & Additional Info</h4>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 15, fontSize: '0.85rem' }}>
+                  {selectedApp.dob && <div><strong>Date of Birth:</strong> {new Date(selectedApp.dob).toLocaleDateString()}</div>}
+                  {selectedApp.gender && <div><strong>Gender:</strong> {selectedApp.gender}</div>}
+                  {selectedApp.address && <div><strong>Address:</strong> {selectedApp.address}</div>}
+                  {selectedApp.programLevel && <div><strong>Program Level:</strong> {selectedApp.programLevel}</div>}
+                  {selectedApp.studyMode && <div><strong>Study Mode:</strong> {selectedApp.studyMode}</div>}
+                  {selectedApp.researchTitle && <div style={{ gridColumn: 'span 2' }}><strong>Research Title:</strong> {selectedApp.researchTitle}</div>}
+                  {selectedApp.notes && (
+                    <div style={{ gridColumn: 'span 2', marginTop: 5 }}>
+                      <strong>Self-reported Honors / Experience / Notes:</strong>
+                      <p style={{ margin: '4px 0 0 0', color: '#4a5568', whiteSpace: 'pre-wrap' }}>{selectedApp.notes}</p>
+                    </div>
+                  )}
                 </div>
               </div>
 

@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import api from '../../../lib/api';
 import { useTerminology } from '../../../hooks/useTerminology';
+import { useToast } from '../../../context/ToastContext';
 
 export default function AdminAnnouncementsManagement() {
   const { t } = useTerminology();
+  const { showToast, toastConfirm } = useToast();
   const [announcements, setAnnouncements] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -23,7 +25,7 @@ export default function AdminAnnouncementsManagement() {
     { id: 'PARENT', label: `${t('parent')} Portal` },
     { id: 'BURSAR', label: 'Bursar Portal' },
     { id: 'LIBRARIAN', label: 'Librarian Portal' },
-    { id: 'ANCILLARY', label: 'Ancillary Portal' },
+    { id: 'ANCILLARY', label: 'Ancillary Portal' }
   ];
 
   useEffect(() => {
@@ -33,11 +35,11 @@ export default function AdminAnnouncementsManagement() {
   const fetchAnnouncements = async () => {
     setLoading(true);
     try {
-      const res = await api.get('/api/content/announcements');
+      const res = await api.get('/api/content/announcements?all=true');
       setAnnouncements(res.data);
     } catch (err) {
-      console.error('Failed to fetch announcements');
-    
+      console.error(err);
+      showToast('Failed to load announcements', 'error');
     } finally {
       setLoading(false);
     }
@@ -54,31 +56,43 @@ export default function AdminAnnouncementsManagement() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
     try {
       if (editingId) {
         await api.put(`/api/content/announcements/${editingId}`, formData);
+        showToast('Announcement updated successfully', 'success');
       } else {
         await api.post('/api/content/announcements', formData);
+        showToast('Announcement created successfully', 'success');
       }
       setShowModal(false);
       setEditingId(null);
       setFormData({ title: '', content: '', visiblePortals: [], isPublic: false, expiresAt: '' });
       fetchAnnouncements();
     } catch (err) {
-      alert(`Failed to ${editingId ? 'update' : 'create'} announcement`);
-    } finally {
-      setLoading(false);
+      showToast(`Failed to ${editingId ? 'update' : 'create'} announcement`, 'error');
     }
   };
 
+  const handleEdit = (announcement: any) => {
+    setEditingId(announcement.id);
+    setFormData({
+      title: announcement.title,
+      content: announcement.content,
+      visiblePortals: announcement.visiblePortals || [],
+      isPublic: announcement.isPublic,
+      expiresAt: announcement.expiresAt ? announcement.expiresAt.split('T')[0] : ''
+    });
+    setShowModal(true);
+  };
+
   const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this announcement?')) return;
+    if (!(await toastConfirm('Are you sure you want to delete this announcement?'))) return;
     try {
       await api.delete(`/api/content/announcements/${id}`);
+      showToast('Announcement deleted successfully', 'success');
       fetchAnnouncements();
     } catch (err) {
-      alert('Failed to delete');
+      showToast('Failed to delete announcement', 'error');
     }
   };
 
