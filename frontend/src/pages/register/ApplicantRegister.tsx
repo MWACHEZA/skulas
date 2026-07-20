@@ -260,6 +260,11 @@ export default function ApplicantRegister() {
                 <p style={{ fontSize: '0.85rem', color: '#64748b', marginBottom: 20 }}>Please upload scanned copies (Images/PDFs) of the following documents for verification.</p>
                 
                 <div className="form-group" style={{ background: '#f8fafc', padding: 15, borderRadius: 10, border: '1px solid #e2e8f0', marginBottom: 12 }}>
+                  <label style={{ display: 'block', fontWeight: 600 }}>Applicant Photo (Max 20MB) * {getDocStatusIcon('Applicant Photo')}</label>
+                  <input type="file" accept="image/*" onChange={(e) => handleFileUpload(e, 'Applicant Photo')} style={{ marginTop: 5 }} />
+                </div>
+
+                <div className="form-group" style={{ background: '#f8fafc', padding: 15, borderRadius: 10, border: '1px solid #e2e8f0', marginBottom: 12 }}>
                   <label style={{ display: 'block', fontWeight: 600 }}>Birth Certificate * {getDocStatusIcon('Birth Certificate')}</label>
                   <input type="file" onChange={(e) => handleFileUpload(e, 'Birth Certificate')} style={{ marginTop: 5 }} />
                 </div>

@@ -32,6 +32,7 @@ export default function JobApplications() {
   const [vacancies, setVacancies] = useState<any[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [editingAppId, setEditingAppId] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [searchTerm, setSearchTerm] = useState('');
@@ -142,10 +143,17 @@ export default function JobApplications() {
         resumeUrl: resumeBase64
       };
 
-      await api.post('/api/hr/applications', payload);
-      alert('Applicant added successfully!');
+      if (editingAppId) {
+        await api.put(`/api/hr/applications/${editingAppId}`, payload);
+        alert('Applicant updated successfully!');
+      } else {
+        await api.post('/api/hr/applications', payload);
+        alert('Applicant added successfully!');
+      }
+      
       fetchApplications(activeTab);
       setShowAddModal(false);
+      setEditingAppId(null);
       
       // Reset form
       setAddFormData({
@@ -163,6 +171,7 @@ export default function JobApplications() {
         coverLetter: ''
       });
       setAddFiles({ photo: null, resume: null });
+      setEditingAppId(null);
     } catch (error) {
       console.error('Failed to add applicant', error);
       alert('Failed to add applicant.');
@@ -300,7 +309,24 @@ export default function JobApplications() {
               <p>Showing {t('applicants').toLowerCase()} who are currently in '{activeTab}' status</p>
             </div>
             <button 
-              onClick={() => setShowAddModal(true)}
+              onClick={() => {
+                setEditingAppId(null);
+                setAddFormData({
+                  applicantName: '',
+                  vacancyId: '',
+                  date: new Date().toISOString().split('T')[0],
+                  status: 'Applied',
+                  gender: '',
+                  email: '',
+                  phone: '',
+                  qualification: '',
+                  skills: '',
+                  workExperience: '',
+                  address: '',
+                  coverLetter: ''
+                });
+                setShowAddModal(true);
+              }}
               className="portal-btn-primary"
               style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}
             >
@@ -369,6 +395,31 @@ export default function JobApplications() {
                               <button onClick={() => updateStatus(app.id, 'Hired')} className="portal-btn-secondary" style={{ padding: '6px 12px', fontSize: '0.85rem', color: '#10b981', borderColor: '#10b981' }}>Hire</button>
                             )}
                             <button 
+                              onClick={() => {
+                                setEditingAppId(app.id);
+                                setAddFormData({
+                                  applicantName: app.applicantName || '',
+                                  vacancyId: app.vacancyId || '',
+                                  date: app.createdAt ? new Date(app.createdAt).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+                                  status: app.status || 'Applied',
+                                  gender: app.gender || '',
+                                  email: app.email || '',
+                                  phone: app.phone || '',
+                                  qualification: app.qualification || '',
+                                  skills: app.skills || '',
+                                  workExperience: app.workExperience || '',
+                                  address: app.address || '',
+                                  coverLetter: app.coverLetter || ''
+                                });
+                                setShowAddModal(true);
+                              }}
+                              className="portal-btn-ghost" 
+                              style={{ padding: '8px', width: '36px', height: '36px', color: '#f59e0b', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                              title="Edit"
+                            >
+                              <i className="fas fa-edit"></i>
+                            </button>
+                            <button 
                               onClick={() => deleteApplication(app.id)}
                               className="portal-btn-ghost" 
                               style={{ padding: '8px', width: '36px', height: '36px', color: '#dc2626', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
@@ -418,11 +469,14 @@ export default function JobApplications() {
           <div className="portal-modal-card" style={{ maxWidth: '650px', width: '90%' }}>
             <div className="portal-modal-header">
               <div>
-                <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 700 }}>ADD {t('applicant').toUpperCase()}</h3>
-                <p style={{ margin: '4px 0 0 0', fontSize: '0.85rem', color: '#64748b' }}>Register a new {t('applicant').toLowerCase()} manually</p>
+                <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 700 }}>{editingAppId ? `EDIT ${t('applicant').toUpperCase()}` : `ADD ${t('applicant').toUpperCase()}`}</h3>
+                <p style={{ margin: '4px 0 0 0', fontSize: '0.85rem', color: '#64748b' }}>{editingAppId ? `Update ${t('applicant').toLowerCase()} details` : `Register a new ${t('applicant').toLowerCase()} manually`}</p>
               </div>
               <button 
-                onClick={() => setShowAddModal(false)}
+                onClick={() => {
+                  setShowAddModal(false);
+                  setEditingAppId(null);
+                }}
                 className="portal-btn-ghost"
                 style={{ padding: '6px', minWidth: 'auto' }}
               >
@@ -592,11 +646,14 @@ export default function JobApplications() {
                 </div>
 
                 <div style={{ gridColumn: 'span 2', display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '20px' }}>
-                  <button type="button" onClick={() => setShowAddModal(false)} className="portal-btn-neutral">
+                  <button type="button" onClick={() => {
+                    setShowAddModal(false);
+                    setEditingAppId(null);
+                  }} className="portal-btn-neutral">
                     Cancel
                   </button>
                   <button type="submit" disabled={submitting} className="portal-btn-primary" style={{ background: 'var(--school-primary, #0056b3)', borderColor: 'var(--school-primary, #0056b3)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    {submitting ? <i className="fas fa-spinner fa-spin"></i> : <i className="fas fa-plus"></i>} Save {t('applicant').toLowerCase()}
+                    {submitting ? <i className="fas fa-spinner fa-spin"></i> : (editingAppId ? <i className="fas fa-save"></i> : <i className="fas fa-plus"></i>)} {editingAppId ? 'Update' : 'Save'} {t('applicant').toLowerCase()}
                   </button>
                 </div>
               </form>

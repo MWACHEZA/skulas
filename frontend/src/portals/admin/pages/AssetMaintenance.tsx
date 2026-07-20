@@ -213,28 +213,28 @@ export default function AdminAssetMaintenance() {
                             >
                               <i className="fas fa-check"></i>
                             </button>
-                            <button 
-                              className="portal-btn-ghost" 
-                              style={{ padding: '8px', width: '36px', height: '36px', color: '#f59e0b', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                              title="Edit Task"
-                              onClick={() => {
-                                setIsEditing(true);
-                                setEditTaskId(task.id);
-                                setForm({
-                                  assetId: task.assetId,
-                                  description: task.task,
-                                  cost: task.cost ? task.cost.toString() : '',
-                                  scheduledDate: task.dueDate.split('T')[0]
-                                });
-                                setShowModal(true);
-                              }}
-                            >
-                              <i className="fas fa-edit"></i>
-                            </button>
                           </>
                         ) : (
                           <span style={{ fontSize: '0.8rem', color: '#94a3b8', fontStyle: 'italic', display: 'flex', alignItems: 'center', height: '36px', padding: '0 8px' }}>Done</span>
                         )}
+                        <button 
+                          className="portal-btn-ghost" 
+                          style={{ padding: '8px', width: '36px', height: '36px', color: '#f59e0b', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                          title="Edit Task"
+                          onClick={() => {
+                            setIsEditing(true);
+                            setEditTaskId(task.id);
+                            setForm({
+                              assetId: task.assetId,
+                              description: task.task,
+                              cost: task.cost ? task.cost.toString() : '',
+                              scheduledDate: task.dueDate.split('T')[0]
+                            });
+                            setShowModal(true);
+                          }}
+                        >
+                          <i className="fas fa-edit"></i>
+                        </button>
                         <button 
                           className="portal-btn-ghost" 
                           style={{ padding: '8px', width: '36px', height: '36px', color: '#ef4444', display: 'flex', alignItems: 'center', justifyContent: 'center' }}

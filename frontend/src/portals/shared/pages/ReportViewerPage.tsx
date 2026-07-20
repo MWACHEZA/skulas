@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../../../lib/api';
 import { toast } from 'react-hot-toast';
@@ -755,11 +755,11 @@ export default function ReportViewerPage() {
               );
             })()}
           </div>
-
-          {/* ── Visualizations ── */}
-          {renderVisualizations(false)}
         </div>
       )}
+
+      {/* ── Visualizations ── */}
+      {renderVisualizations(false)}
 
       {!data && !loading && (
         <div style={{ padding: '80px', textAlign: 'center', background: 'white', borderRadius: '20px', border: '1px solid #f1f5f9' }}>
