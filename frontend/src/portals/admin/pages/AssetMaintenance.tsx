@@ -29,6 +29,8 @@ export default function AdminAssetMaintenance() {
     cost: '',
     scheduledDate: '',
   });
+  const [isEditing, setIsEditing] = useState(false);
+  const [editTaskId, setEditTaskId] = useState('');
 
   const [showCompleteModal, setShowCompleteModal] = useState(false);
   const [completeForm, setCompleteForm] = useState({
@@ -53,7 +55,7 @@ export default function AdminAssetMaintenance() {
     }
   };
 
-  const handleSchedule = async (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.assetId || !form.description || !form.scheduledDate) {
       showToast('Please fill all required fields', 'error');
@@ -61,20 +63,43 @@ export default function AdminAssetMaintenance() {
     }
     setSaving(true);
     try {
-      await api.post('/api/assets/maintenance/schedule', {
-        assetId: form.assetId,
-        description: form.description,
-        cost: parseFloat(form.cost) || 0,
-        scheduledDate: form.scheduledDate,
-      });
-      showToast('Maintenance task scheduled successfully', 'success');
+      if (isEditing) {
+        await api.put(`/api/assets/maintenance/${editTaskId}`, {
+          description: form.description,
+          cost: parseFloat(form.cost) || 0,
+          scheduledDate: form.scheduledDate,
+        });
+        showToast('Maintenance task updated successfully', 'success');
+      } else {
+        await api.post('/api/assets/maintenance/schedule', {
+          assetId: form.assetId,
+          description: form.description,
+          cost: parseFloat(form.cost) || 0,
+          scheduledDate: form.scheduledDate,
+        });
+        showToast('Maintenance task scheduled successfully', 'success');
+      }
       setShowModal(false);
+      setIsEditing(false);
+      setEditTaskId('');
       setForm({ assetId: '', description: '', cost: '', scheduledDate: '' });
       fetchAssets();
     } catch {
-      showToast('Failed to schedule maintenance task', 'error');
+      showToast(isEditing ? 'Failed to update task' : 'Failed to schedule maintenance task', 'error');
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (window.confirm('Are you sure you want to delete this maintenance task?')) {
+      try {
+        await api.delete(`/api/assets/maintenance/${id}`);
+        showToast('Maintenance task deleted successfully', 'success');
+        fetchAssets();
+      } catch (err: any) {
+        showToast(err.response?.data?.error || 'Failed to delete maintenance task', 'error');
+      }
     }
   };
 
@@ -127,7 +152,12 @@ export default function AdminAssetMaintenance() {
       <div className="portal-card animate-in">
         <div className="portal-card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <h2><i className="fas fa-tools" style={{ marginRight: 8, color: 'var(--portal-danger)' }}></i>Maintenance Pipeline</h2>
-          <button className="portal-btn-primary" onClick={() => setShowModal(true)} style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <button className="portal-btn-primary" onClick={() => {
+            setIsEditing(false);
+            setEditTaskId('');
+            setForm({ assetId: '', description: '', cost: '', scheduledDate: '' });
+            setShowModal(true);
+          }} style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}>
             <i className="fas fa-plus"></i> SCHEDULE TASK
           </button>
         </div>
@@ -169,21 +199,51 @@ export default function AdminAssetMaintenance() {
                       </span>
                     </td>
                     <td>
-                      {!task.performedDate ? (
-                        <button 
-                          className="portal-btn-ghost" 
-                          style={{ padding: '8px', width: '36px', height: '36px', color: '#10b981', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                          title="Complete Task"
-                          onClick={() => {
-                            setCompleteForm({ ...completeForm, taskId: task.id, condition: 'good' });
-                            setShowCompleteModal(true);
-                          }}
-                        >
-                          <i className="fas fa-check"></i>
-                        </button>
-                      ) : (
-                        <span style={{ fontSize: '0.8rem', color: '#94a3b8', fontStyle: 'italic' }}>Done</span>
-                      )}
+                      <div style={{ display: 'flex', gap: '8px' }}>
+                        {!task.performedDate ? (
+                          <>
+                            <button 
+                              className="portal-btn-ghost" 
+                              style={{ padding: '8px', width: '36px', height: '36px', color: '#10b981', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                              title="Complete Task"
+                              onClick={() => {
+                                setCompleteForm({ ...completeForm, taskId: task.id, condition: 'good' });
+                                setShowCompleteModal(true);
+                              }}
+                            >
+                              <i className="fas fa-check"></i>
+                            </button>
+                            <button 
+                              className="portal-btn-ghost" 
+                              style={{ padding: '8px', width: '36px', height: '36px', color: '#f59e0b', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                              title="Edit Task"
+                              onClick={() => {
+                                setIsEditing(true);
+                                setEditTaskId(task.id);
+                                setForm({
+                                  assetId: task.assetId,
+                                  description: task.task,
+                                  cost: task.cost ? task.cost.toString() : '',
+                                  scheduledDate: task.dueDate.split('T')[0]
+                                });
+                                setShowModal(true);
+                              }}
+                            >
+                              <i className="fas fa-edit"></i>
+                            </button>
+                            <button 
+                              className="portal-btn-ghost" 
+                              style={{ padding: '8px', width: '36px', height: '36px', color: '#ef4444', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                              title="Delete Task"
+                              onClick={() => handleDelete(task.id)}
+                            >
+                              <i className="fas fa-trash"></i>
+                            </button>
+                          </>
+                        ) : (
+                          <span style={{ fontSize: '0.8rem', color: '#94a3b8', fontStyle: 'italic', display: 'flex', alignItems: 'center', height: '36px', padding: '0 8px' }}>Done</span>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -198,10 +258,10 @@ export default function AdminAssetMaintenance() {
         <div className="portal-modal-overlay">
           <div className="portal-modal-card" style={{ maxWidth: 500 }}>
             <div className="portal-modal-header">
-              <h2>Schedule Maintenance Task</h2>
+              <h2>{isEditing ? 'Edit Maintenance Task' : 'Schedule Maintenance Task'}</h2>
               <button className="modal-close" style={{ border: 'none', background: 'none', fontSize: '1.5rem', cursor: 'pointer' }} onClick={() => setShowModal(false)}>&times;</button>
             </div>
-            <form onSubmit={handleSchedule}>
+            <form onSubmit={handleSave}>
               <div className="portal-modal-body">
                 <div style={{ display: 'grid', gap: 16 }}>
                   <div>
@@ -211,6 +271,7 @@ export default function AdminAssetMaintenance() {
                       value={form.assetId}
                       onChange={e => setForm({ ...form, assetId: e.target.value })}
                       required
+                      disabled={isEditing}
                     >
                       <option value="">-- Choose Asset --</option>
                       {assets.map(a => (

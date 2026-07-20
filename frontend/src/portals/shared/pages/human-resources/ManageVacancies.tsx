@@ -17,7 +17,8 @@ export default function ManageVacancies() {
   const { t } = useTerminology();
   const [vacancies, setVacancies] = useState<Vacancy[]>([]);
   const [loading, setLoading] = useState(true);
-  const [isAdding, setIsAdding] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [departments, setDepartments] = useState<{ id: string; name: string }[]>([]);
   const [recruiters, setRecruiters] = useState<{ id: string; firstName: string; lastName: string }[]>([]);
 
@@ -76,14 +77,20 @@ export default function ManageVacancies() {
         requiredFields: JSON.stringify(requiredFields)
       };
 
-      await api.post('/api/hr/vacancies', payload);
-      alert('Vacancy added successfully!');
-      setIsAdding(false);
+      if (editingId) {
+        await api.put(`/api/hr/vacancies/${editingId}`, payload);
+        alert('Vacancy updated successfully!');
+      } else {
+        await api.post('/api/hr/vacancies', payload);
+        alert('Vacancy added successfully!');
+      }
+      setIsModalOpen(false);
+      setEditingId(null);
       reset();
       fetchVacancies();
     } catch (error) {
       console.error('Failed to add vacancy', error);
-      alert('Failed to add vacancy');
+      alert(`Failed to ${editingId ? 'update' : 'add'} vacancy`);
     }
   };
 
@@ -182,7 +189,11 @@ export default function ManageVacancies() {
       <div className="portal-card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <h3>VACANCIES</h3>
         <button 
-          onClick={() => setIsAdding(true)}
+          onClick={() => {
+            setEditingId(null);
+            reset({});
+            setIsModalOpen(true);
+          }}
           className="portal-btn-primary"
           style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}
         >
@@ -256,14 +267,38 @@ export default function ManageVacancies() {
                       </span>
                     </td>
                     <td style={{ textAlign: 'center' }}>
-                      <button
-                        onClick={() => deleteVacancy(vacancy.id)}
-                        className="portal-btn-ghost"
-                        style={{ padding: '8px', width: '36px', height: '36px', color: '#dc2626', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                        title="Delete"
-                      >
-                        <i className="fas fa-trash"></i>
-                      </button>
+                      <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
+                        <button
+                          onClick={() => {
+                            setEditingId(vacancy.id);
+                            // Set form values
+                            const requiredFields = vacancy.requiredFields ? JSON.parse(vacancy.requiredFields as any) : [];
+                            reset({
+                              ...vacancy,
+                              startDate: vacancy.startDate ? format(new Date(vacancy.startDate), 'yyyy-MM-dd') : '',
+                              endDate: vacancy.endDate ? format(new Date(vacancy.endDate), 'yyyy-MM-dd') : '',
+                              reqPhoto: requiredFields.includes('Photo'),
+                              reqResume: requiredFields.includes('Resume'),
+                              reqDob: requiredFields.includes('Date of Birth'),
+                              reqGender: requiredFields.includes('Gender'),
+                            });
+                            setIsModalOpen(true);
+                          }}
+                          className="portal-btn-ghost"
+                          style={{ padding: '8px', width: '36px', height: '36px', color: '#f59e0b', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                          title="Edit"
+                        >
+                          <i className="fas fa-edit"></i>
+                        </button>
+                        <button
+                          onClick={() => deleteVacancy(vacancy.id)}
+                          className="portal-btn-ghost"
+                          style={{ padding: '8px', width: '36px', height: '36px', color: '#dc2626', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                          title="Delete"
+                        >
+                          <i className="fas fa-trash"></i>
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))
@@ -299,16 +334,19 @@ export default function ManageVacancies() {
         </div>
       </div>
 
-      {isAdding && (
+      {isModalOpen && (
         <div className="portal-modal-overlay">
           <div className="portal-modal-card" style={{ maxWidth: '800px' }}>
             <div className="portal-modal-header">
               <div>
-                <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 700 }}>ADD VACANCY</h3>
-                <p style={{ margin: '4px 0 0 0', fontSize: '0.85rem', color: '#64748b' }}>Register a new job vacancy</p>
+                <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 700 }}>{editingId ? 'EDIT VACANCY' : 'ADD VACANCY'}</h3>
+                <p style={{ margin: '4px 0 0 0', fontSize: '0.85rem', color: '#64748b' }}>{editingId ? 'Update job vacancy details' : 'Register a new job vacancy'}</p>
               </div>
               <button 
-                onClick={() => setIsAdding(false)}
+                onClick={() => {
+                  setIsModalOpen(false);
+                  setEditingId(null);
+                }}
                 className="portal-btn-ghost"
                 style={{ padding: '6px', minWidth: 'auto' }}
               >
@@ -454,7 +492,10 @@ export default function ManageVacancies() {
                 </div>
 
                 <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '10px' }}>
-                  <button type="button" onClick={() => setIsAdding(false)} className="portal-btn-neutral">
+                  <button type="button" onClick={() => {
+                    setIsModalOpen(false);
+                    setEditingId(null);
+                  }} className="portal-btn-neutral">
                     Cancel
                   </button>
                   <button type="submit" className="portal-btn-primary" style={{ background: 'var(--school-primary, #0056b3)', borderColor: 'var(--school-primary, #0056b3)', display: 'flex', alignItems: 'center', gap: '8px' }}>

@@ -376,10 +376,27 @@ export default function AdminApplications() {
             </div>
             <div className="portal-modal-body">
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, marginBottom: 25 }}>
-                <div>
-                  <label style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: '#718096' }}>Name & Contacts</label>
-                  <p style={{ fontWeight: 600, margin: '2px 0' }}>{selectedApp.applicantName}</p>
-                  <p style={{ margin: '2px 0', fontSize: '0.85rem', color: '#4a5568' }}>{selectedApp.email}<br/>{selectedApp.phone}</p>
+                <div style={{ display: 'flex', gap: 15 }}>
+                  {(() => {
+                    const photoDoc = selectedApp.documents?.find((d: any) => d.name === 'Applicant Photo');
+                    if (photoDoc) {
+                      return (
+                        <div style={{ width: 60, height: 60, borderRadius: '50%', overflow: 'hidden', background: '#e2e8f0', flexShrink: 0 }}>
+                          <img src={`${BASE_URL}/api/storage/media/${photoDoc.url}`} alt="Applicant" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        </div>
+                      );
+                    }
+                    return (
+                      <div style={{ width: 60, height: 60, borderRadius: '50%', background: '#e2e8f0', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#a0aec0' }}>
+                        <i className="fas fa-user" style={{ fontSize: '1.5rem' }}></i>
+                      </div>
+                    );
+                  })()}
+                  <div>
+                    <label style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: '#718096' }}>Name & Contacts</label>
+                    <p style={{ fontWeight: 600, margin: '2px 0' }}>{selectedApp.applicantName}</p>
+                    <p style={{ margin: '2px 0', fontSize: '0.85rem', color: '#4a5568' }}>{selectedApp.email}<br/>{selectedApp.phone}</p>
+                  </div>
                 </div>
                 <div>
                   <label style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: '#718096' }}>Tracking Info</label>
@@ -448,10 +465,17 @@ export default function AdminApplications() {
                 const isMedical = selectedApp.appType?.toLowerCase().includes('nursing') || selectedApp.school?.type?.toLowerCase().includes('nursing');
                 
                 const categories = [
-                  { title: 'Identity & Personal Records', types: ['Birth Certificate', 'National ID', 'Passport', 'Guardian ID'] },
+                  { title: 'Identity & Personal Records', types: ['Birth Certificate', 'National ID', 'Passport', 'Guardian ID', 'Applicant Photo'] },
                   { title: isMedical ? 'Academic & Registration History' : 'Academic Records', types: ['Academic Certificate', 'O-Level Results', 'A-Level Results', 'Transcripts', 'School Leaving Cert'] },
                   { title: 'Professional & Clinical Records', types: ['Medical Fitness Cert', 'Nursing Council Indexing', 'Police Clearance', 'Immunization Record'], hidden: !isMedical }
                 ];
+
+                const mappedTypes = categories.flatMap(c => c.types);
+                const uncategorizedDocs = selectedApp.documents.filter((d: any) => !mappedTypes.includes(d.name));
+                
+                if (uncategorizedDocs.length > 0) {
+                  categories.push({ title: 'Other Documents', types: uncategorizedDocs.map((d: any) => d.name) });
+                }
 
                 return (
                   <div style={{ marginBottom: 25 }}>

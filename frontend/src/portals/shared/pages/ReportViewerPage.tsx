@@ -174,7 +174,7 @@ export default function ReportViewerPage() {
   const handlePrint = () => window.print();
 
   return (
-    <div className="portal-container printable-area" style={{ background: '#f8fafc', minHeight: '100vh', padding: '0 24px 40px', position: 'relative' }}>
+    <div className="portal-container printable-area" style={{ minHeight: '100vh', padding: '0 24px 40px', position: 'relative' }}>
       <div className="portal-page-header">
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
           <button onClick={() => navigate(-1)} className="portal-btn-ghost" style={{ padding: '8px', width: '40px', height: '40px', borderRadius: '10px' }}>

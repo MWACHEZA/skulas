@@ -247,7 +247,7 @@ const ReportDocument: React.FC<Props> = ({ data, template }) => {
   return (
     <div id={`report-${data.id || data.studentId}`} className="report-container" style={{ 
       padding: '40px', 
-      background: 'white', 
+      background: 'transparent', 
       color: '#2d3748', 
       fontFamily: 'Inter, system-ui, sans-serif',
       width: '800px',

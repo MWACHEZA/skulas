@@ -147,13 +147,12 @@ export default function ProgressReports() {
               </div>
             </div>
             
-            <div className="portal-modal-body" style={{ padding: '40px', background: '#f8fafc' }}>
+            <div className="portal-modal-body" style={{ padding: '40px', background: 'transparent' }}>
               <div id={`report-viewer-${selectedReport.id}`} style={{ 
-                background: 'white', 
+                background: 'transparent', 
                 color: '#1e293b', 
                 padding: '60px', 
                 borderRadius: '16px',
-                boxShadow: '0 10px 25px -5px rgba(0,0,0,0.05), 0 8px 10px -6px rgba(0,0,0,0.01)',
                 border: '1px solid #f1f5f9',
                 fontFamily: 'system-ui, -apple-system, sans-serif' 
               }}>

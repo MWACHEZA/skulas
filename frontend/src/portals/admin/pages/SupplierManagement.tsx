@@ -15,6 +15,8 @@ export default function SupplierManagement() {
   const [activeUserForEdit, setActiveUserForEdit] = useState<any>(null);
   const [selectedSupplier, setSelectedSupplier] = useState<any>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
+  const [historySupplier, setHistorySupplier] = useState<any>(null);
+  const [historyData, setHistoryData] = useState<any[]>([]);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'ACTIVE' | 'PENDING'>('ACTIVE');
   const [pendingSuppliers, setPendingSuppliers] = useState<any[]>([]);
@@ -213,7 +215,10 @@ export default function SupplierManagement() {
                             <button className="portal-btn-ghost" title={s.isLocked ? "Unlock Access" : "Lock Access"} onClick={() => handleLockToggle(s)} style={{ padding: '8px', width: '36px', height: '36px', color: s.isLocked ? '#10b981' : '#dc2626', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                               <i className={`fas fa-${s.isLocked ? 'unlock' : 'lock'}`}></i>
                             </button>
-                            <button className="portal-btn-ghost" title="Purchase History" style={{ padding: '8px', width: '36px', height: '36px', color: '#3182ce', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => alert('This feature is currently under development or disabled.')}>
+                            <button className="portal-btn-ghost" title="Purchase History" style={{ padding: '8px', width: '36px', height: '36px', color: '#3182ce', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => {
+                              setHistorySupplier(s);
+                              setHistoryData([]); // Reset and trigger fetch if needed
+                            }}>
                               <i className="fas fa-file-invoice-dollar"></i>
                             </button>
                           </>
@@ -238,6 +243,68 @@ export default function SupplierManagement() {
           )}
         </div>
       </div>
+
+      {/* Purchase History Modal */}
+      {historySupplier && (
+        <div className="portal-modal-overlay">
+          <div className="portal-modal" style={{ maxWidth: 800 }}>
+            <div className="portal-modal-header">
+              <h2 style={{ margin: 0 }}>Purchase History - {historySupplier.name}</h2>
+              <button className="portal-modal-close" onClick={() => setHistorySupplier(null)}>&times;</button>
+            </div>
+            <div className="portal-modal-body">
+              <div style={{ background: '#f7fafc', padding: '15px 20px', borderRadius: '8px', marginBottom: '20px', display: 'flex', gap: '30px' }}>
+                <div>
+                  <label style={{ fontSize: '0.75rem', color: '#718096', textTransform: 'uppercase' }}>Supplier ID</label>
+                  <div style={{ fontWeight: 600 }}>{historySupplier.metadata?.globalId || 'GLB-PENDING'}</div>
+                </div>
+                <div>
+                  <label style={{ fontSize: '0.75rem', color: '#718096', textTransform: 'uppercase' }}>Category</label>
+                  <div style={{ fontWeight: 600 }}>{historySupplier.metadata?.specialization || 'General Supplies'}</div>
+                </div>
+              </div>
+
+              <div style={{ overflowX: 'auto' }}>
+                <table className="portal-table">
+                  <thead>
+                    <tr>
+                      <th>PO Number</th>
+                      <th>Date</th>
+                      <th>Description</th>
+                      <th>Total Amount</th>
+                      <th>Status</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {historyData.length > 0 ? historyData.map((order: any, idx) => (
+                      <tr key={idx}>
+                        <td>{order.poNumber}</td>
+                        <td>{new Date(order.createdAt).toLocaleDateString()}</td>
+                        <td>{order.description}</td>
+                        <td style={{ fontWeight: 600 }}>${order.totalAmount.toFixed(2)}</td>
+                        <td><span className={`portal-badge ${order.status === 'delivered' ? 'success' : 'info'}`}>{order.status}</span></td>
+                        <td>
+                          <button className="portal-btn-ghost" style={{ padding: 4 }} title="View Invoice">
+                            <i className="fas fa-file-pdf"></i>
+                          </button>
+                        </td>
+                      </tr>
+                    )) : (
+                      <tr>
+                        <td colSpan={6} style={{ textAlign: 'center', padding: '40px 20px', color: '#718096' }}>
+                          <i className="fas fa-file-invoice-dollar" style={{ fontSize: '2rem', color: '#cbd5e1', marginBottom: 10, display: 'block' }}></i>
+                          No purchase history or completed orders found for this supplier.
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Detail Panel */}
       {selectedSupplier && (

@@ -52,4 +52,27 @@ router.delete('/:id', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCILLARY'), asy
   }
 });
 
+router.put('/:id', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCILLARY'), async (req: AuthRequest, res: Response) => {
+  try {
+    const { reqPhoto, reqResume, reqDob, reqGender, id, ...data } = req.body;
+    const vacancy = await prisma.vacancy.update({
+      where: {
+        id: req.params.id as string,
+        schoolId: req.user!.schoolId!
+      },
+      data: {
+        ...data,
+        startDate: data.startDate ? new Date(data.startDate) : undefined,
+        endDate: data.endDate ? new Date(data.endDate) : undefined,
+        interviewRounds: data.interviewRounds ? parseInt(data.interviewRounds, 10) : undefined,
+        numberOfVacancies: data.numberOfVacancies ? parseInt(data.numberOfVacancies, 10) : undefined
+      }
+    });
+    res.json(vacancy);
+  } catch (error) {
+    console.error('Error updating vacancy:', error);
+    res.status(500).json({ error: 'Failed to update vacancy' });
+  }
+});
+
 export default router;

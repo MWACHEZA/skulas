@@ -130,6 +130,30 @@ router.post('/announcements', async (req: AuthRequest, res: Response) => {
 });
 
 /**
+ * @route   PUT /api/content/announcements/:id
+ * @desc    Update announcement
+ */
+router.put('/announcements/:id', async (req: AuthRequest, res: Response) => {
+  const id = req.params.id as string;
+  const { title, content, visiblePortals, isPublic, expiresAt } = req.body;
+  try {
+    const announcement = await prisma.announcement.updateMany({
+      where: { id, schoolId: req.user!.schoolId! },
+      data: {
+        title,
+        content,
+        visiblePortals,
+        isPublic,
+        expiresAt: expiresAt ? new Date(expiresAt) : null,
+      }
+    });
+    res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to update announcement' });
+  }
+});
+
+/**
  * @route   DELETE /api/admin/announcements/:id
  * @desc    Delete announcement
  */

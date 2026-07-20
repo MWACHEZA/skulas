@@ -362,4 +362,42 @@ router.patch('/maintenance/:id/complete', requireAuth, requireRole('SCHOOL_ADMIN
   }
 });
 
+/**
+ * @route   PUT /api/assets/maintenance/:id
+ * @desc    [ADMIN] Update a scheduled maintenance task
+ */
+router.put('/maintenance/:id', requireAuth, requireRole('SCHOOL_ADMIN'), async (req: AuthRequest, res: Response) => {
+  const { id } = req.params;
+  const { description, cost, scheduledDate } = req.body;
+  try {
+    const maintenance = await prisma.assetMaintenance.update({
+      where: { id: String(id) },
+      data: {
+        description: description ? String(description) : undefined,
+        cost: cost ? parseFloat(cost) : undefined,
+        scheduledDate: scheduledDate ? new Date(scheduledDate) : undefined,
+      }
+    });
+    res.json(maintenance);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to update maintenance task' });
+  }
+});
+
+/**
+ * @route   DELETE /api/assets/maintenance/:id
+ * @desc    [ADMIN] Delete a maintenance task
+ */
+router.delete('/maintenance/:id', requireAuth, requireRole('SCHOOL_ADMIN'), async (req: AuthRequest, res: Response) => {
+  const { id } = req.params;
+  try {
+    await prisma.assetMaintenance.delete({
+      where: { id: String(id) }
+    });
+    res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to delete maintenance task' });
+  }
+});
+
 export default router;

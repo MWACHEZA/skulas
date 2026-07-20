@@ -7,6 +7,7 @@ export default function AdminAnnouncementsManagement() {
   const [announcements, setAnnouncements] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     title: '',
     content: '',
@@ -55,12 +56,17 @@ export default function AdminAnnouncementsManagement() {
     e.preventDefault();
     setLoading(true);
     try {
-      await api.post('/api/content/announcements', formData);
+      if (editingId) {
+        await api.put(`/api/content/announcements/${editingId}`, formData);
+      } else {
+        await api.post('/api/content/announcements', formData);
+      }
       setShowModal(false);
+      setEditingId(null);
       setFormData({ title: '', content: '', visiblePortals: [], isPublic: false, expiresAt: '' });
       fetchAnnouncements();
     } catch (err) {
-      alert('Failed to create announcement');
+      alert(`Failed to ${editingId ? 'update' : 'create'} announcement`);
     } finally {
       setLoading(false);
     }
@@ -84,7 +90,11 @@ export default function AdminAnnouncementsManagement() {
             <h1>Announcements Management</h1>
             <p>Broadcast important information to specific user groups or the entire school community.</p>
           </div>
-          <button className="portal-btn-primary" style={{ background: 'var(--school-primary, #0056b3)', borderColor: 'var(--school-primary, #0056b3)' }} onClick={() => setShowModal(true)}>
+          <button className="portal-btn-primary" style={{ background: 'var(--school-primary, #0056b3)', borderColor: 'var(--school-primary, #0056b3)' }} onClick={() => {
+            setEditingId(null);
+            setFormData({ title: '', content: '', visiblePortals: [], isPublic: false, expiresAt: '' });
+            setShowModal(true);
+          }}>
             <i className="fas fa-plus" style={{ marginRight: 8 }}></i>Create Announcement
           </button>
         </div>
@@ -123,13 +133,34 @@ export default function AdminAnnouncementsManagement() {
                   <td>{a.isPublic ? <span className="portal-badge success">YES</span> : <span className="portal-badge neutral">NO</span>}</td>
                   <td style={{ fontSize: '0.85rem' }}>{new Date(a.publishedAt).toLocaleDateString()}</td>
                   <td>
-                    <button 
-                      className="portal-btn-secondary" 
-                      style={{ padding: '6px 12px', color: 'var(--portal-danger)' }}
-                      onClick={() => handleDelete(a.id)}
-                    >
-                      <i className="fas fa-trash"></i>
-                    </button>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      <button 
+                        className="portal-btn-secondary" 
+                        style={{ padding: '6px 12px', color: 'var(--school-primary, #3182ce)' }}
+                        onClick={() => {
+                          setEditingId(a.id);
+                          setFormData({
+                            title: a.title,
+                            content: a.content,
+                            visiblePortals: a.visiblePortals || [],
+                            isPublic: a.isPublic,
+                            expiresAt: a.expiresAt ? new Date(a.expiresAt).toISOString().split('T')[0] : ''
+                          });
+                          setShowModal(true);
+                        }}
+                        title="Edit"
+                      >
+                        <i className="fas fa-edit"></i>
+                      </button>
+                      <button 
+                        className="portal-btn-secondary" 
+                        style={{ padding: '6px 12px', color: 'var(--portal-danger)' }}
+                        onClick={() => handleDelete(a.id)}
+                        title="Delete"
+                      >
+                        <i className="fas fa-trash"></i>
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -143,11 +174,14 @@ export default function AdminAnnouncementsManagement() {
           <div className="portal-modal-card" style={{ maxWidth: '600px' }}>
             <div className="portal-modal-header">
               <div>
-                <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 700 }}>Create New Announcement</h3>
-                <p style={{ margin: '4px 0 0 0', fontSize: '0.85rem', color: '#64748b' }}>Broadcast important information to specific user groups or the entire school community.</p>
+                <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 700 }}>{editingId ? 'Edit Announcement' : 'Create New Announcement'}</h3>
+                <p style={{ margin: '4px 0 0 0', fontSize: '0.85rem', color: '#64748b' }}>{editingId ? 'Update announcement details.' : 'Broadcast important information to specific user groups or the entire school community.'}</p>
               </div>
               <button 
-                onClick={() => setShowModal(false)}
+                onClick={() => {
+                  setShowModal(false);
+                  setEditingId(null);
+                }}
                 className="portal-btn-ghost"
                 style={{ padding: '6px', minWidth: 'auto' }}
               >
@@ -204,10 +238,14 @@ export default function AdminAnnouncementsManagement() {
                   <label htmlFor="is-public" style={{ fontWeight: 600, color: '#2c5282', cursor: 'pointer', margin: 0 }}>Show on Public "News & Updates" page</label>
                 </div>
 
-                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, marginTop: '10px' }}>
-                  <button type="button" className="portal-btn-neutral" onClick={() => setShowModal(false)}>Cancel</button>
-                  <button type="submit" className="portal-btn-primary" style={{ background: 'var(--school-primary, #0056b3)', borderColor: 'var(--school-primary, #0056b3)' }} disabled={loading}>
-                    {loading ? 'Creating...' : 'Broadcast Announcement'}
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12, marginTop: 20 }}>
+                  <button type="button" className="portal-btn-ghost" onClick={() => {
+                    setShowModal(false);
+                    setEditingId(null);
+                  }}>Cancel</button>
+                  <button type="submit" className="portal-btn-primary" disabled={loading} style={{ background: 'var(--school-primary, #0056b3)', borderColor: 'var(--school-primary, #0056b3)' }}>
+                    {loading ? <i className="fas fa-spinner fa-spin"></i> : <i className="fas fa-paper-plane" style={{ marginRight: 8 }}></i>}
+                    {editingId ? 'Update Broadcast' : 'Publish Broadcast'}
                   </button>
                 </div>
               </form>
