@@ -83,6 +83,122 @@ export default function ManageCBT() {
     } catch (e) { console.error(e); }
   };
 
+  const handlePrintExam = () => {
+    if (!previewData) return;
+
+    const pBuiltin = PAPER_BUILTIN.find(p => p.id === templateConfig?.paperDesign) || PAPER_BUILTIN[0];
+    const pColor = pBuiltin.color;
+    const logoUrl = templateConfig?.paperLogo || templateConfig?.consultationLogo || previewData.school?.logo;
+    const resolvedLogo = logoUrl
+      ? (logoUrl.startsWith('/api') || logoUrl.startsWith('http') ? logoUrl : `/api/storage/file/${logoUrl}`)
+      : null;
+
+    // Build question rows
+    const questionsHtml = (previewData.questions || []).map((q: any, idx: number) => {
+      const optionsHtml = q.options && q.options.length > 0
+        ? `<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-left:1rem;margin-top:8px">
+            ${q.options.map((opt: string, i: number) =>
+              `<div>${String.fromCharCode(65 + i)}) ${opt || '_________'}</div>`
+            ).join('')}
+           </div>`
+        : (q.type !== 'True or false'
+            ? `<div style="border-bottom:1px dotted #ccc;height:80px;margin:10px 0"></div>`
+            : '');
+
+      const imageHtml = q.imageUrl
+        ? `<div style="margin-bottom:12px"><img src="${q.imageUrl}" alt="figure" style="max-width:100%;max-height:260px" /></div>`
+        : '';
+
+      return `
+        <div style="margin-bottom:1.8rem;display:flex;gap:14px;page-break-inside:avoid">
+          <div style="font-weight:800;min-width:24px">${idx + 1}.</div>
+          <div style="flex:1">
+            <p style="white-space:pre-wrap;margin:0 0 8px;font-size:1.05rem">${q.question || '____________________________________________________?'}</p>
+            ${imageHtml}
+            ${optionsHtml}
+            <div style="text-align:right;font-weight:700;font-style:italic;font-size:0.9rem;margin-top:6px">[${q.mark} mark${q.mark > 1 ? 's' : ''}]</div>
+          </div>
+        </div>`;
+    }).join('');
+
+    const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>${previewData.title || 'Exam'}</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: "Times New Roman", Times, serif; color: #000; background: #fff; padding: 2cm; }
+    h1, h2, h3, h4 { font-family: "Times New Roman", Times, serif; }
+    @page { margin: 2cm; }
+    @media print {
+      body { padding: 0; }
+    }
+  </style>
+</head>
+<body>
+  <!-- HEADER -->
+  <div style="text-align:center;margin-bottom:2.5rem;border-top:8px solid ${pColor};padding-top:1.5rem;border-bottom:2px solid ${pColor};padding-bottom:1.5rem">
+    ${resolvedLogo ? `<img src="${window.location.origin}${resolvedLogo.startsWith('/') ? resolvedLogo : '/' + resolvedLogo}" alt="Logo" style="height:90px;margin-bottom:12px;display:block;margin-left:auto;margin-right:auto" />` : ''}
+    <h1 style="font-size:2.2rem;text-transform:uppercase;letter-spacing:1px;color:${pColor};margin-bottom:8px">${previewData.school?.name || 'SCHOOL NAME'}</h1>
+    <h2 style="font-size:1.6rem;text-transform:uppercase;margin-bottom:16px">${previewData.title || 'Untitled CBT Exam'}</h2>
+    <div style="display:flex;justify-content:center;gap:3rem;font-size:1.05rem;font-weight:600">
+      <span>SUBJECT: ${previewData.subject?.name || '_________'}</span>
+      <span>DATE: ${new Date(previewData.date).toLocaleDateString()}</span>
+      <span>TIME: ${previewData.time}</span>
+    </div>
+    <div style="margin-top:1rem;font-weight:800;font-size:1.1rem">PASSING PERCENT: ${previewData.passingPercent}%</div>
+  </div>
+
+  <!-- INSTRUCTIONS -->
+  <div style="margin-bottom:1.8rem">
+    <h3 style="font-size:1rem;font-weight:800;text-decoration:underline;margin-bottom:8px">INSTRUCTIONS TO CANDIDATES</h3>
+    ${previewData.instructions
+      ? `<p style="font-size:1rem;white-space:pre-wrap;line-height:1.6">${previewData.instructions}</p>`
+      : `<ul style="padding-left:20px;line-height:1.8;font-size:1rem">
+           <li>Read each question carefully before answering.</li>
+           <li>For multiple-choice questions, select the best possible option.</li>
+           <li>Total questions: ${previewData.questions?.length || 0}</li>
+         </ul>`
+    }
+  </div>
+
+  <hr style="border:none;border-bottom:1px dashed #aaa;margin:1.5rem 0" />
+
+  <!-- QUESTIONS -->
+  ${questionsHtml}
+
+  <!-- END -->
+  <div style="text-align:center;margin-top:3rem;font-weight:800;border-top:1px solid #000;padding-top:1rem">--- END OF EXAMINATION ---</div>
+
+  <!-- FOOTER -->
+  <div style="text-align:center;font-size:0.8rem;color:#555;margin-top:2rem">
+    ${[previewData.school?.name, previewData.school?.address, previewData.school?.phone, previewData.school?.email].filter(Boolean).join(' | ')}
+  </div>
+</body>
+</html>`;
+
+    const printWin = window.open('', '_blank', 'width=900,height=700');
+    if (!printWin) {
+      alert('Pop-up was blocked. Please allow pop-ups for this site and try again.');
+      return;
+    }
+    printWin.document.write(html);
+    printWin.document.close();
+    printWin.focus();
+    // Give images time to load before printing
+    printWin.onload = () => {
+      setTimeout(() => {
+        printWin.print();
+        printWin.close();
+      }, 300);
+    };
+    // Fallback if onload doesn't fire (no images)
+    setTimeout(() => {
+      try { printWin.print(); printWin.close(); } catch (_) {}
+    }, 800);
+  };
+
   useEffect(() => {
     fetchExams();
     fetchInitialData();
@@ -453,7 +569,7 @@ export default function ManageCBT() {
                 <i className="fas fa-eye mr-2"></i> Exam Preview
               </h2>
               <div style={{ display: 'flex', gap: '12px' }}>
-                <button onClick={() => window.print()} className="portal-btn-secondary" style={{ padding: '8px 16px', fontSize: '0.9rem' }}>
+                <button onClick={handlePrintExam} className="portal-btn-secondary" style={{ padding: '8px 16px', fontSize: '0.9rem' }}>
                   <i className="fas fa-print mr-2"></i> Print
                 </button>
                 <button onClick={() => setPreviewExamId(null)} className="portal-btn-ghost" style={{ padding: '8px', fontSize: '1.2rem', color: '#64748b' }}>
