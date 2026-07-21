@@ -245,7 +245,7 @@ export default function StudentAssignments() {
                   </span>
                 )}
               </div>
-              <button className="view-btn" onClick={() => alert('This feature is currently under development or disabled.')}>
+              <button className="view-btn" onClick={(e) => { e.stopPropagation(); setSelectedAssignment(a); }}>
                 {a.submissions.length > 0 ? 'View Results' : a.questions ? 'Take Quiz' : 'View Details'} 
                 <i className="fas fa-arrow-right"></i>
               </button>

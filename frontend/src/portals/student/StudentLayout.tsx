@@ -18,6 +18,7 @@ export default function StudentLayout() {
     { label: t('grades'), icon: 'fas fa-chart-line', to: '/student/grades' },
     { label: t('timetable'), icon: 'fas fa-calendar-alt', to: '/student/timetable' },
     { label: t('assignments'), icon: 'fas fa-tasks', to: '/student/assignments' },
+    { label: 'Online Exams (CBT)', icon: 'fas fa-laptop-code', to: '/student/cbt' },
     { label: t('attendance'), icon: `fas ${isMedical ? 'fa-notes-medical' : 'fa-clipboard-check'}`, to: '/student/attendance' },
     { label: 'Fees & Payments', icon: 'fas fa-money-bill-wave', to: '/student/fees' },
     { label: 'Uniforms', icon: 'fas fa-tshirt', to: '/student/uniforms' },

@@ -61,6 +61,7 @@ import StudentMyBooks from './portals/student/pages/MyBooks';
 import Library from './portals/shared/pages/Library';
 import StudentEvents from './portals/student/pages/Events';
 import ResearchDashboard from './portals/student/pages/ResearchDashboard';
+import CBTExams from './portals/student/pages/CBTExams';
 
 //  Clinic Portal pages 
 import ClinicLayout from './portals/clinic/ClinicLayout';
@@ -413,11 +414,6 @@ export default function App() {
               <Route index element={<Home />} />
               <Route path="departments" element={<Departments />} />
               <Route path="library" element={<div>Library</div>} />
-              <Route path="leave" element={<MyLeave />} />
-              <Route path="awards" element={<MyAwards />} />
-              <Route path="payslips" element={<MyPaymentSlip />} />
-              <Route path="study-materials" element={<StudentStudyMaterial />} />
-              <Route path="*" element={<StudentDashboard />} />
               <Route path="gallery" element={<Gallery />} />
               <Route path="news" element={<News />} />
               <Route path="sports" element={<Sports />} />
@@ -487,6 +483,7 @@ export default function App() {
               <Route path="portfolio" element={<AcademicPortfolio />} />
               <Route path="settings" element={<SettingsPage />} />
               <Route path="profile" element={<ProfilePage />} />
+              <Route path="cbt" element={<CBTExams />} />
               <Route path="cbt/take/:id" element={<TakeExam />} />
             </Route>
 
