@@ -175,7 +175,11 @@ export default function CBTResults() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                 {exam?.questions.map((q: any, idx: number) => {
                   const sAns = selectedResult.responses ? selectedResult.responses[q.id] : null;
-                  const cAns = q.answer;
+                  let cAns = q.answer;
+                  
+                  if (Array.isArray(cAns) && q.type !== 'Multiple choice') {
+                    cAns = cAns[0];
+                  }
                   
                   // Simple heuristic for incorrect vs correct UI
                   let isCorrect = false;

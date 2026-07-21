@@ -338,7 +338,7 @@ export default function AdminUsers() {
                     { label: "Bank Branch (USD)", value: selectedUser.employeeProfile.bankBranch },
                     { label: "Account Number (USD)", value: selectedUser.employeeProfile.accountNumber },
                     { label: "Account Holder (USD)", value: selectedUser.employeeProfile.accountHolderName },
-                    ...(selectedUser.employeeProfile.bankNameZig ? [
+                    ...(selectedUser.employeeProfile.accountNumberZig || selectedUser.employeeProfile.bankNameZig ? [
                       { label: "🪙 Bank Name (ZiG)", value: selectedUser.employeeProfile.bankNameZig },
                       { label: "Bank Branch (ZiG)", value: selectedUser.employeeProfile.bankBranchZig },
                       { label: "Account Number (ZiG)", value: selectedUser.employeeProfile.accountNumberZig },

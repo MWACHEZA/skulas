@@ -272,7 +272,7 @@ export default function BursarManagement() {
                   { label: "Bank Branch (USD)", value: selectedBursar.employeeProfile.bankBranch },
                   { label: "Account Number (USD)", value: selectedBursar.employeeProfile.accountNumber },
                   { label: "Account Holder (USD)", value: selectedBursar.employeeProfile.accountHolderName },
-                  ...(selectedBursar.employeeProfile.bankNameZig ? [
+                  ...(selectedBursar.employeeProfile.accountNumberZig || selectedBursar.employeeProfile.bankNameZig ? [
                     { label: "🪙 Bank Name (ZiG)", value: selectedBursar.employeeProfile.bankNameZig },
                     { label: "Bank Branch (ZiG)", value: selectedBursar.employeeProfile.bankBranchZig },
                     { label: "Account Number (ZiG)", value: selectedBursar.employeeProfile.accountNumberZig },

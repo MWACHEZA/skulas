@@ -304,7 +304,7 @@ export default function AdminTeachers() {
                   { label: "Bank Branch (USD)", value: selectedTeacher.user.employeeProfile.bankBranch },
                   { label: "Account Number (USD)", value: selectedTeacher.user.employeeProfile.accountNumber },
                   { label: "Account Holder (USD)", value: selectedTeacher.user.employeeProfile.accountHolderName },
-                  ...(selectedTeacher.user.employeeProfile.bankNameZig ? [
+                  ...(selectedTeacher.user.employeeProfile.accountNumberZig || selectedTeacher.user.employeeProfile.bankNameZig ? [
                     { label: "🪙 Bank Name (ZiG)", value: selectedTeacher.user.employeeProfile.bankNameZig },
                     { label: "Bank Branch (ZiG)", value: selectedTeacher.user.employeeProfile.bankBranchZig },
                     { label: "Account Number (ZiG)", value: selectedTeacher.user.employeeProfile.accountNumberZig },

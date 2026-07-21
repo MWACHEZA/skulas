@@ -53,6 +53,18 @@ router.post('/', requireAuth, requireRole('TEACHER', 'SCHOOL_ADMIN', 'SUPER_ADMI
 });
 
 // Get a specific exam with questions
+router.get('/my-results', requireAuth, async (req: AuthRequest, res) => {
+  try {
+    const results = await prisma.cBTResult.findMany({
+      where: { studentId: req.user!.id }
+    });
+    res.json(results);
+  } catch (error) {
+    console.error('Error fetching student CBT results:', error);
+    res.status(500).json({ error: 'Failed to fetch your results' });
+  }
+});
+
 router.get('/:id', requireAuth, async (req: AuthRequest, res) => {
   try {
     const exam = await prisma.cBTExam.findFirst({
@@ -229,7 +241,12 @@ router.post('/:id/submit', requireAuth, async (req: AuthRequest, res) => {
 
     exam.questions.forEach((q) => {
       const studentAns = responses[q.id];
-      const correctAns = q.answer;
+      let correctAns = q.answer;
+      
+      // ManageQuestions.tsx saves answers as arrays even for single-value types. Unwrap it here.
+      if (Array.isArray(correctAns) && q.type !== 'Multiple choice') {
+        correctAns = correctAns[0];
+      }
 
       if (studentAns === undefined || studentAns === null) return;
 
