@@ -1,4 +1,4 @@
-# Wave 3 Tasks
+78# Wave 3 Tasks
 
 - [x] Backend users.ts - ID resolver helper & GET / auth
 - [x] Backend study-materials.ts - Enforce subject restrictions

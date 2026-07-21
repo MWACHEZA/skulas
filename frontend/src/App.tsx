@@ -296,6 +296,30 @@ const Placeholder = ({ title }: { title: string }) => (
   <div className="container" style={{ padding: '80px 0' }}><h2>{title} coming soon.</h2></div>
 );
 
+/**
+ * SchoolCodeRedirect: Catches /:schoolCode URLs and redirects to /school/:schoolCode
+ * Only fires for paths that don't match known portal/system prefixes.
+ * This lets users access school public sites via localhost/AX-SEMINARY
+ */
+const RESERVED_PATHS = new Set([
+  'student', 'teacher', 'admin', 'bursar', 'library', 'librarian',
+  'alumni', 'ancillary', 'parent', 'supplier', 'clinic', 'acadex',
+  'register', 'login', 'school', 'api', 'apply', 'check-status'
+]);
+
+function SchoolCodeRedirect() {
+  const pathname = window.location.pathname;
+  const parts = pathname.split('/').filter(Boolean);
+  const code = parts[0] || '';
+  // If it's a reserved system path, don't redirect — let the router handle it
+  if (RESERVED_PATHS.has(code.toLowerCase())) {
+    return <Navigate to="/" replace />;
+  }
+  const rest = parts.slice(1).join('/');
+  const target = `/school/${code.toUpperCase()}${rest ? `/${rest}` : ''}`;
+  return <Navigate to={target} replace />;
+}
+
 import { useAuth } from './contexts/AuthContext';
 import { useState, useEffect } from 'react';
 import i18n from './i18n';
@@ -376,6 +400,13 @@ export default function App() {
           <Routes>
             {/*  Acadex Platform Landing (Solo)  */}
             <Route path="/" element={<AcadexLanding />} />
+
+            {/*
+              Short school URL: localhost/AX-SEMINARY  → /school/AX-SEMINARY
+              Also catches sub-paths: localhost/AX-SEMINARY/gallery → /school/AX-SEMINARY/gallery
+            */}
+            <Route path="/:schoolCode" element={<SchoolCodeRedirect />} />
+            <Route path="/:schoolCode/*" element={<SchoolCodeRedirect />} />
 
             {/*  School Public Website (Wrapped in Layout)  */}
             <Route path="/school/:schoolCode" element={<Layout />}>
