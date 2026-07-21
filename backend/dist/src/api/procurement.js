@@ -1,23 +1,30 @@
-import { Router } from 'express';
-import prisma from '../lib/prisma';
-import { requireAuth } from '../middleware/auth';
-import { logAction } from '../utils/audit';
-const router = Router();
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const prisma_1 = __importDefault(require("../lib/prisma"));
+const auth_1 = require("../middleware/auth");
+const audit_1 = require("../utils/audit");
+const router = (0, express_1.Router)();
 /**
  * @route   GET /api/procurement/requisitions
  * @desc    Get requisitions based on role (Self for Staff, Dept for HOD, All for Admin/Bursar)
  */
-router.get('/requisitions', requireAuth, async (req, res) => {
+router.get('/requisitions', auth_1.requireAuth, async (req, res) => {
     const user = req.user;
     try {
         let whereClause = { schoolId: user.schoolId };
+        const isProcurementOrBuyer = user.secondaryRoles?.some(r => r.toLowerCase() === 'procurement officer' ||
+            r.toLowerCase() === 'buyer');
         // Role-based visibility logic
-        if (user.role === 'SCHOOL_ADMIN' || user.role === 'BURSAR') {
+        if (user.role === 'SCHOOL_ADMIN' || user.role === 'BURSAR' || isProcurementOrBuyer) {
             // Sees everything in the school
         }
         else if (user.secondaryRoles.includes('HOD')) {
             // Find HOD's department
-            const teacher = await prisma.teacher.findUnique({ where: { userId: user.id } });
+            const teacher = await prisma_1.default.teacher.findFirst({ where: { userId: user.id } });
             whereClause = {
                 schoolId: user.schoolId,
                 OR: [
@@ -30,7 +37,7 @@ router.get('/requisitions', requireAuth, async (req, res) => {
             // STAFF/TEACHER: Only see their own requests
             whereClause.requesterId = user.id;
         }
-        const requisitions = await prisma.requisition.findMany({
+        const requisitions = await prisma_1.default.requisition.findMany({
             where: whereClause,
             include: {
                 requester: { select: { id: true, name: true, role: true } },
@@ -52,21 +59,21 @@ router.get('/requisitions', requireAuth, async (req, res) => {
  * @route   POST /api/procurement/requisitions
  * @desc    [STAFF] Create a new requisition
  */
-router.post('/requisitions', requireAuth, async (req, res) => {
+router.post('/requisitions', auth_1.requireAuth, async (req, res) => {
     const { title, description, estimatedAmount } = req.body;
     const user = req.user;
     const schoolId = user.schoolId;
     try {
-        const count = await prisma.requisition.count({ where: { schoolId } });
+        const count = await prisma_1.default.requisition.count({ where: { schoolId } });
         const refNumber = `PRQ-${new Date().getFullYear()}-${(count + 1).toString().padStart(4, '0')}`;
         // Find the user's department and head
-        const dbUser = await prisma.user.findUnique({
+        const dbUser = await prisma_1.default.user.findFirst({
             where: { id: user.id },
             include: { dept: true }
         });
         const departmentId = dbUser?.departmentId;
         const hodId = dbUser?.dept?.headId;
-        const requisition = await prisma.requisition.create({
+        const requisition = await prisma_1.default.requisition.create({
             data: {
                 refNumber,
                 title,
@@ -78,7 +85,7 @@ router.post('/requisitions', requireAuth, async (req, res) => {
                 schoolId
             }
         });
-        await logAction(req, 'CREATE_REQUISITION', 'Requisition', requisition.id, { title, amount: estimatedAmount });
+        await (0, audit_1.logAction)(req, 'CREATE_REQUISITION', 'Requisition', requisition.id, { title, amount: estimatedAmount });
         res.json(requisition);
     }
     catch (err) {
@@ -89,21 +96,21 @@ router.post('/requisitions', requireAuth, async (req, res) => {
  * @route   PATCH /api/procurement/requisitions/:id/approve
  * @desc    [HOD/BURSAR/ADMIN] Progress requisition through approval stages
  */
-router.patch('/requisitions/:id/approve', requireAuth, async (req, res) => {
+router.patch('/requisitions/:id/approve', auth_1.requireAuth, async (req, res) => {
     const { id } = req.params;
     const { action } = req.body; // 'APPROVE' or 'REJECT'
     const user = req.user;
     try {
-        const reqInstance = await prisma.requisition.findUnique({ where: { id: id } });
+        const reqInstance = await prisma_1.default.requisition.findFirst({ where: { id: id } });
         if (!reqInstance || reqInstance.schoolId !== user.schoolId) {
             return res.status(404).json({ error: 'Requisition not found' });
         }
         if (action === 'REJECT') {
-            const updated = await prisma.requisition.update({
+            const updated = await prisma_1.default.requisition.update({
                 where: { id: id },
                 data: { status: 'REJECTED' }
             });
-            await logAction(req, 'REJECT_REQUISITION', 'Requisition', String(id), { previousStatus: reqInstance.status });
+            await (0, audit_1.logAction)(req, 'REJECT_REQUISITION', 'Requisition', String(id), { previousStatus: reqInstance.status });
             return res.json(updated);
         }
         let nextStatus = reqInstance.status;
@@ -143,17 +150,17 @@ router.patch('/requisitions/:id/approve', requireAuth, async (req, res) => {
         else {
             return res.status(400).json({ error: 'Requisition is already finalized' });
         }
-        const updated = await prisma.requisition.update({
+        const updated = await prisma_1.default.requisition.update({
             where: { id: id },
             data: { status: nextStatus, ...updateData },
             include: { requester: { select: { name: true } } }
         });
-        await logAction(req, 'APPROVE_REQUISITION_STAGE', 'Requisition', String(id), { from: reqInstance.status, to: nextStatus });
+        await (0, audit_1.logAction)(req, 'APPROVE_REQUISITION_STAGE', 'Requisition', String(id), { from: reqInstance.status, to: nextStatus });
         res.json(updated);
     }
     catch (err) {
         res.status(500).json({ error: 'Approval action failed' });
     }
 });
-export default router;
+exports.default = router;
 //# sourceMappingURL=procurement.js.map

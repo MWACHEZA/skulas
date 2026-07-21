@@ -1,83 +1,117 @@
-import { Router } from 'express';
-import prisma from '../lib/prisma';
-import { requireAuth, requireRole } from '../middleware/auth';
-import { startOfDay, endOfDay } from 'date-fns';
-import fs from 'fs';
-import path from 'path';
-const router = Router();
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const prisma_1 = __importDefault(require("../lib/prisma"));
+const auth_1 = require("../middleware/auth");
+const date_fns_1 = require("date-fns");
+const fs_1 = __importDefault(require("fs"));
+const path_1 = __importDefault(require("path"));
+const router = (0, express_1.Router)();
 // Get daily attendance for a class
-router.get('/', requireAuth, async (req, res) => {
+router.get('/', auth_1.requireAuth, async (req, res) => {
     try {
         const { classId, date } = req.query;
         if (!classId || !date) {
             return res.status(400).json({ error: 'classId and date are required' });
         }
         const queryDate = new Date(date);
-        const attendances = await prisma.attendance.findMany({
-            where: {
-                schoolId: req.user.schoolId,
-                student: {
-                    classId: classId
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 100;
+        const skip = (page - 1) * limit;
+        const [attendances, total] = await Promise.all([
+            prisma_1.default.attendance.findMany({
+                where: {
+                    schoolId: req.user.schoolId,
+                    student: {
+                        classId: classId
+                    },
+                    date: {
+                        gte: (0, date_fns_1.startOfDay)(queryDate),
+                        lte: (0, date_fns_1.endOfDay)(queryDate)
+                    }
                 },
-                date: {
-                    gte: startOfDay(queryDate),
-                    lte: endOfDay(queryDate)
+                include: {
+                    student: true
+                },
+                skip,
+                take: limit
+            }),
+            prisma_1.default.attendance.count({
+                where: {
+                    schoolId: req.user.schoolId,
+                    student: {
+                        classId: classId
+                    },
+                    date: {
+                        gte: (0, date_fns_1.startOfDay)(queryDate),
+                        lte: (0, date_fns_1.endOfDay)(queryDate)
+                    }
                 }
-            },
-            include: {
-                student: true
-            }
-        });
-        res.json(attendances);
+            })
+        ]);
+        res.json({ data: attendances, total, page, limit });
     }
     catch (error) {
         console.error('Error fetching attendance:', error);
-        res.status(500).json({ error: 'Failed to fetch attendance' });
+        res.status(500).json({ error: "We couldn't load the attendance records right now due to a network connection issue. Please refresh the page." });
     }
 });
 // Mark student attendance (Manual)
-router.post('/', requireAuth, requireRole('TEACHER', 'SCHOOL_ADMIN', 'SUPER_ADMIN'), async (req, res) => {
+router.post('/', auth_1.requireAuth, (0, auth_1.requireRole)('TEACHER', 'SCHOOL_ADMIN', 'SUPER_ADMIN'), async (req, res) => {
     try {
         const { studentId, date, status, note } = req.body;
         if (!studentId || !date || !status) {
             return res.status(400).json({ error: 'Missing required fields' });
         }
         const queryDate = new Date(date);
-        // Upsert the attendance record
-        const attendance = await prisma.attendance.upsert({
+        // Find existing attendance
+        const existing = await prisma_1.default.attendance.findFirst({
             where: {
-                schoolId_studentId_date: {
-                    schoolId: req.user.schoolId,
-                    studentId,
-                    date: startOfDay(queryDate)
-                }
-            },
-            update: {
-                status,
-                note,
-                teacherId: req.user.staffId || 'admin',
-                scanMethod: 'Manual'
-            },
-            create: {
                 schoolId: req.user.schoolId,
                 studentId,
-                date: startOfDay(queryDate),
-                status,
-                note,
-                teacherId: req.user.staffId || 'admin',
-                scanMethod: 'Manual'
+                date: (0, date_fns_1.startOfDay)(queryDate),
+                classId: req.body.classId || null
             }
         });
+        let attendance;
+        if (existing) {
+            attendance = await prisma_1.default.attendance.update({
+                where: { id: existing.id },
+                data: {
+                    status,
+                    note,
+                    teacherId: req.user.staffId || 'admin',
+                    scanMethod: 'Manual'
+                }
+            });
+        }
+        else {
+            attendance = await prisma_1.default.attendance.create({
+                data: {
+                    schoolId: req.user.schoolId,
+                    studentId,
+                    date: (0, date_fns_1.startOfDay)(queryDate),
+                    status,
+                    note,
+                    teacherId: req.user.staffId || 'admin',
+                    classId: req.body.classId || null,
+                    scanMethod: 'Manual'
+                }
+            });
+        }
         res.json({ success: true, attendance });
     }
     catch (error) {
-        console.error('Error marking attendance:', error);
-        res.status(500).json({ error: 'Failed to mark attendance' });
+        console.error('Error saving attendance:', error);
+        res.status(500).json({ error: "We couldn't save today's attendance because the connection to the server was lost. Please check your internet and try clicking save again." });
     }
 });
 // Helper to run a gate check on a student
 async function runGateCheck(studentId, schoolId) {
-    const student = await prisma.student.findUnique({
+    const student = await prisma_1.default.student.findFirst({
         where: { id: studentId },
         include: { class: true }
     });
@@ -85,19 +119,19 @@ async function runGateCheck(studentId, schoolId) {
         return { allowed: false, reason: 'Student not found or unauthorized' };
     }
     // Calculate fee balance
-    const fees = await prisma.fee.findMany({
+    const fees = await prisma_1.default.fee.findMany({
         where: { studentId: student.id }
     });
     const totalFees = fees.reduce((sum, f) => sum + f.amount, 0);
     const totalPaid = fees.reduce((sum, f) => sum + f.paid, 0);
     const balance = totalFees - totalPaid;
     // Load school gate settings
-    let settings = await prisma.schoolSetting.findUnique({
+    let settings = await prisma_1.default.schoolSetting.findFirst({
         where: { schoolId }
     });
     // Create default fallback settings if missing
     if (!settings) {
-        settings = await prisma.schoolSetting.create({
+        settings = await prisma_1.default.schoolSetting.create({
             data: { schoolId }
         });
     }
@@ -131,7 +165,7 @@ async function runGateCheck(studentId, schoolId) {
     }
     // If not allowed, check for APPROVED payment plans
     if (!allowed) {
-        const activePlans = await prisma.paymentPlan.findMany({
+        const activePlans = await prisma_1.default.paymentPlan.findMany({
             where: {
                 studentId: student.id,
                 status: { in: ['APPROVED', 'OVERDUE'] }
@@ -144,7 +178,7 @@ async function runGateCheck(studentId, schoolId) {
             if (today > new Date(latestPlan.dueDate) && balance > 0) {
                 // Overdue payment plan! Flag it as OVERDUE
                 if (latestPlan.status !== 'OVERDUE') {
-                    await prisma.paymentPlan.update({
+                    await prisma_1.default.paymentPlan.update({
                         where: { id: latestPlan.id },
                         data: { status: 'OVERDUE' }
                     });
@@ -171,7 +205,7 @@ async function runGateCheck(studentId, schoolId) {
     };
 }
 // Get gate check status for a student QR scan
-router.get('/gate-check', requireAuth, async (req, res) => {
+router.get('/gate-check', auth_1.requireAuth, async (req, res) => {
     try {
         const { qrData } = req.query;
         if (!qrData) {
@@ -182,11 +216,11 @@ router.get('/gate-check', requireAuth, async (req, res) => {
     }
     catch (error) {
         console.error('Error running gate check:', error);
-        res.status(500).json({ error: 'Failed to run gate check' });
+        res.status(500).json({ error: "We couldn't verify the student's fee status right now. Please check your connection and try scanning the QR code again." });
     }
 });
 // Mark student attendance via QR code (with gate check enforcement)
-router.post('/qr', requireAuth, requireRole('TEACHER', 'SCHOOL_ADMIN', 'SUPER_ADMIN', 'ANCILLARY'), async (req, res) => {
+router.post('/qr', auth_1.requireAuth, (0, auth_1.requireRole)('TEACHER', 'SCHOOL_ADMIN', 'SUPER_ADMIN', 'ANCILLARY'), async (req, res) => {
     try {
         const { qrData, date, forceAllow } = req.body;
         if (!qrData) {
@@ -206,28 +240,38 @@ router.post('/qr', requireAuth, requireRole('TEACHER', 'SCHOOL_ADMIN', 'SUPER_AD
             return res.status(404).json({ error: 'Student not found' });
         }
         const queryDate = date ? new Date(date) : new Date();
-        const attendance = await prisma.attendance.upsert({
+        const existing = await prisma_1.default.attendance.findFirst({
             where: {
-                schoolId_studentId_date: {
-                    schoolId,
-                    studentId: student.id,
-                    date: startOfDay(queryDate)
-                }
-            },
-            update: {
-                status: 'present',
-                teacherId: req.user.staffId || 'admin',
-                scanMethod: 'QR Code'
-            },
-            create: {
                 schoolId,
                 studentId: student.id,
-                date: startOfDay(queryDate),
-                status: 'present',
-                teacherId: req.user.staffId || 'admin',
-                scanMethod: 'QR Code'
+                date: (0, date_fns_1.startOfDay)(queryDate),
+                classId: null
             }
         });
+        let attendance;
+        if (existing) {
+            attendance = await prisma_1.default.attendance.update({
+                where: { id: existing.id },
+                data: {
+                    status: 'present',
+                    teacherId: req.user.staffId || 'admin',
+                    scanMethod: 'QR Code'
+                }
+            });
+        }
+        else {
+            attendance = await prisma_1.default.attendance.create({
+                data: {
+                    schoolId,
+                    studentId: student.id,
+                    date: (0, date_fns_1.startOfDay)(queryDate),
+                    status: 'present',
+                    teacherId: req.user.staffId || 'admin',
+                    classId: null,
+                    scanMethod: 'QR Code'
+                }
+            });
+        }
         res.json({ success: true, attendance, student, gateCheck });
     }
     catch (error) {
@@ -236,7 +280,7 @@ router.post('/qr', requireAuth, requireRole('TEACHER', 'SCHOOL_ADMIN', 'SUPER_AD
     }
 });
 // GET student clock-in/out image logs from storage
-router.get('/student-clock-ins', requireAuth, async (req, res) => {
+router.get('/student-clock-ins', auth_1.requireAuth, async (req, res) => {
     try {
         const schoolId = req.user.schoolId;
         const schoolCode = req.user.schoolCode || 'global';
@@ -252,15 +296,15 @@ router.get('/student-clock-ins', requireAuth, async (req, res) => {
         // DD
         const day = String(queryDate.getDate()).padStart(2, '0');
         // Build directory path: storage/[schoolCode]/attendance/YYYY-MM/DD/
-        const storageDir = path.join(__dirname, '../../storage', schoolCode, 'attendance', yearMonth, day);
+        const storageDir = path_1.default.join(__dirname, '../../storage', schoolCode, 'attendance', yearMonth, day);
         const logs = [];
-        if (fs.existsSync(storageDir)) {
-            const files = fs.readdirSync(storageDir);
+        if (fs_1.default.existsSync(storageDir)) {
+            const files = fs_1.default.readdirSync(storageDir);
             // Check headed departments for HOD
             const isAdmin = ['SUPER_ADMIN', 'SCHOOL_ADMIN', 'BURSAR', 'HR'].includes(req.user.role);
             let headedDeptIds = [];
             if (!isAdmin) {
-                const headedDepts = await prisma.department.findMany({
+                const headedDepts = await prisma_1.default.department.findMany({
                     where: { schoolId, headId: req.user.id }
                 });
                 if (headedDepts.length === 0) {
@@ -275,7 +319,7 @@ router.get('/student-clock-ins', requireAuth, async (req, res) => {
                     const studentIdentifier = match[1];
                     const direction = match[2].toLowerCase(); // 'in' or 'out'
                     // Get Student Details
-                    const student = await prisma.student.findFirst({
+                    const student = await prisma_1.default.student.findFirst({
                         where: {
                             schoolId,
                             OR: [
@@ -306,7 +350,7 @@ router.get('/student-clock-ins', requireAuth, async (req, res) => {
                             continue; // Skip student not in headed department
                         }
                     }
-                    const stat = fs.statSync(path.join(storageDir, file));
+                    const stat = fs_1.default.statSync(path_1.default.join(storageDir, file));
                     logs.push({
                         id: `${student.id}_${direction}`,
                         student: {
@@ -332,5 +376,5 @@ router.get('/student-clock-ins', requireAuth, async (req, res) => {
         res.status(500).json({ error: 'Failed to fetch student clock-in logs' });
     }
 });
-export default router;
+exports.default = router;
 //# sourceMappingURL=attendance.js.map

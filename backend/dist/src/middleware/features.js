@@ -1,16 +1,22 @@
-import prisma from '../lib/prisma';
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.requireFeature = void 0;
+const prisma_1 = __importDefault(require("../lib/prisma"));
 /**
  * Middleware: Checks if the school's plan includes the required feature.
  * @param featureName The name of the feature to check for.
  */
-export const requireFeature = (featureName) => {
+const requireFeature = (featureName) => {
     return async (req, res, next) => {
         if (!req.user || !req.user.schoolId) {
             res.status(401).json({ error: 'Unauthenticated or no school context' });
             return;
         }
         try {
-            const school = await prisma.school.findUnique({
+            const school = await prisma_1.default.school.findUnique({
                 where: { id: req.user.schoolId },
                 include: { plan: true },
             });
@@ -38,4 +44,5 @@ export const requireFeature = (featureName) => {
         }
     };
 };
+exports.requireFeature = requireFeature;
 //# sourceMappingURL=features.js.map

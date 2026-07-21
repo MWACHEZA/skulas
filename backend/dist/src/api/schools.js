@@ -1,22 +1,30 @@
-import { Router } from 'express';
-import prisma from '../lib/prisma';
-import { requireAuth, requireRole } from '../middleware/auth';
-import { generateSequentialId } from '../lib/id-generator';
-import { upload, brandingUpload, clubsUpload, sportsUpload } from '../middleware/upload';
-const router = Router();
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const prisma_1 = __importDefault(require("../lib/prisma"));
+const auth_1 = require("../middleware/auth");
+const id_generator_1 = require("../lib/id-generator");
+const upload_1 = require("../middleware/upload");
+const validation_1 = require("../middleware/validation");
+const school_schema_1 = require("../schemas/school.schema");
+const audit_1 = require("../utils/audit");
+const router = (0, express_1.Router)();
 /**
  * @route   GET /api/schools/settings
  * @desc    [SCHOOL_ADMIN] Get institutional settings
  */
-router.get('/settings', requireAuth, async (req, res) => {
+router.get('/settings', auth_1.requireAuth, async (req, res) => {
     try {
         const schoolId = req.user.schoolId;
-        let settings = await prisma.schoolSetting.findUnique({
+        let settings = await prisma_1.default.schoolSetting.findFirst({
             where: { schoolId }
         });
         // Fallback if not created yet
         if (!settings) {
-            settings = await prisma.schoolSetting.create({
+            settings = await prisma_1.default.schoolSetting.create({
                 data: { schoolId }
             });
         }
@@ -37,7 +45,7 @@ router.get('/settings', requireAuth, async (req, res) => {
  * @route   PATCH /api/schools/settings
  * @desc    [SCHOOL_ADMIN] Update institutional settings
  */
-router.patch('/settings', requireAuth, requireRole('SCHOOL_ADMIN'), async (req, res) => {
+router.patch('/settings', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN'), (0, validation_1.validate)(school_schema_1.SystemSettingsSchema), async (req, res) => {
     try {
         const schoolId = req.user.schoolId;
         const settingsData = req.body;
@@ -95,16 +103,22 @@ router.patch('/settings', requireAuth, requireRole('SCHOOL_ADMIN'), async (req, 
         if (filteredData.nextTermBegin) {
             filteredData.nextTermBegin = new Date(filteredData.nextTermBegin).toISOString();
         }
+        else if (filteredData.nextTermBegin === '') {
+            filteredData.nextTermBegin = null;
+        }
         if (filteredData.scoreClosingDate) {
             filteredData.scoreClosingDate = new Date(filteredData.scoreClosingDate).toISOString();
         }
-        const settings = await prisma.schoolSetting.upsert({
+        else if (filteredData.scoreClosingDate === '') {
+            filteredData.scoreClosingDate = null;
+        }
+        const settings = await prisma_1.default.schoolSetting.upsert({
             where: { schoolId },
             update: filteredData,
             create: { ...filteredData, schoolId }
         });
         // Log the change for audit
-        await prisma.auditLog.create({
+        await prisma_1.default.auditLog.create({
             data: {
                 actorId: req.user.id,
                 schoolId: schoolId,
@@ -128,9 +142,9 @@ router.patch('/settings', requireAuth, requireRole('SCHOOL_ADMIN'), async (req, 
  * @route   GET /api/schools/me
  * @desc    [SCHOOL_ADMIN] Get own school details with plan
  */
-router.get('/me', requireAuth, requireRole('SCHOOL_ADMIN'), async (req, res) => {
+router.get('/me', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN'), async (req, res) => {
     try {
-        const school = await prisma.school.findUnique({
+        const school = await prisma_1.default.school.findUnique({
             where: { id: req.user.schoolId },
             include: { plan: true }
         });
@@ -146,31 +160,16 @@ router.get('/me', requireAuth, requireRole('SCHOOL_ADMIN'), async (req, res) => 
  * @route   PATCH /api/schools/me/plan
  * @desc    [SCHOOL_ADMIN] Change own school's subscription plan
  */
-router.patch('/me/plan', requireAuth, requireRole('SCHOOL_ADMIN'), async (req, res) => {
+router.patch('/me/plan', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN'), (0, validation_1.validate)(school_schema_1.UpdatePlanSchema), async (req, res) => {
     try {
         const { planName } = req.body;
         if (!planName)
             return res.status(400).json({ error: 'Plan name is required' });
-        const plan = await prisma.plan.findUnique({ where: { name: planName } });
-        if (!plan)
-            return res.status(400).json({ error: 'Invalid plan name' });
-        const school = await prisma.school.update({
-            where: { id: req.user.schoolId },
-            data: { planId: plan.id },
-            include: { plan: true }
+        // SECURITY FIX: Prevent arbitrary free upgrades by school admins.
+        // This endpoint is blocked until a proper SaaS billing gateway (e.g. Stripe) is integrated.
+        return res.status(501).json({
+            error: 'SaaS Subscription Gateway is not configured. Please contact support (Super Admin) to upgrade your plan.'
         });
-        // Log the change
-        await prisma.auditLog.create({
-            data: {
-                actorId: req.user.id,
-                schoolId: req.user.schoolId,
-                action: 'UPDATE_SUBSCRIPTION_PLAN',
-                entityType: 'School',
-                entityId: school.id,
-                details: { planName, timestamp: new Date().toISOString() }
-            }
-        });
-        res.json({ success: true, school });
     }
     catch (err) {
         console.error('Failed to update subscription plan', err);
@@ -181,11 +180,11 @@ router.patch('/me/plan', requireAuth, requireRole('SCHOOL_ADMIN'), async (req, r
  * @route   PATCH /api/schools/branding
  * @desc    [SCHOOL_ADMIN] Update own school branding (logo, colors, motto)
  */
-router.patch('/branding', requireAuth, requireRole('SCHOOL_ADMIN'), upload.single('logo'), async (req, res) => {
+router.patch('/branding', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN'), upload_1.upload.single('logo'), (0, validation_1.validate)(school_schema_1.UpdateBrandingSchema), async (req, res) => {
     try {
         const { primaryColor, accentColor, motto } = req.body;
         const logoFilename = req.file ? req.file.filename : undefined;
-        const existing = await prisma.school.findUnique({ where: { id: req.user.schoolId } });
+        const existing = await prisma_1.default.school.findUnique({ where: { id: req.user.schoolId } });
         if (!existing)
             return res.status(404).json({ error: 'School not found' });
         const currentBranding = existing.branding || {};
@@ -196,7 +195,7 @@ router.patch('/branding', requireAuth, requireRole('SCHOOL_ADMIN'), upload.singl
             motto: motto !== undefined ? motto : currentBranding.motto,
             logo: logoFilename || currentBranding.logo,
         };
-        const school = await prisma.school.update({
+        const school = await prisma_1.default.school.update({
             where: { id: req.user.schoolId },
             data: { branding: updatedBranding }
         });
@@ -211,17 +210,17 @@ router.patch('/branding', requireAuth, requireRole('SCHOOL_ADMIN'), upload.singl
  * @route   PATCH /api/schools/info
  * @desc    [SCHOOL_ADMIN] Update own school contact info and social links
  */
-router.patch('/info', requireAuth, requireRole('SCHOOL_ADMIN'), async (req, res) => {
+router.patch('/info', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN'), (0, validation_1.validate)(school_schema_1.UpdateSchoolInfoSchema), async (req, res) => {
     try {
         const { address, phone, email, website, twitter, facebook, linkedin, instagram, youtube, tiktok } = req.body;
-        const existing = await prisma.school.findUnique({ where: { id: req.user.schoolId } });
+        const existing = await prisma_1.default.school.findUnique({ where: { id: req.user.schoolId } });
         if (!existing)
             return res.status(404).json({ error: 'School not found' });
         const currentBranding = existing.branding || {};
         // Keep branding backward-compat (twitter, facebook, linkedin for legacy reads)
         const updatedBranding = { ...currentBranding, twitter, facebook, linkedin };
         // Update the School record (address, phone, email, website)
-        const school = await prisma.school.update({
+        const school = await prisma_1.default.school.update({
             where: { id: req.user.schoolId },
             data: {
                 address: address ?? existing.address,
@@ -233,7 +232,7 @@ router.patch('/info', requireAuth, requireRole('SCHOOL_ADMIN'), async (req, res)
             }
         });
         // Also write contact info + all social URLs to SchoolSetting for public page reads
-        await prisma.schoolSetting.upsert({
+        await prisma_1.default.schoolSetting.upsert({
             where: { schoolId: req.user.schoolId },
             update: {
                 ...(phone !== undefined && { phone }),
@@ -272,7 +271,7 @@ router.patch('/info', requireAuth, requireRole('SCHOOL_ADMIN'), async (req, res)
  */
 router.get('/', async (req, res) => {
     try {
-        const schools = await prisma.school.findMany({
+        const schools = await prisma_1.default.school.findMany({
             where: {
                 status: { in: ['active', 'trial'] }
             },
@@ -293,14 +292,14 @@ router.get('/', async (req, res) => {
  * @route   PATCH /api/schools/id-template
  * @desc    [SCHOOL_ADMIN] Update own school ID card template (front, legacy single)
  */
-router.patch('/id-template', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR'), brandingUpload.single('template'), async (req, res) => {
+router.patch('/id-template', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'BURSAR'), upload_1.brandingUpload.single('template'), async (req, res) => {
     try {
         const templatePath = req.uploadCategoryPath && req.file
             ? `${req.uploadCategoryPath}/${req.file.filename}`
             : undefined;
         if (!templatePath)
             return res.status(400).json({ error: 'No template file uploaded' });
-        const school = await prisma.school.update({
+        const school = await prisma_1.default.school.update({
             where: { id: req.user.schoolId },
             data: { idCardTemplate: templatePath }
         });
@@ -315,7 +314,7 @@ router.patch('/id-template', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR'),
  * @route   PATCH /api/schools/id-template/front
  * @desc    [SCHOOL_ADMIN] Upload front-face of the student ID card template
  */
-router.patch('/id-template/front', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR'), brandingUpload.single('template'), async (req, res) => {
+router.patch('/id-template/front', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'BURSAR'), upload_1.brandingUpload.single('template'), async (req, res) => {
     try {
         const templatePath = req.uploadCategoryPath && req.file
             ? `${req.uploadCategoryPath}/${req.file.filename}`
@@ -323,12 +322,12 @@ router.patch('/id-template/front', requireAuth, requireRole('SCHOOL_ADMIN', 'BUR
         if (!templatePath)
             return res.status(400).json({ error: 'No front template file uploaded' });
         // Store front template in the idCardTemplate field (legacy) + settings JSON
-        const school = await prisma.school.update({
+        const school = await prisma_1.default.school.update({
             where: { id: req.user.schoolId },
             data: { idCardTemplate: templatePath }
         });
         // Also persist to school settings as JSON for front/back distinction
-        await prisma.schoolSetting.upsert({
+        await prisma_1.default.schoolSetting.upsert({
             where: { schoolId: req.user.schoolId },
             update: { idCardTemplateFront: templatePath },
             create: { schoolId: req.user.schoolId, idCardTemplateFront: templatePath }
@@ -344,14 +343,14 @@ router.patch('/id-template/front', requireAuth, requireRole('SCHOOL_ADMIN', 'BUR
  * @route   PATCH /api/schools/id-template/back
  * @desc    [SCHOOL_ADMIN] Upload back-face of the student ID card template
  */
-router.patch('/id-template/back', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR'), brandingUpload.single('template'), async (req, res) => {
+router.patch('/id-template/back', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'BURSAR'), upload_1.brandingUpload.single('template'), async (req, res) => {
     try {
         const templatePath = req.uploadCategoryPath && req.file
             ? `${req.uploadCategoryPath}/${req.file.filename}`
             : undefined;
         if (!templatePath)
             return res.status(400).json({ error: 'No back template file uploaded' });
-        await prisma.schoolSetting.upsert({
+        await prisma_1.default.schoolSetting.upsert({
             where: { schoolId: req.user.schoolId },
             update: { idCardTemplateBack: templatePath },
             create: { schoolId: req.user.schoolId, idCardTemplateBack: templatePath }
@@ -367,10 +366,10 @@ router.patch('/id-template/back', requireAuth, requireRole('SCHOOL_ADMIN', 'BURS
  * @route   GET /api/schools/id-card/students
  * @desc    [SCHOOL_ADMIN/BURSAR] Get students list for ID card preview selection
  */
-router.get('/id-card/students', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR'), async (req, res) => {
+router.get('/id-card/students', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'BURSAR'), async (req, res) => {
     try {
         const { classId } = req.query;
-        const students = await prisma.student.findMany({
+        const students = await prisma_1.default.student.findMany({
             where: {
                 schoolId: req.user.schoolId,
                 ...(classId && classId !== 'all' ? { classId: classId } : {})
@@ -381,17 +380,17 @@ router.get('/id-card/students', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR
                 studentId: true,
                 gender: true,
                 classId: true,
+                class: { select: { name: true, level: true } },
+                user: { select: { avatar: true } }
             },
             orderBy: { name: 'asc' },
             take: 200
         });
-        // Fetch class names and user avatars separately to avoid complex join typing
-        const withClass = await Promise.all(students.map(async (s) => {
-            const cls = s.classId ? await prisma.schoolClass.findUnique({ where: { id: s.classId }, select: { name: true, level: true } }) : null;
-            const user = await prisma.user.findFirst({ where: { id: { not: undefined }, staffId: s.studentId }, select: { avatar: true } });
-            return { ...s, class: cls, photo: user?.avatar || null };
+        const formattedStudents = students.map(s => ({
+            ...s,
+            photo: s.user?.avatar || null
         }));
-        res.json(withClass);
+        res.json(formattedStudents);
     }
     catch (error) {
         res.status(500).json({ error: 'Failed to fetch students for ID card generation' });
@@ -401,11 +400,11 @@ router.get('/id-card/students', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR
  * @route   GET /api/schools/id-card/data/:studentId
  * @desc    [SCHOOL_ADMIN/BURSAR] Get full data needed to render a student ID card
  */
-router.get('/id-card/data/:studentId', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR'), async (req, res) => {
+router.get('/id-card/data/:studentId', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'BURSAR'), async (req, res) => {
     try {
         const schoolId = req.user.schoolId;
         const [school, settings, student] = await Promise.all([
-            prisma.school.findUnique({
+            prisma_1.default.school.findUnique({
                 where: { id: schoolId },
                 select: {
                     name: true,
@@ -418,8 +417,8 @@ router.get('/id-card/data/:studentId', requireAuth, requireRole('SCHOOL_ADMIN', 
                     idCardTemplate: true
                 }
             }),
-            prisma.schoolSetting.findUnique({ where: { schoolId } }),
-            prisma.student.findFirst({
+            prisma_1.default.schoolSetting.findFirst({ where: { schoolId } }),
+            prisma_1.default.student.findFirst({
                 where: { id: req.params.studentId, schoolId },
                 select: {
                     id: true,
@@ -436,8 +435,8 @@ router.get('/id-card/data/:studentId', requireAuth, requireRole('SCHOOL_ADMIN', 
         if (!school)
             return res.status(404).json({ error: 'School not found' });
         // Fetch class and user separately
-        const cls = student.classId ? await prisma.schoolClass.findUnique({ where: { id: student.classId }, select: { name: true, level: true } }) : null;
-        const userRecord = await prisma.user.findFirst({ where: { staffId: student.studentId, schoolId }, select: { avatar: true } });
+        const cls = student.classId ? await prisma_1.default.schoolClass.findFirst({ where: { id: student.classId }, select: { name: true, level: true } }) : null;
+        const userRecord = await prisma_1.default.user.findFirst({ where: { staffId: student.studentId, schoolId }, select: { avatar: true } });
         const branding = school.branding || {};
         const customContent = school.customContent || {};
         res.json({
@@ -477,14 +476,14 @@ router.get('/id-card/data/:studentId', requireAuth, requireRole('SCHOOL_ADMIN', 
  * @route   PATCH /api/schools/favicon
  * @desc    [SCHOOL_ADMIN] Update school favicon
  */
-router.patch('/favicon', requireAuth, requireRole('SCHOOL_ADMIN'), brandingUpload.single('favicon'), async (req, res) => {
+router.patch('/favicon', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN'), upload_1.brandingUpload.single('favicon'), async (req, res) => {
     try {
         const faviconPath = req.uploadCategoryPath && req.file
             ? `${req.uploadCategoryPath}/${req.file.filename}`
             : undefined;
         if (!faviconPath)
             return res.status(400).json({ error: 'No favicon file uploaded' });
-        const settings = await prisma.schoolSetting.upsert({
+        const settings = await prisma_1.default.schoolSetting.upsert({
             where: { schoolId: req.user.schoolId },
             update: { favicon: faviconPath },
             create: { schoolId: req.user.schoolId, favicon: faviconPath }
@@ -496,9 +495,9 @@ router.patch('/favicon', requireAuth, requireRole('SCHOOL_ADMIN'), brandingUploa
     }
 });
 // ── STUDENT HOUSES ──
-router.get('/houses', requireAuth, async (req, res) => {
+router.get('/houses', auth_1.requireAuth, async (req, res) => {
     try {
-        const houses = await prisma.studentHouse.findMany({
+        const houses = await prisma_1.default.studentHouse.findMany({
             where: { schoolId: req.user.schoolId },
             include: {
                 houseMaster: {
@@ -524,11 +523,11 @@ router.get('/houses', requireAuth, async (req, res) => {
         res.status(500).json({ error: 'Failed to fetch houses' });
     }
 });
-router.post('/houses', requireAuth, requireRole('SCHOOL_ADMIN'), brandingUpload.single('logo'), async (req, res) => {
+router.post('/houses', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN'), upload_1.brandingUpload.single('logo'), (0, validation_1.validate)(school_schema_1.HouseSchema), async (req, res) => {
     try {
         const { name, description, houseMasterId, houseCaptainId, color, motto } = req.body;
         const logoFilename = req.file ? req.file.filename : undefined;
-        const house = await prisma.studentHouse.create({
+        const house = await prisma_1.default.studentHouse.create({
             data: {
                 name,
                 description,
@@ -563,7 +562,7 @@ router.post('/houses', requireAuth, requireRole('SCHOOL_ADMIN'), brandingUpload.
         res.status(500).json({ error: 'Failed to create house' });
     }
 });
-router.patch('/houses/:id', requireAuth, requireRole('SCHOOL_ADMIN'), brandingUpload.single('logo'), async (req, res) => {
+router.patch('/houses/:id', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN'), upload_1.brandingUpload.single('logo'), (0, validation_1.validate)(school_schema_1.HouseSchema), async (req, res) => {
     try {
         const { id } = req.params;
         const { name, description, houseMasterId, houseCaptainId, color, motto } = req.body;
@@ -579,7 +578,7 @@ router.patch('/houses/:id', requireAuth, requireRole('SCHOOL_ADMIN'), brandingUp
         if (logoFilename) {
             updateData.logo = logoFilename;
         }
-        const house = await prisma.studentHouse.update({
+        const house = await prisma_1.default.studentHouse.update({
             where: { id: id, schoolId: req.user.schoolId },
             data: updateData,
             include: {
@@ -606,9 +605,9 @@ router.patch('/houses/:id', requireAuth, requireRole('SCHOOL_ADMIN'), brandingUp
         res.status(500).json({ error: 'Failed to update house' });
     }
 });
-router.delete('/houses/:id', requireAuth, requireRole('SCHOOL_ADMIN'), async (req, res) => {
+router.delete('/houses/:id', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN'), async (req, res) => {
     try {
-        await prisma.studentHouse.delete({ where: { id: req.params.id } });
+        await prisma_1.default.studentHouse.delete({ where: { id: req.params.id } });
         res.json({ success: true });
     }
     catch (error) {
@@ -616,7 +615,7 @@ router.delete('/houses/:id', requireAuth, requireRole('SCHOOL_ADMIN'), async (re
     }
 });
 // Assign student to house (Admins, Sports Master, Sports Captain)
-router.post('/houses/assign-student', requireAuth, async (req, res) => {
+router.post('/houses/assign-student', auth_1.requireAuth, (0, validation_1.validate)(school_schema_1.AssignHouseStudentSchema), async (req, res) => {
     try {
         const { studentId, houseId } = req.body;
         const isAuthorized = req.user.role === 'SCHOOL_ADMIN' ||
@@ -628,7 +627,7 @@ router.post('/houses/assign-student', requireAuth, async (req, res) => {
         if (!studentId) {
             return res.status(400).json({ error: 'Student ID is required' });
         }
-        const updatedStudent = await prisma.student.update({
+        const updatedStudent = await prisma_1.default.student.update({
             where: { id: studentId },
             data: {
                 houseId: houseId ? houseId : null
@@ -642,10 +641,10 @@ router.post('/houses/assign-student', requireAuth, async (req, res) => {
     }
 });
 // Get members of a specific house
-router.get('/houses/:id/members', requireAuth, async (req, res) => {
+router.get('/houses/:id/members', auth_1.requireAuth, async (req, res) => {
     try {
         const { id } = req.params;
-        const members = await prisma.student.findMany({
+        const members = await prisma_1.default.student.findMany({
             where: { houseId: id, schoolId: req.user.schoolId },
             include: {
                 class: { select: { name: true } }
@@ -660,9 +659,9 @@ router.get('/houses/:id/members', requireAuth, async (req, res) => {
     }
 });
 // ── STUDENT CLUBS ──
-router.get('/clubs-list', requireAuth, async (req, res) => {
+router.get('/clubs-list', auth_1.requireAuth, async (req, res) => {
     try {
-        const clubs = await prisma.club.findMany({
+        const clubs = await prisma_1.default.club.findMany({
             where: { schoolId: req.user.schoolId },
             orderBy: { name: 'asc' }
         });
@@ -672,11 +671,11 @@ router.get('/clubs-list', requireAuth, async (req, res) => {
         res.status(500).json({ error: 'Failed to fetch clubs' });
     }
 });
-router.post('/clubs-list', requireAuth, requireRole('SCHOOL_ADMIN'), clubsUpload.single('logo'), async (req, res) => {
+router.post('/clubs-list', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN'), upload_1.clubsUpload.single('logo'), (0, validation_1.validate)(school_schema_1.ClubSchema), async (req, res) => {
     try {
         const { name, description, date, category, patron, chairperson } = req.body;
         const logoFilename = req.file ? req.file.filename : undefined;
-        const club = await prisma.club.create({
+        const club = await prisma_1.default.club.create({
             data: {
                 name,
                 description,
@@ -695,7 +694,7 @@ router.post('/clubs-list', requireAuth, requireRole('SCHOOL_ADMIN'), clubsUpload
         res.status(500).json({ error: 'Failed to create club' });
     }
 });
-router.patch('/clubs-list/:id', requireAuth, requireRole('SCHOOL_ADMIN'), clubsUpload.single('logo'), async (req, res) => {
+router.patch('/clubs-list/:id', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN'), upload_1.clubsUpload.single('logo'), (0, validation_1.validate)(school_schema_1.ClubSchema), async (req, res) => {
     try {
         const { id } = req.params;
         const { name, description, date, category, patron, chairperson } = req.body;
@@ -711,7 +710,7 @@ router.patch('/clubs-list/:id', requireAuth, requireRole('SCHOOL_ADMIN'), clubsU
             updateData.patron = patron || null;
         if (chairperson !== undefined)
             updateData.chairperson = chairperson || null;
-        const club = await prisma.club.update({
+        const club = await prisma_1.default.club.update({
             where: { id: id, schoolId: req.user.schoolId },
             data: updateData
         });
@@ -722,14 +721,14 @@ router.patch('/clubs-list/:id', requireAuth, requireRole('SCHOOL_ADMIN'), clubsU
         res.status(500).json({ error: 'Failed to update club' });
     }
 });
-router.delete('/clubs-list/:id', requireAuth, requireRole('SCHOOL_ADMIN'), async (req, res) => {
+router.delete('/clubs-list/:id', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN'), async (req, res) => {
     try {
-        const club = await prisma.club.findFirst({
+        const club = await prisma_1.default.club.findFirst({
             where: { id: req.params.id, schoolId: req.user.schoolId }
         });
         if (!club)
             return res.status(404).json({ error: 'Club not found' });
-        await prisma.club.delete({ where: { id: club.id } });
+        await prisma_1.default.club.delete({ where: { id: club.id } });
         res.json({ success: true });
     }
     catch (error) {
@@ -737,9 +736,9 @@ router.delete('/clubs-list/:id', requireAuth, requireRole('SCHOOL_ADMIN'), async
     }
 });
 // ── SCHOOL SPORTS ──
-router.get('/sports-list', requireAuth, async (req, res) => {
+router.get('/sports-list', auth_1.requireAuth, async (req, res) => {
     try {
-        const sports = await prisma.sport.findMany({
+        const sports = await prisma_1.default.sport.findMany({
             where: { schoolId: req.user.schoolId },
             orderBy: { name: 'asc' }
         });
@@ -749,7 +748,7 @@ router.get('/sports-list', requireAuth, async (req, res) => {
         res.status(500).json({ error: 'Failed to fetch sports' });
     }
 });
-router.post('/sports-list', requireAuth, requireRole('SCHOOL_ADMIN'), sportsUpload.single('logo'), async (req, res) => {
+router.post('/sports-list', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN'), upload_1.sportsUpload.single('logo'), (0, validation_1.validate)(school_schema_1.SportSchema), async (req, res) => {
     try {
         const { name, description, category, coach, sportMaster, captain, sportMasterId, captains, coaches, ageGroups } = req.body;
         const logoFilename = req.file ? req.file.filename : undefined;
@@ -807,7 +806,7 @@ router.post('/sports-list', requireAuth, requireRole('SCHOOL_ADMIN'), sportsUplo
                 coachesJson = coaches;
             }
         }
-        const sport = await prisma.sport.create({
+        const sport = await prisma_1.default.sport.create({
             data: {
                 name,
                 description,
@@ -830,7 +829,7 @@ router.post('/sports-list', requireAuth, requireRole('SCHOOL_ADMIN'), sportsUplo
         res.status(500).json({ error: 'Failed to create sport' });
     }
 });
-router.patch('/sports-list/:id', requireAuth, requireRole('SCHOOL_ADMIN'), sportsUpload.single('logo'), async (req, res) => {
+router.patch('/sports-list/:id', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN'), upload_1.sportsUpload.single('logo'), (0, validation_1.validate)(school_schema_1.SportSchema), async (req, res) => {
     try {
         const { id } = req.params;
         const { name, description, category, coach, sportMaster, captain, sportMasterId, captains, coaches, ageGroups } = req.body;
@@ -911,7 +910,7 @@ router.patch('/sports-list/:id', requireAuth, requireRole('SCHOOL_ADMIN'), sport
             }
             updateData.ageGroups = ageGroupsArr;
         }
-        const sport = await prisma.sport.update({
+        const sport = await prisma_1.default.sport.update({
             where: { id: id, schoolId: req.user.schoolId },
             data: updateData
         });
@@ -922,14 +921,14 @@ router.patch('/sports-list/:id', requireAuth, requireRole('SCHOOL_ADMIN'), sport
         res.status(500).json({ error: 'Failed to update sport' });
     }
 });
-router.delete('/sports-list/:id', requireAuth, requireRole('SCHOOL_ADMIN'), async (req, res) => {
+router.delete('/sports-list/:id', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN'), async (req, res) => {
     try {
-        const sport = await prisma.sport.findFirst({
+        const sport = await prisma_1.default.sport.findFirst({
             where: { id: req.params.id, schoolId: req.user.schoolId }
         });
         if (!sport)
             return res.status(404).json({ error: 'Sport not found' });
-        await prisma.sport.delete({ where: { id: sport.id } });
+        await prisma_1.default.sport.delete({ where: { id: sport.id } });
         res.json({ success: true });
     }
     catch (error) {
@@ -937,9 +936,9 @@ router.delete('/sports-list/:id', requireAuth, requireRole('SCHOOL_ADMIN'), asyn
     }
 });
 // ── SPORTING EQUIPMENT ──
-router.get('/sports-equipment', requireAuth, async (req, res) => {
+router.get('/sports-equipment', auth_1.requireAuth, async (req, res) => {
     try {
-        const equipment = await prisma.sportingEquipment.findMany({
+        const equipment = await prisma_1.default.sportingEquipment.findMany({
             where: { schoolId: req.user.schoolId },
             include: {
                 sport: { select: { id: true, name: true } },
@@ -954,10 +953,10 @@ router.get('/sports-equipment', requireAuth, async (req, res) => {
         res.status(500).json({ error: 'Failed to fetch sporting equipment' });
     }
 });
-router.post('/sports-equipment', requireAuth, requireRole('SCHOOL_ADMIN'), async (req, res) => {
+router.post('/sports-equipment', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN'), (0, validation_1.validate)(school_schema_1.SportEquipmentSchema), async (req, res) => {
     try {
         const { name, sportId, quantity, condition, custodianId } = req.body;
-        const equipment = await prisma.sportingEquipment.create({
+        const equipment = await prisma_1.default.sportingEquipment.create({
             data: {
                 name,
                 sportId: sportId || null,
@@ -978,7 +977,7 @@ router.post('/sports-equipment', requireAuth, requireRole('SCHOOL_ADMIN'), async
         res.status(500).json({ error: 'Failed to create sporting equipment' });
     }
 });
-router.patch('/sports-equipment/:id', requireAuth, requireRole('SCHOOL_ADMIN'), async (req, res) => {
+router.patch('/sports-equipment/:id', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN'), (0, validation_1.validate)(school_schema_1.SportEquipmentSchema), async (req, res) => {
     try {
         const { id } = req.params;
         const { name, sportId, quantity, condition, custodianId } = req.body;
@@ -993,7 +992,7 @@ router.patch('/sports-equipment/:id', requireAuth, requireRole('SCHOOL_ADMIN'), 
             updateData.condition = condition;
         if (custodianId !== undefined)
             updateData.custodianId = custodianId || null;
-        const equipment = await prisma.sportingEquipment.update({
+        const equipment = await prisma_1.default.sportingEquipment.update({
             where: { id: id, schoolId: req.user.schoolId },
             data: updateData,
             include: {
@@ -1008,15 +1007,15 @@ router.patch('/sports-equipment/:id', requireAuth, requireRole('SCHOOL_ADMIN'), 
         res.status(500).json({ error: 'Failed to update sporting equipment' });
     }
 });
-router.delete('/sports-equipment/:id', requireAuth, requireRole('SCHOOL_ADMIN'), async (req, res) => {
+router.delete('/sports-equipment/:id', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN'), async (req, res) => {
     try {
         const { id } = req.params;
-        const equipment = await prisma.sportingEquipment.findFirst({
+        const equipment = await prisma_1.default.sportingEquipment.findFirst({
             where: { id: id, schoolId: req.user.schoolId }
         });
         if (!equipment)
             return res.status(404).json({ error: 'Equipment not found' });
-        await prisma.sportingEquipment.delete({ where: { id: equipment.id } });
+        await prisma_1.default.sportingEquipment.delete({ where: { id: equipment.id } });
         res.json({ success: true });
     }
     catch (error) {
@@ -1025,9 +1024,9 @@ router.delete('/sports-equipment/:id', requireAuth, requireRole('SCHOOL_ADMIN'),
     }
 });
 // ── HOLIDAYS ──
-router.get('/holidays', requireAuth, async (req, res) => {
+router.get('/holidays', auth_1.requireAuth, async (req, res) => {
     try {
-        const holidays = await prisma.holiday.findMany({
+        const holidays = await prisma_1.default.holiday.findMany({
             where: { schoolId: req.user.schoolId },
             orderBy: { startDate: 'asc' }
         });
@@ -1037,10 +1036,10 @@ router.get('/holidays', requireAuth, async (req, res) => {
         res.status(500).json({ error: 'Failed to fetch holidays' });
     }
 });
-router.post('/holidays', requireAuth, requireRole('SCHOOL_ADMIN'), async (req, res) => {
+router.post('/holidays', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN'), (0, validation_1.validate)(school_schema_1.HolidaySchema), async (req, res) => {
     try {
         const { title, content, startDate, endDate } = req.body;
-        const holiday = await prisma.holiday.create({
+        const holiday = await prisma_1.default.holiday.create({
             data: {
                 title,
                 content,
@@ -1055,13 +1054,62 @@ router.post('/holidays', requireAuth, requireRole('SCHOOL_ADMIN'), async (req, r
         res.status(500).json({ error: 'Failed to create holiday' });
     }
 });
-router.delete('/holidays/:id', requireAuth, requireRole('SCHOOL_ADMIN'), async (req, res) => {
+router.delete('/holidays/:id', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN'), async (req, res) => {
     try {
-        await prisma.holiday.delete({ where: { id: req.params.id } });
+        await prisma_1.default.holiday.delete({ where: { id: req.params.id } });
         res.json({ success: true });
     }
     catch (error) {
         res.status(500).json({ error: 'Failed to delete holiday' });
+    }
+});
+/**
+ * @route   GET /api/schools/tenant/export
+ * @desc    Export all critical data for the current school
+ */
+router.get('/tenant/export', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN'), async (req, res) => {
+    try {
+        const schoolId = req.user.schoolId;
+        // Fetch critical tables
+        const students = await prisma_1.default.student.findMany({ where: { schoolId } });
+        const teachers = await prisma_1.default.teacher.findMany({ where: { schoolId } });
+        const users = await prisma_1.default.user.findMany({ where: { schoolId }, select: { id: true, name: true, email: true, role: true } });
+        const fees = await prisma_1.default.fee.findMany({ where: { schoolId } });
+        const payments = await prisma_1.default.studentPayment.findMany({ where: { schoolId } });
+        const classes = await prisma_1.default.schoolClass.findMany({ where: { schoolId } });
+        const subjects = await prisma_1.default.subject.findMany({ where: { schoolId } });
+        const exportData = {
+            timestamp: new Date().toISOString(),
+            schoolId,
+            data: {
+                users,
+                students,
+                teachers,
+                classes,
+                subjects,
+                fees,
+                payments
+            }
+        };
+        // Audit Log the data exfiltration event
+        await (0, audit_1.logAction)(req, 'EXPORT_TENANT_DATA', 'School', schoolId, {
+            recordsExported: {
+                users: users.length,
+                students: students.length,
+                teachers: teachers.length,
+                classes: classes.length,
+                subjects: subjects.length,
+                fees: fees.length,
+                payments: payments.length
+            }
+        });
+        res.setHeader('Content-Type', 'application/json');
+        res.setHeader('Content-Disposition', `attachment; filename="school_export_${new Date().toISOString().split('T')[0]}.json"`);
+        res.send(JSON.stringify(exportData, null, 2));
+    }
+    catch (error) {
+        console.error('Export error:', error);
+        res.status(500).json({ error: 'Failed to export data' });
     }
 });
 /**
@@ -1071,7 +1119,7 @@ router.delete('/holidays/:id', requireAuth, requireRole('SCHOOL_ADMIN'), async (
 router.get('/:code', async (req, res) => {
     const { code } = req.params;
     try {
-        const school = await prisma.school.findUnique({
+        const school = await prisma_1.default.school.findUnique({
             where: { code: code.toUpperCase() },
             select: {
                 id: true,
@@ -1103,7 +1151,7 @@ router.get('/:code', async (req, res) => {
         // Auto-create websiteSettings if null
         let websiteSettings = school.websiteSettings;
         if (!websiteSettings) {
-            websiteSettings = await prisma.websiteSettings.create({
+            websiteSettings = await prisma_1.default.websiteSettings.create({
                 data: {
                     schoolId: school.id,
                     bannerTitle: `Welcome to ${school.name}`,
@@ -1122,7 +1170,7 @@ router.get('/:code', async (req, res) => {
         // Auto-create schoolSetting if null
         let schoolSetting = school.schoolSetting;
         if (!schoolSetting) {
-            schoolSetting = await prisma.schoolSetting.create({
+            schoolSetting = await prisma_1.default.schoolSetting.create({
                 data: {
                     schoolId: school.id,
                     systemName: school.name,
@@ -1134,7 +1182,7 @@ router.get('/:code', async (req, res) => {
             school.schoolSetting = schoolSetting;
         }
         // Calculate dynamic Years of Excellence based on oldest student
-        const oldestStudent = await prisma.student.findFirst({
+        const oldestStudent = await prisma_1.default.student.findFirst({
             where: { schoolId: school.id },
             orderBy: { enrolledAt: 'asc' },
             select: { enrolledAt: true }
@@ -1161,14 +1209,14 @@ router.get('/:code', async (req, res) => {
  * @route   PATCH /api/schools/supplier-categories
  * @desc    [SCHOOL_ADMIN] Update school supplier categories list
  */
-router.patch('/supplier-categories', requireAuth, requireRole('SCHOOL_ADMIN'), async (req, res) => {
+router.patch('/supplier-categories', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN'), (0, validation_1.validate)(school_schema_1.SupplierCategoriesSchema), async (req, res) => {
     const { categories } = req.body;
     if (!Array.isArray(categories)) {
         return res.status(400).json({ error: 'Categories must be an array of strings' });
     }
     try {
         const schoolId = req.user.schoolId;
-        const school = await prisma.school.findUnique({ where: { id: schoolId } });
+        const school = await prisma_1.default.school.findUnique({ where: { id: schoolId } });
         if (!school)
             return res.status(404).json({ error: 'School not found' });
         const currentContent = school.customContent || {};
@@ -1176,7 +1224,7 @@ router.patch('/supplier-categories', requireAuth, requireRole('SCHOOL_ADMIN'), a
             ...currentContent,
             supplierCategories: categories
         };
-        await prisma.school.update({
+        await prisma_1.default.school.update({
             where: { id: schoolId },
             data: { customContent: updatedContent }
         });
@@ -1191,7 +1239,7 @@ router.patch('/supplier-categories', requireAuth, requireRole('SCHOOL_ADMIN'), a
  * @route   PATCH /api/schools/:code
  * @desc    [SUPER_ADMIN] Update school metadata, status or plan
  */
-router.patch('/:code', requireAuth, requireRole('SUPER_ADMIN'), async (req, res) => {
+router.patch('/:code', auth_1.requireAuth, (0, auth_1.requireRole)('SUPER_ADMIN'), (0, validation_1.validate)(school_schema_1.SuperAdminSchoolSchema), async (req, res) => {
     const code = req.params.code;
     const { name, email, phone, address, status, planName, type } = req.body;
     try {
@@ -1209,12 +1257,12 @@ router.patch('/:code', requireAuth, requireRole('SUPER_ADMIN'), async (req, res)
         if (type)
             updateData.type = type;
         if (planName) {
-            const plan = await prisma.plan.findUnique({ where: { name: planName } });
+            const plan = await prisma_1.default.plan.findUnique({ where: { name: planName } });
             if (!plan)
                 return res.status(400).json({ error: 'Invalid plan name' });
             updateData.planId = plan.id;
         }
-        const school = await prisma.school.update({
+        const school = await prisma_1.default.school.update({
             where: { code: code.toUpperCase() },
             data: updateData
         });
@@ -1228,10 +1276,15 @@ router.patch('/:code', requireAuth, requireRole('SUPER_ADMIN'), async (req, res)
  * @route   DELETE /api/schools/:code
  * @desc    [SUPER_ADMIN] Permanently delete a school
  */
-router.delete('/:code', requireAuth, requireRole('SUPER_ADMIN'), async (req, res) => {
+router.delete('/:code', auth_1.requireAuth, (0, auth_1.requireRole)('SUPER_ADMIN'), async (req, res) => {
     const code = req.params.code;
     try {
-        await prisma.school.delete({ where: { code: code.toUpperCase() } });
+        const school = await prisma_1.default.school.update({
+            where: { code: code.toUpperCase() },
+            data: { status: 'deleted' }
+        });
+        // Invalidate all tokens for users of this school by locking them or requiring password change
+        // For now, the requireAuth middleware will block them because school.status === 'deleted'
         res.json({ message: 'School deleted successfully' });
     }
     catch (error) {
@@ -1245,7 +1298,7 @@ router.delete('/:code', requireAuth, requireRole('SUPER_ADMIN'), async (req, res
 router.get('/:code/content', async (req, res) => {
     const { code } = req.params;
     try {
-        const school = await prisma.school.findUnique({
+        const school = await prisma_1.default.school.findUnique({
             where: { code: code.toUpperCase() },
             include: {
                 news: { orderBy: { publishedAt: 'desc' }, take: 10 },
@@ -1266,12 +1319,12 @@ router.get('/:code/content', async (req, res) => {
  * @route   GET /api/schools/connections/pending
  * @desc    [SCHOOL_ADMIN] Fetch all users with pending link requests (Suppliers or Parents)
  */
-router.get('/connections/pending', requireAuth, requireRole('SCHOOL_ADMIN'), async (req, res) => {
+router.get('/connections/pending', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN'), async (req, res) => {
     const { role } = req.query;
     try {
         const schoolId = req.user.schoolId;
         if (role === 'PARENT') {
-            const pendingParents = await prisma.parentStudent.findMany({
+            const pendingParents = await prisma_1.default.parentStudent.findMany({
                 where: {
                     student: { schoolId },
                     status: 'PENDING'
@@ -1291,7 +1344,7 @@ router.get('/connections/pending', requireAuth, requireRole('SCHOOL_ADMIN'), asy
             })));
         }
         // Default: Fetch PENDING connections from SchoolSupplier table
-        const pendingConnections = await prisma.schoolSupplier.findMany({
+        const pendingConnections = await prisma_1.default.schoolSupplier.findMany({
             where: {
                 schoolId,
                 status: 'PENDING'
@@ -1324,19 +1377,19 @@ router.get('/connections/pending', requireAuth, requireRole('SCHOOL_ADMIN'), asy
  * @route   PATCH /api/schools/connections/:userId/approve
  * @desc    [SCHOOL_ADMIN] Approve a pending connection request
  */
-router.patch('/connections/:userId/approve', requireAuth, requireRole('SCHOOL_ADMIN'), async (req, res) => {
+router.patch('/connections/:userId/approve', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN'), async (req, res) => {
     try {
         const applicantId = req.params.userId;
-        const school = await prisma.school.findUnique({ where: { id: req.user.schoolId } });
+        const school = await prisma_1.default.school.findUnique({ where: { id: req.user.schoolId } });
         if (!school)
             return res.status(404).json({ error: 'School not found' });
-        const applicant = await prisma.user.findUnique({ where: { id: applicantId } });
+        const applicant = await prisma_1.default.user.findFirst({ where: { id: applicantId } });
         if (!applicant)
             return res.status(404).json({ error: 'User not found' });
         // 1. Find the pending connection (Check Supplier first, then Parent)
         let schoolSpecificId = null;
         let type = 'SUPPLIER';
-        let connection = await prisma.schoolSupplier.findFirst({
+        let connection = await prisma_1.default.schoolSupplier.findFirst({
             where: {
                 schoolId: school.id,
                 supplier: { userId: applicantId },
@@ -1344,7 +1397,7 @@ router.patch('/connections/:userId/approve', requireAuth, requireRole('SCHOOL_AD
             }
         });
         if (!connection) {
-            connection = await prisma.parentStudent.findFirst({
+            connection = await prisma_1.default.parentStudent.findFirst({
                 where: {
                     student: { schoolId: school.id },
                     parent: { userId: applicantId },
@@ -1358,19 +1411,23 @@ router.patch('/connections/:userId/approve', requireAuth, requireRole('SCHOOL_AD
         }
         // 2. Handle role-specific logic (e.g., ID generation)
         if (type === 'SUPPLIER') {
-            schoolSpecificId = await generateSequentialId(school.id, 'SUPPLIER');
-            await prisma.schoolSupplier.update({
-                where: { id: connection.id },
-                data: { status: 'APPROVED', schoolSpecificId }
-            });
-            // Sync generated ID back to the User table
-            await prisma.user.update({
-                where: { id: applicantId },
-                data: { staffId: schoolSpecificId }
-            });
+            // Generate ID before the transaction (atomic via SchoolSequence table)
+            schoolSpecificId = await (0, id_generator_1.generateSequentialId)(school.id, 'SUPPLIER');
+            // Both writes must succeed or neither should — wrap in transaction
+            await prisma_1.default.$transaction([
+                prisma_1.default.schoolSupplier.update({
+                    where: { id: connection.id },
+                    data: { status: 'APPROVED', schoolSpecificId }
+                }),
+                // Sync generated ID back to the User table
+                prisma_1.default.user.update({
+                    where: { id: applicantId },
+                    data: { staffId: schoolSpecificId }
+                })
+            ]);
         }
         else {
-            await prisma.parentStudent.update({
+            await prisma_1.default.parentStudent.update({
                 where: { id: connection.id },
                 data: { status: 'APPROVED' }
             });
@@ -1381,5 +1438,5 @@ router.patch('/connections/:userId/approve', requireAuth, requireRole('SCHOOL_AD
         res.status(500).json({ error: 'Failed to approve connection' });
     }
 });
-export default router;
+exports.default = router;
 //# sourceMappingURL=schools.js.map

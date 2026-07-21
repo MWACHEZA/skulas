@@ -1,10 +1,15 @@
-import express from 'express';
-import { requireAuth, requireRole } from '../middleware/auth';
-import prisma from '../lib/prisma';
-const router = express.Router();
-router.get('/', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCILLARY'), async (req, res) => {
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = __importDefault(require("express"));
+const auth_1 = require("../middleware/auth");
+const prisma_1 = __importDefault(require("../lib/prisma"));
+const router = express_1.default.Router();
+router.get('/', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'ANCILLARY'), async (req, res) => {
     try {
-        const inquiries = await prisma.websiteInquiry.findMany({
+        const inquiries = await prisma_1.default.websiteInquiry.findMany({
             where: { schoolId: req.user.schoolId },
             orderBy: { createdAt: 'desc' }
         });
@@ -14,10 +19,10 @@ router.get('/', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCILLARY'), async (re
         res.status(500).json({ error: 'Failed to fetch inquiries' });
     }
 });
-router.post('/', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCILLARY'), async (req, res) => {
+router.post('/', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'ANCILLARY'), async (req, res) => {
     try {
         const { name, email, phone, message } = req.body;
-        const inquiry = await prisma.websiteInquiry.create({
+        const inquiry = await prisma_1.default.websiteInquiry.create({
             data: {
                 name,
                 email,
@@ -32,9 +37,9 @@ router.post('/', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCILLARY'), async (r
         res.status(500).json({ error: 'Failed to create inquiry' });
     }
 });
-router.delete('/:id', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCILLARY'), async (req, res) => {
+router.delete('/:id', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'ANCILLARY'), async (req, res) => {
     try {
-        await prisma.websiteInquiry.delete({
+        await prisma_1.default.websiteInquiry.delete({
             where: {
                 id: req.params.id,
                 schoolId: req.user.schoolId
@@ -46,5 +51,5 @@ router.delete('/:id', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCILLARY'), asy
         res.status(500).json({ error: 'Failed to delete inquiry' });
     }
 });
-export default router;
+exports.default = router;
 //# sourceMappingURL=website-settings-inquiries.js.map

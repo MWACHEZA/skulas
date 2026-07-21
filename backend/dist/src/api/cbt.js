@@ -1,11 +1,16 @@
-import { Router } from 'express';
-import prisma from '../lib/prisma';
-import { requireAuth, requireRole } from '../middleware/auth';
-const router = Router();
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const prisma_1 = __importDefault(require("../lib/prisma"));
+const auth_1 = require("../middleware/auth");
+const router = (0, express_1.Router)();
 // Get all CBT exams for a school
-router.get('/', requireAuth, async (req, res) => {
+router.get('/', auth_1.requireAuth, async (req, res) => {
     try {
-        const exams = await prisma.cBTExam.findMany({
+        const exams = await prisma_1.default.cBTExam.findMany({
             where: { schoolId: req.user.schoolId },
             include: {
                 class: true,
@@ -25,13 +30,14 @@ router.get('/', requireAuth, async (req, res) => {
     }
 });
 // Create a new CBT exam
-router.post('/', requireAuth, requireRole('TEACHER', 'SCHOOL_ADMIN', 'SUPER_ADMIN'), async (req, res) => {
+router.post('/', auth_1.requireAuth, (0, auth_1.requireRole)('TEACHER', 'SCHOOL_ADMIN', 'SUPER_ADMIN'), async (req, res) => {
     try {
-        const { title, description, date, time, passingPercent, classId, sectionId, subjectId } = req.body;
-        const exam = await prisma.cBTExam.create({
+        const { title, description, instructions, date, time, passingPercent, classId, sectionId, subjectId } = req.body;
+        const exam = await prisma_1.default.cBTExam.create({
             data: {
                 title,
                 description,
+                instructions,
                 date: new Date(date),
                 time,
                 passingPercent: Number(passingPercent),
@@ -50,15 +56,22 @@ router.post('/', requireAuth, requireRole('TEACHER', 'SCHOOL_ADMIN', 'SUPER_ADMI
     }
 });
 // Get a specific exam with questions
-router.get('/:id', requireAuth, async (req, res) => {
+router.get('/:id', auth_1.requireAuth, async (req, res) => {
     try {
-        const exam = await prisma.cBTExam.findUnique({
+        const exam = await prisma_1.default.cBTExam.findFirst({
             where: { id: req.params.id },
             include: {
                 class: true,
                 section: true,
                 subject: true,
-                questions: true
+                school: true,
+                questions: {
+                    orderBy: [
+                        { page: 'asc' },
+                        { section: 'asc' },
+                        { createdAt: 'asc' }
+                    ]
+                }
             }
         });
         if (!exam || exam.schoolId !== req.user.schoolId) {
@@ -72,11 +85,11 @@ router.get('/:id', requireAuth, async (req, res) => {
     }
 });
 // Update exam status (Publish)
-router.put('/:id', requireAuth, requireRole('TEACHER', 'SCHOOL_ADMIN', 'SUPER_ADMIN'), async (req, res) => {
+router.put('/:id', auth_1.requireAuth, (0, auth_1.requireRole)('TEACHER', 'SCHOOL_ADMIN', 'SUPER_ADMIN'), async (req, res) => {
     try {
-        const { status, title, date, time, passingPercent, classId, sectionId, subjectId } = req.body;
+        const { status, title, description, instructions, date, time, passingPercent, classId, sectionId, subjectId } = req.body;
         // First verify ownership or admin
-        const existing = await prisma.cBTExam.findUnique({ where: { id: req.params.id } });
+        const existing = await prisma_1.default.cBTExam.findFirst({ where: { id: req.params.id } });
         if (!existing || existing.schoolId !== req.user.schoolId) {
             return res.status(404).json({ error: 'Exam not found' });
         }
@@ -85,6 +98,10 @@ router.put('/:id', requireAuth, requireRole('TEACHER', 'SCHOOL_ADMIN', 'SUPER_AD
             data.status = status;
         if (title !== undefined)
             data.title = title;
+        if (description !== undefined)
+            data.description = description;
+        if (instructions !== undefined)
+            data.instructions = instructions;
         if (date !== undefined)
             data.date = new Date(date);
         if (time !== undefined)
@@ -97,7 +114,7 @@ router.put('/:id', requireAuth, requireRole('TEACHER', 'SCHOOL_ADMIN', 'SUPER_AD
             data.sectionId = sectionId;
         if (subjectId !== undefined)
             data.subjectId = subjectId;
-        const exam = await prisma.cBTExam.update({
+        const exam = await prisma_1.default.cBTExam.update({
             where: { id: req.params.id },
             data
         });
@@ -109,13 +126,13 @@ router.put('/:id', requireAuth, requireRole('TEACHER', 'SCHOOL_ADMIN', 'SUPER_AD
     }
 });
 // Delete an exam
-router.delete('/:id', requireAuth, requireRole('TEACHER', 'SCHOOL_ADMIN', 'SUPER_ADMIN'), async (req, res) => {
+router.delete('/:id', auth_1.requireAuth, (0, auth_1.requireRole)('TEACHER', 'SCHOOL_ADMIN', 'SUPER_ADMIN'), async (req, res) => {
     try {
-        const existing = await prisma.cBTExam.findUnique({ where: { id: req.params.id } });
+        const existing = await prisma_1.default.cBTExam.findFirst({ where: { id: req.params.id } });
         if (!existing || existing.schoolId !== req.user.schoolId) {
             return res.status(404).json({ error: 'Exam not found' });
         }
-        await prisma.cBTExam.delete({ where: { id: req.params.id } });
+        await prisma_1.default.cBTExam.delete({ where: { id: req.params.id } });
         res.json({ success: true });
     }
     catch (error) {
@@ -124,26 +141,28 @@ router.delete('/:id', requireAuth, requireRole('TEACHER', 'SCHOOL_ADMIN', 'SUPER
     }
 });
 // Add a question to an exam
-router.post('/:id/questions', requireAuth, requireRole('TEACHER', 'SCHOOL_ADMIN', 'SUPER_ADMIN'), async (req, res) => {
+router.post('/:id/questions', auth_1.requireAuth, (0, auth_1.requireRole)('TEACHER', 'SCHOOL_ADMIN', 'SUPER_ADMIN'), async (req, res) => {
     try {
         const examId = req.params.id;
-        const { type, mark, question, options, answer } = req.body;
-        const exam = await prisma.cBTExam.findUnique({ where: { id: examId } });
+        const { type, mark, question, options, answer, section, page } = req.body;
+        const exam = await prisma_1.default.cBTExam.findFirst({ where: { id: examId } });
         if (!exam || exam.schoolId !== req.user.schoolId) {
             return res.status(404).json({ error: 'Exam not found' });
         }
-        const newQuestion = await prisma.cBTQuestion.create({
+        const newQuestion = await prisma_1.default.cBTQuestion.create({
             data: {
                 examId,
                 type,
                 mark: Number(mark),
                 question,
                 options: options || [],
-                answer
+                answer,
+                section: section || null,
+                page: page ? Number(page) : 1
             }
         });
         // Update total marks of the exam
-        await prisma.cBTExam.update({
+        await prisma_1.default.cBTExam.update({
             where: { id: examId },
             data: {
                 totalMarks: { increment: Number(mark) }
@@ -157,21 +176,21 @@ router.post('/:id/questions', requireAuth, requireRole('TEACHER', 'SCHOOL_ADMIN'
     }
 });
 // Delete a question
-router.delete('/:examId/questions/:questionId', requireAuth, requireRole('TEACHER', 'SCHOOL_ADMIN', 'SUPER_ADMIN'), async (req, res) => {
+router.delete('/:examId/questions/:questionId', auth_1.requireAuth, (0, auth_1.requireRole)('TEACHER', 'SCHOOL_ADMIN', 'SUPER_ADMIN'), async (req, res) => {
     try {
         const examId = req.params.examId;
         const questionId = req.params.questionId;
-        const exam = await prisma.cBTExam.findUnique({ where: { id: examId } });
+        const exam = await prisma_1.default.cBTExam.findFirst({ where: { id: examId } });
         if (!exam || exam.schoolId !== req.user.schoolId) {
             return res.status(404).json({ error: 'Exam not found' });
         }
-        const question = await prisma.cBTQuestion.findUnique({ where: { id: questionId } });
+        const question = await prisma_1.default.cBTQuestion.findUnique({ where: { id: questionId } });
         if (!question || question.examId !== examId) {
             return res.status(404).json({ error: 'Question not found' });
         }
-        await prisma.cBTQuestion.delete({ where: { id: questionId } });
+        await prisma_1.default.cBTQuestion.delete({ where: { id: questionId } });
         // Update total marks of the exam
-        await prisma.cBTExam.update({
+        await prisma_1.default.cBTExam.update({
             where: { id: examId },
             data: {
                 totalMarks: { decrement: question.mark }
@@ -184,5 +203,134 @@ router.delete('/:examId/questions/:questionId', requireAuth, requireRole('TEACHE
         res.status(500).json({ error: 'Failed to delete question' });
     }
 });
-export default router;
+// Submit an exam (Auto-grade)
+router.post('/:id/submit', auth_1.requireAuth, async (req, res) => {
+    try {
+        const examId = req.params.id;
+        const { responses } = req.body;
+        const existingResult = await prisma_1.default.cBTResult.findUnique({
+            where: { examId_studentId: { examId, studentId: req.user.id } }
+        });
+        if (existingResult) {
+            return res.status(400).json({ error: 'You have already submitted this exam.' });
+        }
+        const exam = await prisma_1.default.cBTExam.findUnique({
+            where: { id: examId },
+            include: { questions: true }
+        });
+        if (!exam || exam.schoolId !== req.user.schoolId) {
+            return res.status(404).json({ error: 'Exam not found' });
+        }
+        let score = 0;
+        const totalMarks = exam.totalMarks;
+        exam.questions.forEach((q) => {
+            const studentAns = responses[q.id];
+            const correctAns = q.answer;
+            if (studentAns === undefined || studentAns === null)
+                return;
+            if (q.type === 'Single choice') {
+                if (studentAns === correctAns)
+                    score += q.mark;
+            }
+            else if (q.type === 'Multiple choice') {
+                if (Array.isArray(studentAns) && Array.isArray(correctAns)) {
+                    const isCorrect = studentAns.length === correctAns.length &&
+                        studentAns.every(val => correctAns.includes(val));
+                    if (isCorrect)
+                        score += q.mark;
+                }
+            }
+            else if (q.type === 'True or false') {
+                if (studentAns === correctAns)
+                    score += q.mark;
+            }
+            else if (q.type === 'Fill in the blanks') {
+                if (typeof studentAns === 'string' && typeof correctAns === 'string') {
+                    if (studentAns.trim().toLowerCase() === correctAns.trim().toLowerCase()) {
+                        score += q.mark;
+                    }
+                }
+            }
+        });
+        const percent = totalMarks > 0 ? (score / totalMarks) * 100 : 0;
+        const status = percent >= exam.passingPercent ? 'Pass' : 'Fail';
+        const result = await prisma_1.default.cBTResult.create({
+            data: {
+                examId,
+                studentId: req.user.id,
+                score,
+                totalMarks,
+                status,
+                responses
+            }
+        });
+        res.json({ success: true, result });
+    }
+    catch (error) {
+        console.error('Error submitting exam:', error);
+        res.status(500).json({ error: 'Failed to submit exam' });
+    }
+});
+// Get all results for an exam
+router.get('/:id/results', auth_1.requireAuth, (0, auth_1.requireRole)('TEACHER', 'SCHOOL_ADMIN', 'SUPER_ADMIN'), async (req, res) => {
+    try {
+        const examId = req.params.id;
+        const exam = await prisma_1.default.cBTExam.findUnique({ where: { id: examId } });
+        if (!exam || exam.schoolId !== req.user.schoolId) {
+            return res.status(404).json({ error: 'Exam not found' });
+        }
+        const results = await prisma_1.default.cBTResult.findMany({
+            where: { examId },
+            orderBy: { createdAt: 'desc' }
+        });
+        const studentIds = results.map(r => r.studentId);
+        // In skulas, a logged-in student uses User model. Sometimes User.student is linked. Let's fetch Users.
+        const users = await prisma_1.default.user.findMany({
+            where: { id: { in: studentIds } },
+            include: { student: { include: { class: true } } }
+        });
+        const userMap = new Map();
+        users.forEach(u => userMap.set(u.id, u));
+        const enrichedResults = results.map(r => {
+            const u = userMap.get(r.studentId);
+            return {
+                ...r,
+                student: u ? {
+                    firstName: u.firstName,
+                    lastName: u.lastName,
+                    class: u.student?.class ? { name: u.student.class.name } : null
+                } : null
+            };
+        });
+        res.json(enrichedResults);
+    }
+    catch (error) {
+        console.error('Error fetching exam results:', error);
+        res.status(500).json({ error: 'Failed to fetch exam results' });
+    }
+});
+// Remark a student's result
+router.put('/results/:resultId', auth_1.requireAuth, (0, auth_1.requireRole)('TEACHER', 'SCHOOL_ADMIN', 'SUPER_ADMIN'), async (req, res) => {
+    try {
+        const resultId = req.params.resultId;
+        const { score, status } = req.body;
+        const result = await prisma_1.default.cBTResult.findUnique({
+            where: { id: resultId },
+            include: { exam: true }
+        });
+        if (!result || result.exam.schoolId !== req.user.schoolId) {
+            return res.status(404).json({ error: 'Result not found' });
+        }
+        const updated = await prisma_1.default.cBTResult.update({
+            where: { id: resultId },
+            data: { score: Number(score), status }
+        });
+        res.json({ success: true, result: updated });
+    }
+    catch (error) {
+        console.error('Error updating exam result:', error);
+        res.status(500).json({ error: 'Failed to update result' });
+    }
+});
+exports.default = router;
 //# sourceMappingURL=cbt.js.map

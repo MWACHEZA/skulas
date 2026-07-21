@@ -1,14 +1,52 @@
-import { Router } from 'express';
-import prisma from '../lib/prisma';
-import { requireAuth } from '../middleware/auth';
-import { saveBase64Image } from '../lib/file-utils';
-import { checkUniversityEligibility } from '../utils/academic';
-const router = Router();
+"use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const prisma_1 = __importDefault(require("../lib/prisma"));
+const auth_1 = require("../middleware/auth");
+const file_utils_1 = require("../lib/file-utils");
+const academic_1 = require("../utils/academic");
+const router = (0, express_1.Router)();
 /**
  * @route   GET /api/applications
  * @desc    List all applications for current school (SCHOOL_ADMIN, BURSAR, TEACHER)
  */
-router.get('/', requireAuth, async (req, res) => {
+router.get('/', auth_1.requireAuth, async (req, res) => {
     const userRole = req.user.role.toUpperCase();
     const secondaryRoles = req.user.secondaryRoles || [];
     const isAuthorized = userRole === 'SCHOOL_ADMIN' || userRole === 'BURSAR' || secondaryRoles.includes('Senior Teacher') || secondaryRoles.includes('Class Teacher');
@@ -22,14 +60,14 @@ router.get('/', requireAuth, async (req, res) => {
             ...(status && status !== 'all' ? { status: status } : {}),
         };
         const [applications, total] = await Promise.all([
-            prisma.application.findMany({
+            prisma_1.default.application.findMany({
                 where,
                 include: { school: true },
                 orderBy: { createdAt: 'desc' },
                 skip,
                 take: parseInt(limit),
             }),
-            prisma.application.count({ where }),
+            prisma_1.default.application.count({ where }),
         ]);
         // Enhance with eligibility if University
         const enhancedApplications = applications.map(app => {
@@ -38,7 +76,7 @@ router.get('/', requireAuth, async (req, res) => {
                 const entryCategory = app.entryCategory || 'Normal';
                 const dob = app.dob ? new Date(app.dob) : null;
                 const age = dob ? new Date().getFullYear() - dob.getFullYear() : undefined;
-                const eligibility = checkUniversityEligibility({
+                const eligibility = (0, academic_1.checkUniversityEligibility)({
                     entryCategory,
                     oLevels: (data.oLevels || []).map((o) => o.subject).filter(Boolean),
                     aLevels: (data.aLevels || []).map((a) => a.subject).filter(Boolean),
@@ -62,11 +100,11 @@ router.get('/', requireAuth, async (req, res) => {
 router.post('/', async (req, res) => {
     const { applicantName, email, phone, dob, gender, appType, schoolCode, prevSchool, reasonForTransfer, lastGradeAchieved, academicHistory, address, notes, entryCategory, academicData, programLevel, studyMode, researchTitle } = req.body;
     try {
-        const school = await prisma.school.findUnique({ where: { code: schoolCode?.toUpperCase() } });
+        const school = await prisma_1.default.school.findUnique({ where: { code: schoolCode?.toUpperCase() } });
         if (!school)
             return res.status(404).json({ error: 'School not found. Check school code.' });
-        const application = await prisma.$transaction(async (tx) => {
-            const { generateSequentialId } = await import('../lib/id-generator');
+        const application = await prisma_1.default.$transaction(async (tx) => {
+            const { generateSequentialId } = await Promise.resolve().then(() => __importStar(require('../lib/id-generator')));
             const applicationNumber = await generateSequentialId(school.id, 'APPLICATION', tx);
             return await tx.application.create({
                 data: {
@@ -114,7 +152,7 @@ router.post('/', async (req, res) => {
  * @route   GET /api/applications/:id
  * @desc    Get a single application
  */
-router.get('/:id', requireAuth, async (req, res) => {
+router.get('/:id', auth_1.requireAuth, async (req, res) => {
     const userRole = req.user.role.toUpperCase();
     const secondaryRoles = req.user.secondaryRoles || [];
     const isAuthorized = userRole === 'SCHOOL_ADMIN' || userRole === 'BURSAR' || secondaryRoles.includes('Senior Teacher') || secondaryRoles.includes('Class Teacher');
@@ -122,7 +160,7 @@ router.get('/:id', requireAuth, async (req, res) => {
         return res.status(403).json({ error: 'Access denied' });
     const { id } = req.params;
     try {
-        const application = await prisma.application.findFirst({
+        const application = await prisma_1.default.application.findFirst({
             where: { id: String(id), schoolId: req.user.schoolId },
             include: {
                 timeline: { orderBy: { occurredAt: 'desc' } },
@@ -139,7 +177,7 @@ router.get('/:id', requireAuth, async (req, res) => {
             const entryCategory = application.entryCategory || 'Normal';
             const dob = application.dob ? new Date(application.dob) : null;
             const age = dob ? new Date().getFullYear() - dob.getFullYear() : undefined;
-            eligibility = checkUniversityEligibility({
+            eligibility = (0, academic_1.checkUniversityEligibility)({
                 entryCategory,
                 oLevels: (data.oLevels || []).map((o) => o.subject).filter(Boolean),
                 aLevels: (data.aLevels || []).map((a) => a.subject).filter(Boolean),
@@ -157,7 +195,7 @@ router.get('/:id', requireAuth, async (req, res) => {
  * @route   PATCH /api/applications/:id
  * @desc    Update application status & Enroll (Admin/Authorized Teachers)
  */
-router.patch('/:id', requireAuth, async (req, res) => {
+router.patch('/:id', auth_1.requireAuth, async (req, res) => {
     const { id } = req.params;
     const { status, notes, classId, interviewDate, interviewTime, interviewVenue } = req.body;
     const userRole = req.user.role.toUpperCase();
@@ -166,14 +204,14 @@ router.patch('/:id', requireAuth, async (req, res) => {
     if (!isAuthorized)
         return res.status(403).json({ error: 'Access denied' });
     try {
-        const application = await prisma.application.findUnique({
+        const application = await prisma_1.default.application.findFirst({
             where: { id: String(id) },
             include: { school: true }
         });
         if (!application || application.schoolId !== req.user.schoolId) {
             return res.status(404).json({ error: 'Application not found' });
         }
-        const result = await prisma.$transaction(async (tx) => {
+        const result = await prisma_1.default.$transaction(async (tx) => {
             // 1. Update Application status
             const updatedApp = await tx.application.update({
                 where: { id: application.id },
@@ -197,13 +235,13 @@ router.patch('/:id', requireAuth, async (req, res) => {
                 if (!classId)
                     throw new Error('Class assignment is required for approval');
                 // Find existing user (created during registration) or create new one
-                let user = await tx.user.findUnique({
+                let user = await tx.user.findFirst({
                     where: { email: application.email }
                 });
                 if (!user) {
                     // Create a guest user account if it doesn't exist
-                    const hashedPassword = await import('bcryptjs').then(m => m.hash('Password', 10));
-                    const { generateSequentialId } = await import('../lib/id-generator');
+                    const hashedPassword = await Promise.resolve().then(() => __importStar(require('bcryptjs'))).then(m => m.hash('Password', 10));
+                    const { generateSequentialId } = await Promise.resolve().then(() => __importStar(require('../lib/id-generator')));
                     const staffId = await generateSequentialId(application.schoolId, 'STUDENT', tx);
                     user = await tx.user.create({
                         data: {
@@ -230,8 +268,8 @@ router.patch('/:id', requireAuth, async (req, res) => {
                     where: { email: application.email, schoolId: application.schoolId }
                 });
                 if (!existingStudent) {
-                    const { generateSequentialId } = await import('../lib/id-generator');
-                    const { renameEntityDir } = await import('../lib/file-utils');
+                    const { generateSequentialId } = await Promise.resolve().then(() => __importStar(require('../lib/id-generator')));
+                    const { renameEntityDir } = await Promise.resolve().then(() => __importStar(require('../lib/file-utils')));
                     const studentId = await generateSequentialId(application.schoolId, 'STUDENT', tx);
                     // Calculate maxCompletionDate based on level and mode
                     const startDate = new Date();
@@ -319,23 +357,23 @@ router.patch('/:id', requireAuth, async (req, res) => {
  * @route   POST /api/applications/documents
  * @desc    Upload a document for an application (Applicant only)
  */
-router.post('/documents', requireAuth, async (req, res) => {
+router.post('/documents', auth_1.requireAuth, async (req, res) => {
     const { name, url } = req.body; // url is base64
     try {
-        const application = await prisma.application.findFirst({
+        const application = await prisma_1.default.application.findFirst({
             where: { email: req.user.email },
             include: { school: true }
         });
         if (!application)
             return res.status(404).json({ error: 'Application not found' });
         const humanId = req.user?.staffId || application.applicationNumber || application.id;
-        const filename = saveBase64Image(url, 'doc', 'docs', application.school?.code || 'global', 'students', humanId);
+        const filename = (0, file_utils_1.saveBase64Image)(url, 'doc', 'docs', application.school?.code || 'global', 'students', humanId);
         if (!filename)
             return res.status(400).json({ error: 'Upload failed' });
-        const doc = await prisma.applicantDocument.create({
+        const doc = await prisma_1.default.applicantDocument.create({
             data: { applicationId: application.id, name, url: filename, status: 'pending' }
         });
-        await prisma.applicantTimeline.create({
+        await prisma_1.default.applicantTimeline.create({
             data: {
                 applicationId: application.id,
                 event: 'Document Uploaded',
@@ -352,7 +390,7 @@ router.post('/documents', requireAuth, async (req, res) => {
  * @route   PATCH /api/applications/documents/:id
  * @desc    Verify or Reject a document (Admin/Authorized Teachers)
  */
-router.patch('/documents/:id', requireAuth, async (req, res) => {
+router.patch('/documents/:id', auth_1.requireAuth, async (req, res) => {
     const { id } = req.params;
     const { status } = req.body; // verified, rejected, pending
     const userRole = req.user.role.toUpperCase();
@@ -361,12 +399,12 @@ router.patch('/documents/:id', requireAuth, async (req, res) => {
     if (!isAuthorized)
         return res.status(403).json({ error: 'Access denied' });
     try {
-        const document = await prisma.applicantDocument.update({
+        const document = await prisma_1.default.applicantDocument.update({
             where: { id: String(id) },
             data: { status: String(status) },
             include: { application: true }
         });
-        await prisma.applicantTimeline.create({
+        await prisma_1.default.applicantTimeline.create({
             data: {
                 applicationId: document.applicationId,
                 event: `Document ${status.toUpperCase()}`,
@@ -379,5 +417,5 @@ router.patch('/documents/:id', requireAuth, async (req, res) => {
         res.status(500).json({ error: 'Failed to update document status' });
     }
 });
-export default router;
+exports.default = router;
 //# sourceMappingURL=applications.js.map

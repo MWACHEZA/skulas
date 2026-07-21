@@ -1,16 +1,21 @@
-import { Router } from 'express';
-import path from 'path';
-import prisma from '../lib/prisma';
-import { requireAuth, requireRole } from '../middleware/auth';
-import { libraryUpload } from '../middleware/upload';
-const router = Router();
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const path_1 = __importDefault(require("path"));
+const prisma_1 = __importDefault(require("../lib/prisma"));
+const auth_1 = require("../middleware/auth");
+const upload_1 = require("../middleware/upload");
+const router = (0, express_1.Router)();
 /**
  * @route   GET /api/library/books
  * @desc    Get all books in the catalog
  */
-router.get('/books', requireAuth, async (req, res) => {
+router.get('/books', auth_1.requireAuth, async (req, res) => {
     try {
-        const books = await prisma.book.findMany({
+        const books = await prisma_1.default.book.findMany({
             where: { schoolId: req.user.schoolId },
             include: { category: true },
             orderBy: { title: 'asc' }
@@ -32,10 +37,10 @@ router.get('/books', requireAuth, async (req, res) => {
  * @route   GET /api/library/categories
  * @desc    Get custom library categories and book counts
  */
-router.get('/categories', requireAuth, async (req, res) => {
+router.get('/categories', auth_1.requireAuth, async (req, res) => {
     try {
         const schoolId = req.user.schoolId;
-        const categories = await prisma.libraryCategory.findMany({
+        const categories = await prisma_1.default.libraryCategory.findMany({
             where: { schoolId },
             include: { _count: { select: { books: true } } },
             orderBy: { name: 'asc' }
@@ -56,11 +61,11 @@ router.get('/categories', requireAuth, async (req, res) => {
  * @route   POST /api/library/categories
  * @desc    Create a new library category
  */
-router.post('/categories', requireAuth, requireRole('SCHOOL_ADMIN', 'LIBRARIAN'), async (req, res) => {
+router.post('/categories', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'LIBRARIAN'), async (req, res) => {
     const { name } = req.body;
     const schoolId = req.user.schoolId;
     try {
-        const category = await prisma.libraryCategory.create({
+        const category = await prisma_1.default.libraryCategory.create({
             data: { name, schoolId }
         });
         res.status(201).json(category);
@@ -73,22 +78,22 @@ router.post('/categories', requireAuth, requireRole('SCHOOL_ADMIN', 'LIBRARIAN')
  * @route   GET /api/library/reports
  * @desc    Get analytical reports for the librarian
  */
-router.get('/reports', requireAuth, async (req, res) => {
+router.get('/reports', auth_1.requireAuth, async (req, res) => {
     const schoolId = req.user.schoolId;
     try {
         const [totalBooks, categoryDistribution, activeLoans, overdueCount] = await Promise.all([
-            prisma.book.aggregate({
+            prisma_1.default.book.aggregate({
                 where: { schoolId },
                 _sum: { copies: true }
             }),
-            prisma.libraryCategory.findMany({
+            prisma_1.default.libraryCategory.findMany({
                 where: { schoolId },
                 include: { _count: { select: { books: true } } }
             }),
-            prisma.bookLoan.count({
+            prisma_1.default.bookLoan.count({
                 where: { schoolId, status: 'borrowed' }
             }),
-            prisma.bookLoan.count({
+            prisma_1.default.bookLoan.count({
                 where: {
                     schoolId,
                     status: 'borrowed',
@@ -97,7 +102,7 @@ router.get('/reports', requireAuth, async (req, res) => {
             })
         ]);
         // Fetch detailed overdue loans
-        const overdueLoans = await prisma.bookLoan.findMany({
+        const overdueLoans = await prisma_1.default.bookLoan.findMany({
             where: {
                 schoolId,
                 status: 'borrowed',
@@ -111,7 +116,7 @@ router.get('/reports', requireAuth, async (req, res) => {
             orderBy: { dueDate: 'asc' }
         });
         // Fetch detailed inventory list
-        const inventoryList = await prisma.book.findMany({
+        const inventoryList = await prisma_1.default.book.findMany({
             where: { schoolId },
             include: {
                 category: { select: { name: true } }
@@ -119,7 +124,7 @@ router.get('/reports', requireAuth, async (req, res) => {
             orderBy: { title: 'asc' }
         });
         // Fetch popular books/trends
-        const popularBooks = await prisma.book.findMany({
+        const popularBooks = await prisma_1.default.book.findMany({
             where: { schoolId },
             include: {
                 category: { select: { name: true } },
@@ -135,7 +140,7 @@ router.get('/reports', requireAuth, async (req, res) => {
         res.json({
             summary: {
                 totalVolumes: totalBooks._sum.copies || 0,
-                uniqueTitles: await prisma.book.count({ where: { schoolId } }),
+                uniqueTitles: await prisma_1.default.book.count({ where: { schoolId } }),
                 activeLoans,
                 overdueLoansCount: overdueCount,
                 byCategory: categoryDistribution.map(c => ({ name: c.name, count: c._count.books }))
@@ -160,9 +165,9 @@ router.get('/reports', requireAuth, async (req, res) => {
  * @route   GET /api/library/digital
  * @desc    Get all digital resources (books with PDF/files)
  */
-router.get('/digital', requireAuth, async (req, res) => {
+router.get('/digital', auth_1.requireAuth, async (req, res) => {
     try {
-        const digitalBooks = await prisma.book.findMany({
+        const digitalBooks = await prisma_1.default.book.findMany({
             where: {
                 schoolId: req.user.schoolId,
                 pdfUrl: { not: null }
@@ -180,9 +185,9 @@ router.get('/digital', requireAuth, async (req, res) => {
  * @route   GET /api/library/loans/overdue
  * @desc    Get all overdue loans
  */
-router.get('/loans/overdue', requireAuth, async (req, res) => {
+router.get('/loans/overdue', auth_1.requireAuth, async (req, res) => {
     try {
-        const overdueLoans = await prisma.bookLoan.findMany({
+        const overdueLoans = await prisma_1.default.bookLoan.findMany({
             where: {
                 schoolId: req.user.schoolId,
                 returnedAt: null,
@@ -204,7 +209,7 @@ router.get('/loans/overdue', requireAuth, async (req, res) => {
  * @route   POST /api/library/books
  * @desc    Add a new book to the catalog (with optional cover/PDF)
  */
-router.post('/books', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCILLARY', 'TEACHER', 'LIBRARIAN'), libraryUpload.fields([
+router.post('/books', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'ANCILLARY', 'TEACHER', 'LIBRARIAN'), upload_1.libraryUpload.fields([
     { name: 'cover', maxCount: 1 },
     { name: 'pdf', maxCount: 1 }
 ]), async (req, res) => {
@@ -214,12 +219,12 @@ router.post('/books', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCILLARY', 'TEA
     try {
         let teacherId = null;
         if (req.user.role === 'TEACHER') {
-            const teacher = await prisma.teacher.findUnique({ where: { userId: req.user.id } });
+            const teacher = await prisma_1.default.teacher.findFirst({ where: { userId: req.user.id } });
             if (teacher) {
                 teacherId = teacher.id;
             }
         }
-        const book = await prisma.book.create({
+        const book = await prisma_1.default.book.create({
             data: {
                 title,
                 author,
@@ -235,8 +240,8 @@ router.post('/books', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCILLARY', 'TEA
                 classId,
                 copies: parseInt(totalCopies) || 1,
                 available: parseInt(totalCopies) || 1,
-                coverUrl: files?.cover?.[0] ? path.join(req.uploadCategoryPath || '', files.cover[0].filename).replace(/\\/g, '/') : null,
-                pdfUrl: files?.pdf?.[0] ? path.join(req.uploadCategoryPath || '', files.pdf[0].filename).replace(/\\/g, '/') : null,
+                coverUrl: files?.cover?.[0] ? path_1.default.join(req.uploadCategoryPath || '', files.cover[0].filename).replace(/\\/g, '/') : null,
+                pdfUrl: files?.pdf?.[0] ? path_1.default.join(req.uploadCategoryPath || '', files.pdf[0].filename).replace(/\\/g, '/') : null,
                 schoolId,
                 teacherId
             }
@@ -252,7 +257,7 @@ router.post('/books', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCILLARY', 'TEA
  * @route   PATCH /api/library/books/:id
  * @desc    Update book details or upload files
  */
-router.patch('/books/:id', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCILLARY', 'TEACHER', 'LIBRARIAN'), libraryUpload.fields([
+router.patch('/books/:id', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'ANCILLARY', 'TEACHER', 'LIBRARIAN'), upload_1.libraryUpload.fields([
     { name: 'cover', maxCount: 1 },
     { name: 'pdf', maxCount: 1 }
 ]), async (req, res) => {
@@ -275,12 +280,12 @@ router.patch('/books/:id', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCILLARY',
         if (publishedDate)
             data.publishedDate = new Date(publishedDate);
         if (files?.cover?.[0]) {
-            data.coverUrl = path.join(req.uploadCategoryPath || '', files.cover[0].filename).replace(/\\/g, '/');
+            data.coverUrl = path_1.default.join(req.uploadCategoryPath || '', files.cover[0].filename).replace(/\\/g, '/');
         }
         if (files?.pdf?.[0]) {
-            data.pdfUrl = path.join(req.uploadCategoryPath || '', files.pdf[0].filename).replace(/\\/g, '/');
+            data.pdfUrl = path_1.default.join(req.uploadCategoryPath || '', files.pdf[0].filename).replace(/\\/g, '/');
         }
-        const book = await prisma.book.update({
+        const book = await prisma_1.default.book.update({
             where: { id },
             data
         });
@@ -295,16 +300,16 @@ router.patch('/books/:id', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCILLARY',
  * @route   GET /api/library/my-books
  * @desc    Get current user's library loans (both staff and student)
  */
-router.get('/my-books', requireAuth, async (req, res) => {
+router.get('/my-books', auth_1.requireAuth, async (req, res) => {
     try {
         // If the user is a student, their student ID would normally be used,
         // but we can query by userId directly since we added it to BookLoan.
         // For backwards compatibility we check both.
         // First, let's find if they have a student profile
-        const student = await prisma.student.findFirst({
+        const student = await prisma_1.default.student.findFirst({
             where: { userId: req.user.id }
         });
-        const loans = await prisma.bookLoan.findMany({
+        const loans = await prisma_1.default.bookLoan.findMany({
             where: {
                 schoolId: req.user.schoolId,
                 OR: [
@@ -321,7 +326,7 @@ router.get('/my-books', requireAuth, async (req, res) => {
         const formattedLoans = await Promise.all(loans.map(async (l) => {
             let categoryName = 'General';
             if (l.book.categoryId) {
-                const cat = await prisma.libraryCategory.findUnique({ where: { id: l.book.categoryId } });
+                const cat = await prisma_1.default.libraryCategory.findFirst({ where: { id: l.book.categoryId } });
                 if (cat)
                     categoryName = cat.name;
             }
@@ -344,9 +349,9 @@ router.get('/my-books', requireAuth, async (req, res) => {
  * @route   GET /api/library/loans
  * @desc    Get all active/recent loans
  */
-router.get('/loans', requireAuth, async (req, res) => {
+router.get('/loans', auth_1.requireAuth, async (req, res) => {
     try {
-        const loans = await prisma.bookLoan.findMany({
+        const loans = await prisma_1.default.bookLoan.findMany({
             where: {
                 schoolId: req.user.schoolId
             },
@@ -366,64 +371,64 @@ router.get('/loans', requireAuth, async (req, res) => {
  * @route   POST /api/library/loans/issue
  * @desc    Hand out a book to a student (Individual Loan)
  */
-router.post('/loans/issue', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCILLARY', 'TEACHER', 'LIBRARIAN'), async (req, res) => {
+router.post('/loans/issue', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'ANCILLARY', 'TEACHER', 'LIBRARIAN'), async (req, res) => {
     const { studentId, userId, bookId, dueDate, loanType = 'LIBRARY' } = req.body;
     try {
-        const book = await prisma.book.findUnique({ where: { id: bookId } });
-        if (!book || book.available <= 0) {
-            return res.status(400).json({ error: 'Book not available for loan' });
-        }
-        const loan = await prisma.bookLoan.create({
-            data: {
-                schoolId: req.user.schoolId,
-                studentId,
-                userId,
-                bookId,
-                dueDate: new Date(dueDate),
-                loanType,
-                status: 'borrowed'
+        const loan = await prisma_1.default.$transaction(async (tx) => {
+            // Atomically decrement available — fails if already 0
+            const stockUpdate = await tx.book.updateMany({
+                where: { id: bookId, available: { gt: 0 } },
+                data: { available: { decrement: 1 } }
+            });
+            if (stockUpdate.count === 0) {
+                throw new Error('Book not available for loan');
             }
-        });
-        await prisma.book.update({
-            where: { id: bookId },
-            data: { available: { decrement: 1 } }
+            return tx.bookLoan.create({
+                data: {
+                    schoolId: req.user.schoolId,
+                    studentId,
+                    userId,
+                    bookId,
+                    dueDate: new Date(dueDate),
+                    loanType,
+                    status: 'borrowed'
+                }
+            });
         });
         res.status(201).json(loan);
     }
     catch (error) {
-        res.status(500).json({ error: 'Failed to issue book' });
+        res.status(400).json({ error: error.message || 'Failed to issue book' });
     }
 });
 /**
  * @route   POST /api/library/loans/:id/return
  * @desc    Give back a book (Mark Returned)
  */
-router.post('/loans/:id/return', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCILLARY', 'TEACHER', 'LIBRARIAN'), async (req, res) => {
+router.post('/loans/:id/return', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'ANCILLARY', 'TEACHER', 'LIBRARIAN'), async (req, res) => {
     const id = req.params.id;
     try {
-        const loan = await prisma.bookLoan.findUnique({
-            where: { id },
-            include: { book: true }
-        });
-        if (!loan || loan.status === 'returned') {
-            return res.status(400).json({ error: 'Invalid loan record or already returned' });
-        }
-        const updatedLoan = await prisma.bookLoan.update({
-            where: { id },
-            data: {
-                status: 'returned',
-                returnedAt: new Date()
+        const updatedLoan = await prisma_1.default.$transaction(async (tx) => {
+            // Mark returned atomically — only if currently borrowed
+            const returnResult = await tx.bookLoan.updateMany({
+                where: { id, status: 'borrowed' },
+                data: { status: 'returned', returnedAt: new Date() }
+            });
+            if (returnResult.count === 0) {
+                throw new Error('Invalid loan record or already returned');
             }
-        });
-        await prisma.book.update({
-            where: { id: loan.bookId },
-            data: { available: { increment: 1 } }
+            const loan = await tx.bookLoan.findFirst({ where: { id } });
+            await tx.book.update({
+                where: { id: loan.bookId },
+                data: { available: { increment: 1 } }
+            });
+            return loan;
         });
         res.json(updatedLoan);
     }
     catch (error) {
-        res.status(500).json({ error: 'Failed to process return' });
+        res.status(400).json({ error: error.message || 'Failed to process return' });
     }
 });
-export default router;
+exports.default = router;
 //# sourceMappingURL=library.js.map

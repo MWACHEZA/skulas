@@ -1,25 +1,30 @@
-import { Router } from 'express';
-import prisma from '../lib/prisma';
-import { requireAuth } from '../middleware/auth';
-const router = Router();
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const prisma_1 = __importDefault(require("../lib/prisma"));
+const auth_1 = require("../middleware/auth");
+const router = (0, express_1.Router)();
 /**
  * @route   GET /api/dashboard/admin
  * @desc    Aggregated stats for the admin portal
  */
-router.get('/admin', requireAuth, async (req, res) => {
+router.get('/admin', auth_1.requireAuth, async (req, res) => {
     const schoolId = req.user.schoolId;
     try {
         // 1. Core aggregates - use individual try-catches if specific counts are non-critical
         const [totalStudents, totalTeachers, pendingApplications, reportsCount] = await Promise.all([
-            prisma.student.count({ where: { schoolId } }).catch(() => 0),
-            prisma.teacher.count({ where: { schoolId } }).catch(() => 0),
-            prisma.application.count({ where: { schoolId, status: 'pending' } }).catch(() => 0),
-            prisma.academicReport.count({ where: { schoolId } }).catch(() => 0),
+            prisma_1.default.student.count({ where: { schoolId } }).catch(() => 0),
+            prisma_1.default.teacher.count({ where: { schoolId } }).catch(() => 0),
+            prisma_1.default.application.count({ where: { schoolId, status: 'pending' } }).catch(() => 0),
+            prisma_1.default.academicReport.count({ where: { schoolId } }).catch(() => 0),
         ]);
         // 2. Financial aggregation
         let totalRevenue = 0;
         try {
-            const revAgg = await prisma.fee.aggregate({
+            const revAgg = await prisma_1.default.fee.aggregate({
                 where: { student: { schoolId } },
                 _sum: { paid: true }
             });
@@ -29,12 +34,12 @@ router.get('/admin', requireAuth, async (req, res) => {
             console.error('[Dashboard] Revenue aggregation failed:', e);
         }
         // 3. Announcements & Recent Apps
-        const announcements = await prisma.announcement.findMany({
+        const announcements = await prisma_1.default.announcement.findMany({
             where: { schoolId },
             orderBy: { publishedAt: 'desc' },
             take: 5
         }).catch(() => []);
-        const recentApplications = await prisma.application.findMany({
+        const recentApplications = await prisma_1.default.application.findMany({
             where: { schoolId },
             orderBy: { createdAt: 'desc' },
             take: 5,
@@ -60,10 +65,10 @@ router.get('/admin', requireAuth, async (req, res) => {
  * @route   GET /api/dashboard/teacher
  * @desc    Aggregated stats for the teacher portal
  */
-router.get('/teacher', requireAuth, async (req, res) => {
+router.get('/teacher', auth_1.requireAuth, async (req, res) => {
     const userId = req.user.id;
     try {
-        const teacher = await prisma.teacher.findUnique({
+        const teacher = await prisma_1.default.teacher.findFirst({
             where: { userId },
             include: {
                 classes: { include: { _count: { select: { students: true } } } },
@@ -88,7 +93,7 @@ router.get('/teacher', requireAuth, async (req, res) => {
         });
         const aggregatedClasses = Array.from(classMap.values());
         const totalStudents = aggregatedClasses.reduce((s, c) => s + c._count.students, 0);
-        const announcements = await prisma.announcement.findMany({
+        const announcements = await prisma_1.default.announcement.findMany({
             where: { schoolId: req.user.schoolId, targetRole: { in: ['ALL', 'TEACHER'] } },
             orderBy: { publishedAt: 'desc' },
             take: 5,
@@ -115,18 +120,18 @@ router.get('/teacher', requireAuth, async (req, res) => {
  * @route   GET /api/dashboard/bursar
  * @desc    Financial stats for bursar portal
  */
-router.get('/bursar', requireAuth, async (req, res) => {
+router.get('/bursar', auth_1.requireAuth, async (req, res) => {
     const schoolId = req.user.schoolId;
     try {
         const [feeStats, studentCount, recentFees] = await Promise.all([
-            prisma.fee.groupBy({
+            prisma_1.default.fee.groupBy({
                 by: ['status'],
                 where: { student: { schoolId } },
                 _count: true,
                 _sum: { amount: true, paid: true },
             }),
-            prisma.student.count({ where: { schoolId } }),
-            prisma.fee.findMany({
+            prisma_1.default.student.count({ where: { schoolId } }),
+            prisma_1.default.fee.findMany({
                 where: { student: { schoolId } },
                 include: { student: { select: { name: true, studentId: true } } },
                 orderBy: { createdAt: 'desc' },
@@ -151,17 +156,17 @@ router.get('/bursar', requireAuth, async (req, res) => {
  * @route   GET /api/dashboard/library
  * @desc    Library stats for librarian portal
  */
-router.get('/library', requireAuth, async (req, res) => {
+router.get('/library', auth_1.requireAuth, async (req, res) => {
     const schoolId = req.user.schoolId;
     try {
         const [totalBooks, totalLoans, overdueLoans] = await Promise.all([
-            prisma.book.count({ where: { schoolId } }),
-            prisma.bookLoan.count({ where: { book: { schoolId }, status: 'borrowed' } }),
-            prisma.bookLoan.count({
+            prisma_1.default.book.count({ where: { schoolId } }),
+            prisma_1.default.bookLoan.count({ where: { book: { schoolId }, status: 'borrowed' } }),
+            prisma_1.default.bookLoan.count({
                 where: { book: { schoolId }, status: 'borrowed', dueDate: { lt: new Date() } },
             }),
         ]);
-        const recentLoans = await prisma.bookLoan.findMany({
+        const recentLoans = await prisma_1.default.bookLoan.findMany({
             where: { book: { schoolId } },
             include: {
                 student: { select: { name: true } },
@@ -171,7 +176,7 @@ router.get('/library', requireAuth, async (req, res) => {
             take: 5
         });
         // 1. Category Data
-        const categories = await prisma.libraryCategory.findMany({
+        const categories = await prisma_1.default.libraryCategory.findMany({
             where: { schoolId },
             include: { _count: { select: { books: true } } }
         });
@@ -192,7 +197,7 @@ router.get('/library', requireAuth, async (req, res) => {
         const lendingTrends = await Promise.all(last7Days.map(async (date) => {
             const startOfDay = new Date(date.setHours(0, 0, 0, 0));
             const endOfDay = new Date(date.setHours(23, 59, 59, 999));
-            const count = await prisma.bookLoan.count({
+            const count = await prisma_1.default.bookLoan.count({
                 where: {
                     book: { schoolId },
                     borrowedAt: { gte: startOfDay, lte: endOfDay }
@@ -204,7 +209,7 @@ router.get('/library', requireAuth, async (req, res) => {
             };
         }));
         // 3. Trending Books
-        const popularLoans = await prisma.bookLoan.groupBy({
+        const popularLoans = await prisma_1.default.bookLoan.groupBy({
             by: ['bookId'],
             where: { book: { schoolId } },
             _count: { bookId: true },
@@ -212,7 +217,7 @@ router.get('/library', requireAuth, async (req, res) => {
             take: 3
         });
         const trendingBooks = await Promise.all(popularLoans.map(async (loan) => {
-            const book = await prisma.book.findUnique({ where: { id: loan.bookId } });
+            const book = await prisma_1.default.book.findFirst({ where: { id: loan.bookId } });
             return {
                 id: book?.id,
                 title: book?.title,
@@ -245,13 +250,13 @@ router.get('/library', requireAuth, async (req, res) => {
  * @route   GET /api/dashboard/acadex
  * @desc    Global platform stats for Super Admin
  */
-router.get('/acadex', requireAuth, async (req, res) => {
+router.get('/acadex', auth_1.requireAuth, async (req, res) => {
     if (req.user.role !== 'SUPER_ADMIN') {
         return res.status(403).json({ error: 'Access denied. Super Admin only.' });
     }
     try {
         const [schools, totalStudents, totalRevenue] = await Promise.all([
-            prisma.school.findMany({
+            prisma_1.default.school.findMany({
                 include: {
                     plan: { select: { name: true } },
                     users: { where: { role: 'SCHOOL_ADMIN' }, select: { id: true }, take: 1 },
@@ -259,8 +264,8 @@ router.get('/acadex', requireAuth, async (req, res) => {
                 },
                 orderBy: { createdAt: 'desc' }
             }),
-            prisma.student.count(),
-            prisma.fee.aggregate({ _sum: { paid: true } })
+            prisma_1.default.student.count(),
+            prisma_1.default.fee.aggregate({ _sum: { paid: true } })
         ]);
         res.json({
             stats: {
@@ -289,9 +294,9 @@ router.get('/acadex', requireAuth, async (req, res) => {
  * @route   GET /api/dashboard/applicant
  * @desc    Get status and timeline for the logged-in applicant
  */
-router.get('/applicant', requireAuth, async (req, res) => {
+router.get('/applicant', auth_1.requireAuth, async (req, res) => {
     try {
-        const application = await prisma.application.findFirst({
+        const application = await prisma_1.default.application.findFirst({
             where: { email: req.user.email }, // Linked by email
             include: {
                 timeline: { orderBy: { occurredAt: 'desc' } },
@@ -323,5 +328,84 @@ router.get('/applicant', requireAuth, async (req, res) => {
         res.status(500).json({ error: 'Failed to fetch applicant data' });
     }
 });
-export default router;
+/**
+ * @route   GET /api/dashboard/ancillary
+ * @desc    Aggregated stats for the ancillary staff portal
+ */
+router.get('/ancillary', auth_1.requireAuth, async (req, res) => {
+    const schoolId = req.user.schoolId;
+    const userId = req.user.id;
+    try {
+        const openTicketsCount = await prisma_1.default.supportTicket.count({
+            where: { schoolId, status: 'open' }
+        });
+        const pendingProcurementsCount = await prisma_1.default.requisition.count({
+            where: { schoolId, status: 'PENDING' }
+        });
+        const assignedTasksCount = await prisma_1.default.shiftAssignment.count({
+            where: { schoolId, userId }
+        });
+        const recentTickets = await prisma_1.default.supportTicket.findMany({
+            where: { schoolId },
+            orderBy: { createdAt: 'desc' },
+            take: 5
+        });
+        res.json({
+            stats: {
+                openTicketsCount,
+                pendingProcurementsCount,
+                assignedTasksCount
+            },
+            recentTickets
+        });
+    }
+    catch (error) {
+        console.error('Fetch ancillary dashboard error:', error);
+        res.status(500).json({ error: 'Failed to fetch ancillary dashboard' });
+    }
+});
+/**
+ * @route   GET /api/dashboard/parent
+ * @desc    Aggregated stats for the parent portal
+ */
+router.get('/parent', auth_1.requireAuth, async (req, res) => {
+    const studentId = req.query.studentId;
+    if (!studentId)
+        return res.status(400).json({ error: 'Student ID is required' });
+    try {
+        // Fees
+        const fees = await prisma_1.default.fee.findMany({ where: { studentId } });
+        const outstandingBalance = fees.reduce((acc, f) => acc + (f.amount - f.paid), 0);
+        // Attendance
+        const attendances = await prisma_1.default.attendance.findMany({ where: { studentId } });
+        const presentCount = attendances.filter(a => a.status === 'Present').length;
+        const avgAttendance = attendances.length > 0 ? Math.round((presentCount / attendances.length) * 100) : 0;
+        // Wallet
+        const wallet = await prisma_1.default.studentWallet.findUnique({
+            where: { studentId },
+            include: { transactions: true }
+        });
+        let walletBalance = 0;
+        if (wallet && wallet.transactions) {
+            walletBalance = wallet.transactions.reduce((acc, tx) => {
+                if (tx.type === 'DEPOSIT' || tx.type === 'REFUND')
+                    return acc + tx.amount;
+                if (tx.type === 'PURCHASE')
+                    return acc - tx.amount;
+                return acc;
+            }, 0);
+        }
+        res.json({
+            outstandingBalance,
+            avgAttendance,
+            walletBalance,
+            recentMerits: 0 // Mock for now
+        });
+    }
+    catch (error) {
+        console.error('Fetch parent dashboard error:', error);
+        res.status(500).json({ error: 'Failed to fetch parent dashboard' });
+    }
+});
+exports.default = router;
 //# sourceMappingURL=dashboard.js.map

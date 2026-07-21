@@ -10,6 +10,7 @@ export interface AuthRequest extends Request {
         secondaryRoles: string[];
         staffId?: string;
         studentId?: string;
+        sessionId?: string;
     };
     uploadCategoryPath?: string;
 }
@@ -17,7 +18,7 @@ export interface AuthRequest extends Request {
  * Middleware: Verifies JWT and attaches decoded user to req.user
  * Wraps the request in a tenant context for automatic Prisma isolation
  */
-export declare const requireAuth: (req: AuthRequest, res: Response, next: NextFunction) => void;
+export declare const requireAuth: (req: AuthRequest, res: Response, next: NextFunction) => Promise<void>;
 /**
  * Middleware factory: Checks that req.user has one of the allowed roles
  */

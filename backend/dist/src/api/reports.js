@@ -1,14 +1,19 @@
-import { Router } from 'express';
-import prisma from '../lib/prisma';
-import { requireAuth, requireRole } from '../middleware/auth';
-import { generateAcademicReportPDF } from '../lib/pdf-generator';
-import { signatureUpload, brandingUpload } from '../middleware/upload';
-const router = Router();
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const prisma_1 = __importDefault(require("../lib/prisma"));
+const auth_1 = require("../middleware/auth");
+const pdf_generator_1 = require("../lib/pdf-generator");
+const upload_1 = require("../middleware/upload");
+const router = (0, express_1.Router)();
 /**
  * @route   GET /api/reports/classes
  * @desc    [TEACHER/ADMIN] Get list of classes for the school
  */
-router.get('/classes', requireAuth, requireRole('SCHOOL_ADMIN', 'TEACHER'), async (req, res) => {
+router.get('/classes', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'TEACHER'), async (req, res) => {
     try {
         const userRole = req.user.role.toUpperCase();
         const secondaryRoles = req.user.secondaryRoles || [];
@@ -17,7 +22,7 @@ router.get('/classes', requireAuth, requireRole('SCHOOL_ADMIN', 'TEACHER'), asyn
         let where = { schoolId: req.user.schoolId };
         if (isClassTeacher && !isAdmin) {
             // Find teacher record
-            const teacher = await prisma.teacher.findUnique({
+            const teacher = await prisma_1.default.teacher.findFirst({
                 where: { userId: req.user.id }
             });
             if (teacher) {
@@ -27,7 +32,7 @@ router.get('/classes', requireAuth, requireRole('SCHOOL_ADMIN', 'TEACHER'), asyn
                 return res.json([]); // No teacher record found
             }
         }
-        const classes = await prisma.schoolClass.findMany({
+        const classes = await prisma_1.default.schoolClass.findMany({
             where,
             select: { id: true, name: true }
         });
@@ -41,7 +46,7 @@ router.get('/classes', requireAuth, requireRole('SCHOOL_ADMIN', 'TEACHER'), asyn
  * @route   GET /api/reports/preview
  * @desc    [TEACHER/ADMIN] Get student data for report preview
  */
-router.get('/preview', requireAuth, requireRole('SCHOOL_ADMIN', 'TEACHER'), async (req, res) => {
+router.get('/preview', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'TEACHER'), async (req, res) => {
     const { type, classId, term, year, studentId } = req.query;
     const schoolId = req.user.schoolId;
     const userRole = req.user.role.toUpperCase();
@@ -51,8 +56,8 @@ router.get('/preview', requireAuth, requireRole('SCHOOL_ADMIN', 'TEACHER'), asyn
     try {
         // Security check for class teachers
         if (isClassTeacher && !isAdmin && classId) {
-            const teacher = await prisma.teacher.findUnique({ where: { userId: req.user.id } });
-            const targetClass = await prisma.schoolClass.findFirst({
+            const teacher = await prisma_1.default.teacher.findFirst({ where: { userId: req.user.id } });
+            const targetClass = await prisma_1.default.schoolClass.findFirst({
                 where: { id: String(classId), teacherId: teacher?.id }
             });
             if (!targetClass)
@@ -63,7 +68,7 @@ router.get('/preview', requireAuth, requireRole('SCHOOL_ADMIN', 'TEACHER'), asyn
             case 'ACADEMIC':
             case 'ATTENDANCE':
             case 'ENROLLMENT':
-                const students = await prisma.user.findMany({
+                const students = await prisma_1.default.user.findMany({
                     where: {
                         role: 'STUDENT',
                         schoolId,
@@ -101,7 +106,7 @@ router.get('/preview', requireAuth, requireRole('SCHOOL_ADMIN', 'TEACHER'), asyn
                 }));
                 break;
             case 'FEES':
-                const feeStudents = await prisma.student.findMany({
+                const feeStudents = await prisma_1.default.student.findMany({
                     where: {
                         schoolId,
                         ...(classId ? { classId: String(classId) } : {})
@@ -114,9 +119,9 @@ router.get('/preview', requireAuth, requireRole('SCHOOL_ADMIN', 'TEACHER'), asyn
                     }
                 });
                 data = feeStudents.map(s => {
-                    const totalFee = s.fees.reduce((sum, f) => sum + f.amount, 0);
-                    const totalPaid = s.fees.reduce((sum, f) => sum + f.paid, 0);
-                    const balance = totalFee - totalPaid;
+                    const totalFee = Math.round(s.fees.reduce((sum, f) => sum + f.amount, 0) * 100) / 100;
+                    const totalPaid = Math.round(s.fees.reduce((sum, f) => sum + f.paid, 0) * 100) / 100;
+                    const balance = Math.round((totalFee - totalPaid) * 100) / 100;
                     return {
                         id: s.id,
                         name: s.user?.name || s.name,
@@ -131,7 +136,7 @@ router.get('/preview', requireAuth, requireRole('SCHOOL_ADMIN', 'TEACHER'), asyn
                 });
                 break;
             case 'STAFF':
-                const staff = await prisma.user.findMany({
+                const staff = await prisma_1.default.user.findMany({
                     where: {
                         schoolId,
                         role: { in: ['TEACHER', 'BURSAR', 'LIBRARIAN', 'ANCILLARY'] }
@@ -149,7 +154,7 @@ router.get('/preview', requireAuth, requireRole('SCHOOL_ADMIN', 'TEACHER'), asyn
                 }));
                 break;
             case 'ASSETS':
-                const assets = await prisma.asset.findMany({
+                const assets = await prisma_1.default.asset.findMany({
                     where: { schoolId },
                     include: { custodian: { select: { name: true } } }
                 });
@@ -178,47 +183,48 @@ router.get('/preview', requireAuth, requireRole('SCHOOL_ADMIN', 'TEACHER'), asyn
  * @route   POST /api/reports/snapshot
  * @desc    [TEACHER/ADMIN] Bulk generate and save reports
  */
-router.post('/snapshot', requireAuth, requireRole('SCHOOL_ADMIN', 'TEACHER'), async (req, res) => {
+router.post('/snapshot', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'TEACHER'), async (req, res) => {
     const { studentIds, term, year, publishStudent, publishParent } = req.body;
     if (!studentIds || !Array.isArray(studentIds)) {
         return res.status(400).json({ error: 'List of student IDs is required' });
     }
     try {
-        const reports = await Promise.all(studentIds.map(async (sid) => {
-            // Fetch fresh data for each student
-            const studentData = await prisma.user.findUnique({
-                where: { id: sid },
-                include: {
-                    student: {
-                        include: {
-                            class: true,
-                            grades: {
-                                where: { term: term, year: parseInt(year) }
-                            },
-                            attendance: {
-                                where: {
-                                    date: {
-                                        gte: term === 'Term 1' ? new Date(`${year}-01-01`) :
-                                            term === 'Term 2' ? new Date(`${year}-05-01`) :
-                                                term === 'Term 3' ? new Date(`${year}-09-01`) :
-                                                    new Date(`${year}-01-01`),
-                                        lte: term === 'Term 1' ? new Date(`${year}-04-30`) :
-                                            term === 'Term 2' ? new Date(`${year}-08-31`) :
-                                                term === 'Term 3' ? new Date(`${year}-12-31`) :
-                                                    new Date(`${year}-12-31`)
-                                    }
+        // 1. Fetch fresh data for all students in a single query
+        const gteDate = term === 'Term 1' ? new Date(`${year}-01-01`) :
+            term === 'Term 2' ? new Date(`${year}-05-01`) :
+                term === 'Term 3' ? new Date(`${year}-09-01`) :
+                    new Date(`${year}-01-01`);
+        const lteDate = term === 'Term 1' ? new Date(`${year}-04-30`) :
+            term === 'Term 2' ? new Date(`${year}-08-31`) :
+                term === 'Term 3' ? new Date(`${year}-12-31`) :
+                    new Date(`${year}-12-31`);
+        const studentsData = await prisma_1.default.user.findMany({
+            where: { id: { in: studentIds }, schoolId: req.user.schoolId },
+            include: {
+                student: {
+                    include: {
+                        class: true,
+                        grades: {
+                            where: { term: term, year: parseInt(year) }
+                        },
+                        attendance: {
+                            where: {
+                                date: {
+                                    gte: gteDate,
+                                    lte: lteDate
                                 }
                             }
                         }
                     }
                 }
-            });
-            if (!studentData)
-                return null;
-            // Create snapshot record
-            return prisma.academicReport.upsert({
+            }
+        });
+        // 2. Prepare bulk upsert operations
+        const upsertOperations = studentsData.map(studentData => {
+            const sid = studentData.id;
+            return prisma_1.default.academicReport.upsert({
                 where: {
-                    id: `${sid}-${term}-${year}` // Deterministic ID for upsert or just use cuid
+                    id: `${sid}-${term}-${year}` // Deterministic ID for upsert
                 },
                 update: {
                     data: studentData,
@@ -226,6 +232,7 @@ router.post('/snapshot', requireAuth, requireRole('SCHOOL_ADMIN', 'TEACHER'), as
                     publishedParent: !!publishParent,
                 },
                 create: {
+                    id: `${sid}-${term}-${year}`,
                     studentId: sid,
                     term,
                     year,
@@ -235,8 +242,10 @@ router.post('/snapshot', requireAuth, requireRole('SCHOOL_ADMIN', 'TEACHER'), as
                     schoolId: req.user.schoolId
                 }
             });
-        }));
-        res.json({ success: true, count: reports.filter((r) => r !== null).length });
+        });
+        // 3. Execute all upserts in a single transaction
+        const reports = await prisma_1.default.$transaction(upsertOperations);
+        res.json({ success: true, count: reports.length });
     }
     catch (error) {
         console.error('Report generation error:', error);
@@ -247,26 +256,26 @@ router.post('/snapshot', requireAuth, requireRole('SCHOOL_ADMIN', 'TEACHER'), as
  * @route   GET /api/reports/my
  * @desc    Get reports for the current student or parent
  */
-router.get('/my', requireAuth, async (req, res) => {
+router.get('/my', auth_1.requireAuth, async (req, res) => {
     const userId = req.user.id;
     const role = req.user.role;
     try {
         let reports = [];
         if (role === 'STUDENT') {
-            reports = await prisma.academicReport.findMany({
+            reports = await prisma_1.default.academicReport.findMany({
                 where: { studentId: userId, publishedStudent: true },
                 orderBy: { createdAt: 'desc' }
             });
         }
         else if (role === 'PARENT') {
             // Find linked students
-            const parent = await prisma.parent.findUnique({
+            const parent = await prisma_1.default.parent.findUnique({
                 where: { userId },
                 include: { students: { where: { status: 'APPROVED' } } }
             });
             if (parent) {
                 const studentIds = parent.students.map(ps => ps.studentId);
-                reports = await prisma.academicReport.findMany({
+                reports = await prisma_1.default.academicReport.findMany({
                     where: {
                         studentId: { in: studentIds },
                         publishedParent: true
@@ -286,11 +295,11 @@ router.get('/my', requireAuth, async (req, res) => {
  * @route   POST /api/reports/template
  * @desc    [ADMIN] Update report template and signature
  */
-router.post('/template', requireAuth, requireRole('SCHOOL_ADMIN'), signatureUpload.single('signature'), async (req, res) => {
+router.post('/template', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN'), upload_1.signatureUpload.single('signature'), async (req, res) => {
     const { config } = req.body;
     const signatureUrl = req.file ? `/storage/${req.uploadCategoryPath}/${req.file.filename}` : undefined;
     try {
-        const template = await prisma.reportTemplate.upsert({
+        const template = await prisma_1.default.reportTemplate.upsert({
             where: { schoolId: String(req.user.schoolId) },
             update: {
                 config: config ? JSON.parse(config) : undefined,
@@ -310,14 +319,45 @@ router.post('/template', requireAuth, requireRole('SCHOOL_ADMIN'), signatureUplo
 });
 /**
  * @route   GET /api/reports/template
- * @desc    Get school report template
+ * @desc    Get school report template + school branding info
  */
-router.get('/template', requireAuth, async (req, res) => {
+router.get('/template', auth_1.requireAuth, async (req, res) => {
     try {
-        const template = await prisma.reportTemplate.findUnique({
-            where: { schoolId: String(req.user.schoolId) }
-        });
-        res.json(template || { config: { primaryColor: '#3182ce' } });
+        const schoolId = String(req.user.schoolId);
+        const [template, school] = await Promise.all([
+            prisma_1.default.reportTemplate.findFirst({ where: { schoolId } }),
+            prisma_1.default.school.findUnique({
+                where: { id: schoolId },
+                select: {
+                    name: true,
+                    address: true,
+                    type: true,
+                    phone: true,
+                    email: true,
+                    website: true,
+                    branding: true,
+                    customContent: true
+                }
+            })
+        ]);
+        const branding = school?.branding;
+        const customContent = school?.customContent;
+        const enriched = {
+            ...(template || { config: { primaryColor: '#3182ce' } }),
+            school: {
+                name: school?.name || 'School',
+                address: school?.address || '',
+                type: school?.type || 'secondary',
+                phone: school?.phone || '',
+                email: school?.email || '',
+                website: school?.website || '',
+                motto: customContent?.motto || '',
+                logoUrl: branding?.logo
+                    ? (branding.logo.startsWith('http') ? branding.logo : `/api/storage/media/global/${branding.logo}`)
+                    : null
+            }
+        };
+        res.json(enriched);
     }
     catch (error) {
         res.status(500).json({ error: 'Failed to fetch template' });
@@ -327,7 +367,7 @@ router.get('/template', requireAuth, async (req, res) => {
  * @route   PATCH /api/reports/cert-template
  * @desc    [ADMIN] Upload certificate background template
  */
-router.patch('/cert-template', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR'), brandingUpload.single('template'), async (req, res) => {
+router.patch('/cert-template', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'BURSAR'), upload_1.brandingUpload.single('template'), async (req, res) => {
     try {
         const templatePath = req.uploadCategoryPath && req.file
             ? `${req.uploadCategoryPath}/${req.file.filename}`
@@ -335,10 +375,10 @@ router.patch('/cert-template', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR'
         if (!templatePath)
             return res.status(400).json({ error: 'No template file uploaded' });
         const schoolId = String(req.user.schoolId);
-        const existing = await prisma.reportTemplate.findUnique({ where: { schoolId } });
+        const existing = await prisma_1.default.reportTemplate.findFirst({ where: { schoolId } });
         const config = existing ? existing.config || {} : {};
         config.certTemplateUrl = templatePath;
-        const updated = await prisma.reportTemplate.upsert({
+        const updated = await prisma_1.default.reportTemplate.upsert({
             where: { schoolId },
             update: { config },
             create: { schoolId, config }
@@ -351,15 +391,96 @@ router.patch('/cert-template', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR'
     }
 });
 /**
+ * @route   PATCH /api/reports/report-template
+ * @desc    [ADMIN] Upload report background template
+ */
+router.patch('/report-template', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'BURSAR'), upload_1.brandingUpload.single('template'), async (req, res) => {
+    try {
+        const templatePath = req.uploadCategoryPath && req.file
+            ? `${req.uploadCategoryPath}/${req.file.filename}`
+            : undefined;
+        if (!templatePath)
+            return res.status(400).json({ error: 'No template file uploaded' });
+        const schoolId = String(req.user.schoolId);
+        const existing = await prisma_1.default.reportTemplate.findFirst({ where: { schoolId } });
+        const config = existing ? existing.config || {} : {};
+        config.reportTemplateUrl = templatePath;
+        const updated = await prisma_1.default.reportTemplate.upsert({
+            where: { schoolId },
+            update: { config },
+            create: { schoolId, config }
+        });
+        res.json({ success: true, reportTemplateUrl: templatePath, config: updated.config });
+    }
+    catch (error) {
+        console.error('Report Template upload error:', error);
+        res.status(500).json({ error: 'Failed to update report template' });
+    }
+});
+/**
+ * @route   PATCH /api/reports/receipt-logo
+ * @desc    [ADMIN] Upload receipt logo
+ */
+router.patch('/receipt-logo', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'BURSAR'), upload_1.brandingUpload.single('logo'), async (req, res) => {
+    try {
+        const logoPath = req.uploadCategoryPath && req.file
+            ? `${req.uploadCategoryPath}/${req.file.filename}`
+            : undefined;
+        if (!logoPath)
+            return res.status(400).json({ error: 'No logo file uploaded' });
+        const schoolId = String(req.user.schoolId);
+        const existing = await prisma_1.default.reportTemplate.findFirst({ where: { schoolId } });
+        const config = existing ? existing.config || {} : {};
+        config.receiptLogoUrl = logoPath;
+        const updated = await prisma_1.default.reportTemplate.upsert({
+            where: { schoolId },
+            update: { config },
+            create: { schoolId, config }
+        });
+        res.json({ success: true, receiptLogoUrl: logoPath, config: updated.config });
+    }
+    catch (error) {
+        console.error('Receipt Logo upload error:', error);
+        res.status(500).json({ error: 'Failed to update receipt logo' });
+    }
+});
+/**
+ * @route   PATCH /api/reports/consultation-logo
+ * @desc    [ADMIN] Upload consultation logo
+ */
+router.patch('/consultation-logo', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'CLINIC'), upload_1.brandingUpload.single('logo'), async (req, res) => {
+    try {
+        const logoPath = req.uploadCategoryPath && req.file
+            ? `${req.uploadCategoryPath}/${req.file.filename}`
+            : undefined;
+        if (!logoPath)
+            return res.status(400).json({ error: 'No logo file uploaded' });
+        const schoolId = String(req.user.schoolId);
+        const existing = await prisma_1.default.reportTemplate.findFirst({ where: { schoolId } });
+        const config = existing ? existing.config || {} : {};
+        config.consultationLogoUrl = logoPath;
+        const updated = await prisma_1.default.reportTemplate.upsert({
+            where: { schoolId },
+            update: { config },
+            create: { schoolId, config }
+        });
+        res.json({ success: true, consultationLogoUrl: logoPath, config: updated.config });
+    }
+    catch (error) {
+        console.error('Consultation Logo upload error:', error);
+        res.status(500).json({ error: 'Failed to update consultation logo' });
+    }
+});
+/**
  * @route   GET /api/reports/download/:id
  * @desc    Generate and download PDF report
  */
-router.get('/download/:id', requireAuth, async (req, res) => {
+router.get('/download/:id', auth_1.requireAuth, async (req, res) => {
     const { id } = req.params;
     const userId = req.user.id;
     const role = req.user.role;
     try {
-        const report = await prisma.academicReport.findUnique({
+        const report = await prisma_1.default.academicReport.findFirst({
             where: { id: String(id) }
         });
         if (!report)
@@ -371,7 +492,7 @@ router.get('/download/:id', requireAuth, async (req, res) => {
         // (Parent check could be added here if needed, but 'my' route handles listing)
         const reportData = report.data;
         // Enrich with school branding
-        const school = await prisma.school.findUnique({
+        const school = await prisma_1.default.school.findUnique({
             where: { id: report.schoolId }
         });
         // Map to PDF Generator Interface
@@ -408,7 +529,7 @@ router.get('/download/:id', requireAuth, async (req, res) => {
         // Compute attendance rate
         const total = pdfData.attendance.present + pdfData.attendance.absent;
         pdfData.attendance.rate = total > 0 ? Math.round((pdfData.attendance.present / total) * 100) : 100;
-        await generateAcademicReportPDF(pdfData, res);
+        await (0, pdf_generator_1.generateAcademicReportPDF)(pdfData, res);
     }
     catch (error) {
         console.error('PDF Download Error:', error);
@@ -419,12 +540,12 @@ router.get('/download/:id', requireAuth, async (req, res) => {
  * @route   GET /api/reports/principal-comments/:classId
  * @desc    [ADMIN/TEACHER] Get students and their principal comments for a class
  */
-router.get('/principal-comments/:classId', requireAuth, requireRole('SCHOOL_ADMIN', 'TEACHER'), async (req, res) => {
+router.get('/principal-comments/:classId', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'TEACHER'), async (req, res) => {
     const { classId } = req.params;
     const { term, year, subjectId } = req.query;
     const schoolId = req.user.schoolId;
     try {
-        const students = await prisma.student.findMany({
+        const students = await prisma_1.default.student.findMany({
             where: { classId: String(classId), schoolId: String(schoolId) },
             include: {
                 termlyComments: {
@@ -454,13 +575,13 @@ router.get('/principal-comments/:classId', requireAuth, requireRole('SCHOOL_ADMI
  * @route   POST /api/reports/principal-comments/bulk
  * @desc    [ADMIN] Bulk save principal comments
  */
-router.post('/principal-comments/bulk', requireAuth, requireRole('SCHOOL_ADMIN'), async (req, res) => {
+router.post('/principal-comments/bulk', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN'), async (req, res) => {
     const { term, year, comments } = req.body;
     const schoolId = req.user.schoolId;
     // comments: Array<{ studentId: string, principalComment: string }>
     try {
         const operations = comments.map((c) => {
-            return prisma.termlyComment.upsert({
+            return prisma_1.default.termlyComment.upsert({
                 where: {
                     schoolId_studentId_term_year: {
                         schoolId,
@@ -481,12 +602,12 @@ router.post('/principal-comments/bulk', requireAuth, requireRole('SCHOOL_ADMIN')
                 }
             });
         });
-        await prisma.$transaction(operations);
+        await prisma_1.default.$transaction(operations);
         res.json({ success: true });
     }
     catch (error) {
         res.status(500).json({ error: 'Failed to save comments: ' + error.message });
     }
 });
-export default router;
+exports.default = router;
 //# sourceMappingURL=reports.js.map

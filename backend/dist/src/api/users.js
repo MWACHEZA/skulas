@@ -1,22 +1,32 @@
-import { Router } from 'express';
-import bcrypt from 'bcryptjs';
-import prisma from '../lib/prisma';
-import { requireAuth, requireRole } from '../middleware/auth';
-import { generateSequentialId } from '../lib/id-generator';
-import { upload, staffDocumentUpload } from '../middleware/upload';
-import { validate } from '../middleware/validation';
-import { UpdateProfileSchema } from '../schemas/auth.schema';
-import { uploadLimiter } from '../middleware/rate-limit';
-const router = Router();
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const crypto_1 = __importDefault(require("crypto"));
+const bcryptjs_1 = __importDefault(require("bcryptjs"));
+const prisma_1 = __importDefault(require("../lib/prisma"));
+const auth_1 = require("../middleware/auth");
+const id_generator_1 = require("../lib/id-generator");
+const upload_1 = require("../middleware/upload");
+const validation_1 = require("../middleware/validation");
+const auth_schema_1 = require("../schemas/auth.schema");
+const rate_limit_1 = require("../middleware/rate-limit");
+const router = (0, express_1.Router)();
 // Define staff roles for EmployeeProfile creation
 const STAFF_ROLES = ['TEACHER', 'BURSAR', 'LIBRARIAN', 'ANCILLARY', 'SCHOOL_ADMIN'];
+// Roles that a SCHOOL_ADMIN is allowed to assign (cannot self-escalate to SUPER_ADMIN)
+const SCHOOL_ADMIN_ASSIGNABLE_ROLES = [
+    'TEACHER', 'STUDENT', 'BURSAR', 'LIBRARIAN', 'ANCILLARY', 'PARENT', 'SUPPLIER', 'ALUMNI', 'APPLICANT', 'CLINIC'
+];
 /**
  * @route   GET /api/users/me
  * @desc    Get current user profile
  */
-router.get('/me', requireAuth, async (req, res) => {
+router.get('/me', auth_1.requireAuth, async (req, res) => {
     try {
-        const user = await prisma.user.findUnique({
+        const user = await prisma_1.default.user.findFirst({
             where: { id: req.user.id },
             select: {
                 id: true,
@@ -97,13 +107,13 @@ router.get('/me', requireAuth, async (req, res) => {
  * @route   GET /api/users
  * @desc    [ADMIN] Get all users with optional role filter
  */
-router.get('/', requireAuth, requireRole('SCHOOL_ADMIN', 'SUPER_ADMIN', 'CLINIC'), async (req, res) => {
+router.get('/', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'SUPER_ADMIN', 'CLINIC'), async (req, res) => {
     const { role } = req.query;
     const targetRole = role ? String(role).toUpperCase() : undefined;
     try {
-        const school = await prisma.school.findUnique({ where: { id: req.user.schoolId } });
+        const school = await prisma_1.default.school.findUnique({ where: { id: req.user.schoolId } });
         // First fetch users strictly tied by schoolId, excluding global roles which are managed via junction tables
-        let users = await prisma.user.findMany({
+        let users = await prisma_1.default.user.findMany({
             where: {
                 schoolId: req.user.schoolId,
                 role: { notIn: ['SUPPLIER', 'PARENT'] },
@@ -130,7 +140,7 @@ router.get('/', requireAuth, requireRole('SCHOOL_ADMIN', 'SUPER_ADMIN', 'CLINIC'
         });
         // 2. Fetch Global Roles (SUPPLIER/PARENT) via junction tables
         if (!targetRole || targetRole === 'SUPPLIER') {
-            const linkedSuppliers = await prisma.schoolSupplier.findMany({
+            const linkedSuppliers = await prisma_1.default.schoolSupplier.findMany({
                 where: { schoolId: req.user.schoolId, status: 'APPROVED' },
                 include: { supplier: { include: { user: true } } }
             });
@@ -150,7 +160,7 @@ router.get('/', requireAuth, requireRole('SCHOOL_ADMIN', 'SUPER_ADMIN', 'CLINIC'
             });
         }
         if (!targetRole || targetRole === 'PARENT') {
-            const linkedParents = await prisma.parentStudent.findMany({
+            const linkedParents = await prisma_1.default.parentStudent.findMany({
                 where: {
                     student: { schoolId: req.user.schoolId },
                     status: 'APPROVED'
@@ -179,28 +189,10 @@ router.get('/', requireAuth, requireRole('SCHOOL_ADMIN', 'SUPER_ADMIN', 'CLINIC'
     }
 });
 /**
- * @route   GET /api/teachers
- * @desc    [ADMIN] Get all teachers with user details
- */
-// This route is called as /api/teachers in the frontend
-// We'll add it to users.ts and mount it as /api/teachers in index.ts or handle it here
-router.get('/faculty', requireAuth, requireRole('SCHOOL_ADMIN'), async (req, res) => {
-    try {
-        const teachers = await prisma.teacher.findMany({
-            where: { schoolId: req.user.schoolId },
-            include: { user: { include: { employeeProfile: true } } }
-        });
-        res.json({ teachers });
-    }
-    catch (error) {
-        res.status(500).json({ error: 'Failed to fetch teacher roster' });
-    }
-});
-/**
  * @route   POST /api/users
  * @desc    [ADMIN] Create a new user account for any role with profile pic and HR details
  */
-router.post('/', requireAuth, staffDocumentUpload.fields([
+router.post('/', auth_1.requireAuth, upload_1.staffDocumentUpload.fields([
     { name: 'avatar', maxCount: 1 },
     { name: 'idDoc', maxCount: 1 },
     { name: 'residenceDoc', maxCount: 1 },
@@ -265,12 +257,17 @@ router.post('/', requireAuth, staffDocumentUpload.fields([
         return res.status(403).json({ error: 'Unauthorized to create users' });
     }
     try {
-        const hashedPassword = await bcrypt.hash(password || 'Password', 10);
+        const randomPassword = password || crypto_1.default.randomBytes(8).toString('hex');
+        const hashedPassword = await bcryptjs_1.default.hash(randomPassword, 10);
         const finalRole = role.toUpperCase();
+        // Role escalation guard: SCHOOL_ADMINs cannot assign privileged roles to users
+        if (req.user.role === 'SCHOOL_ADMIN' && !SCHOOL_ADMIN_ASSIGNABLE_ROLES.includes(finalRole)) {
+            return res.status(403).json({ error: `Unauthorized: Cannot assign role '${finalRole}'` });
+        }
         // Use transaction for atomic ID generation and record creation
-        const user = await prisma.$transaction(async (tx) => {
+        const user = await prisma_1.default.$transaction(async (tx) => {
             // 1. Generate sequential ID inside transaction
-            const generatedId = await generateSequentialId(schoolId, finalRole, tx);
+            const generatedId = await (0, id_generator_1.generateSequentialId)(schoolId, finalRole, tx);
             // 2. Create the base User
             const newUser = await tx.user.create({
                 data: {
@@ -285,7 +282,7 @@ router.post('/', requireAuth, staffDocumentUpload.fields([
                     schoolId,
                     departmentId: (role === 'TEACHER' && !departmentId) ? req.body.departmentId : departmentId, // Fallback for teacher specific logic if needed
                     metadata: metadata,
-                    mustChangePassword: !password || password === 'Password',
+                    mustChangePassword: true,
                     ...(finalRole === 'TEACHER' && {
                         teacher: {
                             create: {
@@ -374,8 +371,8 @@ router.post('/', requireAuth, staffDocumentUpload.fields([
             // 3. Nested student creation is already handled inside newUser.create above.
             // 4. Handle Supplier
             if (finalRole === 'SUPPLIER') {
-                const globalId = await generateSequentialId(null, 'SUPPLIER', tx);
-                const schoolSpecificId = await generateSequentialId(schoolId || null, 'SUPPLIER', tx);
+                const globalId = await (0, id_generator_1.generateSequentialId)(null, 'SUPPLIER', tx);
+                const schoolSpecificId = await (0, id_generator_1.generateSequentialId)(schoolId || null, 'SUPPLIER', tx);
                 const supplier = await tx.supplier.create({
                     data: {
                         globalId,
@@ -401,7 +398,7 @@ router.post('/', requireAuth, staffDocumentUpload.fields([
             }
             // 5. Handle Parent
             if (finalRole === 'PARENT') {
-                const globalId = await generateSequentialId(null, 'PARENT', tx);
+                const globalId = await (0, id_generator_1.generateSequentialId)(null, 'PARENT', tx);
                 await tx.parent.create({
                     data: {
                         globalId,
@@ -426,7 +423,7 @@ router.post('/', requireAuth, staffDocumentUpload.fields([
  * @route   PUT /api/users/me
  * @desc    Update current user's profile
  */
-router.put('/me', requireAuth, uploadLimiter, upload.single('avatar'), validate(UpdateProfileSchema), async (req, res) => {
+router.put('/me', auth_1.requireAuth, rate_limit_1.uploadLimiter, upload_1.upload.single('avatar'), (0, validation_1.validate)(auth_schema_1.UpdateProfileSchema), async (req, res) => {
     const { name, email, phone, dob, gender, address, metadata, prevSchool, reasonForTransfer, lastGradeAchieved, admissionsNotes, parents, religion } = req.body;
     const avatar = req.file ? `${req.uploadCategoryPath}/${req.file.filename}` : req.body.avatar;
     try {
@@ -441,11 +438,11 @@ router.put('/me', requireAuth, uploadLimiter, upload.single('avatar'), validate(
         else if (typeof metadata === 'object') {
             parsedMetadata = metadata;
         }
-        const existingUser = await prisma.user.findUnique({
+        const existingUser = await prisma_1.default.user.findFirst({
             where: { id: req.user.id },
             include: { student: true, parent: true, teacher: true }
         });
-        const updatedUser = await prisma.$transaction(async (tx) => {
+        const updatedUser = await prisma_1.default.$transaction(async (tx) => {
             // 2. Update Student record if exists
             if (existingUser?.student) {
                 await tx.student.update({
@@ -521,7 +518,7 @@ router.put('/me', requireAuth, uploadLimiter, upload.single('avatar'), validate(
  * @route   PUT /api/users/:id
  * @desc    [ADMIN] Update any user's profile, roles, and metadata
  */
-router.put('/:id', requireAuth, requireRole('SCHOOL_ADMIN'), staffDocumentUpload.fields([
+router.put('/:id', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN'), upload_1.staffDocumentUpload.fields([
     { name: 'avatar', maxCount: 1 },
     { name: 'idDoc', maxCount: 1 },
     { name: 'residenceDoc', maxCount: 1 },
@@ -558,10 +555,10 @@ router.put('/:id', requireAuth, requireRole('SCHOOL_ADMIN'), staffDocumentUpload
         birthCertificateUrl: files['birthCertificate'] ? `${req.uploadCategoryPath}/${files['birthCertificate'][0].filename}` : undefined,
     };
     try {
-        const existingUser = await prisma.user.findUnique({ where: { id } });
+        const existingUser = await prisma_1.default.user.findFirst({ where: { id } });
         if (!existingUser)
             return res.status(404).json({ error: 'User not found' });
-        const updatedUser = await prisma.$transaction(async (tx) => {
+        const updatedUser = await prisma_1.default.$transaction(async (tx) => {
             // 1. Sync Student record if it exists
             if (existingUser.role === 'STUDENT') {
                 await tx.student.update({
@@ -623,13 +620,18 @@ router.put('/:id', requireAuth, requireRole('SCHOOL_ADMIN'), staffDocumentUpload
                 lastModifiedBy: req.user.id,
                 updatedAt: new Date().toISOString()
             };
+            // Role escalation guard on update: only allow safe role changes
+            const newRole = role ? role.toUpperCase() : undefined;
+            if (newRole && req.user.role === 'SCHOOL_ADMIN' && !SCHOOL_ADMIN_ASSIGNABLE_ROLES.includes(newRole)) {
+                throw new Error(`Unauthorized: Cannot assign role '${newRole}'`);
+            }
             return await tx.user.update({
                 where: { id },
                 data: {
                     name,
                     email,
                     phone,
-                    role,
+                    role: newRole,
                     secondaryRoles: parsedSecondaryRoles,
                     avatar,
                     departmentId,
@@ -653,7 +655,7 @@ router.put('/:id', requireAuth, requireRole('SCHOOL_ADMIN'), staffDocumentUpload
         });
         // Handle Teacher-specific fields if applicable
         if (updatedUser.role === 'TEACHER') {
-            await prisma.teacher.update({
+            await prisma_1.default.teacher.update({
                 where: { userId: id },
                 data: {
                     department: req.body.department || undefined,
@@ -665,7 +667,7 @@ router.put('/:id', requireAuth, requireRole('SCHOOL_ADMIN'), staffDocumentUpload
         }
         // Handle EmployeeProfile updates
         if (STAFF_ROLES.includes(updatedUser.role)) {
-            const existingProfile = await prisma.employeeProfile.findUnique({ where: { userId: id } });
+            const existingProfile = await prisma_1.default.employeeProfile.findUnique({ where: { userId: id } });
             const profileData = {
                 designation: designation || undefined,
                 bloodGroup: bloodGroup || undefined,
@@ -694,13 +696,13 @@ router.put('/:id', requireAuth, requireRole('SCHOOL_ADMIN'), staffDocumentUpload
                     ...newStaffDocs
                 };
                 profileData.staffDocuments = mergedDocs;
-                await prisma.employeeProfile.update({
+                await prisma_1.default.employeeProfile.update({
                     where: { userId: id },
                     data: profileData
                 });
             }
             else {
-                await prisma.employeeProfile.create({
+                await prisma_1.default.employeeProfile.create({
                     data: {
                         ...profileData,
                         userId: id,
@@ -713,7 +715,7 @@ router.put('/:id', requireAuth, requireRole('SCHOOL_ADMIN'), staffDocumentUpload
         // Sync supplier profile if user is a supplier
         if (updatedUser.role === 'SUPPLIER') {
             const metadataObj = (updatedUser.metadata || {});
-            await prisma.supplier.update({
+            await prisma_1.default.supplier.update({
                 where: { userId: id },
                 data: {
                     companyName: req.body.companyName || metadataObj.companyName || name || undefined,
@@ -735,52 +737,24 @@ router.put('/:id', requireAuth, requireRole('SCHOOL_ADMIN'), staffDocumentUpload
         res.status(500).json({ error: 'Failed to update user' });
     }
 });
-/**
- * @route   GET /api/users/alumni
- * @desc    [ADMIN] Get all alumni records for the school
- */
-router.get('/alumni', requireAuth, requireRole('SCHOOL_ADMIN'), async (req, res) => {
-    try {
-        const alumni = await prisma.user.findMany({
-            where: {
-                schoolId: req.user.schoolId,
-                role: 'ALUMNI'
-            },
-            select: {
-                id: true,
-                name: true,
-                email: true,
-                phone: true,
-                staffId: true,
-                metadata: true,
-                createdAt: true
-            },
-            orderBy: { createdAt: 'desc' }
-        });
-        res.json(alumni);
-    }
-    catch (error) {
-        res.status(500).json({ error: 'Failed to fetch alumni records' });
-    }
-});
 // Helper to resolve User ID from User, Student, or Teacher ID
 async function resolveUserId(id) {
     // Check if ID is directly a User ID
-    const userExists = await prisma.user.findFirst({
+    const userExists = await prisma_1.default.user.findFirst({
         where: { id },
         select: { id: true }
     });
     if (userExists)
         return userExists.id;
     // Check if ID belongs to a Student profile
-    const student = await prisma.student.findFirst({
+    const student = await prisma_1.default.student.findFirst({
         where: { id },
         select: { userId: true }
     });
     if (student?.userId)
         return student.userId;
     // Check if ID belongs to a Teacher profile
-    const teacher = await prisma.teacher.findFirst({
+    const teacher = await prisma_1.default.teacher.findFirst({
         where: { id },
         select: { userId: true }
     });
@@ -792,13 +766,13 @@ async function resolveUserId(id) {
  * @route   POST /api/users/:id/lock
  * @desc    [ADMIN] Lock a user account
  */
-router.post('/:id/lock', requireAuth, requireRole('SCHOOL_ADMIN'), async (req, res) => {
+router.post('/:id/lock', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN'), async (req, res) => {
     try {
         const resolvedId = await resolveUserId(req.params.id);
         if (!resolvedId) {
             return res.status(404).json({ error: 'User account not found' });
         }
-        await prisma.user.update({
+        await prisma_1.default.user.update({
             where: { id: resolvedId },
             data: { isLocked: true }
         });
@@ -813,13 +787,13 @@ router.post('/:id/lock', requireAuth, requireRole('SCHOOL_ADMIN'), async (req, r
  * @route   POST /api/users/:id/unlock
  * @desc    [ADMIN] Unlock a user account
  */
-router.post('/:id/unlock', requireAuth, requireRole('SCHOOL_ADMIN'), async (req, res) => {
+router.post('/:id/unlock', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN'), async (req, res) => {
     try {
         const resolvedId = await resolveUserId(req.params.id);
         if (!resolvedId) {
             return res.status(404).json({ error: 'User account not found' });
         }
-        await prisma.user.update({
+        await prisma_1.default.user.update({
             where: { id: resolvedId },
             data: { isLocked: false }
         });
@@ -831,17 +805,42 @@ router.post('/:id/unlock', requireAuth, requireRole('SCHOOL_ADMIN'), async (req,
     }
 });
 /**
- * @route   POST /api/users/:id/reset-password
- * @desc    [ADMIN] Reset user password to default "Password"
+ * @route   DELETE /api/users/:id
+ * @desc    [ADMIN] Delete a user account (cascades to linked profiles)
  */
-router.post('/:id/reset-password', requireAuth, requireRole('SCHOOL_ADMIN'), async (req, res) => {
+router.delete('/:id', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'SUPER_ADMIN'), async (req, res) => {
     try {
         const resolvedId = await resolveUserId(req.params.id);
         if (!resolvedId) {
             return res.status(404).json({ error: 'User account not found' });
         }
-        const hashedPassword = await bcrypt.hash('Password', 10);
-        await prisma.user.update({
+        // Prevent self-deletion
+        if (resolvedId === req.user.id) {
+            return res.status(400).json({ error: 'Cannot delete your own account' });
+        }
+        await prisma_1.default.user.deleteMany({
+            where: { id: resolvedId }
+        });
+        res.json({ success: true, message: 'User deleted successfully' });
+    }
+    catch (error) {
+        console.error('Delete user error:', error);
+        res.status(500).json({ error: 'Failed to delete user' });
+    }
+});
+/**
+ * @route   POST /api/users/:id/reset-password
+ * @desc    [ADMIN] Reset user password to default "Password"
+ */
+router.post('/:id/reset-password', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN'), async (req, res) => {
+    try {
+        const resolvedId = await resolveUserId(req.params.id);
+        if (!resolvedId) {
+            return res.status(404).json({ error: 'User account not found' });
+        }
+        const randomPassword = crypto_1.default.randomBytes(8).toString('hex');
+        const hashedPassword = await bcryptjs_1.default.hash(randomPassword, 10);
+        await prisma_1.default.user.update({
             where: { id: resolvedId },
             data: {
                 password: hashedPassword,
@@ -856,5 +855,5 @@ router.post('/:id/reset-password', requireAuth, requireRole('SCHOOL_ADMIN'), asy
         res.status(500).json({ error: 'Failed to reset password' });
     }
 });
-export default router;
+exports.default = router;
 //# sourceMappingURL=users.js.map

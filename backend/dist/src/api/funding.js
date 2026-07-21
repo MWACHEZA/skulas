@@ -1,12 +1,17 @@
-import { Router } from 'express';
-import prisma from '../lib/prisma';
-import { requireAuth, requireRole } from '../middleware/auth';
-import { logAction } from '../utils/audit';
-const router = Router();
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const prisma_1 = __importDefault(require("../lib/prisma"));
+const auth_1 = require("../middleware/auth");
+const audit_1 = require("../utils/audit");
+const router = (0, express_1.Router)();
 // Get all project funding records for the current school
-router.get('/', requireAuth, async (req, res) => {
+router.get('/', auth_1.requireAuth, async (req, res) => {
     try {
-        const list = await prisma.projectFunding.findMany({
+        const list = await prisma_1.default.projectFunding.findMany({
             where: { schoolId: req.user.schoolId },
             orderBy: { name: 'asc' }
         });
@@ -18,13 +23,13 @@ router.get('/', requireAuth, async (req, res) => {
     }
 });
 // Create a new project funding record (Admin/Bursar only)
-router.post('/', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR'), async (req, res) => {
+router.post('/', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'BURSAR'), async (req, res) => {
     try {
         const { name, budget, spent, status } = req.body;
         if (!name || budget === undefined) {
             return res.status(400).json({ error: 'Missing required fields: name and budget' });
         }
-        const item = await prisma.projectFunding.create({
+        const item = await prisma_1.default.projectFunding.create({
             data: {
                 schoolId: req.user.schoolId,
                 name,
@@ -34,7 +39,7 @@ router.post('/', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR'), async (req,
             }
         });
         // Log this action for audit
-        await logAction(req, 'CREATE_PROJECT_FUNDING', 'ProjectFunding', item.id, {
+        await (0, audit_1.logAction)(req, 'CREATE_PROJECT_FUNDING', 'ProjectFunding', item.id, {
             name,
             budget,
             spent
@@ -47,7 +52,7 @@ router.post('/', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR'), async (req,
     }
 });
 // Update a project funding record (Admin/Bursar only)
-router.patch('/:id', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR'), async (req, res) => {
+router.patch('/:id', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'BURSAR'), async (req, res) => {
     try {
         const { id } = req.params;
         const { name, budget, spent, status } = req.body;
@@ -60,18 +65,18 @@ router.patch('/:id', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR'), async (
             dataToUpdate.spent = parseFloat(spent);
         if (status !== undefined)
             dataToUpdate.status = status;
-        const existing = await prisma.projectFunding.findFirst({
+        const existing = await prisma_1.default.projectFunding.findFirst({
             where: { id: String(id), schoolId: req.user.schoolId }
         });
         if (!existing) {
             return res.status(404).json({ error: 'Project funding record not found' });
         }
-        const item = await prisma.projectFunding.update({
+        const item = await prisma_1.default.projectFunding.update({
             where: { id: String(id) },
             data: dataToUpdate
         });
         // Log this action for audit
-        await logAction(req, 'UPDATE_PROJECT_FUNDING', 'ProjectFunding', item.id, {
+        await (0, audit_1.logAction)(req, 'UPDATE_PROJECT_FUNDING', 'ProjectFunding', item.id, {
             changedFields: Object.keys(dataToUpdate)
         });
         res.json(item);
@@ -82,20 +87,20 @@ router.patch('/:id', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR'), async (
     }
 });
 // Delete a project funding record (Admin/Bursar only)
-router.delete('/:id', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR'), async (req, res) => {
+router.delete('/:id', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'BURSAR'), async (req, res) => {
     try {
         const { id } = req.params;
-        const existing = await prisma.projectFunding.findFirst({
+        const existing = await prisma_1.default.projectFunding.findFirst({
             where: { id: String(id), schoolId: req.user.schoolId }
         });
         if (!existing) {
             return res.status(404).json({ error: 'Project funding record not found' });
         }
-        await prisma.projectFunding.delete({
+        await prisma_1.default.projectFunding.delete({
             where: { id: String(id) }
         });
         // Log this action for audit
-        await logAction(req, 'DELETE_PROJECT_FUNDING', 'ProjectFunding', String(id), {
+        await (0, audit_1.logAction)(req, 'DELETE_PROJECT_FUNDING', 'ProjectFunding', String(id), {
             name: existing.name
         });
         res.json({ success: true });
@@ -105,5 +110,5 @@ router.delete('/:id', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR'), async 
         res.status(500).json({ error: 'Failed to delete project funding item' });
     }
 });
-export default router;
+exports.default = router;
 //# sourceMappingURL=funding.js.map

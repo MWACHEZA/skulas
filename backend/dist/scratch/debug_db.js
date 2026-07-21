@@ -1,5 +1,7 @@
-import { PrismaClient } from '../src/generated/client';
-const prisma = new PrismaClient();
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const client_1 = require("../src/generated/client");
+const prisma = new client_1.PrismaClient();
 async function main() {
     const students = await prisma.student.findMany({
         include: {

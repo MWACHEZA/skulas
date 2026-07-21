@@ -1,24 +1,29 @@
-import { Router } from 'express';
-import prisma from '../lib/prisma';
-import { requireAuth, requireRole } from '../middleware/auth';
-import { saveBase64Image } from '../lib/file-utils';
-const router = Router();
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const prisma_1 = __importDefault(require("../lib/prisma"));
+const auth_1 = require("../middleware/auth");
+const file_utils_1 = require("../lib/file-utils");
+const router = (0, express_1.Router)();
 // Get study materials (students can see their class materials, teachers see what they uploaded)
-router.get('/', requireAuth, async (req, res) => {
+router.get('/', auth_1.requireAuth, async (req, res) => {
     try {
         const where = { schoolId: req.user.schoolId };
         if (req.user.role === 'TEACHER') {
             where.teacherId = req.user.id;
         }
         else if (req.user.role === 'STUDENT') {
-            const student = await prisma.student.findUnique({
+            const student = await prisma_1.default.student.findFirst({
                 where: { userId: req.user.id }
             });
             if (student?.classId) {
                 where.classId = student.classId;
             }
         }
-        const materials = await prisma.studyMaterial.findMany({
+        const materials = await prisma_1.default.studyMaterial.findMany({
             where,
             include: {
                 class: { select: { name: true } },
@@ -35,7 +40,7 @@ router.get('/', requireAuth, async (req, res) => {
     }
 });
 // Upload study material
-router.post('/', requireAuth, requireRole('TEACHER', 'SCHOOL_ADMIN', 'SUPER_ADMIN'), async (req, res) => {
+router.post('/', auth_1.requireAuth, (0, auth_1.requireRole)('TEACHER', 'SCHOOL_ADMIN', 'SUPER_ADMIN'), async (req, res) => {
     try {
         const { title, date, classId, classIds, subjectId, description, documentBase64, videoUrl } = req.body;
         const targetClassIds = Array.isArray(classIds) && classIds.length > 0
@@ -46,7 +51,7 @@ router.post('/', requireAuth, requireRole('TEACHER', 'SCHOOL_ADMIN', 'SUPER_ADMI
         }
         // Enforce that teachers can only upload study materials for subjects assigned to them
         if (req.user.role === 'TEACHER') {
-            const teacher = await prisma.teacher.findUnique({
+            const teacher = await prisma_1.default.teacher.findFirst({
                 where: { userId: req.user.id },
                 include: { subjects: true }
             });
@@ -60,14 +65,14 @@ router.post('/', requireAuth, requireRole('TEACHER', 'SCHOOL_ADMIN', 'SUPER_ADMI
         }
         let documentUrl = videoUrl || null;
         if (documentBase64) {
-            const savedPath = saveBase64Image(documentBase64, 'study-material', 'academic/documents', req.user.schoolId, 'teacher', req.user.id);
+            const savedPath = (0, file_utils_1.saveBase64Image)(documentBase64, 'study-material', 'academic/documents', req.user.schoolId, 'teacher', req.user.id);
             if (savedPath) {
                 documentUrl = `/api/storage/file/${savedPath}`;
             }
         }
         const created = [];
         for (const cId of targetClassIds) {
-            const material = await prisma.studyMaterial.create({
+            const material = await prisma_1.default.studyMaterial.create({
                 data: {
                     schoolId: req.user.schoolId,
                     title,
@@ -94,17 +99,17 @@ router.post('/', requireAuth, requireRole('TEACHER', 'SCHOOL_ADMIN', 'SUPER_ADMI
     }
 });
 // Delete study material
-router.delete('/:id', requireAuth, requireRole('TEACHER', 'SCHOOL_ADMIN', 'SUPER_ADMIN'), async (req, res) => {
+router.delete('/:id', auth_1.requireAuth, (0, auth_1.requireRole)('TEACHER', 'SCHOOL_ADMIN', 'SUPER_ADMIN'), async (req, res) => {
     try {
         const { id } = req.params;
         const materialId = String(id);
-        const material = await prisma.studyMaterial.findUnique({ where: { id: materialId } });
+        const material = await prisma_1.default.studyMaterial.findFirst({ where: { id: materialId } });
         if (!material)
             return res.status(404).json({ error: 'Not found' });
         if (req.user.role === 'TEACHER' && material.teacherId !== req.user.id) {
             return res.status(403).json({ error: 'Forbidden' });
         }
-        await prisma.studyMaterial.delete({ where: { id: materialId } });
+        await prisma_1.default.studyMaterial.delete({ where: { id: materialId } });
         res.json({ success: true });
     }
     catch (error) {
@@ -112,5 +117,5 @@ router.delete('/:id', requireAuth, requireRole('TEACHER', 'SCHOOL_ADMIN', 'SUPER
         res.status(500).json({ error: 'Failed to delete study material' });
     }
 });
-export default router;
+exports.default = router;
 //# sourceMappingURL=study-materials.js.map

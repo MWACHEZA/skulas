@@ -1,20 +1,25 @@
-import { Router } from 'express';
-import prisma from '../lib/prisma';
-import { requireAuth, requireRole } from '../middleware/auth';
-const router = Router();
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const prisma_1 = __importDefault(require("../lib/prisma"));
+const auth_1 = require("../middleware/auth");
+const router = (0, express_1.Router)();
 /**
  * @route   GET /api/report-data/summary
  * @desc    [ADMIN/BURSAR] Get summary stats for the reports dashboard
  */
-router.get('/summary', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR'), async (req, res) => {
+router.get('/summary', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'BURSAR'), async (req, res) => {
     const schoolId = req.user.schoolId;
     try {
         const [studentCount, totalFees, totalPaid, expenseTotal, productCount] = await Promise.all([
-            prisma.student.count({ where: { schoolId } }),
-            prisma.fee.aggregate({ where: { schoolId }, _sum: { amount: true } }),
-            prisma.fee.aggregate({ where: { schoolId }, _sum: { paid: true } }),
-            prisma.expense.aggregate({ where: { schoolId }, _sum: { amount: true } }),
-            prisma.physicalProduct.count({ where: { schoolId } })
+            prisma_1.default.student.count({ where: { schoolId } }),
+            prisma_1.default.fee.aggregate({ where: { schoolId }, _sum: { amount: true } }),
+            prisma_1.default.fee.aggregate({ where: { schoolId }, _sum: { paid: true } }),
+            prisma_1.default.expense.aggregate({ where: { schoolId }, _sum: { amount: true } }),
+            prisma_1.default.physicalProduct.count({ where: { schoolId } })
         ]);
         res.json({
             students: studentCount,
@@ -35,25 +40,28 @@ router.get('/summary', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR'), async
  * @route   GET /api/report-data/fees-balances
  * @desc    Get outstanding balances per student
  */
-router.get('/fees-balances', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR'), async (req, res) => {
+router.get('/fees-balances', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'BURSAR'), async (req, res) => {
     const schoolId = req.user.schoolId;
     try {
-        const students = await prisma.student.findMany({
+        const students = await prisma_1.default.student.findMany({
             where: { schoolId },
             include: {
-                fees: true
+                fees: true,
+                class: true
             }
         });
         const report = students.map(s => {
-            const total = s.fees.reduce((acc, f) => acc + f.amount, 0);
-            const paid = s.fees.reduce((acc, f) => acc + f.paid, 0);
+            const total = Math.round(s.fees.reduce((acc, f) => acc + f.amount, 0) * 100) / 100;
+            const paid = Math.round(s.fees.reduce((acc, f) => acc + f.paid, 0) * 100) / 100;
+            const balance = Math.round((total - paid) * 100) / 100;
             return {
                 id: s.id,
                 name: s.name,
                 studentId: s.studentId,
+                class: s.class?.name || 'Unassigned',
                 total,
                 paid,
-                balance: total - paid
+                balance
             };
         }).filter(r => r.balance > 0);
         res.json(report);
@@ -68,9 +76,9 @@ router.get('/fees-balances', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR'),
  * @route   GET /api/report-data/payroll-runs
  * @desc    Get summary of all payroll runs
  */
-router.get('/payroll-runs', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR'), async (req, res) => {
+router.get('/payroll-runs', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'BURSAR'), async (req, res) => {
     try {
-        const runs = await prisma.payrollRun.findMany({
+        const runs = await prisma_1.default.payrollRun.findMany({
             where: { schoolId: req.user.schoolId },
             orderBy: { runDate: 'desc' }
         });
@@ -84,9 +92,9 @@ router.get('/payroll-runs', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR'), 
  * @route   GET /api/report-data/payroll-run-details/:id
  * @desc    Get detailed entries for a payroll run
  */
-router.get('/payroll-run-details/:id', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR'), async (req, res) => {
+router.get('/payroll-run-details/:id', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'BURSAR'), async (req, res) => {
     try {
-        const entries = await prisma.payrollEntry.findMany({
+        const entries = await prisma_1.default.payrollEntry.findMany({
             where: {
                 payrollRunId: req.params.id,
                 schoolId: req.user.schoolId
@@ -103,9 +111,9 @@ router.get('/payroll-run-details/:id', requireAuth, requireRole('SCHOOL_ADMIN', 
  * @route   GET /api/report-data/employee-payslips
  * @desc    Get all payslip records
  */
-router.get('/employee-payslips', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR'), async (req, res) => {
+router.get('/employee-payslips', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'BURSAR'), async (req, res) => {
     try {
-        const entries = await prisma.payrollEntry.findMany({
+        const entries = await prisma_1.default.payrollEntry.findMany({
             where: { schoolId: req.user.schoolId },
             include: { payrollRun: { select: { month: true, year: true } } },
             orderBy: { createdAt: 'desc' }
@@ -120,10 +128,10 @@ router.get('/employee-payslips', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSA
  * @route   GET /api/report-data/tax-contributions
  * @desc    Get aggregate tax and contributions per period
  */
-router.get('/tax-contributions', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR'), async (req, res) => {
+router.get('/tax-contributions', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'BURSAR'), async (req, res) => {
     try {
         const schoolId = req.user.schoolId;
-        const runs = await prisma.payrollRun.findMany({
+        const runs = await prisma_1.default.payrollRun.findMany({
             where: { schoolId },
             include: {
                 entries: {
@@ -159,11 +167,11 @@ router.get('/tax-contributions', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSA
  * @route   GET /api/report-data/grocery-consumption
  * @desc    Get grocery consumption logs with filters
  */
-router.get('/grocery-consumption', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR'), async (req, res) => {
+router.get('/grocery-consumption', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'BURSAR'), async (req, res) => {
     const { from, to } = req.query;
     const schoolId = req.user.schoolId;
     try {
-        const logs = await prisma.physicalProductConsumption.findMany({
+        const logs = await prisma_1.default.physicalProductConsumption.findMany({
             where: {
                 schoolId,
                 ...(from || to ? {
@@ -188,7 +196,7 @@ router.get('/grocery-consumption', requireAuth, requireRole('SCHOOL_ADMIN', 'BUR
  * @route   GET /api/report-data/profit-loss
  * @desc    Get Profit & Loss summary and data for charting
  */
-router.get('/profit-loss', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR'), async (req, res) => {
+router.get('/profit-loss', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'BURSAR'), async (req, res) => {
     const { from, to } = req.query;
     const schoolId = req.user.schoolId;
     try {
@@ -205,27 +213,27 @@ router.get('/profit-loss', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR'), a
             }
         } : {};
         // 1. Income Sources
-        const incomes = await prisma.income.findMany({ where: { schoolId, ...dateFilter } });
-        const uniformSales = await prisma.uniformSale.findMany({ where: { schoolId, ...createdAtFilter } });
-        const tuckshopSales = await prisma.tuckshopSale.findMany({ where: { schoolId, soldAt: createdAtFilter.createdAt } });
+        const incomes = await prisma_1.default.income.findMany({ where: { schoolId, ...dateFilter } });
+        const uniformSales = await prisma_1.default.uniformSale.findMany({ where: { schoolId, ...createdAtFilter } });
+        const tuckshopSales = await prisma_1.default.tuckshopSale.findMany({ where: { schoolId, soldAt: createdAtFilter.createdAt } });
         // For Fees, we look at the paid amount in the Fee model or specific payment logs if they existed.
         // Since we don't have a specific Payment log for fees in the schema yet, we use the total paid on Fee records updated in this range.
         // NOTE: This is a simplified calculation for the MVP.
-        const fees = await prisma.fee.findMany({ where: { schoolId, updatedAt: createdAtFilter.createdAt } });
+        const fees = await prisma_1.default.fee.findMany({ where: { schoolId, updatedAt: createdAtFilter.createdAt } });
         const totalIncome = incomes.reduce((sum, i) => sum + i.amount, 0) +
             uniformSales.reduce((sum, s) => sum + s.totalAmount, 0) +
             tuckshopSales.reduce((sum, s) => sum + s.totalAmount, 0) +
             fees.reduce((sum, f) => sum + f.paid, 0);
         // 2. Expense Sources
-        const expenses = await prisma.expense.findMany({ where: { schoolId, ...dateFilter } });
-        const payroll = await prisma.payrollEntry.findMany({ where: { schoolId, isPaid: true, updatedAt: createdAtFilter.createdAt } });
-        const uniformPayments = await prisma.uniformSupplierPayment.findMany({ where: { schoolId, ...dateFilter } });
+        const expenses = await prisma_1.default.expense.findMany({ where: { schoolId, ...dateFilter } });
+        const payroll = await prisma_1.default.payrollEntry.findMany({ where: { schoolId, isPaid: true, updatedAt: createdAtFilter.createdAt } });
+        const uniformPayments = await prisma_1.default.uniformSupplierPayment.findMany({ where: { schoolId, ...dateFilter } });
         const totalExpenses = expenses.reduce((sum, e) => sum + e.amount, 0) +
             payroll.reduce((sum, p) => sum + p.netSalary, 0) +
             uniformPayments.reduce((sum, p) => sum + p.amount, 0);
         // 3. Student Credit (Excess payments)
         // We sum students with paid > amount on fees
-        const creditFees = await prisma.fee.findMany({ where: { schoolId, paid: { gt: prisma.fee.fields.amount } } });
+        const creditFees = await prisma_1.default.fee.findMany({ where: { schoolId, paid: { gt: prisma_1.default.fee.fields.amount } } });
         const totalStudentCredit = creditFees.reduce((sum, f) => sum + (f.paid - f.amount), 0);
         // 4. Breakdown for Table
         const breakdown = [
@@ -263,11 +271,11 @@ router.get('/profit-loss', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR'), a
  * @route   GET /api/report-data/detailed-expenses
  * @desc    Get breakdown of expenses by type, group, and payment method
  */
-router.get('/detailed-expenses', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR'), async (req, res) => {
+router.get('/detailed-expenses', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'BURSAR'), async (req, res) => {
     const { from, to, categoryId, paymentMode } = req.query;
     const schoolId = req.user.schoolId;
     try {
-        const expenses = await prisma.expense.findMany({
+        const expenses = await prisma_1.default.expense.findMany({
             where: {
                 schoolId,
                 ...(categoryId ? { categoryId: categoryId } : {}),
@@ -314,11 +322,11 @@ router.get('/detailed-expenses', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSA
  * @route   GET /api/report-data/revenue-allocation
  * @desc    Get revenue allocation breakdown
  */
-router.get('/revenue-allocation', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR'), async (req, res) => {
+router.get('/revenue-allocation', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'BURSAR'), async (req, res) => {
     const { allocationId, classId } = req.query;
     const schoolId = req.user.schoolId;
     try {
-        const allocation = await prisma.revenueAllocation.findFirst({
+        const allocation = await prisma_1.default.revenueAllocation.findFirst({
             where: { id: allocationId, schoolId },
             include: { feeGroups: true }
         });
@@ -326,7 +334,7 @@ router.get('/revenue-allocation', requireAuth, requireRole('SCHOOL_ADMIN', 'BURS
             return res.status(404).json({ error: 'Allocation config not found' });
         // Sum fees for the groups in this allocation
         const feeGroupIds = allocation.feeGroups.map(fg => fg.id);
-        const fees = await prisma.fee.findMany({
+        const fees = await prisma_1.default.fee.findMany({
             where: {
                 schoolId,
                 feeGroupId: { in: feeGroupIds },
@@ -354,12 +362,12 @@ router.get('/revenue-allocation', requireAuth, requireRole('SCHOOL_ADMIN', 'BURS
  * @route   GET /api/report-data/enrollment-grouped
  * @desc    Get enrollment statistics grouped by class/gender
  */
-router.get('/enrollment-grouped', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR'), async (req, res) => {
+router.get('/enrollment-grouped', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'BURSAR'), async (req, res) => {
     const { groupName, studentCategory, classCategory, classIds } = req.query;
     const schoolId = req.user.schoolId;
     try {
         const selectedClasses = classIds ? classIds.split(',') : [];
-        const students = await prisma.student.findMany({
+        const students = await prisma_1.default.student.findMany({
             where: {
                 schoolId,
                 ...(selectedClasses.length > 0 ? { classId: { in: selectedClasses } } : {}),
@@ -392,13 +400,13 @@ router.get('/enrollment-grouped', requireAuth, requireRole('SCHOOL_ADMIN', 'BURS
  * @route   GET /api/report-data/fees-takings
  * @desc    Get detailed school fees collection summary
  */
-router.get('/fees-takings', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR'), async (req, res) => {
+router.get('/fees-takings', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'BURSAR'), async (req, res) => {
     const { from, to, classId, paymentMode } = req.query;
     const schoolId = req.user.schoolId;
     try {
         // Note: Since we don't have a separate Payment model for fees, we use the Fee records updated in this range
         // In a production app, there would be a FeePayment model. For now, we simulate with Fee.updatedAt
-        const fees = await prisma.fee.findMany({
+        const fees = await prisma_1.default.fee.findMany({
             where: {
                 schoolId,
                 paid: { gt: 0 },
@@ -465,11 +473,11 @@ router.get('/fees-takings', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR'), 
  * @route   GET /api/report-data/payments-analytics
  * @desc    Get detailed payments analytics for audit and reconciliation
  */
-router.get('/payments-analytics', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR'), async (req, res) => {
+router.get('/payments-analytics', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'BURSAR'), async (req, res) => {
     const { from, to, feeGroupId, paymentMode, receiptNo } = req.query;
     const schoolId = req.user.schoolId;
     try {
-        const fees = await prisma.fee.findMany({
+        const fees = await prisma_1.default.fee.findMany({
             where: {
                 schoolId,
                 paid: { gt: 0 },
@@ -544,14 +552,14 @@ router.get('/payments-analytics', requireAuth, requireRole('SCHOOL_ADMIN', 'BURS
  * @route   GET /api/report-data/student-debtors
  * @desc    Get list of students with outstanding balances
  */
-router.get('/student-debtors', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR'), async (req, res) => {
+router.get('/student-debtors', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'BURSAR'), async (req, res) => {
     const { year, term, status } = req.query;
     const schoolId = req.user.schoolId;
     try {
-        const fees = await prisma.fee.findMany({
+        const fees = await prisma_1.default.fee.findMany({
             where: {
                 schoolId,
-                paid: { lt: prisma.fee.fields.amount },
+                paid: { lt: prisma_1.default.fee.fields.amount },
                 ...(year ? { year: parseInt(year) } : {}),
                 ...(term && term !== 'All Terms' ? { term: term } : {}),
                 ...(status && status !== 'All Statuses' ? { student: { status: status } } : {})
@@ -582,13 +590,13 @@ router.get('/student-debtors', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR'
  * @route   GET /api/report-data/balances-summary
  * @desc    Get total allocation and collection summary across fee groups
  */
-router.get('/balances-summary', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR'), async (req, res) => {
+router.get('/balances-summary', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'BURSAR'), async (req, res) => {
     const { year, status, feeGroupIds } = req.query;
     const schoolId = req.user.schoolId;
     try {
         const selectedIds = feeGroupIds ? feeGroupIds.split(',') : [];
         // 1. Get Fee Groups
-        const feeGroups = await prisma.feeGroup.findMany({
+        const feeGroups = await prisma_1.default.feeGroup.findMany({
             where: {
                 schoolId,
                 year: parseInt(year || '2024'),
@@ -596,7 +604,7 @@ router.get('/balances-summary', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR
             }
         });
         // 2. Fetch Fees for these groups
-        const fees = await prisma.fee.findMany({
+        const fees = await prisma_1.default.fee.findMany({
             where: {
                 schoolId,
                 feeGroupId: { in: feeGroups.map(fg => fg.id) },
@@ -671,13 +679,13 @@ router.get('/balances-summary', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR
  * @route   GET /api/report-data/single-fee-group
  * @desc    Get student-level breakdown for a specific fee group
  */
-router.get('/single-fee-group', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR'), async (req, res) => {
+router.get('/single-fee-group', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'BURSAR'), async (req, res) => {
     const { feeGroupId, classId, status } = req.query;
     const schoolId = req.user.schoolId;
     try {
         if (!feeGroupId)
             return res.status(400).json({ error: 'Fee Group ID is required' });
-        const fees = await prisma.fee.findMany({
+        const fees = await prisma_1.default.fee.findMany({
             where: {
                 schoolId,
                 feeGroupId: feeGroupId,
@@ -723,14 +731,14 @@ router.get('/single-fee-group', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR
  * @route   GET /api/report-data/student-balances
  * @desc    Get comprehensive balance matrix for students across multiple fee groups
  */
-router.get('/student-balances', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR'), async (req, res) => {
+router.get('/student-balances', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'BURSAR'), async (req, res) => {
     const { year, feeGroupIds, classIds, showBalanceOnly, searchName, searchSurname } = req.query;
     const schoolId = req.user.schoolId;
     try {
         const selectedFeeGroupIds = feeGroupIds ? feeGroupIds.split(',') : [];
         const selectedClassIds = classIds ? classIds.split(',') : [];
         // 1. Get Fee Groups to define dynamic columns
-        const feeGroups = await prisma.feeGroup.findMany({
+        const feeGroups = await prisma_1.default.feeGroup.findMany({
             where: {
                 schoolId,
                 year: parseInt(year || '2024'),
@@ -739,7 +747,7 @@ router.get('/student-balances', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR
         });
         const feeGroupMap = new Map(feeGroups.map(fg => [fg.id, fg.name]));
         // 2. Get Students with filters
-        const students = await prisma.student.findMany({
+        const students = await prisma_1.default.student.findMany({
             where: {
                 schoolId,
                 ...(selectedClassIds.length > 0 ? { classId: { in: selectedClassIds } } : {}),
@@ -838,11 +846,11 @@ router.get('/student-balances', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR
  * @route   GET /api/report-data/communication-logs
  * @desc    Get SMS/WhatsApp/Email activity logs
  */
-router.get('/communication-logs', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR'), async (req, res) => {
+router.get('/communication-logs', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'BURSAR'), async (req, res) => {
     const { type, searchName, searchSurname } = req.query;
     const schoolId = req.user.schoolId;
     try {
-        const logs = await prisma.communicationLog.findMany({
+        const logs = await prisma_1.default.communicationLog.findMany({
             where: {
                 schoolId,
                 ...(type ? { type: type } : {}),
@@ -869,11 +877,11 @@ router.get('/communication-logs', requireAuth, requireRole('SCHOOL_ADMIN', 'BURS
  * @route   GET /api/report-data/payment-history
  * @desc    Get detailed payment audit trail for a student
  */
-router.get('/payment-history', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR'), async (req, res) => {
+router.get('/payment-history', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'BURSAR'), async (req, res) => {
     const { searchTerm } = req.query;
     const schoolId = req.user.schoolId;
     try {
-        const students = await prisma.student.findMany({
+        const students = await prisma_1.default.student.findMany({
             where: {
                 schoolId,
                 OR: [
@@ -943,12 +951,12 @@ router.get('/payment-history', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR'
  * @route   GET /api/report-data/uniforms-analytics
  * @desc    Get detailed uniform sales and stock analytics
  */
-router.get('/uniforms-analytics', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR'), async (req, res) => {
+router.get('/uniforms-analytics', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'BURSAR'), async (req, res) => {
     const schoolId = req.user.schoolId;
     try {
         const [items, sales] = await Promise.all([
-            prisma.uniformItem.findMany({ where: { schoolId } }),
-            prisma.uniformSale.findMany({
+            prisma_1.default.uniformItem.findMany({ where: { schoolId } }),
+            prisma_1.default.uniformSale.findMany({
                 where: { schoolId },
                 include: {
                     items: { include: { item: true } },
@@ -998,11 +1006,11 @@ router.get('/uniforms-analytics', requireAuth, requireRole('SCHOOL_ADMIN', 'BURS
  * @route   GET /api/report-data/fees-payments
  * @desc    Get all student payment records
  */
-router.get('/fees-payments', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR'), async (req, res) => {
+router.get('/fees-payments', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'BURSAR'), async (req, res) => {
     const { from, to, paymentMode, searchTerm } = req.query;
     const schoolId = req.user.schoolId;
     try {
-        const payments = await prisma.studentPayment.findMany({
+        const payments = await prisma_1.default.studentPayment.findMany({
             where: {
                 schoolId,
                 ...(from && to ? { date: { gte: new Date(from), lte: new Date(to) } } : {}),
@@ -1043,11 +1051,11 @@ router.get('/fees-payments', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR'),
  * @route   GET /api/report-data/audit-logs
  * @desc    Get system audit logs for administrative actions
  */
-router.get('/audit-logs', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR'), async (req, res) => {
+router.get('/audit-logs', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'BURSAR'), async (req, res) => {
     const { from, to, action, actorId } = req.query;
     const schoolId = req.user.schoolId;
     try {
-        const logs = await prisma.auditLog.findMany({
+        const logs = await prisma_1.default.auditLog.findMany({
             where: {
                 schoolId,
                 ...(from && to ? { createdAt: { gte: new Date(from), lte: new Date(to) } } : {}),
@@ -1070,11 +1078,11 @@ router.get('/audit-logs', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR'), as
  * @route   GET /api/report-data/fee-reminders
  * @desc    Get history of all fee reminders sent
  */
-router.get('/fee-reminders', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR'), async (req, res) => {
+router.get('/fee-reminders', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'BURSAR'), async (req, res) => {
     const { from, to, type } = req.query;
     const schoolId = req.user.schoolId;
     try {
-        const logs = await prisma.feeReminderLog.findMany({
+        const logs = await prisma_1.default.feeReminderLog.findMany({
             where: {
                 schoolId,
                 ...(from && to ? { createdAt: { gte: new Date(from), lte: new Date(to) } } : {}),
@@ -1095,33 +1103,33 @@ router.get('/fee-reminders', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR'),
  * @route   GET /api/report-data/institutional-overview
  * @desc    Get high-level summary of institutional health
  */
-router.get('/institutional-overview', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR'), async (req, res) => {
+router.get('/institutional-overview', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'BURSAR'), async (req, res) => {
     const schoolId = req.user.schoolId;
     try {
         const [studentCount, staffCount, totalPayments, totalUniformSales, totalTuckshopSales, totalOtherIncome, totalExpenses, feeTotals] = await Promise.all([
-            prisma.student.count({ where: { schoolId } }),
-            prisma.user.count({ where: { schoolId, role: { in: ['TEACHER', 'STAFF', 'ADMIN', 'BURSAR'] } } }),
-            prisma.studentPayment.aggregate({
+            prisma_1.default.student.count({ where: { schoolId } }),
+            prisma_1.default.user.count({ where: { schoolId, role: { in: ['TEACHER', 'STAFF', 'ADMIN', 'BURSAR'] } } }),
+            prisma_1.default.studentPayment.aggregate({
                 where: { schoolId, status: 'Commit' },
                 _sum: { amount: true }
             }),
-            prisma.uniformSale.aggregate({
+            prisma_1.default.uniformSale.aggregate({
                 where: { schoolId },
                 _sum: { totalAmount: true }
             }),
-            prisma.tuckshopSale.aggregate({
+            prisma_1.default.tuckshopSale.aggregate({
                 where: { schoolId },
                 _sum: { totalAmount: true }
             }),
-            prisma.income.aggregate({
+            prisma_1.default.income.aggregate({
                 where: { schoolId },
                 _sum: { amount: true }
             }),
-            prisma.expense.aggregate({
+            prisma_1.default.expense.aggregate({
                 where: { schoolId },
                 _sum: { amount: true }
             }),
-            prisma.fee.aggregate({
+            prisma_1.default.fee.aggregate({
                 where: { schoolId },
                 _sum: { amount: true, paid: true }
             })
@@ -1154,5 +1162,5 @@ router.get('/institutional-overview', requireAuth, requireRole('SCHOOL_ADMIN', '
         res.status(500).json({ error: 'Failed to fetch institutional overview' });
     }
 });
-export default router;
+exports.default = router;
 //# sourceMappingURL=report-data.js.map

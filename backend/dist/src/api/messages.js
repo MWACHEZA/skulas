@@ -1,28 +1,46 @@
-import { Router } from 'express';
-import prisma from '../lib/prisma';
-import { requireAuth } from '../middleware/auth';
-const router = Router();
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const prisma_1 = __importDefault(require("../lib/prisma"));
+const auth_1 = require("../middleware/auth");
+const router = (0, express_1.Router)();
 // Get all messages where the logged-in user is the recipient (Inbox)
-router.get('/', requireAuth, async (req, res) => {
+router.get('/', auth_1.requireAuth, async (req, res) => {
     try {
-        const messages = await prisma.message.findMany({
-            where: {
-                recipientId: req.user.id,
-                schoolId: req.user.schoolId
-            },
-            orderBy: { createdAt: 'desc' }
-        });
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 50;
+        const skip = (page - 1) * limit;
+        const [messages, total] = await Promise.all([
+            prisma_1.default.message.findMany({
+                where: {
+                    recipientId: req.user.id,
+                    schoolId: req.user.schoolId
+                },
+                orderBy: { createdAt: 'desc' },
+                skip,
+                take: limit
+            }),
+            prisma_1.default.message.count({
+                where: {
+                    recipientId: req.user.id,
+                    schoolId: req.user.schoolId
+                }
+            })
+        ]);
         const senderIds = Array.from(new Set(messages.map(m => m.senderId)));
-        const senders = await prisma.user.findMany({
+        const senders = await prisma_1.default.user.findMany({
             where: { id: { in: senderIds } },
             select: { id: true, name: true, role: true, email: true }
         });
         const senderMap = new Map(senders.map(s => [s.id, s]));
-        const result = messages.map(m => ({
+        const data = messages.map(m => ({
             ...m,
             sender: senderMap.get(m.senderId) || { name: 'Unknown User', role: 'UNKNOWN', email: '' }
         }));
-        res.json(result);
+        res.json({ data, total, page, limit });
     }
     catch (error) {
         console.error('Error fetching messages:', error);
@@ -30,9 +48,9 @@ router.get('/', requireAuth, async (req, res) => {
     }
 });
 // Get all users in the same school as potential recipients
-router.get('/users', requireAuth, async (req, res) => {
+router.get('/users', auth_1.requireAuth, async (req, res) => {
     try {
-        const users = await prisma.user.findMany({
+        const users = await prisma_1.default.user.findMany({
             where: {
                 schoolId: req.user.schoolId,
                 id: { not: req.user.id }
@@ -48,19 +66,19 @@ router.get('/users', requireAuth, async (req, res) => {
     }
 });
 // Send a new message
-router.post('/', requireAuth, async (req, res) => {
+router.post('/', auth_1.requireAuth, async (req, res) => {
     try {
         const { recipientId, subject, body } = req.body;
         if (!recipientId || !subject || !body) {
             return res.status(400).json({ error: 'Missing required fields' });
         }
-        const recipient = await prisma.user.findUnique({
+        const recipient = await prisma_1.default.user.findFirst({
             where: { id: recipientId }
         });
         if (!recipient || recipient.schoolId !== req.user.schoolId) {
             return res.status(400).json({ error: 'Invalid recipient' });
         }
-        const message = await prisma.message.create({
+        const message = await prisma_1.default.message.create({
             data: {
                 senderId: req.user.id,
                 recipientId,
@@ -77,10 +95,10 @@ router.post('/', requireAuth, async (req, res) => {
     }
 });
 // Mark message as read
-router.patch('/:id/read', requireAuth, async (req, res) => {
+router.patch('/:id/read', auth_1.requireAuth, async (req, res) => {
     const { id } = req.params;
     try {
-        await prisma.message.updateMany({
+        await prisma_1.default.message.updateMany({
             where: {
                 id: id,
                 recipientId: req.user.id
@@ -95,10 +113,10 @@ router.patch('/:id/read', requireAuth, async (req, res) => {
     }
 });
 // Delete message
-router.delete('/:id', requireAuth, async (req, res) => {
+router.delete('/:id', auth_1.requireAuth, async (req, res) => {
     const { id } = req.params;
     try {
-        await prisma.message.deleteMany({
+        await prisma_1.default.message.deleteMany({
             where: {
                 id: id,
                 recipientId: req.user.id
@@ -111,5 +129,5 @@ router.delete('/:id', requireAuth, async (req, res) => {
         res.status(500).json({ error: 'Failed to delete message' });
     }
 });
-export default router;
+exports.default = router;
 //# sourceMappingURL=messages.js.map

@@ -1,11 +1,17 @@
-import multer from 'multer';
-import path from 'path';
-import fs from 'fs';
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.sportsUpload = exports.clubsUpload = exports.studentDocumentUpload = exports.staffDocumentUpload = exports.brandingUpload = exports.reportUpload = exports.receiptUpload = exports.assetUpload = exports.libraryUpload = exports.signatureUpload = exports.submissionUpload = exports.assignmentUpload = exports.upload = void 0;
+const multer_1 = __importDefault(require("multer"));
+const path_1 = __importDefault(require("path"));
+const fs_1 = __importDefault(require("fs"));
 // Helper to ensure directory exists
 const ensureDir = (dir) => {
-    const fullPath = path.join(__dirname, '../../', dir);
-    if (!fs.existsSync(fullPath)) {
-        fs.mkdirSync(fullPath, { recursive: true });
+    const fullPath = path_1.default.join(__dirname, '../../', dir);
+    if (!fs_1.default.existsSync(fullPath)) {
+        fs_1.default.mkdirSync(fullPath, { recursive: true });
     }
     return fullPath;
 };
@@ -28,7 +34,7 @@ const fileFilter = (req, file, cb) => {
     }
 };
 const createStorage = (entityType, category) => {
-    return multer.diskStorage({
+    return multer_1.default.diskStorage({
         destination: (req, file, cb) => {
             const schoolCode = req.user?.schoolCode || 'global';
             const humanId = req.user?.staffId || req.user?.studentId || req.user?.id || 'unassigned';
@@ -43,108 +49,121 @@ const createStorage = (entityType, category) => {
             // Institutional Global Silos (Library, Assets, Finance, Academics)
             const globalEntities = ['library', 'assets', 'finance', 'academic'];
             if (globalEntities.includes(entityType)) {
-                const relativeDir = path.join(schoolCode, 'global', entityType, category).replace(/\\/g, '/');
-                const fullPath = path.join(__dirname, '../../storage', relativeDir);
-                if (!fs.existsSync(fullPath))
-                    fs.mkdirSync(fullPath, { recursive: true });
+                const relativeDir = path_1.default.join(schoolCode, 'global', entityType, category).replace(/\\/g, '/');
+                const fullPath = path_1.default.join(__dirname, '../../storage', relativeDir);
+                if (!fs_1.default.existsSync(fullPath))
+                    fs_1.default.mkdirSync(fullPath, { recursive: true });
                 req.uploadCategoryPath = relativeDir;
                 cb(null, fullPath);
                 return;
             }
             // Entity-Specific Silos (Staff, Students)
-            const relativeDir = path.join(schoolCode, folderType, humanId, category).replace(/\\/g, '/');
+            const relativeDir = path_1.default.join(schoolCode, folderType, humanId, category).replace(/\\/g, '/');
             // SECURITY GAUNTLET: Prevent path traversal and ensure multi-tenant isolation
             if (relativeDir.includes('..') || !relativeDir.startsWith(schoolCode)) {
                 return cb(new Error('Security Violation: Unauthorized path traversal attempt detected.'), '');
             }
-            const fullPath = path.join(__dirname, '../../storage', relativeDir);
-            if (!fs.existsSync(fullPath)) {
-                fs.mkdirSync(fullPath, { recursive: true });
+            const fullPath = path_1.default.join(__dirname, '../../storage', relativeDir);
+            if (!fs_1.default.existsSync(fullPath)) {
+                fs_1.default.mkdirSync(fullPath, { recursive: true });
             }
             req.uploadCategoryPath = relativeDir;
             cb(null, fullPath);
         },
         filename: (req, file, cb) => {
             const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-            const ext = path.extname(file.originalname);
-            cb(null, `${file.fieldname}-${uniqueSuffix}${ext}`);
+            // Ignore original extension entirely to prevent XSS/spoofing (e.g. malicious.html sent as image/png)
+            // Map common mimetypes to safe extensions
+            const mimeToExt = {
+                'image/jpeg': '.jpg',
+                'image/png': '.png',
+                'image/webp': '.webp',
+                'application/pdf': '.pdf',
+                'application/msword': '.doc',
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document': '.docx',
+                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': '.xlsx',
+                'application/vnd.openxmlformats-officedocument.presentationml.presentation': '.pptx',
+                'text/plain': '.txt'
+            };
+            const safeExt = mimeToExt[file.mimetype] || '.bin';
+            cb(null, `${file.fieldname}-${uniqueSuffix}${safeExt}`);
         }
     });
 };
 // Main Export for general use (e.g. avatars)
-export const upload = multer({
+exports.upload = (0, multer_1.default)({
     storage: createStorage('general', 'avatars'),
     limits: { fileSize: 20 * 1024 * 1024 },
     fileFilter
 });
 // Teacher Assignments (stored under Teacher's staff folder)
-export const assignmentUpload = multer({
+exports.assignmentUpload = (0, multer_1.default)({
     storage: createStorage('staff', 'assignments'),
     limits: { fileSize: 50 * 1024 * 1024 },
     fileFilter
 });
 // Student Submissions (stored under Student's student folder)
-export const submissionUpload = multer({
+exports.submissionUpload = (0, multer_1.default)({
     storage: createStorage('students', 'submissions'),
     limits: { fileSize: 30 * 1024 * 1024 },
     fileFilter
 });
 // Signature Uploads (stored under Staff folder)
-export const signatureUpload = multer({
+exports.signatureUpload = (0, multer_1.default)({
     storage: createStorage('staff', 'signatures'),
     limits: { fileSize: 5 * 1024 * 1024 },
     fileFilter
 });
 // Library Book Uploads (Global for the school)
-export const libraryUpload = multer({
+exports.libraryUpload = (0, multer_1.default)({
     storage: createStorage('library', 'catalog'),
     limits: { fileSize: 100 * 1024 * 1024 }, // Larger for PDFs
     fileFilter
 });
 // Asset Uploads (Global for the school)
-export const assetUpload = multer({
+exports.assetUpload = (0, multer_1.default)({
     storage: createStorage('assets', 'inventory'),
     limits: { fileSize: 10 * 1024 * 1024 },
     fileFilter
 });
 // Financial Receipts (Global Institutional Silo)
-export const receiptUpload = multer({
+exports.receiptUpload = (0, multer_1.default)({
     storage: createStorage('finance', 'receipts'),
     limits: { fileSize: 10 * 1024 * 1024 },
     fileFilter
 });
 // Academic Reports (Global Institutional Silo)
-export const reportUpload = multer({
+exports.reportUpload = (0, multer_1.default)({
     storage: createStorage('academic', 'reports'),
     limits: { fileSize: 20 * 1024 * 1024 },
     fileFilter
 });
 // Branding & ID Card Templates (Global Institutional Silo)
-export const brandingUpload = multer({
+exports.brandingUpload = (0, multer_1.default)({
     storage: createStorage('academic', 'branding'),
     limits: { fileSize: 10 * 1024 * 1024 },
     fileFilter
 });
 // HR / Staff Documents
-export const staffDocumentUpload = multer({
+exports.staffDocumentUpload = (0, multer_1.default)({
     storage: createStorage('staff', 'documents'),
     limits: { fileSize: 50 * 1024 * 1024 },
     fileFilter
 });
 // Student Identity / Transfer Documents
-export const studentDocumentUpload = multer({
+exports.studentDocumentUpload = (0, multer_1.default)({
     storage: createStorage('students', 'documents'),
     limits: { fileSize: 50 * 1024 * 1024 },
     fileFilter
 });
 // Student Clubs Upload
-export const clubsUpload = multer({
+exports.clubsUpload = (0, multer_1.default)({
     storage: createStorage('academic', 'clubs'),
     limits: { fileSize: 10 * 1024 * 1024 },
     fileFilter
 });
 // School Sports Upload
-export const sportsUpload = multer({
+exports.sportsUpload = (0, multer_1.default)({
     storage: createStorage('academic', 'sports'),
     limits: { fileSize: 10 * 1024 * 1024 },
     fileFilter

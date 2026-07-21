@@ -1,12 +1,17 @@
-import express from 'express';
-import { requireAuth, requireRole } from '../middleware/auth';
-import prisma from '../lib/prisma';
-import { brandingUpload } from '../middleware/upload';
-const router = express.Router();
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = __importDefault(require("express"));
+const auth_1 = require("../middleware/auth");
+const prisma_1 = __importDefault(require("../lib/prisma"));
+const upload_1 = require("../middleware/upload");
+const router = express_1.default.Router();
 // GET current website settings for the school
-router.get('/', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCILLARY'), async (req, res) => {
+router.get('/', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'ANCILLARY'), async (req, res) => {
     try {
-        const settings = await prisma.websiteSettings.findUnique({
+        const settings = await prisma_1.default.websiteSettings.findFirst({
             where: { schoolId: req.user.schoolId }
         });
         // Return empty object if none exist, the frontend can handle defaults
@@ -18,11 +23,11 @@ router.get('/', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCILLARY'), async (re
     }
 });
 // PUT / POST to update website settings
-router.put('/', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCILLARY'), async (req, res) => {
+router.put('/', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'ANCILLARY'), async (req, res) => {
     try {
         const schoolId = req.user.schoolId;
         const updateData = req.body;
-        const settings = await prisma.websiteSettings.upsert({
+        const settings = await prisma_1.default.websiteSettings.upsert({
             where: { schoolId },
             update: updateData,
             create: {
@@ -38,7 +43,7 @@ router.put('/', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCILLARY'), async (re
     }
 });
 // POST /api/website-settings/upload
-router.post('/upload', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCILLARY'), brandingUpload.single('file'), async (req, res) => {
+router.post('/upload', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'ANCILLARY'), upload_1.brandingUpload.single('file'), async (req, res) => {
     try {
         if (!req.file) {
             return res.status(400).json({ error: 'No file uploaded' });
@@ -51,5 +56,5 @@ router.post('/upload', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCILLARY'), br
         res.status(500).json({ error: 'Failed to upload file' });
     }
 });
-export default router;
+exports.default = router;
 //# sourceMappingURL=website-settings.js.map

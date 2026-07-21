@@ -1,16 +1,22 @@
-import { Router } from 'express';
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
-import prisma from '../lib/prisma';
-import { requireAuth, requireRole } from '../middleware/auth';
-import { generateSequentialId } from '../lib/id-generator';
-import { saveBase64Image } from '../lib/file-utils';
-import { normalizeSchoolCode } from '../lib/utils';
-import { validate } from '../middleware/validation';
-import { LoginSchema, RegisterUserSchema } from '../schemas/auth.schema';
-import { authLimiter, strictLimiter } from '../middleware/rate-limit';
-import { logSecurityEvent } from '../lib/security-logger';
-const router = Router();
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const crypto_1 = __importDefault(require("crypto"));
+const express_1 = require("express");
+const bcryptjs_1 = __importDefault(require("bcryptjs"));
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const prisma_1 = __importDefault(require("../lib/prisma"));
+const auth_1 = require("../middleware/auth");
+const id_generator_1 = require("../lib/id-generator");
+const file_utils_1 = require("../lib/file-utils");
+const utils_1 = require("../lib/utils");
+const validation_1 = require("../middleware/validation");
+const auth_schema_1 = require("../schemas/auth.schema");
+const rate_limit_1 = require("../middleware/rate-limit");
+const security_logger_1 = require("../lib/security-logger");
+const router = (0, express_1.Router)();
 const JWT_SECRET = process.env.JWT_SECRET;
 if (!JWT_SECRET || JWT_SECRET === 'your_jwt_secret_here') {
     console.error('CRITICAL ERROR: JWT_SECRET must be set to a strong value in .env');
@@ -24,16 +30,16 @@ const STRONG_PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-
  * @route   POST /api/auth/impersonate/:userId
  * @desc    [SUPER_ADMIN] Generate a token for any user (impersonation)
  */
-router.post('/impersonate/:userId', requireAuth, requireRole('SUPER_ADMIN'), async (req, res) => {
+router.post('/impersonate/:userId', auth_1.requireAuth, (0, auth_1.requireRole)('SUPER_ADMIN'), async (req, res) => {
     const userId = req.params.userId;
     try {
-        const targetUser = await prisma.user.findUnique({
+        const targetUser = await prisma_1.default.user.findFirst({
             where: { id: userId },
             include: { school: true }
         });
         if (!targetUser)
             return res.status(404).json({ error: 'User not found' });
-        const token = jwt.sign({
+        const token = jsonwebtoken_1.default.sign({
             id: targetUser.id,
             email: targetUser.email,
             name: targetUser.name,
@@ -69,13 +75,13 @@ router.post('/register', async (req, res) => {
     studentCount } = req.body;
     const normalizedEmail = email?.trim().toLowerCase();
     try {
-        const plan = await prisma.plan.findUnique({ where: { name: planName || 'Starter' } });
+        const plan = await prisma_1.default.plan.findUnique({ where: { name: planName || 'Starter' } });
         if (!plan)
             return res.status(400).json({ error: 'Invalid plan selected' });
-        const hashedPassword = await bcrypt.hash(password, 10);
+        const hashedPassword = await bcryptjs_1.default.hash(password, 10);
         const rawCode = `AX-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
-        const schoolCode = normalizeSchoolCode(rawCode);
-        const school = await prisma.school.create({
+        const schoolCode = (0, utils_1.normalizeSchoolCode)(rawCode);
+        const school = await prisma_1.default.school.create({
             data: {
                 name,
                 email: normalizedEmail,
@@ -98,8 +104,11 @@ router.post('/register', async (req, res) => {
                         role: 'SCHOOL_ADMIN',
                     },
                 },
+                schoolSetting: {
+                    create: {} // Create default setting
+                }
             },
-            include: { users: true },
+            include: { users: true, schoolSetting: true },
         });
         res.json({
             success: true,
@@ -116,7 +125,7 @@ router.post('/register', async (req, res) => {
  * @route   POST /api/auth/register-user
  * @desc    Public registration for students, parents, teachers, etc.
  */
-router.post('/register-user', authLimiter, validate(RegisterUserSchema), async (req, res) => {
+router.post('/register-user', rate_limit_1.authLimiter, (0, validation_1.validate)(auth_schema_1.RegisterUserSchema), async (req, res) => {
     const { email, password, name, role, phone, schoolCode, avatar, 
     // Role specific
     staffId, studentId, dob, gender, address, departmentId, metadata // For role-specific custom fields
@@ -125,23 +134,23 @@ router.post('/register-user', authLimiter, validate(RegisterUserSchema), async (
     try {
         let school = null;
         if (schoolCode) {
-            const normalizedCode = normalizeSchoolCode(schoolCode);
-            school = await prisma.school.findUnique({ where: { code: normalizedCode } });
+            const normalizedCode = (0, utils_1.normalizeSchoolCode)(schoolCode);
+            school = await prisma_1.default.school.findUnique({ where: { code: normalizedCode } });
             if (!school)
                 return res.status(404).json({ error: 'Invalid school code' });
         }
         else if (role !== 'PARENT' && role !== 'SUPPLIER') {
             return res.status(400).json({ error: 'School code is required for this role' });
         }
-        const hashedPassword = await bcrypt.hash(password, 10);
+        const hashedPassword = await bcryptjs_1.default.hash(password, 10);
         const finalRole = role.toUpperCase();
         const resolvedSchoolId = school ? school.id : null;
         // Handle avatar saving if provided as base64
-        const avatarFilename = avatar ? saveBase64Image(avatar, 'avatar', 'images', school?.code) : null;
+        const avatarFilename = avatar ? (0, file_utils_1.saveBase64Image)(avatar, 'avatar', 'images', school?.code) : null;
         // Define staff roles
         const STAFF_ROLES = ['TEACHER', 'BURSAR', 'LIBRARIAN', 'ANCILLARY', 'SCHOOL_ADMIN', 'CLINIC'];
         // Use transaction for atomic ID generation and record creation
-        const result = await prisma.$transaction(async (tx) => {
+        const result = await prisma_1.default.$transaction(async (tx) => {
             // 1. Resolve Class if grade name is provided (for direct registration)
             let resolvedClassId = req.body.classId || null;
             if (!resolvedClassId && req.body.grade && resolvedSchoolId) {
@@ -153,26 +162,26 @@ router.post('/register-user', authLimiter, validate(RegisterUserSchema), async (
                     resolvedClassId = schoolClass.id;
             }
             // 2. Generate IDs inside transaction
-            const generatedId = resolvedSchoolId ? await generateSequentialId(resolvedSchoolId, finalRole, tx) : null;
-            const globalId = (finalRole === 'SUPPLIER' || finalRole === 'PARENT') ? await generateSequentialId(null, finalRole, tx) : null;
+            const generatedId = resolvedSchoolId ? await (0, id_generator_1.generateSequentialId)(resolvedSchoolId, finalRole, tx) : null;
+            const globalId = (finalRole === 'SUPPLIER' || finalRole === 'PARENT') ? await (0, id_generator_1.generateSequentialId)(null, finalRole, tx) : null;
             // Handle Documents (Base64)
             const staffDocs = {};
             if (STAFF_ROLES.includes(finalRole)) {
                 if (req.body.idDoc)
-                    staffDocs.idDoc = saveBase64Image(req.body.idDoc, 'id', 'docs', school?.code, 'staff', generatedId || 'unknown');
+                    staffDocs.idDoc = (0, file_utils_1.saveBase64Image)(req.body.idDoc, 'id', 'docs', school?.code, 'staff', generatedId || 'unknown');
                 if (req.body.residenceDoc)
-                    staffDocs.residenceDoc = saveBase64Image(req.body.residenceDoc, 'residence', 'docs', school?.code, 'staff', generatedId || 'unknown');
+                    staffDocs.residenceDoc = (0, file_utils_1.saveBase64Image)(req.body.residenceDoc, 'residence', 'docs', school?.code, 'staff', generatedId || 'unknown');
                 if (req.body.qualificationsDoc)
-                    staffDocs.qualificationsDoc = saveBase64Image(req.body.qualificationsDoc, 'qual', 'docs', school?.code, 'staff', generatedId || 'unknown');
+                    staffDocs.qualificationsDoc = (0, file_utils_1.saveBase64Image)(req.body.qualificationsDoc, 'qual', 'docs', school?.code, 'staff', generatedId || 'unknown');
             }
             // Handle Student Documents (Base64)
             let transferCertificateUrl = null;
             let birthCertificateUrl = null;
             if (finalRole === 'STUDENT') {
                 if (req.body.transferCertificate)
-                    transferCertificateUrl = saveBase64Image(req.body.transferCertificate, 'transfer_cert', 'docs', school?.code, 'students', generatedId || 'unknown');
+                    transferCertificateUrl = (0, file_utils_1.saveBase64Image)(req.body.transferCertificate, 'transfer_cert', 'docs', school?.code, 'students', generatedId || 'unknown');
                 if (req.body.birthCertificate)
-                    birthCertificateUrl = saveBase64Image(req.body.birthCertificate, 'birth_cert', 'docs', school?.code, 'students', generatedId || 'unknown');
+                    birthCertificateUrl = (0, file_utils_1.saveBase64Image)(req.body.birthCertificate, 'birth_cert', 'docs', school?.code, 'students', generatedId || 'unknown');
             }
             // 3. Create User
             const user = await tx.user.create({
@@ -337,7 +346,7 @@ router.post('/register-user', authLimiter, validate(RegisterUserSchema), async (
                     if (student) {
                         let isApproved = false;
                         if (req.body.studentPassword && student.user) {
-                            isApproved = await bcrypt.compare(req.body.studentPassword, student.user.password);
+                            isApproved = await bcryptjs_1.default.compare(req.body.studentPassword, student.user.password);
                         }
                         await tx.parentStudent.create({
                             data: {
@@ -371,17 +380,17 @@ router.post('/register-user', authLimiter, validate(RegisterUserSchema), async (
  * @route   POST /api/auth/login
  * @desc    Authenticates a user and returns a token
  */
-router.post('/login', authLimiter, validate(LoginSchema), async (req, res) => {
+router.post('/login', rate_limit_1.authLimiter, (0, validation_1.validate)(auth_schema_1.LoginSchema), async (req, res) => {
     const { email, password, schoolCode } = req.body;
     if (!email || !password) {
         console.log('Login attempt failed: Missing email or password');
         return res.status(400).json({ error: 'Email and password are required' });
     }
     const normalizedEmail = email.trim().toLowerCase();
-    const normalizedCode = normalizeSchoolCode(schoolCode);
+    const normalizedCode = (0, utils_1.normalizeSchoolCode)(schoolCode);
     console.log(`Login attempt: email=${normalizedEmail}, code=${normalizedCode}`);
     try {
-        const user = await prisma.user.findUnique({
+        const user = await prisma_1.default.user.findFirst({
             where: { email: normalizedEmail },
             include: {
                 school: { include: { plan: true } },
@@ -399,22 +408,39 @@ router.post('/login', authLimiter, validate(LoginSchema), async (req, res) => {
         const isGlobalRole = userRole === 'SUPER_ADMIN' || userRole === 'PARENT' || userRole === 'SUPPLIER';
         console.log(`[Login] Role: ${userRole}, IsGlobal: ${isGlobalRole}, Code: ${normalizedCode}`);
         if (!user) {
-            return res.status(401).json({ error: 'Invalid credentials' });
+            return res.status(401).json({ error: "We couldn't find an account matching that email and password. Please check for typos and make sure Caps Lock is off." });
         }
         if (!isGlobalRole) {
             if (!normalizedCode) {
                 console.log('Login failed: Missing school code for non-global role');
-                return res.status(401).json({ error: 'School code is required for this account' });
+                return res.status(401).json({ error: "Please enter your School Access Code (e.g., AX-EMBAKWE) to log in. You can find this in your welcome email." });
             }
             if (user.school?.code !== normalizedCode) {
                 console.log(`Login failed: School code mismatch for [${normalizedEmail}]. Expected [${user.school?.code}], got [${normalizedCode}]`);
                 return res.status(401).json({ error: 'Invalid school code' });
             }
+            if (user.school?.status === 'suspended') {
+                return res.status(403).json({ error: 'Your school account is currently suspended. Please contact our support team to reactivate your access.' });
+            }
+            if (user.school?.status === 'deleted') {
+                return res.status(403).json({ error: 'Your school account has been deleted.' });
+            }
         }
-        const valid = await bcrypt.compare(password, user.password);
+        const valid = await bcryptjs_1.default.compare(password, user.password);
         if (!valid) {
             console.log(`Login failed: Password mismatch for [${normalizedEmail}]`);
-            return res.status(401).json({ error: 'Invalid credentials' });
+            if (user.schoolId) {
+                (0, security_logger_1.logSecurityEvent)({
+                    actorId: user.id,
+                    action: 'FAILED_LOGIN',
+                    entityType: 'User',
+                    entityId: user.id,
+                    details: { reason: 'Password mismatch' },
+                    schoolId: user.schoolId,
+                    ipAddress: req.ip
+                });
+            }
+            return res.status(401).json({ error: "We couldn't find an account matching that email and password. Please check for typos and make sure Caps Lock is off." });
         }
         // Check if account is locked
         if (user.isLocked) {
@@ -429,7 +455,17 @@ router.post('/login', authLimiter, validate(LoginSchema), async (req, res) => {
         if (diffDays >= PASSWORD_EXPIRY_DAYS) {
             changePasswordRequired = true;
         }
-        const token = jwt.sign({
+        // Create UserSession
+        const sessionExpiryHours = (userRole === 'BURSAR' || userRole === 'SCHOOL_ADMIN' || userRole === 'SUPER_ADMIN') ? 8 : 24;
+        const session = await prisma_1.default.userSession.create({
+            data: {
+                userId: user.id,
+                ipAddress: req.ip || null,
+                userAgent: req.headers['user-agent'] || null,
+                expiresAt: new Date(Date.now() + sessionExpiryHours * 60 * 60 * 1000)
+            }
+        });
+        const token = jsonwebtoken_1.default.sign({
             id: user.id,
             email: user.email,
             name: user.name,
@@ -437,8 +473,9 @@ router.post('/login', authLimiter, validate(LoginSchema), async (req, res) => {
             schoolId: user.schoolId,
             schoolCode: user.school?.code,
             staffId: user.staffId,
-            studentId: userRole === 'STUDENT' ? user.student?.studentId : undefined
-        }, JWT_SECRET, { expiresIn: '24h' });
+            studentId: userRole === 'STUDENT' ? user.student?.studentId : undefined,
+            sessionId: session.id
+        }, JWT_SECRET, { expiresIn: `${sessionExpiryHours}h` });
         // Populate linkedEntities for frontend compatibility
         let linkedEntities = [];
         if (userRole === 'SUPPLIER' && user.supplier) {
@@ -482,7 +519,7 @@ router.post('/login', authLimiter, validate(LoginSchema), async (req, res) => {
         });
         // Audit login
         if (user.schoolId) {
-            logSecurityEvent({ actorId: user.id, action: 'USER_LOGIN', entityType: 'User', entityId: user.id, details: { role: user.role, email: user.email }, schoolId: user.schoolId, ipAddress: req.ip });
+            (0, security_logger_1.logSecurityEvent)({ actorId: user.id, action: 'USER_LOGIN', entityType: 'User', entityId: user.id, details: { role: user.role, email: user.email }, schoolId: user.schoolId, ipAddress: req.ip });
         }
     }
     catch (error) {
@@ -491,20 +528,108 @@ router.post('/login', authLimiter, validate(LoginSchema), async (req, res) => {
     }
 });
 /**
+ * @route   POST /api/auth/logout
+ * @desc    Logs out user by invalidating their specific session
+ */
+router.post('/logout', auth_1.requireAuth, async (req, res) => {
+    try {
+        const sessionId = req.user?.sessionId;
+        if (sessionId) {
+            await prisma_1.default.userSession.update({
+                where: { id: sessionId },
+                data: { isValid: false }
+            });
+            if (req.user?.schoolId) {
+                (0, security_logger_1.logSecurityEvent)({
+                    actorId: req.user.id,
+                    action: 'USER_LOGOUT',
+                    entityType: 'UserSession',
+                    entityId: sessionId,
+                    details: { reason: 'Explicit logout' },
+                    schoolId: req.user.schoolId,
+                    ipAddress: req.ip
+                });
+            }
+        }
+        res.json({ success: true, message: 'Logged out successfully' });
+    }
+    catch (error) {
+        console.error('Logout error:', error);
+        res.status(500).json({ error: 'Failed to logout' });
+    }
+});
+/**
+ * @route   GET /api/auth/sessions
+ * @desc    Gets active sessions for the current user
+ */
+router.get('/sessions', auth_1.requireAuth, async (req, res) => {
+    try {
+        const sessions = await prisma_1.default.userSession.findMany({
+            where: {
+                userId: req.user.id,
+                isValid: true,
+                expiresAt: { gt: new Date() }
+            },
+            orderBy: { lastActiveAt: 'desc' }
+        });
+        res.json(sessions);
+    }
+    catch (error) {
+        console.error('Fetch sessions error:', error);
+        res.status(500).json({ error: 'Failed to fetch sessions' });
+    }
+});
+/**
+ * @route   DELETE /api/auth/sessions/:id
+ * @desc    Revokes a specific session
+ */
+router.delete('/sessions/:id', auth_1.requireAuth, async (req, res) => {
+    try {
+        const sessionId = req.params['id'];
+        const session = await prisma_1.default.userSession.findFirst({
+            where: { id: sessionId, userId: req.user.id }
+        });
+        if (!session) {
+            return res.status(404).json({ error: 'Session not found or already revoked' });
+        }
+        await prisma_1.default.userSession.update({
+            where: { id: sessionId },
+            data: { isValid: false }
+        });
+        if (req.user?.schoolId) {
+            (0, security_logger_1.logSecurityEvent)({
+                actorId: req.user.id,
+                action: 'REVOKE_SESSION',
+                entityType: 'UserSession',
+                entityId: sessionId,
+                details: { revokedSessionId: sessionId },
+                schoolId: req.user.schoolId,
+                ipAddress: req.ip
+            });
+        }
+        res.json({ success: true, message: 'Session revoked successfully' });
+    }
+    catch (error) {
+        console.error('Revoke session error:', error);
+        res.status(500).json({ error: 'Failed to revoke session' });
+    }
+});
+/**
  * @route   POST /api/auth/register-application
  * @desc    Submit an entrance application for prospective students
  */
-router.post('/register-application', async (req, res) => {
+router.post('/register-application', rate_limit_1.authLimiter, async (req, res) => {
     try {
         const { schoolCode, applicantName, email, phone, dob, gender, appType, notes, password, classId, entryCategory, academicData } = req.body;
-        const normalizedCode = normalizeSchoolCode(schoolCode);
-        const school = await prisma.school.findUnique({ where: { code: normalizedCode } });
+        const normalizedCode = (0, utils_1.normalizeSchoolCode)(schoolCode);
+        const school = await prisma_1.default.school.findUnique({ where: { code: normalizedCode } });
         if (!school)
             return res.status(404).json({ error: 'Invalid school code' });
-        const hashedPassword = await bcrypt.hash(password || 'Password123', 10);
-        const result = await prisma.$transaction(async (tx) => {
-            // 1. Generate human-readable Application ID
-            const applicationNumber = await generateSequentialId(school.id, 'APPLICATION', tx);
+        const randomPassword = password || crypto_1.default.randomBytes(8).toString('hex');
+        const hashedPassword = await bcryptjs_1.default.hash(randomPassword, 10);
+        const result = await prisma_1.default.$transaction(async (tx) => {
+            // 1. Generate unguessable Application ID to prevent enumeration
+            const applicationNumber = `APP-${crypto_1.default.randomBytes(4).toString('hex').toUpperCase()}`;
             // 2. Create User account for the applicant
             const user = await tx.user.create({
                 data: {
@@ -514,7 +639,8 @@ router.post('/register-application', async (req, res) => {
                     role: 'APPLICANT',
                     phone,
                     schoolId: school.id,
-                    staffId: applicationNumber
+                    staffId: applicationNumber,
+                    mustChangePassword: true
                 }
             });
             // 3. Create Application linked to the user
@@ -549,7 +675,7 @@ router.post('/register-application', async (req, res) => {
             // 4. Handle Documents
             if (req.body.documents && Array.isArray(req.body.documents)) {
                 for (const doc of req.body.documents) {
-                    const filename = saveBase64Image(doc.data, 'doc', 'docs', school.code, 'students', applicationNumber);
+                    const filename = (0, file_utils_1.saveBase64Image)(doc.data, 'doc', 'docs', school.code, 'students', applicationNumber);
                     if (filename) {
                         await tx.applicantDocument.create({
                             data: {
@@ -580,20 +706,21 @@ router.post('/register-application', async (req, res) => {
  * @route   GET /api/auth/application-status/:appId
  * @desc    Check the status of an application
  */
-router.get('/application-status/:appId', async (req, res) => {
+router.get('/application-status/:appId', rate_limit_1.authLimiter, async (req, res) => {
     const { appId } = req.params;
     const { schoolCode } = req.query;
+    const safeAppId = String(appId);
     try {
-        const application = await prisma.application.findFirst({
+        const application = await prisma_1.default.application.findFirst({
             where: {
                 OR: [
-                    { id: appId },
-                    { applicationNumber: appId }
+                    { id: safeAppId },
+                    { applicationNumber: safeAppId }
                 ]
             },
             include: {
                 timeline: { orderBy: { occurredAt: 'desc' } },
-                school: true
+                school: { select: { code: true } }
             }
         });
         if (application && (!schoolCode || application.school.code === schoolCode.toUpperCase())) {
@@ -605,16 +732,15 @@ router.get('/application-status/:appId', async (req, res) => {
             });
         }
         // Fallback: Check Job Applications
-        const jobApp = await prisma.jobApplication.findFirst({
-            where: { id: appId },
+        const jobApp = await prisma_1.default.jobApplication.findFirst({
+            where: { id: safeAppId },
             include: {
-                school: true,
-                vacancy: true
+                school: { select: { code: true } },
+                vacancy: { select: { jobTitle: true } }
             }
         });
         if (jobApp && (!schoolCode || jobApp.school.code === schoolCode.toUpperCase())) {
             const timeline = [];
-            // Submission event
             timeline.push({
                 id: 'applied',
                 occurredAt: jobApp.createdAt,
@@ -625,36 +751,16 @@ router.get('/application-status/:appId', async (req, res) => {
             if (status !== 'Applied') {
                 const updateDate = jobApp.updatedAt;
                 if (status === 'Under Review') {
-                    timeline.push({
-                        id: 'review',
-                        occurredAt: updateDate,
-                        event: 'Application Under Review',
-                        description: 'Recruitment team is reviewing your profile and credentials.'
-                    });
+                    timeline.push({ id: 'review', occurredAt: updateDate, event: 'Application Under Review', description: 'Recruitment team is reviewing your profile and credentials.' });
                 }
                 else if (status === 'Shortlisted' || status === 'Interviewing') {
-                    timeline.push({
-                        id: 'interview',
-                        occurredAt: updateDate,
-                        event: 'Shortlisted for Interview',
-                        description: 'You have been shortlisted. The recruitment team will reach out for interviews.'
-                    });
+                    timeline.push({ id: 'interview', occurredAt: updateDate, event: 'Shortlisted for Interview', description: 'You have been shortlisted. The recruitment team will reach out for interviews.' });
                 }
                 else if (status === 'Hired' || status === 'Accepted') {
-                    timeline.push({
-                        id: 'hired',
-                        occurredAt: updateDate,
-                        event: 'Application Approved (Hired)',
-                        description: 'Congratulations! You have been selected and hired for this position.'
-                    });
+                    timeline.push({ id: 'hired', occurredAt: updateDate, event: 'Application Approved (Hired)', description: 'Congratulations! You have been selected and hired for this position.' });
                 }
                 else if (status === 'Rejected') {
-                    timeline.push({
-                        id: 'rejected',
-                        occurredAt: updateDate,
-                        event: 'Application Closed',
-                        description: 'Thank you for your interest. We have decided to proceed with other candidates at this time.'
-                    });
+                    timeline.push({ id: 'rejected', occurredAt: updateDate, event: 'Application Closed', description: 'Thank you for your interest. We have decided to proceed with other candidates at this time.' });
                 }
             }
             timeline.sort((a, b) => new Date(b.occurredAt).getTime() - new Date(a.occurredAt).getTime());
@@ -676,14 +782,14 @@ router.get('/application-status/:appId', async (req, res) => {
  * @route   POST /api/auth/change-password
  * @desc    Mandatory or voluntary password update
  */
-router.post('/change-password', requireAuth, strictLimiter, async (req, res) => {
+router.post('/change-password', auth_1.requireAuth, rate_limit_1.strictLimiter, async (req, res) => {
     const { oldPassword, newPassword } = req.body;
     try {
-        const user = await prisma.user.findUnique({ where: { id: req.user.id } });
+        const user = await prisma_1.default.user.findFirst({ where: { id: req.user.id } });
         if (!user)
             return res.status(404).json({ error: 'User not found' });
         // Verify old password
-        const valid = await bcrypt.compare(oldPassword, user.password);
+        const valid = await bcryptjs_1.default.compare(oldPassword, user.password);
         if (!valid) {
             console.log(`[ChangePassword Error] ID: ${user.id}, Email: ${user.email}, Hashed start: ${user.password.substring(0, 10)}`);
             return res.status(400).json({ error: 'Current password provided is incorrect' });
@@ -694,8 +800,8 @@ router.post('/change-password', requireAuth, strictLimiter, async (req, res) => 
                 error: 'Password must be at least 8 characters long and include uppercase, lowercase, numbers, and symbols.'
             });
         }
-        const hashedNewPassword = await bcrypt.hash(newPassword, 10);
-        await prisma.user.update({
+        const hashedNewPassword = await bcryptjs_1.default.hash(newPassword, 10);
+        await prisma_1.default.user.update({
             where: { id: user.id },
             data: {
                 password: hashedNewPassword,
@@ -714,9 +820,9 @@ router.post('/change-password', requireAuth, strictLimiter, async (req, res) => 
  * @route   POST /api/auth/link-entity
  * @desc    Submit a connection request to a school (either Parent or Supplier)
  */
-router.post('/link-entity', requireAuth, async (req, res) => {
+router.post('/link-entity', auth_1.requireAuth, async (req, res) => {
     const { schoolCode, entityId, password } = req.body;
-    const user = await prisma.user.findUnique({
+    const user = await prisma_1.default.user.findFirst({
         where: { id: req.user.id },
         include: { supplier: true, parent: true }
     });
@@ -725,8 +831,8 @@ router.post('/link-entity', requireAuth, async (req, res) => {
     if (!schoolCode)
         return res.status(400).json({ error: 'School code is required' });
     try {
-        const normalizedCode = normalizeSchoolCode(schoolCode);
-        const school = await prisma.school.findUnique({ where: { code: normalizedCode } });
+        const normalizedCode = (0, utils_1.normalizeSchoolCode)(schoolCode);
+        const school = await prisma_1.default.school.findUnique({ where: { code: normalizedCode } });
         if (!school)
             return res.status(404).json({ error: 'School not found' });
         if (user.role === 'PARENT') {
@@ -736,18 +842,18 @@ router.post('/link-entity', requireAuth, async (req, res) => {
                 return res.status(400).json({ error: 'Student ID required' });
             if (!password)
                 return res.status(400).json({ error: 'Student portal password required for verification' });
-            const student = await prisma.student.findFirst({
+            const student = await prisma_1.default.student.findFirst({
                 where: { studentId: entityId, schoolId: school.id },
                 include: { user: true }
             });
             if (!student || !student.user) {
                 return res.status(404).json({ error: 'Student not found in this school' });
             }
-            const valid = await bcrypt.compare(password, student.user.password);
+            const valid = await bcryptjs_1.default.compare(password, student.user.password);
             if (!valid)
                 return res.status(401).json({ error: 'Incorrect student portal password' });
             // Create linked student record
-            await prisma.parentStudent.upsert({
+            await prisma_1.default.parentStudent.upsert({
                 where: {
                     parentId_studentId: {
                         parentId: user.parent.id,
@@ -765,7 +871,7 @@ router.post('/link-entity', requireAuth, async (req, res) => {
         else if (user.role === 'SUPPLIER') {
             if (!user.supplier)
                 return res.status(400).json({ error: 'Supplier record not found for this account' });
-            await prisma.schoolSupplier.upsert({
+            await prisma_1.default.schoolSupplier.upsert({
                 where: {
                     schoolId_supplierId: {
                         schoolId: school.id,
@@ -785,7 +891,7 @@ router.post('/link-entity', requireAuth, async (req, res) => {
         }
         // Fetch updated linked entities to return to frontend
         let linkedEntities = [];
-        const updatedUser = await prisma.user.findUnique({
+        const updatedUser = await prisma_1.default.user.findFirst({
             where: { id: user.id },
             include: {
                 supplier: { include: { schools: { include: { school: true } } } },
@@ -818,5 +924,5 @@ router.post('/link-entity', requireAuth, async (req, res) => {
         res.status(500).json({ error: 'Failed to link entity' });
     }
 });
-export default router;
+exports.default = router;
 //# sourceMappingURL=auth.js.map

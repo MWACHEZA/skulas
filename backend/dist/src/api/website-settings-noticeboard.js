@@ -1,10 +1,15 @@
-import express from 'express';
-import { requireAuth, requireRole } from '../middleware/auth';
-import prisma from '../lib/prisma';
-const router = express.Router();
-router.get('/', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCILLARY', 'STUDENT', 'TEACHER', 'PARENT'), async (req, res) => {
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = __importDefault(require("express"));
+const auth_1 = require("../middleware/auth");
+const prisma_1 = __importDefault(require("../lib/prisma"));
+const router = express_1.default.Router();
+router.get('/', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'ANCILLARY', 'STUDENT', 'TEACHER', 'PARENT'), async (req, res) => {
     try {
-        const noticeboards = await prisma.noticeboard.findMany({
+        const noticeboards = await prisma_1.default.noticeboard.findMany({
             where: { schoolId: req.user.schoolId },
             orderBy: { date: 'desc' }
         });
@@ -14,10 +19,10 @@ router.get('/', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCILLARY', 'STUDENT',
         res.status(500).json({ error: 'Failed to fetch noticeboard' });
     }
 });
-router.post('/', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCILLARY'), async (req, res) => {
+router.post('/', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'ANCILLARY'), async (req, res) => {
     try {
         const { title, content, date } = req.body;
-        const noticeboard = await prisma.noticeboard.create({
+        const noticeboard = await prisma_1.default.noticeboard.create({
             data: {
                 title,
                 content,
@@ -31,9 +36,9 @@ router.post('/', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCILLARY'), async (r
         res.status(500).json({ error: 'Failed to create noticeboard event' });
     }
 });
-router.delete('/:id', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCILLARY'), async (req, res) => {
+router.delete('/:id', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'ANCILLARY'), async (req, res) => {
     try {
-        await prisma.noticeboard.delete({
+        await prisma_1.default.noticeboard.delete({
             where: {
                 id: req.params.id,
                 schoolId: req.user.schoolId
@@ -45,5 +50,5 @@ router.delete('/:id', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCILLARY'), asy
         res.status(500).json({ error: 'Failed to delete noticeboard event' });
     }
 });
-export default router;
+exports.default = router;
 //# sourceMappingURL=website-settings-noticeboard.js.map

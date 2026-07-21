@@ -1,9 +1,12 @@
-import { ZodError } from 'zod';
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.validate = void 0;
+const zod_1 = require("zod");
 /**
  * Middleware factory: Validates request data against a Zod schema
  * Supports validating body, query, or params
  */
-export const validate = (schema) => {
+const validate = (schema) => {
     return async (req, res, next) => {
         try {
             await schema.parseAsync({
@@ -15,7 +18,7 @@ export const validate = (schema) => {
         }
         catch (error) {
             // Handle ZodError — use name check in case of multiple zod instances
-            const isZodError = error instanceof ZodError || error?.name === 'ZodError' || Array.isArray(error?.errors) || Array.isArray(error?.issues);
+            const isZodError = error instanceof zod_1.ZodError || error?.name === 'ZodError' || Array.isArray(error?.errors) || Array.isArray(error?.issues);
             const zodIssues = error.issues || error.errors;
             if (isZodError && zodIssues) {
                 const failures = zodIssues.map((err) => ({
@@ -31,4 +34,5 @@ export const validate = (schema) => {
         }
     };
 };
+exports.validate = validate;
 //# sourceMappingURL=validation.js.map

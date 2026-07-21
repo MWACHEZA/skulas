@@ -1,5 +1,12 @@
-import fs from 'fs';
-import path from 'path';
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.saveBase64Image = saveBase64Image;
+exports.renameEntityDir = renameEntityDir;
+const fs_1 = __importDefault(require("fs"));
+const path_1 = __importDefault(require("path"));
 /**
  * Saves a base64 encoded image to a structured directory
  * @param base64 String (data:image/png;base64,...)
@@ -10,7 +17,7 @@ import path from 'path';
  * @param entityId Optional specific entity ID (Human ID)
  * @returns Standardized path (relative to storage/) or null
  */
-export function saveBase64Image(base64, prefix, subDir = 'images', schoolCode = 'global', entityType, entityId) {
+function saveBase64Image(base64, prefix, subDir = 'images', schoolCode = 'global', entityType, entityId) {
     if (!base64 || !base64.includes(';base64,'))
         return null;
     try {
@@ -24,20 +31,20 @@ export function saveBase64Image(base64, prefix, subDir = 'images', schoolCode = 
         // Structure: storage/[schoolCode]/[entityType]/[entityId]/[subDir]/[filename]
         let relativeDir = '';
         if (entityType && entityId) {
-            relativeDir = path.join(schoolCode, entityType, entityId, subDir);
+            relativeDir = path_1.default.join(schoolCode, entityType, entityId, subDir);
         }
         else {
-            relativeDir = path.join(schoolCode, subDir);
+            relativeDir = path_1.default.join(schoolCode, subDir);
         }
-        const uploadDir = path.join(__dirname, '../../storage', relativeDir);
+        const uploadDir = path_1.default.join(__dirname, '../../storage', relativeDir);
         // Ensure directory exists
-        if (!fs.existsSync(uploadDir)) {
-            fs.mkdirSync(uploadDir, { recursive: true });
+        if (!fs_1.default.existsSync(uploadDir)) {
+            fs_1.default.mkdirSync(uploadDir, { recursive: true });
         }
-        const filePath = path.join(uploadDir, filename);
-        fs.writeFileSync(filePath, buffer);
+        const filePath = path_1.default.join(uploadDir, filename);
+        fs_1.default.writeFileSync(filePath, buffer);
         // Return the relative path stored in DB
-        return path.join(relativeDir, filename).replace(/\\/g, '/');
+        return path_1.default.join(relativeDir, filename).replace(/\\/g, '/');
     }
     catch (error) {
         console.error('Failed to save base64 image:', error);
@@ -47,17 +54,17 @@ export function saveBase64Image(base64, prefix, subDir = 'images', schoolCode = 
 /**
  * Renames an entity directory (e.g. moving from applicant number to student ID)
  */
-export function renameEntityDir(schoolCode, entityType, oldId, newId) {
+function renameEntityDir(schoolCode, entityType, oldId, newId) {
     try {
-        const oldPath = path.join(__dirname, '../../storage', schoolCode, entityType, oldId);
-        const newPath = path.join(__dirname, '../../storage', schoolCode, entityType, newId);
-        if (fs.existsSync(oldPath) && !fs.existsSync(newPath)) {
+        const oldPath = path_1.default.join(__dirname, '../../storage', schoolCode, entityType, oldId);
+        const newPath = path_1.default.join(__dirname, '../../storage', schoolCode, entityType, newId);
+        if (fs_1.default.existsSync(oldPath) && !fs_1.default.existsSync(newPath)) {
             // Ensure parent of newPath exists
-            const parentDir = path.dirname(newPath);
-            if (!fs.existsSync(parentDir)) {
-                fs.mkdirSync(parentDir, { recursive: true });
+            const parentDir = path_1.default.dirname(newPath);
+            if (!fs_1.default.existsSync(parentDir)) {
+                fs_1.default.mkdirSync(parentDir, { recursive: true });
             }
-            fs.renameSync(oldPath, newPath);
+            fs_1.default.renameSync(oldPath, newPath);
             return true;
         }
         return false;

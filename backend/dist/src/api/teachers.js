@@ -1,15 +1,22 @@
-import { Router } from 'express';
-import prisma from '../lib/prisma';
-import { requireAuth, requireRole } from '../middleware/auth';
-import { assignmentUpload } from '../middleware/upload';
-const router = Router();
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const prisma_1 = __importDefault(require("../lib/prisma"));
+const auth_1 = require("../middleware/auth");
+const upload_1 = require("../middleware/upload");
+const validation_1 = require("../middleware/validation");
+const teacher_schema_1 = require("../schemas/teacher.schema");
+const router = (0, express_1.Router)();
 /**
  * @route   GET /api/teachers
  * @desc    [ADMIN] Get all teachers with user details
  */
-router.get('/', requireAuth, requireRole('SCHOOL_ADMIN'), async (req, res) => {
+router.get('/', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN'), async (req, res) => {
     try {
-        const teachers = await prisma.teacher.findMany({
+        const teachers = await prisma_1.default.teacher.findMany({
             where: { schoolId: req.user.schoolId },
             include: {
                 user: {
@@ -38,10 +45,38 @@ router.get('/', requireAuth, requireRole('SCHOOL_ADMIN'), async (req, res) => {
     }
 });
 /**
+ * @route   DELETE /api/teachers/:id
+ * @desc    [ADMIN] Delete a teacher and their user account
+ */
+router.delete('/:id', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'SUPER_ADMIN'), async (req, res) => {
+    try {
+        const teacher = await prisma_1.default.teacher.findFirst({
+            where: { id: req.params.id },
+            select: { userId: true }
+        });
+        if (!teacher) {
+            return res.status(404).json({ error: 'Teacher not found' });
+        }
+        if (teacher.userId === req.user.id) {
+            return res.status(400).json({ error: 'Cannot delete your own account' });
+        }
+        // Since onDelete: Cascade is configured in the schema for User -> Teacher,
+        // deleting the User will also delete the Teacher profile.
+        await prisma_1.default.user.delete({
+            where: { id: teacher.userId }
+        });
+        res.json({ success: true, message: 'Teacher deleted successfully' });
+    }
+    catch (error) {
+        console.error('Delete teacher error:', error);
+        res.status(500).json({ error: 'Failed to delete teacher' });
+    }
+});
+/**
  * @route   POST /api/teachers/assignments
  * @desc    [TEACHER] Create a new assignment for a specific class with optional attachment
  */
-router.post('/assignments', requireAuth, requireRole('TEACHER', 'SCHOOL_ADMIN'), assignmentUpload.array('files', 5), async (req, res) => {
+router.post('/assignments', auth_1.requireAuth, (0, auth_1.requireRole)('TEACHER', 'SCHOOL_ADMIN'), upload_1.assignmentUpload.array('files', 5), (0, validation_1.validate)(teacher_schema_1.CreateAssignmentSchema), async (req, res) => {
     const { title, description, subjectId, classId, dueDate, maxScore, category, timeLimit, allowLate, questions // JSON string if provided
      } = req.body;
     // Handle multiple file storage
@@ -53,10 +88,10 @@ router.post('/assignments', requireAuth, requireRole('TEACHER', 'SCHOOL_ADMIN'),
     })) : [];
     try {
         // Find teacher record
-        const teacher = await prisma.teacher.findUnique({ where: { userId: req.user.id } });
+        const teacher = await prisma_1.default.teacher.findFirst({ where: { userId: req.user.id } });
         if (!teacher)
             return res.status(404).json({ error: 'Teacher record not found' });
-        const assignment = await prisma.assignment.create({
+        const assignment = await prisma_1.default.assignment.create({
             data: {
                 title,
                 description,
@@ -84,11 +119,11 @@ router.post('/assignments', requireAuth, requireRole('TEACHER', 'SCHOOL_ADMIN'),
  * @route   PATCH /api/teachers/assignments/:id/toggle-status
  * @desc    [TEACHER] Manually open or close submissions for an assignment
  */
-router.patch('/assignments/:id/toggle-status', requireAuth, requireRole('TEACHER', 'SCHOOL_ADMIN'), async (req, res) => {
+router.patch('/assignments/:id/toggle-status', auth_1.requireAuth, (0, auth_1.requireRole)('TEACHER', 'SCHOOL_ADMIN'), (0, validation_1.validate)(teacher_schema_1.UpdateAssignmentAcceptingSchema), async (req, res) => {
     const id = req.params.id;
     const { isAccepting } = req.body;
     try {
-        const assignment = await prisma.assignment.update({
+        const assignment = await prisma_1.default.assignment.update({
             where: { id },
             data: { isAccepting }
         });
@@ -102,12 +137,12 @@ router.patch('/assignments/:id/toggle-status', requireAuth, requireRole('TEACHER
  * @route   GET /api/teachers/assignments
  * @desc    [TEACHER] List assignments created by the teacher
  */
-router.get('/assignments', requireAuth, requireRole('TEACHER', 'SCHOOL_ADMIN'), async (req, res) => {
+router.get('/assignments', auth_1.requireAuth, (0, auth_1.requireRole)('TEACHER', 'SCHOOL_ADMIN'), async (req, res) => {
     try {
-        const teacher = await prisma.teacher.findUnique({ where: { userId: req.user.id } });
+        const teacher = await prisma_1.default.teacher.findFirst({ where: { userId: req.user.id } });
         if (!teacher)
             return res.status(404).json({ error: 'Teacher record not found' });
-        const assignments = await prisma.assignment.findMany({
+        const assignments = await prisma_1.default.assignment.findMany({
             where: { teacherId: teacher.id },
             include: {
                 class: { select: { name: true } },
@@ -126,10 +161,10 @@ router.get('/assignments', requireAuth, requireRole('TEACHER', 'SCHOOL_ADMIN'), 
  * @route   GET /api/teachers/assignments/:id
  * @desc    [TEACHER] Get details of a single assignment
  */
-router.get('/assignments/:id', requireAuth, requireRole('TEACHER', 'SCHOOL_ADMIN'), async (req, res) => {
+router.get('/assignments/:id', auth_1.requireAuth, (0, auth_1.requireRole)('TEACHER', 'SCHOOL_ADMIN'), async (req, res) => {
     const id = req.params.id;
     try {
-        const assignment = await prisma.assignment.findUnique({
+        const assignment = await prisma_1.default.assignment.findFirst({
             where: { id },
             include: {
                 class: { select: { name: true } },
@@ -146,10 +181,10 @@ router.get('/assignments/:id', requireAuth, requireRole('TEACHER', 'SCHOOL_ADMIN
  * @route   GET /api/teachers/assignments/:id/submissions
  * @desc    [TEACHER] Get all student submissions for an assignment
  */
-router.get('/assignments/:id/submissions', requireAuth, requireRole('TEACHER', 'SCHOOL_ADMIN'), async (req, res) => {
+router.get('/assignments/:id/submissions', auth_1.requireAuth, (0, auth_1.requireRole)('TEACHER', 'SCHOOL_ADMIN'), async (req, res) => {
     const id = req.params.id;
     try {
-        const submissions = await prisma.assignmentSubmission.findMany({
+        const submissions = await prisma_1.default.assignmentSubmission.findMany({
             where: { assignmentId: id },
             include: {
                 student: { include: { user: { select: { name: true } } } }
@@ -166,11 +201,11 @@ router.get('/assignments/:id/submissions', requireAuth, requireRole('TEACHER', '
  * @route   POST /api/teachers/submissions/:id/grade
  * @desc    [TEACHER] Record a grade and feedback for a submission
  */
-router.post('/submissions/:id/grade', requireAuth, requireRole('TEACHER', 'SCHOOL_ADMIN'), async (req, res) => {
+router.post('/submissions/:id/grade', auth_1.requireAuth, (0, auth_1.requireRole)('TEACHER', 'SCHOOL_ADMIN'), (0, validation_1.validate)(teacher_schema_1.GradeSubmissionSchema), async (req, res) => {
     const id = req.params.id;
     const { grade, feedback } = req.body;
     try {
-        const submission = await prisma.assignmentSubmission.update({
+        const submission = await prisma_1.default.assignmentSubmission.update({
             where: { id },
             data: {
                 grade: parseFloat(grade),
@@ -189,24 +224,49 @@ router.post('/submissions/:id/grade', requireAuth, requireRole('TEACHER', 'SCHOO
  * @route   POST /api/teachers/attendance/mark-bulk
  * @desc    [TEACHER] Bulk record attendance for a class
  */
-router.post('/attendance/mark-bulk', requireAuth, requireRole('TEACHER', 'SCHOOL_ADMIN'), async (req, res) => {
-    const { date, records } = req.body; // records: [{ studentId, status, note }]
+router.post('/attendance/mark-bulk', auth_1.requireAuth, (0, auth_1.requireRole)('TEACHER', 'SCHOOL_ADMIN'), (0, validation_1.validate)(teacher_schema_1.BulkAttendanceSchema), async (req, res) => {
+    const { date, records, classId } = req.body; // records: [{ studentId, status, note }]
     try {
-        const teacher = await prisma.teacher.findUnique({ where: { userId: req.user.id } });
+        const teacher = await prisma_1.default.teacher.findFirst({ where: { userId: req.user.id } });
         if (!teacher)
             return res.status(404).json({ error: 'Teacher record not found' });
-        const results = await Promise.all(records.map(async (rec) => {
-            return prisma.attendance.create({
-                data: {
+        // Use loop with findFirst + create/update instead of upsert to handle classId gracefully
+        const results = [];
+        for (const rec of records) {
+            const existing = await prisma_1.default.attendance.findFirst({
+                where: {
                     schoolId: req.user.schoolId,
                     studentId: rec.studentId,
-                    teacherId: teacher.id,
                     date: new Date(date),
-                    status: rec.status,
-                    note: rec.note
+                    classId: classId || null
                 }
             });
-        }));
+            if (existing) {
+                const updated = await prisma_1.default.attendance.update({
+                    where: { id: existing.id },
+                    data: {
+                        status: rec.status.toLowerCase(),
+                        note: rec.note || null,
+                        teacherId: teacher.id
+                    }
+                });
+                results.push(updated);
+            }
+            else {
+                const created = await prisma_1.default.attendance.create({
+                    data: {
+                        schoolId: req.user.schoolId,
+                        date: new Date(date),
+                        studentId: rec.studentId,
+                        teacherId: teacher.id,
+                        classId: classId || null,
+                        status: rec.status.toLowerCase(),
+                        note: rec.note || null
+                    }
+                });
+                results.push(created);
+            }
+        }
         res.json({ success: true, count: results.length });
     }
     catch (error) {
@@ -218,37 +278,46 @@ router.post('/attendance/mark-bulk', requireAuth, requireRole('TEACHER', 'SCHOOL
  * @route   POST /api/teachers/textbooks/issue
  * @desc    [TEACHER] Bulk issue a textbook to a specific class
  */
-router.post('/textbooks/issue', requireAuth, requireRole('TEACHER', 'SCHOOL_ADMIN'), async (req, res) => {
+router.post('/textbooks/issue', auth_1.requireAuth, (0, auth_1.requireRole)('TEACHER', 'SCHOOL_ADMIN'), (0, validation_1.validate)(teacher_schema_1.AssignBookSchema), async (req, res) => {
     const { bookId, classId, dueDate } = req.body;
     const schoolId = req.user.schoolId;
     try {
-        const students = await prisma.student.findMany({
+        const students = await prisma_1.default.student.findMany({
             where: { classId, schoolId }
         });
         if (students.length === 0)
             return res.status(400).json({ error: 'No students found in selected class' });
         // Check availability
-        const book = await prisma.book.findUnique({ where: { id: bookId } });
+        const book = await prisma_1.default.book.findFirst({ where: { id: bookId } });
         if (!book || book.available < students.length) {
             return res.status(400).json({ error: `Not enough copies available. Need ${students.length}, have ${book?.available || 0}` });
         }
-        // Create loans
-        const loans = await Promise.all(students.map(student => prisma.bookLoan.create({
-            data: {
-                schoolId,
-                bookId,
-                studentId: student.id,
-                dueDate: new Date(dueDate),
-                loanType: 'TEXTBOOK',
-                status: 'borrowed'
+        await prisma_1.default.$transaction(async (tx) => {
+            // Re-read availability inside the transaction to prevent concurrent over-issuance
+            const book = await tx.book.findFirst({ where: { id: bookId } });
+            if (!book || book.available < students.length) {
+                throw new Error(`Not enough copies available. Need ${students.length}, have ${book?.available || 0}`);
             }
-        })));
-        // Update available count
-        await prisma.book.update({
-            where: { id: bookId },
-            data: { available: { decrement: students.length } }
+            // Create loans inside the transaction
+            for (const student of students) {
+                await tx.bookLoan.create({
+                    data: {
+                        schoolId,
+                        bookId,
+                        studentId: student.id,
+                        dueDate: new Date(dueDate),
+                        loanType: 'TEXTBOOK',
+                        status: 'borrowed'
+                    }
+                });
+            }
+            // Atomically decrement available count
+            await tx.book.update({
+                where: { id: bookId },
+                data: { available: { decrement: students.length } }
+            });
         });
-        res.json({ success: true, count: loans.length });
+        res.json({ success: true, count: students.length });
     }
     catch (error) {
         console.error('Textbook issue error:', error);
@@ -259,14 +328,14 @@ router.post('/textbooks/issue', requireAuth, requireRole('TEACHER', 'SCHOOL_ADMI
  * @route   GET /api/teachers/textbooks
  * @desc    [TEACHER] Get school books list for issuance
  */
-router.get('/textbooks', requireAuth, requireRole('TEACHER', 'SCHOOL_ADMIN'), async (req, res) => {
+router.get('/textbooks', auth_1.requireAuth, (0, auth_1.requireRole)('TEACHER', 'SCHOOL_ADMIN'), async (req, res) => {
     try {
         const schoolId = req.user.schoolId;
         const role = req.user.role;
         let whereClause = { schoolId };
         if (role === 'TEACHER') {
             // Check if they are HOD
-            const headedDepts = await prisma.department.findMany({
+            const headedDepts = await prisma_1.default.department.findMany({
                 where: { schoolId, headId: req.user.id }
             });
             const isHod = headedDepts.length > 0;
@@ -280,7 +349,7 @@ router.get('/textbooks', requireAuth, requireRole('TEACHER', 'SCHOOL_ADMIN'), as
                 };
             }
             else {
-                const teacher = await prisma.teacher.findUnique({ where: { userId: req.user.id } });
+                const teacher = await prisma_1.default.teacher.findFirst({ where: { userId: req.user.id } });
                 if (!teacher) {
                     return res.json([]);
                 }
@@ -290,7 +359,7 @@ router.get('/textbooks', requireAuth, requireRole('TEACHER', 'SCHOOL_ADMIN'), as
                 };
             }
         }
-        const books = await prisma.book.findMany({
+        const books = await prisma_1.default.book.findMany({
             where: whereClause,
             include: {
                 teacher: { select: { user: { select: { name: true } } } },
@@ -321,18 +390,18 @@ router.get('/textbooks', requireAuth, requireRole('TEACHER', 'SCHOOL_ADMIN'), as
  * @route   GET /api/teachers/my-classes
  * @desc    [TEACHER] Get classes assigned to teacher (as class teacher or subject teacher)
  */
-router.get('/my-classes', requireAuth, requireRole('TEACHER'), async (req, res) => {
+router.get('/my-classes', auth_1.requireAuth, (0, auth_1.requireRole)('TEACHER'), async (req, res) => {
     try {
-        const teacher = await prisma.teacher.findUnique({ where: { userId: req.user.id } });
+        const teacher = await prisma_1.default.teacher.findFirst({ where: { userId: req.user.id } });
         if (!teacher)
             return res.status(404).json({ error: 'Teacher record not found' });
         // Classes where they are the Class Teacher
-        const homeroomClasses = await prisma.schoolClass.findMany({
+        const homeroomClasses = await prisma_1.default.schoolClass.findMany({
             where: { teacherId: teacher.id },
             include: { _count: { select: { students: true } } }
         });
         // Classes where they are a Subject Teacher
-        const subjectAssignments = await prisma.classSubjectTeacher.findMany({
+        const subjectAssignments = await prisma_1.default.classSubjectTeacher.findMany({
             where: { teacherId: teacher.id },
             include: {
                 class: { include: { _count: { select: { students: true } } } },
@@ -370,10 +439,10 @@ router.get('/my-classes', requireAuth, requireRole('TEACHER'), async (req, res) 
  * @route   GET /api/teachers/my-students
  * @desc    [TEACHER] Get students in a specific class assigned to the teacher
  */
-router.get('/my-students', requireAuth, requireRole('TEACHER'), async (req, res) => {
+router.get('/my-students', auth_1.requireAuth, (0, auth_1.requireRole)('TEACHER'), async (req, res) => {
     const { classId } = req.query;
     try {
-        const students = await prisma.student.findMany({
+        const students = await prisma_1.default.student.findMany({
             where: {
                 schoolId: req.user.schoolId,
                 classId: classId || undefined
@@ -394,10 +463,10 @@ router.get('/my-students', requireAuth, requireRole('TEACHER'), async (req, res)
  * @route   GET /api/teachers/:id/load
  * @desc    [ADMIN] Get professional load for a teacher
  */
-router.get('/:id/load', requireAuth, requireRole('SCHOOL_ADMIN'), async (req, res) => {
+router.get('/:id/load', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN'), async (req, res) => {
     const teacherId = req.params.id;
     try {
-        const teacher = await prisma.teacher.findUnique({
+        const teacher = await prisma_1.default.teacher.findFirst({
             where: { id: teacherId },
             include: {
                 user: { select: { name: true, email: true } },
@@ -420,18 +489,18 @@ router.get('/:id/load', requireAuth, requireRole('SCHOOL_ADMIN'), async (req, re
  * @route   POST /api/teachers/:id/load/assign
  * @desc    [ADMIN] Assign teacher to class/subject
  */
-router.post('/:id/load/assign', requireAuth, requireRole('SCHOOL_ADMIN'), async (req, res) => {
+router.post('/:id/load/assign', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN'), (0, validation_1.validate)(teacher_schema_1.AssignTeacherClassSchema), async (req, res) => {
     const { classId, subjectId, isClassTeacher } = req.body;
     const teacherId = req.params.id;
     try {
         if (isClassTeacher) {
-            await prisma.schoolClass.update({
+            await prisma_1.default.schoolClass.update({
                 where: { id: classId },
                 data: { teacherId: teacherId }
             });
         }
         if (subjectId) {
-            await prisma.classSubjectTeacher.upsert({
+            await prisma_1.default.classSubjectTeacher.upsert({
                 where: {
                     classId_subjectId_teacherId: {
                         classId: classId,
@@ -457,18 +526,18 @@ router.post('/:id/load/assign', requireAuth, requireRole('SCHOOL_ADMIN'), async 
  * @route   DELETE /api/teachers/:id/load/unassign
  * @desc    [ADMIN] Unassign teacher from class/subject
  */
-router.post('/:id/load/unassign', requireAuth, requireRole('SCHOOL_ADMIN'), async (req, res) => {
+router.post('/:id/load/unassign', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN'), (0, validation_1.validate)(teacher_schema_1.AssignTeacherClassSchema), async (req, res) => {
     const { classId, subjectId, isClassTeacher } = req.body;
     const teacherId = req.params.id;
     try {
         if (isClassTeacher) {
-            await prisma.schoolClass.update({
+            await prisma_1.default.schoolClass.update({
                 where: { id: classId },
                 data: { teacherId: null }
             });
         }
         if (subjectId) {
-            await prisma.classSubjectTeacher.deleteMany({
+            await prisma_1.default.classSubjectTeacher.deleteMany({
                 where: {
                     classId: classId,
                     subjectId: subjectId,
@@ -482,33 +551,5 @@ router.post('/:id/load/unassign', requireAuth, requireRole('SCHOOL_ADMIN'), asyn
         res.status(500).json({ error: 'Failed to unassign teacher' });
     }
 });
-/**
- * @route   POST /api/teachers/attendance/mark-bulk
- * @desc    [TEACHER] Mark bulk attendance for students
- */
-router.post('/attendance/mark-bulk', requireAuth, requireRole('TEACHER'), async (req, res) => {
-    const { date, records } = req.body; // records: [{ studentId, status, note }]
-    const userId = req.user.id;
-    try {
-        const teacher = await prisma.teacher.findUnique({ where: { userId } });
-        if (!teacher)
-            return res.status(404).json({ error: 'Teacher record not found' });
-        await prisma.$transaction(records.map((rec) => prisma.attendance.create({
-            data: {
-                schoolId: req.user.schoolId,
-                date: new Date(date),
-                studentId: rec.studentId,
-                teacherId: teacher.id,
-                status: rec.status.toLowerCase(),
-                note: rec.note || null
-            }
-        })));
-        res.json({ success: true, message: 'Attendance recorded successfully' });
-    }
-    catch (error) {
-        console.error('Bulk attendance error:', error);
-        res.status(500).json({ error: 'Failed to record attendance' });
-    }
-});
-export default router;
+exports.default = router;
 //# sourceMappingURL=teachers.js.map

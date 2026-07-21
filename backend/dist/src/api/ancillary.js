@@ -1,20 +1,25 @@
-import { Router } from 'express';
-import prisma from '../lib/prisma';
-import { requireAuth, requireRole } from '../middleware/auth';
-const router = Router();
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const prisma_1 = __importDefault(require("../lib/prisma"));
+const auth_1 = require("../middleware/auth");
+const router = (0, express_1.Router)();
 // ═══════════ HOSTELS & BOARDING ═══════════
-router.get('/hostel-categories', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCILLARY'), async (req, res) => {
+router.get('/hostel-categories', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'ANCILLARY'), async (req, res) => {
     try {
-        const categories = await prisma.hostelCategory.findMany({ where: { schoolId: req.user.schoolId } });
+        const categories = await prisma_1.default.hostelCategory.findMany({ where: { schoolId: req.user.schoolId } });
         res.json(categories);
     }
     catch (error) {
         res.status(500).json({ error: 'Failed to fetch hostel categories' });
     }
 });
-router.post('/hostel-categories', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCILLARY'), async (req, res) => {
+router.post('/hostel-categories', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'ANCILLARY'), async (req, res) => {
     try {
-        const category = await prisma.hostelCategory.create({
+        const category = await prisma_1.default.hostelCategory.create({
             data: { ...req.body, schoolId: req.user.schoolId }
         });
         res.json(category);
@@ -23,27 +28,27 @@ router.post('/hostel-categories', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCI
         res.status(500).json({ error: 'Failed to create hostel category' });
     }
 });
-router.delete('/hostel-categories/:id', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCILLARY'), async (req, res) => {
+router.delete('/hostel-categories/:id', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'ANCILLARY'), async (req, res) => {
     try {
-        await prisma.hostelCategory.delete({ where: { id: req.params.id } });
+        await prisma_1.default.hostelCategory.delete({ where: { id: req.params.id } });
         res.json({ success: true });
     }
     catch (error) {
         res.status(500).json({ error: 'Failed to delete hostel category' });
     }
 });
-router.get('/hostel-rooms', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCILLARY'), async (req, res) => {
+router.get('/hostel-rooms', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'ANCILLARY'), async (req, res) => {
     try {
-        const rooms = await prisma.hostelRoom.findMany({ where: { schoolId: req.user.schoolId } });
+        const rooms = await prisma_1.default.hostelRoom.findMany({ where: { schoolId: req.user.schoolId } });
         res.json(rooms);
     }
     catch (error) {
         res.status(500).json({ error: 'Failed to fetch hostel rooms' });
     }
 });
-router.post('/hostel-rooms', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCILLARY'), async (req, res) => {
+router.post('/hostel-rooms', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'ANCILLARY'), async (req, res) => {
     try {
-        const room = await prisma.hostelRoom.create({
+        const room = await prisma_1.default.hostelRoom.create({
             data: {
                 ...req.body,
                 numberOfBeds: parseInt(req.body.numberOfBeds) || 0,
@@ -57,18 +62,18 @@ router.post('/hostel-rooms', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCILLARY
         res.status(500).json({ error: 'Failed to create hostel room' });
     }
 });
-router.delete('/hostel-rooms/:id', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCILLARY'), async (req, res) => {
+router.delete('/hostel-rooms/:id', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'ANCILLARY'), async (req, res) => {
     try {
-        await prisma.hostelRoom.delete({ where: { id: req.params.id } });
+        await prisma_1.default.hostelRoom.delete({ where: { id: req.params.id } });
         res.json({ success: true });
     }
     catch (error) {
         res.status(500).json({ error: 'Failed to delete hostel room' });
     }
 });
-router.get('/hostels', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCILLARY', 'TEACHER'), async (req, res) => {
+router.get('/hostels', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'ANCILLARY', 'TEACHER'), async (req, res) => {
     try {
-        const hostels = await prisma.hostel.findMany({
+        const hostels = await prisma_1.default.hostel.findMany({
             where: { schoolId: req.user.schoolId },
             include: {
                 category: true,
@@ -82,9 +87,9 @@ router.get('/hostels', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCILLARY', 'TE
         res.status(500).json({ error: 'Failed to fetch hostels' });
     }
 });
-router.post('/hostels', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCILLARY'), async (req, res) => {
+router.post('/hostels', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'ANCILLARY'), async (req, res) => {
     try {
-        const hostel = await prisma.hostel.create({
+        const hostel = await prisma_1.default.hostel.create({
             data: {
                 name: req.body.name,
                 categoryId: req.body.categoryId,
@@ -101,9 +106,9 @@ router.post('/hostels', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCILLARY'), a
         res.status(500).json({ error: 'Failed to create hostel' });
     }
 });
-router.delete('/hostels/:id', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCILLARY'), async (req, res) => {
+router.delete('/hostels/:id', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'ANCILLARY'), async (req, res) => {
     try {
-        await prisma.hostel.delete({ where: { id: req.params.id } });
+        await prisma_1.default.hostel.delete({ where: { id: req.params.id } });
         res.json({ success: true });
     }
     catch (error) {
@@ -111,10 +116,10 @@ router.delete('/hostels/:id', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCILLAR
     }
 });
 // Boarding Assignments
-router.post('/boarding/assign', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCILLARY'), async (req, res) => {
+router.post('/boarding/assign', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'ANCILLARY'), async (req, res) => {
     try {
         const { studentId, hostelId } = req.body;
-        await prisma.student.update({
+        await prisma_1.default.student.update({
             where: { id: studentId },
             data: { hostelId, boardingStatus: 'Boarder' }
         });
@@ -129,12 +134,12 @@ router.post('/boarding/assign', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCILL
  * @route   POST /api/ancillary/boarding/log
  * @desc    Record a boarding movement (Sign-out, Sign-in, etc)
  */
-router.post('/boarding/log', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCILLARY', 'TEACHER'), async (req, res) => {
+router.post('/boarding/log', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'ANCILLARY', 'TEACHER'), async (req, res) => {
     const { studentId, type, reason } = req.body;
     const schoolId = req.user.schoolId;
     const userId = req.user.id;
     try {
-        const log = await prisma.boardingLog.create({
+        const log = await prisma_1.default.boardingLog.create({
             data: {
                 studentId,
                 type,
@@ -156,10 +161,10 @@ router.post('/boarding/log', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCILLARY
  * @route   GET /api/ancillary/visitors
  * @desc    Get current day's visitors
  */
-router.get('/visitors', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCILLARY'), async (req, res) => {
+router.get('/visitors', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'ANCILLARY'), async (req, res) => {
     const schoolId = req.user.schoolId;
     try {
-        const visitors = await prisma.visitorLog.findMany({
+        const visitors = await prisma_1.default.visitorLog.findMany({
             where: { schoolId },
             orderBy: { entryTime: 'desc' }
         });
@@ -174,12 +179,12 @@ router.get('/visitors', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCILLARY'), a
  * @route   POST /api/ancillary/visitors
  * @desc    Record a new visitor entry
  */
-router.post('/visitors', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCILLARY'), async (req, res) => {
+router.post('/visitors', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'ANCILLARY'), async (req, res) => {
     const { name, phone, purpose, vehicleReg } = req.body;
     const schoolId = req.user.schoolId;
     const guardId = req.user.id;
     try {
-        const visitor = await prisma.visitorLog.create({
+        const visitor = await prisma_1.default.visitorLog.create({
             data: { name, phone, purpose, vehicleReg, guardId, schoolId }
         });
         res.json(visitor);
@@ -193,10 +198,10 @@ router.post('/visitors', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCILLARY'), 
  * @route   GET /api/ancillary/menu/current
  * @desc    Get the menu starting this week
  */
-router.get('/menu/current', requireAuth, async (req, res) => {
+router.get('/menu/current', auth_1.requireAuth, async (req, res) => {
     const schoolId = req.user.schoolId;
     try {
-        const menu = await prisma.weeklyMenu.findFirst({
+        const menu = await prisma_1.default.weeklyMenu.findFirst({
             where: { schoolId, published: true },
             orderBy: { weekStarting: 'desc' }
         });
@@ -210,11 +215,11 @@ router.get('/menu/current', requireAuth, async (req, res) => {
  * @route   POST /api/ancillary/menu
  * @desc    Create/Update a weekly menu
  */
-router.post('/menu', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR', 'ANCILLARY'), async (req, res) => {
+router.post('/menu', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'BURSAR', 'ANCILLARY'), async (req, res) => {
     const { weekStarting, menuData, published } = req.body;
     const schoolId = req.user.schoolId;
     try {
-        const menu = await prisma.weeklyMenu.create({
+        const menu = await prisma_1.default.weeklyMenu.create({
             data: {
                 weekStarting: new Date(weekStarting),
                 menuData,
@@ -228,5 +233,5 @@ router.post('/menu', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR', 'ANCILLA
         res.status(500).json({ error: 'Failed to save menu' });
     }
 });
-export default router;
+exports.default = router;
 //# sourceMappingURL=ancillary.js.map

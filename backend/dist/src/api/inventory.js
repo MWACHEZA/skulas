@@ -1,14 +1,19 @@
-import { Router } from 'express';
-import prisma from '../lib/prisma';
-import { requireAuth, requireRole } from '../middleware/auth';
-const router = Router();
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const prisma_1 = __importDefault(require("../lib/prisma"));
+const auth_1 = require("../middleware/auth");
+const router = (0, express_1.Router)();
 /**
  * @route   GET /api/inventory/products
  * @desc    [BURSAR/ADMIN] Get all physical products
  */
-router.get('/products', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req, res) => {
+router.get('/products', auth_1.requireAuth, (0, auth_1.requireRole)('BURSAR', 'SCHOOL_ADMIN'), async (req, res) => {
     try {
-        const products = await prisma.physicalProduct.findMany({
+        const products = await prisma_1.default.physicalProduct.findMany({
             where: { schoolId: String(req.user.schoolId) },
             orderBy: { name: 'asc' }
         });
@@ -22,7 +27,7 @@ router.get('/products', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), asyn
  * @route   POST /api/inventory/products
  * @desc    [BURSAR/ADMIN] Create or update physical product
  */
-router.post('/products', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req, res) => {
+router.post('/products', auth_1.requireAuth, (0, auth_1.requireRole)('BURSAR', 'SCHOOL_ADMIN'), async (req, res) => {
     const { id, name, unit, quantity, price } = req.body;
     const schoolId = req.user.schoolId;
     try {
@@ -35,18 +40,18 @@ router.post('/products', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), asy
         };
         let product;
         if (id) {
-            const existing = await prisma.physicalProduct.findFirst({
+            const existing = await prisma_1.default.physicalProduct.findFirst({
                 where: { id: id, schoolId }
             });
             if (!existing)
                 return res.status(403).json({ error: 'Unauthorized' });
-            product = await prisma.physicalProduct.update({
+            product = await prisma_1.default.physicalProduct.update({
                 where: { id: id },
                 data
             });
         }
         else {
-            product = await prisma.physicalProduct.create({ data });
+            product = await prisma_1.default.physicalProduct.create({ data });
         }
         res.json(product);
     }
@@ -58,9 +63,9 @@ router.post('/products', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), asy
  * @route   DELETE /api/inventory/products/:id
  * @desc    [BURSAR/ADMIN] Delete physical product
  */
-router.delete('/products/:id', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req, res) => {
+router.delete('/products/:id', auth_1.requireAuth, (0, auth_1.requireRole)('BURSAR', 'SCHOOL_ADMIN'), async (req, res) => {
     try {
-        await prisma.physicalProduct.deleteMany({
+        await prisma_1.default.physicalProduct.deleteMany({
             where: { id: req.params.id, schoolId: req.user.schoolId }
         });
         res.json({ success: true });
@@ -73,21 +78,21 @@ router.delete('/products/:id', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'
  * @route   POST /api/inventory/bill
  * @desc    [BURSAR/ADMIN] Bill physical products to students in selected classes
  */
-router.post('/bill', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req, res) => {
+router.post('/bill', auth_1.requireAuth, (0, auth_1.requireRole)('BURSAR', 'SCHOOL_ADMIN'), async (req, res) => {
     const { productAssignments, classIds, year, billingType } = req.body;
     const schoolId = req.user.schoolId;
     // productAssignments: Array<{ productId: string, expectedQty: number }>
     try {
-        const products = await prisma.physicalProduct.findMany({
+        const products = await prisma_1.default.physicalProduct.findMany({
             where: { id: { in: productAssignments.map((p) => p.productId) }, schoolId }
         });
-        const students = await prisma.student.findMany({
+        const students = await prisma_1.default.student.findMany({
             where: { classId: { in: classIds }, schoolId },
             select: { id: true, name: true }
         });
         if (students.length === 0)
             return res.status(400).json({ error: 'No students found in selected classes' });
-        const results = await prisma.$transaction(async (tx) => {
+        const results = await prisma_1.default.$transaction(async (tx) => {
             let createdCount = 0;
             for (const assignment of productAssignments) {
                 const product = products.find(p => p.id === assignment.productId);
@@ -123,9 +128,9 @@ router.post('/bill', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (
  * @route   GET /api/inventory/consumption
  * @desc    [BURSAR/ADMIN] Get consumption logs
  */
-router.get('/consumption', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req, res) => {
+router.get('/consumption', auth_1.requireAuth, (0, auth_1.requireRole)('BURSAR', 'SCHOOL_ADMIN'), async (req, res) => {
     try {
-        const logs = await prisma.physicalProductConsumption.findMany({
+        const logs = await prisma_1.default.physicalProductConsumption.findMany({
             where: { schoolId: req.user.schoolId },
             include: { product: true },
             orderBy: { date: 'desc' }
@@ -140,12 +145,12 @@ router.get('/consumption', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), a
  * @route   POST /api/inventory/consumption
  * @desc    [BURSAR/ADMIN] Log consumption and update stock
  */
-router.post('/consumption', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req, res) => {
+router.post('/consumption', auth_1.requireAuth, (0, auth_1.requireRole)('BURSAR', 'SCHOOL_ADMIN'), async (req, res) => {
     const { consumptions, requestedBy, date } = req.body;
     const schoolId = req.user.schoolId;
     // consumptions: Array<{ productId: string, quantity: number }>
     try {
-        await prisma.$transaction(async (tx) => {
+        await prisma_1.default.$transaction(async (tx) => {
             for (const item of consumptions) {
                 if (item.quantity <= 0)
                     continue;
@@ -159,11 +164,14 @@ router.post('/consumption', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), 
                         schoolId
                     }
                 });
-                // Update stock
-                await tx.physicalProduct.update({
-                    where: { id: item.productId, schoolId },
+                // Update stock atomically and strictly fail if insufficient
+                const stockUpdate = await tx.physicalProduct.updateMany({
+                    where: { id: item.productId, schoolId, quantity: { gte: item.quantity } },
                     data: { quantity: { decrement: item.quantity } }
                 });
+                if (stockUpdate.count === 0) {
+                    throw new Error(`Insufficient stock for product ID: ${item.productId}`);
+                }
             }
         });
         res.json({ success: true });
@@ -172,5 +180,5 @@ router.post('/consumption', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), 
         res.status(500).json({ error: 'Failed to log consumption: ' + error.message });
     }
 });
-export default router;
+exports.default = router;
 //# sourceMappingURL=inventory.js.map

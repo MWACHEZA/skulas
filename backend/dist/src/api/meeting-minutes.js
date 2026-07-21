@@ -1,13 +1,18 @@
-import { Router } from 'express';
-import path from 'path';
-import prisma from '../lib/prisma';
-import { requireAuth } from '../middleware/auth';
-import { reportUpload } from '../middleware/upload';
-const router = Router();
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const path_1 = __importDefault(require("path"));
+const prisma_1 = __importDefault(require("../lib/prisma"));
+const auth_1 = require("../middleware/auth");
+const upload_1 = require("../middleware/upload");
+const router = (0, express_1.Router)();
 // Get all meeting minutes for the school
-router.get('/', requireAuth, async (req, res) => {
+router.get('/', auth_1.requireAuth, async (req, res) => {
     try {
-        const list = await prisma.meetingMinutes.findMany({
+        const list = await prisma_1.default.meetingMinutes.findMany({
             where: { schoolId: req.user.schoolId },
             orderBy: { date: 'desc' }
         });
@@ -19,7 +24,7 @@ router.get('/', requireAuth, async (req, res) => {
     }
 });
 // Create/Upload a new meeting minutes record
-router.post('/', requireAuth, reportUpload.single('file'), async (req, res) => {
+router.post('/', auth_1.requireAuth, upload_1.reportUpload.single('file'), async (req, res) => {
     try {
         const { date, title, attendees, status } = req.body;
         const file = req.file;
@@ -27,9 +32,9 @@ router.post('/', requireAuth, reportUpload.single('file'), async (req, res) => {
             return res.status(400).json({ error: 'Missing required fields' });
         }
         const documentUrl = file
-            ? path.join(req.uploadCategoryPath || '', file.filename).replace(/\\/g, '/')
+            ? path_1.default.join(req.uploadCategoryPath || '', file.filename).replace(/\\/g, '/')
             : null;
-        const minutes = await prisma.meetingMinutes.create({
+        const minutes = await prisma_1.default.meetingMinutes.create({
             data: {
                 schoolId: req.user.schoolId,
                 date: new Date(date),
@@ -47,10 +52,10 @@ router.post('/', requireAuth, reportUpload.single('file'), async (req, res) => {
     }
 });
 // Delete meeting minutes record
-router.delete('/:id', requireAuth, async (req, res) => {
+router.delete('/:id', auth_1.requireAuth, async (req, res) => {
     const { id } = req.params;
     try {
-        await prisma.meetingMinutes.deleteMany({
+        await prisma_1.default.meetingMinutes.deleteMany({
             where: {
                 id: id,
                 schoolId: req.user.schoolId
@@ -63,5 +68,5 @@ router.delete('/:id', requireAuth, async (req, res) => {
         res.status(500).json({ error: 'Failed to delete meeting minutes' });
     }
 });
-export default router;
+exports.default = router;
 //# sourceMappingURL=meeting-minutes.js.map

@@ -45,13 +45,12 @@ export default function TakeExam() {
   };
 
   const handleSubmit = async () => {
-    if (!(await toastConfirm('Are you sure you want to submit your exam?'))) return;
+    if (!window.confirm('Are you sure you want to submit your exam?')) return;
     try {
       setSubmitting(true);
-      // We don't have the submit endpoint yet, so this is just a placeholder
-      // await api.post(`/api/cbt/${examId}/submit`, { responses: answers });
+      await api.post(`/api/cbt/${examId}/submit`, { responses: answers });
       showToast('Exam submitted successfully!', 'success');
-      navigate(-1);
+      navigate('/student/cbt');
     } catch (err: any) {
       showToast(err.response?.data?.error || 'Failed to submit exam', 'error');
     } finally {

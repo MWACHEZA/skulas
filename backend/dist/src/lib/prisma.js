@@ -1,8 +1,11 @@
-import { PrismaClient } from '../generated/client';
-import { AsyncLocalStorage } from 'async_hooks';
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.tenantStorage = void 0;
+const client_1 = require("../generated/client");
+const async_hooks_1 = require("async_hooks");
 // Storage for the current institution's context (schoolId)
-export const tenantStorage = new AsyncLocalStorage();
-const basePrisma = new PrismaClient();
+exports.tenantStorage = new async_hooks_1.AsyncLocalStorage();
+const basePrisma = new client_1.PrismaClient();
 /**
  * ACADEX Zero-Trust Tenant Extension
  * Automatically injects schoolId filters into all queries for tenant-scoped models.
@@ -11,7 +14,7 @@ const prisma = basePrisma.$extends({
     query: {
         $allModels: {
             async $allOperations({ model, operation, args, query }) {
-                const context = tenantStorage.getStore();
+                const context = exports.tenantStorage.getStore();
                 // Define which models are school-scoped (tenant-isolated)
                 const tenantScopedModels = [
                     'Student', 'Teacher', 'User', 'SchoolClass', 'Subject',
@@ -26,7 +29,19 @@ const prisma = basePrisma.$extends({
                     'UniformItem', 'UniformStockOrder', 'UniformStockOrderItem', 'UniformSale', 'UniformSaleItem', 'UniformSupplierPayment',
                     'PhysicalProduct', 'PhysicalProductConsumption', 'FeeReminderLog', 'CommunicationLog',
                     'PayrollRun', 'PayrollEntry', 'StudentPayment', 'FeeGroup', 'RevenueAllocation',
-                    'QuestionPaper', 'PaymentMethod'
+                    'QuestionPaper', 'PaymentMethod',
+                    // Newly added from audit
+                    'GradingScale', 'HostelCategory', 'HostelRoom', 'Section', 'StaffAttendance', 'TimetableSlot',
+                    'AuditLog', 'StudentHouse', 'ChaplaincyEvent', 'Holiday', 'LibraryCategory', 'SchoolSetting',
+                    'PaymentPlan', 'SportingEquipment', 'SchoolSupplier', 'Message', 'SupportTicket', 'StaffLeave',
+                    'SchoolEvent', 'TuckshopItem', 'TuckshopSale', 'DigitalResource', 'Syllabus', 'LessonPlan',
+                    'SalaryStub', 'ShiftAssignment', 'ReportTemplate', 'AdmissionInquiry', 'PhoneCallLog', 'FrontOfficeComplaint',
+                    'PayrollAllowance', 'PayrollDeduction', 'TaxTable', 'TaxBand', 'TermlyComment', 'CBTExam',
+                    'LiveClass', 'Award', 'Course', 'StudyMaterial', 'WebsiteSettings', 'WebsiteInquiry',
+                    'Noticeboard', 'Vacancy', 'JobApplication', 'SchoolVehicle', 'SchoolTransport', 'MeetingMinutes',
+                    'ProjectFunding', 'ClinicAppointment', 'ClinicComplaint', 'ClinicEmergency', 'ClinicImmunization', 'ClinicReferral',
+                    'FarmLivestockBatch', 'FarmCropCycle', 'FarmInventoryItem', 'DiningHallReport', 'PrefectDuty', 'PrefectMeeting',
+                    'PrefectReport', 'NotificationQueue'
                 ];
                 if (context?.schoolId && tenantScopedModels.includes(model)) {
                     // Wrap operations that use 'where'
@@ -68,5 +83,5 @@ const prisma = basePrisma.$extends({
         }
     }
 });
-export default prisma;
+exports.default = prisma;
 //# sourceMappingURL=prisma.js.map

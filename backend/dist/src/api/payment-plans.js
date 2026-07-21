@@ -1,16 +1,21 @@
-import { Router } from 'express';
-import prisma from '../lib/prisma';
-import { requireAuth, requireRole } from '../middleware/auth';
-const router = Router();
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const prisma_1 = __importDefault(require("../lib/prisma"));
+const auth_1 = require("../middleware/auth");
+const router = (0, express_1.Router)();
 // Submit a new payment plan (Parent)
-router.post('/', requireAuth, requireRole('PARENT'), async (req, res) => {
+router.post('/', auth_1.requireAuth, (0, auth_1.requireRole)('PARENT'), async (req, res) => {
     try {
         const { studentId, amount, dueDate, notes, isPredefined } = req.body;
         if (!studentId || !amount || !dueDate) {
             return res.status(400).json({ error: 'Student ID, amount, and due date are required' });
         }
         // Verify parent is linked to this student
-        const connection = await prisma.parentStudent.findFirst({
+        const connection = await prisma_1.default.parentStudent.findFirst({
             where: {
                 studentId,
                 parent: { userId: req.user.id }
@@ -19,7 +24,7 @@ router.post('/', requireAuth, requireRole('PARENT'), async (req, res) => {
         if (!connection) {
             return res.status(403).json({ error: 'You are not authorized to create a payment plan for this student' });
         }
-        const plan = await prisma.paymentPlan.create({
+        const plan = await prisma_1.default.paymentPlan.create({
             data: {
                 schoolId: req.user.schoolId,
                 studentId,
@@ -41,9 +46,9 @@ router.post('/', requireAuth, requireRole('PARENT'), async (req, res) => {
     }
 });
 // Get payment plans for logged-in parent
-router.get('/my', requireAuth, requireRole('PARENT'), async (req, res) => {
+router.get('/my', auth_1.requireAuth, (0, auth_1.requireRole)('PARENT'), async (req, res) => {
     try {
-        const plans = await prisma.paymentPlan.findMany({
+        const plans = await prisma_1.default.paymentPlan.findMany({
             where: {
                 parentUserId: req.user.id,
                 schoolId: req.user.schoolId
@@ -67,9 +72,9 @@ router.get('/my', requireAuth, requireRole('PARENT'), async (req, res) => {
     }
 });
 // Admin get all payment plans for the school
-router.get('/admin', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR'), async (req, res) => {
+router.get('/admin', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'BURSAR'), async (req, res) => {
     try {
-        const plans = await prisma.paymentPlan.findMany({
+        const plans = await prisma_1.default.paymentPlan.findMany({
             where: {
                 schoolId: req.user.schoolId
             },
@@ -95,7 +100,7 @@ router.get('/admin', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR'), async (
         const updatedPlans = await Promise.all(plans.map(async (plan) => {
             if (plan.status === 'APPROVED' && today > new Date(plan.dueDate)) {
                 // Check outstanding fee balance
-                const fees = await prisma.fee.findMany({
+                const fees = await prisma_1.default.fee.findMany({
                     where: { studentId: plan.studentId }
                 });
                 const totalFees = fees.reduce((sum, f) => sum + f.amount, 0);
@@ -103,7 +108,7 @@ router.get('/admin', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR'), async (
                 const balance = totalFees - totalPaid;
                 if (balance > 0) {
                     // Update db status to OVERDUE
-                    const updated = await prisma.paymentPlan.update({
+                    const updated = await prisma_1.default.paymentPlan.update({
                         where: { id: plan.id },
                         data: { status: 'OVERDUE' },
                         include: {
@@ -124,20 +129,20 @@ router.get('/admin', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR'), async (
     }
 });
 // Approve / Reject payment plans (Admin)
-router.patch('/:id/status', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR'), async (req, res) => {
+router.patch('/:id/status', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'BURSAR'), async (req, res) => {
     try {
         const { status, notes } = req.body;
         const { id } = req.params;
         if (!['APPROVED', 'REJECTED', 'PAID', 'PENDING'].includes(status)) {
             return res.status(400).json({ error: 'Invalid status' });
         }
-        const plan = await prisma.paymentPlan.findUnique({
+        const plan = await prisma_1.default.paymentPlan.findFirst({
             where: { id: id }
         });
         if (!plan || plan.schoolId !== req.user.schoolId) {
             return res.status(404).json({ error: 'Payment plan not found' });
         }
-        const updated = await prisma.paymentPlan.update({
+        const updated = await prisma_1.default.paymentPlan.update({
             where: { id: id },
             data: {
                 status,
@@ -157,9 +162,9 @@ router.patch('/:id/status', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR'), 
     }
 });
 // Fetch all predefined templates
-router.get('/templates', requireAuth, async (req, res) => {
+router.get('/templates', auth_1.requireAuth, async (req, res) => {
     try {
-        const school = await prisma.school.findUnique({
+        const school = await prisma_1.default.school.findUnique({
             where: { id: req.user.schoolId },
             select: { settings: true }
         });
@@ -173,13 +178,13 @@ router.get('/templates', requireAuth, async (req, res) => {
     }
 });
 // Create/Update predefined template
-router.post('/templates', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR'), async (req, res) => {
+router.post('/templates', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'BURSAR'), async (req, res) => {
     try {
         const { id, name, amount, notes, dueDate } = req.body;
         if (!name || !amount) {
             return res.status(400).json({ error: 'Name and amount are required' });
         }
-        const school = await prisma.school.findUnique({
+        const school = await prisma_1.default.school.findUnique({
             where: { id: req.user.schoolId }
         });
         if (!school) {
@@ -207,7 +212,7 @@ router.post('/templates', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR'), as
             templates.push(newPlan);
         }
         settings.predefinedPlans = templates;
-        await prisma.school.update({
+        await prisma_1.default.school.update({
             where: { id: req.user.schoolId },
             data: { settings }
         });
@@ -219,10 +224,10 @@ router.post('/templates', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR'), as
     }
 });
 // Delete predefined template
-router.delete('/templates/:id', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR'), async (req, res) => {
+router.delete('/templates/:id', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'BURSAR'), async (req, res) => {
     try {
         const { id } = req.params;
-        const school = await prisma.school.findUnique({
+        const school = await prisma_1.default.school.findUnique({
             where: { id: req.user.schoolId }
         });
         if (!school) {
@@ -232,7 +237,7 @@ router.delete('/templates/:id', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR
         let templates = settings.predefinedPlans || [];
         templates = templates.filter((t) => t.id !== id);
         settings.predefinedPlans = templates;
-        await prisma.school.update({
+        await prisma_1.default.school.update({
             where: { id: req.user.schoolId },
             data: { settings }
         });
@@ -243,5 +248,5 @@ router.delete('/templates/:id', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR
         res.status(500).json({ error: 'Failed to delete template' });
     }
 });
-export default router;
+exports.default = router;
 //# sourceMappingURL=payment-plans.js.map

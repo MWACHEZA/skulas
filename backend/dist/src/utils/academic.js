@@ -1,3 +1,13 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.calculateUniversityDivision = calculateUniversityDivision;
+exports.calculateGradePoint = calculateGradePoint;
+exports.calculateGPA = calculateGPA;
+exports.determineAcademicStanding = determineAcademicStanding;
+exports.calculateIndustrialAttachmentMark = calculateIndustrialAttachmentMark;
+exports.generateCourseCode = generateCourseCode;
+exports.getLevelFromCode = getLevelFromCode;
+exports.checkUniversityEligibility = checkUniversityEligibility;
 /**
  * NUST Zimbabwean University Division Mapping
  *
@@ -19,7 +29,7 @@
  * 50-59   | Pass        | 1.0
  * 0-49    | Fail        | 0.0
  */
-export function calculateUniversityDivision(score, level = 'UNDERGRADUATE') {
+function calculateUniversityDivision(score, level = 'UNDERGRADUATE') {
     if (level === 'UNDERGRADUATE') {
         if (score >= 75)
             return '1';
@@ -46,7 +56,7 @@ export function calculateUniversityDivision(score, level = 'UNDERGRADUATE') {
     // Research Degrees (MPhil/PhD) are usually non-classified
     return score >= 50 ? 'Pass' : 'Fail';
 }
-export function calculateGradePoint(score, level = 'UNDERGRADUATE') {
+function calculateGradePoint(score, level = 'UNDERGRADUATE') {
     if (level === 'UNDERGRADUATE') {
         if (score >= 75)
             return 4.0;
@@ -69,7 +79,7 @@ export function calculateGradePoint(score, level = 'UNDERGRADUATE') {
         return 1.0;
     return 0.0;
 }
-export function calculateGPA(grades, level = 'UNDERGRADUATE') {
+function calculateGPA(grades, level = 'UNDERGRADUATE') {
     if (grades.length === 0)
         return 0.0;
     let totalPoints = 0;
@@ -82,7 +92,7 @@ export function calculateGPA(grades, level = 'UNDERGRADUATE') {
     });
     return totalCredits > 0 ? parseFloat((totalPoints / totalCredits).toFixed(2)) : 0.0;
 }
-export function determineAcademicStanding(results, previousFailsCount = 0) {
+function determineAcademicStanding(results, previousFailsCount = 0) {
     const totalModules = results.length;
     if (totalModules === 0)
         return { standing: 'Normal', reasons: [] };
@@ -129,7 +139,7 @@ export function determineAcademicStanding(results, previousFailsCount = 0) {
  * INDUSTRIAL ATTACHMENT GRADING
  * 50% CA + 50% Final (40% Report + 10% Oral)
  */
-export function calculateIndustrialAttachmentMark(scores) {
+function calculateIndustrialAttachmentMark(scores) {
     const ca = (scores.industrialSup + scores.academicSup) / 2;
     const final = (scores.report * 0.8) + (scores.oral * 0.2); // 40/50 for report, 10/50 for oral relative to the 50% final block
     // Real weights: 
@@ -148,7 +158,7 @@ export function calculateIndustrialAttachmentMark(scores) {
  * 8: MPhil
  * 9: PhD
  */
-export function generateCourseCode(deptCode, part, sequence, level = 'UNDERGRADUATE') {
+function generateCourseCode(deptCode, part, sequence, level = 'UNDERGRADUATE') {
     const cleanDept = deptCode.toUpperCase().substring(0, 3);
     let partDigit = part;
     if (level === 'PG_DIPLOMA' || level === 'MASTERS_TAUGHT' || level === 'MASTERS_RESEARCH') {
@@ -166,7 +176,7 @@ export function generateCourseCode(deptCode, part, sequence, level = 'UNDERGRADU
 /**
  * Extract level from course code
  */
-export function getLevelFromCode(code) {
+function getLevelFromCode(code) {
     const digits = code.match(/\d+/);
     if (!digits)
         return 1;
@@ -200,7 +210,7 @@ const OVERLAP_GROUPS = [
     ['Social Science', 'Sociology'],
     ['Zoology', 'Human Biology', 'Health Science']
 ];
-export function checkUniversityEligibility(criteria) {
+function checkUniversityEligibility(criteria) {
     const reasons = [];
     const flags = [];
     // 1. Overlap Filtering Helper

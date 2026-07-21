@@ -1,17 +1,22 @@
-import express from 'express';
-import { requireAuth } from '../middleware/auth';
-import prisma from '../lib/prisma';
-const router = express.Router();
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = __importDefault(require("express"));
+const auth_1 = require("../middleware/auth");
+const prisma_1 = __importDefault(require("../lib/prisma"));
+const router = express_1.default.Router();
 // Helper to check user scope for fetching records
 async function getAccessibleUserIds(req) {
     const user = req.user;
-    if (['SCHOOL_ADMIN', 'CLINIC', 'TEACHER', 'BURSAR', 'LIBRARIAN', 'ANCILLARY'].includes(user.role)) {
-        // Staff can access all records in the school
+    if (['SCHOOL_ADMIN', 'SUPER_ADMIN', 'CLINIC'].includes(user.role)) {
+        // Clinic staff and admins can access all records in the school
         return null;
     }
     if (user.role === 'PARENT') {
         // Parents can access their own and their linked children's records
-        const linked = await prisma.parentStudent.findMany({
+        const linked = await prisma_1.default.parentStudent.findMany({
             where: { parent: { userId: user.id } },
             select: { student: { select: { userId: true } } }
         });
@@ -22,10 +27,10 @@ async function getAccessibleUserIds(req) {
     return [user.id];
 }
 // ── APPOINTMENTS ──
-router.get('/appointments', requireAuth, async (req, res) => {
+router.get('/appointments', auth_1.requireAuth, async (req, res) => {
     try {
         const userIds = await getAccessibleUserIds(req);
-        const appointments = await prisma.clinicAppointment.findMany({
+        const appointments = await prisma_1.default.clinicAppointment.findMany({
             where: {
                 schoolId: req.user.schoolId,
                 ...(userIds ? { userId: { in: userIds } } : {})
@@ -41,10 +46,10 @@ router.get('/appointments', requireAuth, async (req, res) => {
         res.status(500).json({ error: 'Failed to fetch appointments' });
     }
 });
-router.post('/appointments', requireAuth, async (req, res) => {
+router.post('/appointments', auth_1.requireAuth, async (req, res) => {
     const { appointment, symptoms, medicine, date, targetUserId } = req.body;
     try {
-        const newAppointment = await prisma.clinicAppointment.create({
+        const newAppointment = await prisma_1.default.clinicAppointment.create({
             data: {
                 appointment,
                 symptoms,
@@ -60,14 +65,14 @@ router.post('/appointments', requireAuth, async (req, res) => {
         res.status(500).json({ error: 'Failed to create appointment' });
     }
 });
-router.delete('/appointments/:id', requireAuth, async (req, res) => {
+router.delete('/appointments/:id', auth_1.requireAuth, async (req, res) => {
     try {
-        const record = await prisma.clinicAppointment.findFirst({
+        const record = await prisma_1.default.clinicAppointment.findFirst({
             where: { id: req.params.id, schoolId: req.user.schoolId }
         });
         if (!record)
             return res.status(404).json({ error: 'Record not found' });
-        await prisma.clinicAppointment.delete({ where: { id: record.id } });
+        await prisma_1.default.clinicAppointment.delete({ where: { id: record.id } });
         res.json({ success: true });
     }
     catch (error) {
@@ -75,10 +80,10 @@ router.delete('/appointments/:id', requireAuth, async (req, res) => {
     }
 });
 // ── COMPLAINTS ──
-router.get('/complaints', requireAuth, async (req, res) => {
+router.get('/complaints', auth_1.requireAuth, async (req, res) => {
     try {
         const userIds = await getAccessibleUserIds(req);
-        const complaints = await prisma.clinicComplaint.findMany({
+        const complaints = await prisma_1.default.clinicComplaint.findMany({
             where: {
                 schoolId: req.user.schoolId,
                 ...(userIds ? { userId: { in: userIds } } : {})
@@ -94,10 +99,10 @@ router.get('/complaints', requireAuth, async (req, res) => {
         res.status(500).json({ error: 'Failed to fetch complaints' });
     }
 });
-router.post('/complaints', requireAuth, async (req, res) => {
+router.post('/complaints', auth_1.requireAuth, async (req, res) => {
     const { title, symptoms, date, medicine, targetUserId } = req.body;
     try {
-        const newComplaint = await prisma.clinicComplaint.create({
+        const newComplaint = await prisma_1.default.clinicComplaint.create({
             data: {
                 title,
                 symptoms,
@@ -113,14 +118,14 @@ router.post('/complaints', requireAuth, async (req, res) => {
         res.status(500).json({ error: 'Failed to create complaint' });
     }
 });
-router.delete('/complaints/:id', requireAuth, async (req, res) => {
+router.delete('/complaints/:id', auth_1.requireAuth, async (req, res) => {
     try {
-        const record = await prisma.clinicComplaint.findFirst({
+        const record = await prisma_1.default.clinicComplaint.findFirst({
             where: { id: req.params.id, schoolId: req.user.schoolId }
         });
         if (!record)
             return res.status(404).json({ error: 'Record not found' });
-        await prisma.clinicComplaint.delete({ where: { id: record.id } });
+        await prisma_1.default.clinicComplaint.delete({ where: { id: record.id } });
         res.json({ success: true });
     }
     catch (error) {
@@ -128,9 +133,9 @@ router.delete('/complaints/:id', requireAuth, async (req, res) => {
     }
 });
 // ── EMERGENCIES ──
-router.get('/emergencies', requireAuth, async (req, res) => {
+router.get('/emergencies', auth_1.requireAuth, async (req, res) => {
     try {
-        const emergencies = await prisma.clinicEmergency.findMany({
+        const emergencies = await prisma_1.default.clinicEmergency.findMany({
             where: { schoolId: req.user.schoolId },
             orderBy: { date: 'desc' }
         });
@@ -140,10 +145,10 @@ router.get('/emergencies', requireAuth, async (req, res) => {
         res.status(500).json({ error: 'Failed to fetch emergencies' });
     }
 });
-router.post('/emergencies', requireAuth, async (req, res) => {
+router.post('/emergencies', auth_1.requireAuth, async (req, res) => {
     const { title, details, date, time } = req.body;
     try {
-        const newEmergency = await prisma.clinicEmergency.create({
+        const newEmergency = await prisma_1.default.clinicEmergency.create({
             data: {
                 title,
                 details,
@@ -158,14 +163,14 @@ router.post('/emergencies', requireAuth, async (req, res) => {
         res.status(500).json({ error: 'Failed to create emergency record' });
     }
 });
-router.delete('/emergencies/:id', requireAuth, async (req, res) => {
+router.delete('/emergencies/:id', auth_1.requireAuth, async (req, res) => {
     try {
-        const record = await prisma.clinicEmergency.findFirst({
+        const record = await prisma_1.default.clinicEmergency.findFirst({
             where: { id: req.params.id, schoolId: req.user.schoolId }
         });
         if (!record)
             return res.status(404).json({ error: 'Record not found' });
-        await prisma.clinicEmergency.delete({ where: { id: record.id } });
+        await prisma_1.default.clinicEmergency.delete({ where: { id: record.id } });
         res.json({ success: true });
     }
     catch (error) {
@@ -173,10 +178,10 @@ router.delete('/emergencies/:id', requireAuth, async (req, res) => {
     }
 });
 // ── IMMUNIZATIONS ──
-router.get('/immunizations', requireAuth, async (req, res) => {
+router.get('/immunizations', auth_1.requireAuth, async (req, res) => {
     try {
         const userIds = await getAccessibleUserIds(req);
-        const immunizations = await prisma.clinicImmunization.findMany({
+        const immunizations = await prisma_1.default.clinicImmunization.findMany({
             where: {
                 schoolId: req.user.schoolId,
                 ...(userIds ? { userId: { in: userIds } } : {})
@@ -192,10 +197,10 @@ router.get('/immunizations', requireAuth, async (req, res) => {
         res.status(500).json({ error: 'Failed to fetch immunization records' });
     }
 });
-router.post('/immunizations', requireAuth, async (req, res) => {
+router.post('/immunizations', auth_1.requireAuth, async (req, res) => {
     const { title, details, date, targetUserId } = req.body;
     try {
-        const newImmunization = await prisma.clinicImmunization.create({
+        const newImmunization = await prisma_1.default.clinicImmunization.create({
             data: {
                 title,
                 details,
@@ -210,14 +215,14 @@ router.post('/immunizations', requireAuth, async (req, res) => {
         res.status(500).json({ error: 'Failed to create immunization record' });
     }
 });
-router.delete('/immunizations/:id', requireAuth, async (req, res) => {
+router.delete('/immunizations/:id', auth_1.requireAuth, async (req, res) => {
     try {
-        const record = await prisma.clinicImmunization.findFirst({
+        const record = await prisma_1.default.clinicImmunization.findFirst({
             where: { id: req.params.id, schoolId: req.user.schoolId }
         });
         if (!record)
             return res.status(404).json({ error: 'Record not found' });
-        await prisma.clinicImmunization.delete({ where: { id: record.id } });
+        await prisma_1.default.clinicImmunization.delete({ where: { id: record.id } });
         res.json({ success: true });
     }
     catch (error) {
@@ -225,14 +230,21 @@ router.delete('/immunizations/:id', requireAuth, async (req, res) => {
     }
 });
 // ── REFERRALS ──
-router.get('/referrals', requireAuth, async (req, res) => {
+router.get('/referrals', auth_1.requireAuth, async (req, res) => {
     try {
-        const userIds = await getAccessibleUserIds(req);
-        const referrals = await prisma.clinicReferral.findMany({
-            where: {
-                schoolId: req.user.schoolId,
-                ...(userIds ? { userId: { in: userIds } } : {})
-            },
+        const user = req.user;
+        const isNurseOrHealthCoordinator = user.role === 'CLINIC' ||
+            user.role === 'SCHOOL_ADMIN' ||
+            user.role === 'SUPER_ADMIN' ||
+            user.secondaryRoles?.some(r => r.toLowerCase() === 'nurse' ||
+                r.toLowerCase() === 'health coordinator' ||
+                r.toLowerCase() === 'health co-ordinator');
+        let whereClause = { schoolId: user.schoolId };
+        if (!isNurseOrHealthCoordinator) {
+            whereClause.userId = user.id;
+        }
+        const referrals = await prisma_1.default.clinicReferral.findMany({
+            where: whereClause,
             include: {
                 user: { select: { name: true, email: true } }
             },
@@ -244,10 +256,20 @@ router.get('/referrals', requireAuth, async (req, res) => {
         res.status(500).json({ error: 'Failed to fetch referrals' });
     }
 });
-router.post('/referrals', requireAuth, async (req, res) => {
+router.post('/referrals', auth_1.requireAuth, async (req, res) => {
     const { title, details, date, to, address, targetUserId } = req.body;
+    const user = req.user;
     try {
-        const newReferral = await prisma.clinicReferral.create({
+        const isNurseOrHealthCoordinator = user.role === 'CLINIC' ||
+            user.role === 'SCHOOL_ADMIN' ||
+            user.role === 'SUPER_ADMIN' ||
+            user.secondaryRoles?.some(r => r.toLowerCase() === 'nurse' ||
+                r.toLowerCase() === 'health coordinator' ||
+                r.toLowerCase() === 'health co-ordinator');
+        if (!isNurseOrHealthCoordinator) {
+            return res.status(403).json({ error: 'Forbidden: Only nurses or health coordinators can create referrals' });
+        }
+        const newReferral = await prisma_1.default.clinicReferral.create({
             data: {
                 title,
                 details,
@@ -264,19 +286,29 @@ router.post('/referrals', requireAuth, async (req, res) => {
         res.status(500).json({ error: 'Failed to create referral' });
     }
 });
-router.delete('/referrals/:id', requireAuth, async (req, res) => {
+router.delete('/referrals/:id', auth_1.requireAuth, async (req, res) => {
+    const user = req.user;
     try {
-        const record = await prisma.clinicReferral.findFirst({
+        const isNurseOrHealthCoordinator = user.role === 'CLINIC' ||
+            user.role === 'SCHOOL_ADMIN' ||
+            user.role === 'SUPER_ADMIN' ||
+            user.secondaryRoles?.some(r => r.toLowerCase() === 'nurse' ||
+                r.toLowerCase() === 'health coordinator' ||
+                r.toLowerCase() === 'health co-ordinator');
+        if (!isNurseOrHealthCoordinator) {
+            return res.status(403).json({ error: 'Forbidden: Only nurses or health coordinators can delete referrals' });
+        }
+        const record = await prisma_1.default.clinicReferral.findFirst({
             where: { id: req.params.id, schoolId: req.user.schoolId }
         });
         if (!record)
             return res.status(404).json({ error: 'Record not found' });
-        await prisma.clinicReferral.delete({ where: { id: record.id } });
+        await prisma_1.default.clinicReferral.delete({ where: { id: record.id } });
         res.json({ success: true });
     }
     catch (error) {
         res.status(500).json({ error: 'Failed to delete referral' });
     }
 });
-export default router;
+exports.default = router;
 //# sourceMappingURL=clinic.js.map

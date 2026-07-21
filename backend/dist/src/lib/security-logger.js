@@ -1,12 +1,18 @@
-import prisma from './prisma';
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.logSecurityEvent = exports.logSecurityViolation = void 0;
+const prisma_1 = __importDefault(require("./prisma"));
 /**
  * Log unauthorized access attempts (BOLA/IDOR) to the database audit log
  */
-export const logSecurityViolation = async (details) => {
+const logSecurityViolation = async (details) => {
     console.warn(`[SECURITY VIOLATION] User ${details.userId} attempted unauthorized ${details.action} on ${details.resource} (${details.targetId}). Reason: ${details.reason}`);
     try {
         // Record into the existing AuditLog model
-        await prisma.auditLog.create({
+        await prisma_1.default.auditLog.create({
             data: {
                 actorId: details.userId,
                 schoolId: details.schoolId,
@@ -27,12 +33,13 @@ export const logSecurityViolation = async (details) => {
         console.error('Failed to write to security audit log:', error);
     }
 };
+exports.logSecurityViolation = logSecurityViolation;
 /**
  * Log standard security and audit events
  */
-export const logSecurityEvent = async (params) => {
+const logSecurityEvent = async (params) => {
     try {
-        await prisma.auditLog.create({
+        await prisma_1.default.auditLog.create({
             data: {
                 actorId: params.actorId,
                 schoolId: params.schoolId,
@@ -48,4 +55,5 @@ export const logSecurityEvent = async (params) => {
         console.error('Failed to write to standard audit log:', error);
     }
 };
+exports.logSecurityEvent = logSecurityEvent;
 //# sourceMappingURL=security-logger.js.map

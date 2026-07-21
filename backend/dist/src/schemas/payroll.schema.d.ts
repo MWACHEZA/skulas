@@ -58,6 +58,12 @@ export declare const EmployeeProfileSchema: z.ZodObject<{
     bankBranch: z.ZodOptional<z.ZodString>;
     branchCode: z.ZodOptional<z.ZodString>;
     accountType: z.ZodOptional<z.ZodString>;
+    accountNumberZig: z.ZodOptional<z.ZodString>;
+    accountHolderNameZig: z.ZodOptional<z.ZodString>;
+    bankNameZig: z.ZodOptional<z.ZodString>;
+    bankBranchZig: z.ZodOptional<z.ZodString>;
+    branchCodeZig: z.ZodOptional<z.ZodString>;
+    accountTypeZig: z.ZodOptional<z.ZodString>;
     facebookLink: z.ZodOptional<z.ZodString>;
     linkedinLink: z.ZodOptional<z.ZodString>;
     twitterLink: z.ZodOptional<z.ZodString>;

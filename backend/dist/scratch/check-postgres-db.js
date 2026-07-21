@@ -1,6 +1,8 @@
-import { PrismaClient } from '@prisma/client';
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const client_1 = require("@prisma/client");
 // Manually override the URL to check the default 'postgres' database
-const prisma = new PrismaClient({
+const prisma = new client_1.PrismaClient({
     datasources: {
         db: {
             url: 'postgresql://postgres:Admin@1234@localhost:5432/postgres?schema=public'

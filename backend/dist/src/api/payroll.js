@@ -1,14 +1,19 @@
-import { Router } from 'express';
-import prisma from '../lib/prisma';
-import { requireAuth, requireRole } from '../middleware/auth';
-import { logSecurityEvent } from '../lib/security-logger';
-import { PayrollAllowanceSchema, PayrollDeductionSchema, TaxTableSchema, EmployeeProfileSchema } from '../schemas/payroll.schema';
-const router = Router();
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const prisma_1 = __importDefault(require("../lib/prisma"));
+const auth_1 = require("../middleware/auth");
+const security_logger_1 = require("../lib/security-logger");
+const payroll_schema_1 = require("../schemas/payroll.schema");
+const router = (0, express_1.Router)();
 // â•â•â•â•â•â•â•â•â•â•â• ALLOWANCES â•â•â•â•â•â•â•â•â•â•â•
-router.get('/allowances', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req, res) => {
+router.get('/allowances', auth_1.requireAuth, (0, auth_1.requireRole)('BURSAR', 'SCHOOL_ADMIN'), async (req, res) => {
     try {
         const schoolId = req.user.schoolId;
-        const allowances = await prisma.payrollAllowance.findMany({
+        const allowances = await prisma_1.default.payrollAllowance.findMany({
             where: { schoolId },
             orderBy: { name: 'asc' }
         });
@@ -18,17 +23,17 @@ router.get('/allowances', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), as
         res.status(500).json({ error: 'Failed to fetch allowances' });
     }
 });
-router.post('/allowances', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req, res) => {
+router.post('/allowances', auth_1.requireAuth, (0, auth_1.requireRole)('BURSAR', 'SCHOOL_ADMIN'), async (req, res) => {
     try {
         const schoolId = req.user.schoolId;
-        const validatedData = PayrollAllowanceSchema.parse(req.body);
-        const allowance = await prisma.payrollAllowance.create({
+        const validatedData = payroll_schema_1.PayrollAllowanceSchema.parse(req.body);
+        const allowance = await prisma_1.default.payrollAllowance.create({
             data: {
                 ...validatedData,
                 schoolId
             }
         });
-        await logSecurityEvent({
+        await (0, security_logger_1.logSecurityEvent)({
             actorId: req.user.id,
             action: 'CREATE_PAYROLL_ALLOWANCE',
             entityType: 'PayrollAllowance',
@@ -46,14 +51,14 @@ router.post('/allowances', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), a
         res.status(400).json({ error: error.message || 'Failed to create allowance' });
     }
 });
-router.delete('/allowances/:id', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req, res) => {
+router.delete('/allowances/:id', auth_1.requireAuth, (0, auth_1.requireRole)('BURSAR', 'SCHOOL_ADMIN'), async (req, res) => {
     try {
         const id = req.params.id;
         const schoolId = req.user.schoolId;
-        const allowance = await prisma.payrollAllowance.delete({
+        const allowance = await prisma_1.default.payrollAllowance.delete({
             where: { id, schoolId }
         });
-        await logSecurityEvent({
+        await (0, security_logger_1.logSecurityEvent)({
             actorId: req.user.id,
             action: 'DELETE_PAYROLL_ALLOWANCE',
             entityType: 'PayrollAllowance',
@@ -69,10 +74,10 @@ router.delete('/allowances/:id', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMI
     }
 });
 // â•â•â•â•â•â•â•â•â•â•â• DEDUCTIONS â•â•â•â•â•â•â•â•â•â•â•
-router.get('/deductions', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req, res) => {
+router.get('/deductions', auth_1.requireAuth, (0, auth_1.requireRole)('BURSAR', 'SCHOOL_ADMIN'), async (req, res) => {
     try {
         const schoolId = req.user.schoolId;
-        const deductions = await prisma.payrollDeduction.findMany({
+        const deductions = await prisma_1.default.payrollDeduction.findMany({
             where: { schoolId },
             orderBy: { name: 'asc' }
         });
@@ -82,17 +87,17 @@ router.get('/deductions', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), as
         res.status(500).json({ error: 'Failed to fetch deductions' });
     }
 });
-router.post('/deductions', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req, res) => {
+router.post('/deductions', auth_1.requireAuth, (0, auth_1.requireRole)('BURSAR', 'SCHOOL_ADMIN'), async (req, res) => {
     try {
         const schoolId = req.user.schoolId;
-        const validatedData = PayrollDeductionSchema.parse(req.body);
-        const deduction = await prisma.payrollDeduction.create({
+        const validatedData = payroll_schema_1.PayrollDeductionSchema.parse(req.body);
+        const deduction = await prisma_1.default.payrollDeduction.create({
             data: {
                 ...validatedData,
                 schoolId
             }
         });
-        await logSecurityEvent({
+        await (0, security_logger_1.logSecurityEvent)({
             actorId: req.user.id,
             action: 'CREATE_PAYROLL_DEDUCTION',
             entityType: 'PayrollDeduction',
@@ -110,14 +115,14 @@ router.post('/deductions', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), a
         res.status(400).json({ error: error.message || 'Failed to create deduction' });
     }
 });
-router.delete('/deductions/:id', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req, res) => {
+router.delete('/deductions/:id', auth_1.requireAuth, (0, auth_1.requireRole)('BURSAR', 'SCHOOL_ADMIN'), async (req, res) => {
     try {
         const id = req.params.id;
         const schoolId = req.user.schoolId;
-        const deduction = await prisma.payrollDeduction.delete({
+        const deduction = await prisma_1.default.payrollDeduction.delete({
             where: { id, schoolId }
         });
-        await logSecurityEvent({
+        await (0, security_logger_1.logSecurityEvent)({
             actorId: req.user.id,
             action: 'DELETE_PAYROLL_DEDUCTION',
             entityType: 'PayrollDeduction',
@@ -133,10 +138,10 @@ router.delete('/deductions/:id', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMI
     }
 });
 // â•â•â•â•â•â•â•â•â•â•â• TAX TABLES â•â•â•â•â•â•â•â•â•â•â•
-router.get('/tax-tables', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req, res) => {
+router.get('/tax-tables', auth_1.requireAuth, (0, auth_1.requireRole)('BURSAR', 'SCHOOL_ADMIN'), async (req, res) => {
     try {
         const schoolId = req.user.schoolId;
-        const tables = await prisma.taxTable.findMany({
+        const tables = await prisma_1.default.taxTable.findMany({
             where: { schoolId },
             include: {
                 bands: { orderBy: { minIncome: 'asc' } }
@@ -149,11 +154,11 @@ router.get('/tax-tables', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), as
         res.status(500).json({ error: 'Failed to fetch tax tables' });
     }
 });
-router.post('/tax-tables', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req, res) => {
+router.post('/tax-tables', auth_1.requireAuth, (0, auth_1.requireRole)('BURSAR', 'SCHOOL_ADMIN'), async (req, res) => {
     try {
         const schoolId = req.user.schoolId;
-        const { bands, ...tableData } = TaxTableSchema.parse(req.body);
-        const table = await prisma.taxTable.create({
+        const { bands, ...tableData } = payroll_schema_1.TaxTableSchema.parse(req.body);
+        const table = await prisma_1.default.taxTable.create({
             data: {
                 ...tableData,
                 schoolId,
@@ -169,7 +174,7 @@ router.post('/tax-tables', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), a
             },
             include: { bands: true }
         });
-        await logSecurityEvent({
+        await (0, security_logger_1.logSecurityEvent)({
             actorId: req.user.id,
             action: 'CREATE_TAX_TABLE',
             entityType: 'TaxTable',
@@ -184,15 +189,15 @@ router.post('/tax-tables', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), a
         res.status(400).json({ error: error.message || 'Failed to create tax table' });
     }
 });
-router.delete('/tax-tables/:id', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req, res) => {
+router.delete('/tax-tables/:id', auth_1.requireAuth, (0, auth_1.requireRole)('BURSAR', 'SCHOOL_ADMIN'), async (req, res) => {
     try {
         const id = req.params.id;
         const schoolId = req.user.schoolId;
         // Deleting the tax table will cascade delete the bands due to schema setup
-        const table = await prisma.taxTable.delete({
+        const table = await prisma_1.default.taxTable.delete({
             where: { id, schoolId }
         });
-        await logSecurityEvent({
+        await (0, security_logger_1.logSecurityEvent)({
             actorId: req.user.id,
             action: 'DELETE_TAX_TABLE',
             entityType: 'TaxTable',
@@ -208,12 +213,12 @@ router.delete('/tax-tables/:id', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMI
     }
 });
 // â•â•â•â•â•â•â•â•â•â•â• EMPLOYEE PROFILES â•â•â•â•â•â•â•â•â•â•â•
-router.get('/employees', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req, res) => {
+router.get('/employees', auth_1.requireAuth, (0, auth_1.requireRole)('BURSAR', 'SCHOOL_ADMIN', 'TEACHER', 'ANCILLARY', 'LIBRARIAN', 'CLINIC'), async (req, res) => {
     try {
         const schoolId = req.user.schoolId;
         // Fetch all users that constitute "staff" (excluding students, parents, alumni, applicants)
         const staffRoles = ['TEACHER', 'BURSAR', 'LIBRARIAN', 'ANCILLARY', 'SCHOOL_ADMIN'];
-        const employees = await prisma.user.findMany({
+        const employees = await prisma_1.default.user.findMany({
             where: {
                 schoolId,
                 role: { in: staffRoles }
@@ -233,19 +238,19 @@ router.get('/employees', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), asy
         res.status(500).json({ error: 'Failed to fetch employees' });
     }
 });
-router.put('/employees/:userId', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req, res) => {
+router.put('/employees/:userId', auth_1.requireAuth, (0, auth_1.requireRole)('BURSAR', 'SCHOOL_ADMIN'), async (req, res) => {
     try {
         const schoolId = req.user.schoolId;
         const userId = req.params.userId;
         // Verify the user belongs to the school
-        const user = await prisma.user.findFirst({
+        const user = await prisma_1.default.user.findFirst({
             where: { id: userId, schoolId }
         });
         if (!user) {
             return res.status(404).json({ error: 'Employee not found' });
         }
-        const validatedData = EmployeeProfileSchema.parse(req.body);
-        const profile = await prisma.employeeProfile.upsert({
+        const validatedData = payroll_schema_1.EmployeeProfileSchema.parse(req.body);
+        const profile = await prisma_1.default.employeeProfile.upsert({
             where: { userId },
             update: {
                 jobTitle: validatedData.jobTitle,
@@ -256,12 +261,20 @@ router.put('/employees/:userId', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMI
                 status: validatedData.status,
                 bloodGroup: validatedData.bloodGroup,
                 designation: validatedData.designation,
+                // USD Account
                 accountNumber: validatedData.accountNumber,
                 accountHolderName: validatedData.accountHolderName,
                 bankName: validatedData.bankName,
                 bankBranch: validatedData.bankBranch,
                 branchCode: validatedData.branchCode,
                 accountType: validatedData.accountType,
+                // ZiG Account
+                accountNumberZig: validatedData.accountNumberZig,
+                accountHolderNameZig: validatedData.accountHolderNameZig,
+                bankNameZig: validatedData.bankNameZig,
+                bankBranchZig: validatedData.bankBranchZig,
+                branchCodeZig: validatedData.branchCodeZig,
+                accountTypeZig: validatedData.accountTypeZig,
                 facebookLink: validatedData.facebookLink,
                 linkedinLink: validatedData.linkedinLink,
                 twitterLink: validatedData.twitterLink,
@@ -277,18 +290,26 @@ router.put('/employees/:userId', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMI
                 status: validatedData.status,
                 bloodGroup: validatedData.bloodGroup,
                 designation: validatedData.designation,
+                // USD Account
                 accountNumber: validatedData.accountNumber,
                 accountHolderName: validatedData.accountHolderName,
                 bankName: validatedData.bankName,
                 bankBranch: validatedData.bankBranch,
                 branchCode: validatedData.branchCode,
                 accountType: validatedData.accountType,
+                // ZiG Account
+                accountNumberZig: validatedData.accountNumberZig,
+                accountHolderNameZig: validatedData.accountHolderNameZig,
+                bankNameZig: validatedData.bankNameZig,
+                bankBranchZig: validatedData.bankBranchZig,
+                branchCodeZig: validatedData.branchCodeZig,
+                accountTypeZig: validatedData.accountTypeZig,
                 facebookLink: validatedData.facebookLink,
                 linkedinLink: validatedData.linkedinLink,
                 twitterLink: validatedData.twitterLink,
             }
         });
-        await logSecurityEvent({
+        await (0, security_logger_1.logSecurityEvent)({
             actorId: req.user.id,
             action: 'UPDATE_EMPLOYEE_PROFILE',
             entityType: 'EmployeeProfile',
@@ -304,7 +325,7 @@ router.put('/employees/:userId', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMI
     }
 });
 // ═══════════ PAYROLL ENTRIES (PAYSLIPS) ═══════════
-router.get('/entries', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req, res) => {
+router.get('/entries', auth_1.requireAuth, (0, auth_1.requireRole)('BURSAR', 'SCHOOL_ADMIN'), async (req, res) => {
     try {
         const schoolId = req.user.schoolId;
         const month = parseInt(req.query.month);
@@ -316,7 +337,7 @@ router.get('/entries', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async
                 year
             };
         }
-        const entries = await prisma.payrollEntry.findMany({
+        const entries = await prisma_1.default.payrollEntry.findMany({
             where: whereClause,
             include: {
                 payrollRun: true,
@@ -335,59 +356,91 @@ router.get('/entries', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async
         res.status(500).json({ error: 'Failed to fetch payroll entries' });
     }
 });
-router.post('/entry', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req, res) => {
+router.post('/generate', auth_1.requireAuth, (0, auth_1.requireRole)('BURSAR', 'SCHOOL_ADMIN'), async (req, res) => {
     try {
         const schoolId = req.user.schoolId;
-        const { userId, employeeName, jobTitle, month, year, basicSalary, totalAllowances, totalDeductions, netSalary, isPaid, status } = req.body;
-        // Ensure a PayrollRun exists for this month and year
-        let payrollRun = await prisma.payrollRun.findFirst({
-            where: { schoolId, month, year }
-        });
-        if (!payrollRun) {
-            payrollRun = await prisma.payrollRun.create({
-                data: {
-                    schoolId,
-                    month,
-                    year,
-                    status: 'Completed',
-                    employeesCount: 0,
-                    totalGross: 0,
-                    totalDeductions: 0,
-                    totalNet: 0
-                }
-            });
+        const { month, year } = req.body;
+        if (!month || !year) {
+            return res.status(400).json({ error: 'Month and year are required' });
         }
-        const entry = await prisma.payrollEntry.create({
+        // Check if payroll run already exists
+        const existingRun = await prisma_1.default.payrollRun.findUnique({
+            where: { schoolId_month_year: { schoolId, month, year } }
+        });
+        if (existingRun) {
+            return res.status(400).json({ error: 'Payroll has already been generated for this period' });
+        }
+        const staffRoles = ['TEACHER', 'BURSAR', 'LIBRARIAN', 'ANCILLARY', 'SCHOOL_ADMIN'];
+        const employees = await prisma_1.default.user.findMany({
+            where: {
+                schoolId,
+                role: { in: staffRoles },
+                isLocked: false
+            },
+            include: {
+                employeeProfile: true
+            }
+        });
+        if (employees.length === 0) {
+            return res.status(404).json({ error: 'No active employees found to generate payroll for' });
+        }
+        const payrollRun = await prisma_1.default.payrollRun.create({
             data: {
+                schoolId,
+                month,
+                year,
+                status: 'Completed',
+                employeesCount: 0,
+                totalGross: 0,
+                totalDeductions: 0,
+                totalNet: 0
+            }
+        });
+        let totalGross = 0;
+        let totalDeductions = 0;
+        let totalNet = 0;
+        const entries = [];
+        for (const emp of employees) {
+            const basicSalary = emp.employeeProfile?.basePay || 0;
+            // In a real application, we would calculate specific allowances and deductions
+            const allowances = 0;
+            const deductions = 0;
+            const netSalary = basicSalary + allowances - deductions;
+            entries.push({
                 payrollRunId: payrollRun.id,
                 schoolId,
-                userId,
-                employeeName,
-                jobTitle: jobTitle || 'Employee',
-                grossSalary: parseFloat(basicSalary),
-                totalAllowances: parseFloat(totalAllowances),
-                totalDeductions: parseFloat(totalDeductions),
+                userId: emp.id,
+                employeeName: emp.name,
+                jobTitle: emp.employeeProfile?.jobTitle || emp.role,
+                grossSalary: basicSalary,
+                totalAllowances: allowances,
+                totalDeductions: deductions,
                 taxAmount: 0,
-                netSalary: parseFloat(netSalary),
-                isPaid: isPaid || status === 'Paid'
-            }
+                netSalary: netSalary,
+                isPaid: false
+            });
+            totalGross += basicSalary + allowances;
+            totalDeductions += deductions;
+            totalNet += netSalary;
+        }
+        await prisma_1.default.payrollEntry.createMany({
+            data: entries
         });
-        // Update totals
-        await prisma.payrollRun.update({
+        await prisma_1.default.payrollRun.update({
             where: { id: payrollRun.id },
             data: {
-                employeesCount: { increment: 1 },
-                totalGross: { increment: parseFloat(basicSalary) + parseFloat(totalAllowances) },
-                totalDeductions: { increment: parseFloat(totalDeductions) },
-                totalNet: { increment: parseFloat(netSalary) }
+                employeesCount: entries.length,
+                totalGross,
+                totalDeductions,
+                totalNet
             }
         });
-        res.status(201).json(entry);
+        res.status(201).json({ message: 'Payroll generated successfully', count: entries.length });
     }
     catch (error) {
-        console.error('Error creating payroll entry', error);
-        res.status(500).json({ error: 'Failed to create payroll entry' });
+        console.error('Error generating payroll', error);
+        res.status(500).json({ error: 'Failed to generate payroll' });
     }
 });
-export default router;
+exports.default = router;
 //# sourceMappingURL=payroll.js.map

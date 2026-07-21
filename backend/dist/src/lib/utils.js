@@ -1,22 +1,24 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.normalizeSchoolCode = normalizeSchoolCode;
+exports.generateShortCode = generateShortCode;
 /**
  * Normalizes input strings for sensitive identifiers like School Codes.
  * Converts common visual typos: I, l, L -> 1 and O -> 0.
  * @param code - The raw school code or identifier
  * @returns {string} - The normalized string
  */
-export function normalizeSchoolCode(code) {
+function normalizeSchoolCode(code) {
     if (!code)
         return '';
     return code
         .toUpperCase()
-        .trim()
-        .replace(/[ILl]/g, '1')
-        .replace(/O/g, '0');
+        .trim();
 }
 /**
  * Generates a short, uppercase code from a name.
  */
-export function generateShortCode(name) {
+function generateShortCode(name) {
     if (!name)
         return '';
     const clean = name.trim().toUpperCase().replace(/[^A-Z0-9\s]/g, '');

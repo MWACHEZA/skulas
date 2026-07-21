@@ -1,9 +1,14 @@
-import { Router } from 'express';
-import prisma from '../lib/prisma';
-import { requireAuth, requireRole } from '../middleware/auth';
-const router = Router();
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const prisma_1 = __importDefault(require("../lib/prisma"));
+const auth_1 = require("../middleware/auth");
+const router = (0, express_1.Router)();
 // Get all courses (with optional filters)
-router.get('/', requireAuth, async (req, res) => {
+router.get('/', auth_1.requireAuth, async (req, res) => {
     try {
         const { category, status, classId } = req.query;
         const where = { schoolId: req.user.schoolId };
@@ -17,7 +22,7 @@ router.get('/', requireAuth, async (req, res) => {
             where.status = status;
         if (classId && classId !== 'All')
             where.classId = classId;
-        const courses = await prisma.course.findMany({
+        const courses = await prisma_1.default.course.findMany({
             where,
             include: {
                 class: { select: { name: true } },
@@ -33,13 +38,13 @@ router.get('/', requireAuth, async (req, res) => {
     }
 });
 // Create a new course
-router.post('/', requireAuth, requireRole('TEACHER', 'SCHOOL_ADMIN', 'SUPER_ADMIN'), async (req, res) => {
+router.post('/', auth_1.requireAuth, (0, auth_1.requireRole)('TEACHER', 'SCHOOL_ADMIN', 'SUPER_ADMIN'), async (req, res) => {
     try {
         const { classId, title, courseType, level, language, category, shortDescription, fullDescription } = req.body;
         if (!classId || !title || !courseType || !level || !language || !category || !shortDescription) {
             return res.status(400).json({ error: 'Missing required fields' });
         }
-        const course = await prisma.course.create({
+        const course = await prisma_1.default.course.create({
             data: {
                 schoolId: req.user.schoolId,
                 teacherId: req.user.id,
@@ -61,14 +66,14 @@ router.post('/', requireAuth, requireRole('TEACHER', 'SCHOOL_ADMIN', 'SUPER_ADMI
     }
 });
 // Enroll a student
-router.post('/enroll', requireAuth, requireRole('TEACHER', 'SCHOOL_ADMIN', 'SUPER_ADMIN'), async (req, res) => {
+router.post('/enroll', auth_1.requireAuth, (0, auth_1.requireRole)('TEACHER', 'SCHOOL_ADMIN', 'SUPER_ADMIN'), async (req, res) => {
     try {
         const { courseId, studentId } = req.body;
         if (!courseId || !studentId) {
             return res.status(400).json({ error: 'Course and student are required' });
         }
         // Check if already enrolled
-        const existing = await prisma.courseEnrollment.findUnique({
+        const existing = await prisma_1.default.courseEnrollment.findUnique({
             where: {
                 courseId_studentId: {
                     courseId,
@@ -79,7 +84,7 @@ router.post('/enroll', requireAuth, requireRole('TEACHER', 'SCHOOL_ADMIN', 'SUPE
         if (existing) {
             return res.status(400).json({ error: 'Student is already enrolled in this course' });
         }
-        const enrollment = await prisma.courseEnrollment.create({
+        const enrollment = await prisma_1.default.courseEnrollment.create({
             data: {
                 courseId,
                 studentId
@@ -96,10 +101,10 @@ router.post('/enroll', requireAuth, requireRole('TEACHER', 'SCHOOL_ADMIN', 'SUPE
     }
 });
 // Get enrollments for a course
-router.get('/:courseId/enrollments', requireAuth, async (req, res) => {
+router.get('/:courseId/enrollments', auth_1.requireAuth, async (req, res) => {
     try {
         const { courseId } = req.params;
-        const enrollments = await prisma.courseEnrollment.findMany({
+        const enrollments = await prisma_1.default.courseEnrollment.findMany({
             where: { courseId: String(courseId) },
             include: {
                 student: {
@@ -118,9 +123,9 @@ router.get('/:courseId/enrollments', requireAuth, async (req, res) => {
     }
 });
 // Get revenue report for a teacher
-router.get('/revenue/report', requireAuth, requireRole('TEACHER'), async (req, res) => {
+router.get('/revenue/report', auth_1.requireAuth, (0, auth_1.requireRole)('TEACHER'), async (req, res) => {
     try {
-        const courses = await prisma.course.findMany({
+        const courses = await prisma_1.default.course.findMany({
             where: {
                 schoolId: req.user.schoolId,
                 teacherId: req.user.id,
@@ -163,5 +168,5 @@ router.get('/revenue/report', requireAuth, requireRole('TEACHER'), async (req, r
         res.status(500).json({ error: 'Failed to fetch revenue report' });
     }
 });
-export default router;
+exports.default = router;
 //# sourceMappingURL=courses.js.map

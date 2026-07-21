@@ -1,8 +1,14 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
-import prisma from '../lib/prisma';
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
-export const getSantaResponse = async (schoolId, message, history) => {
-    const school = await prisma.school.findUnique({
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.getSantaResponse = void 0;
+const generative_ai_1 = require("@google/generative-ai");
+const prisma_1 = __importDefault(require("../lib/prisma"));
+const genAI = new generative_ai_1.GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
+const getSantaResponse = async (schoolId, message, history) => {
+    const school = await prisma_1.default.school.findUnique({
         where: { id: schoolId },
         include: { plan: true },
     });
@@ -49,4 +55,5 @@ export const getSantaResponse = async (schoolId, message, history) => {
         throw new Error('Gemini AI failed to generate a response');
     }
 };
+exports.getSantaResponse = getSantaResponse;
 //# sourceMappingURL=ai.js.map

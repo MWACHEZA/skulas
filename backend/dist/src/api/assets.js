@@ -1,47 +1,49 @@
-import { Router } from 'express';
-import path from 'path';
-import prisma from '../lib/prisma';
-import { requireAuth, requireRole } from '../middleware/auth';
-import { assetUpload } from '../middleware/upload';
-const router = Router();
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const path_1 = __importDefault(require("path"));
+const prisma_1 = __importDefault(require("../lib/prisma"));
+const auth_1 = require("../middleware/auth");
+const upload_1 = require("../middleware/upload");
+const router = (0, express_1.Router)();
 /**
  * @route   GET /api/assets
  * @desc    Get all assets for the school (with joined data)
  */
-router.get('/', requireAuth, async (req, res) => {
+router.get('/', auth_1.requireAuth, async (req, res) => {
     try {
         const schoolId = req.user.schoolId;
         const role = req.user.role;
         let whereClause = { schoolId };
-        if (role === 'TEACHER') {
-            // Check if the teacher is a Head of Department (HOD)
-            const headedDepts = await prisma.department.findMany({
-                where: { schoolId, headId: req.user.id }
-            });
-            const isHod = headedDepts.length > 0;
-            if (isHod) {
-                // HOD sees all assets for teachers in their department
-                const deptIds = headedDepts.map(d => d.id);
-                whereClause = {
-                    schoolId,
-                    custodian: {
-                        departmentId: { in: deptIds }
-                    }
-                };
-            }
-            else {
-                // Regular teacher sees only assets assigned to them
-                whereClause = {
-                    schoolId,
-                    custodianId: req.user.id
-                };
-            }
-        }
-        else if (role === 'SCHOOL_ADMIN') {
+        const headedDepts = await prisma_1.default.department.findMany({
+            where: { schoolId, headId: req.user.id }
+        });
+        const isHod = headedDepts.length > 0;
+        if (role === 'SCHOOL_ADMIN' || role === 'SUPER_ADMIN') {
             // Admin sees all assets
             whereClause = { schoolId };
         }
-        const assets = await prisma.asset.findMany({
+        else if (isHod) {
+            // HOD sees all assets for staff in their department
+            const deptIds = headedDepts.map(d => d.id);
+            whereClause = {
+                schoolId,
+                custodian: {
+                    departmentId: { in: deptIds }
+                }
+            };
+        }
+        else {
+            // Individual sees only assets assigned to them
+            whereClause = {
+                schoolId,
+                custodianId: req.user.id
+            };
+        }
+        const assets = await prisma_1.default.asset.findMany({
             where: whereClause,
             include: {
                 custodian: { select: { id: true, name: true, role: true } },
@@ -66,7 +68,7 @@ router.get('/', requireAuth, async (req, res) => {
  * @route   POST /api/assets
  * @desc    Register a new asset with optional attachments
  */
-router.post('/', requireAuth, assetUpload.array('attachments', 5), async (req, res) => {
+router.post('/', auth_1.requireAuth, upload_1.assetUpload.array('attachments', 5), async (req, res) => {
     const { name, category, serialNumber, location, condition, purchaseDate, purchasePrice, custodianId, nextMaintenance, maintenanceInterval } = req.body;
     const files = req.files || [];
     if (!name || !category) {
@@ -75,10 +77,10 @@ router.post('/', requireAuth, assetUpload.array('attachments', 5), async (req, r
     try {
         const attachments = files.map(file => ({
             name: file.originalname,
-            url: path.join(req.uploadCategoryPath || '', file.filename).replace(/\\/g, '/')
+            url: path_1.default.join(req.uploadCategoryPath || '', file.filename).replace(/\\/g, '/')
         }));
         const { name, category, serialNumber, location, condition, purchaseDate, purchasePrice, custodianId, nextMaintenance, maintenanceInterval } = req.body;
-        const asset = await prisma.asset.create({
+        const asset = await prisma_1.default.asset.create({
             data: {
                 name: name,
                 category: category,
@@ -105,21 +107,21 @@ router.post('/', requireAuth, assetUpload.array('attachments', 5), async (req, r
  * @route   PATCH /api/assets/:id
  * @desc    Update asset details and attachments
  */
-router.patch('/:id', requireAuth, requireRole('SCHOOL_ADMIN'), assetUpload.array('attachments', 5), async (req, res) => {
+router.patch('/:id', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN'), upload_1.assetUpload.array('attachments', 5), async (req, res) => {
     const { id } = req.params;
     const body = req.body;
     const files = req.files || [];
     try {
-        const existing = await prisma.asset.findUnique({ where: { id: id } });
+        const existing = await prisma_1.default.asset.findFirst({ where: { id: id } });
         if (!existing)
             return res.status(404).json({ error: 'Asset not found' });
         const newAttachments = files.map(file => ({
             name: file.originalname,
-            url: path.join(req.uploadCategoryPath || '', file.filename).replace(/\\/g, '/')
+            url: path_1.default.join(req.uploadCategoryPath || '', file.filename).replace(/\\/g, '/')
         }));
         const currentAttachments = existing.attachments || [];
         const { name, category, serialNumber, location, condition, custodianId, purchaseDate, purchasePrice, nextMaintenance, maintenanceInterval } = req.body;
-        const asset = await prisma.asset.update({
+        const asset = await prisma_1.default.asset.update({
             where: { id: id },
             data: {
                 name: name,
@@ -145,7 +147,7 @@ router.patch('/:id', requireAuth, requireRole('SCHOOL_ADMIN'), assetUpload.array
  * @route   POST /api/assets/incident
  * @desc    Report an asset incident with optional attachments
  */
-router.post('/incident', requireAuth, assetUpload.array('attachments', 5), async (req, res) => {
+router.post('/incident', auth_1.requireAuth, upload_1.assetUpload.array('attachments', 5), async (req, res) => {
     const { assetId, issueType, details } = req.body;
     const files = req.files || [];
     if (!assetId || !issueType || !details) {
@@ -154,9 +156,9 @@ router.post('/incident', requireAuth, assetUpload.array('attachments', 5), async
     try {
         const attachments = files.map(file => ({
             name: file.originalname,
-            url: path.join(req.uploadCategoryPath || '', file.filename).replace(/\\/g, '/')
+            url: path_1.default.join(req.uploadCategoryPath || '', file.filename).replace(/\\/g, '/')
         }));
-        const incident = await prisma.$transaction(async (tx) => {
+        const incident = await prisma_1.default.$transaction(async (tx) => {
             // 1. Create Incident
             const newIncident = await tx.assetIncident.create({
                 data: {
@@ -188,11 +190,11 @@ router.post('/incident', requireAuth, assetUpload.array('attachments', 5), async
  * @route   PATCH /api/assets/incident/:id/resolve
  * @desc    [ADMIN] Resolve an asset incident
  */
-router.patch('/incident/:id/resolve', requireAuth, requireRole('SCHOOL_ADMIN'), async (req, res) => {
+router.patch('/incident/:id/resolve', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN'), async (req, res) => {
     const { id } = req.params;
     const { fixDetails, newStatus } = req.body;
     try {
-        const incident = await prisma.$transaction(async (tx) => {
+        const incident = await prisma_1.default.$transaction(async (tx) => {
             // 1. Update Incident
             const updatedIncident = await tx.assetIncident.update({
                 where: { id: String(id) },
@@ -220,19 +222,19 @@ router.patch('/incident/:id/resolve', requireAuth, requireRole('SCHOOL_ADMIN'), 
  * @route   POST /api/assets/maintenance/perform
  * @desc    [ADMIN] Record maintenance performance and scheduled next
  */
-router.post('/maintenance/perform', requireAuth, requireRole('SCHOOL_ADMIN'), async (req, res) => {
+router.post('/maintenance/perform', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN'), async (req, res) => {
     const { assetId, description, cost, performedDate } = req.body;
     const pDate = performedDate ? new Date(performedDate) : new Date();
     try {
-        const asset = await prisma.asset.findUnique({ where: { id: assetId } });
+        const asset = await prisma_1.default.asset.findFirst({ where: { id: assetId } });
         if (!asset)
             return res.status(404).json({ error: 'Asset not found' });
         let nextMaintenance = null;
         if (asset.maintenanceInterval) {
             nextMaintenance = new Date(pDate.getTime() + asset.maintenanceInterval * 24 * 60 * 60 * 1000);
         }
-        await prisma.$transaction([
-            prisma.assetMaintenance.create({
+        await prisma_1.default.$transaction([
+            prisma_1.default.assetMaintenance.create({
                 data: {
                     assetId: assetId,
                     description: description,
@@ -242,7 +244,7 @@ router.post('/maintenance/perform', requireAuth, requireRole('SCHOOL_ADMIN'), as
                     schoolId: req.user.schoolId
                 }
             }),
-            prisma.asset.update({
+            prisma_1.default.asset.update({
                 where: { id: assetId },
                 data: { nextMaintenance }
             })
@@ -257,10 +259,10 @@ router.post('/maintenance/perform', requireAuth, requireRole('SCHOOL_ADMIN'), as
  * @route   POST /api/assets/request-maintenance
  * @desc    Request maintenance for an asset (User-facing)
  */
-router.post('/request-maintenance', requireAuth, async (req, res) => {
+router.post('/request-maintenance', auth_1.requireAuth, async (req, res) => {
     const { assetId, details } = req.body;
     try {
-        const incident = await prisma.assetIncident.create({
+        const incident = await prisma_1.default.assetIncident.create({
             data: {
                 assetId: assetId,
                 reporterId: req.user.id,
@@ -280,10 +282,10 @@ router.post('/request-maintenance', requireAuth, async (req, res) => {
  * @route   POST /api/assets/maintenance/schedule
  * @desc    [ADMIN] Schedule a future maintenance task
  */
-router.post('/maintenance/schedule', requireAuth, requireRole('SCHOOL_ADMIN'), async (req, res) => {
+router.post('/maintenance/schedule', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN'), async (req, res) => {
     const { assetId, description, cost, scheduledDate } = req.body;
     try {
-        const maintenance = await prisma.assetMaintenance.create({
+        const maintenance = await prisma_1.default.assetMaintenance.create({
             data: {
                 assetId: assetId,
                 description: description,
@@ -302,30 +304,35 @@ router.post('/maintenance/schedule', requireAuth, requireRole('SCHOOL_ADMIN'), a
  * @route   PATCH /api/assets/maintenance/:id/complete
  * @desc    [ADMIN] Mark a scheduled maintenance task as complete
  */
-router.patch('/maintenance/:id/complete', requireAuth, requireRole('SCHOOL_ADMIN'), async (req, res) => {
+router.patch('/maintenance/:id/complete', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN'), async (req, res) => {
     const { id } = req.params;
-    const { cost, performedDate } = req.body;
+    const { cost, performedDate, notes, assetStatus } = req.body;
     const pDate = performedDate ? new Date(performedDate) : new Date();
     try {
-        const maint = await prisma.assetMaintenance.findUnique({ where: { id: id } });
+        const maint = await prisma_1.default.assetMaintenance.findFirst({ where: { id: id } });
         if (!maint)
             return res.status(404).json({ error: 'Maintenance record not found' });
-        const asset = await prisma.asset.findUnique({ where: { id: maint.assetId } });
+        const asset = await prisma_1.default.asset.findFirst({ where: { id: maint.assetId } });
         let nextMaintenance = null;
         if (asset?.maintenanceInterval) {
             nextMaintenance = new Date(pDate.getTime() + asset.maintenanceInterval * 24 * 60 * 60 * 1000);
         }
-        await prisma.$transaction([
-            prisma.assetMaintenance.update({
+        const assetUpdateData = { nextMaintenance };
+        if (assetStatus && ['good', 'fair', 'poor', 'condemned'].includes(assetStatus)) {
+            assetUpdateData.condition = assetStatus;
+        }
+        await prisma_1.default.$transaction([
+            prisma_1.default.assetMaintenance.update({
                 where: { id: id },
                 data: {
                     performedDate: pDate,
-                    cost: cost ? parseFloat(cost) : maint.cost
+                    cost: cost ? parseFloat(cost) : maint.cost,
+                    notes: notes || null
                 }
             }),
-            prisma.asset.update({
+            prisma_1.default.asset.update({
                 where: { id: maint.assetId },
-                data: { nextMaintenance }
+                data: assetUpdateData
             })
         ]);
         res.json({ success: true });
@@ -334,5 +341,43 @@ router.patch('/maintenance/:id/complete', requireAuth, requireRole('SCHOOL_ADMIN
         res.status(500).json({ error: 'Failed to complete maintenance' });
     }
 });
-export default router;
+/**
+ * @route   PUT /api/assets/maintenance/:id
+ * @desc    [ADMIN] Update a scheduled maintenance task
+ */
+router.put('/maintenance/:id', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN'), async (req, res) => {
+    const { id } = req.params;
+    const { description, cost, scheduledDate } = req.body;
+    try {
+        const maintenance = await prisma_1.default.assetMaintenance.update({
+            where: { id: String(id) },
+            data: {
+                description: description ? String(description) : undefined,
+                cost: cost ? parseFloat(cost) : undefined,
+                scheduledDate: scheduledDate ? new Date(scheduledDate) : undefined,
+            }
+        });
+        res.json(maintenance);
+    }
+    catch (error) {
+        res.status(500).json({ error: 'Failed to update maintenance task' });
+    }
+});
+/**
+ * @route   DELETE /api/assets/maintenance/:id
+ * @desc    [ADMIN] Delete a maintenance task
+ */
+router.delete('/maintenance/:id', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN'), async (req, res) => {
+    const { id } = req.params;
+    try {
+        await prisma_1.default.assetMaintenance.delete({
+            where: { id: String(id) }
+        });
+        res.json({ success: true });
+    }
+    catch (error) {
+        res.status(500).json({ error: 'Failed to delete maintenance task' });
+    }
+});
+exports.default = router;
 //# sourceMappingURL=assets.js.map

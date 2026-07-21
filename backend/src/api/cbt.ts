@@ -201,5 +201,148 @@ router.delete('/:examId/questions/:questionId', requireAuth, requireRole('TEACHE
     res.status(500).json({ error: 'Failed to delete question' });
   }
 });
+// Submit an exam (Auto-grade)
+router.post('/:id/submit', requireAuth, async (req: AuthRequest, res) => {
+  try {
+    const examId = req.params.id as string;
+    const { responses } = req.body;
+    
+    const existingResult = await prisma.cBTResult.findUnique({
+      where: { examId_studentId: { examId, studentId: req.user!.id } }
+    });
+    
+    if (existingResult) {
+      return res.status(400).json({ error: 'You have already submitted this exam.' });
+    }
+
+    const exam = await prisma.cBTExam.findUnique({
+      where: { id: examId },
+      include: { questions: true }
+    });
+    
+    if (!exam || exam.schoolId !== req.user!.schoolId) {
+      return res.status(404).json({ error: 'Exam not found' });
+    }
+
+    let score = 0;
+    const totalMarks = exam.totalMarks;
+
+    exam.questions.forEach((q) => {
+      const studentAns = responses[q.id];
+      const correctAns = q.answer;
+
+      if (studentAns === undefined || studentAns === null) return;
+
+      if (q.type === 'Single choice') {
+        if (studentAns === correctAns) score += q.mark;
+      } else if (q.type === 'Multiple choice') {
+        if (Array.isArray(studentAns) && Array.isArray(correctAns)) {
+          const isCorrect = studentAns.length === correctAns.length && 
+            studentAns.every(val => correctAns.includes(val));
+          if (isCorrect) score += q.mark;
+        }
+      } else if (q.type === 'True or false') {
+        if (studentAns === correctAns) score += q.mark;
+      } else if (q.type === 'Fill in the blanks') {
+        if (typeof studentAns === 'string' && typeof correctAns === 'string') {
+          if (studentAns.trim().toLowerCase() === correctAns.trim().toLowerCase()) {
+            score += q.mark;
+          }
+        }
+      }
+    });
+
+    const percent = totalMarks > 0 ? (score / totalMarks) * 100 : 0;
+    const status = percent >= exam.passingPercent ? 'Pass' : 'Fail';
+
+    const result = await prisma.cBTResult.create({
+      data: {
+        examId,
+        studentId: req.user!.id,
+        score,
+        totalMarks,
+        status,
+        responses
+      }
+    });
+
+    res.json({ success: true, result });
+  } catch (error) {
+    console.error('Error submitting exam:', error);
+    res.status(500).json({ error: 'Failed to submit exam' });
+  }
+});
+
+// Get all results for an exam
+router.get('/:id/results', requireAuth, requireRole('TEACHER', 'SCHOOL_ADMIN', 'SUPER_ADMIN'), async (req: AuthRequest, res) => {
+  try {
+    const examId = req.params.id as string;
+    
+    const exam = await prisma.cBTExam.findUnique({ where: { id: examId } });
+    if (!exam || exam.schoolId !== req.user!.schoolId) {
+      return res.status(404).json({ error: 'Exam not found' });
+    }
+
+    const results = await prisma.cBTResult.findMany({
+      where: { examId },
+      orderBy: { createdAt: 'desc' }
+    });
+
+    const studentIds = results.map(r => r.studentId);
+    
+    // In skulas, a logged-in student uses User model. Sometimes User.student is linked. Let's fetch Users.
+    const users = await prisma.user.findMany({
+      where: { id: { in: studentIds } },
+      include: { student: { include: { class: true } } }
+    });
+
+    const userMap = new Map();
+    users.forEach(u => userMap.set(u.id, u));
+
+    const enrichedResults = results.map(r => {
+      const u = userMap.get(r.studentId);
+      return {
+        ...r,
+        student: u ? {
+          firstName: u.firstName,
+          lastName: u.lastName,
+          class: u.student?.class ? { name: u.student.class.name } : null
+        } : null
+      };
+    });
+
+    res.json(enrichedResults);
+  } catch (error) {
+    console.error('Error fetching exam results:', error);
+    res.status(500).json({ error: 'Failed to fetch exam results' });
+  }
+});
+
+// Remark a student's result
+router.put('/results/:resultId', requireAuth, requireRole('TEACHER', 'SCHOOL_ADMIN', 'SUPER_ADMIN'), async (req: AuthRequest, res) => {
+  try {
+    const resultId = req.params.resultId as string;
+    const { score, status } = req.body;
+
+    const result = await prisma.cBTResult.findUnique({
+      where: { id: resultId },
+      include: { exam: true }
+    });
+
+    if (!result || result.exam.schoolId !== req.user!.schoolId) {
+      return res.status(404).json({ error: 'Result not found' });
+    }
+
+    const updated = await prisma.cBTResult.update({
+      where: { id: resultId },
+      data: { score: Number(score), status }
+    });
+
+    res.json({ success: true, result: updated });
+  } catch (error) {
+    console.error('Error updating exam result:', error);
+    res.status(500).json({ error: 'Failed to update result' });
+  }
+});
 
 export default router;

@@ -1,12 +1,17 @@
-import express from 'express';
-import { requireAuth, requireRole } from '../middleware/auth';
-import prisma from '../lib/prisma';
-const router = express.Router();
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = __importDefault(require("express"));
+const auth_1 = require("../middleware/auth");
+const prisma_1 = __importDefault(require("../lib/prisma"));
+const router = express_1.default.Router();
 // GET all vehicles for user's school
-router.get('/', requireAuth, async (req, res) => {
+router.get('/', auth_1.requireAuth, async (req, res) => {
     try {
         const schoolId = req.user.schoolId;
-        const vehicles = await prisma.schoolVehicle.findMany({
+        const vehicles = await prisma_1.default.schoolVehicle.findMany({
             where: { schoolId },
             orderBy: { createdAt: 'desc' }
         });
@@ -17,11 +22,11 @@ router.get('/', requireAuth, async (req, res) => {
     }
 });
 // POST create a vehicle
-router.post('/', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR', 'ANCILLARY'), async (req, res) => {
+router.post('/', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'BURSAR', 'ANCILLARY'), async (req, res) => {
     try {
         const schoolId = req.user.schoolId;
         const { name, number, model, quantity, yearMade, driverName, driverLicense, driverContact, status, description } = req.body;
-        const vehicle = await prisma.schoolVehicle.create({
+        const vehicle = await prisma_1.default.schoolVehicle.create({
             data: {
                 schoolId,
                 name,
@@ -38,7 +43,7 @@ router.post('/', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR', 'ANCILLARY')
         });
         // Automatically register as general school asset
         try {
-            await prisma.asset.create({
+            await prisma_1.default.asset.create({
                 data: {
                     schoolId,
                     name: `${name} (${number})`,
@@ -59,12 +64,12 @@ router.post('/', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR', 'ANCILLARY')
     }
 });
 // PUT update a vehicle
-router.put('/:id', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR', 'ANCILLARY'), async (req, res) => {
+router.put('/:id', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'BURSAR', 'ANCILLARY'), async (req, res) => {
     try {
         const schoolId = req.user.schoolId;
         const { id } = req.params;
         const { name, number, model, quantity, yearMade, driverName, driverLicense, driverContact, status, description } = req.body;
-        const vehicle = await prisma.schoolVehicle.update({
+        const vehicle = await prisma_1.default.schoolVehicle.update({
             where: { id: id, schoolId },
             data: {
                 name,
@@ -86,11 +91,11 @@ router.put('/:id', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR', 'ANCILLARY
     }
 });
 // DELETE a vehicle
-router.delete('/:id', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR', 'ANCILLARY'), async (req, res) => {
+router.delete('/:id', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'BURSAR', 'ANCILLARY'), async (req, res) => {
     try {
         const schoolId = req.user.schoolId;
         const { id } = req.params;
-        await prisma.schoolVehicle.delete({
+        await prisma_1.default.schoolVehicle.delete({
             where: { id: id, schoolId }
         });
         res.json({ success: true });
@@ -99,5 +104,5 @@ router.delete('/:id', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR', 'ANCILL
         res.status(500).json({ error: 'Failed to delete vehicle' });
     }
 });
-export default router;
+exports.default = router;
 //# sourceMappingURL=vehicles.js.map

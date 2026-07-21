@@ -1,14 +1,19 @@
-import { Router } from 'express';
-import prisma from '../lib/prisma';
-import { requireAuth, requireRole } from '../middleware/auth';
-const router = Router();
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const prisma_1 = __importDefault(require("../lib/prisma"));
+const auth_1 = require("../middleware/auth");
+const router = (0, express_1.Router)();
 /**
  * @route   GET /api/support/my
  * @desc    Get support tickets for the current user
  */
-router.get('/my', requireAuth, async (req, res) => {
+router.get('/my', auth_1.requireAuth, async (req, res) => {
     try {
-        const tickets = await prisma.supportTicket.findMany({
+        const tickets = await prisma_1.default.supportTicket.findMany({
             where: { requesterId: req.user.id },
             orderBy: { createdAt: 'desc' },
         });
@@ -22,9 +27,9 @@ router.get('/my', requireAuth, async (req, res) => {
  * @route   GET /api/support/admin
  * @desc    [ADMIN] Get all support tickets for the school
  */
-router.get('/admin', requireAuth, requireRole('SCHOOL_ADMIN', 'SUPER_ADMIN'), async (req, res) => {
+router.get('/admin', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'SUPER_ADMIN'), async (req, res) => {
     try {
-        const tickets = await prisma.supportTicket.findMany({
+        const tickets = await prisma_1.default.supportTicket.findMany({
             where: { schoolId: req.user.schoolId },
             orderBy: { createdAt: 'desc' },
             select: {
@@ -56,13 +61,13 @@ router.get('/admin', requireAuth, requireRole('SCHOOL_ADMIN', 'SUPER_ADMIN'), as
  * @route   POST /api/support
  * @desc    Create a new support ticket
  */
-router.post('/', requireAuth, async (req, res) => {
+router.post('/', auth_1.requireAuth, async (req, res) => {
     const { title, description, category, priority } = req.body;
     if (!title || !description || !category) {
         return res.status(400).json({ error: 'Title, description and category are required' });
     }
     try {
-        const ticket = await prisma.supportTicket.create({
+        const ticket = await prisma_1.default.supportTicket.create({
             data: {
                 title,
                 description,
@@ -83,11 +88,11 @@ router.post('/', requireAuth, async (req, res) => {
  * @route   PATCH /api/support/:id
  * @desc    [ADMIN] Update ticket status or assignment
  */
-router.patch('/:id', requireAuth, requireRole('SCHOOL_ADMIN'), async (req, res) => {
+router.patch('/:id', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN'), async (req, res) => {
     const { id } = req.params;
     const { status, priority, assignedTo } = req.body;
     try {
-        const ticket = await prisma.supportTicket.update({
+        const ticket = await prisma_1.default.supportTicket.update({
             where: { id: String(id), schoolId: req.user.schoolId },
             data: {
                 status,
@@ -102,5 +107,5 @@ router.patch('/:id', requireAuth, requireRole('SCHOOL_ADMIN'), async (req, res) 
         res.status(500).json({ error: 'Failed to update ticket' });
     }
 });
-export default router;
+exports.default = router;
 //# sourceMappingURL=support.js.map

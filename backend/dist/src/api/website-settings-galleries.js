@@ -1,10 +1,15 @@
-import express from 'express';
-import { requireAuth, requireRole } from '../middleware/auth';
-import prisma from '../lib/prisma';
-const router = express.Router();
-router.get('/', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCILLARY'), async (req, res) => {
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = __importDefault(require("express"));
+const auth_1 = require("../middleware/auth");
+const prisma_1 = __importDefault(require("../lib/prisma"));
+const router = express_1.default.Router();
+router.get('/', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'ANCILLARY'), async (req, res) => {
     try {
-        const galleries = await prisma.gallery.findMany({
+        const galleries = await prisma_1.default.gallery.findMany({
             where: { schoolId: req.user.schoolId },
             orderBy: { createdAt: 'desc' }
         });
@@ -14,10 +19,10 @@ router.get('/', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCILLARY'), async (re
         res.status(500).json({ error: 'Failed to fetch galleries' });
     }
 });
-router.post('/', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCILLARY'), async (req, res) => {
+router.post('/', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'ANCILLARY'), async (req, res) => {
     try {
         const { title, content, createdAt, coverImage, category } = req.body;
-        const gallery = await prisma.gallery.create({
+        const gallery = await prisma_1.default.gallery.create({
             data: {
                 title,
                 content,
@@ -34,11 +39,11 @@ router.post('/', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCILLARY'), async (r
         res.status(500).json({ error: 'Failed to create gallery' });
     }
 });
-router.put('/:id', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCILLARY'), async (req, res) => {
+router.put('/:id', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'ANCILLARY'), async (req, res) => {
     try {
         const { id } = req.params;
         const { title, content, createdAt, coverImage, category } = req.body;
-        const updated = await prisma.gallery.update({
+        const updated = await prisma_1.default.gallery.update({
             where: {
                 id: id,
                 schoolId: req.user.schoolId
@@ -58,9 +63,9 @@ router.put('/:id', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCILLARY'), async 
         res.status(500).json({ error: 'Failed to update gallery' });
     }
 });
-router.delete('/:id', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCILLARY'), async (req, res) => {
+router.delete('/:id', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'ANCILLARY'), async (req, res) => {
     try {
-        await prisma.gallery.delete({
+        await prisma_1.default.gallery.delete({
             where: {
                 id: req.params.id,
                 schoolId: req.user.schoolId
@@ -72,5 +77,5 @@ router.delete('/:id', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCILLARY'), asy
         res.status(500).json({ error: 'Failed to delete gallery' });
     }
 });
-export default router;
+exports.default = router;
 //# sourceMappingURL=website-settings-galleries.js.map

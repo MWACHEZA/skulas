@@ -571,6 +571,11 @@ export default function ManageCBT() {
                               <i className="fas fa-upload"></i>
                             </button>
                           )}
+                          {(exam.status === 'Active' || exam.status === 'Expired') && (
+                            <button className="portal-btn-ghost" style={{ padding: '8px', width: '36px', height: '36px', color: '#f59e0b', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="View Results & Remark" onClick={() => navigate(`${basePath}/cbt/manage/${exam.id}/results`)}>
+                              <i className="fas fa-poll"></i>
+                            </button>
+                          )}
                           <button className="portal-btn-ghost" style={{ padding: '8px', width: '36px', height: '36px', color: '#dc2626', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Delete Exam" onClick={() => handleDelete(exam.id)}>
                             <i className="fas fa-trash-alt"></i>
                           </button>

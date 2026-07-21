@@ -1,8 +1,13 @@
-import { PrismaClient } from '../generated/client';
-import fs from 'fs';
-import path from 'path';
-const prisma = new PrismaClient();
-const UPLOADS_ROOT = path.join(process.cwd(), 'storage');
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const client_1 = require("../generated/client");
+const fs_1 = __importDefault(require("fs"));
+const path_1 = __importDefault(require("path"));
+const prisma = new client_1.PrismaClient();
+const UPLOADS_ROOT = path_1.default.join(process.cwd(), 'storage');
 async function migrate() {
     console.log('🚀 Starting Final Assignment & Submission Migration...');
     // 1. Migrate Teacher Assignment Attachments
@@ -22,11 +27,11 @@ async function migrate() {
         const newAttachments = [];
         for (const file of attachments) {
             if (file.url && !file.url.startsWith(teacher.school.code)) {
-                const oldFilename = path.basename(file.url);
+                const oldFilename = path_1.default.basename(file.url);
                 const oldAbsPath = findFile(oldFilename, ['storage/images', 'storage/assignments', 'storage']);
                 if (oldAbsPath) {
-                    const newRelDir = path.join(teacher.school.code, 'staff', teacher.staffId, 'assignments');
-                    const newRelPath = path.join(newRelDir, oldFilename).replace(/\\/g, '/');
+                    const newRelDir = path_1.default.join(teacher.school.code, 'staff', teacher.staffId, 'assignments');
+                    const newRelPath = path_1.default.join(newRelDir, oldFilename).replace(/\\/g, '/');
                     await moveFile(oldAbsPath, newRelPath);
                     newAttachments.push({ ...file, url: newRelPath });
                     updated = true;
@@ -61,11 +66,11 @@ async function migrate() {
         const newAttachments = [];
         for (const file of attachments) {
             if (file.url && !file.url.startsWith(student.school.code)) {
-                const oldFilename = path.basename(file.url);
+                const oldFilename = path_1.default.basename(file.url);
                 const oldAbsPath = findFile(oldFilename, ['storage/submissions', 'storage/images', 'storage']);
                 if (oldAbsPath) {
-                    const newRelDir = path.join(student.school.code, 'students', student.studentId, 'submissions');
-                    const newRelPath = path.join(newRelDir, oldFilename).replace(/\\/g, '/');
+                    const newRelDir = path_1.default.join(student.school.code, 'students', student.studentId, 'submissions');
+                    const newRelPath = path_1.default.join(newRelDir, oldFilename).replace(/\\/g, '/');
                     await moveFile(oldAbsPath, newRelPath);
                     newAttachments.push({ ...file, url: newRelPath });
                     updated = true;
@@ -88,23 +93,23 @@ async function migrate() {
 }
 function findFile(filename, searchPaths) {
     for (const dir of searchPaths) {
-        const p = path.join(process.cwd(), dir, filename);
-        if (fs.existsSync(p))
+        const p = path_1.default.join(process.cwd(), dir, filename);
+        if (fs_1.default.existsSync(p))
             return p;
     }
     return null;
 }
 async function moveFile(oldAbsPath, newRelPath) {
-    const newAbsPath = path.join(UPLOADS_ROOT, newRelPath);
-    const newDir = path.dirname(newAbsPath);
-    if (!fs.existsSync(newDir)) {
-        fs.mkdirSync(newDir, { recursive: true });
+    const newAbsPath = path_1.default.join(UPLOADS_ROOT, newRelPath);
+    const newDir = path_1.default.dirname(newAbsPath);
+    if (!fs_1.default.existsSync(newDir)) {
+        fs_1.default.mkdirSync(newDir, { recursive: true });
     }
     try {
         if (oldAbsPath === newAbsPath)
             return;
-        fs.renameSync(oldAbsPath, newAbsPath);
-        console.log(`➡️  Moved: ${path.basename(oldAbsPath)} -> ${newRelPath}`);
+        fs_1.default.renameSync(oldAbsPath, newAbsPath);
+        console.log(`➡️  Moved: ${path_1.default.basename(oldAbsPath)} -> ${newRelPath}`);
     }
     catch (err) {
         console.error(`❌ Failed to move ${oldAbsPath}:`, err);

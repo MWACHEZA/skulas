@@ -1,9 +1,14 @@
-import { Router } from 'express';
-import path from 'path';
-import fs from 'fs';
-import { requireAuth } from '../middleware/auth';
-const router = Router();
-const STORAGE_ROOT = path.join(__dirname, '../../storage');
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const path_1 = __importDefault(require("path"));
+const fs_1 = __importDefault(require("fs"));
+const auth_1 = require("../middleware/auth");
+const router = (0, express_1.Router)();
+const STORAGE_ROOT = path_1.default.join(__dirname, '../../storage');
 const collapseDuplicateFolders = (filePath) => {
     const parts = filePath.split('/');
     const cleanParts = [];
@@ -18,7 +23,7 @@ const collapseDuplicateFolders = (filePath) => {
  * @route   GET /api/storage/file/*
  * @desc    Protected institutional file serving
  */
-router.get(/\/file\/(.*)/, requireAuth, (req, res) => {
+router.get(/\/file\/(.*)/, auth_1.requireAuth, (req, res) => {
     let filePath = req.params[0]; // e.g. AX-EMBAKWE/global/images/logo.png
     if (!filePath) {
         return res.status(400).json({ error: 'Missing file path' });
@@ -37,9 +42,9 @@ router.get(/\/file\/(.*)/, requireAuth, (req, res) => {
         // For now, strict isolation
         return res.status(403).json({ error: 'Access denied: Institutional boundary violation' });
     }
-    const fullPath = path.join(STORAGE_ROOT, filePath);
+    const fullPath = path_1.default.join(STORAGE_ROOT, filePath);
     // 3. File Existence Check
-    if (!fs.existsSync(fullPath) || fs.lstatSync(fullPath).isDirectory()) {
+    if (!fs_1.default.existsSync(fullPath) || fs_1.default.lstatSync(fullPath).isDirectory()) {
         return res.status(404).json({ error: 'File not found' });
     }
     // 4. RBAC Check (Sub-Folder specific)
@@ -65,8 +70,8 @@ router.get(/\/file\/(.*)/, requireAuth, (req, res) => {
  */
 router.get(/\/public\/(.*)/, (req, res) => {
     const filePath = req.params[0];
-    const fullPath = path.join(STORAGE_ROOT, 'public', filePath);
-    if (filePath.includes('..') || !fs.existsSync(fullPath) || fs.lstatSync(fullPath).isDirectory()) {
+    const fullPath = path_1.default.join(STORAGE_ROOT, 'public', filePath);
+    if (filePath.includes('..') || !fs_1.default.existsSync(fullPath) || fs_1.default.lstatSync(fullPath).isDirectory()) {
         return res.status(404).send('Not Found');
     }
     res.setHeader('Cache-Control', 'public, max-age=86400'); // Cache for 24h
@@ -91,28 +96,28 @@ router.get(/\/media\/([^\/]+)\/(.*)/, (req, res) => {
     // Collapse duplicate adjacent folders
     filePath = collapseDuplicateFolders(filePath);
     // 2. Extension Check: Only allow images to be served publicly
-    const ext = path.extname(filePath).toLowerCase();
+    const ext = path_1.default.extname(filePath).toLowerCase();
     const allowedExtensions = ['.jpg', '.jpeg', '.png', '.webp', '.svg', '.gif'];
     if (!allowedExtensions.includes(ext)) {
         return res.status(403).json({ error: 'Access denied: Targeted resource type is not public' });
     }
-    const fullPath = path.join(STORAGE_ROOT, schoolCode, filePath);
-    if (!fs.existsSync(fullPath) || fs.lstatSync(fullPath).isDirectory()) {
-        const filename = path.basename(filePath);
+    const fullPath = path_1.default.join(STORAGE_ROOT, schoolCode, filePath);
+    if (!fs_1.default.existsSync(fullPath) || fs_1.default.lstatSync(fullPath).isDirectory()) {
+        const filename = path_1.default.basename(filePath);
         console.log(`[Storage API] File not found: ${fullPath}. Filename: ${filename}`);
         // 1. Fallback: Check common silos first for exact file match
         const fallbacks = [
-            path.join(STORAGE_ROOT, schoolCode, 'global', 'library', 'catalog', filename),
-            path.join(STORAGE_ROOT, schoolCode, 'global', 'assets', 'inventory', filename),
-            path.join(STORAGE_ROOT, schoolCode, 'global', 'academic', 'clubs', filename),
-            path.join(STORAGE_ROOT, schoolCode, 'global', 'academic', 'sports', filename),
-            path.join(STORAGE_ROOT, schoolCode, 'global', 'academic', 'branding', filename),
-            path.join(STORAGE_ROOT, schoolCode, 'global', 'branding', filename),
-            path.join(STORAGE_ROOT, schoolCode, 'global', 'images', filename),
-            path.join(STORAGE_ROOT, schoolCode, 'global', 'profiles', filename)
+            path_1.default.join(STORAGE_ROOT, schoolCode, 'global', 'library', 'catalog', filename),
+            path_1.default.join(STORAGE_ROOT, schoolCode, 'global', 'assets', 'inventory', filename),
+            path_1.default.join(STORAGE_ROOT, schoolCode, 'global', 'academic', 'clubs', filename),
+            path_1.default.join(STORAGE_ROOT, schoolCode, 'global', 'academic', 'sports', filename),
+            path_1.default.join(STORAGE_ROOT, schoolCode, 'global', 'academic', 'branding', filename),
+            path_1.default.join(STORAGE_ROOT, schoolCode, 'global', 'branding', filename),
+            path_1.default.join(STORAGE_ROOT, schoolCode, 'global', 'images', filename),
+            path_1.default.join(STORAGE_ROOT, schoolCode, 'global', 'profiles', filename)
         ];
         for (const fallbackPath of fallbacks) {
-            if (fs.existsSync(fallbackPath) && !fs.lstatSync(fallbackPath).isDirectory()) {
+            if (fs_1.default.existsSync(fallbackPath) && !fs_1.default.lstatSync(fallbackPath).isDirectory()) {
                 res.setHeader('Cache-Control', 'public, max-age=3600');
                 return res.sendFile(fallbackPath);
             }
@@ -121,19 +126,19 @@ router.get(/\/media\/([^\/]+)\/(.*)/, (req, res) => {
         if (filename.toLowerCase().startsWith('logo')) {
             console.log(`[Storage API] Logo requested: ${filename}. Searching dirs...`);
             const logoDirs = [
-                path.join(STORAGE_ROOT, schoolCode, 'global', 'branding'),
-                path.join(STORAGE_ROOT, schoolCode, 'global', 'academic', 'branding'),
-                path.join(STORAGE_ROOT, schoolCode, 'global', 'images')
+                path_1.default.join(STORAGE_ROOT, schoolCode, 'global', 'branding'),
+                path_1.default.join(STORAGE_ROOT, schoolCode, 'global', 'academic', 'branding'),
+                path_1.default.join(STORAGE_ROOT, schoolCode, 'global', 'images')
             ];
             for (const dir of logoDirs) {
                 console.log(`[Storage API] Checking dir: ${dir}`);
-                if (fs.existsSync(dir)) {
-                    const files = fs.readdirSync(dir);
+                if (fs_1.default.existsSync(dir)) {
+                    const files = fs_1.default.readdirSync(dir);
                     console.log(`[Storage API] Files in dir:`, files);
                     const matchingFile = files.find(f => f.toLowerCase().startsWith('logo'));
                     if (matchingFile) {
-                        const matchedPath = path.join(dir, matchingFile);
-                        if (!fs.lstatSync(matchedPath).isDirectory()) {
+                        const matchedPath = path_1.default.join(dir, matchingFile);
+                        if (!fs_1.default.lstatSync(matchedPath).isDirectory()) {
                             console.log(`[Storage API] Found matching logo: ${matchedPath}`);
                             res.setHeader('Cache-Control', 'public, max-age=3600');
                             return res.sendFile(matchedPath);
@@ -147,5 +152,5 @@ router.get(/\/media\/([^\/]+)\/(.*)/, (req, res) => {
     res.setHeader('Cache-Control', 'public, max-age=3600');
     res.sendFile(fullPath);
 });
-export default router;
+exports.default = router;
 //# sourceMappingURL=storage.js.map

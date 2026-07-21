@@ -1,12 +1,17 @@
-import { Router } from 'express';
-import prisma from '../lib/prisma';
-import { requireAuth, requireRole } from '../middleware/auth';
-const router = Router();
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const prisma_1 = __importDefault(require("../lib/prisma"));
+const auth_1 = require("../middleware/auth");
+const router = (0, express_1.Router)();
 // Get syllabus items (Scheme of Work)
-router.get('/', requireAuth, async (req, res) => {
+router.get('/', auth_1.requireAuth, async (req, res) => {
     try {
         const { classId, subjectId } = req.query;
-        const syllabuses = await prisma.syllabus.findMany({
+        const syllabuses = await prisma_1.default.syllabus.findMany({
             where: {
                 schoolId: req.user.schoolId,
                 ...(classId ? { classId: classId } : {}),
@@ -26,13 +31,13 @@ router.get('/', requireAuth, async (req, res) => {
     }
 });
 // Create a syllabus item
-router.post('/', requireAuth, requireRole('TEACHER', 'SCHOOL_ADMIN', 'SUPER_ADMIN'), async (req, res) => {
+router.post('/', auth_1.requireAuth, (0, auth_1.requireRole)('TEACHER', 'SCHOOL_ADMIN', 'SUPER_ADMIN'), async (req, res) => {
     try {
         const { classId, subjectId, topic, content, week } = req.body;
         if (!classId || !subjectId || !topic || !content || !week) {
             return res.status(400).json({ error: 'All fields are required' });
         }
-        const syllabus = await prisma.syllabus.create({
+        const syllabus = await prisma_1.default.syllabus.create({
             data: {
                 classId,
                 subjectId,
@@ -50,13 +55,13 @@ router.post('/', requireAuth, requireRole('TEACHER', 'SCHOOL_ADMIN', 'SUPER_ADMI
     }
 });
 // Delete a syllabus item
-router.delete('/:id', requireAuth, requireRole('TEACHER', 'SCHOOL_ADMIN', 'SUPER_ADMIN'), async (req, res) => {
+router.delete('/:id', auth_1.requireAuth, (0, auth_1.requireRole)('TEACHER', 'SCHOOL_ADMIN', 'SUPER_ADMIN'), async (req, res) => {
     try {
-        const existing = await prisma.syllabus.findUnique({ where: { id: req.params.id } });
+        const existing = await prisma_1.default.syllabus.findFirst({ where: { id: req.params.id } });
         if (!existing || existing.schoolId !== req.user.schoolId) {
             return res.status(404).json({ error: 'Syllabus item not found' });
         }
-        await prisma.syllabus.delete({ where: { id: req.params.id } });
+        await prisma_1.default.syllabus.delete({ where: { id: req.params.id } });
         res.json({ success: true });
     }
     catch (error) {
@@ -64,5 +69,5 @@ router.delete('/:id', requireAuth, requireRole('TEACHER', 'SCHOOL_ADMIN', 'SUPER
         res.status(500).json({ error: 'Failed to delete syllabus item' });
     }
 });
-export default router;
+exports.default = router;
 //# sourceMappingURL=syllabus.js.map

@@ -1,10 +1,15 @@
-import { Router } from 'express';
-import prisma from '../lib/prisma';
-import { requireAuth } from '../middleware/auth';
-import { logAction } from '../utils/audit';
-const router = Router();
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const prisma_1 = __importDefault(require("../lib/prisma"));
+const auth_1 = require("../middleware/auth");
+const audit_1 = require("../utils/audit");
+const router = (0, express_1.Router)();
 // Middleware: all chaplaincy routes require authentication
-router.use(requireAuth);
+router.use(auth_1.requireAuth);
 /**
  * Helper to check if user has chaplaincy administrative permissions
  */
@@ -19,7 +24,7 @@ const isChaplaincyAdmin = (user) => {
  */
 router.get('/events', async (req, res) => {
     try {
-        const events = await prisma.chaplaincyEvent.findMany({
+        const events = await prisma_1.default.chaplaincyEvent.findMany({
             where: { schoolId: req.user.schoolId },
             orderBy: { date: 'asc' }
         });
@@ -43,7 +48,7 @@ router.post('/events', async (req, res) => {
         return res.status(400).json({ error: 'Missing required service fields' });
     }
     try {
-        const event = await prisma.chaplaincyEvent.create({
+        const event = await prisma_1.default.chaplaincyEvent.create({
             data: {
                 title,
                 type,
@@ -53,7 +58,7 @@ router.post('/events', async (req, res) => {
                 schoolId: req.user.schoolId
             }
         });
-        await logAction(req, 'CREATE_CHAPLAINCY_EVENT', 'ChaplaincyEvent', event.id, { title });
+        await (0, audit_1.logAction)(req, 'CREATE_CHAPLAINCY_EVENT', 'ChaplaincyEvent', event.id, { title });
         res.json(event);
     }
     catch (error) {
@@ -74,7 +79,7 @@ router.post('/broadcast', async (req, res) => {
         return res.status(400).json({ error: 'Reflection content is required' });
     }
     try {
-        const announcement = await prisma.announcement.create({
+        const announcement = await prisma_1.default.announcement.create({
             data: {
                 title: 'Daily Reflection',
                 content,
@@ -83,7 +88,7 @@ router.post('/broadcast', async (req, res) => {
                 schoolId: req.user.schoolId
             }
         });
-        await logAction(req, 'CREATE_CHAPLAINCY_REFLECTION', 'Announcement', announcement.id, { title: 'Daily Reflection' });
+        await (0, audit_1.logAction)(req, 'CREATE_CHAPLAINCY_REFLECTION', 'Announcement', announcement.id, { title: 'Daily Reflection' });
         res.json(announcement);
     }
     catch (error) {
@@ -97,7 +102,7 @@ router.post('/broadcast', async (req, res) => {
  */
 router.get('/religion-stats', async (req, res) => {
     try {
-        const users = await prisma.user.findMany({
+        const users = await prisma_1.default.user.findMany({
             where: { schoolId: req.user.schoolId },
             select: { role: true, religion: true }
         });
@@ -125,7 +130,7 @@ router.get('/religion-stats', async (req, res) => {
  */
 router.get('/team', async (req, res) => {
     try {
-        const team = await prisma.user.findMany({
+        const team = await prisma_1.default.user.findMany({
             where: {
                 schoolId: req.user.schoolId,
                 secondaryRoles: {
@@ -147,5 +152,5 @@ router.get('/team', async (req, res) => {
         res.status(500).json({ error: 'Failed to fetch chaplaincy team list' });
     }
 });
-export default router;
+exports.default = router;
 //# sourceMappingURL=chaplaincy.js.map

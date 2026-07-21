@@ -1,11 +1,16 @@
-import { Router } from 'express';
-import prisma from '../lib/prisma';
-import { requireAuth } from '../middleware/auth';
-const router = Router();
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const prisma_1 = __importDefault(require("../lib/prisma"));
+const auth_1 = require("../middleware/auth");
+const router = (0, express_1.Router)();
 // Get the logged in user's payslips (salary stubs)
-router.get('/my', requireAuth, async (req, res) => {
+router.get('/my', auth_1.requireAuth, async (req, res) => {
     try {
-        const payslips = await prisma.salaryStub.findMany({
+        const payslips = await prisma_1.default.salaryStub.findMany({
             where: {
                 schoolId: req.user.schoolId,
                 userId: req.user.id
@@ -28,5 +33,5 @@ router.get('/my', requireAuth, async (req, res) => {
         res.status(500).json({ error: 'Failed to fetch payslips' });
     }
 });
-export default router;
+exports.default = router;
 //# sourceMappingURL=payslips.js.map

@@ -1,16 +1,21 @@
-import { Router } from 'express';
-import prisma from '../lib/prisma';
-import { requireAuth, requireRole } from '../middleware/auth';
-import { generateShortCode } from '../lib/utils';
-const router = Router();
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const prisma_1 = __importDefault(require("../lib/prisma"));
+const auth_1 = require("../middleware/auth");
+const utils_1 = require("../lib/utils");
+const router = (0, express_1.Router)();
 /**
  * @route   GET /api/subjects
  * @desc    Get all subjects for the school
  */
-router.get('/', requireAuth, async (req, res) => {
+router.get('/', auth_1.requireAuth, async (req, res) => {
     const schoolId = req.user.schoolId;
     try {
-        const subjects = await prisma.subject.findMany({
+        const subjects = await prisma_1.default.subject.findMany({
             where: { schoolId },
             include: {
                 dept: { select: { name: true } },
@@ -28,12 +33,12 @@ router.get('/', requireAuth, async (req, res) => {
  * @route   POST /api/subjects
  * @desc    Create a new subject
  */
-router.post('/', requireAuth, requireRole('SCHOOL_ADMIN'), async (req, res) => {
+router.post('/', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN'), async (req, res) => {
     const { name, code, departmentId, department, credits, isIndustrial, isProject, isSubsidiary, caWeight, examWeight } = req.body;
     const schoolId = req.user.schoolId;
     try {
-        const finalCode = code || generateShortCode(name);
-        const newSubject = await prisma.subject.create({
+        const finalCode = code || (0, utils_1.generateShortCode)(name);
+        const newSubject = await prisma_1.default.subject.create({
             data: {
                 name,
                 code: finalCode,
@@ -59,15 +64,15 @@ router.post('/', requireAuth, requireRole('SCHOOL_ADMIN'), async (req, res) => {
  * @route   PUT /api/subjects/:id
  * @desc    Update a subject
  */
-router.put('/:id', requireAuth, requireRole('SCHOOL_ADMIN'), async (req, res) => {
+router.put('/:id', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN'), async (req, res) => {
     const { id } = req.params;
     const { name, code, departmentId, department, credits, isIndustrial, isProject, isSubsidiary, caWeight, examWeight } = req.body;
     try {
-        const updatedSubject = await prisma.subject.update({
+        const updatedSubject = await prisma_1.default.subject.update({
             where: { id: id },
             data: {
                 name,
-                code: code || generateShortCode(name),
+                code: code || (0, utils_1.generateShortCode)(name),
                 department,
                 departmentId,
                 credits: credits ? parseFloat(credits) : undefined,
@@ -89,15 +94,15 @@ router.put('/:id', requireAuth, requireRole('SCHOOL_ADMIN'), async (req, res) =>
  * @route   DELETE /api/subjects/:id
  * @desc    Delete a subject
  */
-router.delete('/:id', requireAuth, requireRole('SCHOOL_ADMIN'), async (req, res) => {
+router.delete('/:id', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN'), async (req, res) => {
     const { id } = req.params;
     try {
-        await prisma.subject.delete({ where: { id: id } });
+        await prisma_1.default.subject.delete({ where: { id: id } });
         res.json({ success: true });
     }
     catch (error) {
         res.status(500).json({ error: 'Failed to delete subject' });
     }
 });
-export default router;
+exports.default = router;
 //# sourceMappingURL=subjects.js.map

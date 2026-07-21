@@ -1,9 +1,15 @@
-import prisma from '../lib/prisma';
-export const logAction = async (req, action, entityType, entityId, details) => {
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.logAction = void 0;
+const prisma_1 = __importDefault(require("../lib/prisma"));
+const logAction = async (req, action, entityType, entityId, details) => {
     try {
         if (!req.user || !req.user.schoolId)
             return;
-        await prisma.auditLog.create({
+        await prisma_1.default.auditLog.create({
             data: {
                 action,
                 entityType,
@@ -19,4 +25,5 @@ export const logAction = async (req, action, entityType, entityId, details) => {
         console.error('Audit Log Error:', err);
     }
 };
+exports.logAction = logAction;
 //# sourceMappingURL=audit.js.map

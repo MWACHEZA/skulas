@@ -1,6 +1,12 @@
-import PDFDocument from 'pdfkit';
-export async function generateAcademicReportPDF(data, res) {
-    const doc = new PDFDocument({ margin: 50, size: 'A4' });
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.generateAcademicReportPDF = generateAcademicReportPDF;
+const pdfkit_1 = __importDefault(require("pdfkit"));
+async function generateAcademicReportPDF(data, res) {
+    const doc = new pdfkit_1.default({ margin: 50, size: 'A4' });
     const isMedical = data.school.type?.toLowerCase().includes('nursing') ||
         data.school.type?.toLowerCase().includes('medical');
     const primaryColor = data.school.branding?.primaryColor || '#3182ce';

@@ -1,22 +1,155 @@
-import { Router } from 'express';
-import bcrypt from 'bcryptjs';
-import prisma from '../lib/prisma';
-import { requireAuth, requireRole } from '../middleware/auth';
-import { generateSequentialId } from '../lib/id-generator';
-import { submissionUpload } from '../middleware/upload';
-import { uploadLimiter } from '../middleware/rate-limit';
-const router = Router();
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const crypto_1 = __importDefault(require("crypto"));
+const bcryptjs_1 = __importDefault(require("bcryptjs"));
+const prisma_1 = __importDefault(require("../lib/prisma"));
+const auth_1 = require("../middleware/auth");
+const id_generator_1 = require("../lib/id-generator");
+const upload_1 = require("../middleware/upload");
+const rate_limit_1 = require("../middleware/rate-limit");
+const validation_1 = require("../middleware/validation");
+const student_schema_1 = require("../schemas/student.schema");
+const multer_1 = __importDefault(require("multer"));
+const xlsx_utils_1 = require("../lib/xlsx-utils");
+const upload = (0, multer_1.default)({ storage: multer_1.default.memoryStorage() });
+const router = (0, express_1.Router)();
+/**
+ * @route   GET /api/students/template
+ * @desc    Download the Excel template for student imports
+ */
+router.get('/template', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN'), async (req, res) => {
+    try {
+        const buffer = await (0, xlsx_utils_1.generateStudentTemplateBuffer)();
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        res.setHeader('Content-Disposition', 'attachment; filename=student_import_template.xlsx');
+        res.send(buffer);
+    }
+    catch (error) {
+        res.status(500).json({ error: 'Failed to generate template' });
+    }
+});
+/**
+ * @route   POST /api/students/import
+ * @desc    Bulk import students from an Excel file
+ */
+router.post('/import', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN'), upload.single('file'), async (req, res) => {
+    if (!req.file)
+        return res.status(400).json({ error: 'No file uploaded' });
+    try {
+        const data = await (0, xlsx_utils_1.parseExcelBuffer)(req.file.buffer);
+        const schoolId = req.user.schoolId;
+        const results = {
+            created: 0,
+            skipped: 0,
+            errors: []
+        };
+        // Pre-fetch classes for this school to map Class Name to classId
+        const schoolClasses = await prisma_1.default.schoolClass.findMany({
+            where: { schoolId }
+        });
+        const classMap = new Map(schoolClasses.map(c => [c.name.toLowerCase(), c.id]));
+        await prisma_1.default.$transaction(async (tx) => {
+            for (const [index, row] of data.entries()) {
+                const studentId = row['Student ID']?.toString() || `STU-IMPORT-${Date.now()}-${index}`;
+                const name = row['Name']?.toString();
+                const email = row['Email']?.toString();
+                const phone = row['Phone']?.toString();
+                const classNameRaw = row['Class Name']?.toString() || '';
+                const gender = row['Gender']?.toString();
+                const dobStr = row['DOB (YYYY-MM-DD)']?.toString();
+                const address = row['Address']?.toString();
+                const guardianName = row['Guardian Name']?.toString();
+                if (!name) {
+                    results.errors.push(`Row ${index + 2}: Missing student name`);
+                    continue;
+                }
+                let classId = null;
+                if (classNameRaw) {
+                    classId = classMap.get(classNameRaw.toLowerCase()) || null;
+                    if (!classId) {
+                        results.errors.push(`Row ${index + 2}: Class "${classNameRaw}" not found in this school`);
+                        continue;
+                    }
+                }
+                try {
+                    // Check if student with this email or studentId already exists
+                    const existing = await tx.student.findFirst({
+                        where: {
+                            schoolId,
+                            OR: [
+                                { studentId },
+                                ...(email ? [{ email }] : [])
+                            ]
+                        }
+                    });
+                    if (existing) {
+                        results.errors.push(`Row ${index + 2}: Student with ID ${studentId} or Email ${email} already exists`);
+                        continue;
+                    }
+                    let parsedDob = undefined;
+                    if (dobStr) {
+                        parsedDob = new Date(dobStr);
+                        if (isNaN(parsedDob.getTime())) {
+                            parsedDob = undefined;
+                            results.errors.push(`Row ${index + 2}: Invalid DOB format, ignored.`);
+                        }
+                    }
+                    await tx.student.create({
+                        data: {
+                            schoolId,
+                            studentId,
+                            name,
+                            email: email || null,
+                            phone: phone || null,
+                            classId,
+                            gender: gender || null,
+                            dob: parsedDob,
+                            address: address || null,
+                            guardianName: guardianName || null,
+                        }
+                    });
+                    results.created++;
+                }
+                catch (err) {
+                    results.errors.push(`Row ${index + 2}: ${err.message}`);
+                }
+            }
+            if (results.errors.length > 0) {
+                const err = new Error('IMPORT_VALIDATION_FAILED');
+                err.details = results;
+                throw err;
+            }
+        });
+        res.json({
+            success: true,
+            summary: `Successfully imported ${results.created} students.`,
+            details: results
+        });
+    }
+    catch (error) {
+        if (error.message === 'IMPORT_VALIDATION_FAILED') {
+            return res.status(400).json({ error: 'Student import failed due to validation errors. Entire import was rolled back.', details: error.details });
+        }
+        console.error('Import error:', error);
+        res.status(500).json({ error: error.message || 'Failed to process Excel file' });
+    }
+});
 /**
  * @route   GET /api/students
+
  * @desc    List students in the current user's school (paginated)
  */
-router.get('/', requireAuth, requireRole('SCHOOL_ADMIN', 'TEACHER', 'BURSAR', 'LIBRARIAN'), async (req, res) => {
+router.get('/', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'TEACHER', 'BURSAR', 'LIBRARIAN'), async (req, res) => {
     const { page = '1', limit = '20', search = '' } = req.query;
     const schoolId = req.user.schoolId;
     const skip = (parseInt(page) - 1) * parseInt(limit);
     try {
         const [students, total] = await Promise.all([
-            prisma.student.findMany({
+            prisma_1.default.student.findMany({
                 where: {
                     schoolId: schoolId,
                     ...(search ? { name: { contains: String(search), mode: 'insensitive' } } : {}),
@@ -36,7 +169,7 @@ router.get('/', requireAuth, requireRole('SCHOOL_ADMIN', 'TEACHER', 'BURSAR', 'L
                 skip,
                 take: parseInt(limit),
             }),
-            prisma.student.count({ where: { schoolId: schoolId } }),
+            prisma_1.default.student.count({ where: { schoolId: schoolId } }),
         ]);
         res.json({ students, total, page: parseInt(page), totalPages: Math.ceil(total / parseInt(limit)) });
     }
@@ -48,9 +181,9 @@ router.get('/', requireAuth, requireRole('SCHOOL_ADMIN', 'TEACHER', 'BURSAR', 'L
  * @route   GET /api/students/me/dashboard
  * @desc    Get the logged-in student's own dashboard data
  */
-router.get('/me/dashboard', requireAuth, requireRole('STUDENT'), async (req, res) => {
+router.get('/me/dashboard', auth_1.requireAuth, (0, auth_1.requireRole)('STUDENT'), async (req, res) => {
     try {
-        const student = await prisma.student.findFirst({
+        const student = await prisma_1.default.student.findFirst({
             where: { userId: req.user.id, schoolId: req.user.schoolId },
             include: {
                 class: true,
@@ -73,12 +206,12 @@ router.get('/me/dashboard', requireAuth, requireRole('STUDENT'), async (req, res
         const totalFees = fees.reduce((s, f) => s + f.amount, 0);
         const paidFees = fees.reduce((s, f) => s + f.paid, 0);
         const feeBalance = totalFees - paidFees;
-        const announcements = await prisma.announcement.findMany({
+        const announcements = await prisma_1.default.announcement.findMany({
             where: { schoolId: student.schoolId, targetRole: { in: ['ALL', 'STUDENT'] } },
             orderBy: { publishedAt: 'desc' },
             take: 5,
         });
-        const assignments = await prisma.assignment.findMany({
+        const assignments = await prisma_1.default.assignment.findMany({
             where: {
                 classId: student.classId,
                 schoolId: student.schoolId,
@@ -94,7 +227,7 @@ router.get('/me/dashboard', requireAuth, requireRole('STUDENT'), async (req, res
         // Only fetch timetable if student is assigned to a class
         let timetable = [];
         if (student.classId) {
-            timetable = await prisma.timetableSlot.findMany({
+            timetable = await prisma_1.default.timetableSlot.findMany({
                 where: { classId: student.classId, schoolId: student.schoolId },
                 include: { subject: { select: { name: true } } },
                 orderBy: [{ dayOfWeek: 'asc' }, { startTime: 'asc' }],
@@ -131,9 +264,9 @@ router.get('/me/dashboard', requireAuth, requireRole('STUDENT'), async (req, res
  * @route   GET /api/students/me/research
  * @desc    Get postgraduate research details for the logged-in student
  */
-router.get('/me/research', requireAuth, requireRole('STUDENT'), async (req, res) => {
+router.get('/me/research', auth_1.requireAuth, (0, auth_1.requireRole)('STUDENT'), async (req, res) => {
     try {
-        const student = await prisma.student.findFirst({
+        const student = await prisma_1.default.student.findFirst({
             where: { userId: req.user.id, schoolId: req.user.schoolId },
             include: {
                 supervisors: {
@@ -176,12 +309,12 @@ router.get('/me/research', requireAuth, requireRole('STUDENT'), async (req, res)
  * @route   GET /api/students/me/portfolio
  * @desc    Aggregate all student records and reports for the logged-in user (Cross-School History)
  */
-router.get('/me/portfolio', requireAuth, async (req, res) => {
+router.get('/me/portfolio', auth_1.requireAuth, async (req, res) => {
     try {
         const userId = req.user.id;
         const [enrollments, reports, transferRequests] = await Promise.all([
             // 1. All student records for this user (past and present)
-            prisma.student.findMany({
+            prisma_1.default.student.findMany({
                 where: { userId },
                 include: {
                     school: { select: { name: true, code: true, branding: true } },
@@ -190,12 +323,12 @@ router.get('/me/portfolio', requireAuth, async (req, res) => {
                 orderBy: { enrollmentDate: 'desc' }
             }),
             // 2. All academic reports for this user (globally)
-            prisma.academicReport.findMany({
+            prisma_1.default.academicReport.findMany({
                 where: { studentId: userId },
                 orderBy: { createdAt: 'desc' }
             }),
             // 3. Relevant transfer requests
-            prisma.transferAuthorization.findMany({
+            prisma_1.default.transferAuthorization.findMany({
                 where: { studentUserId: userId },
                 include: {
                     originSchool: { select: { name: true } },
@@ -225,16 +358,16 @@ router.get('/me/portfolio', requireAuth, async (req, res) => {
  * @route   GET /api/students/assignments
  * @desc    [STUDENT] List assignments for the student's class
  */
-router.get('/assignments', requireAuth, requireRole('STUDENT'), async (req, res) => {
+router.get('/assignments', auth_1.requireAuth, (0, auth_1.requireRole)('STUDENT'), async (req, res) => {
     const userId = req.user.id;
     try {
-        const student = await prisma.student.findFirst({
+        const student = await prisma_1.default.student.findFirst({
             where: { userId, schoolId: req.user.schoolId },
             select: { classId: true }
         });
         if (!student || !student.classId)
             return res.json([]);
-        const assignments = await prisma.assignment.findMany({
+        const assignments = await prisma_1.default.assignment.findMany({
             where: {
                 classId: student.classId,
                 schoolId: req.user.schoolId,
@@ -245,11 +378,11 @@ router.get('/assignments', requireAuth, requireRole('STUDENT'), async (req, res)
             },
             orderBy: { dueDate: 'asc' }
         });
-        const studentRecord = await prisma.student.findFirst({ where: { userId, schoolId: req.user.schoolId } });
+        const studentRecord = await prisma_1.default.student.findFirst({ where: { userId, schoolId: req.user.schoolId } });
         if (!studentRecord)
             return res.json([]);
         const assignmentsWithUserSubmissions = await Promise.all(assignments.map(async (a) => {
-            const submission = await prisma.assignmentSubmission.findFirst({
+            const submission = await prisma_1.default.assignmentSubmission.findFirst({
                 where: {
                     assignmentId: a.id,
                     studentId: studentRecord.id,
@@ -268,9 +401,9 @@ router.get('/assignments', requireAuth, requireRole('STUDENT'), async (req, res)
  * @route   GET /api/students/my-children
  * @desc    [PARENT] Get all students linked to the logged-in parent
  */
-router.get('/my-children', requireAuth, requireRole('PARENT'), async (req, res) => {
+router.get('/my-children', auth_1.requireAuth, (0, auth_1.requireRole)('PARENT'), async (req, res) => {
     try {
-        const parentLinks = await prisma.parentStudent.findMany({
+        const parentLinks = await prisma_1.default.parentStudent.findMany({
             where: {
                 parent: { userId: req.user.id }
             },
@@ -297,13 +430,13 @@ router.get('/my-children', requireAuth, requireRole('PARENT'), async (req, res) 
  * @route   GET /api/students/:id
  * @desc    Get a single student's full profile including grades, fees, attendance summary
  */
-router.get('/:id', requireAuth, async (req, res) => {
+router.get('/:id', auth_1.requireAuth, async (req, res) => {
     const { id } = req.params;
     const user = req.user;
     // Ownership check for students
     if (user.role === 'STUDENT') {
         // A student can only view their own record by student.userId
-        const student = await prisma.student.findFirst({
+        const student = await prisma_1.default.student.findFirst({
             where: { id: String(id), schoolId: user.schoolId }
         });
         if (!student || student.userId !== user.id) {
@@ -311,7 +444,7 @@ router.get('/:id', requireAuth, async (req, res) => {
         }
     }
     try {
-        const student = await prisma.student.findFirst({
+        const student = await prisma_1.default.student.findFirst({
             where: { id: String(id), schoolId: req.user.schoolId },
             include: {
                 user: true,
@@ -341,19 +474,20 @@ router.get('/:id', requireAuth, async (req, res) => {
  * @route   POST /api/students
  * @desc    Create a new student record (SCHOOL_ADMIN only)
  */
-router.post('/', requireAuth, requireRole('SCHOOL_ADMIN'), async (req, res) => {
+router.post('/', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN'), (0, validation_1.validate)(student_schema_1.CreateStudentSchema), async (req, res) => {
     const { studentId, name, email, phone, dob, gender, address, classId } = req.body;
     const schoolId = req.user.schoolId;
     try {
         // Check if email already exists
-        const existingUser = await prisma.user.findUnique({ where: { email: email?.trim().toLowerCase() } });
+        const existingUser = await prisma_1.default.user.findFirst({ where: { email: email?.trim().toLowerCase() } });
         if (existingUser) {
             return res.status(400).json({ error: 'This email is already registered to another account. Please use a unique email.' });
         }
-        const hashedPassword = await bcrypt.hash('Password', 10);
-        const result = await prisma.$transaction(async (tx) => {
+        const randomPassword = crypto_1.default.randomBytes(8).toString('hex');
+        const hashedPassword = await bcryptjs_1.default.hash(randomPassword, 10);
+        const result = await prisma_1.default.$transaction(async (tx) => {
             // 1. Generate sequential ID if not provided
-            const generatedId = await generateSequentialId(schoolId, 'STUDENT', tx);
+            const generatedId = await (0, id_generator_1.generateSequentialId)(schoolId, 'STUDENT', tx);
             const studentEmail = email?.trim().toLowerCase() || `${generatedId.toLowerCase()}@school.com`;
             // 2. Create User account
             const user = await tx.user.create({
@@ -396,11 +530,11 @@ router.post('/', requireAuth, requireRole('SCHOOL_ADMIN'), async (req, res) => {
  * @route   PATCH /api/students/:id
  * @desc    Update a student record
  */
-router.patch('/:id', requireAuth, requireRole('SCHOOL_ADMIN', 'TEACHER'), async (req, res) => {
+router.patch('/:id', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'TEACHER'), (0, validation_1.validate)(student_schema_1.UpdateStudentSchema), async (req, res) => {
     const { id } = req.params;
     const { name, email, phone, dob, gender, address, classId, status, part, standing } = req.body;
     try {
-        const student = await prisma.student.update({
+        const student = await prisma_1.default.student.update({
             where: { id: String(id), schoolId: req.user.schoolId },
             data: {
                 name,
@@ -425,11 +559,11 @@ router.patch('/:id', requireAuth, requireRole('SCHOOL_ADMIN', 'TEACHER'), async 
  * @route   POST /api/students/:id/calculate-standing
  * @desc    [ADMIN/TEACHER] Automated standing calculation based on NUST regs
  */
-router.post('/:id/calculate-standing', requireAuth, requireRole('SCHOOL_ADMIN', 'TEACHER'), async (req, res) => {
+router.post('/:id/calculate-standing', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'TEACHER'), (0, validation_1.validate)(student_schema_1.GenerateReportSchema), async (req, res) => {
     const { id } = req.params;
     const { term, year } = req.body;
     try {
-        const student = await prisma.student.findFirst({
+        const student = await prisma_1.default.student.findFirst({
             where: { id: String(id), schoolId: req.user.schoolId },
             include: {
                 grades: { where: { term: String(term), year: parseInt(year) } },
@@ -456,7 +590,7 @@ router.post('/:id/calculate-standing', requireAuth, requireRole('SCHOOL_ADMIN', 
             standing = 'Repeat';
         else if (failedModules > 0)
             standing = 'Carry Over';
-        const updated = await prisma.student.update({
+        const updated = await prisma_1.default.student.update({
             where: { id: student.id, schoolId: req.user.schoolId },
             data: { standing }
         });
@@ -470,10 +604,10 @@ router.post('/:id/calculate-standing', requireAuth, requireRole('SCHOOL_ADMIN', 
  * @route   DELETE /api/students/:id
  * @desc    Permanently delete a student record
  */
-router.delete('/:id', requireAuth, requireRole('SCHOOL_ADMIN'), async (req, res) => {
+router.delete('/:id', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN'), async (req, res) => {
     const { id } = req.params;
     try {
-        await prisma.student.deleteMany({
+        await prisma_1.default.student.deleteMany({
             where: { id: String(id), schoolId: req.user.schoolId },
         });
         res.json({ message: 'Student deleted successfully' });
@@ -486,10 +620,10 @@ router.delete('/:id', requireAuth, requireRole('SCHOOL_ADMIN'), async (req, res)
  * @route   POST /api/students/:id/reset-password
  * @desc    Reset a student's password to "Password"
  */
-router.post('/:id/reset-password', requireAuth, requireRole('SCHOOL_ADMIN'), async (req, res) => {
+router.post('/:id/reset-password', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN'), async (req, res) => {
     const { id } = req.params;
     try {
-        const student = await prisma.student.findFirst({
+        const student = await prisma_1.default.student.findFirst({
             where: { id: String(id), schoolId: req.user.schoolId },
             select: { email: true, userId: true }
         });
@@ -497,8 +631,9 @@ router.post('/:id/reset-password', requireAuth, requireRole('SCHOOL_ADMIN'), asy
             return res.status(404).json({ error: 'Student user record not found' });
         }
         // Update the corresponding User record
-        const hashedPassword = await bcrypt.hash('Password', 10);
-        await prisma.user.update({
+        const randomPassword = crypto_1.default.randomBytes(8).toString('hex');
+        const hashedPassword = await bcryptjs_1.default.hash(randomPassword, 10);
+        await prisma_1.default.user.update({
             where: { id: student.userId },
             data: {
                 password: hashedPassword,
@@ -517,15 +652,15 @@ router.post('/:id/reset-password', requireAuth, requireRole('SCHOOL_ADMIN'), asy
  * @route   POST /api/students/assignments/:id/start
  * @desc    [STUDENT] Mark an assignment as started (starts the timer for timed quizzes)
  */
-router.post('/assignments/:id/start', requireAuth, requireRole('STUDENT'), async (req, res) => {
+router.post('/assignments/:id/start', auth_1.requireAuth, (0, auth_1.requireRole)('STUDENT'), async (req, res) => {
     const id = req.params.id;
     const userId = req.user.id;
     try {
-        const student = await prisma.student.findUnique({ where: { userId } });
+        const student = await prisma_1.default.student.findFirst({ where: { userId } });
         if (!student)
             return res.status(404).json({ error: 'Student record not found' });
         // Initial check: is it already started?
-        let submission = await prisma.assignmentSubmission.findFirst({
+        let submission = await prisma_1.default.assignmentSubmission.findFirst({
             where: {
                 assignmentId: id,
                 studentId: student.id,
@@ -533,7 +668,7 @@ router.post('/assignments/:id/start', requireAuth, requireRole('STUDENT'), async
             }
         });
         if (!submission) {
-            submission = await prisma.assignmentSubmission.create({
+            submission = await prisma_1.default.assignmentSubmission.create({
                 data: {
                     assignmentId: id,
                     studentId: student.id,
@@ -544,7 +679,7 @@ router.post('/assignments/:id/start', requireAuth, requireRole('STUDENT'), async
             });
         }
         else if (!submission.startedAt) {
-            submission = await prisma.assignmentSubmission.update({
+            submission = await prisma_1.default.assignmentSubmission.update({
                 where: {
                     id: submission.id,
                     schoolId: req.user.schoolId
@@ -562,7 +697,7 @@ router.post('/assignments/:id/start', requireAuth, requireRole('STUDENT'), async
  * @route   POST /api/students/assignments/:id/submit
  * @desc    [STUDENT] Submit work for an assignment (Supports files or Quiz answers)
  */
-router.post('/assignments/:id/submit', requireAuth, requireRole('STUDENT'), uploadLimiter, submissionUpload.array('files', 10), async (req, res) => {
+router.post('/assignments/:id/submit', auth_1.requireAuth, (0, auth_1.requireRole)('STUDENT'), rate_limit_1.uploadLimiter, upload_1.submissionUpload.array('files', 10), (0, validation_1.validate)(student_schema_1.SubmitAssignmentSchema), async (req, res) => {
     const id = req.params.id;
     const userId = req.user.id;
     // Handle multiple file storage
@@ -573,10 +708,10 @@ router.post('/assignments/:id/submit', requireAuth, requireRole('STUDENT'), uplo
         url: `${uploadPath}/${f.filename}`.replace(/\\/g, '/')
     })) : [];
     try {
-        const student = await prisma.student.findUnique({ where: { userId } });
+        const student = await prisma_1.default.student.findFirst({ where: { userId } });
         if (!student)
             return res.status(404).json({ error: 'Student record not found' });
-        const assignment = await prisma.assignment.findFirst({
+        const assignment = await prisma_1.default.assignment.findFirst({
             where: { id, schoolId: req.user.schoolId },
             include: { class: true }
         });
@@ -611,7 +746,7 @@ router.post('/assignments/:id/submit', requireAuth, requireRole('STUDENT'), uplo
             autoScore = totalPoints > 0 ? (earnedPoints / totalPoints) * 100 : 0;
             submissionData = answers; // Store answers in attachments JSON
         }
-        const submission = await prisma.assignmentSubmission.upsert({
+        const submission = await prisma_1.default.assignmentSubmission.upsert({
             where: {
                 assignmentId_studentId: { assignmentId: id, studentId: student.id },
                 schoolId: req.user.schoolId
@@ -643,13 +778,13 @@ router.post('/assignments/:id/submit', requireAuth, requireRole('STUDENT'), uplo
  * @route   GET /api/students/me/books
  * @desc    [STUDENT] List books currently issued to the student
  */
-router.get('/me/books', requireAuth, requireRole('STUDENT'), async (req, res) => {
+router.get('/me/books', auth_1.requireAuth, (0, auth_1.requireRole)('STUDENT'), async (req, res) => {
     const userId = req.user.id;
     try {
-        const student = await prisma.student.findUnique({ where: { userId } });
+        const student = await prisma_1.default.student.findFirst({ where: { userId } });
         if (!student)
             return res.status(404).json({ error: 'Student record not found' });
-        const loans = await prisma.bookLoan.findMany({
+        const loans = await prisma_1.default.bookLoan.findMany({
             where: {
                 studentId: student.id,
                 schoolId: req.user.schoolId,
@@ -677,9 +812,9 @@ router.get('/me/books', requireAuth, requireRole('STUDENT'), async (req, res) =>
  * @route   GET /api/students/by-class/:classId
  * @desc    [SCHOOL_ADMIN/TEACHER] Get students for a specific class for migration
  */
-router.get('/by-class/:classId', requireAuth, requireRole('SCHOOL_ADMIN', 'TEACHER', 'BURSAR'), async (req, res) => {
+router.get('/by-class/:classId', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'TEACHER', 'BURSAR'), async (req, res) => {
     try {
-        const students = await prisma.student.findMany({
+        const students = await prisma_1.default.student.findMany({
             where: {
                 classId: req.params.classId,
                 schoolId: req.user.schoolId
@@ -702,12 +837,12 @@ router.get('/by-class/:classId', requireAuth, requireRole('SCHOOL_ADMIN', 'TEACH
  * @route   POST /api/students/migrate
  * @desc    [SCHOOL_ADMIN] Bulk migrate students to a new class/year
  */
-router.post('/migrate', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR'), async (req, res) => {
+router.post('/migrate', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'BURSAR'), (0, validation_1.validate)(student_schema_1.BulkClassAssignmentSchema), async (req, res) => {
     const { studentIds, targetClassId, targetPart } = req.body;
     const schoolId = req.user.schoolId;
     try {
-        const result = await prisma.$transaction(async (tx) => {
-            const targetClass = await tx.schoolClass.findUnique({
+        const result = await prisma_1.default.$transaction(async (tx) => {
+            const targetClass = await tx.schoolClass.findFirst({
                 where: { id: targetClassId }
             });
             const targetClassName = targetClass ? targetClass.name : 'Unknown Class';
@@ -758,31 +893,36 @@ router.post('/migrate', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR'), asyn
  * @route   POST /api/students/bulk-migrate
  * @desc    [SCHOOL_ADMIN] Bulk migrate students based on class-to-class mapping
  */
-router.post('/bulk-migrate', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR'), async (req, res) => {
+router.post('/bulk-migrate', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'BURSAR'), (0, validation_1.validate)(student_schema_1.AutoPromoteSchema), async (req, res) => {
     const { mappings } = req.body; // mappings: Array of { sourceClassId: string, targetClassId: string, targetPart: number }
     const schoolId = req.user.schoolId;
     if (!Array.isArray(mappings) || mappings.length === 0) {
         return res.status(400).json({ error: 'Invalid mappings provided' });
     }
     try {
-        const result = await prisma.$transaction(async (tx) => {
+        const result = await prisma_1.default.$transaction(async (tx) => {
             let totalCount = 0;
+            // Fetch snapshot of students before any migrations to prevent cascading promotions
+            const sourceClassIds = mappings.map((m) => m.sourceClassId).filter(Boolean);
+            const targetClassIds = mappings.map((m) => m.targetClassId).filter(Boolean);
+            const allSourceStudents = await tx.student.findMany({
+                where: { classId: { in: sourceClassIds }, schoolId }
+            });
+            const classes = await tx.schoolClass.findMany({
+                where: { id: { in: [...sourceClassIds, ...targetClassIds] } }
+            });
+            const classMap = new Map(classes.map(c => [c.id, c]));
             for (const m of mappings) {
                 if (!m.sourceClassId || !m.targetClassId)
                     continue;
-                const sourceClass = await tx.schoolClass.findUnique({
-                    where: { id: m.sourceClassId }
-                });
-                const targetClass = await tx.schoolClass.findUnique({
-                    where: { id: m.targetClassId }
-                });
+                const sourceClass = classMap.get(m.sourceClassId);
+                const targetClass = classMap.get(m.targetClassId);
                 if (!targetClass)
                     continue;
                 const sourceClassName = sourceClass ? sourceClass.name : 'Unknown Class';
                 const targetClassName = targetClass.name;
-                const students = await tx.student.findMany({
-                    where: { classId: m.sourceClassId, schoolId }
-                });
+                // Only process students who originally belonged to this class before any updates
+                const students = allSourceStudents.filter(s => s.classId === m.sourceClassId);
                 for (const student of students) {
                     let history = student.academicHistory;
                     if (!history || typeof history !== 'object') {
@@ -794,6 +934,14 @@ router.post('/bulk-migrate', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR'),
                     else if (!history.migrations) {
                         history.migrations = [];
                     }
+                    const currentYear = new Date().getFullYear();
+                    const targetPart = m.targetPart ? parseInt(m.targetPart) : 1;
+                    // Idempotency check: Skip if already migrated to this target class this year
+                    const alreadyMigrated = history.migrations.some((mig) => mig.toClassId === m.targetClassId &&
+                        new Date(mig.date).getFullYear() === currentYear);
+                    if (alreadyMigrated) {
+                        continue;
+                    }
                     history.migrations.push({
                         date: new Date().toISOString(),
                         fromClassId: m.sourceClassId,
@@ -801,14 +949,53 @@ router.post('/bulk-migrate', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR'),
                         fromPart: student.part,
                         toClassId: m.targetClassId,
                         toClassName: targetClassName,
-                        toPart: m.targetPart ? parseInt(m.targetPart) : 1,
+                        toPart: targetPart,
                         migratedBy: req.user.email || 'Admin'
                     });
+                    // Fee rollover: close out previous year's ledger
+                    const oldFees = await tx.fee.findMany({
+                        where: {
+                            studentId: student.id,
+                            status: { notIn: ['paid', 'carried_forward'] }
+                        }
+                    });
+                    let totalOutstanding = 0;
+                    for (const fee of oldFees) {
+                        totalOutstanding += (fee.amount - fee.paid - fee.discount);
+                    }
+                    if (totalOutstanding > 0) {
+                        // Close old fees
+                        await tx.fee.updateMany({
+                            where: {
+                                studentId: student.id,
+                                status: { notIn: ['paid', 'carried_forward'] }
+                            },
+                            data: {
+                                status: 'carried_forward'
+                            }
+                        });
+                        // Create carried forward balance for new year
+                        await tx.fee.create({
+                            data: {
+                                studentId: student.id,
+                                schoolId: req.user.schoolId,
+                                term: '1',
+                                year: currentYear,
+                                amount: totalOutstanding,
+                                paid: 0,
+                                discount: 0,
+                                dueDate: new Date(currentYear, 8, 1), // e.g. Sept 1st
+                                status: 'unpaid',
+                                description: `Previous Year Balance Carried Forward (${currentYear - 1})`,
+                                isLedger: true
+                            }
+                        });
+                    }
                     await tx.student.update({
                         where: { id: student.id },
                         data: {
                             classId: m.targetClassId,
-                            part: m.targetPart ? parseInt(m.targetPart) : undefined,
+                            part: targetPart,
                             status: 'Enrolled',
                             academicHistory: history
                         }
@@ -824,5 +1011,5 @@ router.post('/bulk-migrate', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR'),
         res.status(500).json({ error: 'Bulk migration failed: ' + error.message });
     }
 });
-export default router;
+exports.default = router;
 //# sourceMappingURL=students.js.map

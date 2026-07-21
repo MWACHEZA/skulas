@@ -1,9 +1,14 @@
-import { Router } from 'express';
-import prisma from '../lib/prisma';
-import { requireAuth, requireRole } from '../middleware/auth';
-const router = Router();
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const prisma_1 = __importDefault(require("../lib/prisma"));
+const auth_1 = require("../middleware/auth");
+const router = (0, express_1.Router)();
 // Get live classes
-router.get('/', requireAuth, async (req, res) => {
+router.get('/', auth_1.requireAuth, async (req, res) => {
     try {
         const { platform } = req.query;
         const where = { schoolId: req.user.schoolId };
@@ -15,7 +20,7 @@ router.get('/', requireAuth, async (req, res) => {
         if (req.user.role === 'TEACHER') {
             where.teacherId = req.user.id;
         }
-        const liveClasses = await prisma.liveClass.findMany({
+        const liveClasses = await prisma_1.default.liveClass.findMany({
             where,
             include: {
                 class: true,
@@ -33,13 +38,13 @@ router.get('/', requireAuth, async (req, res) => {
     }
 });
 // Create live class
-router.post('/', requireAuth, requireRole('TEACHER', 'SCHOOL_ADMIN', 'SUPER_ADMIN'), async (req, res) => {
+router.post('/', auth_1.requireAuth, (0, auth_1.requireRole)('TEACHER', 'SCHOOL_ADMIN', 'SUPER_ADMIN'), async (req, res) => {
     try {
         const { title, classId, section, platform, meetingId, meetingPassword, date, timeStart, timeEnd, remarks, sendSms } = req.body;
         if (!title || !classId || !meetingId || !date || !timeStart || !timeEnd) {
             return res.status(400).json({ error: 'Missing required fields' });
         }
-        const liveClass = await prisma.liveClass.create({
+        const liveClass = await prisma_1.default.liveClass.create({
             data: {
                 schoolId: req.user.schoolId,
                 teacherId: req.user.id,
@@ -68,18 +73,18 @@ router.post('/', requireAuth, requireRole('TEACHER', 'SCHOOL_ADMIN', 'SUPER_ADMI
     }
 });
 // Delete live class
-router.delete('/:id', requireAuth, requireRole('TEACHER', 'SCHOOL_ADMIN', 'SUPER_ADMIN'), async (req, res) => {
+router.delete('/:id', auth_1.requireAuth, (0, auth_1.requireRole)('TEACHER', 'SCHOOL_ADMIN', 'SUPER_ADMIN'), async (req, res) => {
     try {
         const { id } = req.params;
         // Check if it belongs to the user or is admin
-        const existing = await prisma.liveClass.findUnique({ where: { id: id } });
+        const existing = await prisma_1.default.liveClass.findFirst({ where: { id: id } });
         if (!existing || existing.schoolId !== req.user.schoolId) {
             return res.status(404).json({ error: 'Not found' });
         }
         if (req.user.role === 'TEACHER' && existing.teacherId !== req.user.id) {
             return res.status(403).json({ error: 'Unauthorized to delete this class' });
         }
-        await prisma.liveClass.delete({ where: { id: id } });
+        await prisma_1.default.liveClass.delete({ where: { id: id } });
         res.json({ success: true });
     }
     catch (error) {
@@ -87,5 +92,5 @@ router.delete('/:id', requireAuth, requireRole('TEACHER', 'SCHOOL_ADMIN', 'SUPER
         res.status(500).json({ error: 'Failed to delete live class' });
     }
 });
-export default router;
+exports.default = router;
 //# sourceMappingURL=live-class.js.map

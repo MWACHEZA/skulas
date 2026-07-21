@@ -1,11 +1,17 @@
-import prisma from '../lib/prisma';
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.auditMiddleware = void 0;
+const prisma_1 = __importDefault(require("../lib/prisma"));
 /**
  * Global Audit Middleware
  * Automatically logs all mutating API requests (POST/PUT/PATCH/DELETE)
  * for authenticated users to the AuditLog table.
  * Non-blocking - logs fire-and-forget after response.
  */
-export const auditMiddleware = (req, res, next) => {
+const auditMiddleware = (req, res, next) => {
     // Only log mutating methods
     const MUTATING_METHODS = ['POST', 'PUT', 'PATCH', 'DELETE'];
     if (!MUTATING_METHODS.includes(req.method))
@@ -34,7 +40,7 @@ export const auditMiddleware = (req, res, next) => {
                     'DELETE': 'DELETE',
                 };
                 const action = `${actionMap[req.method]}_${entityType}`;
-                await prisma.auditLog.create({
+                await prisma_1.default.auditLog.create({
                     data: {
                         actorId: user.id,
                         schoolId: user.schoolId,
@@ -59,4 +65,5 @@ export const auditMiddleware = (req, res, next) => {
     };
     next();
 };
+exports.auditMiddleware = auditMiddleware;
 //# sourceMappingURL=audit.js.map

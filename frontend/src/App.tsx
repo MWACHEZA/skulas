@@ -62,6 +62,7 @@ import Library from './portals/shared/pages/Library';
 import StudentEvents from './portals/student/pages/Events';
 import ResearchDashboard from './portals/student/pages/ResearchDashboard';
 import CBTExams from './portals/student/pages/CBTExams';
+import CBTResults from './portals/shared/pages/cbt/CBTResults';
 
 //  Clinic Portal pages 
 import ClinicLayout from './portals/clinic/ClinicLayout';
@@ -536,6 +537,8 @@ export default function App() {
 
               <Route path="cbt/manage" element={<ManageCBT />} />
               <Route path="cbt/manage/:id/questions" element={<ManageQuestions />} />
+              <Route path="cbt/manage/:id/results" element={<CBTResults />} />
+              <Route path="cbt/take/:id" element={<TakeExam />} />
               <Route path="timetable" element={<TeacherTimetable />} />
               <Route path="sports" element={<SportsManagement />} />
               <Route path="house" element={<HouseDashboard />} />
@@ -593,6 +596,7 @@ export default function App() {
               <Route path="cbt/manage" element={<ManageCBT />} />
               <Route path="website-settings" element={<SettingsPage />} />
               <Route path="cbt/manage/:id/questions" element={<ManageQuestions />} />
+              <Route path="cbt/manage/:id/results" element={<CBTResults />} />
               <Route path="subjects" element={<AdminSubjects />} />
               <Route path="timetable" element={<AdminTimetable />} />
               <Route path="applications" element={<AdminApplications />} />

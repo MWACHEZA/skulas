@@ -1,8 +1,11 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.tenantContext = void 0;
 /**
  * Extracts school/tenant context from headers or URL parameters.
  * Ensures that requests are scoped to the correct school.
  */
-export const tenantContext = (req, res, next) => {
+const tenantContext = (req, res, next) => {
     const tenantCode = req.headers['x-school-code'] || req.query.schoolCode;
     if (tenantCode) {
         req.tenantCode = tenantCode.toUpperCase();
@@ -11,4 +14,5 @@ export const tenantContext = (req, res, next) => {
     // But for public requests (news, etc.), we use the code.
     next();
 };
+exports.tenantContext = tenantContext;
 //# sourceMappingURL=tenant.js.map

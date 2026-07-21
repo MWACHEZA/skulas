@@ -1,11 +1,16 @@
-import express from 'express';
-import { requireAuth, requireRole } from '../middleware/auth';
-import prisma from '../lib/prisma';
-const router = express.Router();
-router.get('/', requireAuth, async (req, res) => {
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = __importDefault(require("express"));
+const auth_1 = require("../middleware/auth");
+const prisma_1 = __importDefault(require("../lib/prisma"));
+const router = express_1.default.Router();
+router.get('/', auth_1.requireAuth, async (req, res) => {
     try {
         const schoolId = req.user.schoolId;
-        const routes = await prisma.transportRoute.findMany({
+        const routes = await prisma_1.default.transportRoute.findMany({
             where: { schoolId },
             orderBy: { createdAt: 'desc' }
         });
@@ -15,11 +20,11 @@ router.get('/', requireAuth, async (req, res) => {
         res.status(500).json({ error: 'Failed to fetch transport routes' });
     }
 });
-router.post('/', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR', 'ANCILLARY'), async (req, res) => {
+router.post('/', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'BURSAR', 'ANCILLARY'), async (req, res) => {
     try {
         const schoolId = req.user.schoolId;
         const { name, description } = req.body;
-        const route = await prisma.transportRoute.create({
+        const route = await prisma_1.default.transportRoute.create({
             data: {
                 schoolId,
                 name,
@@ -32,11 +37,11 @@ router.post('/', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR', 'ANCILLARY')
         res.status(500).json({ error: 'Failed to create transport route' });
     }
 });
-router.delete('/:id', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR', 'ANCILLARY'), async (req, res) => {
+router.delete('/:id', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'BURSAR', 'ANCILLARY'), async (req, res) => {
     try {
         const schoolId = req.user.schoolId;
         const { id } = req.params;
-        await prisma.transportRoute.delete({
+        await prisma_1.default.transportRoute.delete({
             where: { id: id, schoolId }
         });
         res.json({ success: true });
@@ -45,12 +50,12 @@ router.delete('/:id', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR', 'ANCILL
         res.status(500).json({ error: 'Failed to delete transport route' });
     }
 });
-router.put('/:id', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR', 'ANCILLARY'), async (req, res) => {
+router.put('/:id', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'BURSAR', 'ANCILLARY'), async (req, res) => {
     try {
         const schoolId = req.user.schoolId;
         const { id } = req.params;
         const { name, description } = req.body;
-        const route = await prisma.transportRoute.update({
+        const route = await prisma_1.default.transportRoute.update({
             where: { id: id, schoolId },
             data: { name, description }
         });
@@ -60,5 +65,5 @@ router.put('/:id', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR', 'ANCILLARY
         res.status(500).json({ error: 'Failed to update transport route' });
     }
 });
-export default router;
+exports.default = router;
 //# sourceMappingURL=transport-routes.js.map

@@ -1,8 +1,13 @@
-import { Router } from 'express';
-import prisma from '../lib/prisma';
-import { saveBase64Image } from '../lib/file-utils';
-import nodemailer from 'nodemailer';
-const router = Router();
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const prisma_1 = __importDefault(require("../lib/prisma"));
+const file_utils_1 = require("../lib/file-utils");
+const nodemailer_1 = __importDefault(require("nodemailer"));
+const router = (0, express_1.Router)();
 /**
  * @route   GET /api/public/announcements
  * @desc    Get public announcements for a specific school
@@ -10,12 +15,12 @@ const router = Router();
 router.get('/announcements', async (req, res) => {
     const { schoolCode } = req.query;
     try {
-        const school = await prisma.school.findUnique({
+        const school = await prisma_1.default.school.findUnique({
             where: { code: schoolCode }
         });
         if (!school)
             return res.status(404).json({ error: 'School not found' });
-        const announcements = await prisma.announcement.findMany({
+        const announcements = await prisma_1.default.announcement.findMany({
             where: {
                 schoolId: school.id,
                 isPublic: true
@@ -36,10 +41,10 @@ router.get('/announcements', async (req, res) => {
 router.get('/news', async (req, res) => {
     const { schoolCode } = req.query;
     try {
-        const school = await prisma.school.findUnique({ where: { code: schoolCode } });
+        const school = await prisma_1.default.school.findUnique({ where: { code: schoolCode } });
         if (!school)
             return res.status(404).json({ error: 'School not found' });
-        const news = await prisma.news.findMany({
+        const news = await prisma_1.default.news.findMany({
             where: { schoolId: school.id },
             orderBy: { publishedAt: 'desc' },
             take: 10
@@ -58,7 +63,7 @@ router.get('/schools/:code/data', async (req, res) => {
     const { code } = req.params;
     try {
         const normalizedCode = code.trim().toUpperCase();
-        const school = await prisma.school.findUnique({
+        const school = await prisma_1.default.school.findUnique({
             where: { code: normalizedCode },
             select: {
                 id: true,
@@ -130,12 +135,12 @@ router.post('/inquiries', async (req, res) => {
         return res.status(400).json({ error: 'Name, email, message, and schoolCode are required' });
     }
     try {
-        const school = await prisma.school.findUnique({
+        const school = await prisma_1.default.school.findUnique({
             where: { code: schoolCode.toUpperCase() }
         });
         if (!school)
             return res.status(404).json({ error: 'School not found' });
-        const inquiry = await prisma.websiteInquiry.create({
+        const inquiry = await prisma_1.default.websiteInquiry.create({
             data: {
                 name,
                 email,
@@ -146,11 +151,11 @@ router.post('/inquiries', async (req, res) => {
         });
         // ── Email Notification (best-effort, only if SMTP is configured) ─────────
         try {
-            const setting = await prisma.schoolSetting.findUnique({
+            const setting = await prisma_1.default.schoolSetting.findFirst({
                 where: { schoolId: school.id }
             });
             if (setting?.smtpHost && setting?.smtpEmail && setting?.smtpPassword && setting?.systemEmail) {
-                const transporter = nodemailer.createTransport({
+                const transporter = nodemailer_1.default.createTransport({
                     host: setting.smtpHost,
                     port: setting.smtpPort || 465,
                     secure: setting.smtpSsl ?? true,
@@ -207,12 +212,12 @@ router.post('/inquiries', async (req, res) => {
 router.get('/schools/:code/departments', async (req, res) => {
     const { code } = req.params;
     try {
-        const school = await prisma.school.findUnique({
+        const school = await prisma_1.default.school.findUnique({
             where: { code: code.toUpperCase() }
         });
         if (!school)
             return res.status(404).json({ error: 'School not found' });
-        const departments = await prisma.department.findMany({
+        const departments = await prisma_1.default.department.findMany({
             where: { schoolId: school.id },
             include: {
                 head: {
@@ -276,12 +281,12 @@ router.get('/vacancies', async (req, res) => {
         return res.status(400).json({ error: 'School code is required' });
     }
     try {
-        const school = await prisma.school.findUnique({
+        const school = await prisma_1.default.school.findUnique({
             where: { code: schoolCode.toUpperCase() }
         });
         if (!school)
             return res.status(404).json({ error: 'School not found' });
-        const vacancies = await prisma.vacancy.findMany({
+        const vacancies = await prisma_1.default.vacancy.findMany({
             where: {
                 schoolId: school.id,
                 status: 'Active',
@@ -311,12 +316,12 @@ router.post('/applications', async (req, res) => {
         if (!schoolCode || !vacancyId || !applicantName || !email || !phone) {
             return res.status(400).json({ error: 'Missing required fields (schoolCode, vacancyId, applicantName, email, phone)' });
         }
-        const school = await prisma.school.findUnique({
+        const school = await prisma_1.default.school.findUnique({
             where: { code: schoolCode.toUpperCase() }
         });
         if (!school)
             return res.status(404).json({ error: 'School not found' });
-        const vacancy = await prisma.vacancy.findUnique({
+        const vacancy = await prisma_1.default.vacancy.findFirst({
             where: { id: vacancyId }
         });
         if (!vacancy)
@@ -328,7 +333,7 @@ router.post('/applications', async (req, res) => {
         if (today > expiry) {
             return res.status(400).json({ error: 'This vacancy has expired and is closed for applications' });
         }
-        const app = await prisma.jobApplication.create({
+        const app = await prisma_1.default.jobApplication.create({
             data: {
                 schoolId: school.id,
                 vacancyId,
@@ -347,13 +352,13 @@ router.post('/applications', async (req, res) => {
         let updatedResumeUrl = null;
         let updatedPhotoUrl = null;
         if (resumeUrl && resumeUrl.includes(';base64,')) {
-            updatedResumeUrl = saveBase64Image(resumeUrl, 'resume', 'docs', school.code, 'recruitment/applications', app.id);
+            updatedResumeUrl = (0, file_utils_1.saveBase64Image)(resumeUrl, 'resume', 'docs', school.code, 'recruitment/applications', app.id);
         }
         if (photoUrl && photoUrl.includes(';base64,')) {
-            updatedPhotoUrl = saveBase64Image(photoUrl, 'photo', 'images', school.code, 'recruitment/applications', app.id);
+            updatedPhotoUrl = (0, file_utils_1.saveBase64Image)(photoUrl, 'photo', 'images', school.code, 'recruitment/applications', app.id);
         }
         if (updatedResumeUrl || updatedPhotoUrl) {
-            await prisma.jobApplication.update({
+            await prisma_1.default.jobApplication.update({
                 where: { id: app.id },
                 data: {
                     ...(updatedResumeUrl ? { resumeUrl: updatedResumeUrl } : {}),
@@ -381,12 +386,12 @@ router.post('/applications', async (req, res) => {
 router.get('/noticeboard', async (req, res) => {
     const { schoolCode } = req.query;
     try {
-        const school = await prisma.school.findUnique({
+        const school = await prisma_1.default.school.findUnique({
             where: { code: schoolCode.toUpperCase() }
         });
         if (!school)
             return res.status(404).json({ error: 'School not found' });
-        const noticeboard = await prisma.noticeboard.findMany({
+        const noticeboard = await prisma_1.default.noticeboard.findMany({
             where: { schoolId: school.id },
             orderBy: { date: 'desc' }
         });
@@ -396,5 +401,5 @@ router.get('/noticeboard', async (req, res) => {
         res.status(500).json({ error: 'Failed to fetch noticeboard events' });
     }
 });
-export default router;
+exports.default = router;
 //# sourceMappingURL=public.js.map
