@@ -168,14 +168,35 @@ export default function ReportViewerPage() {
   };
 
   const exportToWord = () => {
-    const rows = Array.isArray(data) ? data : (data?.records || data?.list || []);
+    const rows = Array.isArray(data) ? data : (data?.records || data?.list || data?.detailed || data?.breakdown || []);
     if (!rows.length) return toast.error('No data to export');
+    const summary = data?.summary ? Object.entries(data.summary).map(([k, v]) => `<tr><td style="font-weight:bold">${k}</td><td>${v}</td></tr>`).join('') : '';
     const headers = Object.keys(rows[0]).filter(k => typeof rows[0][k] !== 'object');
     const tableRows = rows.map((r: any) => `<tr>${headers.map(h => `<td>${r[h] ?? ''}</td>`).join('')}</tr>`).join('');
-    const html = `<html><body><h2>${getTitle()}</h2><table border="1"><thead><tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr></thead><tbody>${tableRows}</tbody></table></body></html>`;
+    const html = `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word'>
+<head><meta charset="utf-8"><style>
+body { font-family: Calibri, Arial, sans-serif; font-size: 11pt; margin: 2cm; }
+h1 { color: #1e3a5f; font-size: 18pt; margin-bottom: 4px; }
+p.subtitle { color: #64748b; font-size: 10pt; margin-top: 0; }
+table { border-collapse: collapse; width: 100%; margin-top: 16px; }
+th { background: #1e3a5f; color: white; padding: 6px 10px; font-size: 10pt; text-align: left; }
+td { border: 1px solid #ddd; padding: 5px 9px; font-size: 9.5pt; }
+tr:nth-child(even) td { background: #f8fafc; }
+.summary-table td { border: none; padding: 3px 8px; }
+.summary-label { font-weight: bold; color: #475569; }
+.note { background: #fffbea; border-left: 4px solid #f59e0b; padding: 8px 12px; margin: 12px 0; font-size: 9.5pt; color: #6b3f00; }
+</style></head>
+<body>
+<h1>${getTitle()}</h1>
+<p class="subtitle">Institutional Report | Academic Session ${filters.year} | Total: ${rows.length} records</p>
+${summary ? `<table class="summary-table"><tbody>${summary}</tbody></table>` : ''}
+<p class="note">&#9432; Note: Charts and visualizations are available in the PDF export. Use the PDF button for a full visual report including all graphs.</p>
+<table><thead><tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr></thead><tbody>${tableRows}</tbody></table>
+</body></html>`;
     const blob = new Blob([html], { type: 'application/msword' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a'); a.href = url; a.download = `${type}-report.doc`; a.click();
+    URL.revokeObjectURL(url);
   };
 
   const getColumns = () => {
@@ -614,53 +635,72 @@ export default function ReportViewerPage() {
         </div>
       )}
 
-      {/* â”€â”€ Parameters â”€â”€ */}
+      {/* ── Parameters ── */}
       <div className="portal-card" style={{ marginBottom: '32px' }}>
-        <div className="portal-card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div className="portal-card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
           <h3 style={{ margin: 0 }}>Audit Parameters</h3>
-          <div style={{ display: 'flex', gap: '8px' }}>
-            <button onClick={exportToCSV} className="portal-btn-ghost" style={{ padding: '8px 16px', fontWeight: 900, fontSize: '0.8rem', border: '1px solid #e2e8f0' }} title="Export CSV">
-              <i className="fas fa-file-csv mr-2" style={{ color: '#059669' }}></i>CSV
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+            <button onClick={exportToCSV} className="portal-btn-ghost" style={{ padding: '6px 14px', fontWeight: 700, fontSize: '0.8rem', border: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', gap: '6px' }} title="Export CSV">
+              <i className="fas fa-file-csv" style={{ color: '#059669' }}></i>CSV
             </button>
-            <button onClick={exportToWord} className="portal-btn-ghost" style={{ padding: '8px 16px', fontWeight: 900, fontSize: '0.8rem', border: '1px solid #e2e8f0' }} title="Export Word">
-              <i className="fas fa-file-word mr-2" style={{ color: '#2563eb' }}></i>Word
+            <button onClick={exportToWord} className="portal-btn-ghost" style={{ padding: '6px 14px', fontWeight: 700, fontSize: '0.8rem', border: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', gap: '6px' }} title="Export Word">
+              <i className="fas fa-file-word" style={{ color: '#2563eb' }}></i>Word
             </button>
-            <button onClick={exportToPDF} className="portal-btn-ghost" style={{ padding: '8px 16px', fontWeight: 900, fontSize: '0.8rem', border: '1px solid #e2e8f0' }} title="Export PDF">
-              <i className="fas fa-file-pdf mr-2" style={{ color: '#dc2626' }}></i>PDF
+            <button onClick={exportToPDF} className="portal-btn-ghost" style={{ padding: '6px 14px', fontWeight: 700, fontSize: '0.8rem', border: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', gap: '6px' }} title="Export PDF">
+              <i className="fas fa-file-pdf" style={{ color: '#dc2626' }}></i>PDF
             </button>
-            <button onClick={handlePrint} className="portal-btn-ghost" style={{ padding: '8px 16px', fontWeight: 900, fontSize: '0.8rem', border: '1px solid #e2e8f0' }} title="Print">
-              <i className="fas fa-print mr-2" style={{ color: '#64748b' }}></i>Print
+            <button onClick={handlePrint} className="portal-btn-ghost" style={{ padding: '6px 14px', fontWeight: 700, fontSize: '0.8rem', border: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', gap: '6px' }} title="Print">
+              <i className="fas fa-print" style={{ color: '#64748b' }}></i>Print
             </button>
           </div>
         </div>
-        <div className="portal-card-body" style={{ padding: '24px', display: 'flex', flexWrap: 'wrap', gap: '24px', alignItems: 'flex-end' }}>
-          {(['grocery-consumption', 'profit-loss', 'detailed-expenses', 'fees-takings', 'payments-analytics', 'fees-payments', 'audit-logs', 'fee-reminders'].includes(type || '')) && (
-            <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
-              <div className="form-group" style={{marginBottom: 0}}><label className="portal-label">From</label><input type="date" value={filters.from} onChange={e => setFilters({...filters, from: e.target.value})} className="portal-input" /></div>
-              <div className="form-group" style={{marginBottom: 0}}><label className="portal-label">To</label><input type="date" value={filters.to} onChange={e => setFilters({...filters, to: e.target.value})} className="portal-input" /></div>
-            </div>
-          )}
-          {(['student-balances', 'single-fee-group', 'balances-summary', 'student-debtors'].includes(type || '')) && (
-            <div className="form-group" style={{marginBottom: 0}}><label className="portal-label">Year</label><input type="number" value={filters.year} onChange={e => setFilters({...filters, year: e.target.value})} className="portal-input" style={{ width: '120px' }} /></div>
-          )}
-          {type === 'student-balances' && (
-            <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap', flex: 1 }}>
-              <div className="form-group" style={{marginBottom: 0, flex: 1, minWidth: '200px'}}><label className="portal-label">Search Student</label><input type="text" placeholder="Name or Surname..." value={filters.searchName} onChange={e => setFilters({...filters, searchName: e.target.value})} className="portal-input" /></div>
-              <div className="form-group" style={{marginBottom: 0, display: 'flex', alignItems: 'center', gap: '8px', height: '48px', marginTop: '24px'}}>
-                <input type="checkbox" id="showBalanceOnly" checked={filters.showBalanceOnly} onChange={e => setFilters({...filters, showBalanceOnly: e.target.checked})} />
-                <label htmlFor="showBalanceOnly" style={{ margin: 0, fontWeight: 600, color: '#475569', cursor: 'pointer' }}>Show Balance Only</label>
+        <div className="portal-card-body" style={{ padding: '20px 24px' }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', alignItems: 'flex-end' }}>
+            {(['grocery-consumption', 'profit-loss', 'detailed-expenses', 'fees-takings', 'payments-analytics', 'fees-payments', 'audit-logs', 'fee-reminders'].includes(type || '')) && (
+              <>
+                <div className="form-group" style={{marginBottom: 0}}>
+                  <label className="portal-label">From</label>
+                  <input type="date" value={filters.from} onChange={e => setFilters({...filters, from: e.target.value})} className="portal-input" style={{ minWidth: '150px' }} />
+                </div>
+                <div className="form-group" style={{marginBottom: 0}}>
+                  <label className="portal-label">To</label>
+                  <input type="date" value={filters.to} onChange={e => setFilters({...filters, to: e.target.value})} className="portal-input" style={{ minWidth: '150px' }} />
+                </div>
+              </>
+            )}
+            {(['student-balances', 'single-fee-group', 'balances-summary', 'student-debtors'].includes(type || '')) && (
+              <div className="form-group" style={{marginBottom: 0}}>
+                <label className="portal-label">Year</label>
+                <input type="number" value={filters.year} onChange={e => setFilters({...filters, year: e.target.value})} className="portal-input" style={{ width: '120px' }} />
               </div>
+            )}
+            {type === 'student-balances' && (
+              <>
+                <div className="form-group" style={{marginBottom: 0, flex: 1, minWidth: '200px'}}>
+                  <label className="portal-label">Search Student</label>
+                  <input type="text" placeholder="Name or Surname..." value={filters.searchName} onChange={e => setFilters({...filters, searchName: e.target.value})} className="portal-input" />
+                </div>
+                <div className="form-group" style={{marginBottom: 0, display: 'flex', alignItems: 'center', gap: '8px', paddingTop: '22px'}}>
+                  <input type="checkbox" id="showBalanceOnly" checked={filters.showBalanceOnly} onChange={e => setFilters({...filters, showBalanceOnly: e.target.checked})} />
+                  <label htmlFor="showBalanceOnly" style={{ margin: 0, fontWeight: 600, color: '#475569', cursor: 'pointer', whiteSpace: 'nowrap' }}>Balance Only</label>
+                </div>
+              </>
+            )}
+            {type === 'revenue-allocation' && (
+              <div className="form-group" style={{marginBottom: 0, flex: 1}}>
+                <label className="portal-label">Allocation Config</label>
+                <select value={filters.allocationId} onChange={e => setFilters({...filters, allocationId: e.target.value})} className="portal-input">
+                  <option value="">Select Config</option>
+                  {allocations.map(a => <option key={a.id} value={a.id}>{a.name}</option>)}
+                </select>
+              </div>
+            )}
+            <div style={{ marginLeft: 'auto' }}>
+              <button onClick={fetchData} className="portal-btn-primary" style={{height: '42px', padding: '0 24px', fontWeight: 900, display: 'flex', alignItems: 'center', gap: '8px'}}>
+                <i className="fas fa-sync-alt"></i> Update Report
+              </button>
             </div>
-          )}
-          {type === 'revenue-allocation' && (
-            <div className="form-group" style={{marginBottom: 0, flex: 1}}><label className="portal-label">Allocation Config</label>
-              <select value={filters.allocationId} onChange={e => setFilters({...filters, allocationId: e.target.value})} className="portal-input">
-                <option value="">Select Config</option>
-                {allocations.map(a => <option key={a.id} value={a.id}>{a.name}</option>)}
-              </select>
-            </div>
-          )}
-          <button onClick={fetchData} className="portal-btn-primary" style={{height: '48px', padding: '0 24px', fontWeight: 900}}><i className="fas fa-sync-alt mr-2"></i> Update Report</button>
+          </div>
         </div>
       </div>
 

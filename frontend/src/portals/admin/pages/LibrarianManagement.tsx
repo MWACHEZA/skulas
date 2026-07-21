@@ -269,10 +269,16 @@ export default function LibrarianManagement() {
               {
                 title: "Banking & Payroll Details",
                 fields: [
-                  { label: "Bank Name", value: selectedLibrarian.employeeProfile.bankName },
-                  { label: "Bank Branch", value: selectedLibrarian.employeeProfile.bankBranch },
-                  { label: "Account Number", value: selectedLibrarian.employeeProfile.accountNumber },
-                  { label: "Account Holder", value: selectedLibrarian.employeeProfile.accountHolderName }
+                  { label: "💵 Bank Name (USD)", value: selectedLibrarian.employeeProfile.bankName },
+                  { label: "Bank Branch (USD)", value: selectedLibrarian.employeeProfile.bankBranch },
+                  { label: "Account Number (USD)", value: selectedLibrarian.employeeProfile.accountNumber },
+                  { label: "Account Holder (USD)", value: selectedLibrarian.employeeProfile.accountHolderName },
+                  ...(selectedLibrarian.employeeProfile.bankNameZig ? [
+                    { label: "🪙 Bank Name (ZiG)", value: selectedLibrarian.employeeProfile.bankNameZig },
+                    { label: "Bank Branch (ZiG)", value: selectedLibrarian.employeeProfile.bankBranchZig },
+                    { label: "Account Number (ZiG)", value: selectedLibrarian.employeeProfile.accountNumberZig },
+                    { label: "Account Holder (ZiG)", value: selectedLibrarian.employeeProfile.accountHolderNameZig }
+                  ] : [])
                 ]
               },
               {

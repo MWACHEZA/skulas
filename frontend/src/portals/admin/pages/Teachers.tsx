@@ -300,10 +300,16 @@ export default function AdminTeachers() {
               {
                 title: "Banking & Payroll Details",
                 fields: [
-                  { label: "Bank Name", value: selectedTeacher.user.employeeProfile.bankName },
-                  { label: "Bank Branch", value: selectedTeacher.user.employeeProfile.bankBranch },
-                  { label: "Account Number", value: selectedTeacher.user.employeeProfile.accountNumber },
-                  { label: "Account Holder", value: selectedTeacher.user.employeeProfile.accountHolderName }
+                  { label: "💵 Bank Name (USD)", value: selectedTeacher.user.employeeProfile.bankName },
+                  { label: "Bank Branch (USD)", value: selectedTeacher.user.employeeProfile.bankBranch },
+                  { label: "Account Number (USD)", value: selectedTeacher.user.employeeProfile.accountNumber },
+                  { label: "Account Holder (USD)", value: selectedTeacher.user.employeeProfile.accountHolderName },
+                  ...(selectedTeacher.user.employeeProfile.bankNameZig ? [
+                    { label: "🪙 Bank Name (ZiG)", value: selectedTeacher.user.employeeProfile.bankNameZig },
+                    { label: "Bank Branch (ZiG)", value: selectedTeacher.user.employeeProfile.bankBranchZig },
+                    { label: "Account Number (ZiG)", value: selectedTeacher.user.employeeProfile.accountNumberZig },
+                    { label: "Account Holder (ZiG)", value: selectedTeacher.user.employeeProfile.accountHolderNameZig }
+                  ] : [])
                 ]
               },
               {

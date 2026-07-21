@@ -268,10 +268,16 @@ export default function BursarManagement() {
               {
                 title: "Banking & Payroll Details",
                 fields: [
-                  { label: "Bank Name", value: selectedBursar.employeeProfile.bankName },
-                  { label: "Bank Branch", value: selectedBursar.employeeProfile.bankBranch },
-                  { label: "Account Number", value: selectedBursar.employeeProfile.accountNumber },
-                  { label: "Account Holder", value: selectedBursar.employeeProfile.accountHolderName }
+                  { label: "💵 Bank Name (USD)", value: selectedBursar.employeeProfile.bankName },
+                  { label: "Bank Branch (USD)", value: selectedBursar.employeeProfile.bankBranch },
+                  { label: "Account Number (USD)", value: selectedBursar.employeeProfile.accountNumber },
+                  { label: "Account Holder (USD)", value: selectedBursar.employeeProfile.accountHolderName },
+                  ...(selectedBursar.employeeProfile.bankNameZig ? [
+                    { label: "🪙 Bank Name (ZiG)", value: selectedBursar.employeeProfile.bankNameZig },
+                    { label: "Bank Branch (ZiG)", value: selectedBursar.employeeProfile.bankBranchZig },
+                    { label: "Account Number (ZiG)", value: selectedBursar.employeeProfile.accountNumberZig },
+                    { label: "Account Holder (ZiG)", value: selectedBursar.employeeProfile.accountHolderNameZig }
+                  ] : [])
                 ]
               },
               {

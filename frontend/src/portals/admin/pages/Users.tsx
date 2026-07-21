@@ -334,10 +334,16 @@ export default function AdminUsers() {
                 {
                   title: "Banking & Payroll Details",
                   fields: [
-                    { label: "Bank Name", value: selectedUser.employeeProfile.bankName },
-                    { label: "Bank Branch", value: selectedUser.employeeProfile.bankBranch },
-                    { label: "Account Number", value: selectedUser.employeeProfile.accountNumber },
-                    { label: "Account Holder", value: selectedUser.employeeProfile.accountHolderName }
+                    { label: "💵 Bank Name (USD)", value: selectedUser.employeeProfile.bankName },
+                    { label: "Bank Branch (USD)", value: selectedUser.employeeProfile.bankBranch },
+                    { label: "Account Number (USD)", value: selectedUser.employeeProfile.accountNumber },
+                    { label: "Account Holder (USD)", value: selectedUser.employeeProfile.accountHolderName },
+                    ...(selectedUser.employeeProfile.bankNameZig ? [
+                      { label: "🪙 Bank Name (ZiG)", value: selectedUser.employeeProfile.bankNameZig },
+                      { label: "Bank Branch (ZiG)", value: selectedUser.employeeProfile.bankBranchZig },
+                      { label: "Account Number (ZiG)", value: selectedUser.employeeProfile.accountNumberZig },
+                      { label: "Account Holder (ZiG)", value: selectedUser.employeeProfile.accountHolderNameZig }
+                    ] : [])
                   ]
                 },
                 {

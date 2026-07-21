@@ -268,10 +268,16 @@ export default function AncillaryManagement() {
               {
                 title: "Banking & Payroll Details",
                 fields: [
-                  { label: "Bank Name", value: selectedStaff.employeeProfile.bankName },
-                  { label: "Bank Branch", value: selectedStaff.employeeProfile.bankBranch },
-                  { label: "Account Number", value: selectedStaff.employeeProfile.accountNumber },
-                  { label: "Account Holder", value: selectedStaff.employeeProfile.accountHolderName }
+                  { label: "💵 Bank Name (USD)", value: selectedStaff.employeeProfile.bankName },
+                  { label: "Bank Branch (USD)", value: selectedStaff.employeeProfile.bankBranch },
+                  { label: "Account Number (USD)", value: selectedStaff.employeeProfile.accountNumber },
+                  { label: "Account Holder (USD)", value: selectedStaff.employeeProfile.accountHolderName },
+                  ...(selectedStaff.employeeProfile.bankNameZig ? [
+                    { label: "🪙 Bank Name (ZiG)", value: selectedStaff.employeeProfile.bankNameZig },
+                    { label: "Bank Branch (ZiG)", value: selectedStaff.employeeProfile.bankBranchZig },
+                    { label: "Account Number (ZiG)", value: selectedStaff.employeeProfile.accountNumberZig },
+                    { label: "Account Holder (ZiG)", value: selectedStaff.employeeProfile.accountHolderNameZig }
+                  ] : [])
                 ]
               },
               {
