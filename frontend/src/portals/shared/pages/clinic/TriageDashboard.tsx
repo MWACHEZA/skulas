@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import api from '../../../../lib/api';
 import toast from 'react-hot-toast';
 
@@ -22,6 +22,56 @@ export default function TriageDashboard() {
     notes: '',
     status: 'OPEN'
   });
+
+  // Automatically calculate triage level based on vitals
+  useEffect(() => {
+    let level = 'ROUTINE';
+    const temp = parseFloat(formData.temperature);
+    const hr = parseInt(formData.heartRate, 10);
+    const rr = parseInt(formData.respiratoryRate, 10);
+    const spo2 = parseFloat(formData.oxygenSaturation);
+    
+    let sys = 0;
+    let dia = 0;
+    if (formData.bloodPressure && formData.bloodPressure.includes('/')) {
+      const parts = formData.bloodPressure.split('/');
+      sys = parseInt(parts[0], 10);
+      dia = parseInt(parts[1], 10);
+    }
+
+    // Critical conditions
+    if (
+      (temp && (temp > 39.5 || temp < 35.0)) ||
+      (hr && (hr > 130 || hr < 40)) ||
+      (rr && (rr > 30 || rr < 8)) ||
+      (spo2 && spo2 < 90) ||
+      (sys && (sys > 200 || sys < 80)) ||
+      (dia && dia > 120)
+    ) {
+      level = 'CRITICAL';
+    } 
+    // Urgent conditions
+    else if (
+      (temp && (temp > 38.5 || temp < 36.0)) ||
+      (hr && (hr > 110 || hr < 50)) ||
+      (rr && (rr > 24 || rr < 12)) ||
+      (spo2 && spo2 < 95) ||
+      (sys && (sys > 160 || sys < 90)) ||
+      (dia && dia > 100)
+    ) {
+      level = 'URGENT';
+    }
+
+    if (formData.triageLevel !== level) {
+      setFormData(prev => ({ ...prev, triageLevel: level }));
+    }
+  }, [
+    formData.temperature, 
+    formData.heartRate, 
+    formData.respiratoryRate, 
+    formData.oxygenSaturation, 
+    formData.bloodPressure
+  ]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -89,10 +139,11 @@ export default function TriageDashboard() {
               />
             </div>
             <div className="form-group">
-              <label>Triage Level</label>
+              <label>Triage Level (Auto-calculated)</label>
               <select 
                 value={formData.triageLevel}
                 onChange={e => setFormData({...formData, triageLevel: e.target.value})}
+                style={{ backgroundColor: formData.triageLevel === 'CRITICAL' ? '#fee2e2' : formData.triageLevel === 'URGENT' ? '#fef3c7' : '#dcfce7' }}
               >
                 <option value="CRITICAL">CRITICAL (Immediate)</option>
                 <option value="URGENT">URGENT (Soon)</option>
