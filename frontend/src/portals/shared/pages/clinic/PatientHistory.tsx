@@ -3,6 +3,17 @@ import api from '../../../../lib/api';
 import toast from 'react-hot-toast';
 import { format } from 'date-fns';
 
+const getTriageStyle = (level: string) => {
+  switch(level) {
+    case 'RED': return { backgroundColor: '#fee2e2', color: '#991b1b', fontWeight: 'bold', padding: '4px 8px', borderRadius: '4px' };
+    case 'YELLOW': return { backgroundColor: '#fef3c7', color: '#92400e', fontWeight: 'bold', padding: '4px 8px', borderRadius: '4px' };
+    case 'GREEN': return { backgroundColor: '#dcfce7', color: '#166534', fontWeight: 'bold', padding: '4px 8px', borderRadius: '4px' };
+    case 'BLACK': return { backgroundColor: '#e5e7eb', color: '#111827', fontWeight: 'bold', padding: '4px 8px', borderRadius: '4px' };
+    case 'WHITE': return { backgroundColor: '#ffffff', color: '#374151', fontWeight: 'bold', padding: '4px 8px', borderRadius: '4px', border: '1px solid #d1d5db' };
+    default: return { backgroundColor: '#f3f4f6', color: '#374151', padding: '4px 8px', borderRadius: '4px' };
+  }
+};
+
 export default function PatientHistory() {
   const [loading, setLoading] = useState(false);
   const [targetUserId, setTargetUserId] = useState('');
@@ -73,8 +84,8 @@ export default function PatientHistory() {
                           <td>{format(new Date(v.visitDate), 'MMM dd, yyyy HH:mm')}</td>
                           <td>{v.presentingComplaint || 'N/A'}</td>
                           <td>
-                            <span className={`status-badge ${v.triageLevel?.toLowerCase()}`}>
-                              {v.triageLevel || 'ROUTINE'}
+                            <span style={getTriageStyle(v.triageLevel)}>
+                              {v.triageLevel || 'GREEN'}
                             </span>
                           </td>
                           <td style={{ fontSize: '0.85em' }}>

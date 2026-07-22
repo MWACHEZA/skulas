@@ -14,7 +14,7 @@ export default function TriageDashboard() {
     height: '',
     oxygenSaturation: '',
     presentingComplaint: '',
-    triageLevel: 'ROUTINE',
+    triageLevel: 'GREEN',
     conditionDetails: '',
     diagnosis: '',
     treatment: '',
@@ -25,7 +25,7 @@ export default function TriageDashboard() {
 
   // Automatically calculate triage level based on vitals
   useEffect(() => {
-    let level = 'ROUTINE';
+    let level = 'GREEN'; // Default to Green / Minimal
     const temp = parseFloat(formData.temperature);
     const hr = parseInt(formData.heartRate, 10);
     const rr = parseInt(formData.respiratoryRate, 10);
@@ -39,18 +39,18 @@ export default function TriageDashboard() {
       dia = parseInt(parts[1], 10);
     }
 
-    // Critical conditions
+    // Critical conditions -> RED (Immediate)
     if (
-      (temp && (temp > 39.5 || temp < 35.0)) ||
+      (temp && (temp > 40.0 || temp < 35.0)) ||
       (hr && (hr > 130 || hr < 40)) ||
       (rr && (rr > 30 || rr < 8)) ||
       (spo2 && spo2 < 90) ||
       (sys && (sys > 200 || sys < 80)) ||
       (dia && dia > 120)
     ) {
-      level = 'CRITICAL';
+      level = 'RED';
     } 
-    // Urgent conditions
+    // Urgent conditions -> YELLOW (Delayed)
     else if (
       (temp && (temp > 38.5 || temp < 36.0)) ||
       (hr && (hr > 110 || hr < 50)) ||
@@ -59,10 +59,12 @@ export default function TriageDashboard() {
       (sys && (sys > 160 || sys < 90)) ||
       (dia && dia > 100)
     ) {
-      level = 'URGENT';
+      level = 'YELLOW';
     }
 
-    if (formData.triageLevel !== level) {
+    // Note: BLACK and WHITE are usually manual overrides based on clinician assessment
+
+    if (formData.triageLevel !== level && formData.triageLevel !== 'BLACK' && formData.triageLevel !== 'WHITE') {
       setFormData(prev => ({ ...prev, triageLevel: level }));
     }
   }, [
@@ -143,11 +145,21 @@ export default function TriageDashboard() {
               <select 
                 value={formData.triageLevel}
                 onChange={e => setFormData({...formData, triageLevel: e.target.value})}
-                style={{ backgroundColor: formData.triageLevel === 'CRITICAL' ? '#fee2e2' : formData.triageLevel === 'URGENT' ? '#fef3c7' : '#dcfce7' }}
+                style={{ 
+                  backgroundColor: 
+                    formData.triageLevel === 'RED' ? '#fee2e2' : 
+                    formData.triageLevel === 'YELLOW' ? '#fef3c7' : 
+                    formData.triageLevel === 'GREEN' ? '#dcfce7' :
+                    formData.triageLevel === 'BLACK' ? '#e5e7eb' :
+                    '#ffffff',
+                  fontWeight: 'bold'
+                }}
               >
-                <option value="CRITICAL">CRITICAL (Immediate)</option>
-                <option value="URGENT">URGENT (Soon)</option>
-                <option value="ROUTINE">ROUTINE (Standard)</option>
+                <option value="RED">🔴 RED - Immediate (Priority 1)</option>
+                <option value="YELLOW">🟡 YELLOW - Delayed (Priority 2)</option>
+                <option value="GREEN">🟢 GREEN - Minimal (Priority 3)</option>
+                <option value="BLACK">⚫ BLACK - Expectant / Deceased</option>
+                <option value="WHITE">⚪ WHITE - Dismiss / Minor</option>
               </select>
             </div>
           </div>
