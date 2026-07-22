@@ -39,6 +39,12 @@ export async function seedUsers(prisma: PrismaClient, school: School, emailPrefi
     create: { name: 'Support Services', code: 'SUP', facultyId: genericFaculty.id, schoolId: school.id }
   });
 
+  const medicalDept = await prisma.department.upsert({
+    where: { schoolId_name: { schoolId: school.id, name: 'Medical & Clinic Services' } },
+    update: {},
+    create: { name: 'Medical & Clinic Services', code: 'MED', facultyId: genericFaculty.id, schoolId: school.id }
+  });
+
   // 1. Core Admin & Staff
   const adminUser = await prisma.user.upsert({
     where: { email: `admin@${emailPrefix}` },
@@ -82,6 +88,49 @@ export async function seedUsers(prisma: PrismaClient, school: School, emailPrefi
     create: { email: `library@${emailPrefix}`, password: await hash('Library@1234'), name: 'Mr. Librarian', role: 'LIBRARIAN', schoolId: school.id, departmentId: academicsDept.id },
   });
 
+  // 1b. Clinic Staff Users
+  const clinicUser = await prisma.user.upsert({
+    where: { email: `clinic@${emailPrefix}` },
+    update: {},
+    create: {
+      email: `clinic@${emailPrefix}`,
+      password: await hash('Clinic@1234'),
+      name: 'Sr. Mary Nightingale, RN',
+      role: 'CLINIC',
+      schoolId: school.id,
+      secondaryRoles: ['Head Nurse', 'School Sister', 'Clinic Administrator'],
+      departmentId: medicalDept.id
+    },
+  });
+
+  const nurseUser = await prisma.user.upsert({
+    where: { email: `nurse@${emailPrefix}` },
+    update: {},
+    create: {
+      email: `nurse@${emailPrefix}`,
+      password: await hash('Clinic@1234'),
+      name: 'Sister Grace Chidzero, RN',
+      role: 'CLINIC',
+      schoolId: school.id,
+      secondaryRoles: ['Staff Nurse', 'Health Coordinator'],
+      departmentId: medicalDept.id
+    },
+  });
+
+  const doctorUser = await prisma.user.upsert({
+    where: { email: `doctor@${emailPrefix}` },
+    update: {},
+    create: {
+      email: `doctor@${emailPrefix}`,
+      password: await hash('Clinic@1234'),
+      name: 'Dr. T. Moyo, MBChB',
+      role: 'CLINIC',
+      schoolId: school.id,
+      secondaryRoles: ['Medical Officer', 'Visiting Doctor'],
+      departmentId: medicalDept.id
+    },
+  });
+
   // 2. Ancillary Staff
   const ancillaryUsers = [
     { email: `ancillary@${emailPrefix}`, name: 'Mr. Groundskeeper', secondaryRoles: ['Farm Assistant'] },
@@ -109,8 +158,6 @@ export async function seedUsers(prisma: PrismaClient, school: School, emailPrefi
     });
     dbAncillaryUsers.push(user);
   }
-
-  // Employee Profile creation logic will be handled at the end for all staff
 
   // 3. Teachers
   const teacherUsers = [
@@ -144,8 +191,8 @@ export async function seedUsers(prisma: PrismaClient, school: School, emailPrefi
     dbTeachers.push(teacher);
   }
 
-  // Create Employee Profiles for all staff members
-  const allStaffUsers = [adminUser, admin2User, adminFinanceUser, adminAcademicsUser, adminSupportUser, bursarUser, libraryUser, ...dbAncillaryUsers, ...dbTeacherUsers];
+  // Create Employee Profiles for all staff members including clinic staff
+  const allStaffUsers = [adminUser, admin2User, adminFinanceUser, adminAcademicsUser, adminSupportUser, bursarUser, libraryUser, clinicUser, nurseUser, doctorUser, ...dbAncillaryUsers, ...dbTeacherUsers];
   
   for (const staff of allStaffUsers) {
     const jobTitleMap: Record<string, string> = {
@@ -153,7 +200,8 @@ export async function seedUsers(prisma: PrismaClient, school: School, emailPrefi
       'BURSAR': 'Bursar',
       'LIBRARIAN': 'Librarian',
       'TEACHER': 'Teacher',
-      'ANCILLARY': 'Ancillary Staff'
+      'ANCILLARY': 'Ancillary Staff',
+      'CLINIC': 'School Sister / Health Officer'
     };
     
     let basePay = 800;
@@ -161,6 +209,8 @@ export async function seedUsers(prisma: PrismaClient, school: School, emailPrefi
     if (staff.role === 'BURSAR') basePay = 1500;
     if (staff.role === 'TEACHER') basePay = 1200;
     if (staff.role === 'LIBRARIAN') basePay = 900;
+    if (staff.role === 'CLINIC') basePay = 1400;
+    if (staff.email.startsWith('doctor@')) basePay = 2400;
     
     await prisma.employeeProfile.upsert({
       where: { userId: staff.id },
@@ -168,7 +218,7 @@ export async function seedUsers(prisma: PrismaClient, school: School, emailPrefi
       create: {
         userId: staff.id,
         schoolId: school.id,
-        jobTitle: jobTitleMap[staff.role] || 'Staff',
+        jobTitle: staff.email.startsWith('doctor@') ? 'Medical Officer' : (jobTitleMap[staff.role] || 'Staff'),
         basePay: basePay,
         contractType: 'Full-Time',
         dateAssumedPost: new Date(),
@@ -260,5 +310,5 @@ export async function seedUsers(prisma: PrismaClient, school: School, emailPrefi
     create: { email: `alumni@${emailPrefix}`, password: await hash('Alumni@1234'), name: 'Mr. Alumni', role: 'ALUMNI', schoolId: school.id },
   });
 
-  return { dbTeachers, dbStudents, adminUser, bursarUser, parent, supplier, alumniUser };
+  return { dbTeachers, dbStudents, adminUser, bursarUser, parent, supplier, alumniUser, clinicUser, nurseUser, doctorUser };
 }
