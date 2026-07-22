@@ -1971,6 +1971,30 @@ exports.Prisma.ClinicReferralScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.ClinicVisitScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  schoolId: 'schoolId',
+  temperature: 'temperature',
+  bloodPressure: 'bloodPressure',
+  heartRate: 'heartRate',
+  respiratoryRate: 'respiratoryRate',
+  weight: 'weight',
+  height: 'height',
+  oxygenSaturation: 'oxygenSaturation',
+  presentingComplaint: 'presentingComplaint',
+  triageLevel: 'triageLevel',
+  conditionDetails: 'conditionDetails',
+  diagnosis: 'diagnosis',
+  treatment: 'treatment',
+  prescription: 'prescription',
+  notes: 'notes',
+  status: 'status',
+  visitDate: 'visitDate',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.FarmLivestockBatchScalarFieldEnum = {
   id: 'id',
   batchName: 'batchName',
@@ -2243,6 +2267,7 @@ exports.Prisma.ModelName = {
   ClinicEmergency: 'ClinicEmergency',
   ClinicImmunization: 'ClinicImmunization',
   ClinicReferral: 'ClinicReferral',
+  ClinicVisit: 'ClinicVisit',
   FarmLivestockBatch: 'FarmLivestockBatch',
   FarmCropCycle: 'FarmCropCycle',
   FarmInventoryItem: 'FarmInventoryItem',

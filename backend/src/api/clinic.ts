@@ -315,4 +315,89 @@ router.delete('/referrals/:id', requireAuth, async (req: AuthRequest, res: Respo
   }
 });
 
+// ── CLINIC VISITS & VITALS ──
+router.get('/visits', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    const userIds = await getAccessibleUserIds(req);
+    const visits = await prisma.clinicVisit.findMany({
+      where: {
+        schoolId: req.user!.schoolId!,
+        ...(userIds ? { userId: { in: userIds } } : {})
+      },
+      include: {
+        user: { select: { name: true, email: true, role: true } }
+      },
+      orderBy: { visitDate: 'desc' }
+    });
+    res.json(visits);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch clinic visits' });
+  }
+});
+
+router.post('/visits', requireAuth, async (req: AuthRequest, res: Response) => {
+  const { 
+    targetUserId, temperature, bloodPressure, heartRate, respiratoryRate, 
+    weight, height, oxygenSaturation, presentingComplaint, triageLevel, 
+    conditionDetails, diagnosis, treatment, prescription, notes, status, visitDate 
+  } = req.body;
+  try {
+    const visit = await prisma.clinicVisit.create({
+      data: {
+        userId: targetUserId || req.user!.id,
+        schoolId: req.user!.schoolId!,
+        temperature: temperature ? parseFloat(temperature) : null,
+        bloodPressure: bloodPressure || null,
+        heartRate: heartRate ? parseInt(heartRate) : null,
+        respiratoryRate: respiratoryRate ? parseInt(respiratoryRate) : null,
+        weight: weight ? parseFloat(weight) : null,
+        height: height ? parseFloat(height) : null,
+        oxygenSaturation: oxygenSaturation ? parseFloat(oxygenSaturation) : null,
+        presentingComplaint: presentingComplaint || null,
+        triageLevel: triageLevel || null,
+        conditionDetails: conditionDetails || null,
+        diagnosis: diagnosis || null,
+        treatment: treatment || null,
+        prescription: prescription || null,
+        notes: notes || null,
+        status: status || 'OPEN',
+        visitDate: visitDate ? new Date(visitDate) : new Date(),
+      }
+    });
+    res.json(visit);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to create clinic visit' });
+  }
+});
+
+// ── PATIENT HISTORY ──
+router.get('/patient/:id/history', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    const targetUserId = req.params.id as string;
+    // Basic auth check
+    const accessibleIds = await getAccessibleUserIds(req);
+    if (accessibleIds && !accessibleIds.includes(targetUserId)) {
+       return res.status(403).json({ error: 'Forbidden' });
+    }
+
+    const [visits, appointments, complaints, immunizations, referrals] = await Promise.all([
+      prisma.clinicVisit.findMany({ where: { userId: targetUserId, schoolId: req.user!.schoolId! }, orderBy: { visitDate: 'desc' } }),
+      prisma.clinicAppointment.findMany({ where: { userId: targetUserId, schoolId: req.user!.schoolId! }, orderBy: { date: 'desc' } }),
+      prisma.clinicComplaint.findMany({ where: { userId: targetUserId, schoolId: req.user!.schoolId! }, orderBy: { date: 'desc' } }),
+      prisma.clinicImmunization.findMany({ where: { userId: targetUserId, schoolId: req.user!.schoolId! }, orderBy: { date: 'desc' } }),
+      prisma.clinicReferral.findMany({ where: { userId: targetUserId, schoolId: req.user!.schoolId! }, orderBy: { date: 'desc' } })
+    ]);
+
+    res.json({
+      visits,
+      appointments,
+      complaints,
+      immunizations,
+      referrals
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch patient history' });
+  }
+});
+
 export default router;

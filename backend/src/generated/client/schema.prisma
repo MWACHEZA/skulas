@@ -42,6 +42,7 @@ model School {
   news                  News[]
   websiteInquiries      WebsiteInquiry[]
   noticeboards          Noticeboard[]
+  clinicVisits          ClinicVisit[]
   vacancies             Vacancy[]
   jobApplications       JobApplication[]
   gallery               Gallery[]
@@ -417,6 +418,7 @@ model User {
   clinicComplaints    ClinicComplaint[]
   clinicImmunizations ClinicImmunization[]
   clinicReferrals     ClinicReferral[]
+  clinicVisits        ClinicVisit[]
 
   @@index([schoolId])
 }
@@ -2892,6 +2894,41 @@ model ClinicReferral {
   updatedAt DateTime @updatedAt
 
   @@index([schoolId])
+}
+
+model ClinicVisit {
+  id       String @id @default(cuid())
+  userId   String
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  schoolId String
+  school   School @relation(fields: [schoolId], references: [id])
+
+  // Vitals
+  temperature      Float?
+  bloodPressure    String?
+  heartRate        Int?
+  respiratoryRate  Int?
+  weight           Float?
+  height           Float?
+  oxygenSaturation Float?
+
+  // Triage & Consultation
+  presentingComplaint String?
+  triageLevel         String? // e.g. CRITICAL, URGENT, ROUTINE
+  conditionDetails    String?
+  diagnosis           String?
+  treatment           String?
+  prescription        String?
+  notes               String?
+
+  // Follow-up
+  status    String   @default("OPEN") // OPEN, ADMITTED, REFERRED, DISCHARGED
+  visitDate DateTime @default(now())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([schoolId])
+  @@index([userId])
 }
 
 model FarmLivestockBatch {

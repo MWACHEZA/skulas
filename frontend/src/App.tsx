@@ -71,6 +71,8 @@ import PatientManagement from './portals/clinic/pages/PatientManagement';
 
 import HealthComplaints from './portals/shared/pages/clinic/HealthComplaints';
 import Appointments from './portals/shared/pages/clinic/Appointments';
+import TriageDashboard from './portals/shared/pages/clinic/TriageDashboard';
+import PatientHistory from './portals/shared/pages/clinic/PatientHistory';
 import Emergencies from './portals/shared/pages/clinic/Emergencies';
 import Referrals from './portals/shared/pages/clinic/Referrals';
 import Immunization from './portals/shared/pages/clinic/Immunization';
@@ -989,6 +991,8 @@ export default function App() {
               <Route path="settings" element={<SettingsPage />} />
               <Route path="clinic/complaints" element={<HealthComplaints />} />
               <Route path="clinic/appointments" element={<Appointments />} />
+              <Route path="clinic/triage" element={<TriageDashboard />} />
+              <Route path="clinic/patient-history" element={<PatientHistory />} />
               <Route path="clinic/emergencies" element={<Emergencies />} />
               <Route path="clinic/referrals" element={<Referrals />} />
               <Route path="clinic/immunization" element={<Immunization />} />
