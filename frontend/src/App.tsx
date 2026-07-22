@@ -962,6 +962,8 @@ export default function App() {
               <Route path="dashboard" element={<ClinicDashboard />} />
               <Route path="patients" element={<PatientManagement />} />
               <Route path="appointments" element={<Appointments />} />
+              <Route path="triage" element={<TriageDashboard />} />
+              <Route path="patient-history" element={<PatientHistory />} />
               <Route path="emergencies" element={<Emergencies />} />
               <Route path="referrals" element={<Referrals />} />
               <Route path="immunization" element={<Immunization />} />
@@ -991,8 +993,6 @@ export default function App() {
               <Route path="settings" element={<SettingsPage />} />
               <Route path="clinic/complaints" element={<HealthComplaints />} />
               <Route path="clinic/appointments" element={<Appointments />} />
-              <Route path="clinic/triage" element={<TriageDashboard />} />
-              <Route path="clinic/patient-history" element={<PatientHistory />} />
               <Route path="clinic/emergencies" element={<Emergencies />} />
               <Route path="clinic/referrals" element={<Referrals />} />
               <Route path="clinic/immunization" element={<Immunization />} />
