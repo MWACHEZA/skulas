@@ -1,4 +1,4 @@
-import { PrismaClient, School } from '../../src/generated/client';
+import { PrismaClient, School } from '@prisma/client';
 
 export async function seedCommunications(
   prisma: PrismaClient,
