@@ -1,4 +1,4 @@
-import { PrismaClient, School, User, Student, Asset, Subject, JobApplication } from '@prisma/client';
+import { PrismaClient, School, User, Student, Asset, Subject, JobApplication } from '../../src/generated/client';
 
 export async function seedExtras(prisma: PrismaClient, school: School, admin: User, student: Student) {
   console.log('  -> Seeding Extras for ' + school.name + '...');

@@ -1,4 +1,4 @@
-import { PrismaClient, School, User, Student } from '@prisma/client';
+import { PrismaClient, School, User, Student } from '../../src/generated/client';
 export async function seedExtras2(prisma: PrismaClient, school: School, admin: User, student: Student) {
   console.log('  -> Seeding Extras2 for ' + school.name + '...');
   for (let i = 0; i < 10; i++) {

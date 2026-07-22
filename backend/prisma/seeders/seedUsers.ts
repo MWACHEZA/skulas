@@ -1,4 +1,4 @@
-import { PrismaClient, School } from '@prisma/client';
+import { PrismaClient, School } from '../../src/generated/client';
 import bcrypt from 'bcryptjs';
 
 const hash = (pw: string) => bcrypt.hash(pw, 10);

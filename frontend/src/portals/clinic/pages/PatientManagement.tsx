@@ -45,10 +45,10 @@ export default function PatientManagement() {
     try {
       setLoading(true);
       const res = await api.get('/api/users');
-      setUsers(res.data || []);
+      setUsers(res.data?.users || (Array.isArray(res.data) ? res.data : []));
     } catch (err) {
       showToast('Failed to load patient database', 'error');
-    
+
     } finally {
       setLoading(false);
     }
@@ -75,7 +75,7 @@ export default function PatientManagement() {
       });
     } catch (err) {
       showToast('Failed to retrieve patient medical history', 'error');
-    
+
     } finally {
       setLoadingHistory(false);
     }
@@ -131,16 +131,20 @@ export default function PatientManagement() {
       }
     } catch (err) {
       showToast('Failed to save medical record', 'error');
-    
+
     } finally {
       setSubmitting(false);
     }
   };
 
-  const filteredUsers = users.filter(u => {
-    const matchesSearch = u.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                          u.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          (u.staffId && u.staffId.toLowerCase().includes(searchTerm.toLowerCase()));
+  const filteredUsers = (Array.isArray(users) ? users : []).filter(u => {
+    if (!u) return false;
+    const name = u.name || '';
+    const email = u.email || '';
+    const staffId = u.staffId || u.student?.studentId || '';
+    const matchesSearch = name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      staffId.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesRole = roleFilter === 'ALL' || u.role === roleFilter;
     return matchesSearch && matchesRole;
   });
@@ -165,13 +169,13 @@ export default function PatientManagement() {
               <option value="LIBRARIAN">Librarians</option>
               <option value="SCHOOL_ADMIN">Admins</option>
             </select>
-            <input 
-              type="text" 
-              className="portal-input" 
-              placeholder="Search by name, email, ID..." 
+            <input
+              type="text"
+              className="portal-input"
+              placeholder="Search by name, email, ID..."
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
-              style={{ minWidth: 220 }} 
+              style={{ minWidth: 220 }}
             />
           </div>
         </div>
@@ -205,15 +209,15 @@ export default function PatientManagement() {
                     <td>{u.email}</td>
                     <td>{u.phone || 'N/A'}</td>
                     <td style={{ textAlign: 'right' }}>
-                      <button 
-                        className="portal-btn-secondary" 
+                      <button
+                        className="portal-btn-secondary"
                         onClick={() => fetchPatientHistory(u)}
                         style={{ padding: '6px 12px', fontSize: '0.8rem', marginRight: 8, display: 'inline-flex', alignItems: 'center', gap: 6 }}
                       >
                         <i className="fas fa-eye" style={{ color: 'var(--school-primary, #0056b3)' }}></i> History
                       </button>
-                      <button 
-                        className="portal-btn-primary" 
+                      <button
+                        className="portal-btn-primary"
                         onClick={() => setShowAddRecordModal(u)}
                         style={{ padding: '6px 12px', fontSize: '0.8rem', background: 'var(--portal-success)', borderColor: 'var(--portal-success)', display: 'inline-flex', alignItems: 'center', gap: 6 }}
                       >
@@ -232,8 +236,8 @@ export default function PatientManagement() {
       {selectedUser && (
         <div className="portal-modal-backdrop" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'fixed', inset: 0, backgroundColor: 'rgba(15,23,42,0.6)', backdropFilter: 'blur(8px)', zIndex: 1000, padding: 20 }}>
           <div className="portal-modal-content" style={{ background: 'white', borderRadius: 16, maxWidth: 800, width: '100%', padding: '30px', maxHeight: '90vh', overflowY: 'auto', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)', position: 'relative' }}>
-            <button 
-              onClick={() => setSelectedUser(null)} 
+            <button
+              onClick={() => setSelectedUser(null)}
               style={{ position: 'absolute', top: 20, right: 20, background: 'none', border: 'none', fontSize: '1.25rem', cursor: 'pointer', color: '#94a3b8' }}
             >
               <i className="fas fa-times"></i>
@@ -349,8 +353,8 @@ export default function PatientManagement() {
       {showAddRecordModal && (
         <div className="portal-modal-backdrop" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'fixed', inset: 0, backgroundColor: 'rgba(15,23,42,0.6)', backdropFilter: 'blur(8px)', zIndex: 1000, padding: 20 }}>
           <div className="portal-modal-content" style={{ background: 'white', borderRadius: 16, maxWidth: 540, width: '100%', padding: '30px', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)', position: 'relative' }}>
-            <button 
-              onClick={() => setShowAddRecordModal(null)} 
+            <button
+              onClick={() => setShowAddRecordModal(null)}
               style={{ position: 'absolute', top: 20, right: 20, background: 'none', border: 'none', fontSize: '1.25rem', cursor: 'pointer', color: '#94a3b8' }}
             >
               <i className="fas fa-times"></i>
@@ -388,20 +392,20 @@ export default function PatientManagement() {
                 <>
                   <div className="portal-form-group">
                     <label className="portal-label">Complaint Title *</label>
-                    <input 
-                      type="text" 
-                      className="portal-input" 
+                    <input
+                      type="text"
+                      className="portal-input"
                       placeholder="e.g. Flu, Stomach Ache"
                       value={complaintForm.title}
                       onChange={e => setComplaintForm({ ...complaintForm, title: e.target.value })}
-                      required 
+                      required
                     />
                   </div>
                   <div className="portal-form-group">
                     <label className="portal-label">Symptoms *</label>
-                    <textarea 
-                      className="portal-input" 
-                      rows={3} 
+                    <textarea
+                      className="portal-input"
+                      rows={3}
                       placeholder="Describe symptoms..."
                       value={complaintForm.symptoms}
                       onChange={e => setComplaintForm({ ...complaintForm, symptoms: e.target.value })}
@@ -410,9 +414,9 @@ export default function PatientManagement() {
                   </div>
                   <div className="portal-form-group">
                     <label className="portal-label">Prescription (Medicine)</label>
-                    <input 
-                      type="text" 
-                      className="portal-input" 
+                    <input
+                      type="text"
+                      className="portal-input"
                       placeholder="Prescribed medicine..."
                       value={complaintForm.medicine}
                       onChange={e => setComplaintForm({ ...complaintForm, medicine: e.target.value })}
@@ -425,20 +429,20 @@ export default function PatientManagement() {
                 <>
                   <div className="portal-form-group">
                     <label className="portal-label">Appointment Title / Purpose *</label>
-                    <input 
-                      type="text" 
-                      className="portal-input" 
+                    <input
+                      type="text"
+                      className="portal-input"
                       placeholder="e.g. Regular Checkup, Dental check"
                       value={appointmentForm.appointment}
                       onChange={e => setAppointmentForm({ ...appointmentForm, appointment: e.target.value })}
-                      required 
+                      required
                     />
                   </div>
                   <div className="portal-form-group">
                     <label className="portal-label">Symptoms / Notes</label>
-                    <textarea 
-                      className="portal-input" 
-                      rows={2} 
+                    <textarea
+                      className="portal-input"
+                      rows={2}
                       placeholder="Note down complaints..."
                       value={appointmentForm.symptoms}
                       onChange={e => setAppointmentForm({ ...appointmentForm, symptoms: e.target.value })}
@@ -446,12 +450,12 @@ export default function PatientManagement() {
                   </div>
                   <div className="portal-form-group">
                     <label className="portal-label">Schedule Date & Time *</label>
-                    <input 
-                      type="datetime-local" 
+                    <input
+                      type="datetime-local"
                       className="portal-input"
                       value={appointmentForm.date}
                       onChange={e => setAppointmentForm({ ...appointmentForm, date: e.target.value })}
-                      required 
+                      required
                     />
                   </div>
                 </>
@@ -461,20 +465,20 @@ export default function PatientManagement() {
                 <>
                   <div className="portal-form-group">
                     <label className="portal-label">Vaccine Title *</label>
-                    <input 
-                      type="text" 
-                      className="portal-input" 
+                    <input
+                      type="text"
+                      className="portal-input"
                       placeholder="e.g. BCG, Tetanus, COVID-19"
                       value={immunizationForm.title}
                       onChange={e => setImmunizationForm({ ...immunizationForm, title: e.target.value })}
-                      required 
+                      required
                     />
                   </div>
                   <div className="portal-form-group">
                     <label className="portal-label">Immunization details</label>
-                    <textarea 
-                      className="portal-input" 
-                      rows={3} 
+                    <textarea
+                      className="portal-input"
+                      rows={3}
                       placeholder="Dosage, batch, remarks..."
                       value={immunizationForm.details}
                       onChange={e => setImmunizationForm({ ...immunizationForm, details: e.target.value })}
@@ -487,31 +491,31 @@ export default function PatientManagement() {
                 <>
                   <div className="portal-form-group">
                     <label className="portal-label">Reason for Referral *</label>
-                    <input 
-                      type="text" 
-                      className="portal-input" 
+                    <input
+                      type="text"
+                      className="portal-input"
                       placeholder="e.g. Secondary Specialist consult"
                       value={referralForm.title}
                       onChange={e => setReferralForm({ ...referralForm, title: e.target.value })}
-                      required 
+                      required
                     />
                   </div>
                   <div className="portal-form-group">
                     <label className="portal-label">Referral Target Hospital / Specialist *</label>
-                    <input 
-                      type="text" 
-                      className="portal-input" 
+                    <input
+                      type="text"
+                      className="portal-input"
                       placeholder="Hospital Name"
                       value={referralForm.to}
                       onChange={e => setReferralForm({ ...referralForm, to: e.target.value })}
-                      required 
+                      required
                     />
                   </div>
                   <div className="portal-form-group">
                     <label className="portal-label">Hospital Address</label>
-                    <input 
-                      type="text" 
-                      className="portal-input" 
+                    <input
+                      type="text"
+                      className="portal-input"
                       placeholder="Hospital address details..."
                       value={referralForm.address}
                       onChange={e => setReferralForm({ ...referralForm, address: e.target.value })}
@@ -519,9 +523,9 @@ export default function PatientManagement() {
                   </div>
                   <div className="portal-form-group">
                     <label className="portal-label">Clinical Details / Diagnostic Summary</label>
-                    <textarea 
-                      className="portal-input" 
-                      rows={2} 
+                    <textarea
+                      className="portal-input"
+                      rows={2}
                       placeholder="Patient medical details to pass along..."
                       value={referralForm.details}
                       onChange={e => setReferralForm({ ...referralForm, details: e.target.value })}
@@ -530,9 +534,9 @@ export default function PatientManagement() {
                 </>
               )}
 
-              <button 
-                type="submit" 
-                className="portal-btn-primary" 
+              <button
+                type="submit"
+                className="portal-btn-primary"
                 style={{ width: '100%', background: 'var(--portal-success)', borderColor: 'var(--portal-success)', marginTop: 10 }}
                 disabled={submitting}
               >
