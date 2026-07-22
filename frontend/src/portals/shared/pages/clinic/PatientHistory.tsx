@@ -88,11 +88,15 @@ export default function PatientHistory() {
                               {v.triageLevel || 'GREEN'}
                             </span>
                           </td>
-                          <td style={{ fontSize: '0.85em' }}>
-                            {v.temperature && <div>Temp: {v.temperature}°C</div>}
-                            {v.bloodPressure && <div>BP: {v.bloodPressure}</div>}
-                            {v.heartRate && <div>HR: {v.heartRate} bpm</div>}
-                            {v.weight && <div>Wt: {v.weight} kg</div>}
+                          <td>
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(80px, 1fr))', gap: '6px', fontSize: '0.9em' }}>
+                              {v.temperature && <div><i className="fas fa-thermometer-half" style={{ color: '#ef4444', width: '16px', textAlign: 'center', marginRight: '4px' }}></i> {v.temperature}°C</div>}
+                              {v.bloodPressure && <div><i className="fas fa-tint" style={{ color: '#b91c1c', width: '16px', textAlign: 'center', marginRight: '4px' }}></i> {v.bloodPressure}</div>}
+                              {v.heartRate && <div><i className="fas fa-heartbeat" style={{ color: '#dc2626', width: '16px', textAlign: 'center', marginRight: '4px' }}></i> {v.heartRate} bpm</div>}
+                              {v.respiratoryRate && <div><i className="fas fa-lungs" style={{ color: '#0284c7', width: '16px', textAlign: 'center', marginRight: '4px' }}></i> {v.respiratoryRate}</div>}
+                              {v.oxygenSaturation && <div><i className="fas fa-wind" style={{ color: '#0ea5e9', width: '16px', textAlign: 'center', marginRight: '4px' }}></i> {v.oxygenSaturation}%</div>}
+                              {v.weight && <div><i className="fas fa-weight" style={{ color: '#6b7280', width: '16px', textAlign: 'center', marginRight: '4px' }}></i> {v.weight} kg</div>}
+                            </div>
                           </td>
                           <td>{v.diagnosis || 'Pending'}</td>
                           <td>{v.status}</td>

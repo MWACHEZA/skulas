@@ -111,6 +111,14 @@ export default function TriageDashboard() {
     }
   };
 
+  const hasVitals = !!(
+    formData.temperature || 
+    formData.bloodPressure || 
+    formData.heartRate || 
+    formData.respiratoryRate || 
+    formData.oxygenSaturation
+  );
+
   return (
     <div className="portal-page">
       <div className="portal-header">
@@ -140,60 +148,85 @@ export default function TriageDashboard() {
                 placeholder="Why are they here?"
               />
             </div>
-            <div className="form-group">
-              <label>Triage Level (Auto-calculated)</label>
-              <select 
-                value={formData.triageLevel}
-                onChange={e => setFormData({...formData, triageLevel: e.target.value})}
-                style={{ 
-                  backgroundColor: 
-                    formData.triageLevel === 'RED' ? '#fee2e2' : 
-                    formData.triageLevel === 'YELLOW' ? '#fef3c7' : 
-                    formData.triageLevel === 'GREEN' ? '#dcfce7' :
-                    formData.triageLevel === 'BLACK' ? '#e5e7eb' :
-                    '#ffffff',
-                  fontWeight: 'bold'
-                }}
-              >
-                <option value="RED">🔴 RED - Immediate (Priority 1)</option>
-                <option value="YELLOW">🟡 YELLOW - Delayed (Priority 2)</option>
-                <option value="GREEN">🟢 GREEN - Minimal (Priority 3)</option>
-                <option value="BLACK">⚫ BLACK - Expectant / Deceased</option>
-                <option value="WHITE">⚪ WHITE - Dismiss / Minor</option>
-              </select>
-            </div>
           </div>
 
           <div className="portal-card" style={{ marginTop: '20px' }}>
-            <h2>Vitals</h2>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
-              <div className="form-group">
-                <label>Temperature (°C)</label>
-                <input type="number" step="0.1" value={formData.temperature} onChange={e => setFormData({...formData, temperature: e.target.value})} />
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+              <h2 style={{ margin: 0 }}>Vitals</h2>
+              {hasVitals && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <span style={{ fontWeight: 'bold', color: '#6b7280' }}>Calculated Triage:</span>
+                  <select 
+                    value={formData.triageLevel}
+                    onChange={e => setFormData({...formData, triageLevel: e.target.value})}
+                    style={{ 
+                      backgroundColor: 
+                        formData.triageLevel === 'RED' ? '#fee2e2' : 
+                        formData.triageLevel === 'YELLOW' ? '#fef3c7' : 
+                        formData.triageLevel === 'GREEN' ? '#dcfce7' :
+                        formData.triageLevel === 'BLACK' ? '#e5e7eb' :
+                        '#ffffff',
+                      fontWeight: 'bold',
+                      border: 'none',
+                      padding: '8px 12px',
+                      borderRadius: '20px',
+                      outline: 'none',
+                      boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    <option value="RED">🔴 RED (Immediate)</option>
+                    <option value="YELLOW">🟡 YELLOW (Delayed)</option>
+                    <option value="GREEN">🟢 GREEN (Minimal)</option>
+                    <option value="BLACK">⚫ BLACK (Expectant)</option>
+                    <option value="WHITE">⚪ WHITE (Dismiss)</option>
+                  </select>
+                </div>
+              )}
+            </div>
+            
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px' }}>
+              <div className="form-group" style={{ backgroundColor: '#f9fafb', padding: '15px', borderRadius: '12px', border: '1px solid #e5e7eb' }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 'bold', color: '#374151' }}>
+                  <i className="fas fa-thermometer-half" style={{ color: '#ef4444' }}></i> Temperature (°C)
+                </label>
+                <input type="number" step="0.1" value={formData.temperature} onChange={e => setFormData({...formData, temperature: e.target.value})} style={{ border: 'none', borderBottom: '2px solid #d1d5db', backgroundColor: 'transparent', borderRadius: 0, padding: '8px 0', fontSize: '1.1em', width: '100%' }} placeholder="e.g. 36.5" />
               </div>
-              <div className="form-group">
-                <label>Blood Pressure (e.g. 120/80)</label>
-                <input type="text" value={formData.bloodPressure} onChange={e => setFormData({...formData, bloodPressure: e.target.value})} />
+              <div className="form-group" style={{ backgroundColor: '#f9fafb', padding: '15px', borderRadius: '12px', border: '1px solid #e5e7eb' }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 'bold', color: '#374151' }}>
+                  <i className="fas fa-tint" style={{ color: '#b91c1c' }}></i> Blood Pressure
+                </label>
+                <input type="text" value={formData.bloodPressure} onChange={e => setFormData({...formData, bloodPressure: e.target.value})} style={{ border: 'none', borderBottom: '2px solid #d1d5db', backgroundColor: 'transparent', borderRadius: 0, padding: '8px 0', fontSize: '1.1em', width: '100%' }} placeholder="e.g. 120/80" />
               </div>
-              <div className="form-group">
-                <label>Heart Rate (bpm)</label>
-                <input type="number" value={formData.heartRate} onChange={e => setFormData({...formData, heartRate: e.target.value})} />
+              <div className="form-group" style={{ backgroundColor: '#f9fafb', padding: '15px', borderRadius: '12px', border: '1px solid #e5e7eb' }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 'bold', color: '#374151' }}>
+                  <i className="fas fa-heartbeat" style={{ color: '#dc2626' }}></i> Heart Rate (bpm)
+                </label>
+                <input type="number" value={formData.heartRate} onChange={e => setFormData({...formData, heartRate: e.target.value})} style={{ border: 'none', borderBottom: '2px solid #d1d5db', backgroundColor: 'transparent', borderRadius: 0, padding: '8px 0', fontSize: '1.1em', width: '100%' }} placeholder="e.g. 80" />
               </div>
-              <div className="form-group">
-                <label>Respiratory Rate</label>
-                <input type="number" value={formData.respiratoryRate} onChange={e => setFormData({...formData, respiratoryRate: e.target.value})} />
+              <div className="form-group" style={{ backgroundColor: '#f9fafb', padding: '15px', borderRadius: '12px', border: '1px solid #e5e7eb' }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 'bold', color: '#374151' }}>
+                  <i className="fas fa-lungs" style={{ color: '#0284c7' }}></i> Respiratory Rate
+                </label>
+                <input type="number" value={formData.respiratoryRate} onChange={e => setFormData({...formData, respiratoryRate: e.target.value})} style={{ border: 'none', borderBottom: '2px solid #d1d5db', backgroundColor: 'transparent', borderRadius: 0, padding: '8px 0', fontSize: '1.1em', width: '100%' }} placeholder="e.g. 16" />
               </div>
-              <div className="form-group">
-                <label>Weight (kg)</label>
-                <input type="number" step="0.1" value={formData.weight} onChange={e => setFormData({...formData, weight: e.target.value})} />
+              <div className="form-group" style={{ backgroundColor: '#f9fafb', padding: '15px', borderRadius: '12px', border: '1px solid #e5e7eb' }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 'bold', color: '#374151' }}>
+                  <i className="fas fa-wind" style={{ color: '#0ea5e9' }}></i> SpO2 (%)
+                </label>
+                <input type="number" step="0.1" value={formData.oxygenSaturation} onChange={e => setFormData({...formData, oxygenSaturation: e.target.value})} style={{ border: 'none', borderBottom: '2px solid #d1d5db', backgroundColor: 'transparent', borderRadius: 0, padding: '8px 0', fontSize: '1.1em', width: '100%' }} placeholder="e.g. 98" />
               </div>
-              <div className="form-group">
-                <label>Height (cm)</label>
-                <input type="number" step="0.1" value={formData.height} onChange={e => setFormData({...formData, height: e.target.value})} />
+              <div className="form-group" style={{ backgroundColor: '#f9fafb', padding: '15px', borderRadius: '12px', border: '1px solid #e5e7eb' }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 'bold', color: '#374151' }}>
+                  <i className="fas fa-weight" style={{ color: '#4b5563' }}></i> Weight (kg)
+                </label>
+                <input type="number" step="0.1" value={formData.weight} onChange={e => setFormData({...formData, weight: e.target.value})} style={{ border: 'none', borderBottom: '2px solid #d1d5db', backgroundColor: 'transparent', borderRadius: 0, padding: '8px 0', fontSize: '1.1em', width: '100%' }} placeholder="e.g. 65" />
               </div>
-              <div className="form-group">
-                <label>Oxygen Saturation (%)</label>
-                <input type="number" step="0.1" value={formData.oxygenSaturation} onChange={e => setFormData({...formData, oxygenSaturation: e.target.value})} />
+              <div className="form-group" style={{ backgroundColor: '#f9fafb', padding: '15px', borderRadius: '12px', border: '1px solid #e5e7eb' }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 'bold', color: '#374151' }}>
+                  <i className="fas fa-ruler-vertical" style={{ color: '#4b5563' }}></i> Height (cm)
+                </label>
+                <input type="number" step="0.1" value={formData.height} onChange={e => setFormData({...formData, height: e.target.value})} style={{ border: 'none', borderBottom: '2px solid #d1d5db', backgroundColor: 'transparent', borderRadius: 0, padding: '8px 0', fontSize: '1.1em', width: '100%' }} placeholder="e.g. 170" />
               </div>
             </div>
           </div>
