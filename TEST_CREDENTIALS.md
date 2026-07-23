@@ -122,7 +122,7 @@ All passwords follow the role name capitalized followed by `@1234` (e.g. `Admin@
 - **School Name:** St. Peter Seminary
 - **School Code:** `AX-SEMINARY`
 - **School Type:** `tertiary`
-- **Domain Email Prefix:** `stpeterseminary.org`
+- **Domain Email Prefix:** `stpeterseminary.org` 
 
 **User Accounts:**
 | Role | Title / Secondary Role | Email | Password |
