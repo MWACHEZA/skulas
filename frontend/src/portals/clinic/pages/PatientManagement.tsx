@@ -7,6 +7,7 @@ interface PatientHistory {
   complaints: any[];
   immunizations: any[];
   referrals: any[];
+  hospitalizations: any[];
 }
 
 export default function PatientManagement() {
@@ -22,13 +23,14 @@ export default function PatientManagement() {
     appointments: [],
     complaints: [],
     immunizations: [],
-    referrals: []
+    referrals: [],
+    hospitalizations: []
   });
   const [loadingHistory, setLoadingHistory] = useState(false);
 
   // Add Medical Record Modal
   const [showAddRecordModal, setShowAddRecordModal] = useState<any | null>(null); // holds user object
-  const [recordType, setRecordType] = useState<'COMPLAINT' | 'APPOINTMENT' | 'IMMUNIZATION' | 'REFERRAL'>('COMPLAINT');
+  const [recordType, setRecordType] = useState<'COMPLAINT' | 'APPOINTMENT' | 'IMMUNIZATION' | 'REFERRAL' | 'HOSPITALIZATION'>('COMPLAINT');
   const [submitting, setSubmitting] = useState(false);
 
   // Forms State
@@ -36,6 +38,18 @@ export default function PatientManagement() {
   const [appointmentForm, setAppointmentForm] = useState({ appointment: '', symptoms: '', medicine: '', date: new Date().toISOString().slice(0, 16) });
   const [immunizationForm, setImmunizationForm] = useState({ title: '', details: '', date: new Date().toISOString().split('T')[0] });
   const [referralForm, setReferralForm] = useState({ title: '', details: '', to: '', address: '', date: new Date().toISOString().split('T')[0] });
+  const [hospitalizationForm, setHospitalizationForm] = useState({ 
+    reasonForAdmission: '',
+    admissionType: 'PLANNED',
+    emergencyContacts: '',
+    medicalHistory: '',
+    currentMedications: '',
+    insurance: '',
+    lifestyle: '',
+    consentTreatment: false,
+    consentPrivacy: false,
+    consentRelease: false
+  });
 
   useEffect(() => {
     fetchUsers();
@@ -58,11 +72,12 @@ export default function PatientManagement() {
     setSelectedUser(targetUser);
     setLoadingHistory(true);
     try {
-      const [compRes, appRes, immRes, refRes] = await Promise.all([
+      const [compRes, appRes, immRes, refRes, hospRes] = await Promise.all([
         api.get('/api/clinic/complaints'),
         api.get('/api/clinic/appointments'),
         api.get('/api/clinic/immunizations'),
-        api.get('/api/clinic/referrals')
+        api.get('/api/clinic/referrals'),
+        api.get(`/api/clinic/patient/${targetUser.id}/hospitalizations`)
       ]);
 
       // Filter each record type by the patient's userId
@@ -71,7 +86,8 @@ export default function PatientManagement() {
         complaints: (compRes.data || []).filter((x: any) => x.userId === userId),
         appointments: (appRes.data || []).filter((x: any) => x.userId === userId),
         immunizations: (immRes.data || []).filter((x: any) => x.userId === userId),
-        referrals: (refRes.data || []).filter((x: any) => x.userId === userId)
+        referrals: (refRes.data || []).filter((x: any) => x.userId === userId),
+        hospitalizations: hospRes.data || []
       });
     } catch (err) {
       showToast('Failed to retrieve patient medical history', 'error');
@@ -123,6 +139,22 @@ export default function PatientManagement() {
         await api.post('/api/clinic/referrals', { ...referralForm, targetUserId });
         showToast('Referral created successfully', 'success');
         setReferralForm({ title: '', details: '', to: '', address: '', date: new Date().toISOString().split('T')[0] });
+      } else if (recordType === 'HOSPITALIZATION') {
+        if (!hospitalizationForm.reasonForAdmission) {
+          showToast('Please specify the reason for admission', 'warning');
+          setSubmitting(false);
+          return;
+        }
+        await api.post('/api/clinic/hospitalizations', { 
+           targetUserId, 
+           preAdmissionData: hospitalizationForm 
+        });
+        showToast('Hospitalization initiated', 'success');
+        setHospitalizationForm({ 
+          reasonForAdmission: '', admissionType: 'PLANNED', emergencyContacts: '', 
+          medicalHistory: '', currentMedications: '', insurance: '', lifestyle: '', 
+          consentTreatment: false, consentPrivacy: false, consentRelease: false 
+        });
       }
 
       setShowAddRecordModal(null);
@@ -343,6 +375,33 @@ export default function PatientManagement() {
                     </div>
                   )}
                 </div>
+                
+                {/* Hospitalizations */}
+                <div>
+                  <h3 style={{ fontSize: '1rem', fontWeight: 700, borderBottom: '2px solid #f59e0b', paddingBottom: 6, color: '#d97706', marginBottom: 12 }}>
+                    <i className="fas fa-procedures mr-2"></i> Hospitalizations
+                  </h3>
+                  {history.hospitalizations.length === 0 ? (
+                    <p style={{ fontStyle: 'italic', fontSize: '0.85rem', color: '#94a3b8' }}>No recorded hospitalizations.</p>
+                  ) : (
+                    <div style={{ display: 'grid', gap: 10 }}>
+                      {history.hospitalizations.map(h => (
+                        <div key={h.id} style={{ background: '#fffbeb', border: '1px solid #fde68a', borderRadius: 8, padding: 12 }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 600, fontSize: '0.9rem' }}>
+                            <span>Stage: {h.stage.replace('_', ' ')}</span>
+                            <span style={{ fontSize: '0.8rem', color: '#b45309' }}>{new Date(h.createdAt).toLocaleDateString()}</span>
+                          </div>
+                          {h.preAdmissionData?.reasonForAdmission && (
+                             <p style={{ margin: '6px 0 0 0', fontSize: '0.85rem', color: '#4b5563' }}><strong>Reason:</strong> {h.preAdmissionData.reasonForAdmission}</p>
+                          )}
+                          <div style={{ marginTop: 10 }}>
+                            <a href={`/clinic/hospitalizations/${h.id}`} target="_blank" rel="noreferrer" style={{ fontSize: '0.85rem', color: 'var(--school-primary)', textDecoration: 'underline' }}>Manage / Print Discharge Summary</a>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
             )}
           </div>
@@ -364,8 +423,8 @@ export default function PatientManagement() {
             </h2>
             <p style={{ color: '#64748b', fontSize: '0.85rem', marginBottom: 20 }}>Registering clinical note for patient: {showAddRecordModal.name}</p>
 
-            <div style={{ display: 'flex', borderBottom: '1px solid #e2e8f0', marginBottom: 20 }}>
-              {(['COMPLAINT', 'APPOINTMENT', 'IMMUNIZATION', 'REFERRAL'] as const).map(type => (
+            <div style={{ display: 'flex', borderBottom: '1px solid #e2e8f0', marginBottom: 20, overflowX: 'auto' }}>
+              {(['COMPLAINT', 'APPOINTMENT', 'IMMUNIZATION', 'REFERRAL', 'HOSPITALIZATION'] as const).map(type => (
                 <button
                   key={type}
                   onClick={() => setRecordType(type)}
@@ -530,6 +589,97 @@ export default function PatientManagement() {
                       value={referralForm.details}
                       onChange={e => setReferralForm({ ...referralForm, details: e.target.value })}
                     ></textarea>
+                  </div>
+                </>
+              )}
+
+              {recordType === 'HOSPITALIZATION' && (
+                <>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+                    <div className="portal-form-group">
+                      <label className="portal-label">Admission Type *</label>
+                      <select 
+                        className="portal-input" 
+                        value={hospitalizationForm.admissionType}
+                        onChange={e => setHospitalizationForm({...hospitalizationForm, admissionType: e.target.value})}
+                      >
+                        <option value="PLANNED">Planned Procedure</option>
+                        <option value="EMERGENCY">Emergency Condition</option>
+                        <option value="OBSERVATION">Observation</option>
+                      </select>
+                    </div>
+                    <div className="portal-form-group">
+                      <label className="portal-label">Reason Details *</label>
+                      <input
+                        type="text"
+                        className="portal-input"
+                        placeholder="Detailed reason..."
+                        value={hospitalizationForm.reasonForAdmission}
+                        onChange={e => setHospitalizationForm({ ...hospitalizationForm, reasonForAdmission: e.target.value })}
+                        required
+                      />
+                    </div>
+                    
+                    <div className="portal-form-group">
+                      <label className="portal-label">Emergency Contacts</label>
+                      <textarea
+                        className="portal-input" rows={2} placeholder="Names, relationships, numbers..."
+                        value={hospitalizationForm.emergencyContacts}
+                        onChange={e => setHospitalizationForm({ ...hospitalizationForm, emergencyContacts: e.target.value })}
+                      ></textarea>
+                    </div>
+                    
+                    <div className="portal-form-group">
+                      <label className="portal-label">Medical History</label>
+                      <textarea
+                        className="portal-input" rows={2} placeholder="Chronic conditions, surgeries, allergies..."
+                        value={hospitalizationForm.medicalHistory}
+                        onChange={e => setHospitalizationForm({ ...hospitalizationForm, medicalHistory: e.target.value })}
+                      ></textarea>
+                    </div>
+
+                    <div className="portal-form-group">
+                      <label className="portal-label">Current Medications</label>
+                      <textarea
+                        className="portal-input" rows={2} placeholder="Dosage, frequency, OTC..."
+                        value={hospitalizationForm.currentMedications}
+                        onChange={e => setHospitalizationForm({ ...hospitalizationForm, currentMedications: e.target.value })}
+                      ></textarea>
+                    </div>
+                    
+                    <div className="portal-form-group">
+                      <label className="portal-label">Lifestyle / Social Factors</label>
+                      <textarea
+                        className="portal-input" rows={2} placeholder="Occupation, living situation, smoking..."
+                        value={hospitalizationForm.lifestyle}
+                        onChange={e => setHospitalizationForm({ ...hospitalizationForm, lifestyle: e.target.value })}
+                      ></textarea>
+                    </div>
+                    
+                    <div className="portal-form-group" style={{ gridColumn: '1 / -1' }}>
+                      <label className="portal-label">Insurance / Financial Info</label>
+                      <input
+                        type="text" className="portal-input" placeholder="Coverage details, co-payments..."
+                        value={hospitalizationForm.insurance}
+                        onChange={e => setHospitalizationForm({ ...hospitalizationForm, insurance: e.target.value })}
+                      />
+                    </div>
+                  </div>
+
+                  <div style={{ marginTop: 15, padding: 15, background: '#f8fafc', borderRadius: 8 }}>
+                    <h4 style={{ marginBottom: 10, fontSize: '0.9rem' }}>Required Consents</h4>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8, fontSize: '0.9rem' }}>
+                      <input type="checkbox" checked={hospitalizationForm.consentTreatment} onChange={e => setHospitalizationForm({...hospitalizationForm, consentTreatment: e.target.checked})} />
+                      Consent for Treatment
+                    </label>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8, fontSize: '0.9rem' }}>
+                      <input type="checkbox" checked={hospitalizationForm.consentPrivacy} onChange={e => setHospitalizationForm({...hospitalizationForm, consentPrivacy: e.target.checked})} />
+                      Consent for Data Privacy
+                    </label>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8, fontSize: '0.9rem' }}>
+                      <input type="checkbox" checked={hospitalizationForm.consentRelease} onChange={e => setHospitalizationForm({...hospitalizationForm, consentRelease: e.target.checked})} />
+                      Consent for Release of Medical Info
+                    </label>
                   </div>
                 </>
               )}

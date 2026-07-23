@@ -16,19 +16,34 @@ const getTriageStyle = (level: string) => {
 
 export default function PatientHistory() {
   const [loading, setLoading] = useState(false);
-  const [targetUserId, setTargetUserId] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState<{patients: any[], users: any[]}>({patients: [], users: []});
+  const [selectedPatient, setSelectedPatient] = useState<any>(null);
   const [history, setHistory] = useState<any>(null);
 
-  const fetchHistory = async (e?: React.FormEvent) => {
-    if (e) e.preventDefault();
-    if (!targetUserId) {
-      toast.error('Please enter a Patient User ID');
+  const handleSearch = async (query: string) => {
+    setSearchQuery(query);
+    if (query.length < 2) {
+      setSearchResults({patients: [], users: []});
       return;
     }
+    try {
+      const res = await api.get(`/api/clinic/patients/search?q=${encodeURIComponent(query)}`);
+      setSearchResults(res.data);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const selectPatient = async (patient: any, type: 'patient' | 'user') => {
+    setSelectedPatient({...patient, type});
+    setSearchQuery('');
+    setSearchResults({patients: [], users: []});
     
     setLoading(true);
     try {
-      const res = await api.get(`/api/clinic/patient/${targetUserId}/history`);
+      const url = `/api/clinic/patient/${patient.id}/history?type=${type}`;
+      const res = await api.get(url);
       setHistory(res.data);
       toast.success('Patient history retrieved');
     } catch (err: any) {
@@ -46,18 +61,64 @@ export default function PatientHistory() {
       </div>
 
       <div className="portal-content">
-        <form onSubmit={fetchHistory} className="portal-form" style={{ marginBottom: '20px', display: 'flex', gap: '10px' }}>
-          <input 
-            type="text" 
-            value={targetUserId}
-            onChange={e => setTargetUserId(e.target.value)}
-            placeholder="Enter Patient User ID"
-            style={{ flex: 1, padding: '10px', borderRadius: '4px', border: '1px solid #ddd' }}
-          />
-          <button type="submit" className="portal-btn" disabled={loading}>
-            {loading ? 'Loading...' : 'View History'}
-          </button>
-        </form>
+        <div style={{ position: 'relative', marginBottom: '30px' }}>
+          {selectedPatient ? (
+            <div style={{ backgroundColor: '#f3f4f6', padding: '15px 20px', borderRadius: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
+              <div>
+                <h3 style={{ margin: '0 0 5px 0', color: '#1f2937' }}>{selectedPatient.name || `${selectedPatient.firstName} ${selectedPatient.lastName}`}</h3>
+                <p style={{ margin: 0, color: '#6b7280' }}>
+                  {selectedPatient.type === 'user' ? `Role: ${selectedPatient.role || 'User'}` : 'Walk-in Patient'} 
+                  {selectedPatient.contactNumber ? ` | Contact: ${selectedPatient.contactNumber}` : ''}
+                </p>
+              </div>
+              <button type="button" onClick={() => {
+                setSelectedPatient(null);
+                setHistory(null);
+              }} style={{ padding: '8px 16px', background: '#ef4444', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>
+                Change Patient
+              </button>
+            </div>
+          ) : (
+            <div className="search-container" style={{ display: 'flex', gap: '10px' }}>
+              <div style={{ position: 'relative', flex: 1 }}>
+                <label style={{ fontWeight: 'bold', color: '#374151', marginBottom: '8px', display: 'block' }}>Search Patient (Name, ID, Contact) *</label>
+                <div style={{ position: 'relative' }}>
+                  <i className="fas fa-search" style={{ position: 'absolute', left: '15px', top: '50%', transform: 'translateY(-50%)', color: '#9ca3af' }}></i>
+                  <input 
+                    type="text" 
+                    value={searchQuery}
+                    onChange={e => handleSearch(e.target.value)}
+                    placeholder="Start typing to search existing students, staff, or walk-ins..."
+                    style={{ width: '100%', padding: '14px 14px 14px 45px', borderRadius: '8px', border: '2px solid #e5e7eb', fontSize: '1.1em', outline: 'none', transition: 'border-color 0.2s', boxSizing: 'border-box' }}
+                    onFocus={(e) => e.target.style.borderColor = '#3b82f6'}
+                    onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
+                  />
+                </div>
+                {(searchResults.patients.length > 0 || searchResults.users.length > 0) && (
+                  <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, background: 'white', zIndex: 10, border: '1px solid #e5e7eb', borderRadius: '8px', marginTop: '5px', maxHeight: '300px', overflowY: 'auto', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)' }}>
+                    {searchResults.patients.map(p => (
+                      <div key={`p-${p.id}`} onClick={() => selectPatient(p, 'patient')} style={{ padding: '15px', borderBottom: '1px solid #f3f4f6', cursor: 'pointer', transition: 'background-color 0.2s' }} onMouseEnter={e => e.currentTarget.style.backgroundColor = '#f9fafb'} onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}>
+                        <strong style={{ color: '#111827', fontSize: '1.1em' }}>{p.firstName} {p.lastName}</strong> <span style={{ color: '#6b7280', fontSize: '0.9em' }}>(Walk-in Patient)</span>
+                        {p.contactNumber && <div style={{ color: '#6b7280', fontSize: '0.85em', marginTop: '4px' }}>{p.contactNumber}</div>}
+                      </div>
+                    ))}
+                    {searchResults.users.map(u => (
+                      <div key={`u-${u.id}`} onClick={() => selectPatient(u, 'user')} style={{ padding: '15px', borderBottom: '1px solid #f3f4f6', cursor: 'pointer', transition: 'background-color 0.2s' }} onMouseEnter={e => e.currentTarget.style.backgroundColor = '#f9fafb'} onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}>
+                        <strong style={{ color: '#111827', fontSize: '1.1em' }}>{u.name}</strong> <span style={{ color: '#6b7280', fontSize: '0.9em' }}>({u.role})</span>
+                        {u.email && <div style={{ color: '#6b7280', fontSize: '0.85em', marginTop: '4px' }}>{u.email}</div>}
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {searchQuery.length > 2 && searchResults.patients.length === 0 && searchResults.users.length === 0 && (
+                  <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, background: 'white', zIndex: 10, border: '1px solid #e5e7eb', padding: '15px', color: '#6b7280', borderRadius: '8px', marginTop: '5px' }}>
+                    No matching patients found.
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
 
         {history && (
           <div className="history-container" style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
@@ -70,6 +131,7 @@ export default function PatientHistory() {
                   <table className="portal-table">
                     <thead>
                       <tr>
+                        <th>Episode</th>
                         <th>Date</th>
                         <th>Complaint</th>
                         <th>Triage</th>
@@ -81,7 +143,17 @@ export default function PatientHistory() {
                     <tbody>
                       {history.visits.map((v: any) => (
                         <tr key={v.id}>
-                          <td>{format(new Date(v.visitDate), 'MMM dd, yyyy HH:mm')}</td>
+                          <td>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                              <strong style={{ color: '#1f2937', fontSize: '1em' }}>
+                                Episode: {format(new Date(v.visitDate), 'dd MMM yyyy').toUpperCase()}
+                              </strong>
+                              <span style={{ color: '#3b82f6', backgroundColor: '#eff6ff', padding: '2px 6px', borderRadius: '4px', fontSize: '0.8em', alignSelf: 'flex-start' }}>
+                                #{v.visitCode || v.id.slice(0,8)}
+                              </span>
+                            </div>
+                          </td>
+                          <td>{format(new Date(v.visitDate), 'HH:mm')}</td>
                           <td>{v.presentingComplaint || 'N/A'}</td>
                           <td>
                             <span style={getTriageStyle(v.triageLevel)}>

@@ -21,7 +21,7 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    command: sh -c "npx prisma db push && node dist/src/index.js"
+    command: sh -c "npx prisma db push --accept-data-loss && node dist/src/index.js"
     restart: unless-stopped
     depends_on:
       - db

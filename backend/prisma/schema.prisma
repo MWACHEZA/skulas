@@ -43,6 +43,7 @@ model School {
   websiteInquiries      WebsiteInquiry[]
   noticeboards          Noticeboard[]
   clinicVisits          ClinicVisit[]
+  clinicHospitalizations ClinicHospitalization[]
   vacancies             Vacancy[]
   jobApplications       JobApplication[]
   gallery               Gallery[]
@@ -144,6 +145,7 @@ model School {
   meetingMinutes    MeetingMinutes[]
   projectFundings   ProjectFunding[]
   sportingEquipment SportingEquipment[]
+  ClinicPatient     ClinicPatient[]
 
   @@index([code])
 }
@@ -349,31 +351,31 @@ model Expense {
 
 model User {
   recruitedVacancies Vacancy[]
-  id                 String    @id @default(cuid())
-  email              String    @unique
+  id                 String        @id @default(cuid())
+  email              String        @unique
   password           String
   name               String
   role               String // SUPER_ADMIN, SCHOOL_ADMIN, TEACHER, BURSAR, LIBRARIAN, STUDENT, ALUMNI, ANCILLARY, PARENT, SUPPLIER
-  secondaryRoles     String[]  @default([])
+  secondaryRoles     String[]      @default([])
   sessions           UserSession[]
   avatar             String? // Stores filename or reference ID
-  religion           String?   // User's religious affiliation
+  religion           String? // User's religious affiliation
 
-  phone            String?
-  preferredLanguage String?   @default("en")
-  staffId          String? // Unique sequential ID (BUR-YY000001, etc.)
-  schoolId         String?
-  school           School?           @relation(fields: [schoolId], references: [id])
-  teacher          Teacher?
-  student          Student?
-  parent           Parent?
-  supplier         Supplier?
-  salaryStubs      SalaryStub[]
-  shiftAssignments ShiftAssignment[]
-  employeeProfile  EmployeeProfile?
-  awards           Award[]
-  courses          Course[]
-  bookLoans        BookLoan[]
+  phone             String?
+  preferredLanguage String?           @default("en")
+  staffId           String? // Unique sequential ID (BUR-YY000001, etc.)
+  schoolId          String?
+  school            School?           @relation(fields: [schoolId], references: [id])
+  teacher           Teacher?
+  student           Student?
+  parent            Parent?
+  supplier          Supplier?
+  salaryStubs       SalaryStub[]
+  shiftAssignments  ShiftAssignment[]
+  employeeProfile   EmployeeProfile?
+  awards            Award[]
+  courses           Course[]
+  bookLoans         BookLoan[]
 
   departmentId String?
   dept         Department? @relation(fields: [departmentId], references: [id])
@@ -388,16 +390,16 @@ model User {
   diningHallReports      DiningHallReport[]
   prefectReports         PrefectReport[]
 
-  assignedAssets     Asset[]                 @relation("AssetCustodian")
-  assignedSportingEquipments SportingEquipment[] @relation("EquipmentCustodian")
-  reportedIncidents  AssetIncident[]         @relation("IncidentReporter")
-  supportTickets     SupportTicket[]         @relation("SupportRequester")
-  reports            AcademicReport[]
-  requisitions       Requisition[]           @relation("RequisitionRequester")
-  hodRequisitions    Requisition[]           @relation("RequisitionHOD")
-  bursarRequisitions Requisition[]           @relation("RequisitionBursar")
-  adminRequisitions  Requisition[]           @relation("RequisitionAdmin")
-  transfers          TransferAuthorization[] @relation("StudentTransfers")
+  assignedAssets             Asset[]                 @relation("AssetCustodian")
+  assignedSportingEquipments SportingEquipment[]     @relation("EquipmentCustodian")
+  reportedIncidents          AssetIncident[]         @relation("IncidentReporter")
+  supportTickets             SupportTicket[]         @relation("SupportRequester")
+  reports                    AcademicReport[]
+  requisitions               Requisition[]           @relation("RequisitionRequester")
+  hodRequisitions            Requisition[]           @relation("RequisitionHOD")
+  bursarRequisitions         Requisition[]           @relation("RequisitionBursar")
+  adminRequisitions          Requisition[]           @relation("RequisitionAdmin")
+  transfers                  TransferAuthorization[] @relation("StudentTransfers")
 
   communicationLogs CommunicationLog[] @relation("CommunicationSender")
 
@@ -419,6 +421,8 @@ model User {
   clinicImmunizations ClinicImmunization[]
   clinicReferrals     ClinicReferral[]
   clinicVisits        ClinicVisit[]
+  clinicHospitalizations ClinicHospitalization[]
+  clinicPatient       ClinicPatient?
 
   @@index([schoolId])
 }
@@ -427,10 +431,10 @@ model UserSession {
   id           String   @id @default(cuid())
   userId       String
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  tokenFamily  String?  // Optional: For grouping/refresh flows later
+  tokenFamily  String? // Optional: For grouping/refresh flows later
   ipAddress    String?
   userAgent    String?
-  deviceInfo   String?  // Optional parsed user-agent
+  deviceInfo   String? // Optional parsed user-agent
   isValid      Boolean  @default(true)
   expiresAt    DateTime
   createdAt    DateTime @default(now())
@@ -558,7 +562,7 @@ model Student {
   payments          StudentPayment[]
   communicationLogs CommunicationLog[]
   paymentPlans      PaymentPlan[]
-  houseCaptained    StudentHouse[]       @relation("HouseCaptain")
+  houseCaptained    StudentHouse[]     @relation("HouseCaptain")
   wallet            StudentWallet?
 
   createdAt DateTime @default(now())
@@ -747,9 +751,9 @@ model Department {
 }
 
 model Attendance {
-  id         String   @id @default(cuid())
+  id         String       @id @default(cuid())
   studentId  String
-  student    Student  @relation(fields: [studentId], references: [id])
+  student    Student      @relation(fields: [studentId], references: [id])
   teacherId  String
   teacher    Teacher      @relation(fields: [teacherId], references: [id])
   date       DateTime
@@ -957,7 +961,7 @@ model Book {
   class   SchoolClass? @relation(fields: [classId], references: [id])
 
   teacherId String?
-  teacher   Teacher?   @relation(fields: [teacherId], references: [id])
+  teacher   Teacher? @relation(fields: [teacherId], references: [id])
 
   coverUrl  String?
   pdfUrl    String?
@@ -990,8 +994,8 @@ model StudentHouse {
   houseCaptainId String?
   houseCaptain   Student? @relation("HouseCaptain", fields: [houseCaptainId], references: [id])
 
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([schoolId, name])
   @@index([schoolId])
@@ -1000,10 +1004,10 @@ model StudentHouse {
 model ChaplaincyEvent {
   id        String   @id @default(cuid())
   title     String
-  type      String   // ASSEMBLY, SUNDAY_SERVICE, MIDWEEK, SPECIAL
+  type      String // ASSEMBLY, SUNDAY_SERVICE, MIDWEEK, SPECIAL
   date      DateTime
   theme     String
-  status    String   // PLANNED, CONFIRMED, ARCHIVED
+  status    String // PLANNED, CONFIRMED, ARCHIVED
   schoolId  String
   school    School   @relation(fields: [schoolId], references: [id])
   createdAt DateTime @default(now())
@@ -1108,22 +1112,22 @@ model SchoolSetting {
   idleTime          Int?    @default(0)
   idleTimeCountdown Int?    @default(0)
 
-  baseCurrency                    String?   @default("USD")
-  baseCurrencySymbol              String?   @default("$")
-  altCurrency                     String?   @default("ZWG")
-  altCurrencySymbol               String?   @default("ZWG")
-  mandatoryReceipts               Boolean   @default(true)
-  showBalanceOnReceipts           Boolean   @default(true)
-  showUniformsModule              Boolean   @default(true)
-  smtpEmail                       String?
-  smtpHost                        String?
-  smtpPort                        Int?      @default(465)
-  smtpPassword                    String?
-  smtpSsl                         Boolean   @default(true)
-  systemUrl                       String?
-  whatsappApiUrl                  String?
-  whatsappAccessToken             String?
-  countryPhoneCode                String?   @default("263")
+  baseCurrency          String? @default("USD")
+  baseCurrencySymbol    String? @default("$")
+  altCurrency           String? @default("ZWG")
+  altCurrencySymbol     String? @default("ZWG")
+  mandatoryReceipts     Boolean @default(true)
+  showBalanceOnReceipts Boolean @default(true)
+  showUniformsModule    Boolean @default(true)
+  smtpEmail             String?
+  smtpHost              String?
+  smtpPort              Int?    @default(465)
+  smtpPassword          String?
+  smtpSsl               Boolean @default(true)
+  systemUrl             String?
+  whatsappApiUrl        String?
+  whatsappAccessToken   String?
+  countryPhoneCode      String? @default("263")
 
   systemName                      String?
   systemTitle                     String?
@@ -1163,12 +1167,12 @@ model SchoolSetting {
   reportCommentSignature          String?
   showSubjectPosition             Boolean   @default(false)
 
-  gateMinPaidAmount               Float     @default(0)
-  gateMinPaidPercent              Float     @default(0)
-  gateRequiredType                String    @default("none") // none, amount, percent
+  gateMinPaidAmount  Float  @default(0)
+  gateMinPaidPercent Float  @default(0)
+  gateRequiredType   String @default("none") // none, amount, percent
 
-  idCardTemplateFront             String?   // Path to front face of ID card template image
-  idCardTemplateBack              String?   // Path to back face of ID card template image
+  idCardTemplateFront String? // Path to front face of ID card template image
+  idCardTemplateBack  String? // Path to back face of ID card template image
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -1198,7 +1202,7 @@ model Gallery {
   title      String
   content    String   @db.Text
   coverImage String?
-  category   String?  // e.g. Campus, Sports, Academic, Spiritual
+  category   String? // e.g. Campus, Sports, Academic, Spiritual
   schoolId   String
   school     School   @relation(fields: [schoolId], references: [id])
   createdAt  DateTime @default(now())
@@ -1208,36 +1212,36 @@ model Gallery {
 }
 
 model Club {
-  id            String    @id @default(cuid())
-  name          String
-  description   String?
-  date          DateTime  @default(now())
-  icon          String?
-  category      String?   // Academic, Arts, Service, Sports, etc.
-  patron        String?   // Staff member name who is the patron
-  chairperson   String?   // Student or staff chairperson name
-  schoolId      String
-  school        School    @relation(fields: [schoolId], references: [id])
-  students      Student[]
+  id          String    @id @default(cuid())
+  name        String
+  description String?
+  date        DateTime  @default(now())
+  icon        String?
+  category    String? // Academic, Arts, Service, Sports, etc.
+  patron      String? // Staff member name who is the patron
+  chairperson String? // Student or staff chairperson name
+  schoolId    String
+  school      School    @relation(fields: [schoolId], references: [id])
+  students    Student[]
 
   @@index([schoolId])
 }
 
 model Sport {
-  id          String  @id @default(cuid())
-  name        String
-  description String?
-  icon        String?
-  coach       String? // Legacy
-  category    String? // Team Sport, Individual, etc.
-  sportMaster String? // Legacy
-  sportMasterId String?
-  captain     String? // Legacy
-  captains    String[] @default([])
-  coaches     Json? // [{ userId: string, name: string, ageGroup?: string }]
-  ageGroups   String[] @default([])
-  schoolId    String
-  school      School  @relation(fields: [schoolId], references: [id])
+  id                String              @id @default(cuid())
+  name              String
+  description       String?
+  icon              String?
+  coach             String? // Legacy
+  category          String? // Team Sport, Individual, etc.
+  sportMaster       String? // Legacy
+  sportMasterId     String?
+  captain           String? // Legacy
+  captains          String[]            @default([])
+  coaches           Json? // [{ userId: string, name: string, ageGroup?: string }]
+  ageGroups         String[]            @default([])
+  schoolId          String
+  school            School              @relation(fields: [schoolId], references: [id])
   sportingEquipment SportingEquipment[]
 
   @@index([schoolId])
@@ -1356,15 +1360,15 @@ model SchoolSupplier {
 // ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚Â PARENT REGISTRY ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚Â
 
 model Parent {
-  id         String  @id @default(cuid())
-  globalId   String? @unique // PAR-GLB-XXXXXX
-  userId     String  @unique
-  user       User    @relation(fields: [userId], references: [id])
-  phone      String?
+  id                String  @id @default(cuid())
+  globalId          String? @unique // PAR-GLB-XXXXXX
+  userId            String  @unique
+  user              User    @relation(fields: [userId], references: [id])
+  phone             String?
   preferredLanguage String? @default("en")
-  address    String?
-  occupation String?
-  employer   String?
+  address           String?
+  occupation        String?
+  employer          String?
 
   // Junctions
   students     ParentStudent[]
@@ -2208,8 +2212,8 @@ model CommunicationLog {
   studentId String?
   student   Student? @relation(fields: [studentId], references: [id])
 
-  description String // e.g. "Account Statement Email For Sydney"
-  status      String @default("Sent") // Sent, Delivered, Read, Failed
+  description   String // e.g. "Account Statement Email For Sydney"
+  status        String  @default("Sent") // Sent, Delivered, Read, Failed
   providerMsgId String? // Meta WhatsApp Message ID or SES Message ID
   errorDetails  String? // Reason for failure
 
@@ -2217,7 +2221,7 @@ model CommunicationLog {
   school   School @relation(fields: [schoolId], references: [id])
 
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 
   @@index([schoolId])
   @@index([studentId])
@@ -2226,23 +2230,23 @@ model CommunicationLog {
 }
 
 model NotificationQueue {
-  id              String   @id @default(cuid())
-  type            String   // WhatsApp, Email, SMS
-  recipientPhone  String?
-  recipientEmail  String?
-  template        String?  // Template name or subject
-  payload         String   // JSON content for the notification
-  status          String   @default("PENDING") // PENDING, PROCESSING, FAILED, COMPLETED
-  retries         Int      @default(0)
-  nextAttempt     DateTime @default(now())
-  errorDetails    String?
-  
-  senderId        String
-  schoolId        String
-  studentId       String?
-  
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id             String   @id @default(cuid())
+  type           String // WhatsApp, Email, SMS
+  recipientPhone String?
+  recipientEmail String?
+  template       String? // Template name or subject
+  payload        String // JSON content for the notification
+  status         String   @default("PENDING") // PENDING, PROCESSING, FAILED, COMPLETED
+  retries        Int      @default(0)
+  nextAttempt    DateTime @default(now())
+  errorDetails   String?
+
+  senderId  String
+  schoolId  String
+  studentId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([schoolId, status, nextAttempt])
 }
@@ -2430,7 +2434,7 @@ model PayrollEntry {
   payrollRun   PayrollRun @relation(fields: [payrollRunId], references: [id], onDelete: Cascade)
 
   userId       String
-  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user         User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   employeeName String
   jobTitle     String?
 
@@ -2495,8 +2499,8 @@ model CBTQuestion {
   options  Json? // Array of option strings
   answer   Json // Array of correct option strings or true/false
 
-  section  String?
-  page     Int     @default(1)
+  section String?
+  page    Int     @default(1)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -2810,136 +2814,202 @@ model MeetingMinutes {
 }
 
 model ProjectFunding {
-  id          String   @id @default(cuid())
-  schoolId    String
-  school      School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
-  name        String
-  budget      Float
-  spent       Float    @default(0)
-  status      String   @default("Ongoing") // Ongoing, In Progress, Completed, Proposed
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id        String   @id @default(cuid())
+  schoolId  String
+  school    School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  name      String
+  budget    Float
+  spent     Float    @default(0)
+  status    String   @default("Ongoing") // Ongoing, In Progress, Completed, Proposed
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([schoolId])
+}
+
+model ClinicPatient {
+  id             String    @id @default(cuid())
+  schoolId       String
+  school         School    @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  userId         String?   @unique
+  user           User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  firstName      String?
+  lastName       String?
+  dob            DateTime?
+  gender         String?
+  contactNumber  String?
+  address        String?
+  medicalHistory String?
+
+  visits        ClinicVisit[]
+  appointments  ClinicAppointment[]
+  complaints    ClinicComplaint[]
+  emergencies   ClinicEmergency[]
+  immunizations ClinicImmunization[]
+  referrals     ClinicReferral[]
+  hospitalizations ClinicHospitalization[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([schoolId])
 }
 
 model ClinicAppointment {
-  id          String   @id @default(cuid())
-  userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id          String         @id @default(cuid())
+  userId      String?
+  user        User?          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  patientId   String?
+  patient     ClinicPatient? @relation(fields: [patientId], references: [id], onDelete: Cascade)
   appointment String
   symptoms    String
   medicine    String?
-  date        DateTime @default(now())
+  date        DateTime       @default(now())
   schoolId    String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
 
   @@index([schoolId])
 }
 
 model ClinicComplaint {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id        String         @id @default(cuid())
+  userId    String?
+  user      User?          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  patientId String?
+  patient   ClinicPatient? @relation(fields: [patientId], references: [id], onDelete: Cascade)
   title     String
   symptoms  String
-  date      DateTime @default(now())
+  date      DateTime       @default(now())
   medicine  String?
   schoolId  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
 
   @@index([schoolId])
 }
 
 model ClinicEmergency {
-  id        String   @id @default(cuid())
+  id        String         @id @default(cuid())
+  patientId String?
+  patient   ClinicPatient? @relation(fields: [patientId], references: [id], onDelete: Cascade)
   title     String
   details   String
-  date      DateTime @default(now())
+  date      DateTime       @default(now())
   time      String
   schoolId  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
 
   @@index([schoolId])
 }
 
 model ClinicImmunization {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id        String         @id @default(cuid())
+  userId    String?
+  user      User?          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  patientId String?
+  patient   ClinicPatient? @relation(fields: [patientId], references: [id], onDelete: Cascade)
   title     String
   details   String
-  date      DateTime @default(now())
+  date      DateTime       @default(now())
   schoolId  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
 
   @@index([schoolId])
 }
 
 model ClinicReferral {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id        String         @id @default(cuid())
+  userId    String?
+  user      User?          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  patientId String?
+  patient   ClinicPatient? @relation(fields: [patientId], references: [id], onDelete: Cascade)
   title     String
   details   String
-  date      DateTime @default(now())
+  date      DateTime       @default(now())
   to        String
   address   String
   schoolId  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
 
   @@index([schoolId])
 }
 
 model ClinicVisit {
-  id              String   @id @default(cuid())
-  userId          String
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  schoolId        String
-  school          School   @relation(fields: [schoolId], references: [id])
-  
+  id        String         @id @default(cuid())
+  visitCode String?        @unique
+  userId    String?
+  user      User?          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  patientId String?
+  patient   ClinicPatient? @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  schoolId  String
+  school    School         @relation(fields: [schoolId], references: [id])
+
   // Vitals
-  temperature     Float?
-  bloodPressure   String?
-  heartRate       Int?
-  respiratoryRate Int?
-  weight          Float?
-  height          Float?
+  temperature      Float?
+  bloodPressure    String?
+  heartRate        Int?
+  respiratoryRate  Int?
+  weight           Float?
+  height           Float?
   oxygenSaturation Float?
-  
+
   // Triage & Consultation
   presentingComplaint String?
-  triageLevel         String?   // e.g. CRITICAL, URGENT, ROUTINE
+  triageLevel         String? // e.g. CRITICAL, URGENT, ROUTINE
   conditionDetails    String?
   diagnosis           String?
   treatment           String?
   prescription        String?
   notes               String?
-  
+
   // Follow-up
-  status          String   @default("OPEN") // OPEN, ADMITTED, REFERRED, DISCHARGED
-  visitDate       DateTime @default(now())
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  status    String   @default("OPEN") // OPEN, ADMITTED, REFERRED, DISCHARGED
+  visitDate DateTime @default(now())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([schoolId])
   @@index([userId])
+  @@index([patientId])
+}
+
+model ClinicHospitalization {
+  id              String         @id @default(cuid())
+  userId          String?
+  user            User?          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  patientId       String?
+  patient         ClinicPatient? @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  schoolId        String
+  school          School         @relation(fields: [schoolId], references: [id])
+  
+  stage           String         @default("PRE_ADMISSION") // PRE_ADMISSION, ADMITTED, TRANSFERRED, DISCHARGED
+  
+  preAdmissionData Json?
+  admissionData    Json?
+  transferData     Json?
+  dischargeData    Json?
+
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  
+  @@index([schoolId])
+  @@index([userId])
+  @@index([patientId])
 }
 
 model FarmLivestockBatch {
   id            String   @id @default(cuid())
   batchName     String
-  type          String   // Broilers, Layers, etc.
+  type          String // Broilers, Layers, etc.
   datePlaced    DateTime
   currentCount  Int
   startCount    Int
   mortalityRate Float
-  status        String   // Maturing, Producing, Sold, etc.
+  status        String // Maturing, Producing, Sold, etc.
   schoolId      String
   school        School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
   createdAt     DateTime @default(now())
@@ -2950,12 +3020,12 @@ model FarmLivestockBatch {
 
 model FarmCropCycle {
   id              String   @id @default(cuid())
-  name            String   // Maize Field, Vegetable Garden, etc.
-  type            String   // Maize, Cabbages, Carrots, etc.
-  sector          String   // Sector 1, Sector 2, etc.
+  name            String // Maize Field, Vegetable Garden, etc.
+  type            String // Maize, Cabbages, Carrots, etc.
+  sector          String // Sector 1, Sector 2, etc.
   datePlanted     DateTime
   expectedHarvest DateTime
-  status          String   // Growing, Ready for Harvest, Harvested, etc.
+  status          String // Growing, Ready for Harvest, Harvested, etc.
   schoolId        String
   school          School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
   createdAt       DateTime @default(now())
@@ -2966,10 +3036,10 @@ model FarmCropCycle {
 
 model FarmInventoryItem {
   id        String   @id @default(cuid())
-  name      String   // Chicken Grower Feed, Wheelbarrows, etc.
-  category  String   // Consumables (Feed), Consumables (Fertilizer), Equipment, etc.
-  quantity  String   // 12 Bags (50kg), 4 Units, etc.
-  condition String   // Adequate, Low Stock, Good Condition, etc.
+  name      String // Chicken Grower Feed, Wheelbarrows, etc.
+  category  String // Consumables (Feed), Consumables (Fertilizer), Equipment, etc.
+  quantity  String // 12 Bags (50kg), 4 Units, etc.
+  condition String // Adequate, Low Stock, Good Condition, etc.
   schoolId  String
   school    School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
@@ -2980,8 +3050,8 @@ model FarmInventoryItem {
 
 model DiningHallReport {
   id           String   @id @default(cuid())
-  category     String   // Food Quality, Portion Fairness, etc.
-  rating       Int      // 1-10
+  category     String // Food Quality, Portion Fairness, etc.
+  rating       Int // 1-10
   feedback     String
   reportedById String
   reportedBy   User     @relation(fields: [reportedById], references: [id], onDelete: Cascade)
@@ -3047,18 +3117,18 @@ model StudentWallet {
   balance   Float    @default(0.0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
+
   transactions WalletTransaction[]
 }
 
 model WalletTransaction {
-  id          String   @id @default(cuid())
+  id          String        @id @default(cuid())
   walletId    String
   wallet      StudentWallet @relation(fields: [walletId], references: [id])
   amount      Float
-  type        String   // 'DEPOSIT', 'PURCHASE', 'REFUND'
+  type        String // 'DEPOSIT', 'PURCHASE', 'REFUND'
   description String?
-  createdAt   DateTime @default(now())
+  createdAt   DateTime      @default(now())
 
   // Optional reference to a specific sale or receipt
   referenceId   String?
@@ -3076,4 +3146,13 @@ model SchoolSequence {
   lastValue Int    @default(0)
 
   @@unique([schoolId, entity])
+}
+
+model Icd10Code {
+  id          String   @id @default(cuid())
+  code        String   @unique
+  description String
+  category    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }

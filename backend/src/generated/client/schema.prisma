@@ -20,59 +20,60 @@ model Plan {
 }
 
 model School {
-  id                    String                 @id @default(cuid())
-  code                  String                 @unique // AX-XXXXXX
-  name                  String
-  type                  String // primary, secondary, combined
-  isCombined            Boolean                @default(false)
-  levels                String[] // ["PRE_SCHOOL", "PRIMARY", "SECONDARY", "HIGH_SCHOOL", "TERTIARY"]
-  address               String?
-  country               String?
-  email                 String                 @unique
-  phone                 String?
-  website               String?
-  status                String                 @default("active")
-  planId                String
-  plan                  Plan                   @relation(fields: [planId], references: [id])
-  branding              Json? // { primaryColor, accentColor, logo }
-  customContent         Json? // { motto, welcomeTitle, ... }
-  users                 User[]
-  students              Student[]
-  teachers              Teacher[]
-  news                  News[]
-  websiteInquiries      WebsiteInquiry[]
-  noticeboards          Noticeboard[]
-  clinicVisits          ClinicVisit[]
-  vacancies             Vacancy[]
-  jobApplications       JobApplication[]
-  gallery               Gallery[]
-  clubs                 Club[]
-  sports                Sport[]
-  applications          Application[]
-  announcements         Announcement[]
-  chaplaincyEvents      ChaplaincyEvent[]
-  diningHallReports     DiningHallReport[]
-  farmLivestockBatches  FarmLivestockBatch[]
-  farmCropCycles        FarmCropCycle[]
-  farmInventoryItems    FarmInventoryItem[]
-  prefectDuties         PrefectDuty[]
-  prefectMeetings       PrefectMeeting[]
-  prefectReports        PrefectReport[]
-  staffAttendances      StaffAttendance[]
-  timetableSlots        TimetableSlot[]
-  classes               SchoolClass[]
-  subjects              Subject[]
-  books                 Book[]
-  grades                Grade[]
-  attendance            Attendance[]
-  fees                  Fee[]
-  assignments           Assignment[]
-  bookLoans             BookLoan[]
-  assignmentSubmissions AssignmentSubmission[]
-  supervisorAssignments SupervisorAssignment[]
-  extensionRequests     ExtensionRequest[]
-  progressReports       ProgressReport[]
-  tuckshopItems         TuckshopItem[]
+  id                     String                  @id @default(cuid())
+  code                   String                  @unique // AX-XXXXXX
+  name                   String
+  type                   String // primary, secondary, combined
+  isCombined             Boolean                 @default(false)
+  levels                 String[] // ["PRE_SCHOOL", "PRIMARY", "SECONDARY", "HIGH_SCHOOL", "TERTIARY"]
+  address                String?
+  country                String?
+  email                  String                  @unique
+  phone                  String?
+  website                String?
+  status                 String                  @default("active")
+  planId                 String
+  plan                   Plan                    @relation(fields: [planId], references: [id])
+  branding               Json? // { primaryColor, accentColor, logo }
+  customContent          Json? // { motto, welcomeTitle, ... }
+  users                  User[]
+  students               Student[]
+  teachers               Teacher[]
+  news                   News[]
+  websiteInquiries       WebsiteInquiry[]
+  noticeboards           Noticeboard[]
+  clinicVisits           ClinicVisit[]
+  clinicHospitalizations ClinicHospitalization[]
+  vacancies              Vacancy[]
+  jobApplications        JobApplication[]
+  gallery                Gallery[]
+  clubs                  Club[]
+  sports                 Sport[]
+  applications           Application[]
+  announcements          Announcement[]
+  chaplaincyEvents       ChaplaincyEvent[]
+  diningHallReports      DiningHallReport[]
+  farmLivestockBatches   FarmLivestockBatch[]
+  farmCropCycles         FarmCropCycle[]
+  farmInventoryItems     FarmInventoryItem[]
+  prefectDuties          PrefectDuty[]
+  prefectMeetings        PrefectMeeting[]
+  prefectReports         PrefectReport[]
+  staffAttendances       StaffAttendance[]
+  timetableSlots         TimetableSlot[]
+  classes                SchoolClass[]
+  subjects               Subject[]
+  books                  Book[]
+  grades                 Grade[]
+  attendance             Attendance[]
+  fees                   Fee[]
+  assignments            Assignment[]
+  bookLoans              BookLoan[]
+  assignmentSubmissions  AssignmentSubmission[]
+  supervisorAssignments  SupervisorAssignment[]
+  extensionRequests      ExtensionRequest[]
+  progressReports        ProgressReport[]
+  tuckshopItems          TuckshopItem[]
 
   // Junctions
   suppliers       SchoolSupplier[]
@@ -144,6 +145,7 @@ model School {
   meetingMinutes    MeetingMinutes[]
   projectFundings   ProjectFunding[]
   sportingEquipment SportingEquipment[]
+  ClinicPatient     ClinicPatient[]
 
   @@index([code])
 }
@@ -414,11 +416,13 @@ model User {
   paymentPlans     PaymentPlan[]     @relation("ParentPaymentPlans")
   payrollEntries   PayrollEntry[]
 
-  clinicAppointments  ClinicAppointment[]
-  clinicComplaints    ClinicComplaint[]
-  clinicImmunizations ClinicImmunization[]
-  clinicReferrals     ClinicReferral[]
-  clinicVisits        ClinicVisit[]
+  clinicAppointments     ClinicAppointment[]
+  clinicComplaints       ClinicComplaint[]
+  clinicImmunizations    ClinicImmunization[]
+  clinicReferrals        ClinicReferral[]
+  clinicVisits           ClinicVisit[]
+  clinicHospitalizations ClinicHospitalization[]
+  clinicPatient          ClinicPatient?
 
   @@index([schoolId])
 }
@@ -1585,7 +1589,7 @@ model AssetMaintenance {
   @@index([assetId])
 }
 
-// ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚Â TRANSPORT ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚Â
+// ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã���Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚Â TRANSPORT ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚Â
 
 model TransportRoute {
   id          String   @id @default(cuid())
@@ -2823,85 +2827,126 @@ model ProjectFunding {
   @@index([schoolId])
 }
 
+model ClinicPatient {
+  id             String    @id @default(cuid())
+  schoolId       String
+  school         School    @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  userId         String?   @unique
+  user           User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  firstName      String?
+  lastName       String?
+  dob            DateTime?
+  gender         String?
+  contactNumber  String?
+  address        String?
+  medicalHistory String?
+
+  visits           ClinicVisit[]
+  appointments     ClinicAppointment[]
+  complaints       ClinicComplaint[]
+  emergencies      ClinicEmergency[]
+  immunizations    ClinicImmunization[]
+  referrals        ClinicReferral[]
+  hospitalizations ClinicHospitalization[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([schoolId])
+}
+
 model ClinicAppointment {
-  id          String   @id @default(cuid())
-  userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id          String         @id @default(cuid())
+  userId      String?
+  user        User?          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  patientId   String?
+  patient     ClinicPatient? @relation(fields: [patientId], references: [id], onDelete: Cascade)
   appointment String
   symptoms    String
   medicine    String?
-  date        DateTime @default(now())
+  date        DateTime       @default(now())
   schoolId    String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
 
   @@index([schoolId])
 }
 
 model ClinicComplaint {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id        String         @id @default(cuid())
+  userId    String?
+  user      User?          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  patientId String?
+  patient   ClinicPatient? @relation(fields: [patientId], references: [id], onDelete: Cascade)
   title     String
   symptoms  String
-  date      DateTime @default(now())
+  date      DateTime       @default(now())
   medicine  String?
   schoolId  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
 
   @@index([schoolId])
 }
 
 model ClinicEmergency {
-  id        String   @id @default(cuid())
+  id        String         @id @default(cuid())
+  patientId String?
+  patient   ClinicPatient? @relation(fields: [patientId], references: [id], onDelete: Cascade)
   title     String
   details   String
-  date      DateTime @default(now())
+  date      DateTime       @default(now())
   time      String
   schoolId  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
 
   @@index([schoolId])
 }
 
 model ClinicImmunization {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id        String         @id @default(cuid())
+  userId    String?
+  user      User?          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  patientId String?
+  patient   ClinicPatient? @relation(fields: [patientId], references: [id], onDelete: Cascade)
   title     String
   details   String
-  date      DateTime @default(now())
+  date      DateTime       @default(now())
   schoolId  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
 
   @@index([schoolId])
 }
 
 model ClinicReferral {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id        String         @id @default(cuid())
+  userId    String?
+  user      User?          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  patientId String?
+  patient   ClinicPatient? @relation(fields: [patientId], references: [id], onDelete: Cascade)
   title     String
   details   String
-  date      DateTime @default(now())
+  date      DateTime       @default(now())
   to        String
   address   String
   schoolId  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
 
   @@index([schoolId])
 }
 
 model ClinicVisit {
-  id       String @id @default(cuid())
-  userId   String
-  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  schoolId String
-  school   School @relation(fields: [schoolId], references: [id])
+  id        String         @id @default(cuid())
+  visitCode String?        @unique
+  userId    String?
+  user      User?          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  patientId String?
+  patient   ClinicPatient? @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  schoolId  String
+  school    School         @relation(fields: [schoolId], references: [id])
 
   // Vitals
   temperature      Float?
@@ -2929,6 +2974,31 @@ model ClinicVisit {
 
   @@index([schoolId])
   @@index([userId])
+  @@index([patientId])
+}
+
+model ClinicHospitalization {
+  id        String         @id @default(cuid())
+  userId    String?
+  user      User?          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  patientId String?
+  patient   ClinicPatient? @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  schoolId  String
+  school    School         @relation(fields: [schoolId], references: [id])
+
+  stage String @default("PRE_ADMISSION") // PRE_ADMISSION, ADMITTED, TRANSFERRED, DISCHARGED
+
+  preAdmissionData Json?
+  admissionData    Json?
+  transferData     Json?
+  dischargeData    Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([schoolId])
+  @@index([userId])
+  @@index([patientId])
 }
 
 model FarmLivestockBatch {
@@ -3076,4 +3146,13 @@ model SchoolSequence {
   lastValue Int    @default(0)
 
   @@unique([schoolId, entity])
+}
+
+model Icd10Code {
+  id          String   @id @default(cuid())
+  code        String   @unique
+  description String
+  category    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }

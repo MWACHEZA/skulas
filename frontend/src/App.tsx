@@ -68,10 +68,12 @@ import CBTResults from './portals/shared/pages/cbt/CBTResults';
 import ClinicLayout from './portals/clinic/ClinicLayout';
 import ClinicDashboard from './portals/clinic/pages/Dashboard';
 import PatientManagement from './portals/clinic/pages/PatientManagement';
+import HospitalizationManager from './portals/clinic/pages/HospitalizationManager';
 
 import HealthComplaints from './portals/shared/pages/clinic/HealthComplaints';
 import Appointments from './portals/shared/pages/clinic/Appointments';
 import TriageDashboard from './portals/shared/pages/clinic/TriageDashboard';
+import Icd10Manager from './portals/shared/pages/clinic/Icd10Manager';
 import PatientHistory from './portals/shared/pages/clinic/PatientHistory';
 import Emergencies from './portals/shared/pages/clinic/Emergencies';
 import Referrals from './portals/shared/pages/clinic/Referrals';
@@ -961,8 +963,10 @@ export default function App() {
               <Route index element={<ClinicDashboard />} />
               <Route path="dashboard" element={<ClinicDashboard />} />
               <Route path="patients" element={<PatientManagement />} />
+              <Route path="hospitalizations/:id" element={<HospitalizationManager />} />
               <Route path="appointments" element={<Appointments />} />
               <Route path="triage" element={<TriageDashboard />} />
+              <Route path="icd10" element={<Icd10Manager />} />
               <Route path="patient-history" element={<PatientHistory />} />
               <Route path="emergencies" element={<Emergencies />} />
               <Route path="referrals" element={<Referrals />} />

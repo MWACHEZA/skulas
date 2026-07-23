@@ -40,7 +40,7 @@ const prisma = basePrisma.$extends({
           'PayrollAllowance', 'PayrollDeduction', 'TaxTable', 'TaxBand', 'TermlyComment', 'CBTExam',
           'LiveClass', 'Award', 'Course', 'StudyMaterial', 'WebsiteSettings', 'WebsiteInquiry',
           'Noticeboard', 'Vacancy', 'JobApplication', 'SchoolVehicle', 'SchoolTransport', 'MeetingMinutes',
-          'ProjectFunding', 'ClinicAppointment', 'ClinicComplaint', 'ClinicEmergency', 'ClinicImmunization', 'ClinicReferral',
+          'ProjectFunding', 'ClinicPatient', 'ClinicAppointment', 'ClinicComplaint', 'ClinicEmergency', 'ClinicImmunization', 'ClinicReferral', 'ClinicHospitalization',
           'FarmLivestockBatch', 'FarmCropCycle', 'FarmInventoryItem', 'DiningHallReport', 'PrefectDuty', 'PrefectMeeting',
           'PrefectReport', 'NotificationQueue'
         ];

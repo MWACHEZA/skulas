@@ -1912,9 +1912,25 @@ exports.Prisma.ProjectFundingScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.ClinicPatientScalarFieldEnum = {
+  id: 'id',
+  schoolId: 'schoolId',
+  userId: 'userId',
+  firstName: 'firstName',
+  lastName: 'lastName',
+  dob: 'dob',
+  gender: 'gender',
+  contactNumber: 'contactNumber',
+  address: 'address',
+  medicalHistory: 'medicalHistory',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.ClinicAppointmentScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
+  patientId: 'patientId',
   appointment: 'appointment',
   symptoms: 'symptoms',
   medicine: 'medicine',
@@ -1927,6 +1943,7 @@ exports.Prisma.ClinicAppointmentScalarFieldEnum = {
 exports.Prisma.ClinicComplaintScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
+  patientId: 'patientId',
   title: 'title',
   symptoms: 'symptoms',
   date: 'date',
@@ -1938,6 +1955,7 @@ exports.Prisma.ClinicComplaintScalarFieldEnum = {
 
 exports.Prisma.ClinicEmergencyScalarFieldEnum = {
   id: 'id',
+  patientId: 'patientId',
   title: 'title',
   details: 'details',
   date: 'date',
@@ -1950,6 +1968,7 @@ exports.Prisma.ClinicEmergencyScalarFieldEnum = {
 exports.Prisma.ClinicImmunizationScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
+  patientId: 'patientId',
   title: 'title',
   details: 'details',
   date: 'date',
@@ -1961,6 +1980,7 @@ exports.Prisma.ClinicImmunizationScalarFieldEnum = {
 exports.Prisma.ClinicReferralScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
+  patientId: 'patientId',
   title: 'title',
   details: 'details',
   date: 'date',
@@ -1973,7 +1993,9 @@ exports.Prisma.ClinicReferralScalarFieldEnum = {
 
 exports.Prisma.ClinicVisitScalarFieldEnum = {
   id: 'id',
+  visitCode: 'visitCode',
   userId: 'userId',
+  patientId: 'patientId',
   schoolId: 'schoolId',
   temperature: 'temperature',
   bloodPressure: 'bloodPressure',
@@ -1991,6 +2013,20 @@ exports.Prisma.ClinicVisitScalarFieldEnum = {
   notes: 'notes',
   status: 'status',
   visitDate: 'visitDate',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ClinicHospitalizationScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  patientId: 'patientId',
+  schoolId: 'schoolId',
+  stage: 'stage',
+  preAdmissionData: 'preAdmissionData',
+  admissionData: 'admissionData',
+  transferData: 'transferData',
+  dischargeData: 'dischargeData',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -2101,6 +2137,15 @@ exports.Prisma.SchoolSequenceScalarFieldEnum = {
   schoolId: 'schoolId',
   entity: 'entity',
   lastValue: 'lastValue'
+};
+
+exports.Prisma.Icd10CodeScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  description: 'description',
+  category: 'category',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 };
 
 exports.Prisma.SortOrder = {
@@ -2262,12 +2307,14 @@ exports.Prisma.ModelName = {
   SchoolTransport: 'SchoolTransport',
   MeetingMinutes: 'MeetingMinutes',
   ProjectFunding: 'ProjectFunding',
+  ClinicPatient: 'ClinicPatient',
   ClinicAppointment: 'ClinicAppointment',
   ClinicComplaint: 'ClinicComplaint',
   ClinicEmergency: 'ClinicEmergency',
   ClinicImmunization: 'ClinicImmunization',
   ClinicReferral: 'ClinicReferral',
   ClinicVisit: 'ClinicVisit',
+  ClinicHospitalization: 'ClinicHospitalization',
   FarmLivestockBatch: 'FarmLivestockBatch',
   FarmCropCycle: 'FarmCropCycle',
   FarmInventoryItem: 'FarmInventoryItem',
@@ -2277,7 +2324,8 @@ exports.Prisma.ModelName = {
   PrefectReport: 'PrefectReport',
   StudentWallet: 'StudentWallet',
   WalletTransaction: 'WalletTransaction',
-  SchoolSequence: 'SchoolSequence'
+  SchoolSequence: 'SchoolSequence',
+  Icd10Code: 'Icd10Code'
 };
 
 /**
