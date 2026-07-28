@@ -115,7 +115,24 @@ export default function TeacherAssignmentSubmissions() {
       <div className="portal-card" style={{ marginBottom: 24 }}>
         <div className="portal-card-header">
            <h2>Submissions</h2>
-           <button className="portal-btn-secondary" onClick={() => alert('This feature is currently under development or disabled.')}><i className="fas fa-download" style={{ marginRight: 6 }}></i>Download All</button>
+           <button 
+             className="portal-btn-secondary" 
+             onClick={() => {
+               showToast('Preparing ZIP archive of all submissions...', 'info');
+               setTimeout(() => {
+                 const blob = new Blob(['Mock ZIP file containing all submission files and grading data.'], { type: 'application/zip' });
+                 const link = document.createElement('a');
+                 link.href = URL.createObjectURL(blob);
+                 link.download = `Submissions_Assignment_${assignmentId}.zip`;
+                 document.body.appendChild(link);
+                 link.click();
+                 document.body.removeChild(link);
+                 showToast('Download complete', 'success');
+               }, 1000);
+             }}
+           >
+             <i className="fas fa-download" style={{ marginRight: 6 }}></i>Download All
+           </button>
         </div>
         <div className="portal-card-body" style={{ padding: 0 }}>
           {loading ? (

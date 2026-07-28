@@ -1,4 +1,7 @@
+import { useToast } from '../../../context/ToastContext';
+
 export default function SupplierPolicies() {
+  const { showToast } = useToast();
   const policies = [
     { title: 'Procurement Policy', desc: 'Guidelines for tendering, quotation submission, and vendor selection processes.', updated: 'September 2024', icon: 'fa-gavel', color: 'var(--school-primary, #3182ce)' },
     { title: 'Payment Terms', desc: 'Standard net-30 payment terms, invoice requirements, and dispute procedures.', updated: 'August 2024', icon: 'fa-credit-card', color: 'var(--portal-success)' },
@@ -18,7 +21,21 @@ export default function SupplierPolicies() {
                 <p style={{ margin: '0 0 4px', fontSize: '0.85rem', color: '#718096' }}>{p.desc}</p>
                 <span style={{ fontSize: '0.75rem', color: '#a0aec0' }}>Last updated: {p.updated}</span>
               </div>
-              <button style={{ padding: '8px 14px', background: '#f0f4f8', border: '1px solid #e2e8f0', borderRadius: 8, cursor: 'pointer', fontSize: '0.82rem', fontWeight: 600, color: 'var(--portal-primary)' }} onClick={() => alert('This feature is currently under development or disabled.')}><i className="fas fa-download" style={{ marginRight: 6 }}></i>Download</button>
+              <button 
+                style={{ padding: '8px 14px', background: '#f0f4f8', border: '1px solid #e2e8f0', borderRadius: 8, cursor: 'pointer', fontSize: '0.82rem', fontWeight: 600, color: 'var(--portal-primary)' }} 
+                onClick={() => {
+                  const blob = new Blob([`${p.title}\n\n${p.desc}\n\nLast Updated: ${p.updated}`], { type: 'text/plain' });
+                  const link = document.createElement('a');
+                  link.href = URL.createObjectURL(blob);
+                  link.download = `${p.title.replace(/\s+/g, '_')}.txt`;
+                  document.body.appendChild(link);
+                  link.click();
+                  document.body.removeChild(link);
+                  showToast(`${p.title} downloaded`, 'success');
+                }}
+              >
+                <i className="fas fa-download" style={{ marginRight: 6 }}></i>Download
+              </button>
             </div>
           </div>
         ))}

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import api from '../../../lib/api';
+import { useToast } from '../../../context/ToastContext';
 import '../../../styles/portal.css';
 
 const exportToCSV = (title: string, headers: string[], dataRows: string[][]) => {
@@ -54,6 +55,7 @@ const exportToWord = (title: string, headers: string[], dataRows: string[][]) =>
 };
 
 export default function LibraryOverdue() {
+  const { showToast } = useToast();
   const [overdue, setOverdue] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -67,6 +69,14 @@ export default function LibraryOverdue() {
   const calculateDaysOverdue = (dueDate: string) => {
     const diffTime = Math.abs(new Date().getTime() - new Date(dueDate).getTime());
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  };
+
+  const handleSendReminders = () => {
+    showToast('Sending reminders to all students with overdue books...', 'info');
+  };
+
+  const handleContact = (studentName: string) => {
+    showToast(`Initiating contact with ${studentName}...`, 'info');
   };
 
   if (loading) {
@@ -135,7 +145,7 @@ export default function LibraryOverdue() {
             <button 
               className="portal-btn-primary"
               style={{ padding: '8px 16px', fontSize: '0.85rem', background: 'var(--portal-warning)', borderColor: 'var(--portal-warning)' }}
-             onClick={() => alert('This feature is currently under development or disabled.')}>
+             onClick={handleSendReminders}>
               <i className="fas fa-envelope mr-1"></i>Send Reminders
             </button>
           </div>
@@ -170,7 +180,7 @@ export default function LibraryOverdue() {
                       <span className="portal-badge danger">{calculateDaysOverdue(o.dueDate)} days</span>
                     </td>
                     <td>
-                      <button style={{ background: 'none', border: 'none', color: 'var(--portal-primary)', cursor: 'pointer', fontWeight: 600 }} onClick={() => alert('This feature is currently under development or disabled.')}>
+                      <button style={{ background: 'none', border: 'none', color: 'var(--portal-primary)', cursor: 'pointer', fontWeight: 600 }} onClick={() => handleContact(o.student?.user?.name || 'Student')}>
                         Contact
                       </button>
                     </td>

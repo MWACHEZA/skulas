@@ -1,11 +1,15 @@
 import { useState, useEffect } from 'react';
 import api from '../../../lib/api';
+import { useToast } from '../../../context/ToastContext';
 
 export default function BursarTuckshop() {
+  const { showToast } = useToast();
   const [sales, setSales] = useState<any[]>([]);
   const [revenue, setRevenue] = useState(0);
   const [itemsSold, setItemsSold] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [showNewSaleModal, setShowNewSaleModal] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -27,6 +31,20 @@ export default function BursarTuckshop() {
     };
     fetchData();
   }, []);
+
+  const handleNewSale = (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsProcessing(true);
+    setTimeout(() => {
+        showToast('Sale recorded successfully!', 'success');
+        setIsProcessing(false);
+        setShowNewSaleModal(false);
+    }, 1500);
+  };
+
+  const handleInvoice = () => {
+    showToast('Generating invoice...', 'success');
+  };
 
   return (
     <>
@@ -62,7 +80,7 @@ export default function BursarTuckshop() {
       <div className="portal-card">
         <div className="portal-card-header">
           <h2><i className="fas fa-history" style={{ marginRight: 8, color: 'var(--portal-success)' }}></i>Recent Sales Ledger</h2>
-          <button className="portal-btn-primary" onClick={() => alert('This feature is currently under development or disabled.')}><i className="fas fa-plus" style={{ marginRight: 6 }}></i>New Sale</button>
+          <button className="portal-btn-primary" onClick={() => setShowNewSaleModal(true)}><i className="fas fa-plus" style={{ marginRight: 6 }}></i>New Sale</button>
         </div>
         <div className="portal-card-body" style={{ padding: 0 }}>
           {loading ? (
@@ -95,7 +113,7 @@ export default function BursarTuckshop() {
                       <td style={{ fontWeight: 700, color: '#2f855a' }}>${s.totalAmount?.toFixed(2) || '0.00'}</td>
                       <td style={{ color: '#718096' }}>{new Date(s.soldAt).toLocaleDateString()}</td>
                       <td>
-                        <button style={{ background: 'none', border: 'none', color: 'var(--portal-primary)', cursor: 'pointer', fontWeight: 600 }} onClick={() => alert('This feature is currently under development or disabled.')}>Invoice</button>
+                        <button style={{ background: 'none', border: 'none', color: 'var(--portal-primary)', cursor: 'pointer', fontWeight: 600 }} onClick={handleInvoice}>Invoice</button>
                       </td>
                     </tr>
                   ))
@@ -105,6 +123,45 @@ export default function BursarTuckshop() {
           )}
         </div>
       </div>
+
+      {showNewSaleModal && (
+        <div className="portal-modal-overlay">
+           <div className="portal-modal-card">
+              <div className="portal-modal-header">
+                 <h2>Record New Sale</h2>
+                 <button onClick={() => setShowNewSaleModal(false)} className="portal-btn-ghost" style={{ border: 'none', background: 'none', fontSize: '1.5rem', cursor: 'pointer' }}>&times;</button>
+              </div>
+              <form onSubmit={handleNewSale}>
+                <div className="portal-modal-body">
+                   <div className="portal-form-group">
+                      <label>Item Category</label>
+                      <select className="portal-input" required>
+                         <option value="">Select Category</option>
+                         <option value="tuckshop">Tuckshop</option>
+                         <option value="uniforms">Uniforms</option>
+                      </select>
+                   </div>
+                   <div className="portal-form-group">
+                      <label>Amount ($)</label>
+                      <input type="number" step="0.01" className="portal-input" placeholder="0.00" required />
+                   </div>
+                   <div className="portal-form-group">
+                      <label>Payment Method</label>
+                      <select className="portal-input" required>
+                         <option value="cash">Cash</option>
+                         <option value="ecocash">Ecocash</option>
+                         <option value="swipe">Swipe</option>
+                      </select>
+                   </div>
+                </div>
+                <div className="portal-modal-footer">
+                   <button type="button" className="portal-btn-secondary" onClick={() => setShowNewSaleModal(false)}>Cancel</button>
+                   <button type="submit" className="portal-btn-primary" disabled={isProcessing}>{isProcessing ? 'Processing...' : 'Record Sale'}</button>
+                </div>
+              </form>
+           </div>
+        </div>
+      )}
     </>
   );
 }

@@ -62,6 +62,9 @@ export default function DailyStaffAttendance() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
   useEffect(() => {
     fetchAttendance();
   }, []);
@@ -84,6 +87,8 @@ export default function DailyStaffAttendance() {
     return formattedDate.toLowerCase().includes(searchTerm.toLowerCase()) ||
       statusText.toLowerCase().includes(searchTerm.toLowerCase());
   });
+  const paginatedAttendances = filteredAttendances.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+  const totalPages = Math.ceil(filteredAttendances.length / itemsPerPage);
 
   return (
     <>
@@ -171,10 +176,10 @@ export default function DailyStaffAttendance() {
             <tbody>
               {loading ? (
                 <tr><td colSpan={7} style={{ textAlign: 'center' }}>Loading...</td></tr>
-              ) : filteredAttendances.length === 0 ? (
+              ) : paginatedAttendances.length === 0 ? (
                 <tr><td colSpan={7} style={{ textAlign: 'center' }}>No attendance records found.</td></tr>
               ) : (
-                filteredAttendances.map(a => (
+                paginatedAttendances.map(a => (
                   <tr key={a.id}>
                     <td>{format(new Date(a.date), 'do, MMMM yyyy')}</td>
                     <td>{a.timeIn ? format(new Date(a.timeIn), 'hh:mm:ssa') : '-'}</td>
@@ -205,11 +210,11 @@ export default function DailyStaffAttendance() {
             </tbody>
           </table>
           <div style={{ marginTop: 15, display: 'flex', justifyContent: 'space-between', color: '#718096', fontSize: '0.9rem' }}>
-             <span>Showing 1 to {filteredAttendances.length} of {filteredAttendances.length} entries</span>
+             <span>Showing {filteredAttendances.length > 0 ? (currentPage - 1) * itemsPerPage + 1 : 0} to {Math.min(currentPage * itemsPerPage, filteredAttendances.length)} of {filteredAttendances.length} entries</span>
              <div>
-                <button style={{ border: 'none', background: 'transparent', color: '#718096', cursor: 'pointer', marginRight: 10 }} onClick={() => alert('This feature is currently under development or disabled.')}>Previous</button>
-                <button style={{ border: 'none', background: 'var(--school-primary, #3182ce)', color: 'white', borderRadius: 50, width: 25, height: 25, cursor: 'pointer' }} onClick={() => alert('This feature is currently under development or disabled.')}>1</button>
-                <button style={{ border: 'none', background: 'transparent', color: '#718096', cursor: 'pointer', marginLeft: 10 }} onClick={() => alert('This feature is currently under development or disabled.')}>Next</button>
+                <button style={{ border: 'none', background: 'transparent', color: '#718096', cursor: 'pointer', marginRight: 10 }} disabled={currentPage === 1} onClick={() => setCurrentPage(p => p - 1)}>Previous</button>
+                <button style={{ border: 'none', background: 'var(--school-primary, #3182ce)', color: 'white', borderRadius: 50, width: 25, height: 25, cursor: 'pointer' }}>{currentPage}</button>
+                <button style={{ border: 'none', background: 'transparent', color: '#718096', cursor: 'pointer', marginLeft: 10 }} disabled={currentPage === totalPages || filteredAttendances.length === 0} onClick={() => setCurrentPage(p => p + 1)}>Next</button>
              </div>
           </div>
         </div>

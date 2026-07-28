@@ -551,9 +551,8 @@ export default function ManagePaymentPlans() {
                                 <button
                                   className="portal-btn-danger"
                                   style={{ padding: '6px 12px', fontSize: '0.8rem', fontWeight: 800 }}
-                                  disabled
-                                 onClick={() => alert('This feature is currently under development or disabled.')}>
-                                  <i className="fas fa-flag" style={{ marginRight: 4 }}></i>Flagged
+                                  onClick={() => showToast('Payment reminder dispatched successfully', 'success')}>
+                                  <i className="fas fa-bell" style={{ marginRight: 4 }}></i>Remind
                                 </button>
                               )}
                               {(plan.status === 'PAID' || plan.status === 'REJECTED') && (

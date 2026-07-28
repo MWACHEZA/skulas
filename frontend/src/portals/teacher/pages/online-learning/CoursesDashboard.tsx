@@ -12,6 +12,10 @@ export default function CoursesDashboard() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
   const [searchQuery, setSearchQuery] = useState('');
+  const [filterCategory, setFilterCategory] = useState('All');
+  const [filterStatus, setFilterStatus] = useState('All');
+  const [filterClass, setFilterClass] = useState('All');
+  const [filterPrice, setFilterPrice] = useState('All');
 
   useEffect(() => {
     fetchCourses();
@@ -33,6 +37,15 @@ export default function CoursesDashboard() {
   const freeCount = courses.filter(c => c.isFree).length;
   const paidCount = courses.filter(c => !c.isFree).length;
   const totalStudents = courses.reduce((acc, curr) => acc + (curr._count?.enrollments || 0), 0);
+
+  const filteredCourses = courses.filter(c => {
+    const matchSearch = c.title.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchCat = filterCategory === 'All' || c.category === filterCategory;
+    const matchStatus = filterStatus === 'All' || c.status === filterStatus;
+    const matchClass = filterClass === 'All' || c.class?.name === filterClass;
+    const matchPrice = filterPrice === 'All' || (filterPrice === 'Free' ? c.isFree : !c.isFree);
+    return matchSearch && matchCat && matchStatus && matchClass && matchPrice;
+  });
 
   return (
     <>
@@ -88,22 +101,42 @@ export default function CoursesDashboard() {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 15, marginBottom: 40 }}>
             <div>
               <label style={{ fontSize: '0.85rem', color: '#4a5568' }}>Filter by categories</label>
-              <select className="portal-input"><option>All</option></select>
+              <select className="portal-input" value={filterCategory} onChange={e => { setFilterCategory(e.target.value); setCurrentPage(1); }}>
+                <option value="All">All</option>
+                <option value="Science">Science</option>
+                <option value="Math">Math</option>
+                <option value="Languages">Languages</option>
+              </select>
             </div>
             <div>
               <label style={{ fontSize: '0.85rem', color: '#4a5568' }}>Filter by status</label>
-              <select className="portal-input"><option>All</option></select>
+              <select className="portal-input" value={filterStatus} onChange={e => { setFilterStatus(e.target.value); setCurrentPage(1); }}>
+                <option value="All">All</option>
+                <option value="Active">Active</option>
+                <option value="Pending">Pending</option>
+                <option value="Draft">Draft</option>
+              </select>
             </div>
             <div>
               <label style={{ fontSize: '0.85rem', color: '#4a5568' }}>Filter by class</label>
-              <select className="portal-input"><option>All</option></select>
+              <select className="portal-input" value={filterClass} onChange={e => { setFilterClass(e.target.value); setCurrentPage(1); }}>
+                <option value="All">All</option>
+                <option value="Form 1">Form 1</option>
+                <option value="Form 2">Form 2</option>
+                <option value="Form 3">Form 3</option>
+                <option value="Form 4">Form 4</option>
+              </select>
             </div>
             <div>
               <label style={{ fontSize: '0.85rem', color: '#4a5568' }}>Filter by price</label>
-              <select className="portal-input"><option>All</option></select>
+              <select className="portal-input" value={filterPrice} onChange={e => { setFilterPrice(e.target.value); setCurrentPage(1); }}>
+                <option value="All">All</option>
+                <option value="Free">Free</option>
+                <option value="Paid">Paid</option>
+              </select>
             </div>
             <div style={{ display: 'flex', alignItems: 'flex-end' }}>
-              <button className="portal-btn-primary" style={{ background: 'var(--portal-success)', borderColor: 'var(--portal-success)', width: '100%', height: '40px' }} onClick={() => alert('This feature is currently under development or disabled.')}>Filter</button>
+              <button className="portal-btn-primary" style={{ background: 'var(--portal-success)', borderColor: 'var(--portal-success)', width: '100%', height: '40px' }} onClick={() => showToast('Filters applied', 'success')}>Filter</button>
             </div>
           </div>
 
@@ -146,11 +179,10 @@ export default function CoursesDashboard() {
               </thead>
               <tbody>
                 {(() => {
-                  const filtered = courses.filter(c => c.title.toLowerCase().includes(searchQuery.toLowerCase()));
                   const indexOfLastItem = currentPage * itemsPerPage;
                   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-                  const currentItems = filtered.slice(indexOfFirstItem, indexOfLastItem);
-                  if (currentItems.length === 0 && filtered.length > 0) setCurrentPage(1);
+                  const currentItems = filteredCourses.slice(indexOfFirstItem, indexOfLastItem);
+                  if (currentItems.length === 0 && filteredCourses.length > 0) setCurrentPage(1);
                   return currentItems.map(c => (
                   <tr key={c.id}>
                     <td>{c.title}</td>
@@ -191,11 +223,10 @@ export default function CoursesDashboard() {
           )}
           
           {(() => {
-            const filtered = courses.filter(c => c.title.toLowerCase().includes(searchQuery.toLowerCase()));
-            return filtered.length > 0 && (
+            return filteredCourses.length > 0 && (
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px', borderTop: '1px solid #e2e8f0' }}>
               <span style={{ fontSize: '0.85rem', color: '#64748b' }}>
-                Showing {(currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, filtered.length)} of {filtered.length} entries
+                Showing {(currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, filteredCourses.length)} of {filteredCourses.length} entries
               </span>
               <div style={{ display: 'flex', gap: '8px' }}>
                 <button 
@@ -207,8 +238,8 @@ export default function CoursesDashboard() {
                   Previous
                 </button>
                 <button 
-                  onClick={() => setCurrentPage(prev => Math.min(prev + 1, Math.ceil(filtered.length / itemsPerPage)))}
-                  disabled={currentPage === Math.ceil(filtered.length / itemsPerPage) || filtered.length === 0}
+                  onClick={() => setCurrentPage(prev => Math.min(prev + 1, Math.ceil(filteredCourses.length / itemsPerPage)))}
+                  disabled={currentPage === Math.ceil(filteredCourses.length / itemsPerPage) || filteredCourses.length === 0}
                   className="portal-btn-ghost"
                   style={{ padding: '6px 12px', fontSize: '0.85rem' }}
                 >

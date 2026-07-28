@@ -1,11 +1,40 @@
 import { useState } from 'react';
+import { useToast } from '../../../context/ToastContext';
 
 export default function TeacherSyllabusManager() {
-  const [topics] = useState([
+  const { showToast } = useToast();
+  const [topics, setTopics] = useState([
     { id: 1, name: 'Number Theory', progress: 100, status: 'Completed', deadline: 'Sep 15, 2024' },
     { id: 2, name: 'Algebraic Expressions', progress: 85, status: 'Ongoing', deadline: 'Oct 20, 2024' },
     { id: 3, name: 'Trigonometry Fundamentals', progress: 0, status: 'Planned', deadline: 'Nov 10, 2024' },
   ]);
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingTopic, setEditingTopic] = useState<any>(null);
+  const [progressValue, setProgressValue] = useState(0);
+
+  const openModal = (topic: any) => {
+    setEditingTopic(topic);
+    setProgressValue(topic.progress);
+    setIsModalOpen(true);
+  };
+
+  const handleUpdateProgress = (e: React.FormEvent) => {
+    e.preventDefault();
+    const updatedTopics = topics.map(t => {
+      if (t.id === editingTopic.id) {
+        const p = Number(progressValue);
+        const status = p === 100 ? 'Completed' : (p > 0 ? 'Ongoing' : 'Planned');
+        return { ...t, progress: p, status };
+      }
+      return t;
+    });
+    setTopics(updatedTopics);
+    setIsModalOpen(false);
+    showToast('Progress updated successfully!', 'success');
+  };
+
+  const overallProgress = Math.round(topics.reduce((acc, t) => acc + t.progress, 0) / topics.length) || 0;
 
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
@@ -21,9 +50,9 @@ export default function TeacherSyllabusManager() {
         <div className="portal-card-header">
           <h2><i className="fas fa-book-open" style={{ marginRight: 8, color: 'var(--school-primary, #3182ce)' }}></i>Mathematics Form 3 Syllabus</h2>
           <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-             <span style={{ fontSize: '0.9rem', color: '#718096' }}>Overall Progress: 62%</span>
+             <span style={{ fontSize: '0.9rem', color: '#718096' }}>Overall Progress: {overallProgress}%</span>
              <div style={{ width: 120, height: 10, background: '#edf2f7', borderRadius: 5 }}>
-                <div style={{ width: '62%', height: '100%', background: 'var(--portal-success)', borderRadius: 5 }}></div>
+                <div style={{ width: `${overallProgress}%`, height: '100%', background: 'var(--portal-success)', borderRadius: 5, transition: 'width 0.3s ease' }}></div>
              </div>
           </div>
         </div>
@@ -65,7 +94,7 @@ export default function TeacherSyllabusManager() {
                     </span>
                   </td>
                   <td>
-                    <button className="portal-btn-ghost" style={{ padding: '8px', width: '36px', height: '36px', color: '#2563eb', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Update Progress" onClick={() => alert('This feature is currently under development or disabled.')}>
+                    <button className="portal-btn-ghost" style={{ padding: '8px', width: '36px', height: '36px', color: '#2563eb', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Update Progress" onClick={() => openModal(t)}>
                       <i className="fas fa-edit"></i>
                     </button>
                   </td>
@@ -102,6 +131,33 @@ export default function TeacherSyllabusManager() {
           )}
         </div>
       </div>
+
+      {isModalOpen && (
+        <div className="portal-modal-overlay">
+          <div className="portal-modal-content" style={{ maxWidth: 400 }}>
+            <div className="portal-modal-header" style={{ padding: 20, borderBottom: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between' }}>
+              <h2 style={{ margin: 0, fontSize: '1.25rem' }}><i className="fas fa-chart-line" style={{ marginRight: 8, color: 'var(--school-primary, #3182ce)' }}></i> Update Progress</h2>
+              <button className="portal-btn-ghost" onClick={() => setIsModalOpen(false)}><i className="fas fa-times"></i></button>
+            </div>
+            <div className="portal-modal-body" style={{ padding: 20 }}>
+              <form onSubmit={handleUpdateProgress}>
+                <div style={{ marginBottom: 20 }}>
+                  <strong>{editingTopic?.name}</strong>
+                </div>
+                <div className="portal-form-group">
+                  <label>Coverage Progress ({progressValue}%)</label>
+                  <input type="range" min="0" max="100" className="portal-input" style={{ padding: 0 }} value={progressValue} onChange={e => setProgressValue(Number(e.target.value))} />
+                </div>
+                
+                <div style={{ display: 'flex', gap: 10, marginTop: 24 }}>
+                  <button type="button" className="portal-btn-secondary" style={{ flex: 1 }} onClick={() => setIsModalOpen(false)}>Cancel</button>
+                  <button type="submit" className="portal-btn-primary" style={{ flex: 1, justifyContent: 'center' }}>Save Update</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

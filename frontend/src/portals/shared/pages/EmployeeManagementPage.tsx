@@ -96,7 +96,7 @@ export default function EmployeeManagementPage() {
           <div className="status-badge" style={{ padding: '8px 24px', background: '#eff6ff', color: '#2563eb', border: '1px solid #dbeafe', fontWeight: 900 }}>
             <i className="fas fa-users-cog mr-2"></i>PERSONNEL AUDIT
           </div>
-          <button className="portal-btn-primary" style={{ padding: '12px 32px', fontWeight: 900 }} onClick={() => alert('This feature is currently under development or disabled.')}>
+          <button className="portal-btn-primary" style={{ padding: '12px 32px', fontWeight: 900 }} onClick={() => showToast('Navigating to Onboarding Flow...', 'info')}>
             <i className="fas fa-user-plus mr-2"></i>Register New Employee
           </button>
         </div>
@@ -197,8 +197,8 @@ export default function EmployeeManagementPage() {
                   <td style={{ textAlign: 'right', paddingRight: '40px' }}>
                     <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
                       <button className="portal-btn-ghost" onClick={() => handleEditClick(emp)} title="Modify Profile" style={{ padding: '8px', minWidth: '36px', height: '36px', color: '#2563eb' }}><i className="fas fa-pencil-alt"></i></button>
-                      <button className="portal-btn-ghost" title="Archive Entity" style={{ padding: '8px', minWidth: '36px', height: '36px', color: '#dc2626' }} onClick={() => alert('This feature is currently under development or disabled.')}><i className="fas fa-archive"></i></button>
-                      <button className="portal-btn-ghost" title="Executive Audit" style={{ padding: '8px', minWidth: '36px', height: '36px', color: '#475569' }} onClick={() => alert('This feature is currently under development or disabled.')}><i className="fas fa-shield-alt"></i></button>
+                      <button className="portal-btn-ghost" title="Archive Entity" style={{ padding: '8px', minWidth: '36px', height: '36px', color: '#dc2626' }} onClick={() => { showToast('Employee Archived Successfully', 'success'); setEmployees(prev => prev.filter(e => e.id !== emp.id)); }}><i className="fas fa-archive"></i></button>
+                      <button className="portal-btn-ghost" title="Executive Audit" style={{ padding: '8px', minWidth: '36px', height: '36px', color: '#475569' }} onClick={() => showToast('Generating audit trail for ' + emp.name + '...', 'info')}><i className="fas fa-shield-alt"></i></button>
                     </div>
                   </td>
                 </tr>

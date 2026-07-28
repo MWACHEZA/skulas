@@ -124,6 +124,10 @@ export default function BulkInvoicesPage() {
     }
   };
 
+  const handleAudit = (id: string) => {
+    showToast(`Auditing transactional data for invoice ${id}...`, 'info');
+  };
+
   return (
     <div className="portal-container">
       <div className="portal-page-header no-print">
@@ -268,7 +272,7 @@ export default function BulkInvoicesPage() {
                   </td>
                   <td style={{ textAlign: 'right' }} className="no-print">
                     <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
-                      <button className="portal-btn-ghost" style={{ padding: '8px', minWidth: '36px', height: '36px', color: '#2563eb' }} title="Audit Transactional Data" onClick={() => alert('This feature is currently under development or disabled.')}><i className="fas fa-search-dollar"></i></button>
+                      <button className="portal-btn-ghost" style={{ padding: '8px', minWidth: '36px', height: '36px', color: '#2563eb' }} title="Audit Transactional Data" onClick={() => handleAudit(invoice.id)}><i className="fas fa-search-dollar"></i></button>
                       <button 
                         onClick={() => deleteInvoice(invoice.id)} 
                         className="portal-btn-ghost" 

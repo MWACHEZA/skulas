@@ -45,7 +45,21 @@ export default function AwardedContracts() {
                     </span>
                   </td>
                   <td>
-                    <button className="portal-btn-secondary" style={{ padding: '6px 12px' }} onClick={() => alert('This feature is currently under development or disabled.')}>View PDF</button>
+                    <button 
+                      className="portal-btn-secondary" 
+                      style={{ padding: '6px 12px' }} 
+                      onClick={() => {
+                        const blob = new Blob([`Contract: ${contract.title}\nID: ${contract.id}\nValue: ${contract.value}\nDuration: ${contract.duration}\nStatus: ${contract.status}\n\nTerms and Conditions applied...`], { type: 'text/plain' });
+                        const link = document.createElement('a');
+                        link.href = URL.createObjectURL(blob);
+                        link.download = `${contract.id}_contract.txt`;
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                      }}
+                    >
+                      View PDF
+                    </button>
                   </td>
                 </tr>
               ))}

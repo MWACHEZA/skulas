@@ -24,6 +24,7 @@ export default function ParentWallet() {
   // Topup state
   const [amount, setAmount] = useState<string>('');
   const [isProcessing, setIsProcessing] = useState(false);
+  const [showFilterModal, setShowFilterModal] = useState(false);
 
   useEffect(() => {
     if (activeEntity?.id) {
@@ -151,7 +152,7 @@ export default function ParentWallet() {
              <div className="portal-card">
                 <div className="portal-card-header">
                    <h2>Recent Transactions</h2>
-                   <button className="portal-btn-secondary" onClick={() => alert('This feature is currently under development or disabled.')}><i className="fas fa-filter"></i> Filter</button>
+                   <button className="portal-btn-secondary" onClick={() => setShowFilterModal(true)}><i className="fas fa-filter"></i> Filter</button>
                 </div>
                 <div className="portal-card-body" style={{ padding: 0 }}>
                    <table className="portal-table">
@@ -186,6 +187,38 @@ export default function ParentWallet() {
              </div>
           </div>
         </>
+      )}
+
+      {showFilterModal && (
+        <div className="portal-modal-overlay">
+           <div className="portal-modal-card">
+              <div className="portal-modal-header">
+                 <h2>Filter Transactions</h2>
+                 <button onClick={() => setShowFilterModal(false)} className="portal-btn-ghost" style={{ border: 'none', background: 'none', fontSize: '1.5rem', cursor: 'pointer' }}>&times;</button>
+              </div>
+              <div className="portal-modal-body">
+                 <div className="portal-form-group">
+                    <label>Transaction Type</label>
+                    <select className="portal-input">
+                       <option value="">All Types</option>
+                       <option value="DEPOSIT">Deposits</option>
+                       <option value="PURCHASE">Purchases</option>
+                    </select>
+                 </div>
+                 <div className="portal-form-group">
+                    <label>Date Range</label>
+                    <div style={{ display: 'flex', gap: 10 }}>
+                       <input type="date" className="portal-input" />
+                       <input type="date" className="portal-input" />
+                    </div>
+                 </div>
+              </div>
+              <div className="portal-modal-footer">
+                 <button className="portal-btn-secondary" onClick={() => setShowFilterModal(false)}>Clear</button>
+                 <button className="portal-btn-primary" onClick={() => setShowFilterModal(false)}>Apply Filter</button>
+              </div>
+           </div>
+        </div>
       )}
     </>
   );

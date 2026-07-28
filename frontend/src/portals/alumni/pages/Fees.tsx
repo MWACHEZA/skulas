@@ -1,6 +1,24 @@
+import { useState } from 'react';
 import { formatCurrency } from '../../../utils/formatters';
+import { useToast } from '../../../context/ToastContext';
 
 export default function AlumniFees() {
+  const { showToast } = useToast();
+  const [customAmount, setCustomAmount] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const handleDonate = (amount: number) => {
+    setLoading(true);
+    setTimeout(() => {
+      showToast(`Redirecting to payment gateway for ${formatCurrency(amount)} donation...`, 'info');
+      setLoading(false);
+    }, 1500);
+  };
+
+  const handleDownloadReceipt = () => {
+    showToast('Downloading receipt...', 'success');
+  };
+
   return (
     <>
       <div className="portal-page-header"><h1>Donations & Contributions</h1><p>Support Embakwe High School through contributions and the Legacy Scholarship Fund.</p></div>
@@ -15,14 +33,14 @@ export default function AlumniFees() {
             <p style={{ color: '#718096', marginBottom: 16 }}>Your donations go directly towards scholarships, infrastructure, and student resources.</p>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 16 }}>
               {[25, 50, 100, 250].map(a => (
-                <button key={a} style={{ padding: '12px', background: '#f8faff', border: '2px solid #e2e8f0', borderRadius: 8, cursor: 'pointer', fontWeight: 700, fontSize: '1rem', color: 'var(--portal-primary)' }} onClick={() => alert('This feature is currently under development or disabled.')}>{formatCurrency(a)}</button>
+                <button key={a} style={{ padding: '12px', background: '#f8faff', border: '2px solid #e2e8f0', borderRadius: 8, cursor: 'pointer', fontWeight: 700, fontSize: '1rem', color: 'var(--portal-primary)' }} onClick={() => handleDonate(a)} disabled={loading}>{formatCurrency(a)}</button>
               ))}
             </div>
             <div style={{ marginBottom: 16 }}>
               <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 600, color: '#718096', marginBottom: 4 }}>Custom Amount ($)</label>
-              <input type="number" placeholder="Enter amount" style={{ width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid #cbd5e0' }} />
+              <input type="number" placeholder="Enter amount" style={{ width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid #cbd5e0' }} value={customAmount} onChange={e => setCustomAmount(e.target.value)} />
             </div>
-            <button style={{ width: '100%', padding: '14px', background: 'var(--portal-success)', color: 'white', border: 'none', borderRadius: 8, fontWeight: 600, cursor: 'pointer', fontSize: '1rem' }} onClick={() => alert('This feature is currently under development or disabled.')}><i className="fas fa-heart" style={{ marginRight: 8 }}></i>Donate Now</button>
+            <button style={{ width: '100%', padding: '14px', background: 'var(--portal-success)', color: 'white', border: 'none', borderRadius: 8, fontWeight: 600, cursor: 'pointer', fontSize: '1rem' }} onClick={() => { if (customAmount && Number(customAmount) > 0) handleDonate(Number(customAmount)); else showToast('Enter a valid amount', 'warning'); }} disabled={loading}><i className="fas fa-heart" style={{ marginRight: 8 }}></i>{loading ? 'Processing...' : 'Donate Now'}</button>
           </div>
         </div>
         <div className="portal-card">
@@ -31,8 +49,8 @@ export default function AlumniFees() {
             <table className="portal-table">
               <thead><tr><th>Date</th><th>Amount</th><th>Fund</th><th>Receipt</th></tr></thead>
               <tbody>
-                <tr><td>2024-06-15</td><td style={{ fontWeight: 700, color: 'var(--portal-success)' }}>{formatCurrency(100)}</td><td>Legacy Scholarship</td><td><button style={{ background: 'none', border: 'none', color: 'var(--portal-primary)', cursor: 'pointer' }} onClick={() => alert('This feature is currently under development or disabled.')}>Download</button></td></tr>
-                <tr><td>2023-12-10</td><td style={{ fontWeight: 700, color: 'var(--portal-success)' }}>{formatCurrency(50)}</td><td>Science Lab Fund</td><td><button style={{ background: 'none', border: 'none', color: 'var(--portal-primary)', cursor: 'pointer' }} onClick={() => alert('This feature is currently under development or disabled.')}>Download</button></td></tr>
+                <tr><td>2024-06-15</td><td style={{ fontWeight: 700, color: 'var(--portal-success)' }}>{formatCurrency(100)}</td><td>Legacy Scholarship</td><td><button style={{ background: 'none', border: 'none', color: 'var(--portal-primary)', cursor: 'pointer' }} onClick={handleDownloadReceipt}>Download</button></td></tr>
+                <tr><td>2023-12-10</td><td style={{ fontWeight: 700, color: 'var(--portal-success)' }}>{formatCurrency(50)}</td><td>Science Lab Fund</td><td><button style={{ background: 'none', border: 'none', color: 'var(--portal-primary)', cursor: 'pointer' }} onClick={handleDownloadReceipt}>Download</button></td></tr>
               </tbody>
             </table>
           </div>

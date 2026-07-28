@@ -95,7 +95,7 @@ export default function SupplierTenders() {
                     {submitting === t.id ? ' Submitting Bid...' : ' Submit Bid / Quotation'}
                   </button>
                 ) : (
-                   <button className="portal-btn-secondary" style={{ width: '100%', justifyContent: 'center', cursor: 'not-allowed', opacity: 0.6 }} disabled onClick={() => alert('This feature is currently under development or disabled.')}>
+                   <button className="portal-btn-secondary" style={{ width: '100%', justifyContent: 'center', cursor: 'not-allowed', opacity: 0.6 }} onClick={() => showToast('This tender is no longer accepting bids.', 'error')}>
                       <i className="fas fa-lock"></i> Tender Closed
                    </button>
                 )}

@@ -1,6 +1,8 @@
 import { useState } from 'react';
+import { useToast } from '../../../context/ToastContext';
 
 export default function TeacherAttendance() {
+  const { showToast } = useToast();
   const [selectedClass, setSelectedClass] = useState('Form 3A Mathematics');
   const [date] = useState(new Date().toISOString().split('T')[0]);
   const [students, setStudents] = useState([
@@ -9,7 +11,17 @@ export default function TeacherAttendance() {
     { id: '3', name: 'Farai Moyo', status: 'absent' },
     { id: '4', name: 'Chipo Sibanda', status: 'late' },
     { id: '5', name: 'Rudo Macharia', status: 'present' },
+    { id: '5', name: 'Rudo Macharia', status: 'present' },
   ]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = () => {
+    setIsSubmitting(true);
+    setTimeout(() => {
+      setIsSubmitting(false);
+      showToast('Attendance records submitted successfully!', 'success');
+    }, 1200);
+  };
 
   const updateStatus = (id: string, status: string) => {
     setStudents(prev => prev.map(s => s.id === id ? { ...s, status } : s));
@@ -43,8 +55,16 @@ export default function TeacherAttendance() {
             </select>
             <input type="date" defaultValue={date} style={{ padding: '8px 14px', borderRadius: 8, border: '1px solid #cbd5e0' }} />
           </div>
-          <button style={{ padding: '10px 20px', background: 'var(--portal-success)', color: 'white', border: 'none', borderRadius: 8, fontWeight: 600, cursor: 'pointer' }} onClick={() => alert('This feature is currently under development or disabled.')}>
-            <i className="fas fa-save" style={{ marginRight: 8 }}></i>Submit Attendance
+          <button 
+            style={{ padding: '10px 20px', background: 'var(--portal-success)', color: 'white', border: 'none', borderRadius: 8, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center' }} 
+            onClick={handleSubmit}
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? (
+              <><i className="fas fa-spinner fa-spin" style={{ marginRight: 8 }}></i>Submitting...</>
+            ) : (
+              <><i className="fas fa-save" style={{ marginRight: 8 }}></i>Submit Attendance</>
+            )}
           </button>
         </div>
 

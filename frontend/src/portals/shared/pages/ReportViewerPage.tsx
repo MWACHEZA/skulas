@@ -23,6 +23,7 @@ export default function ReportViewerPage() {
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [reportTemplate, setReportTemplate] = useState<any>(null);
+  const [selectedPayslip, setSelectedPayslip] = useState<any>(null);
   const itemsPerPage = 10;
   const [filters, setFilters] = useState({ 
     from: '', to: '', categoryId: '', paymentMode: '', allocationId: '', classId: '',
@@ -743,7 +744,7 @@ ${summary ? `<table class="summary-table"><tbody>${summary}</tbody></table>` : '
                   return paginatedRecords.map((item: any, i: number) => (
                     <tr key={i}>
                       {type === 'payroll-runs' && <><td style={{fontWeight: 800}}>{item.id?.slice(-8) || '-'}</td><td>{item.runDate ? new Date(item.runDate).toLocaleDateString() : '-'}</td><td>{item.month}/{item.year}</td><td>{item.employeesCount}</td><td style={{textAlign: 'right', fontWeight: 900}}>${item.totalNet?.toLocaleString()}</td></>}
-                      {type === 'employee-payslips' && <><td>{item.employeeName}</td><td>{item.payrollRun?.month}/{item.payrollRun?.year}</td><td style={{textAlign: 'right'}}>${item.grossSalary?.toLocaleString()}</td><td style={{textAlign: 'right'}}>${item.taxAmount?.toLocaleString()}</td><td style={{textAlign: 'right', fontWeight: 800}}>${item.netSalary?.toLocaleString()}</td><td><button className="portal-btn-ghost" style={{padding: '4px 8px', fontSize: '0.7rem'}} onClick={() => alert('This feature is currently under development or disabled.')}>View</button></td></>}
+                      {type === 'employee-payslips' && <><td>{item.employeeName}</td><td>{item.payrollRun?.month}/{item.payrollRun?.year}</td><td style={{textAlign: 'right'}}>${item.grossSalary?.toLocaleString()}</td><td style={{textAlign: 'right'}}>${item.taxAmount?.toLocaleString()}</td><td style={{textAlign: 'right', fontWeight: 800}}>${item.netSalary?.toLocaleString()}</td><td><button className="portal-btn-ghost" style={{padding: '4px 8px', fontSize: '0.7rem'}} onClick={() => setSelectedPayslip(item)}>View</button></td></>}
                       {type === 'tax-contributions' && <><td>{item.period}</td><td>{item.employees}</td><td style={{textAlign: 'right'}}>${item.totalPAYE?.toLocaleString()}</td><td style={{textAlign: 'right'}}>${item.totalAidsLevy?.toLocaleString()}</td><td style={{textAlign: 'right', fontWeight: 800}}>${((item.totalPAYE || 0) + (item.totalAidsLevy || 0) + (item.totalOtherDeductions || 0)).toLocaleString()}</td><td style={{fontSize: '0.75rem', color: '#64748b'}}>{item.breakdown}</td></>}
                       {type === 'grocery-consumption' && <><td>{item.product?.name || '-'}</td><td>{item.date ? new Date(item.date).toLocaleDateString() : '-'}</td><td style={{fontWeight: 800}}>{item.quantity}</td><td>{item.unit || 'Units'}</td><td>{item.recordedBy || 'System'}</td></>}
                       {type === 'profit-loss' && <><td>{item.description}</td><td><span className="status-badge" style={{background: '#f1f5f9', color: '#475569'}}>{item.category || 'General'}</span></td><td style={{textAlign: 'right', color: '#10b981', fontWeight: 800}}>{item.income > 0 ? `$${item.income.toLocaleString()}` : '-'}</td><td style={{textAlign: 'right', color: 'var(--portal-danger)', fontWeight: 800}}>{item.expense > 0 ? `$${item.expense.toLocaleString()}` : '-'}</td><td style={{textAlign: 'right', fontWeight: 900}}>${item.balance?.toLocaleString() || '0'}</td></>}
@@ -806,6 +807,58 @@ ${summary ? `<table class="summary-table"><tbody>${summary}</tbody></table>` : '
           <i className="fas fa-cloud-download-alt" style={{ fontSize: '3rem', opacity: 0.1, marginBottom: '16px' }}></i>
           <h3>No Synchronized Data</h3>
           <p>Please update report parameters to fetch latest registry records.</p>
+        </div>
+      )}
+
+      {selectedPayslip && (
+        <div className="portal-modal-overlay">
+           <div className="portal-modal-card" style={{ maxWidth: '600px' }}>
+              <div className="portal-modal-header">
+                 <h2>Payslip Details</h2>
+                 <button onClick={() => setSelectedPayslip(null)} className="portal-btn-ghost" style={{ border: 'none', background: 'none', fontSize: '1.5rem', cursor: 'pointer' }}>&times;</button>
+              </div>
+              <div className="portal-modal-body">
+                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px' }}>
+                    <div>
+                      <p style={{ margin: '0 0 5px', color: '#64748b', fontSize: '0.9rem' }}>Employee</p>
+                      <p style={{ margin: 0, fontWeight: 700, fontSize: '1.1rem' }}>{selectedPayslip.employeeName}</p>
+                    </div>
+                    <div>
+                      <p style={{ margin: '0 0 5px', color: '#64748b', fontSize: '0.9rem' }}>Period</p>
+                      <p style={{ margin: 0, fontWeight: 700, fontSize: '1.1rem' }}>{selectedPayslip.payrollRun?.month}/{selectedPayslip.payrollRun?.year}</p>
+                    </div>
+                    <div>
+                      <p style={{ margin: '0 0 5px', color: '#64748b', fontSize: '0.9rem' }}>Gross Salary</p>
+                      <p style={{ margin: 0, fontWeight: 700, color: '#10b981', fontSize: '1.1rem' }}>${selectedPayslip.grossSalary?.toLocaleString()}</p>
+                    </div>
+                    <div>
+                      <p style={{ margin: '0 0 5px', color: '#64748b', fontSize: '0.9rem' }}>Tax Amount</p>
+                      <p style={{ margin: 0, fontWeight: 700, color: 'var(--portal-danger)', fontSize: '1.1rem' }}>${selectedPayslip.taxAmount?.toLocaleString()}</p>
+                    </div>
+                    <div>
+                      <p style={{ margin: '0 0 5px', color: '#64748b', fontSize: '0.9rem' }}>Net Salary</p>
+                      <p style={{ margin: 0, fontWeight: 900, fontSize: '1.3rem', color: '#2563eb' }}>${selectedPayslip.netSalary?.toLocaleString()}</p>
+                    </div>
+                 </div>
+                 {selectedPayslip.deductions && selectedPayslip.deductions.length > 0 && (
+                   <>
+                     <h3 style={{ fontSize: '1rem', borderBottom: '1px solid #e2e8f0', paddingBottom: '10px', margin: '20px 0 10px' }}>Deductions</h3>
+                     <table className="portal-table" style={{ width: '100%', fontSize: '0.9rem' }}>
+                        <thead><tr><th style={{ textAlign: 'left', padding: '8px' }}>Description</th><th style={{textAlign: 'right', padding: '8px'}}>Amount</th></tr></thead>
+                        <tbody>
+                          {selectedPayslip.deductions.map((d: any, idx: number) => (
+                            <tr key={idx}><td style={{ padding: '8px' }}>{d.description}</td><td style={{textAlign: 'right', padding: '8px', color: 'var(--portal-danger)'}}>${d.amount?.toLocaleString()}</td></tr>
+                          ))}
+                        </tbody>
+                     </table>
+                   </>
+                 )}
+              </div>
+              <div className="portal-modal-footer">
+                 <button className="portal-btn-secondary" onClick={() => window.print()} style={{ padding: '10px 20px', borderRadius: '12px' }}><i className="fas fa-print"></i> Print</button>
+                 <button className="portal-btn-primary" onClick={() => setSelectedPayslip(null)} style={{ padding: '10px 20px', borderRadius: '12px', background: 'var(--school-primary, #0056b3)' }}>Close</button>
+              </div>
+           </div>
         </div>
       )}
 

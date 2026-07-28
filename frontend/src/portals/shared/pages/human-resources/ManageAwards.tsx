@@ -22,6 +22,12 @@ export default function ManageAwards() {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+  const totalPages = Math.ceil(awards.length / itemsPerPage);
+  const paginatedAwards = awards.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   const { register, handleSubmit, reset } = useForm();
 
@@ -59,17 +65,46 @@ export default function ManageAwards() {
         ...data,
         amount: parseFloat(data.amount)
       };
-      await api.post('/api/awards', payload);
-      showToast('Award saved successfully!', 'success');
+      if (editingId) {
+        await api.put(`/api/awards/${editingId}`, payload);
+        showToast('Award updated successfully!', 'success');
+      } else {
+        await api.post('/api/awards', payload);
+        showToast('Award saved successfully!', 'success');
+      }
       reset();
       fetchAwards();
       setShowAddModal(false);
+      setEditingId(null);
     } catch (error) {
       console.error('Failed to save award', error);
       showToast('Failed to save award.', 'error');
     } finally {
       setSubmitting(false);
     }
+  };
+
+  const deleteAward = async (id: string) => {
+    if (window.confirm('Are you sure you want to delete this award?')) {
+      try {
+        await api.delete(`/api/awards/${id}`);
+        showToast('Award deleted successfully', 'success');
+        fetchAwards();
+      } catch (error) {
+        showToast('Failed to delete award', 'error');
+      }
+    }
+  };
+
+  const handleEdit = (award: AwardEntry) => {
+    setEditingId(award.id);
+    reset({
+      awardName: award.awardName,
+      gift: award.gift,
+      amount: award.amount,
+      date: award.date ? format(new Date(award.date), 'yyyy-MM-dd') : ''
+    });
+    setShowAddModal(true);
   };
 
   const handlePrint = () => {
@@ -162,7 +197,11 @@ export default function ManageAwards() {
             <p>View history of all recognized {t('staff').toLowerCase()} accomplishments</p>
           </div>
           <button 
-            onClick={() => setShowAddModal(true)}
+            onClick={() => {
+              setEditingId(null);
+              reset({});
+              setShowAddModal(true);
+            }}
             className="portal-btn-primary"
             style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}
           >
@@ -206,7 +245,7 @@ export default function ManageAwards() {
                   <tr>
                     <td colSpan={6} style={{ textAlign: 'center', padding: '30px', color: '#64748b' }}>Loading awards...</td>
                   </tr>
-                ) : awards.length === 0 ? (
+                ) : paginatedAwards.length === 0 ? (
                   <tr>
                     <td colSpan={6} style={{ textAlign: 'center', padding: '50px', color: '#94a3b8' }}>
                       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
@@ -216,7 +255,7 @@ export default function ManageAwards() {
                     </td>
                   </tr>
                 ) : (
-                  awards.map(award => (
+                  paginatedAwards.map(award => (
                     <tr key={award.id}>
                       <td style={{ fontWeight: 600, color: '#1e293b' }}>{award.awardName}</td>
                       <td>{award.gift}</td>
@@ -225,10 +264,10 @@ export default function ManageAwards() {
                       <td>{award.date ? format(new Date(award.date), 'dd/MM/yyyy') : 'N/A'}</td>
                       <td style={{ textAlign: 'center' }}>
                         <div style={{ display: 'flex', justifyContent: 'center', gap: '5px' }}>
-                          <button className="portal-btn-ghost" style={{ padding: '8px', width: '36px', height: '36px', color: '#eab308', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => showToast('This feature is currently under development or disabled.', 'info')} title="Edit">
+                          <button className="portal-btn-ghost" style={{ padding: '8px', width: '36px', height: '36px', color: '#eab308', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => handleEdit(award)} title="Edit">
                             <i className="fas fa-edit"></i>
                           </button>
-                          <button className="portal-btn-ghost" style={{ padding: '8px', width: '36px', height: '36px', color: '#dc2626', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => showToast('This feature is currently under development or disabled.', 'info')} title="Delete">
+                          <button className="portal-btn-ghost" style={{ padding: '8px', width: '36px', height: '36px', color: '#dc2626', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => deleteAward(award.id)} title="Delete">
                             <i className="fas fa-trash"></i>
                           </button>
                         </div>
@@ -240,10 +279,10 @@ export default function ManageAwards() {
             </table>
             
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '20px', color: '#64748b', fontSize: '0.9rem' }}>
-              <span>Showing {awards.length > 0 ? 1 : 0} to {awards.length} of {awards.length} entries</span>
+              <span>Showing {awards.length > 0 ? (currentPage - 1) * itemsPerPage + 1 : 0} to {Math.min(currentPage * itemsPerPage, awards.length)} of {awards.length} entries</span>
               <div style={{ display: 'flex', gap: '10px' }}>
-                <button className="portal-btn-ghost" style={{ padding: '6px 12px', fontSize: '0.85rem' }} disabled onClick={() => showToast('This feature is currently under development or disabled.', 'info')}>Previous</button>
-                <button className="portal-btn-ghost" style={{ padding: '6px 12px', fontSize: '0.85rem' }} disabled onClick={() => showToast('This feature is currently under development or disabled.', 'info')}>Next</button>
+                <button className="portal-btn-ghost" style={{ padding: '6px 12px', fontSize: '0.85rem' }} disabled={currentPage === 1} onClick={() => setCurrentPage(p => p - 1)}>Previous</button>
+                <button className="portal-btn-ghost" style={{ padding: '6px 12px', fontSize: '0.85rem' }} disabled={currentPage === totalPages || awards.length === 0} onClick={() => setCurrentPage(p => p + 1)}>Next</button>
               </div>
             </div>
           </div>
@@ -256,11 +295,14 @@ export default function ManageAwards() {
           <div className="portal-modal-card" style={{ maxWidth: '600px' }}>
             <div className="portal-modal-header">
               <div>
-                <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 700 }}>ADD {t('staff').toUpperCase()} AWARD</h3>
+                <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 700 }}>{editingId ? 'EDIT' : 'ADD'} {t('staff').toUpperCase()} AWARD</h3>
                 <p style={{ margin: '4px 0 0 0', fontSize: '0.85rem', color: '#64748b' }}>Recognize and award achievements of the school {t('staff').toLowerCase()} members</p>
               </div>
               <button 
-                onClick={() => setShowAddModal(false)}
+                onClick={() => {
+                  setShowAddModal(false);
+                  setEditingId(null);
+                }}
                 className="portal-btn-ghost"
                 style={{ padding: '6px', minWidth: 'auto' }}
               >
@@ -296,7 +338,10 @@ export default function ManageAwards() {
                 </div>
 
                 <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '10px' }}>
-                  <button type="button" onClick={() => setShowAddModal(false)} className="portal-btn-neutral">
+                  <button type="button" onClick={() => {
+                    setShowAddModal(false);
+                    setEditingId(null);
+                  }} className="portal-btn-neutral">
                     Cancel
                   </button>
                   <button disabled={submitting} type="submit" className="portal-btn-primary" style={{ height: '52px', borderRadius: '16px', fontWeight: 900, background: 'var(--school-primary, #0056b3)', borderColor: 'var(--school-primary, #0056b3)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>

@@ -317,7 +317,12 @@ export default function PayrollSettingsPage({ isEmbedded = false }: { isEmbedded
                     </td>
                     <td style={{ textAlign: 'right' }}>
                       <div className="action-buttons" style={{ justifyContent: 'flex-end' }}>
-                        <button className="portal-btn-ghost" style={{ padding: '8px', color: '#2563eb' }} onClick={() => alert('This feature is currently under development or disabled.')}><i className="fas fa-pencil-alt"></i></button>
+                        <button className="portal-btn-ghost" style={{ padding: '8px', color: '#2563eb' }} onClick={() => {
+                          setFormData({ name: item.name, isRecurring: item.isRecurring, isPercentage: item.isPercentage, defaultValue: item.defaultValue });
+                          if (activeTab === 'allowances') setShowAddAllowance(true);
+                          else setShowAddDeduction(true);
+                          toast.success('Loaded for editing. Make changes above.');
+                        }}><i className="fas fa-pencil-alt"></i></button>
                         <button className="portal-btn-ghost" style={{ padding: '8px', color: '#dc2626' }} onClick={() => handleDeleteModifier(activeTab as any, item.id)}><i className="fas fa-trash"></i></button>
                       </div>
                     </td>
@@ -351,7 +356,11 @@ export default function PayrollSettingsPage({ isEmbedded = false }: { isEmbedded
                     </div>
                   </div>
                   <div className="action-buttons">
-                    <button className="portal-btn-ghost" style={{ padding: '8px', color: '#2563eb' }} onClick={() => alert('This feature is currently under development or disabled.')}><i className="fas fa-pencil-alt"></i></button>
+                    <button className="portal-btn-ghost" style={{ padding: '8px', color: '#2563eb' }} onClick={() => {
+                      setTaxData({ name: t.name, effectiveFrom: t.effectiveFrom || '2025-01-01', effectiveTo: t.effectiveTo || '2025-12-31', bands: t.bands });
+                      setShowAddTaxTable(true);
+                      toast.success('Tax table loaded for editing. Make changes above.');
+                    }}><i className="fas fa-pencil-alt"></i></button>
                     <button className="portal-btn-ghost" style={{ padding: '8px', color: '#dc2626' }} onClick={() => handleDeleteModifier('tax-tables', t.id)}><i className="fas fa-trash"></i></button>
                   </div>
                 </div>

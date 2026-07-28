@@ -21,6 +21,11 @@ export default function ListLeaves() {
   const [selectedLeave, setSelectedLeave] = useState<LeaveEntry | null>(null);
   const [editStatus, setEditStatus] = useState('Pending');
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+  const totalPages = Math.ceil(leaves.length / itemsPerPage);
+  const paginatedLeaves = leaves.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
   useEffect(() => {
     fetchLeaves();
   }, []);
@@ -53,7 +58,7 @@ export default function ListLeaves() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!(await toastConfirm('Are you sure you want to delete this leave application?'))) return;
+    if (!window.confirm('Are you sure you want to delete this leave application?')) return;
     try {
       await api.delete(`/api/leave/${id}`);
       fetchLeaves();
@@ -185,7 +190,7 @@ export default function ListLeaves() {
                 <tr>
                   <td colSpan={6} style={{ textAlign: 'center', padding: '30px', color: '#64748b' }}>Loading leaves...</td>
                 </tr>
-              ) : leaves.length === 0 ? (
+              ) : paginatedLeaves.length === 0 ? (
                 <tr>
                   <td colSpan={6} style={{ textAlign: 'center', padding: '50px', color: '#94a3b8' }}>
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
@@ -195,7 +200,7 @@ export default function ListLeaves() {
                   </td>
                 </tr>
               ) : (
-                leaves.map(leave => (
+                paginatedLeaves.map(leave => (
                   <tr key={leave.id}>
                     <td style={{ fontWeight: 600, color: '#1e293b' }}>{leave.user?.name || 'Unknown'}</td>
                     <td>{leave.startDate ? format(new Date(leave.startDate), 'dd/MM/yyyy') : 'N/A'}</td>
@@ -245,10 +250,10 @@ export default function ListLeaves() {
           </table>
           
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '20px', color: '#64748b', fontSize: '0.9rem' }}>
-            <span>Showing {leaves.length > 0 ? 1 : 0} to {leaves.length} of {leaves.length} entries</span>
+            <span>Showing {leaves.length > 0 ? (currentPage - 1) * itemsPerPage + 1 : 0} to {Math.min(currentPage * itemsPerPage, leaves.length)} of {leaves.length} entries</span>
             <div style={{ display: 'flex', gap: '10px' }}>
-              <button className="portal-btn-ghost" style={{ padding: '6px 12px', fontSize: '0.85rem' }} disabled onClick={() => showToast('This feature is currently under development or disabled.', 'info')}>Previous</button>
-              <button className="portal-btn-ghost" style={{ padding: '6px 12px', fontSize: '0.85rem' }} disabled onClick={() => showToast('This feature is currently under development or disabled.', 'info')}>Next</button>
+              <button className="portal-btn-ghost" style={{ padding: '6px 12px', fontSize: '0.85rem' }} disabled={currentPage === 1} onClick={() => setCurrentPage(p => p - 1)}>Previous</button>
+              <button className="portal-btn-ghost" style={{ padding: '6px 12px', fontSize: '0.85rem' }} disabled={currentPage === totalPages || leaves.length === 0} onClick={() => setCurrentPage(p => p + 1)}>Next</button>
             </div>
           </div>
         </div>

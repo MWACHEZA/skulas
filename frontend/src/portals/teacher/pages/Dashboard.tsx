@@ -243,7 +243,7 @@ export default function TeacherDashboard() {
                       <td><span style={{ fontSize: '0.85rem', color: '#4a5568' }}>{c.role}</span></td>
                       <td>{c._count.students} {t('students')}</td>
                       <td style={{ textAlign: 'right' }}>
-                         <button className="portal-btn-secondary" style={{ padding: '4px 8px', fontSize: '0.75rem' }} onClick={() => alert('This feature is currently under development or disabled.')}>View</button>
+                         <button className="portal-btn-secondary" style={{ padding: '4px 8px', fontSize: '0.75rem' }} onClick={(e) => { e.stopPropagation(); navigate(`/teacher/classes/${c.id}`); }}>View</button>
                       </td>
                     </tr>
                   ))}

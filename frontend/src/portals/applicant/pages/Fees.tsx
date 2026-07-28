@@ -1,11 +1,22 @@
 import { useState } from 'react';
+import { useToast } from '../../../context/ToastContext';
 
 export default function ApplicantFees() {
+  const { showToast } = useToast();
+  const [loading, setLoading] = useState(false);
   const [fees] = useState([
     { name: 'Application Processing Fee', amount: '$25.00', status: 'Paid', date: '2024-10-15', ref: 'PAY-8821' },
     { name: 'Entrance Aptitude Test Fee', amount: '$15.00', status: 'Pending', date: '-', ref: '-' },
     { name: 'Acceptance Deposit', amount: '$250.00', status: 'Upcoming', date: '-', ref: '-' },
   ]);
+
+  const handlePay = () => {
+    setLoading(true);
+    setTimeout(() => {
+       showToast('Redirecting to payment gateway...', 'info');
+       setLoading(false);
+    }, 1500);
+  };
 
   return (
     <>
@@ -17,7 +28,7 @@ export default function ApplicantFees() {
       <div className="portal-card">
         <div className="portal-card-header">
           <h2><i className="fas fa-file-invoice-dollar" style={{ marginRight: 8, color: 'var(--school-primary, #3182ce)' }}></i>Payment Schedule</h2>
-          <button className="portal-btn-primary" onClick={() => alert('This feature is currently under development or disabled.')}>Pay Outstanding</button>
+          <button className="portal-btn-primary" onClick={handlePay} disabled={loading}>{loading ? 'Processing...' : 'Pay Outstanding'}</button>
         </div>
         <div className="portal-card-body" style={{ padding: 0 }}>
           <table className="portal-table">

@@ -62,6 +62,10 @@ export default function MyLeave() {
   const [loading, setLoading] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [editingId, setEditingId] = useState<string | null>(null);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   const [formData, setFormData] = useState({
     startDate: '',
@@ -89,6 +93,8 @@ export default function MyLeave() {
     return reasonText.toLowerCase().includes(searchTerm.toLowerCase()) ||
       statusText.toLowerCase().includes(searchTerm.toLowerCase());
   });
+  const paginatedLeaves = filteredLeaves.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+  const totalPages = Math.ceil(filteredLeaves.length / itemsPerPage);
 
   const handleSave = async () => {
     if (!formData.startDate || !formData.endDate || !formData.reason) {
@@ -98,17 +104,45 @@ export default function MyLeave() {
 
     setLoading(true);
     try {
-      await api.post('/api/leave', formData);
-      showToast('Leave application submitted successfully', 'success');
+      if (editingId) {
+        await api.put(`/api/leave/${editingId}`, formData);
+        showToast('Leave application updated successfully', 'success');
+      } else {
+        await api.post('/api/leave', formData);
+        showToast('Leave application submitted successfully', 'success');
+      }
       fetchLeaves();
       setFormData({ startDate: '', endDate: '', reason: '' });
       setShowAddModal(false);
+      setEditingId(null);
     } catch (error) {
-      showToast('Failed to submit leave application', 'error');
+      showToast('Failed to save leave application', 'error');
     
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (window.confirm('Are you sure you want to delete this leave application?')) {
+      try {
+        await api.delete(`/api/leave/${id}`);
+        showToast('Leave application deleted', 'success');
+        fetchLeaves();
+      } catch (error) {
+        showToast('Failed to delete', 'error');
+      }
+    }
+  };
+
+  const handleEdit = (leave: any) => {
+    setEditingId(leave.id);
+    setFormData({
+      startDate: format(new Date(leave.startDate), 'yyyy-MM-dd'),
+      endDate: format(new Date(leave.endDate), 'yyyy-MM-dd'),
+      reason: leave.reason
+    });
+    setShowAddModal(true);
   };
 
   return (
@@ -170,7 +204,11 @@ export default function MyLeave() {
                 <i className="fas fa-print mr-1"></i> Print/PDF
               </button>
               <button 
-                onClick={() => setShowAddModal(true)}
+                onClick={() => {
+                  setEditingId(null);
+                  setFormData({ startDate: '', endDate: '', reason: '' });
+                  setShowAddModal(true);
+                }}
                 className="portal-btn-primary"
                 style={{ background: 'var(--school-primary, #0056b3)', borderColor: 'var(--school-primary, #0056b3)', fontSize: '0.9rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 16px' }}
               >
@@ -204,12 +242,12 @@ export default function MyLeave() {
                 </tr>
               </thead>
               <tbody>
-                {filteredLeaves.length === 0 ? (
+                {paginatedLeaves.length === 0 ? (
                   <tr><td colSpan={6} style={{ textAlign: 'center', padding: 30, color: '#a0aec0' }}>
                     <span>No leave records found.</span>
                   </td></tr>
                 ) : (
-                  filteredLeaves.map((leave) => (
+                  paginatedLeaves.map((leave) => (
                     <tr key={leave.id}>
                       <td>{leave.id.substring(0, 8)}</td>
                       <td>{format(new Date(leave.startDate), 'yyyy-MM-dd')}</td>
@@ -221,10 +259,10 @@ export default function MyLeave() {
                         </span>
                       </td>
                       <td>
-                        <button className="portal-btn-secondary" style={{ padding: '2px 6px', color: 'white', background: 'var(--portal-success)', border: 'none', marginRight: 5 }} onClick={() => alert('This feature is currently under development or disabled.')}>
+                        <button className="portal-btn-secondary" style={{ padding: '2px 6px', color: 'white', background: 'var(--portal-success)', border: 'none', marginRight: 5 }} onClick={() => handleEdit(leave)}>
                           <i className="fas fa-edit"></i>
                         </button>
-                        <button className="portal-btn-secondary" style={{ padding: '2px 6px', color: 'white', background: 'var(--portal-danger)', border: 'none' }} onClick={() => alert('This feature is currently under development or disabled.')}>
+                        <button className="portal-btn-secondary" style={{ padding: '2px 6px', color: 'white', background: 'var(--portal-danger)', border: 'none' }} onClick={() => handleDelete(leave.id)}>
                           <i className="fas fa-times"></i>
                         </button>
                       </td>
@@ -235,11 +273,11 @@ export default function MyLeave() {
             </table>
             
             <div style={{ marginTop: 15, display: 'flex', justifyContent: 'space-between', color: '#718096', fontSize: '0.9rem' }}>
-               <span>Showing 1 to {leaves.length} of {leaves.length} entries</span>
+               <span>Showing {filteredLeaves.length > 0 ? (currentPage - 1) * itemsPerPage + 1 : 0} to {Math.min(currentPage * itemsPerPage, filteredLeaves.length)} of {filteredLeaves.length} entries</span>
                <div>
-                  <button style={{ border: 'none', background: 'transparent', color: '#718096', cursor: 'pointer', marginRight: 10 }} onClick={() => alert('This feature is currently under development or disabled.')}>Previous</button>
-                  <span style={{ background: '#4299e1', color: 'white', padding: '2px 8px', borderRadius: '50%', margin: '0 5px' }}>1</span>
-                  <button style={{ border: 'none', background: 'transparent', color: '#718096', cursor: 'pointer', marginLeft: 10 }} onClick={() => alert('This feature is currently under development or disabled.')}>Next</button>
+                  <button style={{ border: 'none', background: 'transparent', color: '#718096', cursor: 'pointer', marginRight: 10 }} disabled={currentPage === 1} onClick={() => setCurrentPage(p => p - 1)}>Previous</button>
+                  <span style={{ background: '#4299e1', color: 'white', padding: '2px 8px', borderRadius: '50%', margin: '0 5px' }}>{currentPage}</span>
+                  <button style={{ border: 'none', background: 'transparent', color: '#718096', cursor: 'pointer', marginLeft: 10 }} disabled={currentPage === totalPages || filteredLeaves.length === 0} onClick={() => setCurrentPage(p => p + 1)}>Next</button>
                </div>
             </div>
           </div>
@@ -252,11 +290,14 @@ export default function MyLeave() {
           <div className="portal-modal-card" style={{ maxWidth: '600px' }}>
             <div className="portal-modal-header">
               <div>
-                <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 700 }}>APPLY FOR LEAVE</h3>
-                <p style={{ margin: '4px 0 0 0', fontSize: '0.85rem', color: '#64748b' }}>Submit a new leave application</p>
+                <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 700 }}>{editingId ? 'EDIT' : 'APPLY FOR'} LEAVE</h3>
+                <p style={{ margin: '4px 0 0 0', fontSize: '0.85rem', color: '#64748b' }}>{editingId ? 'Update your leave application' : 'Submit a new leave application'}</p>
               </div>
               <button 
-                onClick={() => setShowAddModal(false)}
+                onClick={() => {
+                  setShowAddModal(false);
+                  setEditingId(null);
+                }}
                 className="portal-btn-ghost"
                 style={{ padding: '6px', minWidth: 'auto' }}
               >
@@ -280,11 +321,14 @@ export default function MyLeave() {
               </div>
 
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
-                <button type="button" onClick={() => setShowAddModal(false)} className="portal-btn-neutral">
+                <button type="button" onClick={() => {
+                  setShowAddModal(false);
+                  setEditingId(null);
+                }} className="portal-btn-neutral">
                   Cancel
                 </button>
                 <button className="portal-btn-primary" style={{ background: 'var(--school-primary, #0056b3)', borderColor: 'var(--school-primary, #0056b3)' }} onClick={handleSave} disabled={loading}>
-                  {loading ? 'Saving...' : 'Submit Request'}
+                  {loading ? 'Saving...' : editingId ? 'Update Request' : 'Submit Request'}
                 </button>
               </div>
             </div>

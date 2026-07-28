@@ -18,6 +18,34 @@ export default function SupplierOrders() {
     showToast(`${action} action triggered for ${po}`, 'info');
   };
 
+  const handleExportCSV = () => {
+    const headers = ['PO Number', 'Description', 'Date', 'Items', 'Total Value', 'Status'];
+    const rows = orders.map(o => [
+      o.po,
+      `"${o.desc}"`,
+      o.date,
+      o.items,
+      o.total,
+      o.status
+    ]);
+    const csvContent = [
+      headers.join(','),
+      ...rows.map(e => e.join(','))
+    ].join('\n');
+    
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `Purchase_Orders_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    showToast('Orders exported to CSV', 'success');
+  };
+
   return (
     <PortalGate>
       <div className="portal-page-header">
@@ -48,7 +76,7 @@ export default function SupplierOrders() {
         <div className="portal-card-header">
           <h2><i className="fas fa-clipboard-list" style={{ marginRight: 8, color: 'var(--school-primary, #3182ce)' }}></i>Order Fulfilment List</h2>
           <div style={{ display: 'flex', gap: 10 }}>
-             <button className="portal-btn-secondary" style={{ padding: '6px 14px', fontSize: '0.8rem' }} onClick={() => alert('This feature is currently under development or disabled.')}><i className="fas fa-download"></i> Export CSV</button>
+             <button className="portal-btn-secondary" style={{ padding: '6px 14px', fontSize: '0.8rem' }} onClick={handleExportCSV}><i className="fas fa-download"></i> Export CSV</button>
           </div>
         </div>
         <div className="portal-card-body" style={{ padding: 0 }}>

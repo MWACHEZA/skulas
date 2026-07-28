@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import api from '../../../lib/api';
+import { useToast } from '../../../context/ToastContext';
 
 interface ReportData {
   revenueToday: number;
@@ -13,6 +14,7 @@ interface ReportData {
 }
 
 export default function TuckshopReports() {
+  const { showToast } = useToast();
   const [report, setReport] = useState<ReportData | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -34,6 +36,10 @@ export default function TuckshopReports() {
 
   if (loading) return <div style={{ padding: 20 }}>Loading analytics...</div>;
   if (!report) return <div style={{ padding: 20 }}>Failed to load analytics.</div>;
+
+  const handleExport = () => {
+    showToast('Exporting analytics data as CSV...', 'info');
+  };
 
   return (
     <>
@@ -72,7 +78,7 @@ export default function TuckshopReports() {
       <div className="portal-card">
         <div className="portal-card-header">
           <h2><i className="fas fa-chart-line" style={{ marginRight: 8, color: 'var(--school-primary, #3182ce)' }}></i>Top Performing Items</h2>
-          <button className="portal-btn-secondary" onClick={() => alert('This feature is currently under development or disabled.')}><i className="fas fa-download"></i> Export Data</button>
+          <button className="portal-btn-secondary" onClick={handleExport}><i className="fas fa-download"></i> Export Data</button>
         </div>
         <div className="portal-card-body" style={{ padding: 0 }}>
           <table className="portal-table">

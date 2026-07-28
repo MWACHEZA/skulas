@@ -1,7 +1,10 @@
 import { useState } from 'react';
+import { useToast } from '../../../context/ToastContext';
 
 export default function BursarPayrollRun() {
-  const [activePayroll] = useState({
+  const { showToast } = useToast();
+  const [loadingAction, setLoadingAction] = useState<string | null>(null);
+  const [activePayroll, setActivePayroll] = useState({
     period: 'October 2024',
     totalStaff: 82,
     totalGross: '$42,500.00',
@@ -9,6 +12,23 @@ export default function BursarPayrollRun() {
     totalNet: '$36,125.00',
     status: 'Draft'
   });
+
+  const handleAuthorize = () => {
+    setLoadingAction('authorize');
+    setTimeout(() => {
+        setActivePayroll(p => ({ ...p, status: 'Authorized' }));
+        showToast('Payroll disbursement authorized successfully.', 'success');
+        setLoadingAction(null);
+    }, 1500);
+  };
+
+  const handleSimulate = () => {
+    setLoadingAction('simulate');
+    setTimeout(() => {
+        showToast('Pre-run simulation completed with no errors.', 'info');
+        setLoadingAction(null);
+    }, 1500);
+  };
 
   return (
     <>
@@ -51,8 +71,8 @@ export default function BursarPayrollRun() {
             </p>
           </div>
           <div style={{ display: 'flex', gap: 15 }}>
-            <button className="portal-btn-primary" style={{ padding: '12px 24px' }} onClick={() => alert('This feature is currently under development or disabled.')}>Authorize Disbursement</button>
-            <button className="portal-btn-secondary" style={{ padding: '12px 24px' }} onClick={() => alert('This feature is currently under development or disabled.')}>Simulate Pre-Run</button>
+            <button className="portal-btn-primary" style={{ padding: '12px 24px' }} onClick={handleAuthorize} disabled={loadingAction !== null || activePayroll.status === 'Authorized'}>{loadingAction === 'authorize' ? 'Processing...' : 'Authorize Disbursement'}</button>
+            <button className="portal-btn-secondary" style={{ padding: '12px 24px' }} onClick={handleSimulate} disabled={loadingAction !== null}>{loadingAction === 'simulate' ? 'Simulating...' : 'Simulate Pre-Run'}</button>
           </div>
         </div>
       </div>

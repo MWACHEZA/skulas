@@ -3,6 +3,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { format } from 'date-fns';
 import api from '../../../../lib/api';
 import { useTerminology } from '../../../../hooks/useTerminology';
+import { useToast } from '../../../../context/ToastContext';
 
 interface Vacancy {
   id: string;
@@ -15,6 +16,7 @@ interface Vacancy {
 
 export default function ManageVacancies() {
   const { t } = useTerminology();
+  const { showToast } = useToast();
   const [vacancies, setVacancies] = useState<Vacancy[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -79,10 +81,10 @@ export default function ManageVacancies() {
 
       if (editingId) {
         await api.put(`/api/hr/vacancies/${editingId}`, payload);
-        alert('Vacancy updated successfully!');
+        showToast('Vacancy updated successfully!', 'success');
       } else {
         await api.post('/api/hr/vacancies', payload);
-        alert('Vacancy added successfully!');
+        showToast('Vacancy added successfully!', 'success');
       }
       setIsModalOpen(false);
       setEditingId(null);
@@ -90,7 +92,7 @@ export default function ManageVacancies() {
       fetchVacancies();
     } catch (error) {
       console.error('Failed to add vacancy', error);
-      alert(`Failed to ${editingId ? 'update' : 'add'} vacancy`);
+      showToast(`Failed to ${editingId ? 'update' : 'add'} vacancy`, 'error');
     }
   };
 
@@ -373,7 +375,7 @@ export default function ManageVacancies() {
                     <label className="portal-label">Skills <span style={{ color: 'red' }}>*</span></label>
                     <div style={{ display: 'flex', gap: '10px' }}>
                       <input {...register('skills', { required: true })} type="text" className="portal-input" />
-                      <button type="button" className="portal-btn-ghost" style={{ color: 'var(--school-primary, #0056b3)', whiteSpace: 'nowrap' }} onClick={() => alert('This feature is currently under development or disabled.')}><i className="fas fa-plus-circle"></i> Add</button>
+                      <button type="button" className="portal-btn-ghost" style={{ color: 'var(--school-primary, #0056b3)', whiteSpace: 'nowrap' }} onClick={() => showToast('Skill tagging will be available in next release', 'info')}><i className="fas fa-plus-circle"></i> Add</button>
                     </div>
                   </div>
 
@@ -385,7 +387,7 @@ export default function ManageVacancies() {
                     <label className="portal-label">Interview rounds <span style={{ color: 'red' }}>*</span></label>
                     <div style={{ display: 'flex', gap: '10px' }}>
                       <input {...register('interviewRounds', { required: true })} type="number" defaultValue={1} className="portal-input" />
-                      <button type="button" className="portal-btn-ghost" style={{ color: 'var(--school-primary, #0056b3)', whiteSpace: 'nowrap' }} onClick={() => alert('This feature is currently under development or disabled.')}><i className="fas fa-plus-circle"></i> Add</button>
+                      <button type="button" className="portal-btn-ghost" style={{ color: 'var(--school-primary, #0056b3)', whiteSpace: 'nowrap' }} onClick={() => showToast('Advanced interview round config coming soon', 'info')}><i className="fas fa-plus-circle"></i> Add</button>
                     </div>
                   </div>
                   <div>
@@ -426,14 +428,14 @@ export default function ManageVacancies() {
                         <option value="Part Time">Part Time</option>
                         <option value="Contract">Contract</option>
                       </select>
-                      <button type="button" className="portal-btn-primary" style={{ background: 'var(--school-primary, #0056b3)', borderColor: 'var(--school-primary, #0056b3)', padding: '10px 16px' }} onClick={() => alert('This feature is currently under development or disabled.')}><i className="fas fa-plus"></i></button>
+                      <button type="button" className="portal-btn-primary" style={{ background: 'var(--school-primary, #0056b3)', borderColor: 'var(--school-primary, #0056b3)', padding: '10px 16px' }} onClick={() => showToast('Job type definitions coming soon', 'info')}><i className="fas fa-plus"></i></button>
                     </div>
                   </div>
                   <div>
                     <label className="portal-label">Work experience <span style={{ color: 'red' }}>*</span></label>
                     <div style={{ display: 'flex', gap: '10px' }}>
                       <input {...register('workExperience', { required: true })} type="text" className="portal-input" />
-                      <button type="button" className="portal-btn-primary" style={{ background: 'var(--school-primary, #0056b3)', borderColor: 'var(--school-primary, #0056b3)', padding: '10px 16px' }} onClick={() => alert('This feature is currently under development or disabled.')}><i className="fas fa-plus"></i></button>
+                      <button type="button" className="portal-btn-primary" style={{ background: 'var(--school-primary, #0056b3)', borderColor: 'var(--school-primary, #0056b3)', padding: '10px 16px' }} onClick={() => showToast('Experience level definitions coming soon', 'info')}><i className="fas fa-plus"></i></button>
                     </div>
                   </div>
 

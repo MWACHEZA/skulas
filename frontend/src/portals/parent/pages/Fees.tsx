@@ -24,6 +24,14 @@ export default function ParentFees() {
     }, 1500);
   };
 
+  const handlePayment = (method: string) => {
+    setLoading(true);
+    setTimeout(() => {
+        showToast(`Redirecting to ${method} payment gateway...`, 'info');
+        setLoading(false);
+    }, 1500);
+  };
+
   return (
     <>
       <div className="portal-page-header">
@@ -55,14 +63,14 @@ export default function ParentFees() {
             </div>
             <div className="portal-card-body">
               <div style={{ display: 'grid', gap: 12 }}>
-                <button className="portal-btn-secondary" style={{ padding: '15px', justifyContent: 'flex-start', background: '#f8f9ff', borderColor: 'var(--school-primary, #3182ce)' }} onClick={() => alert('This feature is currently under development or disabled.')}>
+                <button className="portal-btn-secondary" style={{ padding: '15px', justifyContent: 'flex-start', background: '#f8f9ff', borderColor: 'var(--school-primary, #3182ce)' }} onClick={() => handlePayment('Instant Bank Transfer')} disabled={loading}>
                     <i className="fas fa-university fa-lg" style={{ color: 'var(--school-primary, #3182ce)', width: 24 }}></i>
                     <div style={{ textAlign: 'left' }}>
                         <div style={{ fontWeight: 700, fontSize: '0.9rem' }}>Instant Bank Transfer</div>
                         <div style={{ fontSize: '0.75rem', opacity: 0.7 }}>Secure immediate settlement</div>
                     </div>
                 </button>
-                <button className="portal-btn-secondary" style={{ padding: '15px', justifyContent: 'flex-start' }} onClick={() => alert('This feature is currently under development or disabled.')}>
+                <button className="portal-btn-secondary" style={{ padding: '15px', justifyContent: 'flex-start' }} onClick={() => handlePayment('Mobile Money')} disabled={loading}>
                     <i className="fas fa-mobile-alt fa-lg" style={{ color: 'var(--portal-success)', width: 24 }}></i>
                     <div style={{ textAlign: 'left' }}>
                         <div style={{ fontWeight: 700, fontSize: '0.9rem' }}>Mobile Money (Ecocash/Innbucks)</div>
