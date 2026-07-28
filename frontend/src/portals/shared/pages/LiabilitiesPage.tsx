@@ -59,7 +59,7 @@ const LiabilitiesPage: React.FC = () => {
   };
 
   const handleDeleteCategory = async (id: string) => {
-    if (!(await toastConfirm('Are you sure you want to purge this classification category? Existing records using this category may be impacted.'))) return;
+    if (!window.confirm('Are you sure you want to purge this classification category? Existing records using this category may be impacted.')) return;
     try {
       await api.delete(`/api/accounts/categories/${id}`);
       toast.success('Classification category purged');
@@ -145,9 +145,13 @@ const LiabilitiesPage: React.FC = () => {
 
   const handleSettle = async () => {
     if (!showSettleModal || !settleAmount) return;
+    const parsedAmount = parseFloat(settleAmount);
+    if (isNaN(parsedAmount) || parsedAmount <= 0) {
+      return toast.error('Please enter a valid settlement amount greater than zero.');
+    }
     try {
       await api.patch(`/api/accounts/liabilities/${showSettleModal.id}/settle`, {
-        amount: parseFloat(settleAmount)
+        amount: parsedAmount
       });
       toast.success('Liability settlement archived');
       setShowSettleModal(null);
@@ -159,7 +163,7 @@ const LiabilitiesPage: React.FC = () => {
   };
 
   const handleDelete = async (id: string) => {
-    if (!(await toastConfirm('Are you sure you want to purge this liability record? This action is irreversible.'))) return;
+    if (!window.confirm('Are you sure you want to purge this liability record? This action is irreversible.')) return;
     try {
       await api.delete(`/api/accounts/liabilities/${id}`);
       toast.success('Record purged from ledger');

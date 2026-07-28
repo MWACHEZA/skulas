@@ -96,6 +96,7 @@ export default function FeeReminderLogsPage() {
   };
 
   const handleRetry = async (id: string) => {
+    if (!window.confirm('Re-send this fee reminder notification to the student? This will trigger an SMS/email immediately.')) return;
     try {
       await api.post(`/api/fees/reminder-logs/${id}/retry`);
       toast.success('Notification re-transmission authorized');
@@ -104,6 +105,7 @@ export default function FeeReminderLogsPage() {
       toast.error('Re-transmission request failed');
     }
   };
+
 
   return (
     <div className="portal-container">

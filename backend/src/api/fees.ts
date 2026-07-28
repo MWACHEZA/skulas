@@ -659,8 +659,8 @@ router.post('/bulk-invoices', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN')
       }
     });
 
-    // Apply fees to target students
-    const studentFilter: any = { schoolId };
+    // Apply fees to target students (enrolled only — never bill withdrawn/alumni)
+    const studentFilter: any = { schoolId, status: 'Enrolled' };
     if (targetType === 'Boarders Only') studentFilter.boardingStatus = 'Boarder';
     if (targetType === 'Day Students Only') studentFilter.boardingStatus = 'Day';
 
@@ -668,6 +668,7 @@ router.post('/bulk-invoices', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN')
       where: studentFilter,
       select: { id: true }
     });
+
 
     if (students.length > 0) {
       await prisma.fee.createMany({

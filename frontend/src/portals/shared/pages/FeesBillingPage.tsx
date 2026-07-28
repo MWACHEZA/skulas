@@ -103,6 +103,7 @@ export default function FeesBillingPage() {
   const [paymentStatus, setPaymentStatus] = useState('unpaid');
   const [paymentMethod, setPaymentMethod] = useState('');
   const [description, setDescription] = useState('');
+  const [paymentMethods, setPaymentMethods] = useState<{ id: string; name: string }[]>([]);
 
   // Custom Invoicing State
   const [customFeeGroupId, setCustomFeeGroupId] = useState('');
@@ -122,13 +123,15 @@ export default function FeesBillingPage() {
   const fetchInitialData = async () => {
     try {
       setLoading(true);
-      const [groupsRes, classesRes] = await Promise.all([
+      const [groupsRes, classesRes, methodsRes] = await Promise.all([
         api.get('/api/fees/groups'),
-        api.get('/api/classes')
+        api.get('/api/classes'),
+        api.get('/api/finance/payment-methods')
       ]);
       const groups = Array.isArray(groupsRes.data) ? groupsRes.data : [];
       setFeeGroups(groups);
       setClasses(Array.isArray(classesRes.data) ? classesRes.data : []);
+      setPaymentMethods(Array.isArray(methodsRes.data) ? methodsRes.data.filter((m: any) => m.isActive !== false) : []);
       
       if (groups.length > 0) {
         const uniqueYears = Array.from(new Set(groups.map((g: any) => g.year))) as number[];
@@ -433,9 +436,18 @@ export default function FeesBillingPage() {
                     <label className="portal-label">Payment Method</label>
                     <select className="portal-input" value={paymentMethod} onChange={e => setPaymentMethod(e.target.value)} style={{ height: '48px' }}>
                       <option value="">-- Select Method --</option>
-                      <option value="Cash">Cash</option>
-                      <option value="Bank Transfer">Bank Transfer</option>
-                      <option value="Ecocash">Ecocash</option>
+                      {paymentMethods.length > 0
+                        ? paymentMethods.map(m => (
+                            <option key={m.id} value={m.name}>{m.name}</option>
+                          ))
+                        : (
+                            <>
+                              <option value="Cash">Cash</option>
+                              <option value="Bank Transfer">Bank Transfer</option>
+                              <option value="Ecocash">Ecocash</option>
+                            </>
+                          )
+                      }
                     </select>
                   </div>
                 )}

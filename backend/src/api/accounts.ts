@@ -278,65 +278,6 @@ router.delete('/expenses/:id', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'
   }
 });
 
-// ═══════════ PAYMENT METHODS (BANKING/MOBILE) ═══════════
-
-router.get('/payment-methods', requireAuth, async (req: AuthRequest, res: Response) => {
-  try {
-    const schoolId = req.user!.schoolId!;
-    const methods = await prisma.paymentMethod.findMany({
-      where: { schoolId },
-      orderBy: { createdAt: 'desc' }
-    });
-    res.json(methods);
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch payment methods' });
-  }
-});
-
-router.post('/payment-methods', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req: AuthRequest, res: Response) => {
-  try {
-    const schoolId = req.user!.schoolId!;
-    const validatedData = PaymentMethodSchema.parse(req.body);
-
-    const method = await prisma.paymentMethod.create({
-      data: {
-        ...validatedData,
-        schoolId
-      }
-    });
-
-    res.status(201).json(method);
-  } catch (error: any) {
-    res.status(400).json({ error: error.message || 'Failed to create payment method' });
-  }
-});
-
-router.patch('/payment-methods/:id', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req: AuthRequest, res: Response) => {
-  try {
-    const { id } = req.params;
-    const schoolId = req.user!.schoolId!;
-    const validatedData = PaymentMethodSchema.partial().parse(req.body);
-
-    const method = await prisma.paymentMethod.updateMany({
-      where: { id: id as string, schoolId },
-      data: validatedData
-    });
-
-    res.json(method);
-  } catch (error: any) {
-    res.status(400).json({ error: error.message || 'Failed to update payment method' });
-  }
-});
-
-router.delete('/payment-methods/:id', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req: AuthRequest, res: Response) => {
-  try {
-    const { id } = req.params;
-    const schoolId = req.user!.schoolId!;
-    await prisma.paymentMethod.deleteMany({ where: { id: id as string, schoolId } });
-    res.json({ success: true });
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to delete payment method' });
-  }
-});
 
 export default router;
+

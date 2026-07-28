@@ -49,7 +49,7 @@ const IncomePage: React.FC = () => {
   };
 
   const handleDeleteCategory = async (id: string) => {
-    if (!(await toastConfirm('Are you sure you want to purge this classification category? Existing records using this category may be impacted.'))) return;
+    if (!window.confirm('Are you sure you want to purge this classification category? Existing records using this category may be impacted.')) return;
     try {
       await api.delete(`/api/accounts/categories/${id}`);
       toast.success('Classification category purged');
@@ -149,7 +149,7 @@ const IncomePage: React.FC = () => {
   };
 
   const handleDelete = async (id: string) => {
-    if (!(await toastConfirm('Are you sure you want to delete this income record? This action cannot be undone.'))) return;
+    if (!window.confirm('Are you sure you want to delete this income record? This action cannot be undone.')) return;
     try {
       await api.delete(`/api/accounts/income/${id}`);
       toast.success('Record purged from ledger');

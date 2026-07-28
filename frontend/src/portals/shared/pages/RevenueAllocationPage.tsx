@@ -133,6 +133,18 @@ export default function RevenueAllocationPage() {
     }
   };
 
+  const handleDelete = async (id: string) => {
+    if (!window.confirm('Are you sure you want to delete this revenue allocation strategy? This action cannot be undone.')) return;
+    try {
+      await api.delete(`/api/finance/revenue-allocations/${id}`);
+      setAllocations(allocations.filter(a => a.id !== id));
+      toast.success('Allocation strategy removed');
+    } catch (error) {
+      toast.error('Failed to delete allocation strategy');
+    }
+  };
+
+
   return (
     <div className="portal-container">
       <div className="portal-page-header">
@@ -389,13 +401,23 @@ export default function RevenueAllocationPage() {
                     </span>
                   </td>
                   <td style={{ textAlign: 'right' }}>
-                    <button 
-                      className={`portal-btn-${alloc.isActive ? 'ghost' : 'primary'}`}
-                      style={{ padding: '8px 16px', fontSize: '0.75rem', fontWeight: 900, borderRadius: '10px' }}
-                      onClick={() => handleToggleActive(alloc.id, alloc.isActive)}
-                    >
-                      {alloc.isActive ? 'Deactivate' : 'Authorize'}
-                    </button>
+                    <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+                      <button 
+                        className={`portal-btn-${alloc.isActive ? 'ghost' : 'primary'}`}
+                        style={{ padding: '8px 16px', fontSize: '0.75rem', fontWeight: 900, borderRadius: '10px' }}
+                        onClick={() => handleToggleActive(alloc.id, alloc.isActive)}
+                      >
+                        {alloc.isActive ? 'Deactivate' : 'Authorize'}
+                      </button>
+                      <button 
+                        className="portal-btn-ghost"
+                        style={{ padding: '8px', fontSize: '0.75rem', color: '#dc2626', borderRadius: '10px' }}
+                        title="Delete Allocation"
+                        onClick={() => handleDelete(alloc.id)}
+                      >
+                        <i className="fas fa-trash"></i>
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}

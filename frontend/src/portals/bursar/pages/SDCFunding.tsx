@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '../../../lib/api';
 import { useTerminology } from '../../../hooks/useTerminology';
+import { formatCurrency } from '../../../utils/formatters';
 
 interface ProjectFunding {
   id: string;
@@ -112,13 +113,7 @@ export default function BursarSDCFunding() {
   const totalDisbursed = funding.reduce((sum, p) => sum + (p.spent || 0), 0);
   const totalPending = totalBudget - totalDisbursed;
 
-  const formatCurrency = (val: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      maximumFractionDigits: 0
-    }).format(val);
-  };
+
 
   return (
     <>

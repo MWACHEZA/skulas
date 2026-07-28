@@ -68,8 +68,9 @@ export default function PaymentMethodsPage() {
     setSaving(true);
     try {
       if (editingMethod.id) {
-        const { data } = await api.post('/api/finance/payment-methods', editingMethod);
-        setMethods([...methods.filter(m => m.id !== editingMethod.id), data]);
+        // FIX: was calling POST (creates new) — must call PATCH to update existing
+        const { data } = await api.patch(`/api/finance/payment-methods/${editingMethod.id}`, editingMethod);
+        setMethods(methods.map(m => m.id === editingMethod.id ? data : m));
       } else {
         const { data } = await api.post('/api/finance/payment-methods', editingMethod);
         setMethods([data, ...methods]);
@@ -86,7 +87,7 @@ export default function PaymentMethodsPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!(await toastConfirm('Are you sure you want to purge this institutional account? Incoming payment reconciliation may be impacted.'))) return;
+    if (!window.confirm('Are you sure you want to purge this institutional account? Incoming payment reconciliation may be impacted.')) return;
 
     try {
       await api.delete(`/api/finance/payment-methods/${id}`);

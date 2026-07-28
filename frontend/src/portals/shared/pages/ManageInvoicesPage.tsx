@@ -99,6 +99,7 @@ export default function ManageInvoicesPage() {
   const [paymentDate, setPaymentDate] = useState(new Date().toISOString().split('T')[0]);
   const [processingPayment, setProcessingPayment] = useState(false);
   const [idempotencyKey, setIdempotencyKey] = useState('');
+  const [paymentMethods, setPaymentMethods] = useState<{ id: string; name: string }[]>([]);
 
   const printRef = useRef<HTMLDivElement>(null);
   const handlePrint = useReactToPrint({
@@ -109,7 +110,15 @@ export default function ManageInvoicesPage() {
     fetchInvoices();
     fetchTemplate();
     fetchSchool();
+    fetchPaymentMethods();
   }, []);
+
+  const fetchPaymentMethods = async () => {
+    try {
+      const { data } = await api.get('/api/finance/payment-methods');
+      setPaymentMethods(Array.isArray(data) ? data.filter((m: any) => m.isActive !== false) : []);
+    } catch { /* silent — fallback options still shown */ }
+  };
 
   const fetchTemplate = async () => {
     try {
@@ -418,10 +427,19 @@ export default function ManageInvoicesPage() {
                     required
                   >
                     <option value="">-- Select Method --</option>
-                    <option value="Cash">Cash</option>
-                    <option value="Bank Transfer">Bank Transfer</option>
-                    <option value="Ecocash">Ecocash</option>
-                    <option value="Card">Card</option>
+                    {paymentMethods.length > 0
+                      ? paymentMethods.map(m => (
+                          <option key={m.id} value={m.name}>{m.name}</option>
+                        ))
+                      : (
+                          <>
+                            <option value="Cash">Cash</option>
+                            <option value="Bank Transfer">Bank Transfer</option>
+                            <option value="Ecocash">Ecocash</option>
+                            <option value="Card">Card</option>
+                          </>
+                        )
+                    }
                   </select>
                 </div>
                 <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
@@ -567,6 +585,7 @@ export default function ManageInvoicesPage() {
                               <tr style={{ background: '#f8fafc' }}>
                                 <th style={{ padding: '10px 12px', textAlign: 'left', fontSize: '0.85rem', color: '#64748b' }}>Date</th>
                                 <th style={{ padding: '10px 12px', textAlign: 'left', fontSize: '0.85rem', color: '#64748b' }}>Method</th>
+                                <th style={{ padding: '10px 12px', textAlign: 'left', fontSize: '0.85rem', color: '#64748b' }}>Reference</th>
                                 <th style={{ padding: '10px 12px', textAlign: 'right', fontSize: '0.85rem', color: '#64748b' }}>Amount</th>
                               </tr>
                             </thead>
@@ -575,6 +594,7 @@ export default function ManageInvoicesPage() {
                                 <tr key={p.id}>
                                   <td style={{ padding: '10px 12px', borderBottom: '1px solid #e2e8f0', fontSize: '0.9rem', color: '#333' }}>{new Date(p.date).toLocaleDateString()}</td>
                                   <td style={{ padding: '10px 12px', borderBottom: '1px solid #e2e8f0', fontSize: '0.9rem', color: '#333' }}>{p.paymentMode}</td>
+                                  <td style={{ padding: '10px 12px', borderBottom: '1px solid #e2e8f0', fontSize: '0.9rem', color: '#94a3b8', fontFamily: 'monospace' }}>{(p as any).reference || '—'}</td>
                                   <td style={{ padding: '10px 12px', borderBottom: '1px solid #e2e8f0', fontSize: '0.9rem', color: '#333', textAlign: 'right', fontWeight: 600 }}>{formatCurrency(p.amount)}</td>
                                 </tr>
                               ))}

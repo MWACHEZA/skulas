@@ -143,20 +143,27 @@ router.get('/bursar', requireAuth, async (req: AuthRequest, res: Response) => {
       }),
     ]);
 
-    const totalBilled = feeStats.reduce((s, f) => s + (f._sum.amount ?? 0), 0);
-    const totalPaid = feeStats.reduce((s, f) => s + (f._sum.paid ?? 0), 0);
-    const totalOutstanding = totalBilled - totalPaid;
+    const totalFeesBilled    = feeStats.reduce((s, f) => s + (f._sum.amount ?? 0), 0);
+    const totalFeesCollected = feeStats.reduce((s, f) => s + (f._sum.paid   ?? 0), 0);
+    const outstandingFees    = Math.max(0, totalFeesBilled - totalFeesCollected);
 
     res.json({
-      stats: { totalBilled, totalPaid, totalOutstanding, studentCount },
+      // Top-level fields the frontend reads directly
+      totalFeesBilled,
+      totalFeesCollected,
+      outstandingFees,
+      studentCount,
+      // Status breakdown array (unchanged shape)
       feesByStatus: feeStats,
-      recentFees,
+      // Recent fee records — aliased to what the frontend expects
+      recentPayments: recentFees,
     });
   } catch (e) {
     console.error(e);
     res.status(500).json({ error: 'Failed to fetch bursar dashboard' });
   }
 });
+
 
 /**
  * @route   GET /api/dashboard/library

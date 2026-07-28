@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { useTerminology } from '../../../hooks/useTerminology';
+import { formatCurrency } from '../../../utils/formatters';
 
 export default function AdminFees() {
   const { t } = useTerminology();
@@ -32,9 +33,7 @@ export default function AdminFees() {
     }
   };
 
-  const formatCurrency = (val: number) => {
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(val);
-  };
+
 
   if (loading) {
     return (
