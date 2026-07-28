@@ -5,6 +5,7 @@ import { useLessonReminder } from '../../../hooks/useLessonReminder';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useTerminology } from '../../../hooks/useTerminology';
 import MaintenanceRequestModal from '../../../components/shared/MaintenanceRequestModal';
+import { formatCurrency } from '../../../utils/formatters';
 
 interface DashboardData {
   student: { id: string; name: string; studentId: string; class: { name: string; level: string } | null };
@@ -105,7 +106,7 @@ export default function StudentDashboard() {
         <div className="portal-stat-card">
           <div className="portal-stat-icon red"><i className="fas fa-money-bill-wave"></i></div>
           <div className="portal-stat-info">
-            <h3>${data.stats.feeBalance.toFixed(0)}</h3>
+            <h3>{formatCurrency(data.stats.feeBalance)}</h3>
             <p>Fee Balance</p>
           </div>
         </div>
@@ -210,8 +211,8 @@ export default function StudentDashboard() {
                 {data.fees.map((f, i) => (
                   <tr key={i}>
                     <td>{f.term}</td>
-                    <td>${f.amount}</td>
-                    <td>${f.paid}</td>
+                    <td>{formatCurrency(f.amount)}</td>
+                    <td>{formatCurrency(f.paid)}</td>
                     <td><span className={`portal-badge ${feeStatusColor(f.status)}`}>{f.status}</span></td>
                   </tr>
                 ))}

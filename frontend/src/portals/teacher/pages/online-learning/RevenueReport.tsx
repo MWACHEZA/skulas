@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../../../lib/api';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { formatCurrency } from '../../../../utils/formatters';
 
 export default function RevenueReport() {
   const [report, setReport] = useState<any>(null);
@@ -38,19 +39,19 @@ export default function RevenueReport() {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20, marginBottom: 40, textAlign: 'center' }}>
             <div>
               <h1 style={{ fontSize: '2.5rem', color: '#4a5568', margin: '0 0 5px 0' }}>
-                Z${report.lifetimeEarnings.toFixed(2)} <i className="fas fa-arrow-up" style={{ color: 'var(--portal-success)', fontSize: '1.2rem' }}></i>
+                {formatCurrency(report.lifetimeEarnings, 'Z$')} <i className="fas fa-arrow-up" style={{ color: 'var(--portal-success)', fontSize: '1.2rem' }}></i>
               </h1>
               <p style={{ color: '#718096', margin: 0 }}>Lifetime earnings as of {new Date().toLocaleDateString()}</p>
             </div>
             <div>
               <h1 style={{ fontSize: '2.5rem', color: '#4a5568', margin: '0 0 5px 0' }}>
-                Z${report.thisMonthEarnings.toFixed(2)} <i className="fas fa-arrow-up" style={{ color: 'var(--portal-success)', fontSize: '1.2rem' }}></i>
+                {formatCurrency(report.thisMonthEarnings, 'Z$')} <i className="fas fa-arrow-up" style={{ color: 'var(--portal-success)', fontSize: '1.2rem' }}></i>
               </h1>
               <p style={{ color: '#718096', margin: 0 }}>This month earnings</p>
             </div>
             <div>
               <h1 style={{ fontSize: '2.5rem', color: '#4a5568', margin: '0 0 5px 0' }}>
-                Z${report.lifetimeEarnings.toFixed(2)} <i className="fas fa-arrow-up" style={{ color: 'var(--portal-success)', fontSize: '1.2rem' }}></i>
+                {formatCurrency(report.lifetimeEarnings, 'Z$')} <i className="fas fa-arrow-up" style={{ color: 'var(--portal-success)', fontSize: '1.2rem' }}></i>
               </h1>
               <p style={{ color: '#718096', margin: 0 }}>Total earnings received as of {new Date().toLocaleDateString()}</p>
             </div>
@@ -105,7 +106,7 @@ export default function RevenueReport() {
                       )}
                     </td>
                     <td style={{ padding: '15px 20px', borderBottom: '1px solid #e2e8f0' }}>
-                      {data.courseRevenue > 0 ? `Z$${data.courseRevenue}` : '---'}
+                      {data.courseRevenue > 0 ? formatCurrency(data.courseRevenue, 'Z$') : '---'}
                     </td>
                     <td style={{ padding: '15px 20px', borderBottom: '1px solid #e2e8f0' }}>
                       {isCurrentMonth ? <i className="fas fa-circle-notch fa-spin" style={{ color: '#a0aec0' }}></i> : 

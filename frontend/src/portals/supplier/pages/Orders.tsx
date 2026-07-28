@@ -1,6 +1,7 @@
 import { useToast } from '../../../context/ToastContext';
 import { useAuth } from '../../../contexts/AuthContext';
 import PortalGate from '../../../components/portals/shared/PortalGate';
+import { formatCurrency } from '../../../utils/formatters';
 
 export default function SupplierOrders() {
   const { showToast } = useToast();
@@ -39,7 +40,7 @@ export default function SupplierOrders() {
         </div>
         <div className="portal-stat-card">
           <div className="portal-stat-icon purple"><i className="fas fa-dollar-sign"></i></div>
-          <div className="portal-stat-info"><h3>${orders.reduce((acc, o) => acc + o.total, 0).toLocaleString()}</h3><p>Total Value</p></div>
+          <div className="portal-stat-info"><h3>{formatCurrency(orders.reduce((acc, o) => acc + o.total, 0))}</h3><p>Total Value</p></div>
         </div>
       </div>
 
@@ -71,7 +72,7 @@ export default function SupplierOrders() {
                     <div style={{ fontSize: '0.75rem', color: '#718096' }}>Issued: {o.date}</div>
                   </td>
                   <td>{o.items} units</td>
-                  <td style={{ fontWeight: 700 }}>${o.total.toLocaleString()}</td>
+                  <td style={{ fontWeight: 700 }}>{formatCurrency(o.total)}</td>
                   <td>
                     <span className={`portal-badge ${
                       o.status === 'Approved' ? 'success' : 

@@ -1,5 +1,6 @@
 import { useAuth } from '../../../contexts/AuthContext';
 import PortalGate from '../../../components/portals/shared/PortalGate';
+import { formatCurrency } from '../../../utils/formatters';
 
 export default function SupplierInvoices() {
   const { activeEntity } = useAuth();
@@ -30,7 +31,7 @@ export default function SupplierInvoices() {
                 <tr key={inv.no}>
                   <td style={{ fontWeight: 600 }}>{inv.no}</td>
                   <td style={{ color: 'var(--portal-primary)' }}>{inv.po}</td>
-                  <td style={{ fontWeight: 700 }}>${inv.amount.toLocaleString()}</td>
+                  <td style={{ fontWeight: 700 }}>{formatCurrency(inv.amount)}</td>
                   <td style={{ color: '#718096' }}>{inv.due}</td>
                   <td><span className={`portal-badge ${inv.status === 'paid' ? 'success' : 'warning'}`}>{inv.status}</span></td>
                 </tr>

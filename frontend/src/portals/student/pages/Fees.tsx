@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
+import { formatCurrency } from '../../../utils/formatters';
 
 interface Fee {
   term: string;
@@ -64,15 +65,15 @@ export default function StudentFees() {
       <div className="portal-stats-grid">
         <div className="portal-stat-card">
           <div className="portal-stat-icon blue"><i className="fas fa-file-invoice-dollar"></i></div>
-          <div className="portal-stat-info"><h3>${totalBilled}</h3><p>Total Billed</p></div>
+          <div className="portal-stat-info"><h3>{formatCurrency(totalBilled)}</h3><p>Total Billed</p></div>
         </div>
         <div className="portal-stat-card">
           <div className="portal-stat-icon green"><i className="fas fa-check-circle"></i></div>
-          <div className="portal-stat-info"><h3>${totalPaid}</h3><p>Total Paid</p></div>
+          <div className="portal-stat-info"><h3>{formatCurrency(totalPaid)}</h3><p>Total Paid</p></div>
         </div>
         <div className="portal-stat-card">
           <div className="portal-stat-icon red"><i className="fas fa-exclamation-triangle"></i></div>
-          <div className="portal-stat-info"><h3>${outstanding}</h3><p>Outstanding</p></div>
+          <div className="portal-stat-info"><h3>{formatCurrency(outstanding)}</h3><p>Outstanding</p></div>
         </div>
         <div className="portal-stat-card">
           <div className="portal-stat-icon teal"><i className="fas fa-percentage"></i></div>
@@ -86,7 +87,7 @@ export default function StudentFees() {
       {outstanding > 0 && (
         <div className="portal-alert error" style={{ marginBottom: 20 }}>
           <i className="fas fa-exclamation-circle"></i>
-          You have an outstanding balance of <strong>${outstanding}</strong>. Please contact the Bursar's office.
+          You have an outstanding balance of <strong>{formatCurrency(outstanding)}</strong>. Please contact the Bursar's office.
         </div>
       )}
 
@@ -109,10 +110,10 @@ export default function StudentFees() {
                   <tr key={i}>
                     <td style={{ fontWeight: 600 }}>{f.term}</td>
                     <td>{f.year}</td>
-                    <td>${f.amount}</td>
-                    <td style={{ color: 'var(--portal-success)', fontWeight: 600 }}>${f.paid}</td>
+                    <td>{formatCurrency(f.amount)}</td>
+                    <td style={{ color: 'var(--portal-success)', fontWeight: 600 }}>{formatCurrency(f.paid)}</td>
                     <td style={{ color: f.amount - f.paid > 0 ? 'var(--portal-danger)' : 'var(--portal-success)', fontWeight: 700 }}>
-                      ${f.amount - f.paid}
+                      {formatCurrency(f.amount - f.paid)}
                     </td>
                     <td><span className={`portal-badge ${statusColors[f.status] || 'neutral'}`}>{f.status}</span></td>
                   </tr>
@@ -213,7 +214,7 @@ export default function StudentFees() {
             <div className="portal-modal-body" style={{ padding: '20px' }}>
               <div style={{ background: '#f8fafc', padding: '15px', borderRadius: '8px', marginBottom: '20px', border: '1px solid #e2e8f0' }}>
                 <div style={{ fontSize: '0.9rem', color: '#64748b', marginBottom: '5px' }}>Amount Due</div>
-                <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#1e293b' }}>${outstanding.toFixed(2)}</div>
+                <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#1e293b' }}>{formatCurrency(outstanding)}</div>
               </div>
               
               <div className="portal-form-group" style={{ marginBottom: '20px' }}>

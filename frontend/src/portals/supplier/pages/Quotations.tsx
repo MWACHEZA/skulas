@@ -1,5 +1,6 @@
 import { useAuth } from '../../../contexts/AuthContext';
 import PortalGate from '../../../components/portals/shared/PortalGate';
+import { formatCurrency } from '../../../utils/formatters';
 
 export default function SupplierQuotations() {
   const { activeEntity } = useAuth();
@@ -41,7 +42,7 @@ export default function SupplierQuotations() {
                      <div style={{ fontWeight: 600 }}>{q.tenderTitle}</div>
                      <div style={{ fontSize: '0.72rem', color: '#718096' }}>Ref: {q.tenderId}</div>
                   </td>
-                  <td style={{ fontWeight: 700, color: '#2d3748' }}>${q.amount.toLocaleString()}</td>
+                  <td style={{ fontWeight: 700, color: '#2d3748' }}>{formatCurrency(q.amount)}</td>
                   <td style={{ fontSize: '0.85rem' }}>{q.delivery}</td>
                   <td>
                     <span className={`portal-badge ${
