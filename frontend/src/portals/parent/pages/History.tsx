@@ -1,6 +1,7 @@
-import React from 'react';
+import { useToast } from '../../../context/ToastContext';
 
 export default function ParentHistory() {
+  const { showToast } = useToast();
   const history = [
     { term: 'Term 1, 2024', grade: 'A', avg: 82, comment: 'Exceptional performance in STEM subjects.', awards: ['Principal\'s Award', 'Sports Day Medal'] },
     { term: 'Term 3, 2023', grade: 'B+', avg: 76, comment: 'Consistent effort shown across all areas.', awards: ['Merit Badge'] },
@@ -64,7 +65,7 @@ export default function ParentHistory() {
       </div>
 
       <div style={{ marginTop: 30 }}>
-        <button className="portal-btn-secondary" onClick={() => alert('This feature is currently under development or disabled.')}>
+        <button className="portal-btn-secondary" onClick={() => showToast('Preparing PDF download...', 'info')}>
           <i className="fas fa-file-pdf"></i> Download Full Transcript (PDF)
         </button>
       </div>

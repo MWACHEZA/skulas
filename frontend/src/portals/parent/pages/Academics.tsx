@@ -3,8 +3,10 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useTerminology } from '../../../hooks/useTerminology';
 import api from '../../../lib/api';
+import { useToast } from '../../../context/ToastContext';
 
 export default function ParentAcademics() {
+  const { showToast } = useToast();
   const { t: trans } = useTranslation();
   const { t } = useTerminology();
   const { activeEntity } = useAuth();
@@ -90,7 +92,7 @@ export default function ParentAcademics() {
                <div className="portal-card">
                  <div className="portal-card-header">
                    <h2><i className="fas fa-list-check" style={{ marginRight: 8, color: 'var(--school-primary, #3182ce)' }}></i>{trans('subject_breakdown')}</h2>
-                   <button className="portal-btn-secondary" style={{ padding: '6px 14px', fontSize: '0.8rem' }} onClick={() => alert('PDF Download coming soon.')}>
+                   <button className="portal-btn-secondary" style={{ padding: '6px 14px', fontSize: '0.8rem' }} onClick={() => showToast('PDF Download coming soon.', 'info')}>
                       <i className="fas fa-download"></i> {trans('download_full_report')}
                    </button>
                  </div>

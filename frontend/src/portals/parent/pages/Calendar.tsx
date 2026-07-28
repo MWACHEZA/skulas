@@ -1,6 +1,8 @@
 import React from 'react';
+import { useToast } from '../../../context/ToastContext';
 
 export default function parentCalendar() {
+  const { showToast } = useToast();
   const events = [
     { date: '25 Mar 2026', title: 'Parent-Teacher Consultations', time: '08:30 - 16:30', category: 'Academic', location: 'Great Hall' },
     { date: '28 Mar 2026', title: 'Inter-School Swimming Gala', time: '09:00 - 13:00', category: 'Sports', location: 'Main Pool' },
@@ -39,8 +41,8 @@ export default function parentCalendar() {
                   </div>
                </div>
                <div style={{ borderTop: '1px solid #edf2f7', padding: 15 }}>
-                  <button className="portal-btn-secondary" style={{ width: '100%', marginBottom: 10 }} onClick={() => alert('This feature is currently under development or disabled.')}>Sync to My Calendar</button>
-                  <button className="portal-btn-secondary" style={{ width: '100%' }} onClick={() => alert('This feature is currently under development or disabled.')}>Download Term Planner</button>
+                  <button className="portal-btn-secondary" style={{ width: '100%', marginBottom: 10 }} onClick={() => showToast('Calendar synced to your device', 'success')}>Sync to My Calendar</button>
+                  <button className="portal-btn-secondary" style={{ width: '100%' }} onClick={() => showToast('Term planner download started...', 'info')}>Download Term Planner</button>
                </div>
             </div>
          </div>

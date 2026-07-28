@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '../../../lib/api';
 import { useAuth } from '../../../contexts/AuthContext';
+import { useToast } from '../../../context/ToastContext';
 
 interface WalletTransaction {
   id: string;
@@ -18,6 +19,7 @@ interface WalletData {
 
 export default function ParentWallet() {
   const { activeEntity } = useAuth();
+  const { showToast } = useToast();
   const [wallet, setWallet] = useState<WalletData | null>(null);
   const [loading, setLoading] = useState(true);
   
@@ -47,7 +49,7 @@ export default function ParentWallet() {
 
   const handleTopup = async () => {
     const val = parseFloat(amount);
-    if (isNaN(val) || val <= 0) return alert('Enter a valid amount');
+    if (isNaN(val) || val <= 0) return showToast('Enter a valid amount', 'warning');
     
     setIsProcessing(true);
     try {
@@ -59,10 +61,10 @@ export default function ParentWallet() {
       });
       setWallet(res.data);
       setAmount('');
-      alert('Wallet funded successfully!');
+      showToast('Wallet funded successfully!', 'success');
     } catch (e) {
       console.error('Failed to fund wallet', e);
-      alert('Failed to fund wallet');
+      showToast('Failed to fund wallet', 'error');
     } finally {
       setIsProcessing(false);
     }

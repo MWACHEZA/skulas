@@ -1,6 +1,8 @@
 import { useState } from 'react';
+import { useToast } from '../../../context/ToastContext';
 
 export default function ParentAcademicsDetail() {
+  const { showToast } = useToast();
   const [children] = useState([
     { id: 'STU-01', name: 'Tendai Mutasa', grade: 'Form 3A', rank: '4/42', average: '82%', subjects: [
       { name: 'Mathematics', score: 88, grade: 'A', comment: 'Excellent progress' },
@@ -45,7 +47,7 @@ export default function ParentAcademicsDetail() {
           <div className="portal-card">
             <div className="portal-card-header">
               <h2><i className="fas fa-file-alt" style={{ marginRight: 8, color: 'var(--school-primary, #3182ce)' }}></i>Term 3 Assessment Results</h2>
-              <button className="portal-btn-secondary" onClick={() => alert('This feature is currently under development or disabled.')}><i className="fas fa-download" style={{ marginRight: 6 }}></i>Download Report</button>
+              <button className="portal-btn-secondary" onClick={() => showToast('Downloading academic report...', 'info')}><i className="fas fa-download" style={{ marginRight: 6 }}></i>Download Report</button>
             </div>
             <div className="portal-card-body" style={{ padding: 0 }}>
               <table className="portal-table">

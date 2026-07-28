@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import api from '../../../../lib/api';
 import { useTerminology } from '../../../../hooks/useTerminology';
 import { format } from 'date-fns';
+import { useToast } from '../../../../context/ToastContext';
 
 export default function StudentStudyMaterial() {
+  const { showToast } = useToast();
   const { t } = useTerminology();
   const [materials, setMaterials] = useState<any[]>([]);
   const [subjects, setSubjects] = useState<any[]>([]);
@@ -45,7 +47,7 @@ export default function StudentStudyMaterial() {
     if (material.documentUrl) {
       window.open(getAuthenticatedUrl(material.documentUrl), '_blank');
     } else {
-      alert('No document attached to this study material.');
+      showToast('No document attached to this study material.', 'error');
     }
   };
 

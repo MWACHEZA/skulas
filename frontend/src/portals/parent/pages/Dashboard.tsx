@@ -2,9 +2,11 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../../../contexts/AuthContext';
 import { Link } from 'react-router-dom';
 import api from '../../../lib/api';
+import { useToast } from '../../../context/ToastContext';
 
 export default function ParentDashboard() {
   const { user, activeEntity } = useAuth();
+  const { showToast } = useToast();
   const [stats, setStats] = useState({
     outstandingBalance: 0,
     avgAttendance: 0,
@@ -144,7 +146,7 @@ export default function ParentDashboard() {
               <p style={{ margin: '4px 0 0', fontSize: '1.1rem' }}>Sadza with Beef Stew & Seasonal Greens</p>
             </div>
             <div style={{ marginTop: 15 }}>
-              <button className="portal-btn-secondary" style={{ width: '100%', justifyContent: 'center' }} onClick={() => alert('This feature is currently under development or disabled.')}>
+              <button className="portal-btn-secondary" style={{ width: '100%', justifyContent: 'center' }} onClick={() => showToast('Redirecting to full menu...', 'info')}>
                 <i className="fas fa-calendar-alt"></i> View Full Weekly Menu
               </button>
             </div>

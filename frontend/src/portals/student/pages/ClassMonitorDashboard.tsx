@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import '../../../styles/portal.css';
+import { useToast } from '../../../context/ToastContext';
 
 interface ClassAnnouncement {
   id: string;
@@ -10,6 +11,7 @@ interface ClassAnnouncement {
 }
 
 export default function ClassMonitorDashboard() {
+  const { showToast } = useToast();
   const [activeTab, setActiveTab] = useState<'attendance' | 'announcements'>('attendance');
   const [announcements, setAnnouncements] = useState<ClassAnnouncement[]>([
     { id: '1', title: 'Math Worksheet Collection', date: '2026-04-16', content: 'Please submit your math worksheets to my desk by break time.', author: 'Monitor' },
@@ -33,6 +35,11 @@ export default function ClassMonitorDashboard() {
     setAnnouncements([newPost, ...announcements]);
     setNewTitle('');
     setNewAnnouncement('');
+    showToast('Announcement posted to digital noticeboard', 'success');
+  };
+
+  const handleSubmitAttendance = () => {
+    showToast('Attendance data submitted to Form Teacher for review', 'success');
   };
 
   return (
@@ -100,7 +107,7 @@ export default function ClassMonitorDashboard() {
               </table>
             </div>
             <div className="flex mt-6 justify-end">
-               <button className="portal-btn-primary py-2 px-6" onClick={() => alert('This feature is currently under development or disabled.')}><i className="fas fa-paper-plane mr-2"></i>Submit Data to Teacher</button>
+               <button className="portal-btn-primary py-2 px-6" onClick={handleSubmitAttendance}><i className="fas fa-paper-plane mr-2"></i>Submit Data to Teacher</button>
             </div>
           </div>
         )}

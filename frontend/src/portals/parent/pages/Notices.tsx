@@ -1,4 +1,7 @@
+import { useToast } from '../../../context/ToastContext';
+
 export default function ParentNotices() {
+  const { showToast } = useToast();
   const notices = [
     { title: 'Term 2 Opening Date', date: '2024-10-22', category: 'Academic', priority: 'high', content: 'School opens on January 14, 2025. All students must report by 8:00am with full school uniform and stationery.' },
     { title: 'Uniform Policy Update', date: '2024-10-18', category: 'General', priority: 'medium', content: 'New blazer design available from the school shop. Current blazers accepted until end of Term 2.' },
@@ -34,7 +37,7 @@ export default function ParentNotices() {
               <p style={{ margin: 0, color: '#4a5568', lineHeight: 1.8, fontSize: '0.95rem' }}>{n.content}</p>
               
               <div style={{ marginTop: 20, paddingTop: 15, borderTop: '1px solid #edf2f7', display: 'flex', justifyContent: 'flex-end' }}>
-                <button className="portal-btn-secondary" style={{ padding: '6px 12px', fontSize: '0.8rem' }} onClick={() => alert('This feature is currently under development or disabled.')}>
+                <button className="portal-btn-secondary" style={{ padding: '6px 12px', fontSize: '0.8rem' }} onClick={() => showToast('Share functionality coming soon', 'info')}>
                     <i className="fas fa-share-alt" style={{ marginRight: 6 }}></i> Share
                 </button>
               </div>

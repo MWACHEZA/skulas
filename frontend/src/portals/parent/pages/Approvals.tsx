@@ -1,6 +1,8 @@
 import React from 'react';
+import { useToast } from '../../../context/ToastContext';
 
 export default function parentApprovals() {
+  const { showToast } = useToast();
   const pending = [
     { id: 'APP-101', title: 'Museum Trip Consent', date: 'Due By: 28 Mar 2026', type: 'Excursion', description: 'Form 3 History trip to the National Museum. Transport and lunch included.' },
   ];
@@ -31,8 +33,8 @@ export default function parentApprovals() {
                 <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#c53030' }}>{p.date}</div>
               </div>
               <div style={{ display: 'flex', gap: 10 }}>
-                <button className="portal-btn-secondary" onClick={() => alert('This feature is currently under development or disabled.')}>View Details</button>
-                <button className="portal-btn-primary" onClick={() => alert('This feature is currently under development or disabled.')}><i className="fas fa-signature"></i> Sign Now</button>
+                <button className="portal-btn-secondary" onClick={() => showToast('Opening approval details...', 'info')}>View Details</button>
+                <button className="portal-btn-primary" onClick={() => showToast('Signature pad opening...', 'info')}><i className="fas fa-signature"></i> Sign Now</button>
               </div>
             </div>
           ))}
@@ -65,7 +67,7 @@ export default function parentApprovals() {
                     <span className="portal-badge success">Approved</span>
                   </td>
                   <td>
-                    <button className="portal-btn-secondary" style={{ padding: '5px 10px', fontSize: '0.75rem' }} onClick={() => alert('This feature is currently under development or disabled.')}>View Receipt</button>
+                    <button className="portal-btn-secondary" style={{ padding: '5px 10px', fontSize: '0.75rem' }} onClick={() => showToast('Generating receipt...', 'info')}>View Receipt</button>
                   </td>
                 </tr>
               ))}

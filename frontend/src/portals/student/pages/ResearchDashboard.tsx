@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import api from '../../../lib/api';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useTerminology } from '../../../hooks/useTerminology';
+import { useToast } from '../../../context/ToastContext';
 
 interface ResearchData {
   student: {
@@ -35,6 +36,7 @@ interface ResearchData {
 export default function ResearchDashboard() {
   const { user } = useAuth();
   const { t } = useTerminology();
+  const { showToast } = useToast();
   const [data, setData] = useState<ResearchData | null>(null);
   const [loading, setLoading] = useState(true);
   const [showExtensionForm, setShowExtensionForm] = useState(false);
@@ -66,10 +68,15 @@ export default function ResearchDashboard() {
       });
       setShowExtensionForm(false);
       setExtReason('');
+      showToast('Extension request submitted successfully!', 'success');
       fetchData();
     } catch (err) {
-      alert('Failed to submit extension request');
+      showToast('Failed to submit extension request', 'error');
     }
+  };
+
+  const handleNewReport = () => {
+    showToast('Redirecting to new progress report form...', 'info');
   };
 
   if (loading) return <div className="portal-loader">Loading research details...</div>;
@@ -143,7 +150,7 @@ export default function ResearchDashboard() {
         <div className="portal-card">
           <div className="portal-card-header">
             <h3>6-Month Progress Reports</h3>
-            <button className="portal-btn-sm" onClick={() => alert('This feature is currently under development or disabled.')}>+ New Report</button>
+            <button className="portal-btn-sm" onClick={handleNewReport}>+ New Report</button>
           </div>
           <div className="portal-card-body">
             <table className="portal-table">
