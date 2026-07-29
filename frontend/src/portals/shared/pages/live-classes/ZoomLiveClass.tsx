@@ -63,6 +63,8 @@ export default function ZoomLiveClass() {
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [showModal, setShowModal] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   const [formData, setFormData] = useState({
     title: '',
@@ -149,6 +151,8 @@ export default function ZoomLiveClass() {
       meetingIdText.toLowerCase().includes(searchTerm.toLowerCase()) ||
       className.toLowerCase().includes(searchTerm.toLowerCase());
   });
+  const totalPages = Math.ceil(filteredLiveClasses.length / itemsPerPage);
+  const paginatedLiveClasses = filteredLiveClasses.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   return (
     <>
@@ -337,7 +341,7 @@ export default function ZoomLiveClass() {
               </tr>
             </thead>
             <tbody>
-              {filteredLiveClasses.length === 0 ? (
+              {paginatedLiveClasses.length === 0 ? (
                 <tr><td colSpan={9} style={{ textAlign: 'center', padding: 30, color: '#a0aec0' }}>
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                     <i className="fas fa-folder-open fa-3x" style={{ color: '#ecc94b', opacity: 0.5, marginBottom: 10 }}></i>
@@ -345,7 +349,7 @@ export default function ZoomLiveClass() {
                   </div>
                 </td></tr>
               ) : (
-                filteredLiveClasses.map(lc => (
+                paginatedLiveClasses.map(lc => (
                   <tr key={lc.id}>
                     <td>{lc.title}</td>
                     <td>{lc.meetingId}</td>
@@ -366,10 +370,10 @@ export default function ZoomLiveClass() {
             </tbody>
           </table>
           <div style={{ marginTop: 15, display: 'flex', justifyContent: 'space-between', color: '#718096', fontSize: '0.9rem' }}>
-             <span>Showing 1 to {filteredLiveClasses.length} of {filteredLiveClasses.length} entries</span>
+             <span>Showing {filteredLiveClasses.length === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, filteredLiveClasses.length)} of {filteredLiveClasses.length} entries</span>
              <div>
-                <button style={{ border: 'none', background: 'transparent', color: '#718096', cursor: 'pointer', marginRight: 10 }} onClick={() => alert('This feature is currently under development or disabled.')}>Previous</button>
-                <button style={{ border: 'none', background: 'transparent', color: '#718096', cursor: 'pointer', marginLeft: 10 }} onClick={() => alert('This feature is currently under development or disabled.')}>Next</button>
+                <button style={{ border: 'none', background: 'transparent', color: currentPage === 1 ? '#cbd5e0' : '#718096', cursor: currentPage === 1 ? 'default' : 'pointer', marginRight: 10 }} onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1}>Previous</button>
+                <button style={{ border: 'none', background: 'transparent', color: currentPage * itemsPerPage >= filteredLiveClasses.length ? '#cbd5e0' : '#718096', cursor: currentPage * itemsPerPage >= filteredLiveClasses.length ? 'default' : 'pointer', marginLeft: 10 }} onClick={() => setCurrentPage(p => p + 1)} disabled={currentPage * itemsPerPage >= filteredLiveClasses.length}>Next</button>
              </div>
           </div>
         </div>

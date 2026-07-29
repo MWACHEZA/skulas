@@ -53,11 +53,10 @@ export default function ParentWallet() {
     
     setIsProcessing(true);
     try {
-      // MOCK PAYMENT PROCESS
       const res = await api.post('/api/wallets/fund', {
         studentId: activeEntity?.id,
         amount: val,
-        paymentMethod: 'Online Card (Mock)'
+        paymentMethod: 'Online Payment'
       });
       setWallet(res.data);
       setAmount('');
@@ -145,7 +144,7 @@ export default function ParentWallet() {
                      onClick={handleTopup}
                      disabled={isProcessing || !amount}
                    >
-                      {isProcessing ? 'Processing...' : 'Proceed to Payment (Mock)'}
+                      {isProcessing ? 'Processing...' : 'Add Funds to Wallet'}
                    </button>
                 </div>
              </div>

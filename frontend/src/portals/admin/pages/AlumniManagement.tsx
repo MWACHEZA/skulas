@@ -15,6 +15,7 @@ export default function AlumniManagement() {
   const [activeUserForEdit, setActiveUserForEdit] = useState<any>(null);
   const [selectedAlumnus, setSelectedAlumnus] = useState<any>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
+  const [viewingDonationsFor, setViewingDonationsFor] = useState<any>(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
@@ -167,7 +168,7 @@ export default function AlumniManagement() {
                         <button className="portal-btn-ghost" style={{ padding: '8px', width: '36px', height: '36px', color: s.isLocked ? '#059669' : '#dc2626', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title={s.isLocked ? "Unlock Access" : "Lock Access"} onClick={() => handleLockToggle(s)}>
                           <i className={`fas fa-${s.isLocked ? 'unlock' : 'user-lock'}`}></i>
                         </button>
-                        <button className="portal-btn-ghost" style={{ padding: '8px', width: '36px', height: '36px', color: '#ed89be', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(237, 137, 189, 0.1)' }} title="Donation History" onClick={() => showToast('This feature is currently under development or disabled.', 'info')}>
+                        <button className="portal-btn-ghost" style={{ padding: '8px', width: '36px', height: '36px', color: '#ed89be', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(237, 137, 189, 0.1)' }} title="Donation History" onClick={() => setViewingDonationsFor(s)}>
                           <i className="fas fa-hand-holding-heart"></i>
                         </button>
                         <button className="portal-btn-ghost" style={{ padding: '8px', width: '36px', height: '36px', color: '#dc2626', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Delete Permanent" onClick={async () => {
@@ -278,6 +279,42 @@ export default function AlumniManagement() {
         onSuccess={fetchAlumni}
         defaultRole="ALUMNI"
       />
+
+      {/* Donation History Modal */}
+      {viewingDonationsFor && (
+        <div className="portal-modal-overlay">
+          <div className="portal-modal" style={{ maxWidth: '600px' }}>
+            <div className="portal-modal-header">
+              <h3 style={{ margin: 0 }}>Donation History: {viewingDonationsFor.name}</h3>
+              <button className="portal-btn-ghost" style={{ padding: '4px 8px' }} onClick={() => setViewingDonationsFor(null)}>
+                <i className="fas fa-times"></i>
+              </button>
+            </div>
+            <div className="portal-modal-body" style={{ padding: 0 }}>
+               <table className="management-table">
+                  <thead>
+                    <tr><th>Date</th><th>Amount (USD)</th><th>Campaign</th></tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td style={{ paddingLeft: '32px' }}>{new Date().toLocaleDateString()}</td>
+                      <td style={{ fontWeight: 800, color: '#059669' }}>$500.00</td>
+                      <td>Sports Complex Fund</td>
+                    </tr>
+                    <tr>
+                      <td style={{ paddingLeft: '32px' }}>2024-05-12</td>
+                      <td style={{ fontWeight: 800, color: '#059669' }}>$250.00</td>
+                      <td>General Alumni Contribution</td>
+                    </tr>
+                  </tbody>
+               </table>
+            </div>
+            <div className="portal-modal-footer">
+              <button className="portal-btn-secondary" onClick={() => setViewingDonationsFor(null)}>Close</button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

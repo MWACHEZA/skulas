@@ -10,6 +10,7 @@ export default function LibraryResourceCategories() {
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
   const [newCatName, setNewCatName] = useState('');
+  const [editingCategory, setEditingCategory] = useState<any>(null);
 
   const fetchCategories = () => {
     setLoading(true);
@@ -38,6 +39,19 @@ export default function LibraryResourceCategories() {
     }
   };
 
+  const handleEditCategory = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingCategory?.category?.trim()) return;
+    try {
+      await api.patch(`/api/library/categories/${editingCategory.id}`, { name: editingCategory.category });
+      showToast('Category updated successfully', 'success');
+      setEditingCategory(null);
+      fetchCategories();
+    } catch (err) {
+      showToast('Failed to update category', 'error');
+    }
+  };
+
   return (
     <>
       <div className="portal-page-header">
@@ -55,7 +69,7 @@ export default function LibraryResourceCategories() {
             <div className="portal-card-header">
               <h3 style={{ margin: 0 }}>{cat.category}</h3>
               <div style={{ display: 'flex', gap: 8 }}>
-                 <button className="portal-btn-secondary" style={{ padding: '4px 8px' }} title="Edit Category" onClick={() => alert('This feature is currently under development or disabled.')}><i className="fas fa-edit"></i></button>
+                 <button className="portal-btn-secondary" style={{ padding: '4px 8px' }} title="Edit Category" onClick={() => setEditingCategory(cat)}><i className="fas fa-edit"></i></button>
               </div>
             </div>
             <div className="portal-card-body">
@@ -107,6 +121,35 @@ export default function LibraryResourceCategories() {
                  </div>
                </form>
              </div>
+          </div>
+        </div>
+      )}
+
+      {editingCategory && (
+        <div className="portal-modal-overlay">
+          <div className="portal-modal">
+            <div className="portal-modal-header">
+              <h3>Edit Category</h3>
+              <button className="portal-btn-ghost" onClick={() => setEditingCategory(null)}><i className="fas fa-times"></i></button>
+            </div>
+            <form onSubmit={handleEditCategory}>
+              <div className="portal-modal-body">
+                <div className="form-group">
+                  <label className="portal-label">Category Name</label>
+                  <input 
+                    type="text" 
+                    className="portal-input" 
+                    value={editingCategory.category} 
+                    onChange={e => setEditingCategory({...editingCategory, category: e.target.value})}
+                    required
+                  />
+                </div>
+              </div>
+              <div className="portal-modal-footer">
+                <button type="button" className="portal-btn-secondary" onClick={() => setEditingCategory(null)}>Cancel</button>
+                <button type="submit" className="portal-btn-primary">Update Category</button>
+              </div>
+            </form>
           </div>
         </div>
       )}

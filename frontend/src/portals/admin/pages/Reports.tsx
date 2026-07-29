@@ -1,22 +1,29 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import ReportGeneratorWizard from '../../../components/portals/shared/ReportGeneratorWizard';
 import AdminDocumentTemplates from './DocumentTemplates';
 import ReportFilterBar from '../../../components/portals/shared/ReportFilterBar';
 import { useTerminology } from '../../../hooks/useTerminology';
 import LibraryReports from '../../library/pages/Reports';
+import api from '../../../lib/api';
 
 export default function AdminReports() {
   const { t, isMedical } = useTerminology();
   const [activeTab, setActiveTab] = useState<'generation' | 'designer' | 'analytics' | 'library'>('generation');
   const [filters, setFilters] = useState({ term: 'Term 1', year: new Date().getFullYear().toString() });
+  const [dashStats, setDashStats] = useState<any>(null);
+  const [selectedReport, setSelectedReport] = useState<string | null>(null);
+
+  useEffect(() => {
+    api.get('/api/dashboard/admin').then(r => setDashStats(r.data.stats)).catch(console.error);
+  }, []);
   
   const reports = [
-    { name: 'Enrollment Summary Report', desc: `Student enrollment by form and gender`, icon: 'fa-user-graduate', color: 'var(--school-primary, #3182ce)' },
-    { name: 'Fee Collection Report', desc: 'Breakdown of fees by term and payment method', icon: 'fa-money-bill-wave', color: 'var(--portal-success)' },
-    { name: 'Attendance Report', desc: 'Daily, weekly, and term attendance statistics', icon: 'fa-clipboard-check', color: 'var(--portal-warning)' },
-    { name: 'Academic Performance', desc: 'Grade distributions per subject and form', icon: 'fa-chart-line', color: '#805ad5' },
-    { name: 'Staff Report', desc: 'Teacher and support staff summary', icon: 'fa-users', color: 'var(--portal-danger)' },
-    { name: 'Asset Inventory Report', desc: 'School property and equipment register', icon: 'fa-boxes', color: '#38b2ac' },
+    { name: 'Enrollment Summary Report', type: 'enrollment', desc: `Student enrollment by form and gender`, icon: 'fa-user-graduate', color: 'var(--school-primary, #3182ce)' },
+    { name: 'Fee Collection Report', type: 'fees', desc: 'Breakdown of fees by term and payment method', icon: 'fa-money-bill-wave', color: 'var(--portal-success)' },
+    { name: 'Attendance Report', type: 'attendance', desc: 'Daily, weekly, and term attendance statistics', icon: 'fa-clipboard-check', color: 'var(--portal-warning)' },
+    { name: 'Academic Performance', type: 'academic', desc: 'Grade distributions per subject and form', icon: 'fa-chart-line', color: '#805ad5' },
+    { name: 'Staff Report', type: 'staff', desc: 'Teacher and support staff summary', icon: 'fa-users', color: 'var(--portal-danger)' },
+    { name: 'Asset Inventory Report', type: 'assets', desc: 'School property and equipment register', icon: 'fa-boxes', color: '#38b2ac' },
   ];
 
   return (
@@ -76,11 +83,22 @@ export default function AdminReports() {
                   <div style={{ width: 56, height: 56, borderRadius: 14, background: `${r.color}18`, color: r.color, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', margin: '0 auto 16px' }}><i className={`fas ${r.icon}`}></i></div>
                   <h3 style={{ margin: '0 0 6px', fontSize: '0.95rem' }}>{r.name}</h3>
                   <p style={{ margin: '0 0 16px', fontSize: '0.82rem', color: '#718096' }}>{r.desc}</p>
-                  <button style={{ padding: '8px 20px', background: r.color, color: 'white', border: 'none', borderRadius: 8, fontWeight: 600, cursor: 'pointer', fontSize: '0.82rem' }} onClick={() => alert('This feature is currently under development or disabled.')}><i className="fas fa-download" style={{ marginRight: 6 }}></i>Generate</button>
+                  <button style={{ padding: '8px 20px', background: r.color, color: 'white', border: 'none', borderRadius: 8, fontWeight: 600, cursor: 'pointer', fontSize: '0.82rem' }} onClick={() => setSelectedReport(r.type)}><i className="fas fa-download" style={{ marginRight: 6 }}></i>Generate</button>
                 </div>
               </div>
             ))}
           </div>
+          {selectedReport && (
+            <div className="portal-card" style={{ marginTop: 24 }}>
+              <div className="portal-card-header" style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <h2>Generate: {reports.find(r => r.type === selectedReport)?.name}</h2>
+                <button className="portal-btn-ghost" onClick={() => setSelectedReport(null)} style={{ border: 'none', background: 'none', fontSize: '1.5rem', cursor: 'pointer' }}>&times;</button>
+              </div>
+              <div className="portal-card-body">
+                <ReportGeneratorWizard role="ADMIN" />
+              </div>
+            </div>
+          )}
         </>
       ) : activeTab === 'designer' ? (
         <AdminDocumentTemplates />
@@ -90,29 +108,29 @@ export default function AdminReports() {
             <div className="portal-stat-card">
               <div className="portal-stat-icon blue"><i className="fas fa-user-graduate"></i></div>
               <div className="portal-stat-info">
-                <h3>420</h3>
+                <h3>{dashStats ? dashStats.totalStudents : <i className="fas fa-spinner fa-spin" />}</h3>
                 <p>Total {t('students')}</p>
               </div>
             </div>
             <div className="portal-stat-card">
               <div className="portal-stat-icon green"><i className="fas fa-chalkboard-teacher"></i></div>
               <div className="portal-stat-info">
-                <h3>28</h3>
+                <h3>{dashStats ? dashStats.totalTeachers : <i className="fas fa-spinner fa-spin" />}</h3>
                 <p>Total Staff</p>
               </div>
             </div>
             <div className="portal-stat-card">
-              <div className="portal-stat-icon orange"><i className="fas fa-percentage"></i></div>
+              <div className="portal-stat-icon orange"><i className="fas fa-file-alt"></i></div>
               <div className="portal-stat-info">
-                <h3>94%</h3>
-                <p>Attendance Rate</p>
+                <h3>{dashStats ? dashStats.pendingApplications : <i className="fas fa-spinner fa-spin" />}</h3>
+                <p>Pending Applications</p>
               </div>
             </div>
             <div className="portal-stat-card">
-              <div className="portal-stat-icon purple"><i className="fas fa-chart-pie"></i></div>
+              <div className="portal-stat-icon purple"><i className="fas fa-money-bill-wave"></i></div>
               <div className="portal-stat-info">
-                <h3>72%</h3>
-                <p>Pass Rate ({isMedical ? 'Clinical' : 'O-Level'})</p>
+                <h3>{dashStats ? `$${(dashStats.totalRevenue || 0).toLocaleString()}` : <i className="fas fa-spinner fa-spin" />}</h3>
+                <p>Total Revenue Collected</p>
               </div>
             </div>
           </div>

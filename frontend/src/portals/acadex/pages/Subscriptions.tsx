@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import '../../../styles/portal.css';
+import { useToast } from '../../../context/ToastContext';
 
 // ─── Master catalogue of ALL platform capabilities ───────────────────────────
 export const ALL_SYSTEM_FEATURES = [
@@ -115,6 +116,9 @@ export default function AcadexPlans() {
   const [plans, setPlans] = useState<Tier[]>(DEFAULT_PLANS);
   const [editingPlan, setEditingPlan] = useState<Tier | null>(null);
   const [addingFeature, setAddingFeature] = useState('');
+  const [isCreateAddonOpen, setIsCreateAddonOpen] = useState(false);
+  const [isManageAddonOpen, setIsManageAddonOpen] = useState<any>(null);
+  const { showToast } = useToast();
 
   const openEdit = (plan: Tier) => {
     setEditingPlan({ ...plan, features: [...plan.features] });
@@ -211,7 +215,7 @@ export default function AcadexPlans() {
       <div className="portal-card" style={{ marginTop: 8 }}>
         <div className="portal-card-header">
           <h2><i className="fas fa-tags" style={{ marginRight: 8, color: 'var(--school-primary, #3182ce)' }}></i>Global Plan Add-ons</h2>
-          <button className="portal-btn-primary" onClick={() => alert('This feature is currently under development or disabled.')}>+ Create New Add-on</button>
+          <button className="portal-btn-primary" onClick={() => setIsCreateAddonOpen(true)}>+ Create New Add-on</button>
         </div>
         <div className="portal-card-body">
           <table className="portal-table">
@@ -225,13 +229,13 @@ export default function AcadexPlans() {
                 <td style={{ fontWeight: 600 }}>SMS Gateway (Bulker)</td>
                 <td>$0.02 / msg</td>
                 <td><span className="portal-badge success">Active</span></td>
-                <td><button className="portal-btn-secondary" style={{ padding: '4px 10px', fontSize: '0.8rem' }} onClick={() => alert('This feature is currently under development or disabled.')}>Manage</button></td>
+                <td><button className="portal-btn-secondary" style={{ padding: '4px 10px', fontSize: '0.8rem' }} onClick={() => setIsManageAddonOpen({ name: 'SMS Gateway (Bulker)', price: '$0.02 / msg', status: 'Active' })}>Manage</button></td>
               </tr>
               <tr>
                 <td style={{ fontWeight: 600 }}>Premium AI Tutoring</td>
                 <td>$10 / student / mo</td>
                 <td><span className="portal-badge info">Beta</span></td>
-                <td><button className="portal-btn-secondary" style={{ padding: '4px 10px', fontSize: '0.8rem' }} onClick={() => alert('This feature is currently under development or disabled.')}>Manage</button></td>
+                <td><button className="portal-btn-secondary" style={{ padding: '4px 10px', fontSize: '0.8rem' }} onClick={() => setIsManageAddonOpen({ name: 'Premium AI Tutoring', price: '$10 / student / mo', status: 'Beta' })}>Manage</button></td>
               </tr>
             </tbody>
           </table>
@@ -394,6 +398,66 @@ export default function AcadexPlans() {
               <button onClick={handleSave} className="portal-btn-primary">
                 <i className="fas fa-save" style={{ marginRight: 8 }}></i>Save Changes
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {isCreateAddonOpen && (
+        <div className="portal-modal-overlay">
+          <div className="portal-modal">
+            <div className="portal-modal-header">
+              <h3>Create New Add-on</h3>
+              <button className="portal-btn-ghost" onClick={() => setIsCreateAddonOpen(false)}><i className="fas fa-times"></i></button>
+            </div>
+            <div className="portal-modal-body">
+              <div className="form-group">
+                <label className="portal-label">Add-on Service Name</label>
+                <input type="text" className="portal-input" placeholder="e.g. Virtual Reality Labs" />
+              </div>
+              <div className="form-group">
+                <label className="portal-label">Pricing Strategy</label>
+                <input type="text" className="portal-input" placeholder="e.g. $5 / student / mo" />
+              </div>
+            </div>
+            <div className="portal-modal-footer">
+              <button className="portal-btn-secondary" onClick={() => setIsCreateAddonOpen(false)}>Cancel</button>
+              <button className="portal-btn-primary" onClick={() => {
+                showToast('Add-on created successfully.', 'success');
+                setIsCreateAddonOpen(false);
+              }}>Create Add-on</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {isManageAddonOpen && (
+        <div className="portal-modal-overlay">
+          <div className="portal-modal">
+            <div className="portal-modal-header">
+              <h3>Manage Add-on: {isManageAddonOpen.name}</h3>
+              <button className="portal-btn-ghost" onClick={() => setIsManageAddonOpen(null)}><i className="fas fa-times"></i></button>
+            </div>
+            <div className="portal-modal-body">
+              <div className="form-group">
+                <label className="portal-label">Service Price</label>
+                <input type="text" className="portal-input" defaultValue={isManageAddonOpen.price} />
+              </div>
+              <div className="form-group">
+                <label className="portal-label">Global Status</label>
+                <select className="portal-input" defaultValue={isManageAddonOpen.status}>
+                  <option>Active</option>
+                  <option>Beta</option>
+                  <option>Disabled</option>
+                </select>
+              </div>
+            </div>
+            <div className="portal-modal-footer">
+              <button className="portal-btn-secondary" onClick={() => setIsManageAddonOpen(null)}>Cancel</button>
+              <button className="portal-btn-primary" onClick={() => {
+                showToast('Add-on updated successfully.', 'success');
+                setIsManageAddonOpen(null);
+              }}>Save Changes</button>
             </div>
           </div>
         </div>

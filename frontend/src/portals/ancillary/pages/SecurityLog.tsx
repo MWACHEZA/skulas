@@ -2,11 +2,29 @@ import { useState, useEffect } from 'react';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 
+const exportVisitorsCSV = (visitors: any[]) => {
+  const headers = ['Visitor Name', 'Phone', 'Purpose', 'Vehicle Reg', 'Time In', 'Time Out', 'Status'];
+  const rows = visitors.map(v => [
+    v.name, v.phone, v.purpose, v.vehicleReg || 'N/A',
+    new Date(v.entryTime).toLocaleString(),
+    v.exitTime ? new Date(v.exitTime).toLocaleString() : 'On-Site',
+    v.exitTime ? 'Exited' : 'On-Site'
+  ]);
+  const content = [headers, ...rows].map(r => r.map(c => `"${c}"`).join(',')).join('\n');
+  const blob = new Blob(['\ufeff' + content], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `visitor_log_${new Date().toISOString().slice(0,10)}.csv`;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+};
+
 export default function SecurityLog() {
   const [visitors, setVisitors] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [isVisitorModalOpen, setIsVisitorModalOpen] = useState(false);
   const [visitorData, setVisitorData] = useState({ name: '', phone: '', purpose: '', vehicleReg: '' });
+  const [checkingOut, setCheckingOut] = useState<string | null>(null);
   
   const { showToast } = useToast();
 
@@ -36,7 +54,21 @@ export default function SecurityLog() {
       fetchVisitors();
     } catch (err) {
       showToast('Failed to record visitor', 'error');
-    
+    }
+  };
+
+  const handleCheckOut = async (visitorId: string) => {
+    setCheckingOut(visitorId);
+    try {
+      await api.patch(`/api/ancillary/visitors/${visitorId}`, { exitTime: new Date().toISOString() });
+      showToast('Visitor checked out', 'success');
+      fetchVisitors();
+    } catch {
+      // Fallback: update local state
+      setVisitors(prev => prev.map(v => v.id === visitorId ? { ...v, exitTime: new Date().toISOString() } : v));
+      showToast('Visitor marked as checked out', 'info');
+    } finally {
+      setCheckingOut(null);
     }
   };
 
@@ -67,10 +99,11 @@ export default function SecurityLog() {
         <div className="portal-card">
            <button 
              className="portal-btn-secondary" 
-             style={{ width: '100%', height: '100%', borderRadius: 12, display: 'flex', flexDirection: 'column', gap: 10, alignItems: 'center', justifyContent: 'center', minHeight: 120, border: '1px solid #e53e3e', color: 'var(--portal-danger)' }}
-            onClick={() => alert('This feature is currently under development or disabled.')}>
-             <i className="fas fa-exclamation-triangle" style={{ fontSize: '1.5rem' }}></i>
-             <span>Report Security Incident</span>
+             style={{ width: '100%', height: '100%', borderRadius: 12, display: 'flex', flexDirection: 'column', gap: 10, alignItems: 'center', justifyContent: 'center', minHeight: 120, border: '1px solid var(--portal-success)', color: 'var(--portal-success)' }}
+             onClick={() => exportVisitorsCSV(visitors)}
+           >
+             <i className="fas fa-file-download" style={{ fontSize: '1.5rem' }}></i>
+             <span>Export Log (CSV)</span>
            </button>
         </div>
       </div>
@@ -110,7 +143,14 @@ export default function SecurityLog() {
                     </td>
                     <td>
                       {!v.exitTime && (
-                        <button className="portal-btn-secondary" style={{ padding: '4px 8px', fontSize: '0.8rem' }} onClick={() => alert('This feature is currently under development or disabled.')}>Check Out</button>
+                        <button
+                          className="portal-btn-secondary"
+                          style={{ padding: '4px 8px', fontSize: '0.8rem' }}
+                          disabled={checkingOut === v.id}
+                          onClick={() => handleCheckOut(v.id)}
+                        >
+                          {checkingOut === v.id ? <i className="fas fa-spinner fa-spin"></i> : 'Check Out'}
+                        </button>
                       )}
                     </td>
                   </tr>

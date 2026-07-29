@@ -60,6 +60,8 @@ export default function MyAwards() {
   const { showToast } = useToast();
   const [awards, setAwards] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   useEffect(() => {
     fetchAwards();
@@ -82,6 +84,7 @@ export default function MyAwards() {
     return nameText.toLowerCase().includes(searchTerm.toLowerCase()) ||
       giftText.toLowerCase().includes(searchTerm.toLowerCase());
   });
+  const paginatedAwards = filteredAwards.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   return (
     <>
@@ -176,7 +179,7 @@ export default function MyAwards() {
                   </td>
                 </tr>
               ) : (
-                filteredAwards.map((award) => (
+                paginatedAwards.map((award) => (
                   <tr key={award.id}>
                     <td style={{ fontWeight: 600 }}>{award.awardName}</td>
                     <td>{award.gift || '-'}</td>
@@ -189,10 +192,10 @@ export default function MyAwards() {
           </table>
           
           <div style={{ marginTop: 15, display: 'flex', justifyContent: 'space-between', color: '#718096', fontSize: '0.9rem' }}>
-             <span>Showing {filteredAwards.length > 0 ? 1 : 0} to {filteredAwards.length} of {filteredAwards.length} entries</span>
+             <span>Showing {filteredAwards.length === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, filteredAwards.length)} of {filteredAwards.length} entries</span>
              <div>
-                <button style={{ border: 'none', background: 'transparent', color: '#718096', cursor: 'pointer', marginRight: 10 }} onClick={() => alert('This feature is currently under development or disabled.')}>Previous</button>
-                <button style={{ border: 'none', background: 'transparent', color: '#718096', cursor: 'pointer', marginLeft: 10 }} onClick={() => alert('This feature is currently under development or disabled.')}>Next</button>
+                <button style={{ border: 'none', background: 'transparent', color: currentPage === 1 ? '#cbd5e0' : '#718096', cursor: currentPage === 1 ? 'default' : 'pointer', marginRight: 10 }} onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1}>Previous</button>
+                <button style={{ border: 'none', background: 'transparent', color: currentPage * itemsPerPage >= filteredAwards.length ? '#cbd5e0' : '#718096', cursor: currentPage * itemsPerPage >= filteredAwards.length ? 'default' : 'pointer', marginLeft: 10 }} onClick={() => setCurrentPage(p => p + 1)} disabled={currentPage * itemsPerPage >= filteredAwards.length}>Next</button>
              </div>
           </div>
         </div>

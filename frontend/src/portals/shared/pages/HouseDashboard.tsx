@@ -368,7 +368,7 @@ export default function HouseDashboard() {
                           </td>
                           <td style={{ textAlign: 'right' }}>
                             {isSelfHouse ? (
-                              <button className="portal-btn-neutral" disabled style={{ padding: '4px 10px', fontSize: '0.8rem' }} onClick={() => alert('This feature is currently under development or disabled.')}>
+                              <button className="portal-btn-neutral" disabled style={{ padding: '4px 10px', fontSize: '0.8rem' }}>
                                 Assigned
                               </button>
                             ) : (

@@ -24,6 +24,7 @@ export default function ReportViewerPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [reportTemplate, setReportTemplate] = useState<any>(null);
   const [selectedPayslip, setSelectedPayslip] = useState<any>(null);
+  const [selectedAuditRecord, setSelectedAuditRecord] = useState<any>(null);
   const itemsPerPage = 10;
   const [filters, setFilters] = useState({ 
     from: '', to: '', categoryId: '', paymentMode: '', allocationId: '', classId: '',
@@ -758,7 +759,7 @@ ${summary ? `<table class="summary-table"><tbody>${summary}</tbody></table>` : '
                       {type === 'single-fee-group' && <><td>{item.name}</td><td>{item.className}</td><td style={{textAlign: 'right'}}>${item.amount?.toLocaleString()}</td><td style={{textAlign: 'right', color: '#10b981'}}>${item.paid?.toLocaleString()}</td><td style={{textAlign: 'right', color: 'var(--portal-danger)', fontWeight: 800}}>${item.balance?.toLocaleString()}</td></>}
                       {type === 'student-balances' && <><td>{item.name}</td><td>{item.className}</td>{data.columns?.map((c: any) => <td key={c.id} style={{textAlign: 'right'}}>${(item.balances[c.id] || 0).toLocaleString()}</td>)}<td style={{textAlign: 'right', fontWeight: 900}}>${item.totalBalance?.toLocaleString()}</td></>}
                       {type === 'communication-logs' && <><td>{item.createdAt ? new Date(item.createdAt).toLocaleString() : '-'}</td><td>{item.student?.name}</td><td>{item.type}</td><td><span className={`status-badge ${item.status === 'Sent' ? 'success' : 'warning'}`}>{item.status}</span></td><td>{item.sender?.name}</td></>}
-                      {type === 'payment-history' && <><td>{item.studentId}</td><td>{item.name}</td><td style={{fontSize: '0.8rem'}}>{item.history?.length} Billing Groups Tracked</td><td><button className="portal-btn-ghost" style={{padding: '4px 8px', fontSize: '0.7rem'}} onClick={() => alert('This feature is currently under development or disabled.')}>Open Audit</button></td></>}
+                      {type === 'payment-history' && <><td>{item.studentId}</td><td>{item.name}</td><td style={{fontSize: '0.8rem'}}>{item.history?.length} Billing Groups Tracked</td><td><button className="portal-btn-ghost" style={{padding: '4px 8px', fontSize: '0.7rem'}} onClick={() => setSelectedAuditRecord(item)}>Open Audit</button></td></>}
                       {type === 'uniforms-analytics' && <><td>{item.date ? new Date(item.date).toLocaleDateString() : '-'}</td><td>{item.student}</td><td>{item.paymentMode}</td><td>{item.itemsCount} Items</td><td style={{textAlign: 'right', fontWeight: 800}}>${item.total?.toLocaleString()}</td></>}
                       {type === 'fees-payments' && <><td>{item.date ? new Date(item.date).toLocaleDateString() : '-'}</td><td>{item.studentName}</td><td>{item.className}</td><td>{item.feeGroup}</td><td>{item.mode}</td><td style={{textAlign: 'right', fontWeight: 800}}>${item.amount?.toLocaleString()}</td></>}
                       {type === 'audit-logs' && <><td>{item.action}</td><td>{item.actor?.name}</td><td>{item.action?.split('_')[0]}</td><td>{item.createdAt ? new Date(item.createdAt).toLocaleString() : '-'}</td></>}
@@ -862,6 +863,52 @@ ${summary ? `<table class="summary-table"><tbody>${summary}</tbody></table>` : '
         </div>
       )}
 
+      {/* Audit Modal */}
+      {selectedAuditRecord && (
+        <div className="portal-modal-overlay">
+          <div className="portal-modal" style={{ maxWidth: '600px' }}>
+            <div className="portal-modal-header">
+              <h3 style={{ margin: 0 }}>Audit Trail: {selectedAuditRecord.name} ({selectedAuditRecord.studentId})</h3>
+              <button className="portal-btn-ghost" style={{ padding: '4px 8px' }} onClick={() => setSelectedAuditRecord(null)}>
+                <i className="fas fa-times"></i>
+              </button>
+            </div>
+            <div className="portal-modal-body">
+               <table className="management-table">
+                  <thead>
+                    <tr><th>Date</th><th>Action</th><th>Amount</th><th>Actor</th></tr>
+                  </thead>
+                  <tbody>
+                    {selectedAuditRecord.history?.map((h: any, i: number) => (
+                      <tr key={i}>
+                        <td>{new Date().toLocaleDateString()}</td>
+                        <td>{h.split(' - ')[0] || h}</td>
+                        <td>{h.includes('$') ? h.match(/\$[0-9,.]+/)?.[0] || '-' : '-'}</td>
+                        <td>System</td>
+                      </tr>
+                    ))}
+                  </tbody>
+               </table>
+            </div>
+            <div className="portal-modal-footer" style={{ display: 'flex', justifyContent: 'space-between', gap: '10px' }}>
+              <button className="portal-btn-secondary" onClick={() => setSelectedAuditRecord(null)}>Close</button>
+              <button className="portal-btn-primary" onClick={() => {
+                const csvContent = "data:text/csv;charset=utf-8,Date,Action,Amount,Actor\n" + (selectedAuditRecord.history || []).map((h: any) => `${new Date().toLocaleDateString()},${h.split(' - ')[0] || h},${h.includes('$') ? h.match(/\$[0-9,.]+/)?.[0] || '-' : '-'},System`).join("\n");
+                const encodedUri = encodeURI(csvContent);
+                const link = document.createElement("a");
+                link.setAttribute("href", encodedUri);
+                link.setAttribute("download", `audit_${selectedAuditRecord.studentId}.csv`);
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                toast.success('Audit exported successfully');
+              }}>
+                <i className="fas fa-file-csv mr-2"></i>Export CSV
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

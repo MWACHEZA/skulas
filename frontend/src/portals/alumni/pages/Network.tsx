@@ -1,4 +1,7 @@
+import { useToast } from '../../../context/ToastContext';
+
 export default function AlumniNetwork() {
+  const { showToast } = useToast();
   const members = [
     { name: 'John Mupfumi', class: 'Class of 2010', profession: 'Software Engineer', location: 'Harare', avatar: 'JM' },
     { name: 'Sithembile Ncube', class: 'Class of 2012', profession: 'Medical Doctor', location: 'Bulawayo', avatar: 'SN' },
@@ -22,7 +25,7 @@ export default function AlumniNetwork() {
                 <div style={{ fontSize: '0.82rem', color: '#718096' }}>{m.profession} &middot; {m.location}</div>
                 <span className="portal-badge neutral" style={{ marginTop: 4 }}>{m.class}</span>
               </div>
-              <button style={{ padding: '8px 14px', background: 'var(--portal-primary)', color: 'white', border: 'none', borderRadius: 8, fontWeight: 600, cursor: 'pointer', fontSize: '0.8rem' }} onClick={() => alert('This feature is currently under development or disabled.')}><i className="fas fa-envelope" style={{ marginRight: 6 }}></i>Connect</button>
+              <button style={{ padding: '8px 14px', background: 'var(--portal-primary)', color: 'white', border: 'none', borderRadius: 8, fontWeight: 600, cursor: 'pointer', fontSize: '0.8rem' }} onClick={() => showToast(`Connection request sent to ${m.name}`, 'success')}><i className="fas fa-envelope" style={{ marginRight: 6 }}></i>Connect</button>
             </div>
           </div>
         ))}

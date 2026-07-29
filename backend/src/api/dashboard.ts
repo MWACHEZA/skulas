@@ -340,6 +340,9 @@ router.get('/applicant', requireAuth, async (req: AuthRequest, res: Response) =>
       applicantName: application.applicantName,
       appType: application.appType,
       progress,
+      interviewDate: application.interviewDate,
+      interviewTime: application.interviewTime,
+      interviewVenue: application.interviewVenue,
       timeline: application.timeline,
       documents: {
         total: totalDocs,

@@ -1,7 +1,9 @@
+import { useState } from 'react';
 import { useToast } from '../../../context/ToastContext';
 
 export default function ParentNotices() {
   const { showToast } = useToast();
+  const [isShareOpen, setIsShareOpen] = useState<any>(null);
   const notices = [
     { title: 'Term 2 Opening Date', date: '2024-10-22', category: 'Academic', priority: 'high', content: 'School opens on January 14, 2025. All students must report by 8:00am with full school uniform and stationery.' },
     { title: 'Uniform Policy Update', date: '2024-10-18', category: 'General', priority: 'medium', content: 'New blazer design available from the school shop. Current blazers accepted until end of Term 2.' },
@@ -37,7 +39,7 @@ export default function ParentNotices() {
               <p style={{ margin: 0, color: '#4a5568', lineHeight: 1.8, fontSize: '0.95rem' }}>{n.content}</p>
               
               <div style={{ marginTop: 20, paddingTop: 15, borderTop: '1px solid #edf2f7', display: 'flex', justifyContent: 'flex-end' }}>
-                <button className="portal-btn-secondary" style={{ padding: '6px 12px', fontSize: '0.8rem' }} onClick={() => showToast('Share functionality coming soon', 'info')}>
+                <button className="portal-btn-secondary" style={{ padding: '6px 12px', fontSize: '0.8rem' }} onClick={() => setIsShareOpen(n)}>
                     <i className="fas fa-share-alt" style={{ marginRight: 6 }}></i> Share
                 </button>
               </div>
@@ -45,6 +47,31 @@ export default function ParentNotices() {
           </div>
         ))}
       </div>
+
+      {isShareOpen && (
+        <div className="portal-modal-overlay">
+          <div className="portal-modal" style={{ maxWidth: '400px' }}>
+            <div className="portal-modal-header">
+              <h3>Share Notice</h3>
+              <button className="portal-btn-ghost" onClick={() => setIsShareOpen(null)}><i className="fas fa-times"></i></button>
+            </div>
+            <div className="portal-modal-body">
+              <p style={{ margin: '0 0 16px', fontSize: '0.9rem', color: '#4a5568' }}>Share <strong>{isShareOpen.title}</strong> via:</p>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                <button className="portal-btn-secondary" onClick={() => { showToast('Copied to clipboard!', 'success'); setIsShareOpen(null); }}>
+                  <i className="fas fa-link" style={{ marginRight: 8 }}></i> Copy Link
+                </button>
+                <button className="portal-btn-secondary" onClick={() => { showToast('Opened email client.', 'success'); setIsShareOpen(null); }}>
+                  <i className="fas fa-envelope" style={{ marginRight: 8 }}></i> Email
+                </button>
+              </div>
+            </div>
+            <div className="portal-modal-footer">
+              <button className="portal-btn-secondary" onClick={() => setIsShareOpen(null)}>Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

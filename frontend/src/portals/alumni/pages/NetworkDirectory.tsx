@@ -1,6 +1,8 @@
 import { useState } from 'react';
+import { useToast } from '../../../context/ToastContext';
 
 export default function AlumniNetworkDirectory() {
+  const { showToast } = useToast();
   const [alumni] = useState([
     { name: 'John Mupfumi', class: 'Class of 2010', profession: 'Software Engineer', location: 'Harare', industry: 'Technology' },
     { name: 'Sithembile Ncube', class: 'Class of 2012', profession: 'Medical Doctor', location: 'Bulawayo', industry: 'Healthcare' },
@@ -55,7 +57,7 @@ export default function AlumniNetworkDirectory() {
                 <div style={{ fontSize: '0.85rem', color: '#4a5568', fontWeight: 500 }}>{a.profession}</div>
                 <div style={{ fontSize: '0.8rem', color: '#718096', marginTop: 2 }}>{a.location} &bull; <span style={{ fontWeight: 600 }}>{a.class}</span></div>
               </div>
-              <button className="portal-btn-primary" style={{ padding: '8px 16px', fontSize: '0.8rem' }} onClick={() => alert('This feature is currently under development or disabled.')}>Connect</button>
+              <button className="portal-btn-primary" style={{ padding: '8px 16px', fontSize: '0.8rem' }} onClick={() => showToast(`Connection request sent to ${a.name}`, 'success')}>Connect</button>
             </div>
           </div>
         ))}

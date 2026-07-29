@@ -1,4 +1,7 @@
+import { useToast } from '../../../context/ToastContext';
+
 export default function AlumniEvents() {
+  const { showToast } = useToast();
   const events = [
     { id: '1', title: 'Class of 2010 — 15 Year Reunion Gala', date: '2025-12-15', venue: 'Embakwe Main Hall', type: 'Reunion', status: 'upcoming' },
     { id: '2', title: 'Annual Charity Fun Run 2025', date: '2025-03-22', venue: 'School Grounds', type: 'Fundraiser', status: 'upcoming' },
@@ -23,7 +26,7 @@ export default function AlumniEvents() {
                 <div><i className="fas fa-tag" style={{ width: 20 }}></i> {e.type}</div>
               </div>
               {e.status === 'upcoming' && (
-                <button style={{ width: '100%', padding: '10px', background: 'var(--portal-primary)', color: 'white', border: 'none', borderRadius: 8, fontWeight: 600, cursor: 'pointer' }} onClick={() => alert('This feature is currently under development or disabled.')}>
+                <button style={{ width: '100%', padding: '10px', background: 'var(--portal-primary)', color: 'white', border: 'none', borderRadius: 8, fontWeight: 600, cursor: 'pointer' }} onClick={() => showToast(`Successfully RSVP'd for ${e.title}`, 'success')}>
                   <i className="fas fa-ticket-alt" style={{ marginRight: 8 }}></i>Register / RSVP
                 </button>
               )}

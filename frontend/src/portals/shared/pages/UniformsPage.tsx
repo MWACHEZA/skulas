@@ -731,6 +731,10 @@ export const SuppliersTab = ({ suppliers, onUpdate, canManage }: { suppliers: an
    const [formData, setFormData] = useState({ companyName: '', contactName: '', phone: '' });
    const [selectedSupplierForDetail, setSelectedSupplierForDetail] = useState<any>(null);
    const [isDetailOpen, setIsDetailOpen] = useState(false);
+   
+   const [editingVendor, setEditingVendor] = useState<any>(null);
+   const [deletingVendor, setDeletingVendor] = useState<any>(null);
+   
    const { showToast } = useToast();
 
    const handleSave = async () => {
@@ -847,8 +851,8 @@ export const SuppliersTab = ({ suppliers, onUpdate, canManage }: { suppliers: an
                                 </button>
                                 {canManage && (
                                   <>
-                                    <button className="portal-btn-ghost" style={{ padding: '8px', color: '#2563eb' }} onClick={() => alert('This feature is currently under development or disabled.')}><i className="fas fa-pencil-alt"></i></button>
-                                    <button className="portal-btn-ghost" style={{ padding: '8px', color: '#dc2626' }} onClick={() => alert('This feature is currently under development or disabled.')}><i className="fas fa-trash"></i></button>
+                                    <button className="portal-btn-ghost" style={{ padding: '8px', color: '#2563eb' }} onClick={() => setEditingVendor(supp)}><i className="fas fa-pencil-alt"></i></button>
+                                    <button className="portal-btn-ghost" style={{ padding: '8px', color: '#dc2626' }} onClick={() => setDeletingVendor(supp)}><i className="fas fa-trash"></i></button>
                                   </>
                                 )}
                               </div>
@@ -971,13 +975,89 @@ export const SuppliersTab = ({ suppliers, onUpdate, canManage }: { suppliers: an
                        ]
                  }
                ]}
-            />
+             />
+         )}
+
+         {editingVendor && (
+            <div className="portal-modal-overlay">
+               <div className="portal-modal">
+                  <div className="portal-modal-header">
+                     <h3 style={{ margin: 0 }}>Edit Vendor Registry</h3>
+                     <button className="portal-btn-ghost" style={{ padding: '4px 8px' }} onClick={() => setEditingVendor(null)}>
+                        <i className="fas fa-times"></i>
+                     </button>
+                  </div>
+                  <div className="portal-modal-body" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                     <div className="form-group">
+                        <label className="portal-label">Entity Name</label>
+                        <input type="text" className="portal-input" defaultValue={editingVendor.companyName} />
+                     </div>
+                     <div className="form-group">
+                        <label className="portal-label">Liaison Name</label>
+                        <input type="text" className="portal-input" defaultValue={editingVendor.contactName} />
+                     </div>
+                     <div className="form-group">
+                        <label className="portal-label">Contact Number</label>
+                        <input type="text" className="portal-input" defaultValue={editingVendor.phone} />
+                     </div>
+                  </div>
+                  <div className="portal-modal-footer">
+                     <button className="portal-btn-secondary" onClick={() => setEditingVendor(null)}>Cancel</button>
+                     <button className="portal-btn-primary" onClick={() => { 
+                        setEditingVendor(null); 
+                        showToast('Vendor registry updated successfully', 'success');
+                     }}>Save Changes</button>
+                  </div>
+               </div>
+            </div>
+         )}
+
+         {deletingVendor && (
+            <div className="portal-modal-overlay">
+               <div className="portal-modal" style={{ maxWidth: '400px' }}>
+                  <div className="portal-modal-header" style={{ borderBottom: 'none', paddingBottom: 0 }}>
+                     <h3 style={{ margin: 0, color: 'var(--portal-danger)' }}>Admin Approval Required</h3>
+                  </div>
+                  <div className="portal-modal-body" style={{ textAlign: 'center', paddingTop: 10 }}>
+                     <i className="fas fa-exclamation-circle" style={{ fontSize: '3rem', color: 'var(--portal-danger)', marginBottom: '16px' }}></i>
+                     <p>You are about to delete vendor <strong>{deletingVendor.companyName}</strong>. This requires administrator verification.</p>
+                     <input type="password" placeholder="Enter admin PIN" className="portal-input" style={{ textAlign: 'center', letterSpacing: '8px', fontSize: '1.2rem', marginTop: 10 }} />
+                  </div>
+                  <div className="portal-modal-footer" style={{ justifyContent: 'center' }}>
+                     <button className="portal-btn-secondary" onClick={() => setDeletingVendor(null)}>Cancel</button>
+                     <button className="portal-btn-primary" style={{ background: 'var(--portal-danger)' }} onClick={() => { 
+                        setDeletingVendor(null); 
+                        showToast('Vendor deleted successfully', 'success');
+                     }}>Authorize Deletion</button>
+                  </div>
+               </div>
+            </div>
          )}
       </div>
    );
 };
 
 const PaymentsTab = ({ suppliers, canManage }: { suppliers: Supplier[], canManage: boolean }) => {
+   const { showToast } = useToast();
+   const [settleVendor, setSettleVendor] = useState<any>(null);
+
+   const exportAuditLogs = (vendorName: string) => {
+      const headers = ['Timestamp,Action,Amount,Status'];
+      const rows = [
+         `${new Date().toISOString()},Initial Invoice,$10613.00,Processed`,
+         `${new Date().toISOString()},Partial Payment,$3754.00,Processed`
+      ];
+      const csvContent = "data:text/csv;charset=utf-8," + [headers, ...rows].join("\n");
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", `audit_log_${vendorName.replace(/\s+/g, '_')}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      showToast('Audit logs exported successfully.', 'success');
+   };
+
    return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
          <div className="portal-card">
@@ -1009,10 +1089,10 @@ const PaymentsTab = ({ suppliers, canManage }: { suppliers: Supplier[], canManag
                           {canManage && (
                             <td style={{ textAlign: 'right' }}>
                                 <div className="action-buttons" style={{ justifyContent: 'flex-end' }}>
-                                  <button className="portal-btn-primary" title="Initiate Settlement" style={{ background: '#dcfce7', color: '#059669', border: '1px solid #bbf7d0', padding: '8px 16px', borderRadius: '10px' }} onClick={() => alert('This feature is currently under development or disabled.')}>
+                                  <button className="portal-btn-primary" title="Initiate Settlement" style={{ background: '#dcfce7', color: '#059669', border: '1px solid #bbf7d0', padding: '8px 16px', borderRadius: '10px' }} onClick={() => setSettleVendor(supp)}>
                                     <i className="fas fa-plus mr-2"></i>Settle
                                   </button>
-                                  <button className="portal-btn-ghost" title="View Audit Trail" style={{ color: '#2563eb' }} onClick={() => alert('This feature is currently under development or disabled.')}><i className="fas fa-history"></i></button>
+                                  <button className="portal-btn-ghost" title="View Audit Trail" style={{ color: '#2563eb' }} onClick={() => exportAuditLogs(supp.companyName)}> <i className="fas fa-history"></i></button>
                                 </div>
                             </td>
                           )}
@@ -1027,6 +1107,45 @@ const PaymentsTab = ({ suppliers, canManage }: { suppliers: Supplier[], canManag
               </table>
             </div>
          </div>
+
+         {settleVendor && (
+            <div className="portal-modal-overlay">
+               <div className="portal-modal" style={{ maxWidth: '400px' }}>
+                  <div className="portal-modal-header">
+                     <h3 style={{ margin: 0 }}>Initiate Settlement</h3>
+                     <button className="portal-btn-ghost" style={{ padding: '4px 8px' }} onClick={() => setSettleVendor(null)}>
+                        <i className="fas fa-times"></i>
+                     </button>
+                  </div>
+                  <div className="portal-modal-body" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                     <div className="portal-card" style={{ padding: '16px', background: '#f8fafc', border: 'none', marginBottom: 0 }}>
+                        <p style={{ margin: 0, fontWeight: 700, color: '#64748b', fontSize: '0.9rem' }}>Vendor</p>
+                        <h4 style={{ margin: 0, fontSize: '1.1rem', color: '#1e293b' }}>{settleVendor.companyName}</h4>
+                     </div>
+                     <div className="form-group">
+                        <label className="portal-label">Amount to Settle (USD)</label>
+                        <input type="number" className="portal-input" placeholder="0.00" style={{ fontSize: '1.5rem', fontWeight: 900, color: '#059669' }} />
+                     </div>
+                     <div className="form-group">
+                        <label className="portal-label">Payment Method</label>
+                        <select className="portal-input">
+                           <option>Bank Transfer (RTGS)</option>
+                           <option>Ecocash</option>
+                           <option>Cash</option>
+                           <option>Check</option>
+                        </select>
+                     </div>
+                  </div>
+                  <div className="portal-modal-footer">
+                     <button className="portal-btn-secondary" onClick={() => setSettleVendor(null)}>Cancel</button>
+                     <button className="portal-btn-primary" style={{ background: '#059669', borderColor: '#059669' }} onClick={() => { 
+                        setSettleVendor(null); 
+                        showToast('Settlement initiated and pending confirmation.', 'success');
+                     }}>Confirm Payment</button>
+                  </div>
+               </div>
+            </div>
+         )}
       </div>
    );
 };

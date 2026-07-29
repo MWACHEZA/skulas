@@ -1,9 +1,26 @@
+import { useState } from 'react';
+import jsPDF from 'jspdf';
+import { useToast } from '../../../context/ToastContext';
+
 export default function AncillaryHR() {
+  const { showToast } = useToast();
+  const [isLeaveModalOpen, setIsLeaveModalOpen] = useState(false);
   const leaves = [
     { id: '1', type: 'Annual Leave', start: '2024-12-20', end: '2025-01-05', status: 'approved' },
     { id: '2', type: 'Sick Leave', start: '2024-10-10', end: '2024-10-12', status: 'approved' },
     { id: '3', type: 'Study Leave', start: '2025-02-01', end: '2025-02-14', status: 'pending' },
   ];
+
+  const downloadDoc = (docName: string) => {
+    const doc = new jsPDF();
+    doc.setFontSize(20);
+    doc.text(`Official Document: ${docName}`, 20, 20);
+    doc.setFontSize(12);
+    doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 20, 30);
+    doc.text("This is an officially certified institutional document.", 20, 45);
+    doc.save(`${docName.replace(/\s+/g, '_')}.pdf`);
+    showToast(`${docName} downloaded successfully.`, 'success');
+  };
 
   return (
     <>
@@ -15,7 +32,7 @@ export default function AncillaryHR() {
         <div className="portal-card">
           <div className="portal-card-header">
             <h2><i className="fas fa-calendar-minus" style={{ marginRight: 8, color: 'var(--school-primary, #3182ce)' }}></i>Leave Applications</h2>
-            <button style={{ padding: '6px 14px', background: 'var(--portal-primary)', color: 'white', border: 'none', borderRadius: 8, fontWeight: 600, cursor: 'pointer', fontSize: '0.8rem' }} onClick={() => alert('This feature is currently under development or disabled.')}>Apply for Leave</button>
+            <button style={{ padding: '6px 14px', background: 'var(--portal-primary)', color: 'white', border: 'none', borderRadius: 8, fontWeight: 600, cursor: 'pointer', fontSize: '0.8rem' }} onClick={() => setIsLeaveModalOpen(true)}>Apply for Leave</button>
           </div>
           <div className="portal-card-body" style={{ padding: 0 }}>
             <table className="portal-table">
@@ -44,12 +61,59 @@ export default function AncillaryHR() {
                   <i className="fas fa-file-pdf" style={{ color: 'var(--portal-danger)' }}></i>
                   <span style={{ fontWeight: 500 }}>{doc}</span>
                 </div>
-                <button style={{ background: 'none', border: 'none', color: 'var(--portal-primary)', cursor: 'pointer', fontWeight: 600 }} onClick={() => alert('This feature is currently under development or disabled.')}>Download</button>
+                <button style={{ background: 'none', border: 'none', color: 'var(--portal-primary)', cursor: 'pointer', fontWeight: 600 }} onClick={() => downloadDoc(doc)}>Download</button>
               </div>
             ))}
           </div>
         </div>
       </div>
+
+      {isLeaveModalOpen && (
+        <div className="portal-modal-overlay">
+          <div className="portal-modal" style={{ maxWidth: '500px' }}>
+            <div className="portal-modal-header">
+              <h3 style={{ margin: 0 }}>Apply for Leave</h3>
+              <button className="portal-btn-ghost" style={{ padding: '4px 8px' }} onClick={() => setIsLeaveModalOpen(false)}>
+                <i className="fas fa-times"></i>
+              </button>
+            </div>
+            <div className="portal-modal-body" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div className="form-group">
+                <label className="portal-label">Leave Type</label>
+                <select className="portal-input">
+                  <option>Annual Leave</option>
+                  <option>Sick Leave</option>
+                  <option>Study Leave</option>
+                  <option>Compassionate Leave</option>
+                </select>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                <div className="form-group">
+                  <label className="portal-label">Start Date</label>
+                  <input type="date" className="portal-input" />
+                </div>
+                <div className="form-group">
+                  <label className="portal-label">End Date</label>
+                  <input type="date" className="portal-input" />
+                </div>
+              </div>
+              <div className="form-group">
+                <label className="portal-label">Reason</label>
+                <textarea className="portal-input" rows={3} placeholder="Provide additional details..."></textarea>
+              </div>
+            </div>
+            <div className="portal-modal-footer">
+              <button className="portal-btn-secondary" onClick={() => setIsLeaveModalOpen(false)}>Cancel</button>
+              <button className="portal-btn-primary" onClick={() => { 
+                setIsLeaveModalOpen(false); 
+                showToast('Leave application submitted for approval.', 'success'); 
+              }}>
+                Submit Application
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

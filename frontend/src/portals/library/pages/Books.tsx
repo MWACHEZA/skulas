@@ -72,6 +72,9 @@ export default function LibraryBooks() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
+  const [editBook, setEditBook] = useState<BookRecord | null>(null);
+  const [editForm, setEditForm] = useState<any>({});
+  const [editSubmitting, setEditSubmitting] = useState(false);
 
   // Form state
   const [formData, setFormData] = useState<any>({
@@ -159,6 +162,35 @@ export default function LibraryBooks() {
     } catch (err) {
       showToast('Failed to register book', 'error');
     
+    }
+  };
+
+  // Open edit modal pre-filled
+  const openEditModal = (book: BookRecord) => {
+    setEditBook(book);
+    setEditForm({
+      title: book.title,
+      author: book.author,
+      isbn: book.isbn,
+      categoryId: book.categoryId,
+      totalCopies: book.totalCopies?.toString() || '',
+      status: 'Available',
+    });
+  };
+
+  const handleEditBook = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editBook) return;
+    setEditSubmitting(true);
+    try {
+      await api.patch(`/api/library/books/${editBook.id}`, editForm);
+      showToast('Book updated successfully', 'success');
+      setEditBook(null);
+      fetchBooks();
+    } catch {
+      showToast('Failed to update book', 'error');
+    } finally {
+      setEditSubmitting(false);
     }
   };
 
@@ -293,7 +325,9 @@ export default function LibraryBooks() {
                   </div>
                 </td>
                 <td style={{ textAlign: 'center' }}>
-                  <button className="text-blue-600 hover:text-blue-800 font-bold p-2" onClick={() => alert('This feature is currently under development or disabled.')}><i className="fas fa-edit"></i></button>
+                  <button className="text-blue-600 hover:text-blue-800 font-bold p-2" onClick={() => openEditModal(book)} title="Edit book">
+                    <i className="fas fa-edit"></i>
+                  </button>
                 </td>
               </tr>
             ))}
@@ -434,6 +468,54 @@ export default function LibraryBooks() {
                 <div style={{ display: 'flex', gap: '15px', marginTop: '30px' }}>
                    <button type="button" onClick={() => setShowAddModal(false)} className="portal-btn-ghost" style={{ flex: 1 }}>Abort</button>
                    <button type="submit" className="portal-btn-primary" style={{ flex: 2 }}>Finalize Entry</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
+      {editBook && (
+        <div className="portal-modal-overlay" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div className="portal-modal-card" style={{ maxWidth: 540 }}>
+            <div className="portal-modal-header">
+              <div className="header-titles">
+                <h2>Edit Book</h2>
+                <span>Update the details for: <strong>{editBook.title}</strong></span>
+              </div>
+              <button className="close-panel" onClick={() => setEditBook(null)}>&times;</button>
+            </div>
+            <div className="portal-modal-body" style={{ padding: 30 }}>
+              <form onSubmit={handleEditBook}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                  <div className="form-group" style={{ gridColumn: '1 / -1' }}>
+                    <label className="portal-label">Title *</label>
+                    <input type="text" required className="portal-input" value={editForm.title || ''} onChange={e => setEditForm({ ...editForm, title: e.target.value })} />
+                  </div>
+                  <div className="form-group">
+                    <label className="portal-label">Author *</label>
+                    <input type="text" required className="portal-input" value={editForm.author || ''} onChange={e => setEditForm({ ...editForm, author: e.target.value })} />
+                  </div>
+                  <div className="form-group">
+                    <label className="portal-label">ISBN</label>
+                    <input type="text" className="portal-input" value={editForm.isbn || ''} onChange={e => setEditForm({ ...editForm, isbn: e.target.value })} />
+                  </div>
+                  <div className="form-group">
+                    <label className="portal-label">Category</label>
+                    <select className="portal-input" value={editForm.categoryId || ''} onChange={e => setEditForm({ ...editForm, categoryId: e.target.value })}>
+                      <option value="">Uncategorized</option>
+                      {categories.map(c => <option key={c.id} value={c.id}>{c.category}</option>)}
+                    </select>
+                  </div>
+                  <div className="form-group">
+                    <label className="portal-label">Total Copies</label>
+                    <input type="number" className="portal-input" value={editForm.totalCopies || ''} onChange={e => setEditForm({ ...editForm, totalCopies: e.target.value })} />
+                  </div>
+                </div>
+                <div style={{ display: 'flex', gap: 12, marginTop: 24 }}>
+                  <button type="button" className="portal-btn-ghost" style={{ flex: 1 }} onClick={() => setEditBook(null)}>Cancel</button>
+                  <button type="submit" className="portal-btn-primary" style={{ flex: 2 }} disabled={editSubmitting}>
+                    {editSubmitting ? 'Saving...' : 'Save Changes'}
+                  </button>
                 </div>
               </form>
             </div>

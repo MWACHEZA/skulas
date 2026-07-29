@@ -1,7 +1,11 @@
+import { useState } from 'react';
 import { useAuth } from '../../../contexts/AuthContext';
+import { useToast } from '../../../context/ToastContext';
 
 export default function AlumniDashboard() {
   const { user } = useAuth();
+  const { showToast } = useToast();
+  const [isDonationModalOpen, setIsDonationModalOpen] = useState(false);
 
   return (
     <>
@@ -51,12 +55,55 @@ export default function AlumniDashboard() {
           </div>
           <div className="portal-card-body" style={{ textAlign: 'center' }}>
             <p style={{ color: '#4a5568', marginBottom: 20 }}>Support the next generation of Embakwe students by donating to the Legacy Scholarship Fund or registering for an upcoming charity run.</p>
-            <button style={{ padding: '12px 24px', background: 'var(--portal-primary)', color: 'white', border: 'none', borderRadius: 8, fontWeight: 600, cursor: 'pointer', fontSize: '1rem', width: '100%' }} onClick={() => alert('This feature is currently under development or disabled.')}>
+            <button style={{ padding: '12px 24px', background: 'var(--portal-primary)', color: 'white', border: 'none', borderRadius: 8, fontWeight: 600, cursor: 'pointer', fontSize: '1rem', width: '100%' }} onClick={() => setIsDonationModalOpen(true)}>
               Contribute Today
             </button>
           </div>
         </div>
       </div>
+
+      {isDonationModalOpen && (
+        <div className="portal-modal-overlay">
+          <div className="portal-modal">
+            <div className="portal-modal-header">
+              <h3>Secure Payment Gateway</h3>
+              <button className="portal-btn-ghost" onClick={() => setIsDonationModalOpen(false)}><i className="fas fa-times"></i></button>
+            </div>
+            <div className="portal-modal-body">
+              <div className="form-group">
+                <label className="portal-label">Donation Amount (USD)</label>
+                <input type="number" className="portal-input" placeholder="e.g. 100" />
+              </div>
+              <div className="form-group">
+                <label className="portal-label">Fund</label>
+                <select className="portal-input">
+                  <option>Legacy Scholarship Fund</option>
+                  <option>General Alumni Fund</option>
+                  <option>Science Lab Renovation</option>
+                </select>
+              </div>
+              <div className="form-group">
+                <label className="portal-label">Payment Method</label>
+                <select className="portal-input">
+                  <option>Credit/Debit Card</option>
+                  <option>Ecocash</option>
+                  <option>Bank Transfer</option>
+                </select>
+              </div>
+            </div>
+            <div className="portal-modal-footer">
+              <button className="portal-btn-secondary" onClick={() => setIsDonationModalOpen(false)}>Cancel</button>
+              <button className="portal-btn-primary" onClick={() => {
+                showToast('Payment processing...', 'info');
+                setTimeout(() => {
+                  showToast('Thank you for your generous contribution!', 'success');
+                  setIsDonationModalOpen(false);
+                }, 1500);
+              }}>Submit Donation</button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

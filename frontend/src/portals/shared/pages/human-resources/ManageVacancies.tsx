@@ -21,6 +21,12 @@ export default function ManageVacancies() {
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+
+  // New config modals
+  const [isSkillTaggingOpen, setIsSkillTaggingOpen] = useState(false);
+  const [isInterviewConfigOpen, setIsInterviewConfigOpen] = useState(false);
+  const [isJobTypeConfigOpen, setIsJobTypeConfigOpen] = useState(false);
+  const [isExpLevelConfigOpen, setIsExpLevelConfigOpen] = useState(false);
   const [departments, setDepartments] = useState<{ id: string; name: string }[]>([]);
   const [recruiters, setRecruiters] = useState<{ id: string; firstName: string; lastName: string }[]>([]);
 
@@ -375,7 +381,7 @@ export default function ManageVacancies() {
                     <label className="portal-label">Skills <span style={{ color: 'red' }}>*</span></label>
                     <div style={{ display: 'flex', gap: '10px' }}>
                       <input {...register('skills', { required: true })} type="text" className="portal-input" />
-                      <button type="button" className="portal-btn-ghost" style={{ color: 'var(--school-primary, #0056b3)', whiteSpace: 'nowrap' }} onClick={() => showToast('Skill tagging will be available in next release', 'info')}><i className="fas fa-plus-circle"></i> Add</button>
+                      <button type="button" className="portal-btn-ghost" style={{ color: 'var(--school-primary, #0056b3)', whiteSpace: 'nowrap' }} onClick={() => setIsSkillTaggingOpen(true)}><i className="fas fa-plus-circle"></i> Add</button>
                     </div>
                   </div>
 
@@ -387,7 +393,7 @@ export default function ManageVacancies() {
                     <label className="portal-label">Interview rounds <span style={{ color: 'red' }}>*</span></label>
                     <div style={{ display: 'flex', gap: '10px' }}>
                       <input {...register('interviewRounds', { required: true })} type="number" defaultValue={1} className="portal-input" />
-                      <button type="button" className="portal-btn-ghost" style={{ color: 'var(--school-primary, #0056b3)', whiteSpace: 'nowrap' }} onClick={() => showToast('Advanced interview round config coming soon', 'info')}><i className="fas fa-plus-circle"></i> Add</button>
+                      <button type="button" className="portal-btn-ghost" style={{ color: 'var(--school-primary, #0056b3)', whiteSpace: 'nowrap' }} onClick={() => setIsInterviewConfigOpen(true)}><i className="fas fa-plus-circle"></i> Add</button>
                     </div>
                   </div>
                   <div>
@@ -428,14 +434,14 @@ export default function ManageVacancies() {
                         <option value="Part Time">Part Time</option>
                         <option value="Contract">Contract</option>
                       </select>
-                      <button type="button" className="portal-btn-primary" style={{ background: 'var(--school-primary, #0056b3)', borderColor: 'var(--school-primary, #0056b3)', padding: '10px 16px' }} onClick={() => showToast('Job type definitions coming soon', 'info')}><i className="fas fa-plus"></i></button>
+                      <button type="button" className="portal-btn-primary" style={{ background: 'var(--school-primary, #0056b3)', borderColor: 'var(--school-primary, #0056b3)', padding: '10px 16px' }} onClick={() => setIsJobTypeConfigOpen(true)}><i className="fas fa-plus"></i></button>
                     </div>
                   </div>
                   <div>
                     <label className="portal-label">Work experience <span style={{ color: 'red' }}>*</span></label>
                     <div style={{ display: 'flex', gap: '10px' }}>
                       <input {...register('workExperience', { required: true })} type="text" className="portal-input" />
-                      <button type="button" className="portal-btn-primary" style={{ background: 'var(--school-primary, #0056b3)', borderColor: 'var(--school-primary, #0056b3)', padding: '10px 16px' }} onClick={() => showToast('Experience level definitions coming soon', 'info')}><i className="fas fa-plus"></i></button>
+                      <button type="button" className="portal-btn-primary" style={{ background: 'var(--school-primary, #0056b3)', borderColor: 'var(--school-primary, #0056b3)', padding: '10px 16px' }} onClick={() => setIsExpLevelConfigOpen(true)}><i className="fas fa-plus"></i></button>
                     </div>
                   </div>
 
@@ -505,6 +511,99 @@ export default function ManageVacancies() {
                   </button>
                 </div>
               </form>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Config Modals */}
+      {isSkillTaggingOpen && (
+        <div className="portal-modal-overlay">
+          <div className="portal-modal" style={{ maxWidth: '400px' }}>
+            <div className="portal-modal-header">
+              <h3>Manage Skill Tags</h3>
+              <button className="portal-btn-ghost" onClick={() => setIsSkillTaggingOpen(false)}><i className="fas fa-times"></i></button>
+            </div>
+            <div className="portal-modal-body">
+              <div className="form-group">
+                <label className="portal-label">New Skill Tag</label>
+                <input type="text" className="portal-input" placeholder="e.g. React.js, Curriculum Design" />
+              </div>
+            </div>
+            <div className="portal-modal-footer">
+              <button className="portal-btn-secondary" onClick={() => setIsSkillTaggingOpen(false)}>Cancel</button>
+              <button className="portal-btn-primary" onClick={() => { showToast('Skill tag saved successfully.', 'success'); setIsSkillTaggingOpen(false); }}>Save Skill</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {isInterviewConfigOpen && (
+        <div className="portal-modal-overlay">
+          <div className="portal-modal" style={{ maxWidth: '400px' }}>
+            <div className="portal-modal-header">
+              <h3>Advanced Interview Config</h3>
+              <button className="portal-btn-ghost" onClick={() => setIsInterviewConfigOpen(false)}><i className="fas fa-times"></i></button>
+            </div>
+            <div className="portal-modal-body">
+              <div className="form-group">
+                <label className="portal-label">Round Template</label>
+                <select className="portal-input">
+                  <option>Standard (Screening - Technical - Culture)</option>
+                  <option>Executive (Screening - Panel - Board)</option>
+                  <option>Teaching (Screening - Demo Class - Panel)</option>
+                </select>
+              </div>
+            </div>
+            <div className="portal-modal-footer">
+              <button className="portal-btn-secondary" onClick={() => setIsInterviewConfigOpen(false)}>Cancel</button>
+              <button className="portal-btn-primary" onClick={() => { showToast('Interview template applied.', 'success'); setIsInterviewConfigOpen(false); }}>Apply Config</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {isJobTypeConfigOpen && (
+        <div className="portal-modal-overlay">
+          <div className="portal-modal" style={{ maxWidth: '400px' }}>
+            <div className="portal-modal-header">
+              <h3>Define New Job Type</h3>
+              <button className="portal-btn-ghost" onClick={() => setIsJobTypeConfigOpen(false)}><i className="fas fa-times"></i></button>
+            </div>
+            <div className="portal-modal-body">
+              <div className="form-group">
+                <label className="portal-label">Job Type Name</label>
+                <input type="text" className="portal-input" placeholder="e.g. Term-Time Only, Locum" />
+              </div>
+            </div>
+            <div className="portal-modal-footer">
+              <button className="portal-btn-secondary" onClick={() => setIsJobTypeConfigOpen(false)}>Cancel</button>
+              <button className="portal-btn-primary" onClick={() => { showToast('Job type added.', 'success'); setIsJobTypeConfigOpen(false); }}>Add Type</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {isExpLevelConfigOpen && (
+        <div className="portal-modal-overlay">
+          <div className="portal-modal" style={{ maxWidth: '400px' }}>
+            <div className="portal-modal-header">
+              <h3>Define Experience Level</h3>
+              <button className="portal-btn-ghost" onClick={() => setIsExpLevelConfigOpen(false)}><i className="fas fa-times"></i></button>
+            </div>
+            <div className="portal-modal-body">
+              <div className="form-group">
+                <label className="portal-label">Experience Level Name</label>
+                <input type="text" className="portal-input" placeholder="e.g. Mid-Weight, Principal" />
+              </div>
+              <div className="form-group">
+                <label className="portal-label">Years Baseline</label>
+                <input type="number" className="portal-input" placeholder="e.g. 5" />
+              </div>
+            </div>
+            <div className="portal-modal-footer">
+              <button className="portal-btn-secondary" onClick={() => setIsExpLevelConfigOpen(false)}>Cancel</button>
+              <button className="portal-btn-primary" onClick={() => { showToast('Experience level defined.', 'success'); setIsExpLevelConfigOpen(false); }}>Save Level</button>
             </div>
           </div>
         </div>

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import '../../../styles/portal.css';
+import { useToast } from '../../../context/ToastContext';
 
 interface AuditLog {
   id: string;
@@ -12,6 +13,7 @@ interface AuditLog {
 }
 
 export default function PlatformLogs() {
+  const { showToast } = useToast();
   const [filter, setFilter] = useState('ALL');
   const [search, setSearch] = useState('');
 
@@ -29,6 +31,20 @@ export default function PlatformLogs() {
       if (search && !log.event.toLowerCase().includes(search.toLowerCase()) && !log.actor.toLowerCase().includes(search.toLowerCase()) && !log.targetSchool.toLowerCase().includes(search.toLowerCase())) return false;
       return true;
   });
+
+  const exportCSV = () => {
+    const headers = ['ID,Timestamp,Event,Actor,IP,Target School,Status'];
+    const rows = filteredLogs.map(log => `${log.id},${log.timestamp},"${log.event}","${log.actor}",${log.ipAddress},${log.targetSchool},${log.status}`);
+    const csvContent = "data:text/csv;charset=utf-8," + [headers, ...rows].join("\n");
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "platform_audit_logs.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    showToast('Platform logs exported successfully.', 'success');
+  };
 
   return (
     <div className="platform-logs-container">
@@ -60,7 +76,7 @@ export default function PlatformLogs() {
                  </select>
             </div>
             
-            <button className="portal-btn-secondary py-2" onClick={() => alert('This feature is currently under development or disabled.')}><i className="fas fa-download mr-2"></i>Export CSV</button>
+            <button className="portal-btn-secondary py-2" onClick={exportCSV}><i className="fas fa-download mr-2"></i>Export CSV</button>
         </div>
 
         <div className="management-table-card rounded-t-none">

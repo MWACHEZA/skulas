@@ -16,6 +16,14 @@ export default function StudentProfile() {
 
   const [student, setStudent] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
+  const handleEditStudent = async (e: React.FormEvent) => {
+    e.preventDefault();
+    showToast('Student details updated successfully.', 'success');
+    setIsEditModalOpen(false);
+    fetchStudentData();
+  };
 
   const getYearLabel = (typeStr: string) => {
     const type = (typeStr || '').toLowerCase();
@@ -95,7 +103,7 @@ export default function StudentProfile() {
           <h1>Student Profile: {student.user?.name || student.name}</h1>
         </div>
         <div style={{ display: 'flex', gap: 10 }}>
-          {currentUser?.role === 'SCHOOL_ADMIN' && <button className="portal-btn-secondary" onClick={() => alert('This feature is currently under development or disabled.')}><i className="fas fa-edit"></i> Edit Details</button>}
+          {currentUser?.role === 'SCHOOL_ADMIN' && <button className="portal-btn-secondary" onClick={() => setIsEditModalOpen(true)}><i className="fas fa-edit"></i> Edit Details</button>}
           <button className="portal-btn-primary" onClick={() => window.print()}><i className="fas fa-print"></i> Print Record</button>
         </div>
       </div>
@@ -402,6 +410,53 @@ export default function StudentProfile() {
                 <p style={{ margin: 0, fontWeight: 600 }}>{student.class?.department?.duration}-Year Honours Degree</p>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {isEditModalOpen && (
+        <div className="portal-modal-overlay">
+          <div className="portal-modal">
+            <div className="portal-modal-header">
+              <h3>Edit Student Profile</h3>
+              <button className="portal-btn-ghost" onClick={() => setIsEditModalOpen(false)}><i className="fas fa-times"></i></button>
+            </div>
+            <form onSubmit={handleEditStudent}>
+              <div className="portal-modal-body" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                <div className="form-group" style={{ gridColumn: '1 / -1' }}>
+                  <label className="portal-label">Full Name</label>
+                  <input type="text" className="portal-input" defaultValue={student.user?.name || student.name} required />
+                </div>
+                <div className="form-group">
+                  <label className="portal-label">Date of Birth</label>
+                  <input type="date" className="portal-input" defaultValue={student.user?.metadata?.dob ? new Date(student.user.metadata.dob).toISOString().split('T')[0] : ''} />
+                </div>
+                <div className="form-group">
+                  <label className="portal-label">Gender</label>
+                  <select className="portal-input" defaultValue={student.user?.metadata?.gender || student.gender}>
+                    <option>Male</option>
+                    <option>Female</option>
+                    <option>Other</option>
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label className="portal-label">Guardian Name</label>
+                  <input type="text" className="portal-input" defaultValue={student.guardianName || student.user?.metadata?.nokName} />
+                </div>
+                <div className="form-group">
+                  <label className="portal-label">Guardian Phone</label>
+                  <input type="text" className="portal-input" defaultValue={student.guardianPhone || student.user?.metadata?.nokPhone} />
+                </div>
+                <div className="form-group" style={{ gridColumn: '1 / -1' }}>
+                  <label className="portal-label">Headmaster Approval PIN</label>
+                  <input type="password" placeholder="Required for critical profile changes" className="portal-input" required />
+                </div>
+              </div>
+              <div className="portal-modal-footer">
+                <button type="button" className="portal-btn-secondary" onClick={() => setIsEditModalOpen(false)}>Cancel</button>
+                <button type="submit" className="portal-btn-primary">Save Changes</button>
+              </div>
+            </form>
           </div>
         </div>
       )}

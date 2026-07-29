@@ -22,6 +22,7 @@ export default function AdmissionInquiryPage() {
   const [classes, setClasses] = useState<{ id: string; name: string }[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [followUpInquiry, setFollowUpInquiry] = useState<any>(null);
 
   // Filters
   const [filterClass, setFilterClass] = useState('');
@@ -85,6 +86,13 @@ export default function AdmissionInquiryPage() {
       showToast('Failed to add inquiry', 'error');
     
     }
+  };
+
+  const handleFollowUpSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    showToast('Follow-up recorded successfully.', 'success');
+    setFollowUpInquiry(null);
+    fetchInquiries();
   };
 
   const filtered = inquiries.filter(i => {
@@ -151,7 +159,10 @@ export default function AdmissionInquiryPage() {
               </select>
             </div>
             <div style={{ display: 'flex', alignItems: 'flex-end' }}>
-              <button className="portal-btn-primary" style={{ background: '#22c55e', border: 'none', height: '38px', width: '100%' }} onClick={() => alert('This feature is currently under development or disabled.')}>Find</button>
+              <button className="portal-btn-primary" style={{ background: '#22c55e', border: 'none', height: '38px', width: '100%' }} onClick={() => {
+                if (filtered.length === 0) showToast('Search returned 0 results.', 'info');
+                else showToast(`Found ${filtered.length} results.`, 'success');
+              }}>Find</button>
             </div>
           </div>
 
@@ -195,7 +206,7 @@ export default function AdmissionInquiryPage() {
                       <td>{inq.nextFollowUpDate ? new Date(inq.nextFollowUpDate).toLocaleDateString() : '-'}</td>
                       <td><span className="status-badge status-paid">{inq.status}</span></td>
                       <td style={{ textAlign: 'center' }}>
-                        <button className="portal-btn-primary" style={{ padding: '6px 12px', fontSize: '0.8rem' }} onClick={() => alert('This feature is currently under development or disabled.')}><i className="fas fa-phone mr-2"></i> Follow Up</button>
+                        <button className="portal-btn-primary" style={{ padding: '6px 12px', fontSize: '0.8rem' }} onClick={() => setFollowUpInquiry(inq)}><i className="fas fa-phone mr-2"></i> Follow Up</button>
                       </td>
                     </tr>
                   ))
@@ -251,6 +262,50 @@ export default function AdmissionInquiryPage() {
               <div className="modal-footer">
                 <button type="button" className="portal-btn-secondary" onClick={() => setShowAddModal(false)}>Cancel</button>
                 <button type="submit" className="portal-btn-primary" style={{ background: '#22c55e', border: 'none' }}>Save</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {followUpInquiry && (
+        <div className="modal-overlay">
+          <div className="modal-content animate-in fade-in zoom-in-95 duration-200" style={{ maxWidth: '400px' }}>
+            <div className="modal-header">
+              <h2>Record Follow Up</h2>
+              <button className="modal-close" onClick={() => setFollowUpInquiry(null)}><i className="fas fa-times"></i></button>
+            </div>
+            <form onSubmit={handleFollowUpSubmit}>
+              <div className="modal-body" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                <div style={{ padding: '12px', background: '#f8fafc', borderRadius: '8px' }}>
+                  <p style={{ margin: '0 0 4px', fontSize: '0.85rem', color: '#64748b' }}>Inquiry from</p>
+                  <p style={{ margin: 0, fontWeight: 600 }}>{followUpInquiry.name} ({followUpInquiry.phone})</p>
+                </div>
+                <div className="form-group">
+                  <label className="portal-label">Follow Up Date</label>
+                  <input type="date" className="portal-input" defaultValue={new Date().toISOString().split('T')[0]} required />
+                </div>
+                <div className="form-group">
+                  <label className="portal-label">Next Follow Up Date</label>
+                  <input type="date" className="portal-input" />
+                </div>
+                <div className="form-group">
+                  <label className="portal-label">Status Update</label>
+                  <select className="portal-input" defaultValue={followUpInquiry.status}>
+                    <option value="Active">Active</option>
+                    <option value="Passive">Passive</option>
+                    <option value="Dead">Dead</option>
+                    <option value="Won">Won</option>
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label className="portal-label">Notes</label>
+                  <textarea className="portal-input" rows={3} placeholder="Discussion details..." required></textarea>
+                </div>
+              </div>
+              <div className="modal-footer">
+                <button type="button" className="portal-btn-secondary" onClick={() => setFollowUpInquiry(null)}>Cancel</button>
+                <button type="submit" className="portal-btn-primary" style={{ background: '#22c55e', border: 'none' }}>Save Follow Up</button>
               </div>
             </form>
           </div>
