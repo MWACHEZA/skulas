@@ -29,22 +29,28 @@ interface StudentListItem {
 export const resolveImgUrl = (url: string | null) => {
   if (!url) return undefined;
   if (url.startsWith('http') || url.startsWith('data:')) return url;
-  
-  let path = url;
-  if (!path.startsWith('/api')) {
-    path = `/api/storage/file/${path}`;
-  }
-  
-  // Prepend BASE_URL if it doesn't already have an origin
-  if (BASE_URL && path.startsWith('/')) {
-    path = `${BASE_URL}${path}`;
+
+  // Already a full API path — use authenticated file route with token as query param
+  if (url.startsWith('/api')) {
+    let path = url;
+    if (BASE_URL && path.startsWith('/')) {
+      path = `${BASE_URL}${path}`;
+    }
+    const token = localStorage.getItem('acadex_token');
+    if (token) {
+      path += (path.includes('?') ? '&' : '?') + `token=${token}`;
+    }
+    return path;
   }
 
-  const token = localStorage.getItem('acadex_token');
-  if (token) {
-    path += (path.includes('?') ? '&' : '?') + `token=${token}`;
-  }
-  return path;
+  // Raw storage path (e.g. "AX-SEMINARY/global/academic/branding/template-xxx.jpg")
+  // Extract school code from the path and use the public /media/ route so <img> tags
+  // can load without needing Auth headers (branding assets are not private documents).
+  const parts = url.split('/');
+  const schoolCode = parts[0];
+  const rest = parts.slice(1).join('/');
+  const base = BASE_URL || '';
+  return `${base}/api/storage/media/${schoolCode}/${rest}`;
 };
 
 // ─── Builtin templates catalog ────────────────────────────────────────────────
