@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import api from '../../../lib/api';
+import api, { BASE_URL } from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { useTerminology } from '../../../hooks/useTerminology';
 
@@ -24,6 +24,28 @@ interface StudentListItem {
   id: string; name: string; studentId: string; class: { name: string; level: string } | null;
   photo: string | null;
 }
+
+// ─── Utils ──────────────────────────────────────────────────────────────────────
+export const resolveImgUrl = (url: string | null) => {
+  if (!url) return undefined;
+  if (url.startsWith('http') || url.startsWith('data:')) return url;
+  
+  let path = url;
+  if (!path.startsWith('/api')) {
+    path = `/api/storage/file/${path}`;
+  }
+  
+  // Prepend BASE_URL if it doesn't already have an origin
+  if (BASE_URL && path.startsWith('/')) {
+    path = `${BASE_URL}${path}`;
+  }
+
+  const token = localStorage.getItem('acadex_token');
+  if (token) {
+    path += (path.includes('?') ? '&' : '?') + `token=${token}`;
+  }
+  return path;
+};
 
 // ─── Builtin templates catalog ────────────────────────────────────────────────
 const BUILTIN_TEMPLATES = [
@@ -55,12 +77,6 @@ function IdCardFace({
 }) {
   const primaryColor = builtinTemplate?.color || school?.primaryColor || '#1e40af';
   const accentColor = builtinTemplate?.accent || school?.accentColor || '#dbeafe';
-  const resolveImgUrl = (url: string | null) => {
-    if (!url) return undefined;
-    if (url.startsWith('http') || url.startsWith('/api') || url.startsWith('data:')) return url;
-    return `/api/storage/file/${url}`;
-  };
-
   const photoUrl = resolveImgUrl(student?.photo);
   const logoUrl = resolveImgUrl(school?.logo);
 
@@ -207,7 +223,7 @@ function UploadZone({ label, currentUrl, onUpload, uploading, accept = 'image/*'
 
       {currentUrl ? (
         <div>
-          <img src={currentUrl.startsWith('http') || currentUrl.startsWith('/api') || currentUrl.startsWith('data:') ? currentUrl : `/api/storage/file/${currentUrl}`} alt={label}
+          <img src={resolveImgUrl(currentUrl)} alt={label}
             style={{ width: '100%', maxHeight: 120, objectFit: 'contain', borderRadius: 8, marginBottom: 10 }} />
           <div style={{ fontSize: '0.75rem', color: '#64748b' }}>{label} uploaded · Click to replace</div>
         </div>
