@@ -567,11 +567,15 @@ export default function AdminDocumentTemplates() {
       showToast('Please select or upload a front template first', 'error');
       return;
     }
+    if (students.length === 0) {
+      showToast('No students found to generate ID cards for.', 'error');
+      return;
+    }
     setGenerating(true);
     setTimeout(() => {
       setGenerating(false);
-      showToast(`ID cards prepared for ${selectedClassId === 'all' ? 'all students' : 'selected class'} — Ready for print`, 'success');
-    }, 2500);
+      window.print();
+    }, 500);
   };
 
   const activeBuiltin = selectedBuiltin ? BUILTIN_TEMPLATES.find(t => t.id === selectedBuiltin) : null;
@@ -2294,6 +2298,55 @@ export default function AdminDocumentTemplates() {
           </div>
         </div>
       ) : null}
+
+      <style dangerouslySetInnerHTML={{ __html: `
+        @media print {
+          body * { visibility: hidden; }
+          .print-id-cards, .print-id-cards * { visibility: visible; }
+          .print-id-cards {
+            position: absolute; left: 0; top: 0; width: 100%;
+            display: flex !important; flex-wrap: wrap; gap: 20px;
+            padding: 20px; justify-content: flex-start;
+          }
+          .id-card-wrapper {
+             page-break-inside: avoid; display: flex; gap: 10px; margin-bottom: 20px;
+          }
+          .portal-sidebar, .portal-header, .portal-page-header, .portal-card {
+             display: none !important;
+          }
+        }
+      `}} />
+
+      {activeTab === 'id-cards' && (
+        <div className="print-id-cards" style={{ display: 'none' }}>
+          {students.map(s => {
+            const preview = {
+              id: s.id, name: s.name, studentId: s.studentId,
+              gender: '', dob: null,
+              class: s.class?.name || '', classLevel: s.class?.level || '',
+              photo: s.photo,
+            };
+            return (
+              <div key={s.id} className="id-card-wrapper">
+                <div style={{ width: 200, height: 320, borderRadius: 12, overflow: 'hidden', border: '1px solid #ccc', position: 'relative' }}>
+                  <IdCardFace 
+                    school={school} student={preview} 
+                    templateUrl={effectiveFrontUrl} builtinTemplate={activeBuiltin || null} 
+                    isBack={false} classTerm={t('class')} studentIdTerm="ID Number"
+                  />
+                </div>
+                <div style={{ width: 200, height: 320, borderRadius: 12, overflow: 'hidden', border: '1px solid #ccc', position: 'relative' }}>
+                  <IdCardFace 
+                    school={school} student={preview} 
+                    templateUrl={effectiveBackUrl} builtinTemplate={activeBuiltin || null} 
+                    isBack={true} classTerm={t('class')} studentIdTerm="ID Number"
+                  />
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
     </>
   );
 }
