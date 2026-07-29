@@ -55,13 +55,223 @@ export const resolveImgUrl = (url: string | null) => {
 
 // ─── Builtin templates catalog ────────────────────────────────────────────────
 const BUILTIN_TEMPLATES = [
-  { id: 'classic-blue',    name: 'Classic Blue',     color: '#1e40af', accent: '#dbeafe', icon: 'fa-id-card' },
-  { id: 'modern-dark',     name: 'Modern Dark',      color: '#0f172a', accent: '#fbbf24', icon: 'fa-address-card' },
-  { id: 'green-fresh',     name: 'Fresh Green',      color: '#065f46', accent: '#d1fae5', icon: 'fa-user-graduate' },
-  { id: 'maroon-classic',  name: 'Maroon Prestige',  color: '#7c2d12', accent: '#fef3c7', icon: 'fa-shield-alt' },
-  { id: 'minimal-white',   name: 'Minimal White',    color: '#1e293b', accent: '#f1f5f9', icon: 'fa-credit-card' },
-  { id: 'purple-tech',     name: 'Tech Purple',      color: '#4c1d95', accent: '#ede9fe', icon: 'fa-qrcode' },
+  // ── Premium full-layout templates ──
+  { id: 'university-pro', name: 'University Pro',  color: '#0284c7', accent: '#0c4a6e', icon: 'fa-university', layout: 'university-pro' },
+  { id: 'corporate-dark', name: 'Corporate Dark',  color: '#0f172a', accent: '#f59e0b', icon: 'fa-building',   layout: 'corporate-dark' },
+  { id: 'emerald-fresh',  name: 'Emerald Fresh',   color: '#059669', accent: '#ecfdf5', icon: 'fa-leaf',       layout: 'emerald-fresh'  },
+  // ── Color theme templates ──
+  { id: 'classic-blue',   name: 'Classic Blue',    color: '#1e40af', accent: '#dbeafe', icon: 'fa-id-card' },
+  { id: 'modern-dark',    name: 'Modern Dark',     color: '#0f172a', accent: '#fbbf24', icon: 'fa-address-card' },
+  { id: 'green-fresh',    name: 'Fresh Green',     color: '#065f46', accent: '#d1fae5', icon: 'fa-user-graduate' },
+  { id: 'maroon-classic', name: 'Maroon Prestige', color: '#7c2d12', accent: '#fef3c7', icon: 'fa-shield-alt' },
+  { id: 'minimal-white',  name: 'Minimal White',   color: '#1e293b', accent: '#f1f5f9', icon: 'fa-credit-card' },
+  { id: 'purple-tech',    name: 'Tech Purple',     color: '#4c1d95', accent: '#ede9fe', icon: 'fa-qrcode' },
 ];
+
+// ─── Premium Layout: University Pro ──────────────────────────────────────────
+function UniversityProFront({ school, student, photoUrl, logoUrl, classTerm, studentIdTerm }: any) {
+  const primary = '#0284c7', dark = '#0c4a6e', teal = '#06b6d4';
+  const dob = student?.dob ? new Date(student.dob).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }).toUpperCase() : '—';
+  return (
+    <div style={{ width: '100%', height: '100%', background: 'linear-gradient(140deg,#f0f8ff 0%,#e8f5f9 100%)', position: 'relative', overflow: 'hidden', fontFamily: "'Segoe UI',system-ui,sans-serif" }}>
+      <svg style={{ position: 'absolute', bottom: 0, left: 0, width: 130, height: 100 }} viewBox="0 0 130 100" preserveAspectRatio="none">
+        <polygon points="0,100 130,100 0,10" fill={primary} opacity="0.95"/>
+        <polygon points="40,100 130,100 130,40" fill={teal} opacity="0.85"/>
+      </svg>
+      <svg style={{ position: 'absolute', bottom: 28, right: 12, width: 58, height: 58 }} viewBox="0 0 58 58">
+        <circle cx="22" cy="22" r="18" fill="none" stroke={teal} strokeWidth="3"/>
+        <circle cx="36" cy="36" r="16" fill="none" stroke={primary} strokeWidth="2.5"/>
+      </svg>
+      <div style={{ position: 'absolute', top: 10, left: 14, color: primary, fontWeight: 900, fontSize: '1.05rem', letterSpacing: '0.03em', textTransform: 'uppercase' }}>STUDENT ID CARD</div>
+      <div style={{ position: 'absolute', top: 0, right: 0, width: 78, background: dark, padding: '8px 8px 10px', textAlign: 'center' }}>
+        {logoUrl ? <img src={logoUrl} alt="" style={{ width: 30, height: 30, objectFit: 'contain', borderRadius: 4 }} />
+          : <div style={{ width: 30, height: 30, background: 'rgba(255,255,255,0.15)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto' }}><i className="fas fa-shield-alt" style={{ color: '#fff', fontSize: 14 }} /></div>}
+        <div style={{ color: '#fff', fontWeight: 800, fontSize: '0.46rem', marginTop: 4, textTransform: 'uppercase', letterSpacing: '0.04em', lineHeight: 1.4, wordBreak: 'break-word' }}>{school?.name || 'School Name'}</div>
+      </div>
+      <div style={{ position: 'absolute', left: 12, top: 32, width: 90, height: 90, borderRadius: '50%', border: `4px solid ${primary}`, overflow: 'hidden', background: '#dde8f0', boxShadow: `0 4px 14px ${primary}40` }}>
+        {photoUrl ? <img src={photoUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#7cb9e0', fontSize: 36 }}><i className="fas fa-user" /></div>}
+      </div>
+      <div style={{ position: 'absolute', left: 116, top: 30, right: 6 }}>
+        {[{ label: 'NAME', value: student?.name || 'Student Name' },
+          { label: studentIdTerm?.toUpperCase() || 'STUDENT ID', value: student?.studentId || 'STU-000001' },
+          { label: classTerm?.toUpperCase() || 'CLASS', value: `${student?.class || '—'}${student?.classLevel ? ` · ${student.classLevel}` : ''}` },
+          { label: 'DATE OF BIRTH', value: dob },
+        ].map((f, i) => (
+          <div key={i} style={{ marginBottom: 9 }}>
+            <div style={{ color: primary, fontWeight: 800, fontSize: '0.5rem', letterSpacing: '0.07em', textTransform: 'uppercase' }}>{f.label}:</div>
+            <div style={{ color: '#1e293b', fontSize: '0.6rem', fontWeight: 600, marginTop: 1, borderBottom: `1px solid ${primary}40`, paddingBottom: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{f.value}</div>
+          </div>
+        ))}
+      </div>
+      <div style={{ position: 'absolute', bottom: 12, left: '35%', right: '22%', textAlign: 'center', zIndex: 2 }}>
+        <div style={{ display: 'flex', gap: 1, justifyContent: 'center', alignItems: 'flex-end' }}>
+          {Array.from({ length: 30 }, (_, i) => <div key={i} style={{ width: i % 3 === 0 ? 2.5 : 1.5, height: i % 5 === 0 ? 18 : 12, background: '#1e293b' }} />)}
+        </div>
+        <div style={{ fontSize: '0.42rem', color: '#64748b', marginTop: 2 }}>{student?.studentId || '0000000000'}</div>
+      </div>
+      <div style={{ position: 'absolute', bottom: 12, left: 12, zIndex: 10 }}>
+        <div style={{ color: 'rgba(255,255,255,0.75)', fontSize: '0.42rem', fontWeight: 700, textTransform: 'uppercase' }}>VALID UNTIL:</div>
+        <div style={{ color: '#fff', fontSize: '0.52rem', fontWeight: 900 }}>DECEMBER {new Date().getFullYear() + 1}</div>
+      </div>
+    </div>
+  );
+}
+function UniversityProBack({ school, logoUrl }: any) {
+  const primary = '#0284c7', dark = '#0c4a6e', teal = '#06b6d4';
+  return (
+    <div style={{ width: '100%', height: '100%', background: 'linear-gradient(140deg,#f0f8ff 0%,#e8f5f9 100%)', position: 'relative', overflow: 'hidden', fontFamily: "'Segoe UI',system-ui,sans-serif" }}>
+      <svg style={{ position: 'absolute', top: 0, right: 0, width: 130, height: 110 }} viewBox="0 0 130 110" preserveAspectRatio="none">
+        <polygon points="130,0 0,0 130,90" fill={dark} opacity="0.95"/>
+        <polygon points="130,0 50,0 130,55" fill={teal} opacity="0.8"/>
+      </svg>
+      <svg style={{ position: 'absolute', bottom: 14, left: 16, width: 60, height: 60 }} viewBox="0 0 60 60">
+        <circle cx="22" cy="38" r="18" fill="none" stroke={teal} strokeWidth="2.5"/>
+        <circle cx="38" cy="24" r="14" fill="none" stroke={primary} strokeWidth="2"/>
+      </svg>
+      <div style={{ position: 'absolute', top: 16, left: 16, right: 90 }}>
+        {school?.address && (<div style={{ marginBottom: 12 }}>
+          <div style={{ color: primary, fontWeight: 800, fontSize: '0.58rem', letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 3 }}>INSTITUTION ADDRESS:</div>
+          <div style={{ fontSize: '0.57rem', color: '#334155', lineHeight: 1.5, borderBottom: `1px solid ${primary}30`, paddingBottom: 5 }}>{school.address}</div>
+        </div>)}
+        <div style={{ marginBottom: 12 }}>
+          <div style={{ color: primary, fontWeight: 800, fontSize: '0.58rem', letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 3 }}>CONTACT:</div>
+          <div style={{ fontSize: '0.56rem', color: '#334155', lineHeight: 1.6 }}>
+            {school?.phone && <div>PHONE: {school.phone}</div>}
+            {school?.email && <div>EMAIL: {school.email}</div>}
+          </div>
+        </div>
+        {school?.motto && (<div>
+          <div style={{ color: primary, fontWeight: 800, fontSize: '0.58rem', letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 3 }}>MOTTO:</div>
+          <div style={{ fontSize: '0.57rem', color: '#334155', fontStyle: 'italic', borderBottom: `1px solid ${primary}30`, paddingBottom: 4 }}>"{school.motto}"</div>
+        </div>)}
+        {school?.website && (<div style={{ position: 'absolute', bottom: 0, right: -70, textAlign: 'right' }}>
+          <div style={{ color: primary, fontWeight: 800, fontSize: '0.58rem', letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 3 }}>WEBSITE:</div>
+          <div style={{ fontSize: '0.56rem', color: '#334155', borderBottom: `1px solid ${primary}30`, paddingBottom: 3 }}>{school.website.toUpperCase()}</div>
+        </div>)}
+      </div>
+    </div>
+  );
+}
+
+// ─── Premium Layout: Corporate Dark ──────────────────────────────────────────
+function CorporateDarkFront({ school, student, photoUrl, logoUrl, classTerm, studentIdTerm }: any) {
+  const gold = '#f59e0b', dark = '#0f172a', mid = '#1e293b';
+  const dob = student?.dob ? new Date(student.dob).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }).toUpperCase() : '—';
+  return (
+    <div style={{ width: '100%', height: '100%', background: dark, position: 'relative', overflow: 'hidden', fontFamily: "'Segoe UI',system-ui,sans-serif" }}>
+      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 4, background: `linear-gradient(90deg,${gold},#fcd34d,${gold})` }} />
+      <div style={{ position: 'absolute', left: 0, top: 4, bottom: 0, width: 115, background: mid }}>
+        <div style={{ width: 78, height: 92, margin: '16px auto 0', borderRadius: 8, overflow: 'hidden', border: `2px solid ${gold}`, background: '#334155' }}>
+          {photoUrl ? <img src={photoUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748b', fontSize: 30 }}><i className="fas fa-user" /></div>}
+        </div>
+        <div style={{ textAlign: 'center', marginTop: 10, padding: '0 8px' }}>
+          {logoUrl && <img src={logoUrl} alt="" style={{ width: 24, height: 24, objectFit: 'contain', marginBottom: 4 }} />}
+          <div style={{ color: gold, fontWeight: 800, fontSize: '0.46rem', textTransform: 'uppercase', letterSpacing: '0.05em', lineHeight: 1.4 }}>{school?.name || 'School Name'}</div>
+        </div>
+      </div>
+      <div style={{ position: 'absolute', left: 125, top: 14, right: 12, bottom: 12 }}>
+        <div style={{ color: gold, fontWeight: 900, fontSize: '0.75rem', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 2 }}>STUDENT</div>
+        <div style={{ color: '#fff', fontWeight: 900, fontSize: '0.75rem', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 12, borderBottom: `1px solid ${gold}50`, paddingBottom: 8 }}>ID CARD</div>
+        {[{ label: 'NAME', value: student?.name || 'Student Name' },
+          { label: studentIdTerm?.toUpperCase() || 'ID', value: student?.studentId || 'STU-000001' },
+          { label: classTerm?.toUpperCase() || 'CLASS', value: `${student?.class || '—'}${student?.classLevel ? ` · ${student.classLevel}` : ''}` },
+          { label: 'DATE OF BIRTH', value: dob },
+        ].map((f, i) => (
+          <div key={i} style={{ marginBottom: 8 }}>
+            <div style={{ color: gold, fontWeight: 700, fontSize: '0.46rem', letterSpacing: '0.08em', textTransform: 'uppercase' }}>{f.label}</div>
+            <div style={{ color: '#e2e8f0', fontSize: '0.6rem', fontWeight: 600, marginTop: 1, borderBottom: 'solid 1px rgba(255,255,255,0.1)', paddingBottom: 3, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{f.value}</div>
+          </div>
+        ))}
+        <div style={{ position: 'absolute', bottom: 0, right: 0 }}>
+          <svg width="40" height="40" viewBox="0 0 40 40"><polygon points="40,0 40,40 0,40" fill={gold} opacity="0.15"/><polygon points="40,14 40,40 14,40" fill={gold} opacity="0.25"/></svg>
+        </div>
+      </div>
+      <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 4, background: `linear-gradient(90deg,${gold},#fcd34d,${gold})` }} />
+    </div>
+  );
+}
+function CorporateDarkBack({ school }: any) {
+  const gold = '#f59e0b', dark = '#0f172a', mid = '#1e293b';
+  return (
+    <div style={{ width: '100%', height: '100%', background: dark, position: 'relative', overflow: 'hidden', fontFamily: "'Segoe UI',system-ui,sans-serif" }}>
+      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 4, background: `linear-gradient(90deg,${gold},#fcd34d,${gold})` }} />
+      <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 4, background: `linear-gradient(90deg,${gold},#fcd34d,${gold})` }} />
+      <div style={{ position: 'absolute', top: 16, left: 20, right: 20, bottom: 16 }}>
+        {school?.motto && (<div style={{ textAlign: 'center', marginBottom: 14, padding: '8px 14px', border: `1px solid ${gold}40`, borderRadius: 8 }}>
+          <div style={{ color: gold, fontStyle: 'italic', fontSize: '0.62rem', fontWeight: 700 }}>"{school.motto}"</div>
+        </div>)}
+        {[['INSTITUTION', school?.name], ['ADDRESS', school?.address], ['PHONE', school?.phone], ['EMAIL', school?.email], ['WEBSITE', school?.website]]
+          .filter(([, v]) => v).map(([label, value]) => (
+          <div key={label} style={{ display: 'flex', gap: 10, marginBottom: 8, alignItems: 'flex-start' }}>
+            <div style={{ color: gold, fontWeight: 800, fontSize: '0.5rem', letterSpacing: '0.06em', textTransform: 'uppercase', minWidth: 52, flexShrink: 0, marginTop: 1 }}>{label}:</div>
+            <div style={{ color: '#cbd5e1', fontSize: '0.57rem', borderBottom: `1px solid ${mid}`, paddingBottom: 3, flex: 1 }}>{value}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ─── Premium Layout: Emerald Fresh ───────────────────────────────────────────
+function EmeraldFreshFront({ school, student, photoUrl, logoUrl, classTerm, studentIdTerm }: any) {
+  const green = '#059669', lime = '#10b981', dark = '#064e3b';
+  const dob = student?.dob ? new Date(student.dob).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }).toUpperCase() : '—';
+  return (
+    <div style={{ width: '100%', height: '100%', background: '#f0fdf4', position: 'relative', overflow: 'hidden', fontFamily: "'Segoe UI',system-ui,sans-serif" }}>
+      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 44, background: `linear-gradient(135deg,${dark} 0%,${green} 100%)`, display: 'flex', alignItems: 'center', gap: 10, padding: '0 14px' }}>
+        {logoUrl ? <img src={logoUrl} alt="" style={{ width: 28, height: 28, objectFit: 'contain', borderRadius: 4 }} />
+          : <div style={{ width: 28, height: 28, background: 'rgba(255,255,255,0.15)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><i className="fas fa-leaf" style={{ color: '#fff', fontSize: 12 }} /></div>}
+        <div>
+          <div style={{ color: '#fff', fontWeight: 800, fontSize: '0.62rem', textTransform: 'uppercase', letterSpacing: '0.04em', lineHeight: 1.2 }}>{school?.name || 'School Name'}</div>
+          <div style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.48rem', letterSpacing: '0.08em' }}>STUDENT IDENTITY CARD</div>
+        </div>
+      </div>
+      <div style={{ position: 'absolute', left: 14, top: 52, width: 78, height: 90, borderRadius: 10, overflow: 'hidden', border: `3px solid ${green}`, background: '#d1fae5', boxShadow: `0 4px 12px ${green}30` }}>
+        {photoUrl ? <img src={photoUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: green, fontSize: 28 }}><i className="fas fa-user" /></div>}
+      </div>
+      <div style={{ position: 'absolute', left: 106, top: 54, right: 10 }}>
+        <div style={{ color: dark, fontWeight: 900, fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 10, lineHeight: 1.1 }}>STUDENT<br/>ID CARD</div>
+        {[{ label: 'NAME', value: student?.name || 'Student Name' },
+          { label: studentIdTerm?.toUpperCase() || 'STUDENT ID', value: student?.studentId || 'STU-000001' },
+          { label: classTerm?.toUpperCase() || 'CLASS', value: `${student?.class || '—'}${student?.classLevel ? ` · ${student.classLevel}` : ''}` },
+          { label: 'DATE OF BIRTH', value: dob },
+        ].map((f, i) => (
+          <div key={i} style={{ marginBottom: 7 }}>
+            <div style={{ color: green, fontWeight: 800, fontSize: '0.47rem', letterSpacing: '0.07em', textTransform: 'uppercase' }}>{f.label}:</div>
+            <div style={{ color: '#134e4a', fontSize: '0.58rem', fontWeight: 600, marginTop: 1, borderBottom: `1.5px solid ${lime}50`, paddingBottom: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{f.value}</div>
+          </div>
+        ))}
+      </div>
+      <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 20, background: `linear-gradient(135deg,${dark} 0%,${lime} 100%)`, display: 'flex', alignItems: 'center', paddingLeft: 14 }}>
+        <div style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.45rem', fontStyle: 'italic' }}>{school?.motto || ''}</div>
+      </div>
+    </div>
+  );
+}
+function EmeraldFreshBack({ school }: any) {
+  const green = '#059669', lime = '#10b981', dark = '#064e3b';
+  return (
+    <div style={{ width: '100%', height: '100%', background: '#f0fdf4', position: 'relative', overflow: 'hidden', fontFamily: "'Segoe UI',system-ui,sans-serif" }}>
+      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 44, background: `linear-gradient(135deg,${dark} 0%,${green} 100%)` }} />
+      <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 20, background: `linear-gradient(135deg,${dark} 0%,${lime} 100%)` }} />
+      <div style={{ position: 'absolute', top: 52, left: 16, right: 16, bottom: 28 }}>
+        {[['ADDRESS', school?.address], ['PHONE', school?.phone], ['EMAIL', school?.email], ['WEBSITE', school?.website]]
+          .filter(([, v]) => v).map(([label, value]) => (
+          <div key={label} style={{ marginBottom: 10 }}>
+            <div style={{ color: green, fontWeight: 800, fontSize: '0.54rem', letterSpacing: '0.07em', textTransform: 'uppercase', marginBottom: 2 }}>{label}:</div>
+            <div style={{ color: '#134e4a', fontSize: '0.57rem', borderBottom: `1px solid ${green}30`, paddingBottom: 4 }}>{value}</div>
+          </div>
+        ))}
+        <div style={{ marginTop: 14, padding: '8px 12px', background: `${green}15`, borderLeft: `3px solid ${green}`, borderRadius: '0 6px 6px 0' }}>
+          <div style={{ fontSize: '0.5rem', color: '#134e4a' }}>If found, please return to the school above.</div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 // ─── ID Card Face Component ───────────────────────────────────────────────────
 function IdCardFace({
@@ -132,6 +342,20 @@ function IdCardFace({
         </div>
       </div>
     );
+  }
+
+  // -- PREMIUM LAYOUT dispatch --
+  const layout = (builtinTemplate as any)?.layout;
+  if (!templateUrl && layout) {
+    if (isBack) {
+      if (layout === 'university-pro') return <UniversityProBack school={school} logoUrl={logoUrl} />;
+      if (layout === 'corporate-dark') return <CorporateDarkBack school={school} />;
+      if (layout === 'emerald-fresh')  return <EmeraldFreshBack  school={school} />;
+    } else {
+      if (layout === 'university-pro') return <UniversityProFront school={school} student={student} photoUrl={photoUrl} logoUrl={logoUrl} classTerm={classTerm} studentIdTerm={studentIdTerm} />;
+      if (layout === 'corporate-dark') return <CorporateDarkFront school={school} student={student} photoUrl={photoUrl} logoUrl={logoUrl} classTerm={classTerm} studentIdTerm={studentIdTerm} />;
+      if (layout === 'emerald-fresh')  return <EmeraldFreshFront  school={school} student={student} photoUrl={photoUrl} logoUrl={logoUrl} classTerm={classTerm} studentIdTerm={studentIdTerm} />;
+    }
   }
 
   // -- FRONT FACE with custom uploaded template --
@@ -993,31 +1217,71 @@ export default function AdminDocumentTemplates() {
 
             {/* Builtin Catalog Tab */}
             {idCardActiveTab === 'catalog' && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                 <p style={{ margin: 0, fontSize: '0.8rem', color: '#64748b' }}>
-                  Choose a built-in template. Your school name, logo, and motto will automatically appear on the card.
+                  Click a template below. Your school's real data will auto-populate — no uploading needed.
                 </p>
-                {BUILTIN_TEMPLATES.map(template => (
+
+                {/* ── Premium Layouts ── */}
+                <div style={{ fontWeight: 800, fontSize: '0.68rem', color: '#7c3aed', textTransform: 'uppercase', letterSpacing: '0.08em', display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <i className="fas fa-star" style={{ fontSize: 10 }} /> Premium Layouts
+                  <span style={{ flex: 1, height: 1, background: '#ede9fe' }} />
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10 }}>
+                  {BUILTIN_TEMPLATES.filter(tmpl => !!(tmpl as any).layout).map(tmpl => (
+                    <div
+                      key={tmpl.id}
+                      onClick={() => { setSelectedBuiltin(tmpl.id); setTemplates({ front: null, back: null }); }}
+                      style={{
+                        borderRadius: 12, overflow: 'hidden', cursor: 'pointer', transition: 'all 0.2s',
+                        border: selectedBuiltin === tmpl.id ? `2.5px solid ${tmpl.color}` : '2px solid #e2e8f0',
+                        boxShadow: selectedBuiltin === tmpl.id ? `0 6px 20px ${tmpl.color}40` : '0 2px 8px rgba(0,0,0,0.06)',
+                        transform: selectedBuiltin === tmpl.id ? 'translateY(-2px)' : 'none',
+                      }}
+                    >
+                      {/* Scaled card preview */}
+                      <div style={{ width: '100%', aspectRatio: '1.586', overflow: 'hidden', pointerEvents: 'none', position: 'relative' }}>
+                        <div style={{ position: 'absolute', inset: 0, transform: 'scale(0.28)', transformOrigin: 'top left', width: '357%', height: '357%' }}>
+                          <IdCardFace school={school} student={student} templateUrl={null} builtinTemplate={tmpl as any} isBack={false} classTerm={t('class')} studentIdTerm="ID Number" />
+                        </div>
+                      </div>
+                      <div style={{ padding: '7px 10px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: selectedBuiltin === tmpl.id ? `${tmpl.color}12` : '#fafafa', borderTop: '1px solid #f1f5f9' }}>
+                        <div>
+                          <div style={{ fontWeight: 800, fontSize: '0.7rem', color: '#1e293b' }}>{tmpl.name}</div>
+                          <div style={{ fontSize: '0.58rem', color: '#7c3aed', fontWeight: 600 }}>Full layout</div>
+                        </div>
+                        {selectedBuiltin === tmpl.id
+                          ? <i className="fas fa-check-circle" style={{ color: tmpl.color, fontSize: 15 }} />
+                          : <i className="far fa-circle" style={{ color: '#cbd5e1', fontSize: 15 }} />
+                        }
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* ── Color Themes ── */}
+                <div style={{ fontWeight: 800, fontSize: '0.68rem', color: '#475569', textTransform: 'uppercase', letterSpacing: '0.08em', display: 'flex', alignItems: 'center', gap: 8 }}>
+                  Color Themes <span style={{ flex: 1, height: 1, background: '#e2e8f0' }} />
+                </div>
+                {BUILTIN_TEMPLATES.filter(tmpl => !(tmpl as any).layout).map(tmpl => (
                   <div
-                    key={template.id}
-                    onClick={() => { setSelectedBuiltin(template.id); setTemplates({ front: null, back: null }); }}
+                    key={tmpl.id}
+                    onClick={() => { setSelectedBuiltin(tmpl.id); setTemplates({ front: null, back: null }); }}
                     style={{
                       display: 'flex', alignItems: 'center', gap: 14, padding: '12px 16px',
-                      borderRadius: 12, border: selectedBuiltin === template.id ? `2px solid ${template.color}` : '2px solid #e2e8f0',
-                      cursor: 'pointer', background: selectedBuiltin === template.id ? '#f8fafc' : '#fff',
-                      transition: 'all 0.2s', boxShadow: selectedBuiltin === template.id ? `0 4px 16px ${template.color}30` : 'none',
+                      borderRadius: 12, border: selectedBuiltin === tmpl.id ? `2px solid ${tmpl.color}` : '2px solid #e2e8f0',
+                      cursor: 'pointer', background: selectedBuiltin === tmpl.id ? `${tmpl.color}0d` : '#fff',
+                      transition: 'all 0.2s', boxShadow: selectedBuiltin === tmpl.id ? `0 4px 16px ${tmpl.color}30` : 'none',
                     }}
                   >
-                    <div style={{ width: 48, height: 30, borderRadius: 6, background: template.color, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                      <i className={`fas ${template.icon}`} style={{ color: template.accent, fontSize: 14 }}></i>
+                    <div style={{ width: 48, height: 30, borderRadius: 6, background: tmpl.color, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <i className={`fas ${tmpl.icon}`} style={{ color: tmpl.accent, fontSize: 14 }}></i>
                     </div>
                     <div style={{ flex: 1 }}>
-                      <div style={{ fontWeight: 700, fontSize: '0.85rem', color: '#1e293b' }}>{template.name}</div>
-                      <div style={{ fontSize: '0.72rem', color: '#64748b' }}>Primary: {template.color}</div>
+                      <div style={{ fontWeight: 700, fontSize: '0.85rem', color: '#1e293b' }}>{tmpl.name}</div>
+                      <div style={{ fontSize: '0.72rem', color: '#64748b' }}>Color theme</div>
                     </div>
-                    {selectedBuiltin === template.id && (
-                      <i className="fas fa-check-circle" style={{ color: template.color, fontSize: 18 }}></i>
-                    )}
+                    {selectedBuiltin === tmpl.id && <i className="fas fa-check-circle" style={{ color: tmpl.color, fontSize: 18 }}></i>}
                   </div>
                 ))}
               </div>
