@@ -55,15 +55,21 @@ function IdCardFace({
 }) {
   const primaryColor = builtinTemplate?.color || school?.primaryColor || '#1e40af';
   const accentColor = builtinTemplate?.accent || school?.accentColor || '#dbeafe';
-  const photoUrl = student?.photo ? `/api/storage/file/${student.photo}` : null;
-  const logoUrl = school?.logo ? `/api/storage/file/${school.logo}` : null;
+  const resolveImgUrl = (url: string | null) => {
+    if (!url) return undefined;
+    if (url.startsWith('http') || url.startsWith('/api') || url.startsWith('data:')) return url;
+    return `/api/storage/file/${url}`;
+  };
+
+  const photoUrl = resolveImgUrl(student?.photo);
+  const logoUrl = resolveImgUrl(school?.logo);
 
   // -- BACK FACE --
   if (isBack) {
     if (templateUrl) {
       return (
         <div style={{ position: 'relative', width: '100%', height: '100%' }}>
-          <img src={`/api/storage/file/${templateUrl}`} alt="Back Template"
+          <img src={resolveImgUrl(templateUrl)} alt="Back Template"
             style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
         </div>
       );
@@ -93,7 +99,7 @@ function IdCardFace({
   if (templateUrl) {
     return (
       <div style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden' }}>
-        <img src={`/api/storage/file/${templateUrl}`} alt="Front Template"
+        <img src={resolveImgUrl(templateUrl)} alt="Front Template"
           style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
         {/* Overlay student data on top of the template */}
         <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', padding: '16px 20px 14px' }}>
@@ -201,7 +207,7 @@ function UploadZone({ label, currentUrl, onUpload, uploading, accept = 'image/*'
 
       {currentUrl ? (
         <div>
-          <img src={`/api/storage/file/${currentUrl}`} alt={label}
+          <img src={currentUrl.startsWith('http') || currentUrl.startsWith('/api') || currentUrl.startsWith('data:') ? currentUrl : `/api/storage/file/${currentUrl}`} alt={label}
             style={{ width: '100%', maxHeight: 120, objectFit: 'contain', borderRadius: 8, marginBottom: 10 }} />
           <div style={{ fontSize: '0.75rem', color: '#64748b' }}>{label} uploaded · Click to replace</div>
         </div>
