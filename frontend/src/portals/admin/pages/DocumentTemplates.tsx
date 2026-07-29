@@ -92,7 +92,24 @@ function IdCardFace({
       return (
         <div style={{ position: 'relative', width: '100%', height: '100%' }}>
           <img src={resolveImgUrl(templateUrl)} alt="Back Template"
-            style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+          {/* School info overlay on back */}
+          <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end', padding: '0 16px 14px' }}>
+            <div style={{ background: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(6px)', borderRadius: 10, padding: '10px 16px', textAlign: 'center', width: '100%' }}>
+              {logoUrl && <img src={logoUrl} alt="Logo" style={{ width: 28, height: 28, objectFit: 'contain', marginBottom: 6, borderRadius: 4 }} />}
+              <div style={{ color: 'rgba(255,255,255,0.55)', fontSize: '0.58rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 3 }}>MOTTO</div>
+              <div style={{ color: '#fff', fontStyle: 'italic', fontSize: '0.72rem', fontWeight: 700 }}>
+                {school?.motto || '"Excellence in Education"'}
+              </div>
+              <div style={{ marginTop: 6, fontSize: '0.6rem', color: 'rgba(255,255,255,0.55)' }}>
+                {school?.phone && <div>{school.phone}</div>}
+                {school?.email && <div>{school.email}</div>}
+              </div>
+              <div style={{ marginTop: 6, padding: '4px 10px', background: 'rgba(255,255,255,0.08)', borderRadius: 5, fontSize: '0.58rem', color: 'rgba(255,255,255,0.4)' }}>
+                If found, please return to the school above
+              </div>
+            </div>
+          </div>
         </div>
       );
     }
@@ -121,27 +138,74 @@ function IdCardFace({
   if (templateUrl) {
     return (
       <div style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden' }}>
+        {/* Background template image */}
         <img src={resolveImgUrl(templateUrl)} alt="Front Template"
           style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
-        {/* Overlay student data on top of the template */}
-        <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', padding: '16px 20px 14px' }}>
-          <div style={{ display: 'flex', alignItems: 'flex-end', gap: 14 }}>
+
+        {/* Full overlay with all school + student data */}
+        <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+
+          {/* Top: School branding header */}
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 8, padding: '10px 14px',
+            background: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(6px)',
+          }}>
+            {logoUrl
+              ? <img src={logoUrl} alt="Logo" style={{ width: 32, height: 32, objectFit: 'contain', borderRadius: 4 }} />
+              : <div style={{ width: 32, height: 32, borderRadius: 4, background: 'rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <i className="fas fa-school" style={{ color: '#fff', fontSize: 14 }} />
+                </div>
+            }
+            <div style={{ flex: 1 }}>
+              <div style={{ color: '#fff', fontWeight: 800, fontSize: '0.72rem', lineHeight: 1.2, textTransform: 'uppercase', letterSpacing: '0.03em' }}>
+                {school?.name || 'School Name'}
+              </div>
+              <div style={{ color: 'rgba(255,255,255,0.65)', fontSize: '0.58rem', letterSpacing: '0.08em' }}>STUDENT ID CARD</div>
+            </div>
+          </div>
+
+          {/* Bottom: Student info panel */}
+          <div style={{
+            display: 'flex', alignItems: 'flex-end', gap: 10, padding: '10px 14px 12px',
+            background: 'linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.2) 100%)',
+          }}>
             {/* Student Photo */}
-            <div style={{ width: 68, height: 80, borderRadius: 8, overflow: 'hidden', border: '2px solid rgba(255,255,255,0.8)', boxShadow: '0 4px 12px rgba(0,0,0,0.3)', flexShrink: 0, background: '#e2e8f0' }}>
+            <div style={{
+              width: 62, height: 74, borderRadius: 6, overflow: 'hidden', flexShrink: 0,
+              border: '2px solid rgba(255,255,255,0.85)', boxShadow: '0 2px 8px rgba(0,0,0,0.4)',
+              background: '#e2e8f0',
+            }}>
               {photoUrl
                 ? <img src={photoUrl} alt={student?.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#94a3b8', fontSize: 28 }}><i className="fas fa-user"></i></div>
+                : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#94a3b8', fontSize: 24 }}>
+                    <i className="fas fa-user" />
+                  </div>
               }
             </div>
+
             {/* Student Details */}
-            <div style={{ flex: 1, background: 'rgba(0,0,0,0.55)', borderRadius: 8, padding: '8px 12px', backdropFilter: 'blur(4px)' }}>
-              <div style={{ color: '#fff', fontWeight: 800, fontSize: '0.9rem', lineHeight: 1.2 }}>{student?.name || 'Student Name'}</div>
-              <div style={{ color: 'rgba(255,255,255,0.75)', fontSize: '0.7rem', marginTop: 3 }}>{student?.class || classTerm} {student?.classLevel ? `• ${student.classLevel}` : ''}</div>
-              <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.65rem', marginTop: 2 }}>{studentIdTerm}: {student?.studentId || 'STU-000001'}</div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ color: '#fff', fontWeight: 900, fontSize: '0.88rem', lineHeight: 1.2, textShadow: '0 1px 3px rgba(0,0,0,0.6)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                {student?.name || 'Student Name'}
+              </div>
+              <div style={{ color: 'rgba(255,255,255,0.8)', fontSize: '0.67rem', fontWeight: 600, marginTop: 2 }}>
+                {student?.class || classTerm}{student?.classLevel ? ` • ${student.classLevel}` : ''}
+              </div>
+              <div style={{ color: 'rgba(255,255,255,0.65)', fontSize: '0.62rem', marginTop: 2 }}>
+                {studentIdTerm}: <span style={{ color: '#fff', fontWeight: 700 }}>{student?.studentId || 'STU-000001'}</span>
+              </div>
+              {student?.gender && (
+                <div style={{ color: 'rgba(255,255,255,0.55)', fontSize: '0.58rem', marginTop: 1 }}>{student.gender}</div>
+              )}
             </div>
-            {/* QR placeholder */}
-            <div style={{ width: 52, height: 52, background: 'rgba(255,255,255,0.9)', borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-              <i className="fas fa-qrcode" style={{ fontSize: 32, color: '#1e293b' }}></i>
+
+            {/* QR Code placeholder */}
+            <div style={{
+              width: 48, height: 48, borderRadius: 5, flexShrink: 0,
+              background: 'rgba(255,255,255,0.95)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+              boxShadow: '0 2px 6px rgba(0,0,0,0.3)',
+            }}>
+              <i className="fas fa-qrcode" style={{ fontSize: 28, color: '#1e293b' }} />
             </div>
           </div>
         </div>
