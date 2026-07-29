@@ -117,7 +117,7 @@ function UniversityProFront({ school, student, photoUrl, logoUrl, classTerm, stu
     </div>
   );
 }
-function UniversityProBack({ school, logoUrl }: any) {
+function UniversityProBack({ school }: any) {
   const primary = '#0284c7', dark = '#0c4a6e', teal = '#06b6d4';
   return (
     <div style={{ width: '100%', height: '100%', background: 'linear-gradient(140deg,#f0f8ff 0%,#e8f5f9 100%)', position: 'relative', overflow: 'hidden', fontFamily: "'Segoe UI',system-ui,sans-serif" }}>
