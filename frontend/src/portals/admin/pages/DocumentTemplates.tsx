@@ -77,8 +77,8 @@ function IdCardFace({
 }) {
   const primaryColor = builtinTemplate?.color || school?.primaryColor || '#1e40af';
   const accentColor = builtinTemplate?.accent || school?.accentColor || '#dbeafe';
-  const photoUrl = resolveImgUrl(student?.photo);
-  const logoUrl = resolveImgUrl(school?.logo);
+  const photoUrl = resolveImgUrl(student?.photo ?? null);
+  const logoUrl = resolveImgUrl(school?.logo ?? null);
 
   // -- BACK FACE --
   if (isBack) {
