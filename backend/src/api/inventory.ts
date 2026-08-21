@@ -46,9 +46,9 @@ router.post('/products', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), asy
       });
       if (!existing) return res.status(403).json({ error: 'Unauthorized' });
 
-      product = await prisma.physicalProduct.update({ 
-        where: { id: id as string }, 
-        data 
+      product = await prisma.physicalProduct.update({
+        where: { id: id as string },
+        data
       });
     } else {
       product = await prisma.physicalProduct.create({ data });

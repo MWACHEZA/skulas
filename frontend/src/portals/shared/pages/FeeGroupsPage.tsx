@@ -64,6 +64,8 @@ interface FeeGroup {
   billingType: string;
   isRecurring: boolean;
   remindersEnabled: boolean;
+  incomeAccountId?: string;
+  arAccountId?: string;
   _count?: { fees: number };
   classAmounts?: { classId: string; amount: number }[];
 }
