@@ -832,6 +832,9 @@ model Fee {
   feeGroupId String?
   feeGroup   FeeGroup? @relation(fields: [feeGroupId], references: [id])
 
+  incomeAccountId String?
+  arAccountId     String?
+
   payments  StudentPayment[]
   lineItems FeeLineItem[]
   schoolId  String
@@ -2119,6 +2122,9 @@ model FeeGroup {
   schoolId String
   school   School @relation(fields: [schoolId], references: [id])
   fees     Fee[]
+
+  incomeAccountId String? // Account to credit (e.g., 5100 Tuition Fees)
+  arAccountId     String? // Account to debit (e.g., 1210 Student Accounts Receivable)
 
   revenueAllocations RevenueAllocation[]   @relation("AllocatedFeeGroups")
   classAmounts       FeeGroupClassAmount[]

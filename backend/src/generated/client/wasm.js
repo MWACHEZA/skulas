@@ -537,6 +537,8 @@ exports.Prisma.FeeScalarFieldEnum = {
   description: 'description',
   isLedger: 'isLedger',
   feeGroupId: 'feeGroupId',
+  incomeAccountId: 'incomeAccountId',
+  arAccountId: 'arAccountId',
   schoolId: 'schoolId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -1418,6 +1420,8 @@ exports.Prisma.FeeGroupScalarFieldEnum = {
   isRecurring: 'isRecurring',
   remindersEnabled: 'remindersEnabled',
   schoolId: 'schoolId',
+  incomeAccountId: 'incomeAccountId',
+  arAccountId: 'arAccountId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };

@@ -1,18 +1,29 @@
 import { useState } from 'react';
 import { formatCurrency } from '../../../utils/formatters';
 import { useToast } from '../../../context/ToastContext';
+import api from '../../../lib/api';
 
 export default function AlumniFees() {
   const { showToast } = useToast();
   const [customAmount, setCustomAmount] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const handleDonate = (amount: number) => {
+  const handleDonate = async (amount: number) => {
     setLoading(true);
-    setTimeout(() => {
+    try {
       showToast(`Redirecting to payment gateway for ${formatCurrency(amount)} donation...`, 'info');
+      const { data } = await api.post('/api/finance/donations', {
+        amount,
+        fund: 'Legacy Scholarship Fund',
+        paymentMethod: 'ONLINE'
+      });
+      showToast(`Donation of ${formatCurrency(data.amount)} processed successfully!`, 'success');
+      setCustomAmount('');
+    } catch (error: any) {
+      showToast(error.response?.data?.error || 'Failed to process donation', 'error');
+    } finally {
       setLoading(false);
-    }, 1500);
+    }
   };
 
   const handleDownloadReceipt = () => {

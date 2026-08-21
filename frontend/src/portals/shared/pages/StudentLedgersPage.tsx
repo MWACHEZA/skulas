@@ -98,11 +98,24 @@ export default function StudentLedgersPage() {
   const [status, setStatus] = useState('unpaid');
   const [formLineItems, setFormLineItems] = useState([{ item: '', amount: '', date: '' }]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [accounts, setAccounts] = useState<any[]>([]);
+  const [arAccountId, setArAccountId] = useState('');
+  const [incomeAccountId, setIncomeAccountId] = useState('');
 
   useEffect(() => {
     fetchLedgers();
     fetchClasses();
+    fetchAccounts();
   }, []);
+
+  const fetchAccounts = async () => {
+    try {
+      const { data } = await api.get('/api/accounts/coa');
+      setAccounts(Array.isArray(data) ? data : []);
+    } catch (error) {
+      console.error('Failed to load accounts');
+    }
+  };
 
   useEffect(() => {
     if (selectedClass) {
@@ -164,7 +177,9 @@ export default function StudentLedgersPage() {
         vatPercentage: vatPercentage || 0,
         discount: discount || 0,
         status,
-        lineItems: formLineItems
+        lineItems: formLineItems,
+        arAccountId: arAccountId || undefined,
+        incomeAccountId: incomeAccountId || undefined
       });
       showToast(`${t('student')} ledger created successfully!`, 'success');
       // Reset
@@ -174,6 +189,8 @@ export default function StudentLedgersPage() {
       setDueDate('');
       setVatPercentage('');
       setDiscount('');
+      setArAccountId('');
+      setIncomeAccountId('');
       setFormLineItems([{ item: '', amount: '', date: '' }]);
       setIsCreateModalOpen(false);
       fetchLedgers();
@@ -522,6 +539,27 @@ export default function StudentLedgersPage() {
                   <select className="portal-input" value={status} onChange={e => setStatus(e.target.value)} required>
                     <option value="unpaid">Unpaid</option>
                     <option value="paid">Paid</option>
+                  </select>
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '24px' }}>
+                <div className="form-group">
+                  <label className="portal-label">Accounts Receivable (AR) Account (Optional)</label>
+                  <select className="portal-input" value={arAccountId} onChange={e => setArAccountId(e.target.value)}>
+                    <option value="">Default AR (e.g. 1210)</option>
+                    {accounts.filter(a => a.type === 'Asset').map(a => (
+                      <option key={a.id} value={a.id}>{a.code} - {a.name}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label className="portal-label">Income Account (Optional)</label>
+                  <select className="portal-input" value={incomeAccountId} onChange={e => setIncomeAccountId(e.target.value)}>
+                    <option value="">Default Income (e.g. 5100)</option>
+                    {accounts.filter(a => a.type === 'Revenue' || a.type === 'Equity').map(a => (
+                      <option key={a.id} value={a.id}>{a.code} - {a.name}</option>
+                    ))}
                   </select>
                 </div>
               </div>

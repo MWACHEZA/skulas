@@ -156,11 +156,17 @@ table{border-collapse:collapse;width:100%}@page{margin:2cm}@media print{body{pad
   };
 
   return (
-    <div className="portal-card">
-      <div className="portal-card-header">
-        <h3>Employee Payroll Registry</h3>
-        <p>Select month and year to view generated payroll details</p>
+    <div className="portal-container">
+      <div className="portal-page-header">
+        <h1>Human Resources & Payroll</h1>
+        <p>Manage employee payroll, view salary runs, and generate payslips securely.</p>
       </div>
+
+      <div className="portal-card">
+        <div className="portal-card-header">
+          <h3>Employee Payroll Registry</h3>
+          <p>Select month and year to view generated payroll details</p>
+        </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px', marginTop: '20px', marginBottom: '20px', alignItems: 'center' }}>
         <div>
@@ -437,6 +443,7 @@ table{border-collapse:collapse;width:100%}@page{margin:2cm}@media print{body{pad
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 }

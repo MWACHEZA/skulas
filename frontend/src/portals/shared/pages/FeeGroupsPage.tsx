@@ -81,6 +81,7 @@ export default function FeeGroupsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const { showToast } = useToast();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [accounts, setAccounts] = useState<any[]>([]);
   
   const [formData, setFormData] = useState({
     id: '',
@@ -89,7 +90,9 @@ export default function FeeGroupsPage() {
     year: new Date().getFullYear().toString(),
     billingType: '',
     isRecurring: false,
-    remindersEnabled: true
+    remindersEnabled: true,
+    incomeAccountId: '',
+    arAccountId: ''
   });
 
   const [saving, setSaving] = useState(false);
@@ -99,6 +102,7 @@ export default function FeeGroupsPage() {
   useEffect(() => {
     fetchGroups();
     fetchClasses();
+    fetchAccounts();
   }, []);
 
   const fetchClasses = async () => {
@@ -108,6 +112,15 @@ export default function FeeGroupsPage() {
     } catch (error) {
       console.error('Failed to load classes');
     
+    }
+  };
+
+  const fetchAccounts = async () => {
+    try {
+      const { data } = await api.get('/api/accounts/coa');
+      setAccounts(Array.isArray(data) ? data : []);
+    } catch (error) {
+      console.error('Failed to load accounts');
     }
   };
 
@@ -202,7 +215,9 @@ export default function FeeGroupsPage() {
       year: new Date().getFullYear().toString(),
       billingType: '',
       isRecurring: false,
-      remindersEnabled: true
+      remindersEnabled: true,
+      incomeAccountId: '',
+      arAccountId: ''
     });
     setClassAmounts({});
     setIsModalOpen(false);
@@ -304,9 +319,37 @@ export default function FeeGroupsPage() {
                     required
                   />
                 </div>
+                <div className="form-group">
+                  <label className="portal-label">Income Account (Credit)</label>
+                  <select
+                    className="portal-input"
+                    value={formData.incomeAccountId}
+                    onChange={e => setFormData({...formData, incomeAccountId: e.target.value})}
+                    style={{ height: '48px' }}
+                  >
+                    <option value="">-- Default Income Account --</option>
+                    {accounts.filter(a => a.type === 'REVENUE' || a.type === 'INCOME').map(acc => (
+                      <option key={acc.id} value={acc.id}>{acc.code} - {acc.name}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label className="portal-label">Receivable Account (Debit)</label>
+                  <select
+                    className="portal-input"
+                    value={formData.arAccountId}
+                    onChange={e => setFormData({...formData, arAccountId: e.target.value})}
+                    style={{ height: '48px' }}
+                  >
+                    <option value="">-- Default AR Account --</option>
+                    {accounts.filter(a => a.type === 'ASSET' && (a.name.toLowerCase().includes('receivable') || a.name.toLowerCase().includes('debtor'))).map(acc => (
+                      <option key={acc.id} value={acc.id}>{acc.code} - {acc.name}</option>
+                    ))}
+                  </select>
+                </div>
               </div>
 
-              <div style={{ marginBottom: '24px', borderTop: '1px solid #f1f5f9', paddingTop: '20px' }}>
+              <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '12px', border: '1px solid #e2e8f0', marginBottom: '20px' }}>
                 <label className="portal-label" style={{ marginBottom: '4px' }}>Class Specific Pricing (Optional overrides)</label>
                 <p style={{ color: '#64748b', fontSize: '0.8rem', marginBottom: '12px' }}>Leave blank to use the default financial valuation for a class.</p>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '12px' }}>

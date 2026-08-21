@@ -3,8 +3,67 @@ import prisma from '../lib/prisma';
 import { requireAuth, requireRole, AuthRequest } from '../middleware/auth';
 import { PaymentMethodSchema, FeeGroupSchema, RevenueAllocationSchema } from '../schemas/finance.schema';
 import { logSecurityEvent } from '../lib/security-logger';
+import { getAccountId } from '../../prisma/seeders/coa.seeder';
+import { LedgerService } from '../services/ledger.service';
 
 const router = Router();
+
+// ═══════════ DONATIONS ═══════════
+
+router.post('/donations', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    const schoolId = req.user!.schoolId!;
+    const { amount, fund, paymentMethod, reference } = req.body;
+
+    if (!amount || amount <= 0) {
+      return res.status(400).json({ error: 'Valid amount is required' });
+    }
+
+    const parsedAmount = parseFloat(amount);
+
+    const results = await prisma.$transaction(async (tx) => {
+      // Create a student payment record for the donation (using user as reference if possible, or general)
+      const payment = await tx.studentPayment.create({
+        data: {
+          studentId: req.user!.id, // Using user ID for now, though it's technically an Alumni/User
+          amount: parsedAmount,
+          paymentMode: paymentMethod || 'ONLINE',
+          status: 'Commit',
+          schoolId,
+          reference: reference || `Donation: ${fund || 'General'}`
+        }
+      });
+
+      // Post to Ledger
+      // Cash/Bank Debit (1100)
+      const cashAccountId = await getAccountId(schoolId, '1100', tx as any);
+      // Grants & Donations Credit (5300)
+      const donationAccountId = await getAccountId(schoolId, '5300', tx as any);
+
+      const je = await LedgerService.postEntry({
+        schoolId,
+        date: new Date(),
+        description: `Alumni Donation: ${fund || 'General'}`,
+        sourceType: 'donation',
+        sourceId: payment.id,
+        lines: [
+          { accountId: cashAccountId, debit: parsedAmount, description: `Donation Received via ${paymentMethod || 'ONLINE'}` },
+          { accountId: donationAccountId, credit: parsedAmount, description: `Contribution to ${fund || 'General Fund'}` }
+        ],
+        tx
+      });
+
+      await tx.studentPayment.update({ where: { id: payment.id }, data: { journalEntryId: je.id } });
+
+      return payment;
+    });
+
+    res.status(201).json({ success: true, paymentId: results.id, amount: parsedAmount });
+  } catch (error: any) {
+    console.error('Donation error:', error);
+    res.status(500).json({ error: 'Failed to process donation' });
+  }
+});
 
 // ═══════════ PAYMENT METHODS ═══════════
 

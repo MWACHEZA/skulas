@@ -62,6 +62,8 @@ interface FeeGroup {
   amount: number;
   year: number;
   billingType: string;
+  incomeAccountId?: string;
+  arAccountId?: string;
 }
 
 interface Student {
@@ -83,6 +85,7 @@ export default function FeesBillingPage() {
   const [activeTab, setActiveTab] = useState<'standard' | 'custom'>('standard');
   const [feeGroups, setFeeGroups] = useState<FeeGroup[]>([]);
   const [classes, setClasses] = useState<Class[]>([]);
+  const [accounts, setAccounts] = useState<any[]>([]);
   const [students, setStudents] = useState<Student[]>([]);
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
@@ -123,15 +126,17 @@ export default function FeesBillingPage() {
   const fetchInitialData = async () => {
     try {
       setLoading(true);
-      const [groupsRes, classesRes, methodsRes] = await Promise.all([
+      const [groupsRes, classesRes, methodsRes, accountsRes] = await Promise.all([
         api.get('/api/fees/groups'),
         api.get('/api/classes'),
-        api.get('/api/finance/payment-methods')
+        api.get('/api/finance/payment-methods'),
+        api.get('/api/accounts/coa')
       ]);
       const groups = Array.isArray(groupsRes.data) ? groupsRes.data : [];
       setFeeGroups(groups);
       setClasses(Array.isArray(classesRes.data) ? classesRes.data : []);
       setPaymentMethods(Array.isArray(methodsRes.data) ? methodsRes.data.filter((m: any) => m.isActive !== false) : []);
+      setAccounts(Array.isArray(accountsRes.data) ? accountsRes.data : []);
       
       if (groups.length > 0) {
         const uniqueYears = Array.from(new Set(groups.map((g: any) => g.year))) as number[];
@@ -324,6 +329,12 @@ export default function FeesBillingPage() {
                             <div style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: 800, marginTop: '2px', display: 'flex', alignItems: 'center', gap: '12px' }}>
                               <span className="status-badge" style={{ background: '#fff', padding: '2px 10px', fontSize: '0.7rem' }}>{group.billingType?.toUpperCase()}</span>
                               <span style={{ color: '#059669', fontWeight: 900, fontSize: '1rem' }}>{formatCurrency(group.amount)}</span>
+                            </div>
+                            <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '6px', fontWeight: 700 }}>
+                              Ledger Map: 
+                              <span style={{ color: '#475569', marginLeft: '6px' }}>AR: {accounts.find(a => a.id === group.arAccountId)?.code || '1210 (Default)'}</span> 
+                              <span style={{ margin: '0 6px' }}>|</span>
+                              <span style={{ color: '#475569' }}>Income: {accounts.find(a => a.id === group.incomeAccountId)?.code || '5100 (Default)'}</span>
                             </div>
                           </div>
                         </label>

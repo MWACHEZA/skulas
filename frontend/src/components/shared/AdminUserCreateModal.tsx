@@ -608,21 +608,27 @@ export default function AdminUserCreateModal({
                 {/* Step 3: Banking & Social */}
                 {staffStep === 3 && (
                   <div className="modal-form-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}>
-                    <div className="form-group"><label>Bank Name</label><input name="bankName" value={formData.bankName || ''} onChange={handleInputChange} className="form-control" /></div>
-                    <div className="form-group"><label>Bank Branch</label><input name="bankBranch" value={formData.bankBranch || ''} onChange={handleInputChange} className="form-control" /></div>
-                    <div className="form-group"><label>Branch Code</label><input name="branchCode" value={formData.branchCode || ''} onChange={handleInputChange} className="form-control" /></div>
-                    <div className="form-group">
-                      <label>Account Currency / Type</label>
-                      <select name="accountType" value={formData.accountType || ''} onChange={handleInputChange} className="form-control">
-                        <option value="">Select Currency...</option>
-                        <option value="USD">USD</option>
-                        <option value="ZiG">ZiG</option>
-                      </select>
-                    </div>
-                    <div className="form-group"><label>Account Number</label><input name="accountNumber" value={formData.accountNumber || ''} onChange={handleInputChange} className="form-control" /></div>
-                    <div className="form-group"><label>Account Holder Name</label><input name="accountHolderName" value={formData.accountHolderName || ''} onChange={handleInputChange} className="form-control" /></div>
-                    
                     <div className="form-group" style={{ gridColumn: 'span 3' }}>
+                      <label className="font-semibold text-sm text-gray-700 block border-b pb-1 mb-2">💵 USD Banking Details</label>
+                    </div>
+                    <div className="form-group"><label>Bank Name (USD)</label><input name="bankName" value={formData.bankName || ''} onChange={handleInputChange} className="form-control" /></div>
+                    <div className="form-group"><label>Bank Branch (USD)</label><input name="bankBranch" value={formData.bankBranch || ''} onChange={handleInputChange} className="form-control" /></div>
+                    <div className="form-group"><label>Branch Code (USD)</label><input name="branchCode" value={formData.branchCode || ''} onChange={handleInputChange} className="form-control" /></div>
+                    <div className="form-group"><label>Account Number (USD)</label><input name="accountNumber" value={formData.accountNumber || ''} onChange={handleInputChange} className="form-control" /></div>
+                    <div className="form-group"><label>Account Holder Name (USD)</label><input name="accountHolderName" value={formData.accountHolderName || ''} onChange={handleInputChange} className="form-control" /></div>
+                    <div className="form-group"><label>Account Type (USD)</label><input name="accountType" value={formData.accountType || ''} onChange={handleInputChange} className="form-control" /></div>
+
+                    <div className="form-group" style={{ gridColumn: 'span 3' }}>
+                      <label className="font-semibold text-sm text-gray-700 block border-b pb-1 mt-2 mb-2">🪙 ZiG Banking Details</label>
+                    </div>
+                    <div className="form-group"><label>Bank Name (ZiG)</label><input name="bankNameZig" value={formData.bankNameZig || ''} onChange={handleInputChange} className="form-control" /></div>
+                    <div className="form-group"><label>Bank Branch (ZiG)</label><input name="bankBranchZig" value={formData.bankBranchZig || ''} onChange={handleInputChange} className="form-control" /></div>
+                    <div className="form-group"><label>Branch Code (ZiG)</label><input name="branchCodeZig" value={formData.branchCodeZig || ''} onChange={handleInputChange} className="form-control" /></div>
+                    <div className="form-group"><label>Account Number (ZiG)</label><input name="accountNumberZig" value={formData.accountNumberZig || ''} onChange={handleInputChange} className="form-control" /></div>
+                    <div className="form-group"><label>Account Holder Name (ZiG)</label><input name="accountHolderNameZig" value={formData.accountHolderNameZig || ''} onChange={handleInputChange} className="form-control" /></div>
+                    <div className="form-group"><label>Account Type (ZiG)</label><input name="accountTypeZig" value={formData.accountTypeZig || ''} onChange={handleInputChange} className="form-control" /></div>
+
+                    <div className="form-group" style={{ gridColumn: 'span 3', marginTop: '1rem' }}>
                       <label className="font-semibold text-sm text-gray-700 block border-b pb-1 mb-3">Social Media Profiles</label>
                     </div>
                     <div className="form-group"><label><i className="fab fa-facebook"></i> Facebook Link</label><input name="facebookLink" value={formData.facebookLink || ''} onChange={handleInputChange} className="form-control" placeholder="https://..." /></div>

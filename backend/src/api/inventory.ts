@@ -1,6 +1,8 @@
 import { Router, Response } from 'express';
 import prisma from '../lib/prisma';
 import { requireAuth, requireRole, AuthRequest } from '../middleware/auth';
+import { LedgerService } from '../services/ledger.service';
+import { getAccountId } from '../../prisma/seeders/coa.seeder';
 
 const router = Router();
 
@@ -97,6 +99,8 @@ router.post('/bill', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (
 
     const results = await prisma.$transaction(async (tx) => {
       let createdCount = 0;
+      let totalBilledAmount = 0;
+
       for (const assignment of productAssignments) {
         const product = products.find(p => p.id === assignment.productId);
         if (!product) continue;
@@ -117,8 +121,31 @@ router.post('/bill', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (
             }
           });
           createdCount++;
+          totalBilledAmount += amount;
         }
       }
+
+      if (totalBilledAmount > 0) {
+        const [arAccountId, salesAccountId] = await Promise.all([
+          getAccountId(schoolId, '1210', tx as any),
+          getAccountId(schoolId, '5210', tx as any) // Tuckshop/Canteen Sales
+        ]);
+
+        await LedgerService.postEntry({
+          schoolId,
+          date: new Date(),
+          description: `Bulk Grocery Billing for ${students.length} students (${year} ${billingType})`,
+          sourceType: 'inventory',
+          sourceId: `bill_${Date.now()}`,
+          createdByUserId: req.user!.id,
+          lines: [
+            { accountId: arAccountId, debit: totalBilledAmount, description: 'Grocery billing to students' },
+            { accountId: salesAccountId, credit: totalBilledAmount, description: 'Grocery revenue' }
+          ],
+          tx: tx as any
+        });
+      }
+
       return { createdCount };
     });
 
@@ -157,8 +184,21 @@ router.post('/consumption', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), 
 
   try {
     await prisma.$transaction(async (tx) => {
+      let totalCostValue = 0;
+
+      // Need products to get price for total cost
+      const productIds = consumptions.map((c: any) => c.productId);
+      const products = await tx.physicalProduct.findMany({
+        where: { id: { in: productIds }, schoolId }
+      });
+
       for (const item of consumptions) {
         if (item.quantity <= 0) continue;
+
+        const product = products.find(p => p.id === item.productId);
+        if (product) {
+          totalCostValue += (product.price || 0) * item.quantity;
+        }
 
         // Create log
         await tx.physicalProductConsumption.create({
@@ -180,6 +220,27 @@ router.post('/consumption', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), 
         if (stockUpdate.count === 0) {
           throw new Error(`Insufficient stock for product ID: ${item.productId}`);
         }
+      }
+
+      if (totalCostValue > 0) {
+        const [cogsAccountId, inventoryAccountId] = await Promise.all([
+          getAccountId(schoolId, '6110', tx as any), // COGS - Tuckshop
+          getAccountId(schoolId, '1310', tx as any)  // Inventory - Tuckshop
+        ]);
+
+        await LedgerService.postEntry({
+          schoolId,
+          date: new Date(date),
+          description: `Inventory consumption recorded by ${requestedBy}`,
+          sourceType: 'inventory',
+          sourceId: `consump_${Date.now()}`,
+          createdByUserId: req.user!.id,
+          lines: [
+            { accountId: cogsAccountId, debit: totalCostValue, description: 'Cost of goods consumed' },
+            { accountId: inventoryAccountId, credit: totalCostValue, description: 'Stock reduction' }
+          ],
+          tx: tx as any
+        });
       }
     });
 

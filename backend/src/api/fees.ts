@@ -429,9 +429,9 @@ router.post('/invoice/standard', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMI
           });
 
           // Post AR debit / Income credit for the invoice
-          const arAccountId = await getAccountId(schoolId, '1210', tx as any);
+          const arAccountId = group.arAccountId || (await getAccountId(schoolId, '1210', tx as any));
           // Map fee group billing type to income account (tuition default, can be extended)
-          const incomeAccountId = await getAccountId(schoolId, '5100', tx as any);
+          const incomeAccountId = group.incomeAccountId || (await getAccountId(schoolId, '5100', tx as any));
           await LedgerService.postEntry({
             schoolId,
             date: new Date(),
@@ -525,8 +525,26 @@ router.post('/invoice/custom', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'
           }
         });
 
+        // Post AR debit / Income credit for the invoice
+        const arAccountId = group.arAccountId || (await getAccountId(schoolId, '1210', tx as any));
+        const incomeAccountId = group.incomeAccountId || (await getAccountId(schoolId, '5100', tx as any));
+        
+        await LedgerService.postEntry({
+          schoolId,
+          date: new Date(),
+          description: `Custom Invoice: ${description || `${group.name} - ${group.billingType} ${group.year}`}`,
+          sourceType: 'fee_invoice',
+          sourceId: fee.id,
+          lines: [
+            { accountId: arAccountId, debit: netAmount, description: 'Student AR — custom fee billed', studentId },
+            { accountId: incomeAccountId, credit: netAmount, description: group.name }
+          ],
+          tx
+        });
+
         if (isPaid && paymentMethod) {
-          await tx.studentPayment.create({
+          const cashAccountId = await getAccountId(schoolId, '1100', tx as any);
+          const payment = await tx.studentPayment.create({
             data: {
               studentId,
               feeId: fee.id,
@@ -536,6 +554,21 @@ router.post('/invoice/custom', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'
               schoolId
             }
           });
+
+          // Post Cash debit / AR credit
+          const payJe = await LedgerService.postEntry({
+            schoolId,
+            date: new Date(),
+            description: `Payment: ${description || group.name}`,
+            sourceType: 'fee_payment',
+            sourceId: payment.id,
+            lines: [
+              { accountId: cashAccountId, debit: paidAmount, description: paymentMethod, studentId },
+              { accountId: arAccountId, credit: paidAmount, description: 'Reduce AR', studentId }
+            ],
+            tx
+          });
+          await tx.studentPayment.update({ where: { id: payment.id }, data: { journalEntryId: payJe.id } });
         }
         createdCount++;
       }
@@ -705,18 +738,38 @@ router.post('/bulk-invoices', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN')
 
 
     if (students.length > 0) {
+      const feesData = students.map(s => ({
+        id: require('crypto').randomUUID(), // we need IDs to potentially link to sourceId, but since it's createMany, we might just use the feeGroup.id as the sourceId for the aggregate ledger entry
+        studentId: s.id,
+        feeGroupId: feeGroup.id,
+        amount: parsedAmount,
+        term: billingLabel,
+        year,
+        dueDate: new Date(year, 11, 31),
+        description: description || `${name} - Bulk Invoice`,
+        schoolId
+      }));
+
       await prisma.fee.createMany({
-        data: students.map(s => ({
-          studentId: s.id,
-          feeGroupId: feeGroup.id,
-          amount: parsedAmount,
-          term: billingLabel,
-          year,
-          dueDate: new Date(year, 11, 31),
-          description: description || `${name} - Bulk Invoice`,
-          schoolId
-        })),
+        data: feesData,
         skipDuplicates: true
+      });
+
+      // Aggregate ledger entry for the entire bulk invoice run
+      const totalAmount = parsedAmount * students.length;
+      const arAccountId = feeGroup.arAccountId || (await getAccountId(schoolId, '1210', prisma));
+      const incomeAccountId = feeGroup.incomeAccountId || (await getAccountId(schoolId, '5100', prisma));
+
+      await LedgerService.postEntry({
+        schoolId,
+        date: new Date(),
+        description: `Bulk Invoice: ${description || `${name} - ${billingLabel} ${year}`}`,
+        sourceType: 'fee_group',
+        sourceId: feeGroup.id,
+        lines: [
+          { accountId: arAccountId, debit: totalAmount, description: `Student AR — bulk fee billed for ${students.length} students` },
+          { accountId: incomeAccountId, credit: totalAmount, description: feeGroup.name }
+        ]
       });
     }
 
@@ -934,7 +987,7 @@ router.get('/payments', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), asyn
 router.post('/ledger', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req: AuthRequest, res: Response) => {
   try {
     const schoolId = req.user!.schoolId!;
-    const { title, studentId, dueDate, vatPercentage, discount, status, lineItems } = req.body;
+    const { title, studentId, dueDate, vatPercentage, discount, status, lineItems, incomeAccountId: reqIncomeAccountId, arAccountId: reqArAccountId } = req.body;
 
     if (!studentId || !Array.isArray(lineItems) || lineItems.length === 0) {
       return res.status(400).json({ error: 'Student ID and at least one line item are required' });
@@ -946,31 +999,54 @@ router.post('/ledger', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async
     const parsedDiscount = Math.round((parseFloat(discount) || 0) * 100) / 100;
     const totalAmount = Math.round((grossAmount + calculatedVat) * 100) / 100;
 
-    const fee = await prisma.fee.create({
-      data: {
+    const results = await prisma.$transaction(async (tx) => {
+      const fee = await tx.fee.create({
+        data: {
+          schoolId,
+          studentId,
+          term: 'Ledger',
+          year: new Date().getFullYear(),
+          amount: totalAmount,
+          discount: parsedDiscount,
+          vatPercentage: vatPct,
+          dueDate: new Date(dueDate || new Date()),
+          status: status || 'unpaid',
+          description: title,
+          isLedger: true,
+          incomeAccountId: reqIncomeAccountId || undefined,
+          arAccountId: reqArAccountId || undefined,
+          lineItems: {
+            create: lineItems.map((item: any) => ({
+              item: item.item,
+              amount: Math.round((parseFloat(item.amount) || 0) * 100) / 100,
+              date: new Date(item.date || new Date())
+            }))
+          }
+        },
+        include: { lineItems: true }
+      });
+
+      // Post to Ledger
+      const arAccountId = reqArAccountId || (await getAccountId(schoolId, '1210', tx as any));
+      const incomeAccountId = reqIncomeAccountId || (await getAccountId(schoolId, '5100', tx as any));
+
+      await LedgerService.postEntry({
         schoolId,
-        studentId,
-        term: 'Ledger',
-        year: new Date().getFullYear(),
-        amount: totalAmount,
-        discount: parsedDiscount,
-        vatPercentage: vatPct,
-        dueDate: new Date(dueDate || new Date()),
-        status: status || 'unpaid',
-        description: title,
-        isLedger: true,
-        lineItems: {
-          create: lineItems.map((item: any) => ({
-            item: item.item,
-            amount: Math.round((parseFloat(item.amount) || 0) * 100) / 100,
-            date: new Date(item.date || new Date())
-          }))
-        }
-      },
-      include: { lineItems: true }
+        date: new Date(),
+        description: `Student Ledger: ${title}`,
+        sourceType: 'fee_ledger',
+        sourceId: fee.id,
+        lines: [
+          { accountId: arAccountId, debit: totalAmount, description: `AR for Ledger: ${title}`, studentId },
+          { accountId: incomeAccountId, credit: totalAmount, description: `Income for Ledger: ${title}` }
+        ],
+        tx
+      });
+
+      return fee;
     });
 
-    res.json({ success: true, fee });
+    res.json({ success: true, fee: results });
   } catch (error: any) {
     res.status(500).json({ error: 'Failed to create ledger: ' + error.message });
   }

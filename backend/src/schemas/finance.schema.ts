@@ -22,6 +22,8 @@ export const FeeGroupSchema = z.object({
   billingType: z.string().min(1, 'Billing Type/Period is required'),
   isRecurring: z.boolean().optional(),
   remindersEnabled: z.boolean().optional(),
+  incomeAccountId: z.string().optional().nullable().transform(v => v === '' ? null : v),
+  arAccountId: z.string().optional().nullable().transform(v => v === '' ? null : v),
 });
 
 export const RevenueAllocationSchema = z.object({

@@ -52799,6 +52799,8 @@ export namespace Prisma {
     description: string | null
     isLedger: boolean | null
     feeGroupId: string | null
+    incomeAccountId: string | null
+    arAccountId: string | null
     schoolId: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -52818,6 +52820,8 @@ export namespace Prisma {
     description: string | null
     isLedger: boolean | null
     feeGroupId: string | null
+    incomeAccountId: string | null
+    arAccountId: string | null
     schoolId: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -52837,6 +52841,8 @@ export namespace Prisma {
     description: number
     isLedger: number
     feeGroupId: number
+    incomeAccountId: number
+    arAccountId: number
     schoolId: number
     createdAt: number
     updatedAt: number
@@ -52874,6 +52880,8 @@ export namespace Prisma {
     description?: true
     isLedger?: true
     feeGroupId?: true
+    incomeAccountId?: true
+    arAccountId?: true
     schoolId?: true
     createdAt?: true
     updatedAt?: true
@@ -52893,6 +52901,8 @@ export namespace Prisma {
     description?: true
     isLedger?: true
     feeGroupId?: true
+    incomeAccountId?: true
+    arAccountId?: true
     schoolId?: true
     createdAt?: true
     updatedAt?: true
@@ -52912,6 +52922,8 @@ export namespace Prisma {
     description?: true
     isLedger?: true
     feeGroupId?: true
+    incomeAccountId?: true
+    arAccountId?: true
     schoolId?: true
     createdAt?: true
     updatedAt?: true
@@ -53018,6 +53030,8 @@ export namespace Prisma {
     description: string | null
     isLedger: boolean
     feeGroupId: string | null
+    incomeAccountId: string | null
+    arAccountId: string | null
     schoolId: string
     createdAt: Date
     updatedAt: Date
@@ -53056,6 +53070,8 @@ export namespace Prisma {
     description?: boolean
     isLedger?: boolean
     feeGroupId?: boolean
+    incomeAccountId?: boolean
+    arAccountId?: boolean
     schoolId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -53081,6 +53097,8 @@ export namespace Prisma {
     description?: boolean
     isLedger?: boolean
     feeGroupId?: boolean
+    incomeAccountId?: boolean
+    arAccountId?: boolean
     schoolId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -53103,6 +53121,8 @@ export namespace Prisma {
     description?: boolean
     isLedger?: boolean
     feeGroupId?: boolean
+    incomeAccountId?: boolean
+    arAccountId?: boolean
     schoolId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -53145,6 +53165,8 @@ export namespace Prisma {
       description: string | null
       isLedger: boolean
       feeGroupId: string | null
+      incomeAccountId: string | null
+      arAccountId: string | null
       schoolId: string
       createdAt: Date
       updatedAt: Date
@@ -53559,6 +53581,8 @@ export namespace Prisma {
     readonly description: FieldRef<"Fee", 'String'>
     readonly isLedger: FieldRef<"Fee", 'Boolean'>
     readonly feeGroupId: FieldRef<"Fee", 'String'>
+    readonly incomeAccountId: FieldRef<"Fee", 'String'>
+    readonly arAccountId: FieldRef<"Fee", 'String'>
     readonly schoolId: FieldRef<"Fee", 'String'>
     readonly createdAt: FieldRef<"Fee", 'DateTime'>
     readonly updatedAt: FieldRef<"Fee", 'DateTime'>
@@ -118988,6 +119012,8 @@ export namespace Prisma {
     isRecurring: boolean | null
     remindersEnabled: boolean | null
     schoolId: string | null
+    incomeAccountId: string | null
+    arAccountId: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -119001,6 +119027,8 @@ export namespace Prisma {
     isRecurring: boolean | null
     remindersEnabled: boolean | null
     schoolId: string | null
+    incomeAccountId: string | null
+    arAccountId: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -119014,6 +119042,8 @@ export namespace Prisma {
     isRecurring: number
     remindersEnabled: number
     schoolId: number
+    incomeAccountId: number
+    arAccountId: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -119039,6 +119069,8 @@ export namespace Prisma {
     isRecurring?: true
     remindersEnabled?: true
     schoolId?: true
+    incomeAccountId?: true
+    arAccountId?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -119052,6 +119084,8 @@ export namespace Prisma {
     isRecurring?: true
     remindersEnabled?: true
     schoolId?: true
+    incomeAccountId?: true
+    arAccountId?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -119065,6 +119099,8 @@ export namespace Prisma {
     isRecurring?: true
     remindersEnabled?: true
     schoolId?: true
+    incomeAccountId?: true
+    arAccountId?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -119165,6 +119201,8 @@ export namespace Prisma {
     isRecurring: boolean
     remindersEnabled: boolean
     schoolId: string
+    incomeAccountId: string | null
+    arAccountId: string | null
     createdAt: Date
     updatedAt: Date
     _count: FeeGroupCountAggregateOutputType | null
@@ -119197,6 +119235,8 @@ export namespace Prisma {
     isRecurring?: boolean
     remindersEnabled?: boolean
     schoolId?: boolean
+    incomeAccountId?: boolean
+    arAccountId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     school?: boolean | SchoolDefaultArgs<ExtArgs>
@@ -119215,6 +119255,8 @@ export namespace Prisma {
     isRecurring?: boolean
     remindersEnabled?: boolean
     schoolId?: boolean
+    incomeAccountId?: boolean
+    arAccountId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     school?: boolean | SchoolDefaultArgs<ExtArgs>
@@ -119229,6 +119271,8 @@ export namespace Prisma {
     isRecurring?: boolean
     remindersEnabled?: boolean
     schoolId?: boolean
+    incomeAccountId?: boolean
+    arAccountId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
@@ -119261,6 +119305,8 @@ export namespace Prisma {
       isRecurring: boolean
       remindersEnabled: boolean
       schoolId: string
+      incomeAccountId: string | null
+      arAccountId: string | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["feeGroup"]>
@@ -119668,6 +119714,8 @@ export namespace Prisma {
     readonly isRecurring: FieldRef<"FeeGroup", 'Boolean'>
     readonly remindersEnabled: FieldRef<"FeeGroup", 'Boolean'>
     readonly schoolId: FieldRef<"FeeGroup", 'String'>
+    readonly incomeAccountId: FieldRef<"FeeGroup", 'String'>
+    readonly arAccountId: FieldRef<"FeeGroup", 'String'>
     readonly createdAt: FieldRef<"FeeGroup", 'DateTime'>
     readonly updatedAt: FieldRef<"FeeGroup", 'DateTime'>
   }
@@ -182020,6 +182068,8 @@ export namespace Prisma {
     description: 'description',
     isLedger: 'isLedger',
     feeGroupId: 'feeGroupId',
+    incomeAccountId: 'incomeAccountId',
+    arAccountId: 'arAccountId',
     schoolId: 'schoolId',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
@@ -183093,6 +183143,8 @@ export namespace Prisma {
     isRecurring: 'isRecurring',
     remindersEnabled: 'remindersEnabled',
     schoolId: 'schoolId',
+    incomeAccountId: 'incomeAccountId',
+    arAccountId: 'arAccountId',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -187501,6 +187553,8 @@ export namespace Prisma {
     description?: StringNullableFilter<"Fee"> | string | null
     isLedger?: BoolFilter<"Fee"> | boolean
     feeGroupId?: StringNullableFilter<"Fee"> | string | null
+    incomeAccountId?: StringNullableFilter<"Fee"> | string | null
+    arAccountId?: StringNullableFilter<"Fee"> | string | null
     schoolId?: StringFilter<"Fee"> | string
     createdAt?: DateTimeFilter<"Fee"> | Date | string
     updatedAt?: DateTimeFilter<"Fee"> | Date | string
@@ -187525,6 +187579,8 @@ export namespace Prisma {
     description?: SortOrderInput | SortOrder
     isLedger?: SortOrder
     feeGroupId?: SortOrderInput | SortOrder
+    incomeAccountId?: SortOrderInput | SortOrder
+    arAccountId?: SortOrderInput | SortOrder
     schoolId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -187552,6 +187608,8 @@ export namespace Prisma {
     description?: StringNullableFilter<"Fee"> | string | null
     isLedger?: BoolFilter<"Fee"> | boolean
     feeGroupId?: StringNullableFilter<"Fee"> | string | null
+    incomeAccountId?: StringNullableFilter<"Fee"> | string | null
+    arAccountId?: StringNullableFilter<"Fee"> | string | null
     schoolId?: StringFilter<"Fee"> | string
     createdAt?: DateTimeFilter<"Fee"> | Date | string
     updatedAt?: DateTimeFilter<"Fee"> | Date | string
@@ -187576,6 +187634,8 @@ export namespace Prisma {
     description?: SortOrderInput | SortOrder
     isLedger?: SortOrder
     feeGroupId?: SortOrderInput | SortOrder
+    incomeAccountId?: SortOrderInput | SortOrder
+    arAccountId?: SortOrderInput | SortOrder
     schoolId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -187603,6 +187663,8 @@ export namespace Prisma {
     description?: StringNullableWithAggregatesFilter<"Fee"> | string | null
     isLedger?: BoolWithAggregatesFilter<"Fee"> | boolean
     feeGroupId?: StringNullableWithAggregatesFilter<"Fee"> | string | null
+    incomeAccountId?: StringNullableWithAggregatesFilter<"Fee"> | string | null
+    arAccountId?: StringNullableWithAggregatesFilter<"Fee"> | string | null
     schoolId?: StringWithAggregatesFilter<"Fee"> | string
     createdAt?: DateTimeWithAggregatesFilter<"Fee"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Fee"> | Date | string
@@ -193172,6 +193234,8 @@ export namespace Prisma {
     isRecurring?: BoolFilter<"FeeGroup"> | boolean
     remindersEnabled?: BoolFilter<"FeeGroup"> | boolean
     schoolId?: StringFilter<"FeeGroup"> | string
+    incomeAccountId?: StringNullableFilter<"FeeGroup"> | string | null
+    arAccountId?: StringNullableFilter<"FeeGroup"> | string | null
     createdAt?: DateTimeFilter<"FeeGroup"> | Date | string
     updatedAt?: DateTimeFilter<"FeeGroup"> | Date | string
     school?: XOR<SchoolRelationFilter, SchoolWhereInput>
@@ -193189,6 +193253,8 @@ export namespace Prisma {
     isRecurring?: SortOrder
     remindersEnabled?: SortOrder
     schoolId?: SortOrder
+    incomeAccountId?: SortOrderInput | SortOrder
+    arAccountId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     school?: SchoolOrderByWithRelationInput
@@ -193210,6 +193276,8 @@ export namespace Prisma {
     isRecurring?: BoolFilter<"FeeGroup"> | boolean
     remindersEnabled?: BoolFilter<"FeeGroup"> | boolean
     schoolId?: StringFilter<"FeeGroup"> | string
+    incomeAccountId?: StringNullableFilter<"FeeGroup"> | string | null
+    arAccountId?: StringNullableFilter<"FeeGroup"> | string | null
     createdAt?: DateTimeFilter<"FeeGroup"> | Date | string
     updatedAt?: DateTimeFilter<"FeeGroup"> | Date | string
     school?: XOR<SchoolRelationFilter, SchoolWhereInput>
@@ -193227,6 +193295,8 @@ export namespace Prisma {
     isRecurring?: SortOrder
     remindersEnabled?: SortOrder
     schoolId?: SortOrder
+    incomeAccountId?: SortOrderInput | SortOrder
+    arAccountId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: FeeGroupCountOrderByAggregateInput
@@ -193248,6 +193318,8 @@ export namespace Prisma {
     isRecurring?: BoolWithAggregatesFilter<"FeeGroup"> | boolean
     remindersEnabled?: BoolWithAggregatesFilter<"FeeGroup"> | boolean
     schoolId?: StringWithAggregatesFilter<"FeeGroup"> | string
+    incomeAccountId?: StringNullableWithAggregatesFilter<"FeeGroup"> | string | null
+    arAccountId?: StringNullableWithAggregatesFilter<"FeeGroup"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"FeeGroup"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"FeeGroup"> | Date | string
   }
@@ -202177,6 +202249,8 @@ export namespace Prisma {
     status?: string
     description?: string | null
     isLedger?: boolean
+    incomeAccountId?: string | null
+    arAccountId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     student: StudentCreateNestedOneWithoutFeesInput
@@ -202200,6 +202274,8 @@ export namespace Prisma {
     description?: string | null
     isLedger?: boolean
     feeGroupId?: string | null
+    incomeAccountId?: string | null
+    arAccountId?: string | null
     schoolId: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -202219,6 +202295,8 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     isLedger?: BoolFieldUpdateOperationsInput | boolean
+    incomeAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    arAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     student?: StudentUpdateOneRequiredWithoutFeesNestedInput
@@ -202242,6 +202320,8 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     isLedger?: BoolFieldUpdateOperationsInput | boolean
     feeGroupId?: NullableStringFieldUpdateOperationsInput | string | null
+    incomeAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    arAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     schoolId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -202263,6 +202343,8 @@ export namespace Prisma {
     description?: string | null
     isLedger?: boolean
     feeGroupId?: string | null
+    incomeAccountId?: string | null
+    arAccountId?: string | null
     schoolId: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -202280,6 +202362,8 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     isLedger?: BoolFieldUpdateOperationsInput | boolean
+    incomeAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    arAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -202298,6 +202382,8 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     isLedger?: BoolFieldUpdateOperationsInput | boolean
     feeGroupId?: NullableStringFieldUpdateOperationsInput | string | null
+    incomeAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    arAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     schoolId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -208381,6 +208467,8 @@ export namespace Prisma {
     billingType: string
     isRecurring?: boolean
     remindersEnabled?: boolean
+    incomeAccountId?: string | null
+    arAccountId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     school: SchoolCreateNestedOneWithoutFeeGroupsInput
@@ -208398,6 +208486,8 @@ export namespace Prisma {
     isRecurring?: boolean
     remindersEnabled?: boolean
     schoolId: string
+    incomeAccountId?: string | null
+    arAccountId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     fees?: FeeUncheckedCreateNestedManyWithoutFeeGroupInput
@@ -208413,6 +208503,8 @@ export namespace Prisma {
     billingType?: StringFieldUpdateOperationsInput | string
     isRecurring?: BoolFieldUpdateOperationsInput | boolean
     remindersEnabled?: BoolFieldUpdateOperationsInput | boolean
+    incomeAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    arAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     school?: SchoolUpdateOneRequiredWithoutFeeGroupsNestedInput
@@ -208430,6 +208522,8 @@ export namespace Prisma {
     isRecurring?: BoolFieldUpdateOperationsInput | boolean
     remindersEnabled?: BoolFieldUpdateOperationsInput | boolean
     schoolId?: StringFieldUpdateOperationsInput | string
+    incomeAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    arAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fees?: FeeUncheckedUpdateManyWithoutFeeGroupNestedInput
@@ -208446,6 +208540,8 @@ export namespace Prisma {
     isRecurring?: boolean
     remindersEnabled?: boolean
     schoolId: string
+    incomeAccountId?: string | null
+    arAccountId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -208458,6 +208554,8 @@ export namespace Prisma {
     billingType?: StringFieldUpdateOperationsInput | string
     isRecurring?: BoolFieldUpdateOperationsInput | boolean
     remindersEnabled?: BoolFieldUpdateOperationsInput | boolean
+    incomeAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    arAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -208471,6 +208569,8 @@ export namespace Prisma {
     isRecurring?: BoolFieldUpdateOperationsInput | boolean
     remindersEnabled?: BoolFieldUpdateOperationsInput | boolean
     schoolId?: StringFieldUpdateOperationsInput | string
+    incomeAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    arAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -217372,6 +217472,8 @@ export namespace Prisma {
     description?: SortOrder
     isLedger?: SortOrder
     feeGroupId?: SortOrder
+    incomeAccountId?: SortOrder
+    arAccountId?: SortOrder
     schoolId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -217399,6 +217501,8 @@ export namespace Prisma {
     description?: SortOrder
     isLedger?: SortOrder
     feeGroupId?: SortOrder
+    incomeAccountId?: SortOrder
+    arAccountId?: SortOrder
     schoolId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -217418,6 +217522,8 @@ export namespace Prisma {
     description?: SortOrder
     isLedger?: SortOrder
     feeGroupId?: SortOrder
+    incomeAccountId?: SortOrder
+    arAccountId?: SortOrder
     schoolId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -220508,6 +220614,8 @@ export namespace Prisma {
     isRecurring?: SortOrder
     remindersEnabled?: SortOrder
     schoolId?: SortOrder
+    incomeAccountId?: SortOrder
+    arAccountId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -220526,6 +220634,8 @@ export namespace Prisma {
     isRecurring?: SortOrder
     remindersEnabled?: SortOrder
     schoolId?: SortOrder
+    incomeAccountId?: SortOrder
+    arAccountId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -220539,6 +220649,8 @@ export namespace Prisma {
     isRecurring?: SortOrder
     remindersEnabled?: SortOrder
     schoolId?: SortOrder
+    incomeAccountId?: SortOrder
+    arAccountId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -241089,6 +241201,8 @@ export namespace Prisma {
     status?: string
     description?: string | null
     isLedger?: boolean
+    incomeAccountId?: string | null
+    arAccountId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     student: StudentCreateNestedOneWithoutFeesInput
@@ -241111,6 +241225,8 @@ export namespace Prisma {
     description?: string | null
     isLedger?: boolean
     feeGroupId?: string | null
+    incomeAccountId?: string | null
+    arAccountId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     payments?: StudentPaymentUncheckedCreateNestedManyWithoutFeeInput
@@ -241859,6 +241975,8 @@ export namespace Prisma {
     billingType: string
     isRecurring?: boolean
     remindersEnabled?: boolean
+    incomeAccountId?: string | null
+    arAccountId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     fees?: FeeCreateNestedManyWithoutFeeGroupInput
@@ -241874,6 +241992,8 @@ export namespace Prisma {
     billingType: string
     isRecurring?: boolean
     remindersEnabled?: boolean
+    incomeAccountId?: string | null
+    arAccountId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     fees?: FeeUncheckedCreateNestedManyWithoutFeeGroupInput
@@ -244894,6 +245014,8 @@ export namespace Prisma {
     description?: StringNullableFilter<"Fee"> | string | null
     isLedger?: BoolFilter<"Fee"> | boolean
     feeGroupId?: StringNullableFilter<"Fee"> | string | null
+    incomeAccountId?: StringNullableFilter<"Fee"> | string | null
+    arAccountId?: StringNullableFilter<"Fee"> | string | null
     schoolId?: StringFilter<"Fee"> | string
     createdAt?: DateTimeFilter<"Fee"> | Date | string
     updatedAt?: DateTimeFilter<"Fee"> | Date | string
@@ -245583,6 +245705,8 @@ export namespace Prisma {
     isRecurring?: BoolFilter<"FeeGroup"> | boolean
     remindersEnabled?: BoolFilter<"FeeGroup"> | boolean
     schoolId?: StringFilter<"FeeGroup"> | string
+    incomeAccountId?: StringNullableFilter<"FeeGroup"> | string | null
+    arAccountId?: StringNullableFilter<"FeeGroup"> | string | null
     createdAt?: DateTimeFilter<"FeeGroup"> | Date | string
     updatedAt?: DateTimeFilter<"FeeGroup"> | Date | string
   }
@@ -260398,6 +260522,8 @@ export namespace Prisma {
     status?: string
     description?: string | null
     isLedger?: boolean
+    incomeAccountId?: string | null
+    arAccountId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     feeGroup?: FeeGroupCreateNestedOneWithoutFeesInput
@@ -260419,6 +260545,8 @@ export namespace Prisma {
     description?: string | null
     isLedger?: boolean
     feeGroupId?: string | null
+    incomeAccountId?: string | null
+    arAccountId?: string | null
     schoolId: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -270936,6 +271064,8 @@ export namespace Prisma {
     billingType: string
     isRecurring?: boolean
     remindersEnabled?: boolean
+    incomeAccountId?: string | null
+    arAccountId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     school: SchoolCreateNestedOneWithoutFeeGroupsInput
@@ -270952,6 +271082,8 @@ export namespace Prisma {
     isRecurring?: boolean
     remindersEnabled?: boolean
     schoolId: string
+    incomeAccountId?: string | null
+    arAccountId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     revenueAllocations?: RevenueAllocationUncheckedCreateNestedManyWithoutFeeGroupsInput
@@ -271452,6 +271584,8 @@ export namespace Prisma {
     billingType?: StringFieldUpdateOperationsInput | string
     isRecurring?: BoolFieldUpdateOperationsInput | boolean
     remindersEnabled?: BoolFieldUpdateOperationsInput | boolean
+    incomeAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    arAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     school?: SchoolUpdateOneRequiredWithoutFeeGroupsNestedInput
@@ -271468,6 +271602,8 @@ export namespace Prisma {
     isRecurring?: BoolFieldUpdateOperationsInput | boolean
     remindersEnabled?: BoolFieldUpdateOperationsInput | boolean
     schoolId?: StringFieldUpdateOperationsInput | string
+    incomeAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    arAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     revenueAllocations?: RevenueAllocationUncheckedUpdateManyWithoutFeeGroupsNestedInput
@@ -271786,6 +271922,8 @@ export namespace Prisma {
     status?: string
     description?: string | null
     isLedger?: boolean
+    incomeAccountId?: string | null
+    arAccountId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     student: StudentCreateNestedOneWithoutFeesInput
@@ -271808,6 +271946,8 @@ export namespace Prisma {
     description?: string | null
     isLedger?: boolean
     feeGroupId?: string | null
+    incomeAccountId?: string | null
+    arAccountId?: string | null
     schoolId: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -271842,6 +271982,8 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     isLedger?: BoolFieldUpdateOperationsInput | boolean
+    incomeAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    arAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     student?: StudentUpdateOneRequiredWithoutFeesNestedInput
@@ -271864,6 +272006,8 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     isLedger?: BoolFieldUpdateOperationsInput | boolean
     feeGroupId?: NullableStringFieldUpdateOperationsInput | string | null
+    incomeAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    arAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     schoolId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -304167,6 +304311,8 @@ export namespace Prisma {
     status?: string
     description?: string | null
     isLedger?: boolean
+    incomeAccountId?: string | null
+    arAccountId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     student: StudentCreateNestedOneWithoutFeesInput
@@ -304188,6 +304334,8 @@ export namespace Prisma {
     status?: string
     description?: string | null
     isLedger?: boolean
+    incomeAccountId?: string | null
+    arAccountId?: string | null
     schoolId: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -304569,6 +304717,8 @@ export namespace Prisma {
     billingType: string
     isRecurring?: boolean
     remindersEnabled?: boolean
+    incomeAccountId?: string | null
+    arAccountId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     school: SchoolCreateNestedOneWithoutFeeGroupsInput
@@ -304585,6 +304735,8 @@ export namespace Prisma {
     isRecurring?: boolean
     remindersEnabled?: boolean
     schoolId: string
+    incomeAccountId?: string | null
+    arAccountId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     fees?: FeeUncheckedCreateNestedManyWithoutFeeGroupInput
@@ -304666,6 +304818,8 @@ export namespace Prisma {
     billingType?: StringFieldUpdateOperationsInput | string
     isRecurring?: BoolFieldUpdateOperationsInput | boolean
     remindersEnabled?: BoolFieldUpdateOperationsInput | boolean
+    incomeAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    arAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     school?: SchoolUpdateOneRequiredWithoutFeeGroupsNestedInput
@@ -304682,6 +304836,8 @@ export namespace Prisma {
     isRecurring?: BoolFieldUpdateOperationsInput | boolean
     remindersEnabled?: BoolFieldUpdateOperationsInput | boolean
     schoolId?: StringFieldUpdateOperationsInput | string
+    incomeAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    arAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fees?: FeeUncheckedUpdateManyWithoutFeeGroupNestedInput
@@ -306848,6 +307004,8 @@ export namespace Prisma {
     status?: string
     description?: string | null
     isLedger?: boolean
+    incomeAccountId?: string | null
+    arAccountId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     student: StudentCreateNestedOneWithoutFeesInput
@@ -306870,6 +307028,8 @@ export namespace Prisma {
     description?: string | null
     isLedger?: boolean
     feeGroupId?: string | null
+    incomeAccountId?: string | null
+    arAccountId?: string | null
     schoolId: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -307312,6 +307472,8 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     isLedger?: BoolFieldUpdateOperationsInput | boolean
+    incomeAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    arAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     student?: StudentUpdateOneRequiredWithoutFeesNestedInput
@@ -307334,6 +307496,8 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     isLedger?: BoolFieldUpdateOperationsInput | boolean
     feeGroupId?: NullableStringFieldUpdateOperationsInput | string | null
+    incomeAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    arAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     schoolId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -308940,6 +309104,8 @@ export namespace Prisma {
     billingType: string
     isRecurring?: boolean
     remindersEnabled?: boolean
+    incomeAccountId?: string | null
+    arAccountId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     school: SchoolCreateNestedOneWithoutFeeGroupsInput
@@ -308956,6 +309122,8 @@ export namespace Prisma {
     isRecurring?: boolean
     remindersEnabled?: boolean
     schoolId: string
+    incomeAccountId?: string | null
+    arAccountId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     fees?: FeeUncheckedCreateNestedManyWithoutFeeGroupInput
@@ -337562,6 +337730,8 @@ export namespace Prisma {
     description?: string | null
     isLedger?: boolean
     feeGroupId?: string | null
+    incomeAccountId?: string | null
+    arAccountId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -337791,6 +337961,8 @@ export namespace Prisma {
     billingType: string
     isRecurring?: boolean
     remindersEnabled?: boolean
+    incomeAccountId?: string | null
+    arAccountId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -340007,6 +340179,8 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     isLedger?: BoolFieldUpdateOperationsInput | boolean
+    incomeAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    arAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     student?: StudentUpdateOneRequiredWithoutFeesNestedInput
@@ -340029,6 +340203,8 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     isLedger?: BoolFieldUpdateOperationsInput | boolean
     feeGroupId?: NullableStringFieldUpdateOperationsInput | string | null
+    incomeAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    arAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     payments?: StudentPaymentUncheckedUpdateManyWithoutFeeNestedInput
@@ -340049,6 +340225,8 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     isLedger?: BoolFieldUpdateOperationsInput | boolean
     feeGroupId?: NullableStringFieldUpdateOperationsInput | string | null
+    incomeAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    arAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -340738,6 +340916,8 @@ export namespace Prisma {
     billingType?: StringFieldUpdateOperationsInput | string
     isRecurring?: BoolFieldUpdateOperationsInput | boolean
     remindersEnabled?: BoolFieldUpdateOperationsInput | boolean
+    incomeAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    arAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fees?: FeeUpdateManyWithoutFeeGroupNestedInput
@@ -340753,6 +340933,8 @@ export namespace Prisma {
     billingType?: StringFieldUpdateOperationsInput | string
     isRecurring?: BoolFieldUpdateOperationsInput | boolean
     remindersEnabled?: BoolFieldUpdateOperationsInput | boolean
+    incomeAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    arAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fees?: FeeUncheckedUpdateManyWithoutFeeGroupNestedInput
@@ -340768,6 +340950,8 @@ export namespace Prisma {
     billingType?: StringFieldUpdateOperationsInput | string
     isRecurring?: BoolFieldUpdateOperationsInput | boolean
     remindersEnabled?: BoolFieldUpdateOperationsInput | boolean
+    incomeAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    arAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -345807,6 +345991,8 @@ export namespace Prisma {
     description?: string | null
     isLedger?: boolean
     feeGroupId?: string | null
+    incomeAccountId?: string | null
+    arAccountId?: string | null
     schoolId: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -346092,6 +346278,8 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     isLedger?: BoolFieldUpdateOperationsInput | boolean
+    incomeAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    arAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     feeGroup?: FeeGroupUpdateOneWithoutFeesNestedInput
@@ -346113,6 +346301,8 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     isLedger?: BoolFieldUpdateOperationsInput | boolean
     feeGroupId?: NullableStringFieldUpdateOperationsInput | string | null
+    incomeAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    arAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     schoolId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -346133,6 +346323,8 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     isLedger?: BoolFieldUpdateOperationsInput | boolean
     feeGroupId?: NullableStringFieldUpdateOperationsInput | string | null
+    incomeAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    arAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     schoolId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -351155,6 +351347,8 @@ export namespace Prisma {
     status?: string
     description?: string | null
     isLedger?: boolean
+    incomeAccountId?: string | null
+    arAccountId?: string | null
     schoolId: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -351178,6 +351372,8 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     isLedger?: BoolFieldUpdateOperationsInput | boolean
+    incomeAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    arAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     student?: StudentUpdateOneRequiredWithoutFeesNestedInput
@@ -351199,6 +351395,8 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     isLedger?: BoolFieldUpdateOperationsInput | boolean
+    incomeAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    arAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     schoolId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -351219,6 +351417,8 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     isLedger?: BoolFieldUpdateOperationsInput | boolean
+    incomeAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    arAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     schoolId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -351330,6 +351530,8 @@ export namespace Prisma {
     billingType?: StringFieldUpdateOperationsInput | string
     isRecurring?: BoolFieldUpdateOperationsInput | boolean
     remindersEnabled?: BoolFieldUpdateOperationsInput | boolean
+    incomeAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    arAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     school?: SchoolUpdateOneRequiredWithoutFeeGroupsNestedInput
@@ -351346,6 +351548,8 @@ export namespace Prisma {
     isRecurring?: BoolFieldUpdateOperationsInput | boolean
     remindersEnabled?: BoolFieldUpdateOperationsInput | boolean
     schoolId?: StringFieldUpdateOperationsInput | string
+    incomeAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    arAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fees?: FeeUncheckedUpdateManyWithoutFeeGroupNestedInput
@@ -351361,6 +351565,8 @@ export namespace Prisma {
     isRecurring?: BoolFieldUpdateOperationsInput | boolean
     remindersEnabled?: BoolFieldUpdateOperationsInput | boolean
     schoolId?: StringFieldUpdateOperationsInput | string
+    incomeAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    arAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
