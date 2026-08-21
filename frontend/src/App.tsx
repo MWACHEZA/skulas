@@ -161,6 +161,9 @@ import AdminHelpdesk from './portals/admin/pages/Helpdesk';
 import AdminClassMigration from './portals/admin/pages/ClassMigration';
 import AdminStudentClub from './portals/admin/pages/StudentClub';
 import ManagePaymentPlans from './portals/shared/pages/human-resources/ManagePaymentPlans';
+import ChartOfAccountsPage from './portals/shared/pages/ChartOfAccountsPage';
+import FinancialReportsPage from './portals/shared/pages/FinancialReportsPage';
+import BankReconciliationPage from './portals/shared/pages/BankReconciliationPage';
 
 import TransportRoute from './portals/admin/pages/TransportRoute';
 import ManageVehicle from './portals/admin/pages/ManageVehicle';
@@ -651,6 +654,9 @@ export default function App() {
               <Route path="fee-groups" element={<FeeGroupsPage />} />
               <Route path="revenue-allocation" element={<RevenueAllocationPage />} />
               <Route path="accounts">
+                <Route path="coa" element={<ChartOfAccountsPage />} />
+                <Route path="financial-reports" element={<FinancialReportsPage />} />
+                <Route path="bank-reconciliation" element={<BankReconciliationPage />} />
                 <Route path="liabilities" element={<LiabilitiesPage />} />
                 <Route path="income" element={<IncomePage />} />
                 <Route path="expenses" element={<ExpensesPage />} />
@@ -710,6 +716,15 @@ export default function App() {
               <Route path="payments" element={<PaymentHistoryPage />} />
               <Route path="expenses" element={<ExpensesPage />} />
               <Route path="reconcile" element={<BursarFinancialReconciliation />} />
+              <Route path="accounts">
+                <Route path="coa" element={<ChartOfAccountsPage />} />
+                <Route path="financial-reports" element={<FinancialReportsPage />} />
+                <Route path="bank-reconciliation" element={<BankReconciliationPage />} />
+                <Route path="liabilities" element={<LiabilitiesPage />} />
+                <Route path="income" element={<IncomePage />} />
+                <Route path="expenses" element={<ExpensesPage />} />
+                <Route path="uniforms" element={<UniformsPage />} />
+              </Route>
               <Route path="payroll">
                 <Route index element={<PayrollList />} />
                 <Route path="run" element={<BursarPayrollRun />} />

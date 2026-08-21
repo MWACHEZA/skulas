@@ -5,6 +5,7 @@ import api, { BASE_URL } from '../../lib/api';
 import MaintenanceRequestModal from '../shared/MaintenanceRequestModal';
 import AdminPortalFooter from './shared/AdminPortalFooter';
 import ClockInModal from '../attendance/ClockInModal';
+import { useLedgerSSE } from '../../hooks/useLedgerSSE';
 import './portal.css';
 
 export interface NavItem {
@@ -44,6 +45,9 @@ export default function DashboardLayout({
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isMaintModalOpen, setIsMaintModalOpen] = useState(false);
+
+  // Initialize tenant-scoped SSE stream for accounting & stock real-time sync
+  useLedgerSSE();
 
   const [todayAttendance, setTodayAttendance] = useState<any>(null);
   const [showClockModal, setShowClockModal] = useState(false);

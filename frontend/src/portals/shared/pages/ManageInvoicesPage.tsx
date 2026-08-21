@@ -5,6 +5,7 @@ import { formatCurrency } from '../../../utils/formatters';
 import '../../../styles/portal.css';
 import { useReactToPrint } from 'react-to-print';
 import { useTerminology } from '../../../hooks/useTerminology';
+import { useAccountingQuery, invalidateAllAccountingKeys } from '../../../hooks/useAccountingQuery';
 
 const exportToCSV = (title: string, headers: string[], dataRows: string[][]) => {
   const content = [
@@ -81,8 +82,6 @@ interface Invoice {
 export default function ManageInvoicesPage() {
   const { t } = useTerminology();
   const { showToast } = useToast();
-  const [invoices, setInvoices] = useState<Invoice[]>([]);
-  const [loading, setLoading] = useState(true);
   const [templateConfig, setTemplateConfig] = useState<any>({});
   const [school, setSchool] = useState<any>(null);
   
@@ -134,18 +133,15 @@ export default function ManageInvoicesPage() {
     } catch { /* silent */ }
   };
 
-  const fetchInvoices = async () => {
-    try {
-      setLoading(true);
+  const { data: rawInvoices = [], isLoading: loading, refetch: fetchInvoices } = useAccountingQuery<Invoice[]>({
+    key: 'fees:invoices',
+    fetcher: async () => {
       const { data } = await api.get('/api/fees/invoices');
-      setInvoices(Array.isArray(data) ? data : []);
-    } catch (error) {
-      showToast('Failed to load invoices', 'error');
-    
-    } finally {
-      setLoading(false);
+      return Array.isArray(data) ? data : [];
     }
-  };
+  });
+
+  const invoices = rawInvoices;
 
   const openPaymentModal = (invoice: Invoice) => {
     setSelectedInvoice(invoice);
@@ -181,10 +177,10 @@ export default function ManageInvoicesPage() {
       });
       showToast('Payment recorded successfully', 'success');
       setIsPaymentModalOpen(false);
-      fetchInvoices();
+      // Invalidate all accounting keys so dashboards, trial balance, P&L, and AR aging update instantly
+      invalidateAllAccountingKeys();
     } catch (error: any) {
       showToast(error.response?.data?.error || 'Failed to record payment', 'error');
-    
     } finally {
       setProcessingPayment(false);
     }

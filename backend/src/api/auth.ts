@@ -12,6 +12,7 @@ import { LoginSchema, RegisterUserSchema, UpdateProfileSchema } from '../schemas
 import { authLimiter, strictLimiter } from '../middleware/rate-limit';
 import { requireOwnership } from '../middleware/auth';
 import { logSecurityEvent } from '../lib/security-logger';
+import { seedChartOfAccounts } from '../../prisma/seeders/coa.seeder';
 
 const router = Router();
 const JWT_SECRET = process.env.JWT_SECRET as string;
@@ -123,6 +124,11 @@ router.post('/register', async (req, res) => {
       },
       include: { users: true, schoolSetting: true },
     });
+
+    // Seed the default Chart of Accounts for this new tenant
+    await seedChartOfAccounts(school.id, prisma).catch(err =>
+      console.error(`[CoA Seeder] Failed to seed CoA for school ${school.id}:`, err)
+    );
 
     res.json({ 
       success: true, 

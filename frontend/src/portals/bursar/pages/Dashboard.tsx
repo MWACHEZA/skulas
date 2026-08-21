@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
 import api from '../../../lib/api';
 import { useAuth } from '../../../contexts/AuthContext';
+import { useAccountingQuery } from '../../../hooks/useAccountingQuery';
 
 interface DashboardData {
   totalFeesBilled: number;
@@ -12,16 +12,17 @@ interface DashboardData {
 
 export default function BursarDashboard() {
   const { user } = useAuth();
-  const [data, setData] = useState<DashboardData | null>(null);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    api.get('/api/dashboard/bursar')
-      .then(r => setData(r.data))
-      .finally(() => setLoading(false));
-  }, []);
+  // Consumes shared reactive query cache — updates automatically when SSE fires
+  const { data, isLoading, refetch } = useAccountingQuery<DashboardData>({
+    key: 'accounting:dashboard:bursar',
+    fetcher: async () => {
+      const r = await api.get('/api/dashboard/bursar');
+      return r.data;
+    }
+  });
 
-  if (loading) return (
+  if (isLoading) return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '60vh', flexDirection: 'column', gap: 16 }}>
       <i className="fas fa-spinner fa-spin fa-3x" style={{ color: 'var(--portal-primary)', opacity: 0.6 }}></i>
       <p style={{ color: '#718096' }}>Loading financial dashboard...</p>
@@ -34,7 +35,7 @@ export default function BursarDashboard() {
     <>
       <div className="portal-page-header">
         <h1>Bursar Dashboard</h1>
-        <p>Welcome, {user?.name}. Here's the school's financial overview.</p>
+        <p>Welcome, {user?.name}. Real-time double-entry general ledger overview.</p>
       </div>
 
       <div className="portal-stats-grid">

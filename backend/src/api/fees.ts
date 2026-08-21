@@ -6,6 +6,8 @@ import multer from 'multer';
 import { parseExcelBuffer, generateFeeTemplateBuffer } from '../lib/xlsx-utils';
 import { NotificationService } from '../services/notifications';
 import { logAction } from '../utils/audit';
+import { LedgerService } from '../services/ledger.service';
+import { getAccountId } from '../../prisma/seeders/coa.seeder';
 
 const router = Router();
 const upload = multer({ storage: multer.memoryStorage() });
@@ -426,8 +428,26 @@ router.post('/invoice/standard', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMI
             }
           });
 
+          // Post AR debit / Income credit for the invoice
+          const arAccountId = await getAccountId(schoolId, '1210', tx as any);
+          // Map fee group billing type to income account (tuition default, can be extended)
+          const incomeAccountId = await getAccountId(schoolId, '5100', tx as any);
+          await LedgerService.postEntry({
+            schoolId,
+            date: new Date(),
+            description: `Invoice: ${description || `${group.name} - ${group.billingType} ${group.year}`}`,
+            sourceType: 'fee_invoice',
+            sourceId: fee.id,
+            lines: [
+              { accountId: arAccountId, debit: netAmount, description: 'Student AR — fee billed', studentId },
+              { accountId: incomeAccountId, credit: netAmount, description: group.name }
+            ],
+            tx
+          });
+
           if (isPaid && paymentMethod) {
-            await tx.studentPayment.create({
+            const cashAccountId = await getAccountId(schoolId, '1100', tx as any);
+            const payment = await tx.studentPayment.create({
               data: {
                 studentId,
                 feeId: fee.id,
@@ -437,6 +457,20 @@ router.post('/invoice/standard', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMI
                 schoolId
               }
             });
+            // Post Cash debit / AR credit
+            const payJe = await LedgerService.postEntry({
+              schoolId,
+              date: new Date(),
+              description: `Payment: ${description || group.name}`,
+              sourceType: 'fee_payment',
+              sourceId: payment.id,
+              lines: [
+                { accountId: cashAccountId, debit: paidAmount, description: paymentMethod, studentId },
+                { accountId: arAccountId, credit: paidAmount, description: 'Reduce AR', studentId }
+              ],
+              tx
+            });
+            await tx.studentPayment.update({ where: { id: payment.id }, data: { journalEntryId: payJe.id } });
           }
 
           createdCount++;
@@ -767,13 +801,18 @@ router.post('/invoices/:id/pay', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMI
         where: { reference: idempotencyKey, feeId, schoolId }
       });
       if (existingPayment) {
-        // Payment was already successfully processed
         return res.json({ success: true, message: 'Payment already processed (idempotent)', payment: existingPayment });
       }
     }
 
+    // Resolve account IDs before entering the transaction
+    // (avoids repeated lookups; will throw if CoA not seeded)
+    const [cashAccountId, arAccountId] = await Promise.all([
+      getAccountId(schoolId, '1100', prisma), // Cash on Hand (default)
+      getAccountId(schoolId, '1210', prisma)  // Student Accounts Receivable
+    ]);
+
     const result = await prisma.$transaction(async (tx) => {
-      // Read fee inside the transaction so no concurrent payment can interleave
       const fee = await tx.fee.findFirst({ where: { id: feeId, schoolId } });
       if (!fee) return null;
 
@@ -794,26 +833,55 @@ router.post('/invoices/:id/pay', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMI
       const netAmount = Math.max(0, Math.round((fee.amount - fee.discount) * 100) / 100);
 
       let newStatus = fee.status;
-      if (updatedPaid >= netAmount) {
-        newStatus = 'paid';
-      } else if (updatedPaid > 0) {
-        newStatus = 'partial';
-      }
+      if (updatedPaid >= netAmount) newStatus = 'paid';
+      else if (updatedPaid > 0) newStatus = 'partial';
 
       const updatedFee = await tx.fee.update({
         where: { id: fee.id },
         data: { paid: updatedPaid, status: newStatus }
       });
 
+      // Post double-entry: Cash/Bank DR / Student AR CR
+      const je = await LedgerService.postEntry({
+        schoolId,
+        date: new Date(date || new Date()),
+        description: description || `Fee payment — ${method}`,
+        sourceType: 'fee_payment',
+        sourceId: payment.id,
+        createdByUserId: req.user!.id,
+        lines: [
+          {
+            accountId: cashAccountId,
+            debit: paymentAmount,
+            description: `Payment via ${method}`,
+            studentId: fee.studentId
+          },
+          {
+            accountId: arAccountId,
+            credit: paymentAmount,
+            description: 'Reduce student AR',
+            studentId: fee.studentId
+          }
+        ],
+        tx
+      });
+
+      // Back-reference: link payment record to its journal entry
+      await tx.studentPayment.update({
+        where: { id: payment.id },
+        data: { journalEntryId: je.id }
+      });
+
       return {
         updatedFee,
+        payment,
         oldState: { paid: fee.paid, status: fee.status }
       };
     });
 
     if (!result) return res.status(404).json({ error: 'Invoice not found' });
 
-    // Audit Log the payment and ledger modification
+    // Audit log AFTER the transaction committed
     await logAction(req, 'RECORD_PAYMENT', 'Fee', feeId, {
       paymentAmount,
       method,

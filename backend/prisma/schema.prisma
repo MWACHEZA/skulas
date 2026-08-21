@@ -3,6 +3,14 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum AccountType {
+  ASSET
+  LIABILITY
+  EQUITY
+  INCOME
+  EXPENSE
+}
+
 generator client {
   provider      = "prisma-client-js"
   output        = "../src/generated/client"
@@ -147,6 +155,13 @@ model School {
   sportingEquipment SportingEquipment[]
   ClinicPatient     ClinicPatient[]
 
+  // ── Ledger relations ──────────────────────────────────
+  chartOfAccounts       ChartOfAccount[]
+  journalEntries        JournalEntry[]
+  accountingPeriods     AccountingPeriod[]
+  uniformStockMovements UniformStockMovement[]
+  bankStatements        BankStatement[]
+
   @@index([code])
 }
 
@@ -194,11 +209,13 @@ model UniformItem {
   name         String
   orderPrice   Float                   @default(0)
   sellingPrice Float                   @default(0)
-  stockLevel   Int                     @default(0)
+  // stockLevel is now COMPUTED from UniformStockMovement — do not write directly
+  costPrice    Float                   @default(0) // last purchase unit cost, used for COGS
   schoolId     String
   school       School                  @relation(fields: [schoolId], references: [id])
   stockItems   UniformStockOrderItem[]
   saleItems    UniformSaleItem[]
+  stockMovements UniformStockMovement[]
   createdAt    DateTime                @default(now())
   updatedAt    DateTime                @updatedAt
 
@@ -2193,6 +2210,9 @@ model StudentPayment {
   status      String   @default("Commit") // Commit, Refunded, Pending
   date        DateTime @default(now())
 
+  // Ledger back-reference — the journal entry created when this payment was posted
+  journalEntryId String?
+
   schoolId String
   school   School @relation(fields: [schoolId], references: [id])
 
@@ -3114,7 +3134,8 @@ model StudentWallet {
   id        String   @id @default(cuid())
   studentId String   @unique
   student   Student  @relation(fields: [studentId], references: [id])
-  balance   Float    @default(0.0)
+  // balance is COMPUTED on-the-fly: SUM(WalletTransaction.amount)
+  // DEPOSIT = positive, PURCHASE/REFUND = negative amount
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -3155,4 +3176,203 @@ model Icd10Code {
   category    String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// ●●● DOUBLE-ENTRY ACCOUNTING LEDGER ●●●
+// ═══════════════════════════════════════════════════════════════════
+
+/// Tenant-scoped Chart of Accounts. Seeded per school on creation.
+/// Supports hierarchical accounts via self-relation (parentId).
+/// system accounts cannot be deleted or renamed — only custom ones can.
+model ChartOfAccount {
+  id              String          @id @default(cuid())
+  schoolId        String
+  school          School          @relation(fields: [schoolId], references: [id])
+  code            String          // e.g. "1100", "4100" — unique per tenant
+  name            String          // e.g. "Cash on Hand"
+  type            AccountType
+  parentId        String?
+  parent          ChartOfAccount? @relation("AccountHierarchy", fields: [parentId], references: [id])
+  children        ChartOfAccount[] @relation("AccountHierarchy")
+  isSystemAccount Boolean         @default(false) // system accounts cannot be deleted/renamed
+  isActive        Boolean         @default(true)
+  description     String?
+
+  journalLines    JournalEntryLine[]
+  bankStatements  BankStatement[]
+
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  @@unique([schoolId, code])
+  @@index([schoolId])
+  @@index([schoolId, type])
+  @@index([schoolId, isActive])
+}
+
+/// Central journal entry header. Every financial event produces exactly one entry.
+/// Total debits across all lines MUST equal total credits — enforced by LedgerService.
+model JournalEntry {
+  id           String   @id @default(cuid())
+  schoolId     String
+  school       School   @relation(fields: [schoolId], references: [id])
+
+  entryNumber  String   // JE-{SCHOOL_CODE}-{seq}
+  date         DateTime
+  description  String
+  status       String   @default("POSTED") // POSTED | REVERSED | VOID
+
+  // Reversal chain — never delete; always reverse
+  isReversing  Boolean  @default(false)   // true if this entry was created to reverse another
+  reversedById String?  // ID of the original entry this reverses
+  reversedBy   JournalEntry?  @relation("Reversal", fields: [reversedById], references: [id])
+  reversalOf   JournalEntry[] @relation("Reversal")
+
+  // Source traceability — mandatory: every JE must link back to what caused it
+  sourceType   String   // fee_payment | uniform_sale | uniform_purchase | payroll
+                        // tuckshop_sale | expense | income | manual | wallet_deposit
+                        // refund | cogs | depreciation | migration
+  sourceId     String   // primary key in the source table
+
+  // Period control
+  period       String   // "YYYY-MM" e.g. "2025-01"
+  isLocked     Boolean  @default(false)
+
+  createdByUserId String?
+  lines        JournalEntryLine[]
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@unique([schoolId, entryNumber])
+  @@index([schoolId])
+  @@index([schoolId, period])
+  @@index([sourceType, sourceId])
+  @@index([schoolId, status])
+  @@index([schoolId, date])
+}
+
+/// Individual debit or credit line within a journal entry.
+/// Exactly one of debit/credit is non-zero per line.
+/// Dual-currency: amounts stored in both base and foreign currency.
+model JournalEntryLine {
+  id             String       @id @default(cuid())
+  journalEntryId String
+  journalEntry   JournalEntry @relation(fields: [journalEntryId], references: [id], onDelete: Cascade)
+  accountId      String
+  account        ChartOfAccount @relation(fields: [accountId], references: [id])
+  schoolId       String
+
+  description    String?
+
+  // Base currency amounts (always stored in school's baseCurrency)
+  debit          Float        @default(0)
+  credit         Float        @default(0)
+
+  // Foreign currency support
+  currency       String       @default("USD")  // ISO 4217 code
+  exchangeRate   Float        @default(1.0)    // rate to base currency at time of posting
+  debitForeign   Float        @default(0)      // original amount in foreign currency
+  creditForeign  Float        @default(0)
+
+  // Sub-ledger references (for AR aging, student ledger reconciliation)
+  studentId      String?
+  supplierId     String?
+
+  // Bank reconciliation
+  isReconciled   Boolean      @default(false)
+  reconciledAt   DateTime?
+  bankLineId     String?      // BankStatementLine.id when matched
+
+  createdAt      DateTime     @default(now())
+
+  @@index([journalEntryId])
+  @@index([accountId])
+  @@index([schoolId])
+  @@index([studentId])
+  @@index([schoolId, isReconciled])
+}
+
+/// Per-tenant accounting period. Once CLOSED no new entries can be posted.
+/// Once LOCKED even the close cannot be undone without super-admin.
+model AccountingPeriod {
+  id        String    @id @default(cuid())
+  schoolId  String
+  school    School    @relation(fields: [schoolId], references: [id])
+  period    String    // "YYYY-MM"
+  status    String    @default("OPEN") // OPEN | CLOSED | LOCKED
+  closedBy  String?
+  closedAt  DateTime?
+  notes     String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@unique([schoolId, period])
+  @@index([schoolId])
+}
+
+/// Every stock change to a uniform item is recorded here.
+/// stockLevel is computed as SUM(quantity) — never stored separately.
+model UniformStockMovement {
+  id           String      @id @default(cuid())
+  schoolId     String
+  school       School      @relation(fields: [schoolId], references: [id])
+  itemId       String
+  item         UniformItem @relation(fields: [itemId], references: [id])
+
+  // movementType determines sign convention:
+  // PURCHASE_IN, RETURN_IN, ADJUSTMENT_IN = positive quantity
+  // SALE_OUT, RETURN_OUT, ADJUSTMENT_OUT  = negative quantity
+  movementType String      // PURCHASE_IN | SALE_OUT | ADJUSTMENT_IN | ADJUSTMENT_OUT | RETURN_IN | RETURN_OUT
+  quantity     Int         // positive = stock in, negative = stock out
+  unitCost     Float       @default(0) // cost per unit at time of movement
+  totalCost    Float       @default(0) // quantity * unitCost
+
+  reference    String?     // e.g. stock order ID, sale ID
+  sourceType   String?     // uniform_purchase | uniform_sale | adjustment | return
+  sourceId     String?
+
+  journalEntryId String?   // the JE posted for this movement
+
+  createdAt    DateTime    @default(now())
+
+  @@index([schoolId])
+  @@index([itemId])
+  @@index([sourceType, sourceId])
+}
+
+/// Uploaded bank statement for reconciliation against ledger entries.
+model BankStatement {
+  id         String              @id @default(cuid())
+  schoolId   String
+  school     School              @relation(fields: [schoolId], references: [id])
+  accountId  String              // ChartOfAccount — must be type=ASSET (bank account)
+  account    ChartOfAccount      @relation(fields: [accountId], references: [id])
+  period     String              // "YYYY-MM"
+  reference  String?             // statement reference / file name
+  uploadedAt DateTime            @default(now())
+  lines      BankStatementLine[]
+
+  @@index([schoolId])
+  @@index([accountId])
+}
+
+/// Individual line from a bank statement import.
+model BankStatementLine {
+  id              String        @id @default(cuid())
+  statementId     String
+  statement       BankStatement @relation(fields: [statementId], references: [id], onDelete: Cascade)
+  date            DateTime
+  description     String
+  debit           Float         @default(0)   // money out of account
+  credit          Float         @default(0)   // money into account
+  balance         Float         @default(0)   // running balance on statement
+  isReconciled    Boolean       @default(false)
+  journalLineId   String?       // matched JournalEntryLine.id
+  matchedAt       DateTime?
+  matchedBy       String?       // userId who matched it
+
+  @@index([statementId])
+  @@index([isReconciled])
 }

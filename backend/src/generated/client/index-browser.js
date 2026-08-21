@@ -189,7 +189,7 @@ exports.Prisma.UniformItemScalarFieldEnum = {
   name: 'name',
   orderPrice: 'orderPrice',
   sellingPrice: 'sellingPrice',
-  stockLevel: 'stockLevel',
+  costPrice: 'costPrice',
   schoolId: 'schoolId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -1473,6 +1473,7 @@ exports.Prisma.StudentPaymentScalarFieldEnum = {
   reference: 'reference',
   status: 'status',
   date: 'date',
+  journalEntryId: 'journalEntryId',
   schoolId: 'schoolId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -2116,7 +2117,6 @@ exports.Prisma.PrefectReportScalarFieldEnum = {
 exports.Prisma.StudentWalletScalarFieldEnum = {
   id: 'id',
   studentId: 'studentId',
-  balance: 'balance',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -2148,6 +2148,108 @@ exports.Prisma.Icd10CodeScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.ChartOfAccountScalarFieldEnum = {
+  id: 'id',
+  schoolId: 'schoolId',
+  code: 'code',
+  name: 'name',
+  type: 'type',
+  parentId: 'parentId',
+  isSystemAccount: 'isSystemAccount',
+  isActive: 'isActive',
+  description: 'description',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.JournalEntryScalarFieldEnum = {
+  id: 'id',
+  schoolId: 'schoolId',
+  entryNumber: 'entryNumber',
+  date: 'date',
+  description: 'description',
+  status: 'status',
+  isReversing: 'isReversing',
+  reversedById: 'reversedById',
+  sourceType: 'sourceType',
+  sourceId: 'sourceId',
+  period: 'period',
+  isLocked: 'isLocked',
+  createdByUserId: 'createdByUserId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.JournalEntryLineScalarFieldEnum = {
+  id: 'id',
+  journalEntryId: 'journalEntryId',
+  accountId: 'accountId',
+  schoolId: 'schoolId',
+  description: 'description',
+  debit: 'debit',
+  credit: 'credit',
+  currency: 'currency',
+  exchangeRate: 'exchangeRate',
+  debitForeign: 'debitForeign',
+  creditForeign: 'creditForeign',
+  studentId: 'studentId',
+  supplierId: 'supplierId',
+  isReconciled: 'isReconciled',
+  reconciledAt: 'reconciledAt',
+  bankLineId: 'bankLineId',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.AccountingPeriodScalarFieldEnum = {
+  id: 'id',
+  schoolId: 'schoolId',
+  period: 'period',
+  status: 'status',
+  closedBy: 'closedBy',
+  closedAt: 'closedAt',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.UniformStockMovementScalarFieldEnum = {
+  id: 'id',
+  schoolId: 'schoolId',
+  itemId: 'itemId',
+  movementType: 'movementType',
+  quantity: 'quantity',
+  unitCost: 'unitCost',
+  totalCost: 'totalCost',
+  reference: 'reference',
+  sourceType: 'sourceType',
+  sourceId: 'sourceId',
+  journalEntryId: 'journalEntryId',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.BankStatementScalarFieldEnum = {
+  id: 'id',
+  schoolId: 'schoolId',
+  accountId: 'accountId',
+  period: 'period',
+  reference: 'reference',
+  uploadedAt: 'uploadedAt'
+};
+
+exports.Prisma.BankStatementLineScalarFieldEnum = {
+  id: 'id',
+  statementId: 'statementId',
+  date: 'date',
+  description: 'description',
+  debit: 'debit',
+  credit: 'credit',
+  balance: 'balance',
+  isReconciled: 'isReconciled',
+  journalLineId: 'journalLineId',
+  matchedAt: 'matchedAt',
+  matchedBy: 'matchedBy'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -2177,7 +2279,13 @@ exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
 };
-
+exports.AccountType = exports.$Enums.AccountType = {
+  ASSET: 'ASSET',
+  LIABILITY: 'LIABILITY',
+  EQUITY: 'EQUITY',
+  INCOME: 'INCOME',
+  EXPENSE: 'EXPENSE'
+};
 
 exports.Prisma.ModelName = {
   Plan: 'Plan',
@@ -2325,7 +2433,14 @@ exports.Prisma.ModelName = {
   StudentWallet: 'StudentWallet',
   WalletTransaction: 'WalletTransaction',
   SchoolSequence: 'SchoolSequence',
-  Icd10Code: 'Icd10Code'
+  Icd10Code: 'Icd10Code',
+  ChartOfAccount: 'ChartOfAccount',
+  JournalEntry: 'JournalEntry',
+  JournalEntryLine: 'JournalEntryLine',
+  AccountingPeriod: 'AccountingPeriod',
+  UniformStockMovement: 'UniformStockMovement',
+  BankStatement: 'BankStatement',
+  BankStatementLine: 'BankStatementLine'
 };
 
 /**

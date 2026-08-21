@@ -20,7 +20,10 @@ export default function BursarLayout() {
     { label: 'Reminder Logs', icon: 'fas fa-history', to: '/bursar/fees-management/reminder-logs' },
     { label: 'Payment Plans', icon: 'fas fa-calendar-check', to: '/bursar/payment-plans' },
     
-    { section: 'Accounts', label: 'Liabilities', icon: 'fas fa-file-invoice-dollar', to: '/bursar/accounts/liabilities' },
+    { section: 'General Ledger & Accounting', label: 'Chart of Accounts', icon: 'fas fa-sitemap', to: '/bursar/accounts/coa' },
+    { label: 'Financial Reports (P&L/Trial Balance)', icon: 'fas fa-chart-line', to: '/bursar/accounts/financial-reports' },
+    { label: 'Bank Reconciliation', icon: 'fas fa-university', to: '/bursar/accounts/bank-reconciliation' },
+    { label: 'Liabilities', icon: 'fas fa-file-invoice-dollar', to: '/bursar/accounts/liabilities' },
     { label: 'Income', icon: 'fas fa-hand-holding-usd', to: '/bursar/accounts/income' },
     { label: 'Expenses', icon: 'fas fa-file-invoice', to: '/bursar/accounts/expenses' },
     { label: 'Uniforms', icon: 'fas fa-tshirt', to: '/bursar/accounts/uniforms' },

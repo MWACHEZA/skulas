@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import api from '../../../lib/api';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
+import { useAccountingQuery, invalidateAllAccountingKeys } from '../../../hooks/useAccountingQuery';
 
 interface WalletTransaction {
   id: string;
@@ -20,32 +21,20 @@ interface WalletData {
 export default function ParentWallet() {
   const { activeEntity } = useAuth();
   const { showToast } = useToast();
-  const [wallet, setWallet] = useState<WalletData | null>(null);
-  const [loading, setLoading] = useState(true);
   
   // Topup state
   const [amount, setAmount] = useState<string>('');
   const [isProcessing, setIsProcessing] = useState(false);
   const [showFilterModal, setShowFilterModal] = useState(false);
 
-  useEffect(() => {
-    if (activeEntity?.id) {
-      fetchWallet();
-    }
-  }, [activeEntity]);
-
-  const fetchWallet = async () => {
-    try {
-      setLoading(true);
+  const { data: wallet = null, isLoading: loading, refetch: fetchWallet } = useAccountingQuery<WalletData | null>({
+    key: `wallets:${activeEntity?.id}`,
+    enabled: !!activeEntity?.id,
+    fetcher: async () => {
       const res = await api.get(`/api/wallets/${activeEntity?.id}`);
-      setWallet(res.data);
-    } catch (e) {
-      console.error('Failed to fetch wallet', e);
-    
-    } finally {
-      setLoading(false);
+      return res.data;
     }
-  };
+  });
 
   const handleTopup = async () => {
     const val = parseFloat(amount);
@@ -58,12 +47,12 @@ export default function ParentWallet() {
         amount: val,
         paymentMethod: 'Online Payment'
       });
-      setWallet(res.data);
       setAmount('');
       showToast('Wallet funded successfully!', 'success');
+      setAmount('');
+      invalidateAllAccountingKeys();
     } catch (e) {
-      console.error('Failed to fund wallet', e);
-      showToast('Failed to fund wallet', 'error');
+      showToast('Failed to process payment', 'error');
     } finally {
       setIsProcessing(false);
     }

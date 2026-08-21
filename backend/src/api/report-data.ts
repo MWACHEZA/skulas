@@ -1052,7 +1052,14 @@ router.get('/uniforms-analytics', requireAuth, requireRole('SCHOOL_ADMIN', 'BURS
     ]);
 
     const totalRevenue = sales.reduce((sum, s) => sum + s.totalAmount, 0);
-    const lowStockItems = items.filter(i => i.stockLevel < 10).length;
+    // stockLevel is now computed from movements — compute in JS from movement aggregates
+    const stockMovements = await prisma.uniformStockMovement.groupBy({
+      by: ['itemId'],
+      where: { schoolId },
+      _sum: { quantity: true }
+    });
+    const stockMap = new Map(stockMovements.map(m => [m.itemId, m._sum.quantity ?? 0]));
+    const lowStockItems = items.filter(i => (stockMap.get(i.id) ?? 0) < 10).length;
 
     // Chart data
     const salesByDay: any = {};

@@ -5,6 +5,7 @@ import { format } from "date-fns";
 import { useAuth } from "../../../contexts/AuthContext";
 import ManagementDetailPanel from "../../../components/shared/ManagementDetailPanel";
 import '../../../styles/portal.css';
+import { useAccountingQuery, invalidateAllAccountingKeys } from "../../../hooks/useAccountingQuery";
 
 export interface UniformItem {
   id: string;
@@ -40,11 +41,6 @@ interface Sale {
 
 const UniformsPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState("items");
-  const [items, setItems] = useState<UniformItem[]>([]);
-  const [suppliers, setSuppliers] = useState<Supplier[]>([]);
-  const [orders, setOrders] = useState<StockOrder[]>([]);
-  const [sales, setSales] = useState<Sale[]>([]);
-  const [loading, setLoading] = useState(true);
   const { showToast } = useToast();
 
   const { user, hasRole } = useAuth();
@@ -56,36 +52,45 @@ const UniformsPage: React.FC = () => {
   const [showRestockModal, setShowRestockModal] = useState(false);
   const [showSalesModal, setShowSalesModal] = useState(false);
 
-  const fetchData = async () => {
-    try {
-      setLoading(true);
-      const [itemsRes, suppsRes, ordersRes, salesRes] = await Promise.all([
-        api.get("/api/uniforms/items"),
-        api.get("/api/uniforms/suppliers"),
-        api.get("/api/uniforms/stock-orders"),
-        api.get("/api/uniforms/sales")
-      ]);
-      setItems(Array.isArray(itemsRes.data) ? itemsRes.data : []);
-      setSuppliers(Array.isArray(suppsRes.data) ? suppsRes.data : []);
-      setOrders(Array.isArray(ordersRes.data) ? ordersRes.data : []);
-      
-      const salesData = Array.isArray(salesRes.data) ? salesRes.data : [];
-      if (isParentOrStudent) {
-        setSales(salesData.filter((s: any) => s.studentId === user?.id || s.parentId === user?.id));
-      } else {
-        setSales(salesData);
-      }
-    } catch (error) {
-      showToast("Failed to synchronize institutional uniform registry", "error");
-    
-    } finally {
-      setLoading(false);
+  // Fetch items via reactive query cache
+  const { data: items = [], isLoading: itemsLoading, refetch: refetchItems } = useAccountingQuery<UniformItem[]>({
+    key: 'uniforms:items',
+    fetcher: async () => {
+      const res = await api.get('/api/uniforms/items');
+      return Array.isArray(res.data) ? res.data : [];
     }
-  };
+  });
 
-  useEffect(() => {
-    fetchData();
-  }, [user]);
+  const { data: suppliers = [] } = useAccountingQuery<Supplier[]>({
+    key: 'uniforms:suppliers',
+    fetcher: async () => {
+      const res = await api.get('/api/uniforms/suppliers');
+      return Array.isArray(res.data) ? res.data : [];
+    }
+  });
+
+  const { data: orders = [] } = useAccountingQuery<StockOrder[]>({
+    key: 'uniforms:orders',
+    fetcher: async () => {
+      const res = await api.get('/api/uniforms/stock-orders');
+      return Array.isArray(res.data) ? res.data : [];
+    }
+  });
+
+  const { data: rawSales = [] } = useAccountingQuery<Sale[]>({
+    key: 'uniforms:sales',
+    fetcher: async () => {
+      const res = await api.get('/api/uniforms/sales');
+      return Array.isArray(res.data) ? res.data : [];
+    }
+  });
+
+  const sales = isParentOrStudent
+    ? rawSales.filter((s: any) => s.studentId === user?.id || s.parentId === user?.id)
+    : rawSales;
+
+  const loading = itemsLoading;
+  const fetchData = () => invalidateAllAccountingKeys();
 
   const tabs = [
     { id: "items", label: "Uniform Inventory", icon: "fa-tshirt", show: canManage || isParentOrStudent },
