@@ -144,5 +144,19 @@ router.patch('/revenue-allocations/:id/toggle', auth_1.requireAuth, (0, auth_1.r
         res.status(500).json({ error: 'Failed to update allocation' });
     }
 });
+router.delete('/revenue-allocations/:id', auth_1.requireAuth, (0, auth_1.requireRole)('BURSAR', 'SCHOOL_ADMIN'), async (req, res) => {
+    try {
+        const id = req.params.id;
+        const schoolId = req.user.schoolId;
+        const existing = await prisma_1.default.revenueAllocation.findFirst({ where: { id, schoolId } });
+        if (!existing)
+            return res.status(404).json({ error: 'Allocation not found' });
+        await prisma_1.default.revenueAllocation.delete({ where: { id } });
+        res.json({ success: true });
+    }
+    catch (error) {
+        res.status(500).json({ error: 'Failed to delete revenue allocation' });
+    }
+});
 exports.default = router;
 //# sourceMappingURL=finance.js.map

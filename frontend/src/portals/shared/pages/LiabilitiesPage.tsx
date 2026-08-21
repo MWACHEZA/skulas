@@ -84,12 +84,14 @@ const LiabilitiesPage: React.FC = () => {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const [liabRes, catRes] = await Promise.all([
+      const [liabRes, coaRes] = await Promise.all([
         api.get('/api/accounts/liabilities'),
-        api.get('/api/accounts/categories')
+        api.get('/api/accounts/coa')
       ]);
       setLiabilities(Array.isArray(liabRes.data) ? liabRes.data : []);
-      setCategories((Array.isArray(catRes.data) ? catRes.data : []).filter((c: any) => c.type === 'LIABILITY'));
+      const coaList = Array.isArray(coaRes.data) ? coaRes.data : [];
+      const liabAccounts = coaList.filter((c: any) => c.type === 'LIABILITY');
+      setCategories(liabAccounts.length > 0 ? liabAccounts : coaList);
     } catch (error) {
       toast.error('Failed to fetch institutional liabilities');
     } finally {
@@ -319,16 +321,20 @@ const LiabilitiesPage: React.FC = () => {
                     />
                   </div>
                   <div className="form-group">
-                    <label className="portal-label">Strategic Classification</label>
+                    <label className="portal-label">Strategic Classification (Chart of Accounts - Liability Account) *</label>
                     <select 
                       required
                       className="portal-input"
                       value={formData.categoryId}
                       onChange={(e) => setFormData({...formData, categoryId: e.target.value})}
-                      style={{ fontWeight: 700 }}
+                      style={{ fontWeight: 800, height: '52px' }}
                     >
-                      <option value="">-- Select Category --</option>
-                      {(Array.isArray(categories) ? categories : []).map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                      <option value="">-- Select Liability Account --</option>
+                      {(Array.isArray(categories) ? categories : []).map((c: any) => (
+                        <option key={c.id} value={c.id}>
+                          {c.code ? `${c.code} - ${c.name}` : c.name}
+                        </option>
+                      ))}
                     </select>
                   </div>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>

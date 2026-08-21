@@ -1,12 +1,21 @@
 import { Router, Request, Response } from 'express';
 import prisma from '../lib/prisma';
 import { requireAuth } from '../middleware/auth';
+import { seedIcd10Codes } from '../../prisma/seeders/seedIcd10';
 
 const router = Router();
+
+async function ensureIcd10Seeded() {
+  const count = await prisma.icd10Code.count();
+  if (count === 0) {
+    await seedIcd10Codes(prisma);
+  }
+}
 
 // Search ICD10 codes
 router.get('/search', requireAuth, async (req: Request, res: Response) => {
   try {
+    await ensureIcd10Seeded();
     const q = req.query.q as string;
     if (!q || q.length < 2) return res.json([]);
 
@@ -30,6 +39,7 @@ router.get('/search', requireAuth, async (req: Request, res: Response) => {
 // List codes with pagination
 router.get('/', requireAuth, async (req: Request, res: Response) => {
   try {
+    await ensureIcd10Seeded();
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 50;
     const skip = (page - 1) * limit;

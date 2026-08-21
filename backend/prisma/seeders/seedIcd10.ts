@@ -9801,25 +9801,25 @@ const icd10Data = [
   { code: 'U85', description: `Resistance to antineoplastic drugs`, category: 'Resistance to antimicrobial and antineoplastic drugs' },
 ];
 
-async function main() {
+export async function seedIcd10Codes(client: PrismaClient) {
   console.log('Start seeding ICD-10 codes...');
   
-  for (const c of icd10Data) {
-    await prisma.icd10Code.upsert({
-      where: { code: c.code },
-      update: {},
-      create: c,
-    });
-  }
+  // Use createMany with skipDuplicates for high performance bulk insert
+  await client.icd10Code.createMany({
+    data: icd10Data,
+    skipDuplicates: true
+  });
 
   console.log(`Seeded ${icd10Data.length} ICD-10 codes successfully.`);
 }
 
-main()
-  .catch((e) => {
-    console.error(e);
-    process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+if (require.main === module) {
+  seedIcd10Codes(prisma)
+    .catch((e) => {
+      console.error(e);
+      process.exit(1);
+    })
+    .finally(async () => {
+      await prisma.$disconnect();
+    });
+}

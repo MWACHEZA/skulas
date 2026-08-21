@@ -683,6 +683,7 @@ export default function App() {
               <Route path="clinic/emergencies" element={<Emergencies />} />
               <Route path="clinic/referrals" element={<Referrals />} />
               <Route path="clinic/immunization" element={<Immunization />} />
+              <Route path="clinic/icd10" element={<Icd10Manager />} />
               <Route path="transportation/routes" element={<TransportRoute />} />
               <Route path="transportation/vehicles" element={<ManageVehicle />} />
               <Route path="transportation/assignments" element={<SchoolTransportation />} />

@@ -29,11 +29,11 @@ async function seedSchoolData(schoolCode, schoolName, schoolType, planId, emailP
         },
     });
     // 2. Delegate to Domain Seeders
-    const { dbTeachers, dbStudents, adminUser, bursarUser, parent, supplier } = await (0, seedUsers_1.seedUsers)(prisma, school, emailPrefix);
+    const { dbTeachers, dbStudents, adminUser, bursarUser, parent, supplier, alumniUser, clinicUser, nurseUser, doctorUser } = await (0, seedUsers_1.seedUsers)(prisma, school, emailPrefix);
     await (0, seedAcademics_1.seedAcademics)(prisma, school, dbTeachers, dbStudents);
     await (0, seedFinance_1.seedFinance)(prisma, school, dbStudents, [adminUser, bursarUser]);
     await (0, seedInfrastructure_1.seedInfrastructure)(prisma, school, dbStudents);
-    await (0, seedOperations_1.seedOperations)(prisma, school, dbStudents, [adminUser, bursarUser]);
+    await (0, seedOperations_1.seedOperations)(prisma, school, dbStudents, [adminUser, bursarUser], [clinicUser, nurseUser, doctorUser]);
     await (0, seedCommunications_1.seedCommunications)(prisma, school);
     await (0, seedExtras_1.seedExtras)(prisma, school, adminUser, dbStudents[0]);
     await (0, seedExtras2_1.seedExtras2)(prisma, school, adminUser, dbStudents[0]);

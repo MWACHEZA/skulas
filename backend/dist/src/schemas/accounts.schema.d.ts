@@ -2,9 +2,9 @@ import { z } from 'zod';
 export declare const AccountCategorySchema: z.ZodObject<{
     name: z.ZodString;
     type: z.ZodEnum<{
+        LIABILITY: "LIABILITY";
         INCOME: "INCOME";
         EXPENSE: "EXPENSE";
-        LIABILITY: "LIABILITY";
     }>;
 }, z.core.$strip>;
 export declare const LiabilitySchema: z.ZodObject<{

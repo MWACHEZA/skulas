@@ -29,6 +29,7 @@ export default function RevenueAllocationPage() {
   const isSemester = isUniversity || isPoly || isMedical || isSeminary;
   const [allocations, setAllocations] = useState<RevenueAllocation[]>([]);
   const [feeGroups, setFeeGroups] = useState<FeeGroup[]>([]);
+  const [coaAccounts, setCoaAccounts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAdd, setShowAdd] = useState(false);
 
@@ -55,12 +56,14 @@ export default function RevenueAllocationPage() {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const [allocRes, groupRes] = await Promise.all([
+      const [allocRes, groupRes, coaRes] = await Promise.all([
         api.get('/api/finance/revenue-allocations'),
-        api.get('/api/fees/groups')
+        api.get('/api/fees/groups'),
+        api.get('/api/accounts/coa')
       ]);
       setAllocations(Array.isArray(allocRes.data) ? allocRes.data : []);
       setFeeGroups(Array.isArray(groupRes.data) ? groupRes.data : []);
+      setCoaAccounts(Array.isArray(coaRes.data) ? coaRes.data : []);
     } catch (error) {
       toast.error('Failed to synchronize financial allocation data');
     } finally {
@@ -241,13 +244,19 @@ export default function RevenueAllocationPage() {
                           <div style={{ flex: 1 }}>
                             <input
                               type="text"
+                              list="coa-item-list"
                               className="portal-input"
-                              placeholder="Department / Item (e.g. Operational Wages)"
+                              placeholder="Select Chart of Account / Item (e.g. 7100 Salaries & Wages)"
                               value={item.label}
                               onChange={(e) => handleUpdateItem(index, 'label', e.target.value)}
                               required
                               style={{ fontWeight: 700 }}
                             />
+                            <datalist id="coa-item-list">
+                              {coaAccounts.map(acc => (
+                                <option key={acc.id} value={`${acc.code} - ${acc.name} (${acc.type})`} />
+                              ))}
+                            </datalist>
                           </div>
                           <div style={{ position: 'relative', width: '160px' }}>
                             <input

@@ -78,6 +78,7 @@ const prefects_1 = __importDefault(require("./api/prefects"));
 const schedules_1 = __importDefault(require("./api/schedules"));
 const tuckshop_1 = __importDefault(require("./api/tuckshop"));
 const wallets_1 = __importDefault(require("./api/wallets"));
+const icd10_1 = __importDefault(require("./api/icd10"));
 const app = (0, express_1.default)();
 const port = process.env.PORT || 5000;
 // Middleware
@@ -180,6 +181,7 @@ app.use('/api/prefects', prefects_1.default);
 app.use('/api/schedules', schedules_1.default);
 app.use('/api/tuckshop', tuckshop_1.default);
 app.use('/api/wallets', wallets_1.default);
+app.use('/api/icd10', icd10_1.default);
 app.use('/public', public_1.default);
 app.use('/api/public', public_1.default);
 // Health check endpoint

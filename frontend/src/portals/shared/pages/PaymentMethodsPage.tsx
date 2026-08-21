@@ -236,16 +236,16 @@ export default function PaymentMethodsPage() {
                   </div>
 
                   <div className="form-group">
-                    <label className="portal-label">Strategic Account Type</label>
+                    <label className="portal-label">Strategic Account Type (Ledger Asset Classification) *</label>
                     <select 
                       className="portal-input"
                       value={editingMethod?.type}
                       onChange={(e) => setEditingMethod(p => ({ ...p, type: e.target.value as any }))}
                       style={{ fontWeight: 800, height: '56px' }}
                     >
-                      <option value="BANK">Traditional Banking Gateway</option>
-                      <option value="MOBILE_MONEY">Mobile Money Integrated Endpoint</option>
-                      <option value="CASH">Physical Cash Office Vault</option>
+                      <option value="BANK">Traditional Banking Gateway (Asset Account - 1110)</option>
+                      <option value="MOBILE_MONEY">Mobile Money Integrated Endpoint (Asset Account - 1120)</option>
+                      <option value="CASH">Physical Cash Office Vault (Asset Account - 1100)</option>
                     </select>
                   </div>
 

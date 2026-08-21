@@ -8,6 +8,8 @@ const prisma_1 = __importDefault(require("../lib/prisma"));
 const auth_1 = require("../middleware/auth");
 const security_logger_1 = require("../lib/security-logger");
 const payroll_schema_1 = require("../schemas/payroll.schema");
+const ledger_service_1 = require("../services/ledger.service");
+const coa_seeder_1 = require("../../prisma/seeders/coa.seeder");
 const router = (0, express_1.Router)();
 // â•â•â•â•â•â•â•â•â•â•â• ALLOWANCES â•â•â•â•â•â•â•â•â•â•â•
 router.get('/allowances', auth_1.requireAuth, (0, auth_1.requireRole)('BURSAR', 'SCHOOL_ADMIN'), async (req, res) => {
@@ -435,6 +437,49 @@ router.post('/generate', auth_1.requireAuth, (0, auth_1.requireRole)('BURSAR', '
                 totalNet
             }
         });
+        // Post payroll journal entry:
+        //   DR 7100 Salaries & Wages    [totalGross]
+        //   CR 3400 PAYE / Tax Payable  [totalDeductions (tax)]
+        //   CR 3300 Accrued Salaries    [totalNet — net payable to employees]
+        try {
+            const [salariesAccountId, accruedSalariesId, payeAccountId] = await Promise.all([
+                (0, coa_seeder_1.getAccountId)(schoolId, '7100', prisma_1.default),
+                (0, coa_seeder_1.getAccountId)(schoolId, '3300', prisma_1.default),
+                (0, coa_seeder_1.getAccountId)(schoolId, '3400', prisma_1.default)
+            ]);
+            const payrollLines = [
+                {
+                    accountId: salariesAccountId,
+                    debit: totalGross,
+                    description: `Gross payroll — ${month}/${year}`
+                }
+            ];
+            if (totalDeductions > 0) {
+                payrollLines.push({
+                    accountId: payeAccountId,
+                    credit: totalDeductions,
+                    description: 'PAYE tax withheld'
+                });
+            }
+            payrollLines.push({
+                accountId: accruedSalariesId,
+                credit: totalNet,
+                description: `Net salaries payable — ${month}/${year}`
+            });
+            await ledger_service_1.LedgerService.postEntry({
+                schoolId,
+                date: new Date(year, month - 1, 28), // Last business day approximation
+                description: `Payroll — ${month}/${year} (${entries.length} employees)`,
+                sourceType: 'payroll',
+                sourceId: payrollRun.id,
+                createdByUserId: req.user.id,
+                lines: payrollLines
+            });
+        }
+        catch (ledgerErr) {
+            // Log but don't fail the payroll — ledger can be repaired by migration script
+            console.error('[Ledger] Failed to post payroll journal entry:', ledgerErr);
+        }
         res.status(201).json({ message: 'Payroll generated successfully', count: entries.length });
     }
     catch (error) {

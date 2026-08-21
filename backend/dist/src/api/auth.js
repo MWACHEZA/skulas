@@ -16,6 +16,7 @@ const validation_1 = require("../middleware/validation");
 const auth_schema_1 = require("../schemas/auth.schema");
 const rate_limit_1 = require("../middleware/rate-limit");
 const security_logger_1 = require("../lib/security-logger");
+const coa_seeder_1 = require("../../prisma/seeders/coa.seeder");
 const router = (0, express_1.Router)();
 const JWT_SECRET = process.env.JWT_SECRET;
 if (!JWT_SECRET || JWT_SECRET === 'your_jwt_secret_here') {
@@ -110,6 +111,8 @@ router.post('/register', async (req, res) => {
             },
             include: { users: true, schoolSetting: true },
         });
+        // Seed the default Chart of Accounts for this new tenant
+        await (0, coa_seeder_1.seedChartOfAccounts)(school.id, prisma_1.default).catch(err => console.error(`[CoA Seeder] Failed to seed CoA for school ${school.id}:`, err));
         res.json({
             success: true,
             message: 'School registered successfully',

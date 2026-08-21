@@ -355,8 +355,9 @@ export const LedgerService = {
   /**
    * Trial Balance — sum all accounts and verify debit === credit.
    */
-  async trialBalance(schoolId: string, period: string): Promise<TrialBalanceLine[]> {
-    const [year, month] = period.split('-').map(Number);
+  async trialBalance(schoolId: string, period?: string): Promise<TrialBalanceLine[]> {
+    const currentPeriod = period || `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}`;
+    const [year, month] = currentPeriod.split('-').map(Number);
     const periodStart = new Date(year, month - 1, 1);
     const periodEnd = new Date(year, month, 0, 23, 59, 59);
 

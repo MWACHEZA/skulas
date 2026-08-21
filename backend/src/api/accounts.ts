@@ -9,6 +9,8 @@
  *   Reports         GET                    /api/accounts/reports/*
  *   Periods         GET/POST               /api/accounts/periods
  *   Bank Rec        GET/POST               /api/accounts/bank-reconciliation
+ *   Income/Expense  GET/POST               /api/accounts/income, /api/accounts/expenses
+ *   Liabilities     GET/POST/PATCH         /api/accounts/liabilities
  */
 
 import { Router, Response } from 'express';
@@ -72,7 +74,7 @@ router.get('/coa', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (re
 
 /**
  * @route   POST /api/accounts/coa
- * @desc    Create a custom account
+ * @desc    Create a custom account in Chart of Accounts
  */
 router.post('/coa', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req: AuthRequest, res: Response) => {
   try {
@@ -80,37 +82,45 @@ router.post('/coa', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (r
     const { code, name, type, parentId, description } = req.body;
 
     if (!code || !name || !type) {
-      return res.status(400).json({ error: 'code, name, and type are required' });
+      return res.status(400).json({ error: 'Code, name, and type are required' });
     }
 
-    const validTypes = ['ASSET', 'LIABILITY', 'EQUITY', 'INCOME', 'EXPENSE'];
-    if (!validTypes.includes(type)) {
-      return res.status(400).json({ error: `type must be one of: ${validTypes.join(', ')}` });
+    const existing = await prisma.chartOfAccount.findUnique({
+      where: { schoolId_code: { schoolId, code } }
+    });
+    if (existing) {
+      return res.status(400).json({ error: `Account code ${code} already exists for this school` });
     }
 
-    // Validate parent belongs to this school
     if (parentId) {
       const parent = await prisma.chartOfAccount.findFirst({ where: { id: parentId, schoolId } });
-      if (!parent) return res.status(400).json({ error: 'Parent account not found in this school' });
+      if (!parent) return res.status(404).json({ error: 'Parent account not found' });
+      if (parent.type !== type) {
+        return res.status(400).json({ error: `Parent account type (${parent.type}) must match child type (${type})` });
+      }
     }
 
     const account = await prisma.chartOfAccount.create({
-      data: { schoolId, code, name, type, parentId, description, isSystemAccount: false }
+      data: {
+        schoolId,
+        code,
+        name,
+        type,
+        parentId,
+        description,
+        isSystemAccount: false
+      }
     });
 
     res.status(201).json(account);
   } catch (error: any) {
-    if (error.code === 'P2002') {
-      return res.status(400).json({ error: 'Account code already exists in this school' });
-    }
     res.status(400).json({ error: error.message || 'Failed to create account' });
   }
 });
 
 /**
  * @route   PATCH /api/accounts/coa/:id
- * @desc    Update an account (name, description, isActive)
- *          Cannot change type or code of a system account
+ * @desc    Update a custom account (system accounts cannot be renamed)
  */
 router.patch('/coa/:id', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req: AuthRequest, res: Response) => {
   try {
@@ -155,7 +165,7 @@ router.patch('/coa/:id', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), asy
 
 /**
  * @route   DELETE /api/accounts/coa/:id
- * @desc    Deactivate an account (never hard-delete — preserves historical entries)
+ * @desc    Delete a custom account (system accounts cannot be deleted)
  */
 router.delete('/coa/:id', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req: AuthRequest, res: Response) => {
   try {
@@ -180,13 +190,53 @@ router.delete('/coa/:id', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), as
 });
 
 // ═══════════════════════════════════════════════════════════════
-// JOURNAL ENTRIES
+// CATEGORIES (CoA mapping)
 // ═══════════════════════════════════════════════════════════════
 
-/**
- * @route   GET /api/accounts/journal
- * @desc    List journal entries (paginated, filterable)
- */
+router.get('/categories', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    const schoolId = req.user!.schoolId!;
+    await seedChartOfAccounts(schoolId, prisma);
+    const accounts = await prisma.chartOfAccount.findMany({
+      where: { schoolId, isActive: true },
+      orderBy: { code: 'asc' }
+    });
+    res.json(accounts);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message || 'Failed to fetch categories' });
+  }
+});
+
+router.post('/categories', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req: AuthRequest, res: Response) => {
+  try {
+    const schoolId = req.user!.schoolId!;
+    const { name, type } = req.body;
+    if (!name || !type) return res.status(400).json({ error: 'Name and Type are required' });
+
+    const prefix = type === 'ASSET' ? '1' : type === 'LIABILITY' ? '3' : type === 'EQUITY' ? '4' : type === 'INCOME' ? '5' : '7';
+    const count = await prisma.chartOfAccount.count({ where: { schoolId, type } });
+    const code = `${prefix}${80 + count}0`;
+
+    const account = await prisma.chartOfAccount.create({
+      data: {
+        schoolId,
+        code,
+        name,
+        type,
+        isSystemAccount: false
+      }
+    });
+
+    res.status(201).json(account);
+  } catch (error: any) {
+    res.status(400).json({ error: error.message || 'Failed to create category' });
+  }
+});
+
+// ═══════════════════════════════════════════════════════════════
+// JOURNAL ENTRIES — MANUAL POSTING & REVERSALS
+// ═══════════════════════════════════════════════════════════════
+
 router.get('/journal', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req: AuthRequest, res: Response) => {
   try {
     const schoolId = req.user!.schoolId!;
@@ -222,27 +272,19 @@ router.get('/journal', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async
   }
 });
 
-/**
- * @route   POST /api/accounts/journal
- * @desc    Create a manual journal entry (must be balanced)
- */
 router.post('/journal', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req: AuthRequest, res: Response) => {
   try {
     const schoolId = req.user!.schoolId!;
-    const { date, description, lines } = req.body;
-
-    if (!Array.isArray(lines) || lines.length < 2) {
-      return res.status(400).json({ error: 'At least 2 journal lines required' });
-    }
+    const { date, description, lines, sourceType, sourceId } = req.body;
 
     const entry = await LedgerService.postEntry({
       schoolId,
-      date: new Date(date || new Date()),
+      date: new Date(date),
       description,
-      sourceType: 'manual',
-      sourceId: req.user!.id,
-      lines,
-      createdByUserId: req.user!.id
+      sourceType: sourceType || 'manual_journal',
+      sourceId,
+      createdByUserId: req.user!.id,
+      lines
     });
 
     res.status(201).json(entry);
@@ -251,10 +293,6 @@ router.post('/journal', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), asyn
   }
 });
 
-/**
- * @route   POST /api/accounts/journal/:id/reverse
- * @desc    Reverse a posted journal entry
- */
 router.post('/journal/:id/reverse', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req: AuthRequest, res: Response) => {
   try {
     const id = String(req.params.id);
@@ -278,68 +316,273 @@ router.post('/journal/:id/reverse', requireAuth, requireRole('BURSAR', 'SCHOOL_A
 });
 
 // ═══════════════════════════════════════════════════════════════
-// REPORTS
+// INCOME / EXPENSES / LIABILITIES WITH LEDGER POSTING
 // ═══════════════════════════════════════════════════════════════
 
-/**
- * @route   GET /api/accounts/reports/trial-balance
- * @desc    Trial balance for a period (YYYY-MM)
- */
+router.get('/income', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req: AuthRequest, res: Response) => {
+  try {
+    const schoolId = req.user!.schoolId!;
+    const incomes = await prisma.income.findMany({
+      where: { schoolId },
+      include: { category: true },
+      orderBy: { createdAt: 'desc' }
+    });
+    res.json(incomes);
+  } catch (error: any) {
+    res.status(500).json({ error: 'Failed to fetch income' });
+  }
+});
+
+router.post('/income', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req: AuthRequest, res: Response) => {
+  try {
+    const schoolId = req.user!.schoolId!;
+    const { title, amount, date, categoryId, paymentMode, currency } = req.body;
+
+    const income = await prisma.income.create({
+      data: {
+        schoolId,
+        title,
+        amount: Number(amount),
+        date: date ? new Date(date) : new Date(),
+        categoryId,
+        paymentMode,
+        currency: currency || 'USD'
+      },
+      include: { category: true }
+    });
+
+    try {
+      const cashId = await getAccountId(schoolId, '1100', prisma);
+      const incAccId = categoryId || await getAccountId(schoolId, '5900', prisma);
+
+      await LedgerService.postEntry({
+        schoolId,
+        date: income.date,
+        description: `Income: ${title}`,
+        sourceType: 'income',
+        sourceId: income.id,
+        createdByUserId: req.user!.id,
+        lines: [
+          { accountId: cashId, debit: Number(amount), description: `Received via ${paymentMode || 'Cash'}` },
+          { accountId: incAccId, credit: Number(amount), description: title }
+        ]
+      });
+    } catch (lErr) {
+      console.error('[Ledger] Failed to post income JE:', lErr);
+    }
+
+    res.status(201).json(income);
+  } catch (error: any) {
+    res.status(400).json({ error: error.message || 'Failed to record income' });
+  }
+});
+
+router.get('/expenses', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req: AuthRequest, res: Response) => {
+  try {
+    const schoolId = req.user!.schoolId!;
+    const expenses = await prisma.expense.findMany({
+      where: { schoolId },
+      include: { category: true },
+      orderBy: { createdAt: 'desc' }
+    });
+    res.json(expenses);
+  } catch (error: any) {
+    res.status(500).json({ error: 'Failed to fetch expenses' });
+  }
+});
+
+router.post('/expenses', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req: AuthRequest, res: Response) => {
+  try {
+    const schoolId = req.user!.schoolId!;
+    const { title, amount, date, categoryId, paymentMode, currency } = req.body;
+
+    const expense = await prisma.expense.create({
+      data: {
+        schoolId,
+        title,
+        amount: Number(amount),
+        date: date ? new Date(date) : new Date(),
+        categoryId,
+        paymentMode,
+        currency: currency || 'USD'
+      },
+      include: { category: true }
+    });
+
+    try {
+      const cashId = await getAccountId(schoolId, '1100', prisma);
+      const expAccId = categoryId || await getAccountId(schoolId, '7900', prisma);
+
+      await LedgerService.postEntry({
+        schoolId,
+        date: expense.date,
+        description: `Expense: ${title}`,
+        sourceType: 'expense',
+        sourceId: expense.id,
+        createdByUserId: req.user!.id,
+        lines: [
+          { accountId: expAccId, debit: Number(amount), description: title },
+          { accountId: cashId, credit: Number(amount), description: `Paid via ${paymentMode || 'Cash'}` }
+        ]
+      });
+    } catch (lErr) {
+      console.error('[Ledger] Failed to post expense JE:', lErr);
+    }
+
+    res.status(201).json(expense);
+  } catch (error: any) {
+    res.status(400).json({ error: error.message || 'Failed to record expense' });
+  }
+});
+
+router.get('/liabilities', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req: AuthRequest, res: Response) => {
+  try {
+    const schoolId = req.user!.schoolId!;
+    const liabilities = await prisma.liability.findMany({
+      where: { schoolId },
+      include: { category: true },
+      orderBy: { createdAt: 'desc' }
+    });
+    res.json(liabilities);
+  } catch (error: any) {
+    res.status(500).json({ error: 'Failed to fetch liabilities' });
+  }
+});
+
+router.post('/liabilities', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req: AuthRequest, res: Response) => {
+  try {
+    const schoolId = req.user!.schoolId!;
+    const { name, amount, date, categoryId } = req.body;
+
+    const liability = await prisma.liability.create({
+      data: {
+        schoolId,
+        name,
+        amount: Number(amount),
+        date: date ? new Date(date) : new Date(),
+        categoryId,
+        status: 'pending',
+        settled: 0
+      },
+      include: { category: true }
+    });
+
+    try {
+      const expId = await getAccountId(schoolId, '7900', prisma);
+      const liabAccId = categoryId || await getAccountId(schoolId, '3100', prisma);
+
+      await LedgerService.postEntry({
+        schoolId,
+        date: liability.date,
+        description: `Liability incurred: ${name}`,
+        sourceType: 'liability',
+        sourceId: liability.id,
+        createdByUserId: req.user!.id,
+        lines: [
+          { accountId: expId, debit: Number(amount), description: name },
+          { accountId: liabAccId, credit: Number(amount), description: 'Liability payable' }
+        ]
+      });
+    } catch (lErr) {
+      console.error('[Ledger] Failed to post liability JE:', lErr);
+    }
+
+    res.status(201).json(liability);
+  } catch (error: any) {
+    res.status(400).json({ error: error.message || 'Failed to record liability' });
+  }
+});
+
+router.patch('/liabilities/:id/settle', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req: AuthRequest, res: Response) => {
+  try {
+    const id = String(req.params.id);
+    const schoolId = req.user!.schoolId!;
+    const { amount } = req.body;
+    const settleAmt = Number(amount);
+
+    const liab = await prisma.liability.findFirst({ where: { id, schoolId } });
+    if (!liab) return res.status(404).json({ error: 'Liability not found' });
+
+    const newSettled = liab.settled + settleAmt;
+    const newStatus = newSettled >= liab.amount ? 'settled' : 'partial';
+
+    const updated = await prisma.liability.update({
+      where: { id },
+      data: { settled: newSettled, status: newStatus }
+    });
+
+    try {
+      const cashId = await getAccountId(schoolId, '1100', prisma);
+      const liabAccId = liab.categoryId || await getAccountId(schoolId, '3100', prisma);
+
+      await LedgerService.postEntry({
+        schoolId,
+        date: new Date(),
+        description: `Liability settlement: ${liab.name}`,
+        sourceType: 'liability_settlement',
+        sourceId: liab.id,
+        createdByUserId: req.user!.id,
+        lines: [
+          { accountId: liabAccId, debit: settleAmt, description: 'Reduce liability balance' },
+          { accountId: cashId, credit: settleAmt, description: 'Cash settlement' }
+        ]
+      });
+    } catch (lErr) {
+      console.error('[Ledger] Failed to post settlement JE:', lErr);
+    }
+
+    res.json(updated);
+  } catch (error: any) {
+    res.status(400).json({ error: error.message || 'Failed to settle liability' });
+  }
+});
+
+// ═══════════════════════════════════════════════════════════════
+// REPORTS & PERIODS
+// ═══════════════════════════════════════════════════════════════
+
 router.get('/reports/trial-balance', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req: AuthRequest, res: Response) => {
   try {
     const schoolId = req.user!.schoolId!;
-    const period = req.query.period as string || new Date().toISOString().slice(0, 7);
+    const period = req.query.period as string | undefined;
 
-    const lines = await LedgerService.trialBalance(schoolId, period);
-    const totalDebit = lines.reduce((s, l) => s + l.totalDebit, 0);
-    const totalCredit = lines.reduce((s, l) => s + l.totalCredit, 0);
-    const isBalanced = Math.abs(totalDebit - totalCredit) < 0.01;
-
-    res.json({ period, lines, totalDebit, totalCredit, isBalanced });
+    const report = await LedgerService.trialBalance(schoolId, period);
+    res.json(report);
   } catch (error: any) {
     res.status(500).json({ error: error.message || 'Failed to generate trial balance' });
   }
 });
 
-/**
- * @route   GET /api/accounts/reports/income-statement
- * @desc    Profit & Loss statement for a date range
- */
 router.get('/reports/income-statement', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req: AuthRequest, res: Response) => {
   try {
     const schoolId = req.user!.schoolId!;
-    const { from, to } = req.query;
+    const fromStr = req.query.from as string | undefined;
+    const toStr = req.query.to as string | undefined;
 
-    const fromDate = from ? new Date(from as string) : new Date(new Date().getFullYear(), 0, 1);
-    const toDate = to ? new Date(to as string) : new Date();
+    const fromDate = fromStr ? new Date(fromStr) : new Date(new Date().getFullYear(), 0, 1);
+    const toDate = toStr ? new Date(toStr) : new Date();
 
-    const statement = await LedgerService.incomeStatement(schoolId, fromDate, toDate);
-    res.json(statement);
+    const report = await LedgerService.incomeStatement(schoolId, fromDate, toDate);
+    res.json(report);
   } catch (error: any) {
     res.status(500).json({ error: error.message || 'Failed to generate income statement' });
   }
 });
 
-/**
- * @route   GET /api/accounts/reports/balance-sheet
- * @desc    Balance sheet as of a given date
- */
 router.get('/reports/balance-sheet', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req: AuthRequest, res: Response) => {
   try {
     const schoolId = req.user!.schoolId!;
-    const asOf = req.query.asOf ? new Date(req.query.asOf as string) : new Date();
+    const asOfStr = req.query.asOf as string | undefined;
 
-    const sheet = await LedgerService.balanceSheet(schoolId, asOf);
-    res.json(sheet);
+    const asOfDate = asOfStr ? new Date(asOfStr) : new Date();
+    const report = await LedgerService.balanceSheet(schoolId, asOfDate);
+
+    res.json(report);
   } catch (error: any) {
     res.status(500).json({ error: error.message || 'Failed to generate balance sheet' });
   }
 });
 
-/**
- * @route   GET /api/accounts/reports/general-ledger
- * @desc    General ledger drill-down for a specific account
- */
 router.get('/reports/general-ledger', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req: AuthRequest, res: Response) => {
   try {
     const schoolId = req.user!.schoolId!;
@@ -364,38 +607,20 @@ router.get('/reports/general-ledger', requireAuth, requireRole('BURSAR', 'SCHOOL
   }
 });
 
-/**
- * @route   GET /api/accounts/reports/ar-aging
- * @desc    Accounts Receivable aging per student
- */
 router.get('/reports/ar-aging', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req: AuthRequest, res: Response) => {
   try {
     const schoolId = req.user!.schoolId!;
-    const asOf = req.query.asOf ? new Date(req.query.asOf as string) : new Date();
+    const asOfStr = req.query.asOf as string | undefined;
 
-    const rows = await LedgerService.arAging(schoolId, asOf);
-    const totals = {
-      current: rows.reduce((s, r) => s + r.current, 0),
-      days31_60: rows.reduce((s, r) => s + r.days31_60, 0),
-      days61_90: rows.reduce((s, r) => s + r.days61_90, 0),
-      over90: rows.reduce((s, r) => s + r.over90, 0),
-      total: rows.reduce((s, r) => s + r.total, 0)
-    };
+    const asOfDate = asOfStr ? new Date(asOfStr) : new Date();
+    const report = await LedgerService.arAging(schoolId, asOfDate);
 
-    res.json({ asOf, rows, totals });
+    res.json(report);
   } catch (error: any) {
-    res.status(500).json({ error: error.message || 'Failed to generate AR aging' });
+    res.status(500).json({ error: error.message || 'Failed to generate AR aging report' });
   }
 });
 
-// ═══════════════════════════════════════════════════════════════
-// PERIOD CONTROL
-// ═══════════════════════════════════════════════════════════════
-
-/**
- * @route   GET /api/accounts/periods
- * @desc    List accounting periods and their status
- */
 router.get('/periods', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req: AuthRequest, res: Response) => {
   try {
     const schoolId = req.user!.schoolId!;
@@ -403,16 +628,13 @@ router.get('/periods', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async
       where: { schoolId },
       orderBy: { period: 'desc' }
     });
+
     res.json(periods);
   } catch (error: any) {
-    res.status(500).json({ error: error.message || 'Failed to fetch periods' });
+    res.status(500).json({ error: error.message || 'Failed to fetch accounting periods' });
   }
 });
 
-/**
- * @route   POST /api/accounts/periods/:period/close
- * @desc    Close an accounting period (prevents new postings)
- */
 router.post('/periods/:period/close', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req: AuthRequest, res: Response) => {
   try {
     const period = String(req.params.period);
@@ -435,10 +657,6 @@ router.post('/periods/:period/close', requireAuth, requireRole('BURSAR', 'SCHOOL
   }
 });
 
-/**
- * @route   POST /api/accounts/periods/:period/reopen
- * @desc    Reopen a CLOSED period (not LOCKED)
- */
 router.post('/periods/:period/reopen', requireAuth, requireRole('SCHOOL_ADMIN'), async (req: AuthRequest, res: Response) => {
   try {
     const period = String(req.params.period);
@@ -466,10 +684,6 @@ router.post('/periods/:period/reopen', requireAuth, requireRole('SCHOOL_ADMIN'),
 // BANK RECONCILIATION
 // ═══════════════════════════════════════════════════════════════
 
-/**
- * @route   GET /api/accounts/bank-reconciliation
- * @desc    Get bank reconciliation status for a period
- */
 router.get('/bank-reconciliation', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req: AuthRequest, res: Response) => {
   try {
     const schoolId = req.user!.schoolId!;
@@ -479,14 +693,11 @@ router.get('/bank-reconciliation', requireAuth, requireRole('BURSAR', 'SCHOOL_AD
       where: { schoolId, ...(period ? { period: period as string } : {}) },
       include: {
         account: { select: { code: true, name: true } },
-        lines: {
-          orderBy: { date: 'asc' }
-        }
+        lines: { orderBy: { date: 'asc' } }
       },
       orderBy: { uploadedAt: 'desc' }
     });
 
-    // Compute reconciliation stats per statement
     const result = statements.map(stmt => {
       const total = stmt.lines.length;
       const reconciled = stmt.lines.filter(l => l.isReconciled).length;
@@ -507,17 +718,11 @@ router.get('/bank-reconciliation', requireAuth, requireRole('BURSAR', 'SCHOOL_AD
   }
 });
 
-/**
- * @route   POST /api/accounts/bank-reconciliation/match
- * @desc    Match a bank statement line to a journal entry line
- */
 router.post('/bank-reconciliation/match', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req: AuthRequest, res: Response) => {
   try {
     const { bankLineId, journalLineId } = req.body;
-    const schoolId = req.user!.schoolId!;
 
     await prisma.$transaction(async tx => {
-      // Mark bank statement line as reconciled
       await tx.bankStatementLine.update({
         where: { id: bankLineId },
         data: {
@@ -528,7 +733,6 @@ router.post('/bank-reconciliation/match', requireAuth, requireRole('BURSAR', 'SC
         }
       });
 
-      // Mark journal entry line as reconciled
       await tx.journalEntryLine.update({
         where: { id: journalLineId },
         data: {
@@ -545,19 +749,15 @@ router.post('/bank-reconciliation/match', requireAuth, requireRole('BURSAR', 'SC
   }
 });
 
-/**
- * @route   POST /api/accounts/bank-reconciliation/unmatch
- * @desc    Unmatch a previously matched pair
- */
 router.post('/bank-reconciliation/unmatch', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req: AuthRequest, res: Response) => {
   try {
     const { bankLineId } = req.body;
-    const schoolId = req.user!.schoolId!;
 
     const bankLine = await prisma.bankStatementLine.findFirst({
-      where: { id: bankLineId, statement: { schoolId } }
+      where: { id: bankLineId }
     });
-    if (!bankLine) return res.status(404).json({ error: 'Bank statement line not found' });
+
+    if (!bankLine) return res.status(404).json({ error: 'Bank line not found' });
 
     await prisma.$transaction(async tx => {
       if (bankLine.journalLineId) {
@@ -566,6 +766,7 @@ router.post('/bank-reconciliation/unmatch', requireAuth, requireRole('BURSAR', '
           data: { isReconciled: false, reconciledAt: null, bankLineId: null }
         });
       }
+
       await tx.bankStatementLine.update({
         where: { id: bankLineId },
         data: { isReconciled: false, journalLineId: null, matchedAt: null, matchedBy: null }
@@ -574,7 +775,7 @@ router.post('/bank-reconciliation/unmatch', requireAuth, requireRole('BURSAR', '
 
     res.json({ success: true });
   } catch (error: any) {
-    res.status(500).json({ error: error.message || 'Failed to unmatch items' });
+    res.status(500).json({ error: error.message || 'Failed to unmatch reconciliation items' });
   }
 });
 

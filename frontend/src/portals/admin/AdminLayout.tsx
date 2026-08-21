@@ -85,6 +85,7 @@ export default function AdminLayout() {
     { label: 'Emergencies', icon: 'fas fa-ambulance', to: '/admin/clinic/emergencies' },
     { label: 'Referrals', icon: 'fas fa-file-medical', to: '/admin/clinic/referrals' },
     { label: 'Immunization', icon: 'fas fa-syringe', to: '/admin/clinic/immunization' },
+    { label: 'ICD-10 Disease Codes', icon: 'fas fa-notes-medical', to: '/admin/clinic/icd10' },
     { label: 'IT Helpdesk', icon: 'fas fa-headset', to: '/admin/helpdesk' },
     { label: 'Student Club', icon: 'fas fa-users', to: '/admin/student-club' },
     { label: 'Sports Management', icon: 'fas fa-running', to: '/admin/sports-management' },
@@ -92,7 +93,10 @@ export default function AdminLayout() {
     { section: 'Financial config', label: 'Payment Methods', icon: 'fas fa-money-check', to: '/admin/payment-methods' },
     { label: 'Revenue Allocation', icon: 'fas fa-chart-pie', to: '/admin/revenue-allocation' },
     
-    { section: 'Accounts', label: 'Liabilities', icon: 'fas fa-file-invoice-dollar', to: '/admin/accounts/liabilities' },
+    { section: 'General Ledger & Accounting', label: 'Chart of Accounts', icon: 'fas fa-sitemap', to: '/admin/accounts/coa' },
+    { label: 'Financial Reports (P&L/Trial Balance)', icon: 'fas fa-chart-line', to: '/admin/accounts/financial-reports' },
+    { label: 'Bank Reconciliation', icon: 'fas fa-university', to: '/admin/accounts/bank-reconciliation' },
+    { label: 'Liabilities', icon: 'fas fa-file-invoice-dollar', to: '/admin/accounts/liabilities' },
     { label: 'Income', icon: 'fas fa-hand-holding-usd', to: '/admin/accounts/income' },
     { label: 'Expenses', icon: 'fas fa-file-invoice', to: '/admin/accounts/expenses' },
     { label: 'Uniforms', icon: 'fas fa-tshirt', to: '/admin/accounts/uniforms' }

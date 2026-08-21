@@ -138,13 +138,19 @@ router.get('/bursar', auth_1.requireAuth, async (req, res) => {
                 take: 10,
             }),
         ]);
-        const totalBilled = feeStats.reduce((s, f) => s + (f._sum.amount ?? 0), 0);
-        const totalPaid = feeStats.reduce((s, f) => s + (f._sum.paid ?? 0), 0);
-        const totalOutstanding = totalBilled - totalPaid;
+        const totalFeesBilled = feeStats.reduce((s, f) => s + (f._sum.amount ?? 0), 0);
+        const totalFeesCollected = feeStats.reduce((s, f) => s + (f._sum.paid ?? 0), 0);
+        const outstandingFees = Math.max(0, totalFeesBilled - totalFeesCollected);
         res.json({
-            stats: { totalBilled, totalPaid, totalOutstanding, studentCount },
+            // Top-level fields the frontend reads directly
+            totalFeesBilled,
+            totalFeesCollected,
+            outstandingFees,
+            studentCount,
+            // Status breakdown array (unchanged shape)
             feesByStatus: feeStats,
-            recentFees,
+            // Recent fee records — aliased to what the frontend expects
+            recentPayments: recentFees,
         });
     }
     catch (e) {
@@ -315,6 +321,9 @@ router.get('/applicant', auth_1.requireAuth, async (req, res) => {
             applicantName: application.applicantName,
             appType: application.appType,
             progress,
+            interviewDate: application.interviewDate,
+            interviewTime: application.interviewTime,
+            interviewVenue: application.interviewVenue,
             timeline: application.timeline,
             documents: {
                 total: totalDocs,
