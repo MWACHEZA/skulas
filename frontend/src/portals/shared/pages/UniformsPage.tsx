@@ -1045,6 +1045,42 @@ export const SuppliersTab = ({ suppliers, onUpdate, canManage }: { suppliers: an
 const PaymentsTab = ({ suppliers, canManage }: { suppliers: Supplier[], canManage: boolean }) => {
    const { showToast } = useToast();
    const [settleVendor, setSettleVendor] = useState<any>(null);
+   const [amount, setAmount] = useState('');
+   const [paymentMode, setPaymentMode] = useState('');
+   const [paymentMethods, setPaymentMethods] = useState<any[]>([]);
+   const [submitting, setSubmitting] = useState(false);
+
+   useEffect(() => {
+     api.get('/api/finance/payment-methods').then(res => {
+       const pms = Array.isArray(res.data) ? res.data : [];
+       setPaymentMethods(pms);
+       if (pms.length > 0) setPaymentMode(pms[0].name);
+     }).catch(() => {});
+   }, []);
+
+   const handleSettle = async () => {
+     if (!settleVendor || !amount || parseFloat(amount) <= 0) {
+       showToast('Please enter a valid settlement amount', 'error');
+       return;
+     }
+     setSubmitting(true);
+     try {
+       await api.post('/api/uniforms/supplier-payments', {
+         supplierId: settleVendor.id,
+         amount: parseFloat(amount),
+         paymentMode: paymentMode || 'Main Bank Gateway',
+         date: new Date().toISOString()
+       });
+       showToast('Settlement posted & recorded in double-entry ledger', 'success');
+       setSettleVendor(null);
+       setAmount('');
+       invalidateAllAccountingKeys();
+     } catch (err: any) {
+       showToast(err.response?.data?.error || 'Failed to post settlement', 'error');
+     } finally {
+       setSubmitting(false);
+     }
+   };
 
    const exportAuditLogs = (vendorName: string) => {
       const headers = ['Timestamp,Action,Amount,Status'];
@@ -1069,7 +1105,7 @@ const PaymentsTab = ({ suppliers, canManage }: { suppliers: Supplier[], canManag
             <div className="portal-card-header" style={{ marginBottom: '16px' }}>
                <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800 }}><i className="fas fa-wallet mr-3" style={{ color: '#059669' }}></i>Financial Settlements</h3>
             </div>
-            <p style={{ color: '#64748b', fontSize: '1rem', fontWeight: 600, margin: 0 }}>Monitor vendor procurement balances and settle outstanding financial obligations.</p>
+            <p style={{ color: '#64748b', fontSize: '1rem', fontWeight: 600, margin: 0 }}>Monitor vendor procurement balances and settle outstanding financial obligations into the general ledger.</p>
          </div>
 
          <div className="management-table-card">
@@ -1115,38 +1151,62 @@ const PaymentsTab = ({ suppliers, canManage }: { suppliers: Supplier[], canManag
 
          {settleVendor && (
             <div className="portal-modal-overlay">
-               <div className="portal-modal" style={{ maxWidth: '400px' }}>
-                  <div className="portal-modal-header">
-                     <h3 style={{ margin: 0 }}>Initiate Settlement</h3>
-                     <button className="portal-btn-ghost" style={{ padding: '4px 8px' }} onClick={() => setSettleVendor(null)}>
+               <div className="portal-modal-card animate-in zoom-in duration-200" style={{ maxWidth: '440px' }}>
+                  <div className="portal-modal-header" style={{ padding: '24px 32px' }}>
+                     <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 900 }}>Initiate Vendor Settlement</h3>
+                     <button className="portal-btn-ghost" style={{ padding: '8px' }} onClick={() => setSettleVendor(null)}>
                         <i className="fas fa-times"></i>
                      </button>
                   </div>
-                  <div className="portal-modal-body" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                     <div className="portal-card" style={{ padding: '16px', background: '#f8fafc', border: 'none', marginBottom: 0 }}>
-                        <p style={{ margin: 0, fontWeight: 700, color: '#64748b', fontSize: '0.9rem' }}>Vendor</p>
-                        <h4 style={{ margin: 0, fontSize: '1.1rem', color: '#1e293b' }}>{settleVendor.companyName}</h4>
+                  <div className="portal-modal-body" style={{ padding: '32px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                     <div className="portal-card" style={{ padding: '16px', background: '#f8fafc', border: '1px solid #e2e8f0', marginBottom: 0 }}>
+                        <p style={{ margin: 0, fontWeight: 700, color: '#64748b', fontSize: '0.8rem', textTransform: 'uppercase' }}>Vendor Entity</p>
+                        <h4 style={{ margin: '4px 0 0 0', fontSize: '1.1rem', color: '#1e293b', fontWeight: 900 }}>{settleVendor.companyName}</h4>
                      </div>
                      <div className="form-group">
-                        <label className="portal-label">Amount to Settle (USD)</label>
-                        <input type="number" className="portal-input" placeholder="0.00" style={{ fontSize: '1.5rem', fontWeight: 900, color: '#059669' }} />
+                        <label className="portal-label">Amount to Settle (USD) *</label>
+                        <input 
+                          type="number" 
+                          step="0.01"
+                          className="portal-input" 
+                          placeholder="0.00" 
+                          value={amount}
+                          onChange={e => setAmount(e.target.value)}
+                          style={{ fontSize: '1.5rem', fontWeight: 900, color: '#059669', height: '56px' }} 
+                        />
                      </div>
                      <div className="form-group">
-                        <label className="portal-label">Payment Method</label>
-                        <select className="portal-input">
-                           <option>Bank Transfer (RTGS)</option>
-                           <option>Ecocash</option>
-                           <option>Cash</option>
-                           <option>Check</option>
+                        <label className="portal-label">Payment Method (Registered Gateway) *</label>
+                        <select 
+                          className="portal-input"
+                          value={paymentMode}
+                          onChange={e => setPaymentMode(e.target.value)}
+                          style={{ fontWeight: 800, height: '52px' }}
+                        >
+                           {paymentMethods.map(pm => (
+                             <option key={pm.id} value={pm.name}>{pm.name}</option>
+                           ))}
+                           {paymentMethods.length === 0 && (
+                             <>
+                               <option value="Main Bank Gateway">Main Bank Gateway</option>
+                               <option value="Cash Office Vault">Cash Office Vault</option>
+                               <option value="Mobile Money Endpoint">Mobile Money Endpoint</option>
+                             </>
+                           )}
                         </select>
                      </div>
                   </div>
-                  <div className="portal-modal-footer">
-                     <button className="portal-btn-secondary" onClick={() => setSettleVendor(null)}>Cancel</button>
-                     <button className="portal-btn-primary" style={{ background: '#059669', borderColor: '#059669' }} onClick={() => { 
-                        setSettleVendor(null); 
-                        showToast('Settlement initiated and pending confirmation.', 'success');
-                     }}>Confirm Payment</button>
+                  <div className="portal-modal-footer" style={{ padding: '24px 32px', background: '#f8fafc' }}>
+                     <button className="portal-btn-ghost" onClick={() => setSettleVendor(null)} style={{ fontWeight: 800 }}>Cancel</button>
+                     <button 
+                       className="portal-btn-primary" 
+                       disabled={submitting}
+                       style={{ background: '#059669', borderColor: '#059669', padding: '12px 28px', fontWeight: 900 }} 
+                       onClick={handleSettle}
+                     >
+                        {submitting ? <i className="fas fa-spinner fa-spin mr-2"></i> : <i className="fas fa-check-circle mr-2"></i>}
+                        {submitting ? 'Posting...' : 'Confirm & Post Settlement'}
+                     </button>
                   </div>
                </div>
             </div>
@@ -1154,5 +1214,6 @@ const PaymentsTab = ({ suppliers, canManage }: { suppliers: Supplier[], canManag
       </div>
    );
 };
+
 
 export default UniformsPage;

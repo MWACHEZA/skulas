@@ -13,10 +13,24 @@ const router = (0, express_1.Router)();
 router.get('/payment-methods', auth_1.requireAuth, (0, auth_1.requireRole)('BURSAR', 'SCHOOL_ADMIN'), async (req, res) => {
     try {
         const schoolId = req.user.schoolId;
-        const methods = await prisma_1.default.paymentMethod.findMany({
+        let methods = await prisma_1.default.paymentMethod.findMany({
             where: { schoolId },
             orderBy: { name: 'asc' }
         });
+        if (methods.length === 0) {
+            await prisma_1.default.paymentMethod.createMany({
+                data: [
+                    { schoolId, name: 'Cash Office Vault' },
+                    { schoolId, name: 'Main Bank Gateway' },
+                    { schoolId, name: 'Mobile Money Endpoint' }
+                ],
+                skipDuplicates: true
+            });
+            methods = await prisma_1.default.paymentMethod.findMany({
+                where: { schoolId },
+                orderBy: { name: 'asc' }
+            });
+        }
         res.json(methods);
     }
     catch (error) {

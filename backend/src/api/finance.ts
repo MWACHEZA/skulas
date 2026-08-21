@@ -11,10 +11,26 @@ const router = Router();
 router.get('/payment-methods', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req: AuthRequest, res: Response) => {
   try {
     const schoolId = req.user!.schoolId!;
-    const methods = await prisma.paymentMethod.findMany({
+    let methods = await prisma.paymentMethod.findMany({
       where: { schoolId },
       orderBy: { name: 'asc' }
     });
+
+    if (methods.length === 0) {
+      await prisma.paymentMethod.createMany({
+        data: [
+          { schoolId, name: 'Cash Office Vault' },
+          { schoolId, name: 'Main Bank Gateway' },
+          { schoolId, name: 'Mobile Money Endpoint' }
+        ],
+        skipDuplicates: true
+      });
+      methods = await prisma.paymentMethod.findMany({
+        where: { schoolId },
+        orderBy: { name: 'asc' }
+      });
+    }
+
     res.json(methods);
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch payment methods' });

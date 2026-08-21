@@ -26,6 +26,7 @@ const ExpensesPage: React.FC = () => {
   const [baseCurrency, setBaseCurrency] = useState('USD');
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [paymentMethods, setPaymentMethods] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showEntryModal, setShowEntryModal] = useState(false);
   const [showCategoriesModal, setShowCategoriesModal] = useState(false);
@@ -88,14 +89,20 @@ const ExpensesPage: React.FC = () => {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const [expenseRes, coaRes] = await Promise.all([
+      const [expenseRes, coaRes, pmRes] = await Promise.all([
         api.get('/api/accounts/expenses'),
-        api.get('/api/accounts/coa')
+        api.get('/api/accounts/coa'),
+        api.get('/api/finance/payment-methods')
       ]);
       setExpenses(Array.isArray(expenseRes.data) ? expenseRes.data : []);
       const coaList = Array.isArray(coaRes.data) ? coaRes.data : [];
       const expAccounts = coaList.filter((c: any) => c.type === 'EXPENSE');
       setCategories(expAccounts.length > 0 ? expAccounts : coaList);
+      const pms = Array.isArray(pmRes.data) ? pmRes.data : [];
+      setPaymentMethods(pms);
+      if (pms.length > 0 && !formData.paymentMode) {
+        setFormData(prev => ({ ...prev, paymentMode: pms[0].name }));
+      }
     } catch (error) {
       toast.error('Failed to fetch expenditure data');
     } finally {
@@ -331,16 +338,28 @@ const ExpensesPage: React.FC = () => {
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
                   <div className="form-group">
-                    <label className="portal-label">Payment Gateway / Mode</label>
-                    <input 
-                      type="text" 
-                      placeholder="e.g. RTGS Transfer, Petty Cash"
+                    <label className="portal-label">Payment Gateway / Mode (Registered) *</label>
+                    <select 
                       className="portal-input"
                       value={formData.paymentMode}
                       onChange={(e) => setFormData({ ...formData, paymentMode: e.target.value })}
-                      style={{ fontWeight: 700, height: '56px' }}
+                      style={{ fontWeight: 800, height: '56px' }}
                       required
-                    />
+                    >
+                      <option value="">-- Select Registered Mode --</option>
+                      {paymentMethods.map((pm: any) => (
+                        <option key={pm.id} value={pm.name}>
+                          {pm.name} ({pm.type || 'Asset Account'})
+                        </option>
+                      ))}
+                      {paymentMethods.length === 0 && (
+                        <>
+                          <option value="Cash Office Vault">Cash Office Vault (Asset)</option>
+                          <option value="Main Bank Gateway">Main Bank Gateway (Asset)</option>
+                          <option value="Mobile Money Endpoint">Mobile Money Endpoint (Asset)</option>
+                        </>
+                      )}
+                    </select>
                   </div>
                   <div className="form-group">
                     <label className="portal-label">Ledger Currency</label>
