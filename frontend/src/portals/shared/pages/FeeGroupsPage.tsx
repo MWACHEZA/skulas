@@ -182,7 +182,9 @@ export default function FeeGroupsPage() {
       year: group.year.toString(),
       billingType: group.billingType,
       isRecurring: group.isRecurring,
-      remindersEnabled: group.remindersEnabled
+      remindersEnabled: group.remindersEnabled,
+      incomeAccountId: group.incomeAccountId || '',
+      arAccountId: group.arAccountId || ''
     });
     
     const amountsMap: Record<string, string> = {};
