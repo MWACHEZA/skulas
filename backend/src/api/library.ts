@@ -3,6 +3,8 @@ import path from 'path';
 import prisma from '../lib/prisma';
 import { requireAuth, requireRole, AuthRequest } from '../middleware/auth';
 import { libraryUpload } from '../middleware/upload';
+import { LedgerService } from '../services/ledger.service';
+import { getAccountId } from '../../prisma/seeders/coa.seeder';
 
 const router = Router();
 
@@ -233,6 +235,9 @@ router.post('/books', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCILLARY', 'TEA
       }
     }
 
+    const bookPrice = price ? parseFloat(price) : null;
+    const numCopies = parseInt(totalCopies) || 1;
+
     const book = await prisma.book.create({
       data: {
         title,
@@ -241,20 +246,58 @@ router.post('/books', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCILLARY', 'TEA
         categoryId,
         edition,
         publisher,
-        price: price ? parseFloat(price) : null,
+        price: bookPrice,
         publishedDate: publishedDate ? new Date(publishedDate) : null,
         description,
         status: status || 'Available',
         subjectId,
         classId,
-        copies: parseInt(totalCopies) || 1,
-        available: parseInt(totalCopies) || 1,
+        copies: numCopies,
+        available: numCopies,
         coverUrl: files?.cover?.[0] ? path.join(req.uploadCategoryPath || '', files.cover[0].filename).replace(/\\/g, '/') : null,
         pdfUrl: files?.pdf?.[0] ? path.join(req.uploadCategoryPath || '', files.pdf[0].filename).replace(/\\/g, '/') : null,
         schoolId,
         teacherId
       }
     });
+
+    // Post asset purchase JE when a price is provided:
+    //   DR  2100 Property & Equipment  [totalCost]  (library books capitalised as assets)
+    //   CR  1100 Cash on Hand          [totalCost]  (cash paid out)
+    if (bookPrice && bookPrice > 0) {
+      const totalCost = bookPrice * numCopies;
+      try {
+        const [assetId, cashId] = await Promise.all([
+          getAccountId(schoolId, '2100', prisma),  // Property & Equipment
+          getAccountId(schoolId, '1100', prisma)   // Cash on Hand
+        ]);
+
+        await LedgerService.postEntry({
+          schoolId,
+          date: new Date(),
+          description: `Library acquisition: ${title} (${numCopies} cop${numCopies > 1 ? 'ies' : 'y'})`,
+          sourceType: 'library_purchase',
+          sourceId: book.id,
+          createdByUserId: req.user!.id,
+          lines: [
+            {
+              accountId: assetId,
+              debit: totalCost,
+              description: `Book asset: ${title} × ${numCopies}`
+            },
+            {
+              accountId: cashId,
+              credit: totalCost,
+              description: `Cash paid for books: ${title}`
+            }
+          ]
+        });
+      } catch (ledgerErr) {
+        console.error('[Ledger] Library book purchase JE failed:', ledgerErr);
+        // Book is saved. Admin can post a correcting JE manually via Accounts module.
+      }
+    }
+
     res.status(201).json(book);
   } catch (error) {
     console.error('Book creation error:', error);

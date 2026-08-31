@@ -27,6 +27,40 @@ const NATIONALITIES = [
   "Yemenite"
 ];
 
+interface DocFiles {
+  idDoc?: File | null;
+  residenceDoc?: File | null;
+  qualificationsDoc?: File | null;
+  transferCertificate?: File | null;
+  birthCertificate?: File | null;
+}
+
+interface SchoolClass {
+  id: string;
+  name: string;
+  level: string;
+}
+
+interface SchoolHouse {
+  id: string;
+  name: string;
+}
+
+interface SchoolClub {
+  id: string;
+  name: string;
+}
+
+interface SchoolHostel {
+  id: string;
+  name: string;
+}
+
+interface SchoolDepartment {
+  id: string;
+  name: string;
+}
+
 interface AdminUserCreateModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -55,20 +89,20 @@ export default function AdminUserCreateModal({
   );
 
   const [role, setRole] = useState(defaultRole || 'STUDENT');
-  const [formData, setFormData] = useState<any>({});
-  const [docs, setDocs] = useState<any>({});
-  const [docFiles, setDocFiles] = useState<any>({
+  const [formData, setFormData] = useState<Record<string, string>>({});
+  const [docs, setDocs] = useState<Record<string, string>>({});
+  const [docFiles, setDocFiles] = useState<DocFiles>({
     idDoc: null,
     residenceDoc: null,
     qualificationsDoc: null,
     transferCertificate: null,
     birthCertificate: null
   });
-  const [classes, setClasses] = useState<any[]>([]);
-  const [departments, setDepartments] = useState<any[]>([]);
-  const [houses, setHouses] = useState<any[]>([]);
-  const [clubs, setClubs] = useState<any[]>([]);
-  const [hostels, setHostels] = useState<any[]>([]);
+  const [classes, setClasses] = useState<SchoolClass[]>([]);
+  const [departments, setDepartments] = useState<SchoolDepartment[]>([]);
+  const [houses, setHouses] = useState<SchoolHouse[]>([]);
+  const [clubs, setClubs] = useState<SchoolClub[]>([]);
+  const [hostels, setHostels] = useState<SchoolHostel[]>([]);
   const [secondaryRoles, setSecondaryRoles] = useState<string[]>([]);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
@@ -126,7 +160,7 @@ export default function AdminUserCreateModal({
         calculatedAge--;
       }
       if (calculatedAge >= 0) {
-        setFormData((prev: any) => ({ ...prev, age: calculatedAge.toString() }));
+        setFormData(prev => ({ ...prev, age: calculatedAge.toString() }));
       }
     }
   }, [formData.dob]);
@@ -135,7 +169,7 @@ export default function AdminUserCreateModal({
     try {
       const { data } = await api.get('/api/classes');
       setClasses(data);
-    } catch (err) {
+    } catch {
       console.error('Failed to fetch classes');
     }
   };
@@ -144,7 +178,7 @@ export default function AdminUserCreateModal({
     try {
       const { data } = await api.get('/api/departments');
       setDepartments(data);
-    } catch (err) {
+    } catch {
       console.error('Failed to fetch departments');
     }
   };
@@ -153,7 +187,7 @@ export default function AdminUserCreateModal({
     try {
       const { data } = await api.get('/api/schools/houses');
       setHouses(data);
-    } catch (err) {
+    } catch {
       console.error('Failed to fetch houses');
     }
   };
@@ -162,7 +196,7 @@ export default function AdminUserCreateModal({
     try {
       const { data } = await api.get('/api/schools/clubs-list');
       setClubs(data);
-    } catch (err) {
+    } catch {
       console.error('Failed to fetch clubs');
     }
   };
@@ -171,7 +205,7 @@ export default function AdminUserCreateModal({
     try {
       const { data } = await api.get('/api/ancillary/hostels');
       setHostels(data);
-    } catch (err) {
+    } catch {
       console.error('Failed to fetch hostels');
     }
   };
@@ -180,7 +214,7 @@ export default function AdminUserCreateModal({
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setFormData((prev: any) => ({ ...prev, [name]: value }));
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -204,7 +238,7 @@ export default function AdminUserCreateModal({
         showToast('Document size exceeds 10MB limit', 'error');
         return;
       }
-      setDocFiles((prev: any) => ({ ...prev, [key]: file }));
+      setDocFiles(prev => ({ ...prev, [key]: file }));
     }
   };
 
@@ -224,9 +258,9 @@ export default function AdminUserCreateModal({
       }
       try {
         const base64 = await toBase64(file);
-        setDocs((prev: any) => ({ ...prev, [docKey]: base64 }));
+        setDocs(prev => ({ ...prev, [docKey]: base64 }));
         showToast(`${docKey.replace(/([A-Z])/g, ' $1').trim()} updated!`, 'success');
-      } catch (err) {
+      } catch {
         showToast('Failed to read file', 'error');
       }
     }
@@ -305,8 +339,9 @@ export default function AdminUserCreateModal({
       resetForm();
       onSuccess();
       onClose();
-    } catch (error: any) {
-      showToast(error.response?.data?.error || 'Failed to create user', 'error');
+    } catch (error) {
+      const err = error as { response?: { data?: { error?: string } } };
+      showToast(err.response?.data?.error || 'Failed to create user', 'error');
     } finally {
       setLoading(false);
     }
@@ -502,6 +537,20 @@ export default function AdminUserCreateModal({
                         <option value="">Select...</option>
                         <option>A+</option><option>A-</option><option>B+</option><option>B-</option>
                         <option>AB+</option><option>AB-</option><option>O+</option><option>O-</option>
+                      </select>
+                    </div>
+
+                    <div className="form-group">
+                      <label>Religion</label>
+                      <select name="religion" value={formData.religion || ''} onChange={handleInputChange} className="form-control">
+                        <option value="">Select Religion</option>
+                        <option value="Christianity">Christianity</option>
+                        <option value="Islam">Islam</option>
+                        <option value="Hinduism">Hinduism</option>
+                        <option value="Judaism">Judaism</option>
+                        <option value="Buddhism">Buddhism</option>
+                        <option value="None">None</option>
+                        <option value="Other">Other</option>
                       </select>
                     </div>
 
@@ -755,6 +804,19 @@ export default function AdminUserCreateModal({
                       </div>
                       <div className="form-group"><label>Mother Tongue</label><input name="motherTongue" value={formData.motherTongue || ''} onChange={handleInputChange} className="form-control" placeholder="e.g. Shona" /></div>
                       <div className="form-group">
+                        <label>Religion</label>
+                        <select name="religion" value={formData.religion || ''} onChange={handleInputChange} className="form-control">
+                          <option value="">Select Religion</option>
+                          <option value="Christianity">Christianity</option>
+                          <option value="Islam">Islam</option>
+                          <option value="Hinduism">Hinduism</option>
+                          <option value="Judaism">Judaism</option>
+                          <option value="Buddhism">Buddhism</option>
+                          <option value="None">None</option>
+                          <option value="Other">Other</option>
+                        </select>
+                      </div>
+                      <div className="form-group">
                         <label>Physical Handicap</label>
                         <select name="isPhysicallyHandicapped" value={formData.isPhysicallyHandicapped || 'false'} onChange={handleInputChange} className="form-control">
                           <option value="false">No</option>
@@ -804,7 +866,7 @@ export default function AdminUserCreateModal({
                           onChange={(e) => {
                             const val = e.target.value;
                             const selectedHostel = hostels.find(h => h.name === val);
-                            setFormData((prev: any) => ({
+                            setFormData(prev => ({
                               ...prev,
                               dormitory: val,
                               hostelId: selectedHostel ? selectedHostel.id : ''
@@ -849,16 +911,18 @@ export default function AdminUserCreateModal({
                           </select>
                         </div>
                       )}
-                      <div className="form-group">
-                        <label>Academic Standing</label>
-                        <select name="standing" value={formData.standing || 'Normal'} onChange={handleInputChange} className="form-control">
-                          <option value="Normal">Normal</option>
-                          <option value="Carry">Carry</option>
-                          <option value="Repeat">Repeat</option>
-                          <option value="Discontinue">Discontinue</option>
-                          <option value="Withdraw">Withdraw</option>
-                        </select>
-                      </div>
+                      {!isK12 && (
+                        <div className="form-group">
+                          <label>Academic Standing</label>
+                          <select name="standing" value={formData.standing || 'Normal'} onChange={handleInputChange} className="form-control">
+                            <option value="Normal">Normal</option>
+                            <option value="Carry">Carry</option>
+                            <option value="Repeat">Repeat</option>
+                            <option value="Discontinue">Discontinue</option>
+                            <option value="Withdraw">Withdraw</option>
+                          </select>
+                        </div>
+                      )}
                       <div className="form-group"><label>Date Admitted</label><input type="date" name="dateAdmitted" value={formData.dateAdmitted || ''} onChange={handleInputChange} className="form-control" /></div>
                     </div>
 

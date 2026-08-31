@@ -18,7 +18,17 @@ async function seedExtras2(prisma, school, admin, student) {
         let uniformItem = await prisma.uniformItem.findFirst({ where: { schoolId: school.id } });
         if (!uniformItem) {
             try {
-                uniformItem = await prisma.uniformItem.create({ data: { name: `Shirt ${i}`, sellingPrice: 15, stockLevel: 10, schoolId: school.id } });
+                uniformItem = await prisma.uniformItem.create({ data: { name: `Shirt ${i}`, sellingPrice: 15, schoolId: school.id } });
+                await prisma.uniformStockMovement.create({
+                    data: {
+                        itemId: uniformItem.id,
+                        quantity: 10,
+                        movementType: 'PURCHASE_IN',
+                        unitCost: 10,
+                        totalCost: 100,
+                        schoolId: school.id
+                    }
+                });
             }
             catch (e) { }
         }
@@ -241,13 +251,13 @@ async function seedExtras2(prisma, school, admin, student) {
         let wallet = await prisma.studentWallet.findFirst({ where: { studentId: student.userId } });
         if (!wallet) {
             try {
-                wallet = await prisma.studentWallet.create({ data: { studentId: student.userId, balance: 10 } });
+                wallet = await prisma.studentWallet.create({ data: { studentId: student.userId } });
             }
             catch (e) { }
         }
         if (wallet) {
             try {
-                await prisma.walletTransaction.create({ data: { walletId: wallet.id, amount: 10, type: 'Deposit' } });
+                await prisma.walletTransaction.create({ data: { walletId: wallet.id, amount: 10, type: 'DEPOSIT' } });
             }
             catch (e) { }
         }

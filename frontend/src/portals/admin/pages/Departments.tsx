@@ -1,22 +1,57 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { generateShortCode } from '../../../lib/utils';
 import { useTerminology } from '../../../hooks/useTerminology';
 import { useAuth } from '../../../contexts/AuthContext';
 
+export interface Department {
+  id: string;
+  name: string;
+  code: string;
+  headId?: string;
+  deptCode?: string;
+  duration?: number | string;
+  services?: string;
+  facilities?: string;
+  pictures?: string | string[];
+  head?: { name: string };
+  _count?: {
+    subjects?: number;
+    teachers?: number;
+    users?: number;
+  };
+}
+
+export interface Staff {
+  id: string;
+  name: string;
+  role: string;
+}
+
+export interface DepartmentFormData {
+  name: string;
+  code: string;
+  headId: string;
+  deptCode: string;
+  duration: string;
+  services: string;
+  facilities: string;
+  pictures: string[];
+}
+
 export default function AdminDepartments() {
   const { user } = useAuth();
   const currentCode = user?.schoolCode || 'global';
 
-  const [departments, setDepartments] = useState<any[]>([]);
+  const [departments, setDepartments] = useState<Department[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingDept, setEditingDept] = useState<any>(null);
+  const [editingDept, setEditingDept] = useState<Department | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
   const [searchQuery, setSearchQuery] = useState('');
-  const [formData, setFormData] = useState<any>({ 
+  const [formData, setFormData] = useState<DepartmentFormData>({ 
     name: '', 
     code: '', 
     headId: '', 
@@ -24,46 +59,44 @@ export default function AdminDepartments() {
     duration: '4',
     services: '',
     facilities: '',
-    pictures: [] as string[]
+    pictures: []
   });
-  const [staffList, setStaffList] = useState<any[]>([]);
+  const [staffList, setStaffList] = useState<Staff[]>([]);
   const [uploading, setUploading] = useState(false);
   
   const { showToast } = useToast();
   const { isUniversity } = useTerminology();
 
-  useEffect(() => {
-    fetchDepartments();
-    fetchStaff();
-  }, []);
-
-  const fetchDepartments = async () => {
+  const fetchDepartments = useCallback(async () => {
     try {
       const { data } = await api.get('/api/departments');
       setDepartments(data);
-    } catch (err) {
+    } catch {
       showToast('Failed to load departments', 'error');
-    
     } finally {
       setLoading(false);
     }
-  };
+  }, [showToast]);
 
-  const fetchStaff = async () => {
+  const fetchStaff = useCallback(async () => {
     try {
       const { data } = await api.get('/api/users');
       // Filter for staff roles
-      const staff = data.users.filter((u: any) => 
+      const staff = data.users.filter((u: Staff) => 
         ['TEACHER', 'BURSAR', 'LIBRARIAN', 'ANCILLARY', 'SCHOOL_ADMIN'].includes(u.role)
       );
       setStaffList(staff);
-    } catch (err) {
+    } catch {
       console.error('Failed to load staff');
-    
     }
-  };
+  }, []);
 
-  const handleOpenModal = (dept: any = null) => {
+  useEffect(() => {
+    fetchDepartments();
+    fetchStaff();
+  }, [fetchDepartments, fetchStaff]);
+
+  const handleOpenModal = (dept: Department | null = null) => {
     if (dept) {
       setEditingDept(dept);
       setFormData({ 
@@ -111,7 +144,7 @@ export default function AdminDepartments() {
         });
         newPics.push(res.data.filename);
       }
-      setFormData((prev: any) => ({ ...prev, pictures: newPics }));
+      setFormData(prev => ({ ...prev, pictures: newPics }));
       showToast('Files uploaded successfully', 'success');
     } catch (err) {
       console.error(err);
@@ -123,9 +156,9 @@ export default function AdminDepartments() {
   };
 
   const handleRemovePicture = (idx: number) => {
-    setFormData((prev: any) => ({
+    setFormData(prev => ({
       ...prev,
-      pictures: prev.pictures.filter((_: any, i: number) => i !== idx)
+      pictures: prev.pictures.filter((_, i) => i !== idx)
     }));
   };
 
@@ -145,9 +178,8 @@ export default function AdminDepartments() {
       }
       setIsModalOpen(false);
       fetchDepartments();
-    } catch (err) {
+    } catch {
       showToast('Action failed', 'error');
-    
     }
   };
 
@@ -157,9 +189,8 @@ export default function AdminDepartments() {
       await api.delete(`/api/departments/${id}`);
       showToast('Department deleted', 'success');
       fetchDepartments();
-    } catch (err) {
+    } catch {
       showToast('Failed to delete department', 'error');
-    
     }
   };
 
@@ -236,7 +267,9 @@ export default function AdminDepartments() {
                         try {
                           if (Array.isArray(d.pictures)) pics = d.pictures;
                           else if (typeof d.pictures === 'string' && d.pictures) pics = JSON.parse(d.pictures);
-                        } catch (err) {}
+                        } catch {
+                          // Ignore parse errors for invalid picture arrays
+                        }
                         
                         const firstPic = pics[0];
                         return firstPic ? (
@@ -349,10 +382,17 @@ export default function AdminDepartments() {
                   placeholder="e.g. Science, Humanities"
                   onChange={e => {
                     const name = e.target.value;
+                    const generateAdminCode = (str: string) => {
+                      if (!str) return '';
+                      const words = str.trim().split(/\s+/);
+                      if (words.length === 1) return str.substring(0, 3).toUpperCase();
+                      return words.map(w => w[0]).join('').substring(0, 3).toUpperCase();
+                    };
                     setFormData({
                       ...formData, 
                       name,
-                      code: generateShortCode(name)
+                      code: generateShortCode(name),
+                      deptCode: generateAdminCode(name)
                     });
                   }} 
                 />
@@ -371,30 +411,31 @@ export default function AdminDepartments() {
                 </select>
               </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 15, marginBottom: 20 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: isUniversity ? '1fr 1fr' : '1fr', gap: 15, marginBottom: 20 }}>
                   <div className="form-group">
                     <label>Department Admin Code</label>
                     <input 
                       className="form-control" 
                       value={formData.deptCode}
-                      maxLength={3}
-                      placeholder="e.g. SCS"
-                      style={{ textTransform: 'uppercase' }}
-                      onChange={e => setFormData({ ...formData, deptCode: e.target.value.toUpperCase() })}
+                      readOnly
+                      placeholder="Auto-generated"
+                      style={{ textTransform: 'uppercase', background: '#f7fafc', cursor: 'not-allowed' }}
                     />
                   </div>
-                  <div className="form-group">
-                    <label>Program Duration (Years)</label>
-                    <select 
-                      className="form-control" 
-                      value={formData.duration}
-                      onChange={e => setFormData({ ...formData, duration: e.target.value })}
-                    >
-                      {[3, 4, 5, 6, 7].map(num => (
-                        <option key={num} value={num}>{num} Years</option>
-                      ))}
-                    </select>
-                  </div>
+                  {isUniversity && (
+                    <div className="form-group">
+                      <label>Program Duration (Years)</label>
+                      <select 
+                        className="form-control" 
+                        value={formData.duration}
+                        onChange={e => setFormData({ ...formData, duration: e.target.value })}
+                      >
+                        {[3, 4, 5, 6, 7].map(num => (
+                          <option key={num} value={num}>{num} Years</option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
                 </div>
 
                   <div className="form-group" style={{ marginBottom: 15 }}>

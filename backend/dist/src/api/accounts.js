@@ -110,7 +110,10 @@ router.post('/coa', auth_1.requireAuth, (0, auth_1.requireRole)('BURSAR', 'SCHOO
 });
 /**
  * @route   PATCH /api/accounts/coa/:id
- * @desc    Update a custom account (system accounts cannot be renamed)
+ * @desc    Update a Chart of Accounts entry.
+ *          - name & description: editable on ALL accounts (system and custom)
+ *          - isActive / parentId: editable on custom accounts only
+ *          - code & type: NEVER editable (structural integrity)
  */
 router.patch('/coa/:id', auth_1.requireAuth, (0, auth_1.requireRole)('BURSAR', 'SCHOOL_ADMIN'), async (req, res) => {
     try {
@@ -120,14 +123,26 @@ router.patch('/coa/:id', auth_1.requireAuth, (0, auth_1.requireRole)('BURSAR', '
         const account = await prisma_1.default.chartOfAccount.findFirst({ where: { id, schoolId } });
         if (!account)
             return res.status(404).json({ error: 'Account not found' });
-        const updateData = { description, isActive, parentId };
+        // Build update payload — name and description are always editable
+        const updateData = {};
+        if (name !== undefined)
+            updateData.name = String(name).trim();
+        if (description !== undefined)
+            updateData.description = description;
+        // isActive and parentId are only editable on non-system accounts
         if (!account.isSystemAccount) {
-            updateData.name = name;
+            if (isActive !== undefined)
+                updateData.isActive = isActive;
+            if (parentId !== undefined)
+                updateData.parentId = parentId;
         }
-        else if (name && name !== account.name) {
-            return res.status(403).json({ error: 'Cannot rename a system account' });
+        else if (isActive === false) {
+            return res.status(403).json({
+                error: 'System accounts cannot be deactivated. Deactivate a custom sub-account instead.'
+            });
         }
-        if (isActive === false) {
+        // Guard: cannot deactivate an account with recent journal entries
+        if (updateData.isActive === false) {
             const recentEntry = await prisma_1.default.journalEntryLine.findFirst({
                 where: {
                     accountId: id,
@@ -148,6 +163,35 @@ router.patch('/coa/:id', auth_1.requireAuth, (0, auth_1.requireRole)('BURSAR', '
     }
     catch (error) {
         res.status(400).json({ error: error.message || 'Failed to update account' });
+    }
+});
+/**
+ * @route   PATCH /api/accounts/coa/:id/rename
+ * @desc    Dedicated endpoint to rename any account (system or custom).
+ *          Only updates name and optionally description — code and type are immutable.
+ */
+router.patch('/coa/:id/rename', auth_1.requireAuth, (0, auth_1.requireRole)('BURSAR', 'SCHOOL_ADMIN'), async (req, res) => {
+    try {
+        const id = String(req.params.id);
+        const schoolId = req.user.schoolId;
+        const { name, description } = req.body;
+        if (!name || !String(name).trim()) {
+            return res.status(400).json({ error: 'Account name is required' });
+        }
+        const account = await prisma_1.default.chartOfAccount.findFirst({ where: { id, schoolId } });
+        if (!account)
+            return res.status(404).json({ error: 'Account not found' });
+        const updated = await prisma_1.default.chartOfAccount.update({
+            where: { id },
+            data: {
+                name: String(name).trim(),
+                ...(description !== undefined ? { description } : {})
+            }
+        });
+        res.json(updated);
+    }
+    catch (error) {
+        res.status(400).json({ error: error.message || 'Failed to rename account' });
     }
 });
 /**

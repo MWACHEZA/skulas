@@ -9,6 +9,7 @@ export default function AdminLayout() {
 
   const adminNav: NavItem[] = [
     { label: 'Dashboard', icon: 'fas fa-tachometer-alt', to: '/admin/dashboard' },
+    { label: 'Setup Wizard', icon: 'fas fa-magic', to: '/admin/setup' },
     { section: 'Academic', label: t('students'), icon: `fas ${isMedical ? 'fa-user-nurse' : 'fa-user-graduate'}`, to: '/admin/students' },
     { label: t('teachers'), icon: `fas ${isMedical ? 'fa-hospital-user' : 'fa-chalkboard-teacher'}`, to: '/admin/teachers' },
     { label: t('classes'), icon: `fas ${isMedical ? 'fa-hospital' : 'fa-door-open'}`, to: '/admin/classes' },
@@ -80,7 +81,14 @@ export default function AdminLayout() {
     { label: `${t('governanceShort')} Project Funding`, icon: 'fas fa-chart-line', to: '/admin/sdc-funding' },
 
     { section: 'System', label: 'Subscription', icon: 'fas fa-credit-card', to: '/admin/subscription' },
-    { section: 'Clinic', label: 'Health Complaints', icon: 'fas fa-stethoscope', to: '/admin/clinic/complaints' },
+    { section: 'Clinic & Health', label: 'Clinic Dashboard', icon: 'fas fa-notes-medical', to: '/admin/clinic/dashboard' },
+    { label: 'Patient Management', icon: 'fas fa-user-injured', to: '/admin/clinic/patients' },
+    { label: 'Hospitalization & Wards', icon: 'fas fa-bed', to: '/admin/clinic/hospitalization' },
+    { label: 'Triage & Vitals', icon: 'fas fa-heartbeat', to: '/admin/clinic/triage' },
+    { label: 'Pharmacy & Dispensing', icon: 'fas fa-pills', to: '/admin/clinic/pharmacy' },
+    { label: 'Clinic Billing', icon: 'fas fa-file-invoice-dollar', to: '/admin/clinic/billing' },
+    { label: 'Clinical Reports', icon: 'fas fa-chart-bar', to: '/admin/clinic/reports' },
+    { label: 'Health Complaints', icon: 'fas fa-stethoscope', to: '/admin/clinic/complaints' },
     { label: 'Appointments', icon: 'fas fa-calendar-check', to: '/admin/clinic/appointments' },
     { label: 'Emergencies', icon: 'fas fa-ambulance', to: '/admin/clinic/emergencies' },
     { label: 'Referrals', icon: 'fas fa-file-medical', to: '/admin/clinic/referrals' },

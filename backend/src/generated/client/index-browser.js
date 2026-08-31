@@ -800,6 +800,7 @@ exports.Prisma.SchoolSettingScalarFieldEnum = {
   gateRequiredType: 'gateRequiredType',
   idCardTemplateFront: 'idCardTemplateFront',
   idCardTemplateBack: 'idCardTemplateBack',
+  setupStatus: 'setupStatus',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -1921,12 +1922,18 @@ exports.Prisma.ClinicPatientScalarFieldEnum = {
   id: 'id',
   schoolId: 'schoolId',
   userId: 'userId',
+  mrn: 'mrn',
   firstName: 'firstName',
   lastName: 'lastName',
   dob: 'dob',
   gender: 'gender',
   contactNumber: 'contactNumber',
   address: 'address',
+  bloodType: 'bloodType',
+  allergies: 'allergies',
+  chronicConditions: 'chronicConditions',
+  guardianName: 'guardianName',
+  guardianContact: 'guardianContact',
   medicalHistory: 'medicalHistory',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -1976,6 +1983,10 @@ exports.Prisma.ClinicImmunizationScalarFieldEnum = {
   patientId: 'patientId',
   title: 'title',
   details: 'details',
+  vaccine: 'vaccine',
+  doseNumber: 'doseNumber',
+  nextDueDate: 'nextDueDate',
+  administeredBy: 'administeredBy',
   date: 'date',
   schoolId: 'schoolId',
   createdAt: 'createdAt',
@@ -1991,6 +2002,9 @@ exports.Prisma.ClinicReferralScalarFieldEnum = {
   date: 'date',
   to: 'to',
   address: 'address',
+  urgency: 'urgency',
+  status: 'status',
+  outcomeNotes: 'outcomeNotes',
   schoolId: 'schoolId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -2020,6 +2034,37 @@ exports.Prisma.ClinicVisitScalarFieldEnum = {
   visitDate: 'visitDate',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ClinicInventoryItemScalarFieldEnum = {
+  id: 'id',
+  schoolId: 'schoolId',
+  name: 'name',
+  category: 'category',
+  batchNumber: 'batchNumber',
+  expiryDate: 'expiryDate',
+  unit: 'unit',
+  stock: 'stock',
+  reorderLevel: 'reorderLevel',
+  unitCost: 'unitCost',
+  unitPrice: 'unitPrice',
+  location: 'location',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ClinicDispensingLogScalarFieldEnum = {
+  id: 'id',
+  schoolId: 'schoolId',
+  itemId: 'itemId',
+  visitId: 'visitId',
+  patientId: 'patientId',
+  quantity: 'quantity',
+  unitCost: 'unitCost',
+  totalPrice: 'totalPrice',
+  dispensedBy: 'dispensedBy',
+  notes: 'notes',
+  dispensedAt: 'dispensedAt'
 };
 
 exports.Prisma.ClinicHospitalizationScalarFieldEnum = {
@@ -2114,6 +2159,10 @@ exports.Prisma.PrefectReportScalarFieldEnum = {
   narrative: 'narrative',
   reportedById: 'reportedById',
   schoolId: 'schoolId',
+  hasPunishment: 'hasPunishment',
+  punishment: 'punishment',
+  punishmentLocation: 'punishmentLocation',
+  punishmentStatus: 'punishmentStatus',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -2426,6 +2475,8 @@ exports.Prisma.ModelName = {
   ClinicImmunization: 'ClinicImmunization',
   ClinicReferral: 'ClinicReferral',
   ClinicVisit: 'ClinicVisit',
+  ClinicInventoryItem: 'ClinicInventoryItem',
+  ClinicDispensingLog: 'ClinicDispensingLog',
   ClinicHospitalization: 'ClinicHospitalization',
   FarmLivestockBatch: 'FarmLivestockBatch',
   FarmCropCycle: 'FarmCropCycle',

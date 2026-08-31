@@ -6,6 +6,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const prisma_1 = __importDefault(require("../lib/prisma"));
 const auth_1 = require("../middleware/auth");
+const ledger_service_1 = require("../services/ledger.service");
+const coa_seeder_1 = require("../../prisma/seeders/coa.seeder");
 const router = (0, express_1.Router)();
 /**
  * @route   GET /api/inventory/products
@@ -94,6 +96,7 @@ router.post('/bill', auth_1.requireAuth, (0, auth_1.requireRole)('BURSAR', 'SCHO
             return res.status(400).json({ error: 'No students found in selected classes' });
         const results = await prisma_1.default.$transaction(async (tx) => {
             let createdCount = 0;
+            let totalBilledAmount = 0;
             for (const assignment of productAssignments) {
                 const product = products.find(p => p.id === assignment.productId);
                 if (!product)
@@ -114,7 +117,27 @@ router.post('/bill', auth_1.requireAuth, (0, auth_1.requireRole)('BURSAR', 'SCHO
                         }
                     });
                     createdCount++;
+                    totalBilledAmount += amount;
                 }
+            }
+            if (totalBilledAmount > 0) {
+                const [arAccountId, salesAccountId] = await Promise.all([
+                    (0, coa_seeder_1.getAccountId)(schoolId, '1210', tx),
+                    (0, coa_seeder_1.getAccountId)(schoolId, '5210', tx) // Tuckshop/Canteen Sales
+                ]);
+                await ledger_service_1.LedgerService.postEntry({
+                    schoolId,
+                    date: new Date(),
+                    description: `Bulk Grocery Billing for ${students.length} students (${year} ${billingType})`,
+                    sourceType: 'inventory',
+                    sourceId: `bill_${Date.now()}`,
+                    createdByUserId: req.user.id,
+                    lines: [
+                        { accountId: arAccountId, debit: totalBilledAmount, description: 'Grocery billing to students' },
+                        { accountId: salesAccountId, credit: totalBilledAmount, description: 'Grocery revenue' }
+                    ],
+                    tx: tx
+                });
             }
             return { createdCount };
         });
@@ -151,9 +174,19 @@ router.post('/consumption', auth_1.requireAuth, (0, auth_1.requireRole)('BURSAR'
     // consumptions: Array<{ productId: string, quantity: number }>
     try {
         await prisma_1.default.$transaction(async (tx) => {
+            let totalCostValue = 0;
+            // Need products to get price for total cost
+            const productIds = consumptions.map((c) => c.productId);
+            const products = await tx.physicalProduct.findMany({
+                where: { id: { in: productIds }, schoolId }
+            });
             for (const item of consumptions) {
                 if (item.quantity <= 0)
                     continue;
+                const product = products.find(p => p.id === item.productId);
+                if (product) {
+                    totalCostValue += (product.price || 0) * item.quantity;
+                }
                 // Create log
                 await tx.physicalProductConsumption.create({
                     data: {
@@ -172,6 +205,25 @@ router.post('/consumption', auth_1.requireAuth, (0, auth_1.requireRole)('BURSAR'
                 if (stockUpdate.count === 0) {
                     throw new Error(`Insufficient stock for product ID: ${item.productId}`);
                 }
+            }
+            if (totalCostValue > 0) {
+                const [cogsAccountId, inventoryAccountId] = await Promise.all([
+                    (0, coa_seeder_1.getAccountId)(schoolId, '6110', tx), // COGS - Tuckshop
+                    (0, coa_seeder_1.getAccountId)(schoolId, '1310', tx) // Inventory - Tuckshop
+                ]);
+                await ledger_service_1.LedgerService.postEntry({
+                    schoolId,
+                    date: new Date(date),
+                    description: `Inventory consumption recorded by ${requestedBy}`,
+                    sourceType: 'inventory',
+                    sourceId: `consump_${Date.now()}`,
+                    createdByUserId: req.user.id,
+                    lines: [
+                        { accountId: cogsAccountId, debit: totalCostValue, description: 'Cost of goods consumed' },
+                        { accountId: inventoryAccountId, credit: totalCostValue, description: 'Stock reduction' }
+                    ],
+                    tx: tx
+                });
             }
         });
         res.json({ success: true });

@@ -8,7 +8,57 @@ const prisma_1 = __importDefault(require("../lib/prisma"));
 const auth_1 = require("../middleware/auth");
 const finance_schema_1 = require("../schemas/finance.schema");
 const security_logger_1 = require("../lib/security-logger");
+const coa_seeder_1 = require("../../prisma/seeders/coa.seeder");
+const ledger_service_1 = require("../services/ledger.service");
 const router = (0, express_1.Router)();
+// ═══════════ DONATIONS ═══════════
+router.post('/donations', auth_1.requireAuth, async (req, res) => {
+    try {
+        const schoolId = req.user.schoolId;
+        const { amount, fund, paymentMethod, reference } = req.body;
+        if (!amount || amount <= 0) {
+            return res.status(400).json({ error: 'Valid amount is required' });
+        }
+        const parsedAmount = parseFloat(amount);
+        const results = await prisma_1.default.$transaction(async (tx) => {
+            // Create a student payment record for the donation (using user as reference if possible, or general)
+            const payment = await tx.studentPayment.create({
+                data: {
+                    studentId: req.user.id, // Using user ID for now, though it's technically an Alumni/User
+                    amount: parsedAmount,
+                    paymentMode: paymentMethod || 'ONLINE',
+                    status: 'Commit',
+                    schoolId,
+                    reference: reference || `Donation: ${fund || 'General'}`
+                }
+            });
+            // Post to Ledger
+            // Cash/Bank Debit (1100)
+            const cashAccountId = await (0, coa_seeder_1.getAccountId)(schoolId, '1100', tx);
+            // Grants & Donations Credit (5300)
+            const donationAccountId = await (0, coa_seeder_1.getAccountId)(schoolId, '5300', tx);
+            const je = await ledger_service_1.LedgerService.postEntry({
+                schoolId,
+                date: new Date(),
+                description: `Alumni Donation: ${fund || 'General'}`,
+                sourceType: 'donation',
+                sourceId: payment.id,
+                lines: [
+                    { accountId: cashAccountId, debit: parsedAmount, description: `Donation Received via ${paymentMethod || 'ONLINE'}` },
+                    { accountId: donationAccountId, credit: parsedAmount, description: `Contribution to ${fund || 'General Fund'}` }
+                ],
+                tx
+            });
+            await tx.studentPayment.update({ where: { id: payment.id }, data: { journalEntryId: je.id } });
+            return payment;
+        });
+        res.status(201).json({ success: true, paymentId: results.id, amount: parsedAmount });
+    }
+    catch (error) {
+        console.error('Donation error:', error);
+        res.status(500).json({ error: 'Failed to process donation' });
+    }
+});
 // ═══════════ PAYMENT METHODS ═══════════
 router.get('/payment-methods', auth_1.requireAuth, (0, auth_1.requireRole)('BURSAR', 'SCHOOL_ADMIN'), async (req, res) => {
     try {

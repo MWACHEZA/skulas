@@ -1,7 +1,53 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
+
+interface PreAdmissionData {
+  admissionType?: string;
+  reasonForAdmission?: string;
+  emergencyContacts?: string;
+  medicalHistory?: string;
+  currentMedications?: string;
+  lifestyle?: string;
+  insurance?: string;
+  consentTreatment?: boolean;
+  consentPrivacy?: boolean;
+  consentRelease?: boolean;
+}
+
+interface HospitalizationRecord {
+  id: string;
+  stage: string;
+  createdAt: string;
+  user?: {
+    name?: string;
+  };
+  preAdmissionData?: PreAdmissionData;
+  admissionData?: {
+    vitalSigns?: string;
+    generalExam?: string;
+    initialOrders?: string;
+    roomAssignment?: string;
+    admissionNotes?: string;
+  };
+  transferData?: {
+    targetHospital?: string;
+    currentCondition?: string;
+    reason?: string;
+    ongoingTreatments?: string;
+    handoffSummary?: string;
+  };
+  dischargeData?: {
+    finalDiagnosis?: string;
+    clinicalStability?: string;
+    medication?: string;
+    followUpAppointments?: string;
+    woundCare?: string;
+    equipmentNeeds?: string;
+    lama?: boolean;
+  };
+}
 
 export default function HospitalizationManager() {
   const { id } = useParams<{ id: string }>();
@@ -9,7 +55,7 @@ export default function HospitalizationManager() {
   const { showToast } = useToast();
   
   const [loading, setLoading] = useState(true);
-  const [record, setRecord] = useState<any>(null);
+  const [record, setRecord] = useState<HospitalizationRecord | null>(null);
   
   // Forms
   const [stage, setStage] = useState('PRE_ADMISSION');
@@ -29,11 +75,11 @@ export default function HospitalizationManager() {
     consentUnderstood: false, lama: false
   });
 
-  useEffect(() => {
-    fetchRecord();
-  }, [id]);
-
-  const fetchRecord = async () => {
+  const fetchRecord = useCallback(async () => {
+    if (!id || id === 'undefined') {
+      setLoading(false);
+      return;
+    }
     try {
       // Fetch via history logic is tricky since we don't have the user ID from the URL.
       // Wait, we need a dedicated endpoint to GET /api/clinic/hospitalization/:id
@@ -43,12 +89,16 @@ export default function HospitalizationManager() {
       if (res.data.admissionData) setAdmissionData(prev => ({ ...prev, ...res.data.admissionData }));
       if (res.data.transferData) setTransferData(prev => ({ ...prev, ...res.data.transferData }));
       if (res.data.dischargeData) setDischargeData(prev => ({ ...prev, ...res.data.dischargeData }));
-    } catch (err) {
+    } catch {
       showToast('Failed to load hospitalization record', 'error');
     } finally {
       setLoading(false);
     }
-  };
+  }, [id, showToast]);
+
+  useEffect(() => {
+    fetchRecord();
+  }, [fetchRecord]);
 
   const handleUpdate = async () => {
     try {
@@ -61,7 +111,7 @@ export default function HospitalizationManager() {
       await api.put(`/api/clinic/hospitalizations/${id}`, payload);
       showToast('Record updated successfully', 'success');
       fetchRecord();
-    } catch (err) {
+    } catch {
       showToast('Failed to update record', 'error');
     }
   };

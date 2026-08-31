@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
 import api from '../../../lib/api';
 import '../../../styles/portal.css';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 interface ShiftAssignment {
   id: string;
@@ -24,12 +26,20 @@ interface ShiftAssignment {
   };
 }
 
+interface EmployeeRegistryItem {
+  id: string;
+  name: string;
+  employeeProfile?: {
+    jobTitle?: string;
+  } | null;
+}
+
 export default function AncillarySchedules() {
   const { user } = useAuth();
   const { showToast } = useToast();
 
   const [shifts, setShifts] = useState<ShiftAssignment[]>([]);
-  const [employees, setEmployees] = useState<any[]>([]);
+  const [employees, setEmployees] = useState<EmployeeRegistryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [isManager, setIsManager] = useState(false); // Admin or HOD
 
@@ -52,15 +62,10 @@ export default function AncillarySchedules() {
 
   // Styles & Branding
   const primaryColor = user?.schoolBranding?.primaryColor || '#1e3a8a';
-  const accentColor = user?.schoolBranding?.accentColor || '#f59e0b';
 
   const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
-  useEffect(() => {
-    fetchSchedules();
-  }, []);
-
-  const fetchSchedules = async () => {
+  const fetchSchedules = useCallback(async () => {
     setLoading(true);
     try {
       // 1. Attempt to fetch all staff schedules (succeeds only for Admins & HODs)
@@ -71,24 +76,28 @@ export default function AncillarySchedules() {
         // Also fetch employee registry for the assignment dropdown
         const empRes = await api.get('/api/payroll/employees');
         setEmployees(Array.isArray(empRes.data) ? empRes.data : []);
-      } catch (err: any) {
-        if (err.response?.status === 403) {
+      } catch (err) {
+        const error = err as { response?: { status?: number } };
+        if (error.response?.status === 403) {
           // If 403, user is a regular staff member, only fetch their own schedules
           const myRes = await api.get('/api/schedules/my');
           setShifts(myRes.data);
           setIsManager(false);
-        
-    } else {
+        } else {
           showToast('Failed to load schedules', 'error');
         }
       }
-    } catch (error) {
+    } catch {
       showToast('Error syncing schedules', 'error');
     
     } finally {
       setLoading(false);
     }
-  };
+  }, [showToast]);
+
+  useEffect(() => {
+    fetchSchedules();
+  }, [fetchSchedules]);
 
   const handleAssignShift = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -116,9 +125,9 @@ export default function AncillarySchedules() {
         task: ''
       });
       fetchSchedules();
-    } catch (error: any) {
+    } catch (err) {
+      const error = err as { response?: { data?: { error?: string } } };
       showToast(error.response?.data?.error || 'Failed to save shift', 'error');
-    
     }
   };
 
@@ -141,20 +150,45 @@ export default function AncillarySchedules() {
       await api.delete(`/api/schedules/${id}`);
       showToast('Shift assignment removed', 'success');
       fetchSchedules();
-    } catch (error: any) {
+    } catch (err) {
+      const error = err as { response?: { data?: { error?: string } } };
       showToast(error.response?.data?.error || 'Failed to remove shift', 'error');
-    
     }
   };
 
-  const handleExportPDF = () => {
-    window.print();
+  const handleExportPDF = async () => {
+    const element = document.getElementById('schedules-print-area');
+    if (!element) return;
+    
+    const originalStyle = element.getAttribute('style') || '';
+    element.style.padding = '24px';
+    element.style.background = 'white';
+    
+    try {
+      showToast('Generating PDF, please wait...', 'info');
+      const canvas = await html2canvas(element, { 
+        scale: 2, 
+        useCORS: true,
+        ignoreElements: (el) => el.classList && el.classList.contains('no-print')
+      });
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+      pdf.save(`Work_Schedules_${new Date().toISOString().split('T')[0]}.pdf`);
+      showToast('PDF downloaded successfully', 'success');
+    } catch {
+      showToast('Failed to generate PDF', 'error');
+    } finally {
+      element.setAttribute('style', originalStyle);
+    }
   };
 
   return (
     <div className="schedules-container" style={{ padding: '24px' }}>
       {/* Printable Area Wrapper */}
-      <div className="print:p-10 print:bg-white print:text-black">
+      <div id="schedules-print-area" className="printable-area print:p-10 print:bg-white print:text-black">
         {/* Header */}
         <div className="portal-page-header" style={{
           display: 'flex',
@@ -178,7 +212,14 @@ export default function AncillarySchedules() {
               className="portal-btn-secondary"
               style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 20px', borderRadius: '12px', border: '1px solid #cbd5e1', fontWeight: 700 }}
             >
-              <i className="fas fa-print"></i> Export as PDF / Print
+              <i className="fas fa-file-pdf"></i> Export as PDF
+            </button>
+            <button 
+              onClick={() => window.print()} 
+              className="portal-btn-secondary"
+              style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 20px', borderRadius: '12px', border: '1px solid #cbd5e1', fontWeight: 700 }}
+            >
+              <i className="fas fa-print"></i> Print
             </button>
             {isManager && (
               <button 

@@ -23,13 +23,25 @@ const uploadBoxStyle: React.CSSProperties = {
   borderRadius: '10px', padding: '20px', textAlign: 'center', cursor: 'pointer',
 };
 
+interface SchoolData {
+  schoolName: string;
+  departments?: { id: string; name: string }[];
+  subjects?: { id: string; name: string; departmentId?: string | null }[];
+}
+
+interface DocsState {
+  idDoc: string | null;
+  residenceDoc: string | null;
+  qualificationsDoc: string | null;
+}
+
 export default function TeacherRegister() {
   const navigate = useNavigate();
   const { showToast } = useToast();
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
-  const [schoolData, setSchoolData] = useState<any>(null);
+  const [schoolData, setSchoolData] = useState<SchoolData | null>(null);
   const [verifying, setVerifying] = useState(false);
 
   // States to track document filenames
@@ -83,7 +95,7 @@ export default function TeacherRegister() {
     twitterLink: '',
   });
 
-  const [docs, setDocs] = useState<any>({
+  const [docs, setDocs] = useState<DocsState>({
     idDoc: null,
     residenceDoc: null,
     qualificationsDoc: null
@@ -94,7 +106,7 @@ export default function TeacherRegister() {
     const urlSchoolCode = params.get('school') || params.get('code') || localStorage.getItem('last_school_code');
     if (urlSchoolCode) {
       const codeUpper = urlSchoolCode.trim().toUpperCase();
-      setFormData((prev: any) => ({ ...prev, schoolCode: codeUpper }));
+      setFormData((prev) => ({ ...prev, schoolCode: codeUpper }));
       localStorage.setItem('last_school_code', codeUpper);
 
       // Auto-verify silently (no toast to avoid double notification)
@@ -106,7 +118,7 @@ export default function TeacherRegister() {
     }
   }, []);
 
-  const handleInputChange = (e: any) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     if (name === 'schoolCode') {
       localStorage.setItem('last_school_code', value.toUpperCase());
@@ -114,8 +126,8 @@ export default function TeacherRegister() {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleFileChange = (e: any, field: string = 'avatar') => {
-    const file = e.target.files[0];
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, field: 'avatar' | keyof DocsState = 'avatar') => {
+    const file = e.target.files?.[0];
     if (file) {
       if (file.size > MAX_FILE_SIZE) {
         showToast('File size exceeds 20MB limit.', 'error');
@@ -127,7 +139,7 @@ export default function TeacherRegister() {
         if (field === 'avatar') {
           setAvatarPreview(reader.result as string);
         } else {
-          setDocs((prev: any) => ({ ...prev, [field]: reader.result }));
+          setDocs((prev) => ({ ...prev, [field]: reader.result as string }));
           if (field === 'idDoc') {
             setIdDocName(file.name);
             showToast('National ID uploaded', 'success');
@@ -232,8 +244,9 @@ export default function TeacherRegister() {
       await api.post('/api/auth/register-user', payload);
       showToast('Teacher account created successfully! Welcome to the faculty.', 'success');
       navigate('/teacher/login');
-    } catch (err: any) {
-      showToast(err.response?.data?.error || 'Registration failed. Please check your details and try again.', 'error');
+    } catch (err) {
+      const error = err as { response?: { data?: { error?: string } } };
+      showToast(error.response?.data?.error || 'Registration failed. Please check your details and try again.', 'error');
     } finally {
       setLoading(false);
     }
@@ -242,7 +255,7 @@ export default function TeacherRegister() {
   // Filter subjects: if department selected, show only that dept's subjects; otherwise show all
   const availableSubjects = schoolData?.subjects
     ? (formData.departmentId
-      ? schoolData.subjects.filter((s: any) => !s.departmentId || s.departmentId === formData.departmentId)
+      ? schoolData.subjects.filter(s => !s.departmentId || s.departmentId === formData.departmentId)
       : schoolData.subjects)
     : [];
 
@@ -351,6 +364,21 @@ export default function TeacherRegister() {
                     </select>
                   </div>
                 </div>
+                <div className="form-row">
+                  <div className="form-group">
+                    <label>Religion</label>
+                    <select name="religion" value={formData.religion} onChange={handleInputChange}>
+                      <option value="">Select...</option>
+                      <option>Christianity</option>
+                      <option>Islam</option>
+                      <option>Hinduism</option>
+                      <option>Judaism</option>
+                      <option>Buddhism</option>
+                      <option>None</option>
+                      <option>Other</option>
+                    </select>
+                  </div>
+                </div>
                 <div className="form-group">
                   <label>Physical Address</label>
                   <textarea name="address" value={formData.address} onChange={handleInputChange} rows={2} placeholder="Street / Area / City" style={{ width: '100%', padding: '8px', borderRadius: 6, border: '1px solid #e2e8f0' }} />
@@ -368,14 +396,14 @@ export default function TeacherRegister() {
                 <div className="form-row">
                   <div className="form-group">
                     <label>Department *</label>
-                    {schoolData?.departments?.length > 0 ? (
+                    {(schoolData?.departments?.length ?? 0) > 0 ? (
                       <select name="departmentId" value={formData.departmentId} onChange={(e) => {
-                        const dept = schoolData.departments.find((d: any) => d.id === e.target.value);
+                        const dept = schoolData?.departments?.find(d => d.id === e.target.value);
                         setFormData(prev => ({ ...prev, departmentId: e.target.value, department: dept ? dept.name : '' }));
                         setSelectedSubjects([]); // clear subjects on dept change
                       }} required>
                         <option value="">Select Department...</option>
-                        {schoolData.departments.map((d: any) => <option key={d.id} value={d.id}>{d.name}</option>)}
+                        {schoolData?.departments?.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
                       </select>
                     ) : (
                       <input type="text" name="department" value={formData.department} onChange={handleInputChange} placeholder="e.g. Sciences, Humanities" />
@@ -396,7 +424,7 @@ export default function TeacherRegister() {
                   <label>Subjects Taught <small style={{ color: '#94a3b8' }}>(click to select/deselect)</small></label>
                   {availableSubjects.length > 0 ? (
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 8 }}>
-                      {availableSubjects.map((s: any) => {
+                      {availableSubjects.map(s => {
                         const isSelected = selectedSubjects.includes(s.name);
                         return (
                           <button

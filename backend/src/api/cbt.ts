@@ -181,6 +181,54 @@ router.post('/:id/questions', requireAuth, requireRole('TEACHER', 'SCHOOL_ADMIN'
   }
 });
 
+// Update a question
+router.put('/:examId/questions/:questionId', requireAuth, requireRole('TEACHER', 'SCHOOL_ADMIN', 'SUPER_ADMIN'), async (req: AuthRequest, res) => {
+  try {
+    const examId = req.params.examId as string;
+    const questionId = req.params.questionId as string;
+    const { type, mark, question, options, answer, section, page } = req.body;
+    
+    const exam = await prisma.cBTExam.findFirst({ where: { id: examId } });
+    if (!exam || exam.schoolId !== req.user!.schoolId) {
+      return res.status(404).json({ error: 'Exam not found' });
+    }
+
+    const existingQ = await prisma.cBTQuestion.findUnique({ where: { id: questionId } });
+    if (!existingQ || existingQ.examId !== examId) {
+      return res.status(404).json({ error: 'Question not found' });
+    }
+
+    const updatedQ = await prisma.cBTQuestion.update({
+      where: { id: questionId },
+      data: {
+        type,
+        mark: Number(mark),
+        question,
+        options: options || [],
+        answer,
+        section: section || null,
+        page: page ? Number(page) : 1
+      }
+    });
+
+    // Update total marks of the exam if mark changed
+    const markDifference = Number(mark) - existingQ.mark;
+    if (markDifference !== 0) {
+      await prisma.cBTExam.update({
+        where: { id: examId },
+        data: {
+          totalMarks: { increment: markDifference }
+        }
+      });
+    }
+
+    res.json({ success: true, question: updatedQ });
+  } catch (error) {
+    console.error('Error updating question:', error);
+    res.status(500).json({ error: 'Failed to update question' });
+  }
+});
+
 // Delete a question
 router.delete('/:examId/questions/:questionId', requireAuth, requireRole('TEACHER', 'SCHOOL_ADMIN', 'SUPER_ADMIN'), async (req: AuthRequest, res) => {
   try {

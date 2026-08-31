@@ -6,6 +6,7 @@ import { useAuth } from "../../../contexts/AuthContext";
 import ManagementDetailPanel from "../../../components/shared/ManagementDetailPanel";
 import '../../../styles/portal.css';
 import { useAccountingQuery, invalidateAllAccountingKeys } from "../../../hooks/useAccountingQuery";
+import { EmptyState } from "../../../components/common/EmptyState";
 
 export interface UniformItem {
   id: string;
@@ -15,11 +16,78 @@ export interface UniformItem {
   stockLevel: number;
 }
 
+export interface SupplierMetadata {
+  companyName?: string;
+  location?: string;
+  orgType?: string;
+  businessOwnedBy?: string;
+  prazRegistered?: string;
+  prazNo?: string;
+  prazReg?: string;
+  regNo?: string;
+  incorpYear?: string;
+  category?: string;
+  selectedCategories?: { code?: string; name?: string; section?: string }[];
+  specialization?: string;
+  taxNumber?: string;
+  taxClearance?: string;
+  taxExpiry?: string;
+  prazExpiry?: string;
+  nssaExpiry?: string;
+  contactTitle?: string;
+  contactFirstName?: string;
+  contactMiddleName?: string;
+  contactLastName?: string;
+  contactGender?: string;
+  contactPosition?: string;
+  designation?: string;
+  contactEmail?: string;
+  mobileNumber?: string;
+  country?: string;
+  province?: string;
+  city?: string;
+  address?: string;
+  landlineNumber?: string;
+  landlineAreaCode?: string;
+  landlineExtension?: string;
+  faxNumber?: string;
+  faxAreaCode?: string;
+  faxExtension?: string;
+  bankAccounts?: { accountType?: string; bankName?: string; bankBranch?: string; branchCode?: string; accountName?: string; accountNumber?: string }[];
+  categoryPayment?: { currency?: string; amount?: number; disclaimerAccepted?: boolean };
+  docs?: {
+    membershipDocs?: string;
+    profile?: string;
+    cv?: string;
+    supportingDoc?: string;
+    taxClearance?: string;
+    certIncorp?: string;
+    prazCert?: string;
+    nssaClearance?: string;
+    vendorRegFile?: string;
+  };
+  [key: string]: unknown;
+}
+
 export interface Supplier {
   id: string;
   companyName: string;
   contactName?: string;
   phone?: string;
+  name?: string;
+  email?: string;
+  globalId?: string;
+  regNo?: string;
+  incorpYear?: string;
+  category?: string;
+  specialization?: string;
+  address?: string;
+  taxClearance?: string;
+  prazCert?: string;
+  user?: {
+    metadata?: SupplierMetadata;
+  };
+  metadata?: SupplierMetadata;
 }
 
 export interface StockOrder {
@@ -34,6 +102,8 @@ export interface StockOrder {
 interface Sale {
   id: string;
   saleDate: string;
+  studentId?: string;
+  parentId?: string;
   student?: { name: string };
   totalAmount: number;
   paymentMode: string;
@@ -41,7 +111,6 @@ interface Sale {
 
 const UniformsPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState("items");
-  const { showToast } = useToast();
 
   const { user, hasRole } = useAuth();
   const canManage = hasRole('BURSAR', 'SCHOOL_ADMIN');
@@ -53,7 +122,7 @@ const UniformsPage: React.FC = () => {
   const [showSalesModal, setShowSalesModal] = useState(false);
 
   // Fetch items via reactive query cache
-  const { data: items = [], isLoading: itemsLoading, refetch: refetchItems } = useAccountingQuery<UniformItem[]>({
+  const { data: items = [], isLoading: itemsLoading } = useAccountingQuery<UniformItem[]>({
     key: 'uniforms:items',
     fetcher: async () => {
       const res = await api.get('/api/uniforms/items');
@@ -86,7 +155,7 @@ const UniformsPage: React.FC = () => {
   });
 
   const sales = isParentOrStudent
-    ? rawSales.filter((s: any) => s.studentId === user?.id || s.parentId === user?.id)
+    ? rawSales.filter((s: Sale) => s.studentId === user?.id || s.parentId === user?.id)
     : rawSales;
 
   const loading = itemsLoading;
@@ -107,15 +176,14 @@ const UniformsPage: React.FC = () => {
           <h1>Uniforms Management</h1>
           <p>{canManage ? "Comprehensive oversight of institutional uniform inventory, procurement, and distribution." : "View available uniforms and monitor your transaction history."}</p>
         </div>
-        <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-          <div className="status-badge" style={{ padding: '8px 24px', background: '#f8fafc', border: '1px solid #f1f5f9', color: '#64748b', fontWeight: 900 }}>
+        <div className="portal-header-actions-row">
+          <div className="status-badge portal-status-badge-authorization">
              <i className="fas fa-shield-alt mr-2"></i>{user?.role?.toUpperCase()} AUTHORIZATION
           </div>
           {canManage && activeTab === "items" && (
              <button 
               onClick={() => setShowAddItemModal(true)}
-              className="portal-btn-primary" 
-              style={{ padding: '12px 32px', fontWeight: 900 }}
+              className="portal-btn-primary portal-btn-header-lg" 
              >
                 <i className="fas fa-plus-circle mr-2"></i>Catalog Item
              </button>
@@ -123,8 +191,7 @@ const UniformsPage: React.FC = () => {
           {canManage && activeTab === "stock" && (
              <button 
               onClick={() => setShowRestockModal(true)}
-              className="portal-btn-primary" 
-              style={{ padding: '12px 32px', fontWeight: 900, background: '#059669' }}
+              className="portal-btn-primary portal-btn-header-lg portal-btn-emerald" 
              >
                 <i className="fas fa-truck-loading mr-2"></i>Authorize Restock
              </button>
@@ -132,8 +199,7 @@ const UniformsPage: React.FC = () => {
           {canManage && activeTab === "sales" && (
              <button 
               onClick={() => setShowSalesModal(true)}
-              className="portal-btn-primary" 
-              style={{ padding: '12px 32px', fontWeight: 900, background: '#f59e0b' }}
+              className="portal-btn-primary portal-btn-header-lg portal-btn-amber" 
              >
                 <i className="fas fa-cart-plus mr-2"></i>Record Sale
              </button>
@@ -141,13 +207,12 @@ const UniformsPage: React.FC = () => {
         </div>
       </div>
 
-      <div style={{ display: 'flex', gap: '8px', marginBottom: '40px', background: '#f8fafc', padding: '8px', borderRadius: '16px', border: '1px solid #f1f5f9', width: 'fit-content' }}>
+      <div className="portal-tabs-bar-container">
         {tabs.map(tab => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`portal-btn-${activeTab === tab.id ? 'primary' : 'ghost'}`}
-            style={{ padding: '12px 24px', borderRadius: '12px', fontWeight: 900, fontSize: '0.85rem' }}
+            className={`portal-btn-${activeTab === tab.id ? 'primary' : 'ghost'} portal-tab-btn-pill`}
           >
             <i className={`fas ${tab.icon} mr-2`}></i>{tab.label}
           </button>
@@ -155,9 +220,9 @@ const UniformsPage: React.FC = () => {
       </div>
 
       {loading ? (
-        <div className="portal-card animate-in fade-in duration-500" style={{ padding: '100px', textAlign: 'center' }}>
-          <div className="portal-spinner" style={{ margin: '0 auto 24px' }}></div>
-          <p style={{ fontWeight: 900, color: '#64748b' }}>Synchronizing institutional registry...</p>
+        <div className="portal-card animate-in fade-in duration-500 portal-loading-card-padded">
+          <div className="portal-spinner portal-spinner-centered"></div>
+          <p className="portal-loading-text">Synchronizing institutional registry...</p>
         </div>
       ) : (
         <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -201,12 +266,20 @@ const UniformsPage: React.FC = () => {
 
 // ═══════════ SUB-COMPONENTS ═══════════
 
-const ItemsTab = ({ items, onUpdate, canManage, showModal, setShowModal }: any) => {
+interface ItemsTabProps {
+  items: UniformItem[];
+  onUpdate: () => void;
+  canManage: boolean;
+  showModal: boolean;
+  setShowModal: (show: boolean) => void;
+}
+
+const ItemsTab: React.FC<ItemsTabProps> = ({ items, onUpdate, canManage, showModal, setShowModal }) => {
   const [formData, setFormData] = useState({ name: '', orderPrice: '', sellingPrice: '' });
   const [editingId, setEditingId] = useState<string | null>(null);
-  const { showToast } = useToast();
+  const { showToast, toastConfirm } = useToast();
 
-  const handleEdit = (item: any) => {
+  const handleEdit = (item: UniformItem) => {
     setFormData({ name: item.name, orderPrice: item.orderPrice.toString(), sellingPrice: item.sellingPrice.toString() });
     setEditingId(item.id);
     setShowModal(true);
@@ -218,7 +291,7 @@ const ItemsTab = ({ items, onUpdate, canManage, showModal, setShowModal }: any) 
       await api.delete(`/api/uniforms/items/${id}`);
       showToast("Item deleted successfully", "success");
       onUpdate();
-    } catch (error) {
+    } catch {
       showToast("Failed to delete item", "error");
     }
   };
@@ -243,20 +316,20 @@ const ItemsTab = ({ items, onUpdate, canManage, showModal, setShowModal }: any) 
       setEditingId(null);
       setShowModal(false);
       onUpdate();
-    } catch (error) {
+    } catch {
       showToast("Failed to authorize inventory cataloging", "error");
     }
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+    <div className="portal-flex-col-gap32">
       <div className="management-table-card">
-        <div className="portal-card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '32px', borderBottom: '1px solid #f1f5f9' }}>
+        <div className="portal-card-header portal-card-header-flex-padded">
            <div>
-              <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 900, color: '#1e293b' }}>Uniform Inventory Matrix</h3>
-              <p style={{ margin: '4px 0 0 0', color: '#64748b', fontWeight: 700, fontSize: '0.9rem' }}>Real-time oversight of institutional apparel stock levels.</p>
+              <h3 className="portal-card-title-lg">Uniform Inventory Matrix</h3>
+              <p className="portal-card-subtitle">Real-time oversight of institutional apparel stock levels.</p>
            </div>
-           <span className="status-badge" style={{ background: '#eff6ff', color: '#1d4ed8', fontWeight: 900, padding: '8px 16px', border: '1px solid #dbeafe' }}>
+           <span className="status-badge portal-status-badge-blue">
               {(Array.isArray(items) ? items : []).length} REGISTERED ARTICLES
            </span>
         </div>
@@ -264,44 +337,50 @@ const ItemsTab = ({ items, onUpdate, canManage, showModal, setShowModal }: any) 
           <table className="management-table">
             <thead>
               <tr>
-                <th style={{ paddingLeft: '32px' }}>Inventory Item</th>
+                <th className="portal-th-pad-left">Inventory Item</th>
                 {canManage && <th>Procurement Price</th>}
                 <th>Standard Retail</th>
                 <th>Availability</th>
-                {canManage && <th style={{ textAlign: 'right', paddingRight: '32px' }}>Management</th>}
+                {canManage && <th className="portal-th-align-right">Management</th>}
               </tr>
             </thead>
             <tbody>
               {(Array.isArray(items) ? items : []).length > 0 ? (Array.isArray(items) ? items : []).map(item => (
                 <tr key={item.id}>
-                  <td style={{ paddingLeft: '32px' }}>
-                    <div style={{ fontWeight: 800, color: '#1e293b' }}>{item.name}</div>
-                    <div style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 600 }}>SKU: {item.id.slice(0, 8).toUpperCase()}</div>
+                  <td className="portal-td-pad-left">
+                    <div className="portal-text-bold-dark">{item.name}</div>
+                    <div className="portal-text-sku">SKU: {item.id.slice(0, 8).toUpperCase()}</div>
                   </td>
-                  {canManage && <td style={{ color: '#64748b', fontWeight: 700 }}>${item.orderPrice.toFixed(2)}</td>}
-                  <td style={{ fontWeight: 900, color: '#2563eb' }}>${item.sellingPrice.toFixed(2)}</td>
+                  {canManage && <td className="portal-text-muted-bold">${item.orderPrice.toFixed(2)}</td>}
+                  <td className="portal-text-price-blue">${item.sellingPrice.toFixed(2)}</td>
                   <td>
                     {item.stockLevel > 0 ? (
-                      <span className="status-badge status-active" style={{ padding: '6px 14px', fontWeight: 900 }}>
+                      <span className="status-badge status-active portal-status-badge-pill">
                         {item.stockLevel} In Stock
                       </span>
                     ) : (
-                      <span className="status-badge status-inactive" style={{ padding: '6px 14px', fontWeight: 900 }}>Out of Stock</span>
+                      <span className="status-badge status-inactive portal-status-badge-pill">Out of Stock</span>
                     )}
                   </td>
                   {canManage && (
-                    <td style={{ textAlign: 'right', paddingRight: '32px' }}>
-                      <div className="action-buttons" style={{ justifyContent: 'flex-end' }}>
-                        <button className="portal-btn-ghost" style={{ padding: '8px', color: '#2563eb' }} onClick={() => handleEdit(item)}><i className="fas fa-pencil-alt"></i></button>
-                        <button className="portal-btn-ghost" style={{ padding: '8px', color: '#dc2626' }} onClick={() => handleDelete(item.id)}><i className="fas fa-trash"></i></button>
+                    <td className="portal-th-align-right">
+                      <div className="action-buttons portal-action-buttons-end">
+                        <button className="portal-btn-ghost portal-btn-icon-blue" title="Edit Item" aria-label="Edit Item" onClick={() => handleEdit(item)}><i className="fas fa-pencil-alt"></i></button>
+                        <button className="portal-btn-ghost portal-btn-icon-red" title="Delete Item" aria-label="Delete Item" onClick={() => handleDelete(item.id)}><i className="fas fa-trash"></i></button>
                       </div>
                     </td>
                   )}
                 </tr>
               )) : (
-                <tr><td colSpan={canManage ? 5 : 3} style={{ textAlign: 'center', padding: '80px', color: '#94a3b8' }}>
-                  <i className="fas fa-box-open" style={{ fontSize: '3.5rem', display: 'block', marginBottom: '24px', opacity: 0.1 }}></i>
-                  <p style={{ fontWeight: 700, fontSize: '1.1rem' }}>Empty catalog detected</p>
+                <tr><td colSpan={canManage ? 5 : 3} className="portal-td-padded-20">
+                  <EmptyState
+                    icon="fas fa-tshirt"
+                    title="No Uniform Items Cataloged Yet"
+                    description="Your school uniform store catalog is empty. Catalog your school blazers, ties, and skirts to begin selling."
+                    actionLabel={canManage ? "Catalog New Item" : undefined}
+                    onAction={canManage ? () => setShowModal(true) : undefined}
+                    setupStageLink={{ step: 7, label: 'Configure Catalog in Setup Wizard' }}
+                  />
                 </td></tr>
               )}
             </tbody>
@@ -311,54 +390,51 @@ const ItemsTab = ({ items, onUpdate, canManage, showModal, setShowModal }: any) 
 
       {showModal && (
         <div className="portal-modal-overlay">
-          <div className="portal-modal-card animate-in zoom-in duration-200" style={{ maxWidth: '560px', padding: 0 }}>
-            <div className="portal-modal-header" style={{ padding: '32px 40px', borderBottom: '1px solid #f1f5f9' }}>
+          <div className="portal-modal-card animate-in zoom-in duration-200 portal-modal-card-560">
+            <div className="portal-modal-header portal-modal-header-padded">
                <div>
-                  <h3 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 900 }}>{editingId ? 'Update Item' : 'Catalog New Item'}</h3>
-                  <p style={{ margin: '4px 0 0 0', color: '#64748b', fontWeight: 700, fontSize: '0.9rem' }}>{editingId ? 'Modify an existing apparel article.' : 'Register a new apparel article into the institutional registry.'}</p>
+                  <h3 className="portal-modal-header-title-lg">{editingId ? 'Update Item' : 'Catalog New Item'}</h3>
+                  <p className="portal-card-subtitle">{editingId ? 'Modify an existing apparel article.' : 'Register a new apparel article into the institutional registry.'}</p>
                </div>
-               <button onClick={() => { setShowModal(false); setEditingId(null); setFormData({ name: '', orderPrice: '', sellingPrice: '' }); }} className="portal-btn-ghost" style={{ padding: '12px' }}><i className="fas fa-times"></i></button>
+               <button title="Close Modal" aria-label="Close Modal" onClick={() => { setShowModal(false); setEditingId(null); setFormData({ name: '', orderPrice: '', sellingPrice: '' }); }} className="portal-btn-ghost portal-modal-close-btn-lg"><i className="fas fa-times"></i></button>
             </div>
             <form onSubmit={handleSubmit}>
-              <div className="portal-modal-body" style={{ padding: '40px' }}>
-                <div className="form-group" style={{ marginBottom: '24px' }}>
+              <div className="portal-modal-body portal-modal-body-padded-40">
+                <div className="form-group portal-form-group-mb24">
                   <label className="portal-label">Canonical Item Name</label>
                   <input 
                     type="text" required
-                    className="portal-input"
+                    className="portal-input portal-input-height-56"
                     value={formData.name}
                     onChange={e => setFormData({...formData, name: e.target.value})}
                     placeholder="e.g. Academy Blazer (Premium Edition)"
-                    style={{ fontWeight: 700, height: '56px' }}
                   />
                 </div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
+                <div className="portal-grid-2-gap24">
                   <div className="form-group">
                     <label className="portal-label">Procurement Cost ($)</label>
                     <input 
                       type="number" required
-                      className="portal-input"
+                      className="portal-input portal-input-height-56"
                       value={formData.orderPrice}
                       onChange={e => setFormData({...formData, orderPrice: e.target.value})}
                       placeholder="0.00"
-                      style={{ fontWeight: 700, height: '56px' }}
                     />
                   </div>
                   <div className="form-group">
                     <label className="portal-label">Standard Retail Price ($)</label>
                     <input 
                       type="number" required
-                      className="portal-input"
+                      className="portal-input portal-input-height-56"
                       value={formData.sellingPrice}
                       onChange={e => setFormData({...formData, sellingPrice: e.target.value})}
                       placeholder="0.00"
-                      style={{ fontWeight: 700, height: '56px' }}
                     />
                   </div>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '16px', marginTop: '32px' }}>
+                <div className="portal-modal-footer-actions-end">
                   <button type="button" onClick={() => { setShowModal(false); setEditingId(null); setFormData({ name: '', orderPrice: '', sellingPrice: '' }); }} className="portal-btn-ghost">Cancel</button>
-                  <button type="submit" className="portal-btn-primary" style={{ padding: '12px 32px' }}>
+                  <button type="submit" className="portal-btn-primary portal-btn-header-lg">
                     <i className="fas fa-save mr-2"></i> {editingId ? 'Update Item' : 'Commit Catalog Registration'}
                   </button>
                 </div>
@@ -371,7 +447,17 @@ const ItemsTab = ({ items, onUpdate, canManage, showModal, setShowModal }: any) 
   );
 };
 
-export const StockTab = ({ items, suppliers, orders, onUpdate, canManage, showModal, setShowModal }: any) => {
+interface StockTabProps {
+  items: UniformItem[];
+  suppliers: Supplier[];
+  orders: StockOrder[];
+  onUpdate: () => void;
+  canManage: boolean;
+  showModal: boolean;
+  setShowModal: (show: boolean) => void;
+}
+
+export const StockTab: React.FC<StockTabProps> = ({ items, suppliers, orders, onUpdate, canManage, showModal, setShowModal }) => {
   const [supplierId, setSupplierId] = useState('');
   const [orderItems, setOrderItems] = useState<{ itemId: string, quantity: number, unitPrice: number }[]>([]);
   const { showToast } = useToast();
@@ -389,21 +475,20 @@ export const StockTab = ({ items, suppliers, orders, onUpdate, canManage, showMo
       setOrderItems([]);
       setShowModal(false);
       onUpdate();
-    } catch (error) {
+    } catch {
       showToast("Failed to finalize institutional stock order", "error");
-    
     }
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+    <div className="portal-flex-col-gap32">
       <div className="management-table-card">
-         <div className="portal-card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '32px', borderBottom: '1px solid #f1f5f9' }}>
+         <div className="portal-card-header portal-card-header-flex-padded">
             <div>
-               <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 900, color: '#1e293b' }}>Procurement History Ledger</h3>
-               <p style={{ margin: '4px 0 0 0', color: '#64748b', fontWeight: 700, fontSize: '0.9rem' }}>Comprehensive audit of institutional apparel procurement.</p>
+               <h3 className="portal-card-title-lg">Procurement History Ledger</h3>
+               <p className="portal-card-subtitle">Comprehensive audit of institutional apparel procurement.</p>
             </div>
-            <span className="status-badge" style={{ background: '#f8fafc', fontWeight: 900, color: '#475569', padding: '8px 16px', border: '1px solid #f1f5f9' }}>
+            <span className="status-badge portal-status-badge-neutral">
               {(Array.isArray(orders) ? orders : []).length} AUTHORIZED ORDERS
             </span>
          </div>
@@ -411,27 +496,27 @@ export const StockTab = ({ items, suppliers, orders, onUpdate, canManage, showMo
           <table className="management-table">
               <thead>
                 <tr>
-                    <th style={{ paddingLeft: '32px' }}>Settlement Date</th>
+                    <th className="portal-th-pad-left">Settlement Date</th>
                     <th>Manifest Summary</th>
                     {canManage && <th>Unit Procurement</th>}
                     <th>Total Settlement</th>
-                    <th style={{ paddingRight: '32px' }}>Associated Supplier</th>
+                    <th className="portal-th-pad-right">Associated Supplier</th>
                 </tr>
               </thead>
               <tbody>
                 {(Array.isArray(orders) ? orders : []).length === 0 ? (
-                    <tr><td colSpan={5} style={{ textAlign: 'center', padding: '80px', color: '#94a3b8' }}>
-                      <i className="fas fa-history" style={{ fontSize: '3.5rem', display: 'block', marginBottom: '24px', opacity: 0.1 }}></i>
-                      <p style={{ fontWeight: 700 }}>No procurement logs recorded</p>
+                    <tr><td colSpan={5} className="portal-td-empty-padded">
+                      <i className="fas fa-history portal-empty-icon-faint"></i>
+                      <p className="portal-text-bold-muted">No procurement logs recorded</p>
                     </td></tr>
                 ) : (Array.isArray(orders) ? orders : []).map(order => (
                     <tr key={order.id}>
-                      <td style={{ paddingLeft: '32px', color: '#64748b', fontWeight: 700 }}>{format(new Date(order.orderDate), 'dd MMM yyyy')}</td>
-                      <td style={{ fontWeight: 800 }}>{order.items[0]?.item.name} {order.items.length > 1 && <span style={{ color: '#94a3b8' }}>(+{order.items.length - 1} more)</span>}</td>
-                      {canManage && <td style={{ color: '#64748b', fontWeight: 700 }}>${order.items[0]?.unitPrice.toFixed(2)}</td>}
-                      <td style={{ fontWeight: 900, color: '#2563eb' }}>${order.totalAmount.toFixed(2)}</td>
-                      <td style={{ paddingRight: '32px' }}>
-                        <span className="status-badge" style={{ background: '#f8fafc', fontWeight: 800, color: '#475569' }}>
+                      <td className="portal-td-date">{format(new Date(order.orderDate), 'dd MMM yyyy')}</td>
+                      <td className="portal-text-bold-dark">{order.items[0]?.item.name} {order.items.length > 1 && <span className="portal-text-more-count">(+{order.items.length - 1} more)</span>}</td>
+                      {canManage && <td className="portal-text-muted-bold">${order.items[0]?.unitPrice.toFixed(2)}</td>}
+                      <td className="portal-text-price-blue">${order.totalAmount.toFixed(2)}</td>
+                      <td className="portal-th-pad-right">
+                        <span className="status-badge portal-status-badge-supplier">
                           {order.supplier?.companyName || 'Internal Restock'}
                         </span>
                       </td>
@@ -444,33 +529,37 @@ export const StockTab = ({ items, suppliers, orders, onUpdate, canManage, showMo
 
       {showModal && (
         <div className="portal-modal-overlay">
-          <div className="portal-modal-card animate-in zoom-in duration-200" style={{ maxWidth: '800px', padding: 0 }}>
-            <div className="portal-modal-header" style={{ padding: '32px 40px', borderBottom: '1px solid #f1f5f9' }}>
+          <div className="portal-modal-card animate-in zoom-in duration-200 portal-modal-card-800">
+            <div className="portal-modal-header portal-modal-header-padded">
                <div>
-                  <h3 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 900 }}>Authorize Restock Manifest</h3>
-                  <p style={{ margin: '4px 0 0 0', color: '#64748b', fontWeight: 700, fontSize: '0.9rem' }}>Execute batch procurement of institutional apparel articles.</p>
+                  <h3 className="portal-modal-header-title-lg">Authorize Restock Manifest</h3>
+                  <p className="portal-card-subtitle">Execute batch procurement of institutional apparel articles.</p>
                </div>
-               <button onClick={() => setShowModal(false)} className="portal-btn-ghost" style={{ padding: '12px' }}><i className="fas fa-times"></i></button>
+               <button title="Close Modal" aria-label="Close Modal" onClick={() => setShowModal(false)} className="portal-btn-ghost portal-modal-close-btn-lg"><i className="fas fa-times"></i></button>
             </div>
-            <div className="portal-modal-body" style={{ padding: '40px' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginBottom: '32px' }}>
+            <div className="portal-modal-body portal-modal-body-padded-40">
+              <div className="portal-grid-2-gap24-mb32">
                  <div className="form-group">
-                    <label className="portal-label">Designated Supplier</label>
+                    <label htmlFor="designated-supplier" className="portal-label">Designated Supplier</label>
                     <select 
+                      id="designated-supplier"
+                      title="Designated Supplier"
+                      aria-label="Designated Supplier"
                       value={supplierId}
                       onChange={e => setSupplierId(e.target.value)}
-                      className="portal-input"
-                      style={{ fontWeight: 700, height: '56px' }}
+                      className="portal-input portal-input-height-56"
                     >
                        <option value="">-- Generic Procurement --</option>
                        {(Array.isArray(suppliers) ? suppliers : []).map((s: Supplier) => <option key={s.id} value={s.id}>{s.companyName}</option>)}
                     </select>
                  </div>
                  <div className="form-group">
-                    <label className="portal-label">Add Item to Manifest</label>
+                    <label htmlFor="add-manifest-item" className="portal-label">Add Item to Manifest</label>
                     <select 
-                      className="portal-input"
-                      style={{ fontWeight: 700, height: '56px' }}
+                      id="add-manifest-item"
+                      title="Add Item to Manifest"
+                      aria-label="Add Item to Manifest"
+                      className="portal-input portal-input-height-56"
                       onChange={(e) => {
                         const item = items.find((i: UniformItem) => i.id === e.target.value);
                         if (item) {
@@ -486,44 +575,43 @@ export const StockTab = ({ items, suppliers, orders, onUpdate, canManage, showMo
               </div>
               
               {(Array.isArray(orderItems) ? orderItems : []).length > 0 ? (
-                <div style={{ border: '1px solid #f1f5f9', borderRadius: '16px', overflow: 'hidden' }}>
-                   <table className="management-table" style={{ margin: 0 }}>
-                      <thead style={{ background: '#f8fafc' }}>
+                <div className="portal-table-card-bordered">
+                   <table className="management-table portal-table-margin-zero">
+                      <thead className="portal-thead-bg-light">
                          <tr>
-                            <th style={{ paddingLeft: '24px' }}>Manifest Item</th>
-                            <th style={{ textAlign: 'center' }}>Quantity</th>
-                            <th style={{ textAlign: 'center' }}>Unit Price</th>
-                            <th style={{ textAlign: 'right', paddingRight: '24px' }}>Sub-Total</th>
+                            <th className="portal-th-pad-24">Manifest Item</th>
+                            <th className="portal-th-center">Quantity</th>
+                            <th className="portal-th-center">Unit Price</th>
+                            <th className="portal-th-right-24">Sub-Total</th>
                          </tr>
                       </thead>
                       <tbody>
                          {(Array.isArray(orderItems) ? orderItems : []).map((oi, idx) => (
                            <tr key={idx}>
-                              <td style={{ paddingLeft: '24px' }}>
-                                <div style={{ fontWeight: 800 }}>{items.find((i: UniformItem) => i.id === oi.itemId)?.name}</div>
+                              <td className="portal-th-pad-24">
+                                <div className="portal-text-bold-dark">{items.find((i: UniformItem) => i.id === oi.itemId)?.name}</div>
                               </td>
-                              <td style={{ textAlign: 'center' }}>
+                              <td className="portal-th-center">
                                 <input 
-                                  type="number" 
+                                  title="Item Quantity" placeholder="Qty" aria-label="Item Quantity" type="number" 
                                   value={oi.quantity} 
                                   onChange={e => {
                                     const newItems = [...orderItems];
                                     newItems[idx].quantity = parseInt(e.target.value) || 0;
                                     setOrderItems(newItems);
                                   }}
-                                  className="portal-input"
-                                  style={{ width: '80px', height: '40px', textAlign: 'center', fontWeight: 800 }} 
+                                  className="portal-input portal-input-qty-center"
                                 />
                               </td>
-                              <td style={{ textAlign: 'center', fontWeight: 700, color: '#64748b' }}>${oi.unitPrice.toFixed(2)}</td>
-                              <td style={{ textAlign: 'right', paddingRight: '24px', fontWeight: 900, color: '#2563eb' }}>${(oi.quantity * oi.unitPrice).toFixed(2)}</td>
+                              <td className="portal-td-center-muted">${oi.unitPrice.toFixed(2)}</td>
+                              <td className="portal-td-right-blue">${(oi.quantity * oi.unitPrice).toFixed(2)}</td>
                            </tr>
                          ))}
                       </tbody>
-                      <tfoot style={{ background: '#f8fafc' }}>
+                      <tfoot className="portal-tfoot-bg-light">
                          <tr>
-                            <td colSpan={3} style={{ textAlign: 'right', padding: '20px', fontWeight: 800, color: '#64748b' }}>MANIFEST TOTAL SETTLEMENT:</td>
-                            <td style={{ textAlign: 'right', padding: '20px 24px', fontWeight: 900, fontSize: '1.2rem', color: '#1e293b' }}>
+                            <td colSpan={3} className="portal-tfoot-label">MANIFEST TOTAL SETTLEMENT:</td>
+                            <td className="portal-tfoot-total-amount">
                                ${orderItems.reduce((acc, curr) => acc + (curr.quantity * curr.unitPrice), 0).toFixed(2)}
                             </td>
                          </tr>
@@ -531,21 +619,20 @@ export const StockTab = ({ items, suppliers, orders, onUpdate, canManage, showMo
                    </table>
                 </div>
               ) : (
-                <div style={{ padding: '60px', textAlign: 'center', background: '#f8fafc', borderRadius: '16px', border: '2px dashed #e2e8f0' }}>
-                   <i className="fas fa-clipboard-list" style={{ fontSize: '3rem', color: '#cbd5e1', marginBottom: '16px', display: 'block' }}></i>
-                   <p style={{ margin: 0, fontWeight: 700, color: '#94a3b8' }}>Manifest is currently empty. Select items to authorize procurement.</p>
+                <div className="portal-empty-dashed-box">
+                   <i className="fas fa-clipboard-list portal-empty-icon-faint-lg"></i>
+                   <p className="portal-empty-text-dashed">Manifest is currently empty. Select items to authorize procurement.</p>
                 </div>
               )}
             </div>
-            <div className="portal-modal-footer" style={{ padding: '32px 40px', background: '#f8fafc', borderTop: '1px solid #f1f5f9' }}>
-               <button onClick={() => setShowModal(false)} className="portal-btn-ghost" style={{ padding: '14px 32px', fontWeight: 800 }}>Abort Manifest</button>
+            <div className="portal-modal-footer portal-modal-footer-padded">
+               <button onClick={() => setShowModal(false)} className="portal-btn-ghost portal-btn-ghost-lg">Abort Manifest</button>
                <button 
                 onClick={handleSaveOrder}
                 disabled={orderItems.length === 0}
-                className="portal-btn-primary"
-                style={{ padding: '14px 40px', fontWeight: 900, background: '#059669' }}
+                className="portal-btn-primary portal-btn-emerald-lg"
                >
-                <i className="fas fa-check-circle mr-2"></i>Authorize Procurement
+                <i className="fas fa-check-circle mr-2"></i>Authorize Order Manifest
                </button>
             </div>
           </div>
@@ -555,7 +642,16 @@ export const StockTab = ({ items, suppliers, orders, onUpdate, canManage, showMo
   );
 };
 
-const SalesTab = ({ items, sales, onUpdate, canManage, showModal, setShowModal }: any) => {
+interface SalesTabProps {
+  items: UniformItem[];
+  sales: Sale[];
+  onUpdate: () => void;
+  canManage: boolean;
+  showModal: boolean;
+  setShowModal: (show: boolean) => void;
+}
+
+const SalesTab: React.FC<SalesTabProps> = ({ items, sales, onUpdate, canManage, showModal, setShowModal }) => {
   const [studentId, setStudentId] = useState('');
   const [selectedItems, setSelectedItems] = useState<{ itemId: string, quantity: number, unitPrice: number }[]>([]);
   const { showToast } = useToast();
@@ -574,21 +670,21 @@ const SalesTab = ({ items, sales, onUpdate, canManage, showModal, setShowModal }
       setSelectedItems([]);
       setShowModal(false);
       onUpdate();
-    } catch (error: any) {
+    } catch (err) {
+      const error = err as { response?: { data?: { error?: string } } };
       showToast(error.response?.data?.error || "Failed to secure distribution record", "error");
-    
     }
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+    <div className="portal-flex-col-gap32">
       <div className="management-table-card">
-         <div className="portal-card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '32px', borderBottom: '1px solid #f1f5f9' }}>
+         <div className="portal-card-header portal-card-header-flex-padded">
             <div>
-               <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 900, color: '#1e293b' }}>Institutional Distribution Ledger</h3>
-               <p style={{ margin: '4px 0 0 0', color: '#64748b', fontWeight: 700, fontSize: '0.9rem' }}>Comprehensive audit of uniform sales and distributions.</p>
+               <h3 className="portal-card-title-lg">Institutional Distribution Ledger</h3>
+               <p className="portal-card-subtitle">Comprehensive audit of uniform sales and distributions.</p>
             </div>
-            <span className="status-badge" style={{ background: '#fff7ed', fontWeight: 900, color: '#c2410c', padding: '8px 16px', border: '1px solid #ffedd5' }}>
+            <span className="status-badge portal-status-badge-amber">
               {(Array.isArray(sales) ? sales : []).length} COMPLETED TRANSACTIONS
             </span>
          </div>
@@ -596,27 +692,27 @@ const SalesTab = ({ items, sales, onUpdate, canManage, showModal, setShowModal }
           <table className="management-table">
             <thead>
               <tr>
-                <th style={{ paddingLeft: '32px' }}>Temporal Log</th>
+                <th className="portal-th-pad-left">Temporal Log</th>
                 <th>Beneficiary Entity</th>
                 <th>Transaction Volume</th>
-                <th style={{ textAlign: 'right', paddingRight: '32px' }}>Settlement Total</th>
+                <th className="portal-th-align-right">Settlement Total</th>
               </tr>
             </thead>
             <tbody>
               {(Array.isArray(sales) ? sales : []).length === 0 ? (
-                <tr><td colSpan={4} style={{ textAlign: 'center', padding: '80px', color: '#94a3b8' }}>
-                  <i className="fas fa-shopping-cart" style={{ fontSize: '3.5rem', display: 'block', marginBottom: '24px', opacity: 0.1 }}></i>
-                  <p style={{ fontWeight: 700 }}>No distribution records identified</p>
+                <tr><td colSpan={4} className="portal-td-empty-padded">
+                  <i className="fas fa-shopping-cart portal-empty-icon-faint"></i>
+                  <p className="portal-text-bold-muted">No distribution records identified</p>
                 </td></tr>
               ) : (Array.isArray(sales) ? sales : []).map(sale => (
                 <tr key={sale.id}>
-                  <td style={{ paddingLeft: '32px' }}>
-                    <div style={{ fontWeight: 800, color: '#1e293b' }}>{format(new Date(sale.saleDate), 'dd MMM yyyy')}</div>
-                    <div style={{ fontSize: '0.7rem', color: '#94a3b8', fontWeight: 600 }}>ID: {sale.id.slice(0, 8).toUpperCase()}</div>
+                  <td className="portal-td-pad-left">
+                    <div className="portal-text-bold-dark">{format(new Date(sale.saleDate), 'dd MMM yyyy')}</div>
+                    <div className="portal-text-id-sm">ID: {sale.id.slice(0, 8).toUpperCase()}</div>
                   </td>
-                  <td style={{ fontWeight: 800 }}>{sale.student?.name || 'Walk-in Beneficiary'}</td>
-                  <td style={{ fontWeight: 700, color: '#64748b' }}>Processed Order</td>
-                  <td style={{ textAlign: 'right', paddingRight: '32px', fontWeight: 900, color: '#2563eb' }}>${sale.totalAmount.toFixed(2)}</td>
+                  <td className="portal-text-bold-dark">{sale.student?.name || 'Walk-in Beneficiary'}</td>
+                  <td className="portal-text-muted-bold">Processed Order</td>
+                  <td className="portal-td-right-blue-padded">${sale.totalAmount.toFixed(2)}</td>
                 </tr>
               ))}
             </tbody>
@@ -626,16 +722,16 @@ const SalesTab = ({ items, sales, onUpdate, canManage, showModal, setShowModal }
 
       {showModal && (
         <div className="portal-modal-overlay">
-          <div className="portal-modal-card animate-in zoom-in duration-200" style={{ maxWidth: '800px', padding: 0 }}>
-            <div className="portal-modal-header" style={{ padding: '32px 40px', borderBottom: '1px solid #f1f5f9' }}>
+          <div className="portal-modal-card animate-in zoom-in duration-200 portal-modal-card-800">
+            <div className="portal-modal-header portal-modal-header-padded">
                <div>
-                  <h3 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 900 }}>Secure Distribution Entry</h3>
-                  <p style={{ margin: '4px 0 0 0', color: '#64748b', fontWeight: 700, fontSize: '0.9rem' }}>Log and authorize the distribution of apparel articles.</p>
+                  <h3 className="portal-modal-header-title-lg">Secure Distribution Entry</h3>
+                  <p className="portal-card-subtitle">Log and authorize the distribution of apparel articles.</p>
                </div>
-               <button onClick={() => setShowModal(false)} className="portal-btn-ghost" style={{ padding: '12px' }}><i className="fas fa-times"></i></button>
+               <button title="Close Modal" aria-label="Close Modal" onClick={() => setShowModal(false)} className="portal-btn-ghost portal-modal-close-btn-lg"><i className="fas fa-times"></i></button>
             </div>
-            <div className="portal-modal-body" style={{ padding: '40px' }}>
-               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginBottom: '32px' }}>
+            <div className="portal-modal-body portal-modal-body-padded-40">
+               <div className="portal-grid-2-gap24-mb32">
                   <div className="form-group">
                     <label className="portal-label">Entity Beneficiary (Optional)</label>
                     <input 
@@ -643,15 +739,16 @@ const SalesTab = ({ items, sales, onUpdate, canManage, showModal, setShowModal }
                         placeholder="Search student identifier..." 
                         value={studentId}
                         onChange={e => setStudentId(e.target.value)}
-                        className="portal-input" 
-                        style={{ fontWeight: 700, height: '56px' }}
+                        className="portal-input portal-input-height-56" 
                     />
                   </div>
                   <div className="form-group">
-                    <label className="portal-label">Add Distribution Item</label>
+                    <label htmlFor="add-distribution-item" className="portal-label">Add Distribution Item</label>
                     <select 
-                        className="portal-input"
-                        style={{ fontWeight: 700, height: '56px' }}
+                        id="add-distribution-item"
+                        title="Add Distribution Item"
+                        aria-label="Add Distribution Item"
+                        className="portal-input portal-input-height-56"
                         onChange={(e) => {
                           const item = items.find((i: UniformItem) => i.id === e.target.value);
                           if (item) {
@@ -667,40 +764,39 @@ const SalesTab = ({ items, sales, onUpdate, canManage, showModal, setShowModal }
                </div>
 
                {(Array.isArray(selectedItems) ? selectedItems : []).length > 0 ? (
-                <div style={{ border: '1px solid #f1f5f9', borderRadius: '16px', overflow: 'hidden' }}>
-                    <table className="management-table" style={{ margin: 0 }}>
-                      <thead style={{ background: '#f8fafc' }}>
+                <div className="portal-table-card-bordered">
+                    <table className="management-table portal-table-margin-zero">
+                      <thead className="portal-thead-bg-light">
                           <tr>
-                            <th style={{ paddingLeft: '24px' }}>Inventory Item</th>
-                            <th style={{ textAlign: 'center' }}>Units</th>
-                            <th style={{ textAlign: 'right', paddingRight: '24px' }}>Distribution Total</th>
+                            <th className="portal-th-pad-24">Inventory Item</th>
+                            <th className="portal-th-center">Units</th>
+                            <th className="portal-th-right-24">Distribution Total</th>
                           </tr>
                       </thead>
                       <tbody>
                           {(Array.isArray(selectedItems) ? selectedItems : []).map((si, idx) => (
                             <tr key={idx}>
-                                <td style={{ paddingLeft: '24px', fontWeight: 800 }}>{items.find((i: UniformItem) => i.id === si.itemId)?.name}</td>
-                                <td style={{ textAlign: 'center' }}>
+                                <td className="portal-td-pad24-bold">{items.find((i: UniformItem) => i.id === si.itemId)?.name}</td>
+                                <td className="portal-th-center">
                                     <input 
-                                      type="number" 
+                                      title="Distribution Quantity" placeholder="Qty" aria-label="Distribution Quantity" type="number" 
                                       value={si.quantity}
                                       onChange={e => {
                                         const newItems = [...selectedItems];
                                         newItems[idx].quantity = parseInt(e.target.value) || 0;
                                         setSelectedItems(newItems);
                                       }}
-                                      className="portal-input"
-                                      style={{ width: '80px', height: '40px', textAlign: 'center', fontWeight: 800 }}
+                                      className="portal-input portal-input-qty-center"
                                     />
                                 </td>
-                                <td style={{ textAlign: 'right', paddingRight: '24px', fontWeight: 900, color: '#2563eb' }}>${(si.quantity * si.unitPrice).toFixed(2)}</td>
+                                <td className="portal-td-right-blue">${(si.quantity * si.unitPrice).toFixed(2)}</td>
                             </tr>
                           ))}
                       </tbody>
-                      <tfoot style={{ background: '#f8fafc' }}>
+                      <tfoot className="portal-tfoot-bg-light">
                          <tr>
-                            <td colSpan={2} style={{ textAlign: 'right', padding: '20px', fontWeight: 800, color: '#64748b' }}>TRANSACTION TOTAL:</td>
-                            <td style={{ textAlign: 'right', padding: '20px 24px', fontWeight: 900, fontSize: '1.2rem', color: '#1e293b' }}>
+                            <td colSpan={2} className="portal-tfoot-label">TRANSACTION TOTAL:</td>
+                            <td className="portal-tfoot-total-amount">
                                ${selectedItems.reduce((acc, curr) => acc + (curr.quantity * curr.unitPrice), 0).toFixed(2)}
                             </td>
                          </tr>
@@ -708,19 +804,18 @@ const SalesTab = ({ items, sales, onUpdate, canManage, showModal, setShowModal }
                     </table>
                 </div>
                ) : (
-                <div style={{ padding: '60px', textAlign: 'center', background: '#f8fafc', borderRadius: '16px', border: '2px dashed #e2e8f0' }}>
-                   <i className="fas fa-cart-plus" style={{ fontSize: '3rem', color: '#cbd5e1', marginBottom: '16px', display: 'block' }}></i>
-                   <p style={{ margin: 0, fontWeight: 700, color: '#94a3b8' }}>Cart is currently empty. Add items to authorize distribution.</p>
+                <div className="portal-empty-dashed-box">
+                   <i className="fas fa-cart-plus portal-empty-icon-faint-lg"></i>
+                   <p className="portal-empty-text-dashed">Cart is currently empty. Add items to authorize distribution.</p>
                 </div>
                )}
             </div>
-            <div className="portal-modal-footer" style={{ padding: '32px 40px', background: '#f8fafc', borderTop: '1px solid #f1f5f9' }}>
-               <button onClick={() => setShowModal(false)} className="portal-btn-ghost" style={{ padding: '14px 32px', fontWeight: 800 }}>Abort Transaction</button>
+            <div className="portal-modal-footer portal-modal-footer-padded">
+               <button onClick={() => setShowModal(false)} className="portal-btn-ghost portal-btn-ghost-lg">Abort Transaction</button>
                <button 
                 onClick={handleSaveSale}
                 disabled={selectedItems.length === 0}
-                className="portal-btn-primary"
-                style={{ padding: '14px 40px', fontWeight: 900, background: '#f59e0b' }}
+                className="portal-btn-primary portal-btn-amber-lg"
                >
                 <i className="fas fa-check-circle mr-2"></i>Authorize Distribution
                </button>
@@ -732,13 +827,13 @@ const SalesTab = ({ items, sales, onUpdate, canManage, showModal, setShowModal }
   );
 };
 
-export const SuppliersTab = ({ suppliers, onUpdate, canManage }: { suppliers: any[], onUpdate: () => void, canManage: boolean }) => {
+export const SuppliersTab: React.FC<{ suppliers: Supplier[], onUpdate: () => void, canManage: boolean }> = ({ suppliers, onUpdate, canManage }) => {
    const [formData, setFormData] = useState({ companyName: '', contactName: '', phone: '' });
-   const [selectedSupplierForDetail, setSelectedSupplierForDetail] = useState<any>(null);
+   const [selectedSupplierForDetail, setSelectedSupplierForDetail] = useState<Supplier | null>(null);
    const [isDetailOpen, setIsDetailOpen] = useState(false);
    
-   const [editingVendor, setEditingVendor] = useState<any>(null);
-   const [deletingVendor, setDeletingVendor] = useState<any>(null);
+   const [editingVendor, setEditingVendor] = useState<Supplier | null>(null);
+   const [deletingVendor, setDeletingVendor] = useState<Supplier | null>(null);
    
    const { showToast } = useToast();
 
@@ -749,13 +844,12 @@ export const SuppliersTab = ({ suppliers, onUpdate, canManage }: { suppliers: an
          showToast("Vendor credentials cataloged and archived", "success");
          setFormData({ companyName: '', contactName: '', phone: '' });
          onUpdate();
-      } catch (error) {
+      } catch {
          showToast("Failed to catalog institutional vendor", "error");
-      
-    }
+      }
    };
 
-   const openProfileDetail = (supp: any) => {
+   const openProfileDetail = (supp: Supplier) => {
       const normalized = {
          ...supp,
          name: supp.contactName || supp.name,
@@ -778,21 +872,20 @@ export const SuppliersTab = ({ suppliers, onUpdate, canManage }: { suppliers: an
    };
 
    return (
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+      <div className="portal-flex-col-gap32">
          {canManage && (
             <div className="portal-card">
-               <div className="portal-card-header" style={{ marginBottom: '32px' }}>
-                  <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800 }}><i className="fas fa-truck mr-3" style={{ color: '#2563eb' }}></i>Vendor Registry</h3>
+               <div className="portal-card-header portal-card-header-mb32">
+                  <h3 className="portal-card-title-md"><i className="fas fa-truck mr-3 portal-icon-blue"></i>Vendor Registry</h3>
                </div>
-               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '24px', alignItems: 'flex-end' }}>
+               <div className="portal-grid-autofit-200-gap24">
                   <div className="form-group">
                     <label className="portal-label">Entity Name</label>
                     <input 
                         type="text" 
                         value={formData.companyName}
                         onChange={e => setFormData({ ...formData, companyName: e.target.value })}
-                        className="portal-input" 
-                        style={{ fontWeight: 700 }}
+                        className="portal-input portal-input-bold" 
                         placeholder="e.g. Apex Textiles Ltd"
                     />
                   </div>
@@ -802,8 +895,7 @@ export const SuppliersTab = ({ suppliers, onUpdate, canManage }: { suppliers: an
                         type="text" 
                         value={formData.contactName}
                         onChange={e => setFormData({ ...formData, contactName: e.target.value })}
-                        className="portal-input" 
-                        style={{ fontWeight: 700 }}
+                        className="portal-input portal-input-bold" 
                         placeholder="Primary contact"
                     />
                   </div>
@@ -813,15 +905,13 @@ export const SuppliersTab = ({ suppliers, onUpdate, canManage }: { suppliers: an
                         type="text" 
                         value={formData.phone}
                         onChange={e => setFormData({ ...formData, phone: e.target.value })}
-                        className="portal-input" 
-                        style={{ fontWeight: 700 }}
+                        className="portal-input portal-input-bold" 
                         placeholder="+263..."
                     />
                   </div>
                   <button 
                     onClick={handleSave}
-                    className="portal-btn-primary"
-                    style={{ fontWeight: 900, padding: '14px' }}
+                    className="portal-btn-primary portal-btn-padded-14"
                   >
                     <i className="fas fa-user-plus mr-2"></i>Catalog Vendor
                   </button>
@@ -837,36 +927,36 @@ export const SuppliersTab = ({ suppliers, onUpdate, canManage }: { suppliers: an
                       <th>Vendor Entity</th>
                       <th>Liaison Agent</th>
                       <th>Direct Channel</th>
-                      <th style={{ textAlign: 'right' }}>Actions</th>
+                      <th className="portal-th-align-right">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {(Array.isArray(suppliers) ? suppliers : []).length > 0 ? (Array.isArray(suppliers) ? suppliers : []).map((supp: any) => (
+                    {(Array.isArray(suppliers) ? suppliers : []).length > 0 ? (Array.isArray(suppliers) ? suppliers : []).map((supp: Supplier) => (
                       <tr key={supp.id}>
                           <td>
-                            <div style={{ fontWeight: 800 }}>{supp.companyName}</div>
-                            <div style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 600 }}>ID: {supp.id.slice(0, 8).toUpperCase()}</div>
+                            <div className="portal-text-bold-dark">{supp.companyName}</div>
+                            <div className="portal-text-sku">ID: {supp.id.slice(0, 8).toUpperCase()}</div>
                           </td>
-                          <td style={{ fontWeight: 700 }}>{supp.contactName || '-'}</td>
-                          <td style={{ fontWeight: 800, color: '#2563eb' }}>{supp.phone || '-'}</td>
-                          <td style={{ textAlign: 'right' }}>
-                              <div className="action-buttons" style={{ justifyContent: 'flex-end' }}>
-                                <button className="portal-btn-ghost" title="View Profile" style={{ padding: '8px', color: '#4a5568' }} onClick={() => openProfileDetail(supp)}>
+                          <td className="portal-text-muted-bold">{supp.contactName || '-'}</td>
+                          <td className="portal-text-price-blue">{supp.phone || '-'}</td>
+                          <td className="portal-th-align-right">
+                              <div className="action-buttons portal-action-buttons-end">
+                                <button className="portal-btn-ghost portal-btn-icon-slate" title="View Profile" aria-label="View Profile" onClick={() => openProfileDetail(supp)}>
                                   <i className="fas fa-eye"></i>
                                 </button>
                                 {canManage && (
                                   <>
-                                    <button className="portal-btn-ghost" style={{ padding: '8px', color: '#2563eb' }} onClick={() => setEditingVendor(supp)}><i className="fas fa-pencil-alt"></i></button>
-                                    <button className="portal-btn-ghost" style={{ padding: '8px', color: '#dc2626' }} onClick={() => setDeletingVendor(supp)}><i className="fas fa-trash"></i></button>
+                                    <button className="portal-btn-ghost portal-btn-icon-blue" title="Edit Vendor" aria-label="Edit Vendor" onClick={() => setEditingVendor(supp)}><i className="fas fa-pencil-alt"></i></button>
+                                    <button className="portal-btn-ghost portal-btn-icon-red" title="Delete Vendor" aria-label="Delete Vendor" onClick={() => setDeletingVendor(supp)}><i className="fas fa-trash"></i></button>
                                   </>
                                 )}
                               </div>
                           </td>
                       </tr>
                     )) : (
-                      <tr><td colSpan={canManage ? 4 : 3} style={{ textAlign: 'center', padding: '80px', color: '#94a3b8' }}>
-                        <i className="fas fa-address-book" style={{ fontSize: '3.5rem', display: 'block', marginBottom: '24px', opacity: 0.1 }}></i>
-                        <p style={{ fontWeight: 700 }}>Vendor registry is empty</p>
+                      <tr><td colSpan={canManage ? 4 : 3} className="portal-td-empty-padded">
+                        <i className="fas fa-address-book portal-empty-icon-faint"></i>
+                        <p className="portal-text-bold-muted">Vendor registry is empty</p>
                       </td></tr>
                     )}
                 </tbody>
@@ -878,10 +968,10 @@ export const SuppliersTab = ({ suppliers, onUpdate, canManage }: { suppliers: an
             <ManagementDetailPanel
                isOpen={isDetailOpen}
                onClose={() => setIsDetailOpen(false)}
-               title={selectedSupplierForDetail.metadata?.companyName || selectedSupplierForDetail.name}
+               title={selectedSupplierForDetail.metadata?.companyName || selectedSupplierForDetail.name || 'Vendor'}
                subTitle={`Local ID: ${selectedSupplierForDetail.id.slice(0, 8).toUpperCase()} | Global: ${selectedSupplierForDetail.globalId || 'N/A'}`}
                role="Supplier"
-               avatarText={(selectedSupplierForDetail.metadata?.companyName || selectedSupplierForDetail.name).charAt(0)}
+               avatarText={(selectedSupplierForDetail.metadata?.companyName || selectedSupplierForDetail.name || 'V').charAt(0)}
                sections={[
                  {
                    title: "Business Profile",
@@ -897,7 +987,7 @@ export const SuppliersTab = ({ suppliers, onUpdate, canManage }: { suppliers: an
                      { 
                        label: "Business Categories", 
                        value: selectedSupplierForDetail.metadata?.selectedCategories && selectedSupplierForDetail.metadata.selectedCategories.length > 0
-                         ? selectedSupplierForDetail.metadata.selectedCategories.map((c: any) => `${c.code}: ${c.name} (${c.section})`).join(', ')
+                         ? selectedSupplierForDetail.metadata.selectedCategories.map((c: { code?: string; name?: string; section?: string }) => `${c.code}: ${c.name} (${c.section})`).join(', ')
                          : selectedSupplierForDetail.metadata?.category || 'N/A' 
                      },
                      { label: "Specialization", value: selectedSupplierForDetail.metadata?.specialization || 'N/A' },
@@ -946,7 +1036,7 @@ export const SuppliersTab = ({ suppliers, onUpdate, canManage }: { suppliers: an
                  {
                    title: "Bank Details",
                    fields: (selectedSupplierForDetail.metadata?.bankAccounts && selectedSupplierForDetail.metadata.bankAccounts.length > 0)
-                     ? selectedSupplierForDetail.metadata.bankAccounts.map((acc: any, index: number) => ({
+                     ? selectedSupplierForDetail.metadata.bankAccounts.map((acc: { accountType?: string; bankName?: string; bankBranch?: string; branchCode?: string; accountName?: string; accountNumber?: string }, index: number) => ({
                          label: `${acc.accountType || 'Bank'} Account #${index + 1}`,
                          value: `${acc.bankName} (Branch: ${acc.bankBranch}, Code: ${acc.branchCode}) \nName: ${acc.accountName} \nNo: ${acc.accountNumber}`
                        }))
@@ -987,23 +1077,23 @@ export const SuppliersTab = ({ suppliers, onUpdate, canManage }: { suppliers: an
             <div className="portal-modal-overlay">
                <div className="portal-modal">
                   <div className="portal-modal-header">
-                     <h3 style={{ margin: 0 }}>Edit Vendor Registry</h3>
-                     <button className="portal-btn-ghost" style={{ padding: '4px 8px' }} onClick={() => setEditingVendor(null)}>
+                     <h3 className="portal-modal-title-zero">Edit Vendor Registry</h3>
+                     <button className="portal-btn-ghost portal-btn-close-sm" title="Close Modal" aria-label="Close Modal" onClick={() => setEditingVendor(null)}>
                         <i className="fas fa-times"></i>
                      </button>
                   </div>
-                  <div className="portal-modal-body" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  <div className="portal-modal-body portal-flex-col-gap16">
                      <div className="form-group">
                         <label className="portal-label">Entity Name</label>
-                        <input type="text" className="portal-input" defaultValue={editingVendor.companyName} />
+                        <input type="text" className="portal-input" id="edit-vendor-entity-name" title="Entity Name" placeholder="Entity Name" defaultValue={editingVendor.companyName} />
                      </div>
                      <div className="form-group">
                         <label className="portal-label">Liaison Name</label>
-                        <input type="text" className="portal-input" defaultValue={editingVendor.contactName} />
+                        <input type="text" className="portal-input" id="edit-vendor-liaison-name" title="Liaison Name" placeholder="Liaison Name" defaultValue={editingVendor.contactName} />
                      </div>
                      <div className="form-group">
                         <label className="portal-label">Contact Number</label>
-                        <input type="text" className="portal-input" defaultValue={editingVendor.phone} />
+                        <input type="text" className="portal-input" id="edit-vendor-contact-number" title="Contact Number" placeholder="Contact Number" defaultValue={editingVendor.phone} />
                      </div>
                   </div>
                   <div className="portal-modal-footer">
@@ -1019,18 +1109,18 @@ export const SuppliersTab = ({ suppliers, onUpdate, canManage }: { suppliers: an
 
          {deletingVendor && (
             <div className="portal-modal-overlay">
-               <div className="portal-modal" style={{ maxWidth: '400px' }}>
-                  <div className="portal-modal-header" style={{ borderBottom: 'none', paddingBottom: 0 }}>
-                     <h3 style={{ margin: 0, color: 'var(--portal-danger)' }}>Admin Approval Required</h3>
+               <div className="portal-modal portal-modal-card-400">
+                  <div className="portal-modal-header portal-modal-header-noborder">
+                     <h3 className="portal-text-danger-title">Admin Approval Required</h3>
                   </div>
-                  <div className="portal-modal-body" style={{ textAlign: 'center', paddingTop: 10 }}>
-                     <i className="fas fa-exclamation-circle" style={{ fontSize: '3rem', color: 'var(--portal-danger)', marginBottom: '16px' }}></i>
+                  <div className="portal-modal-body portal-modal-body-centered">
+                     <i className="fas fa-exclamation-circle portal-danger-icon-lg"></i>
                      <p>You are about to delete vendor <strong>{deletingVendor.companyName}</strong>. This requires administrator verification.</p>
-                     <input type="password" placeholder="Enter admin PIN" className="portal-input" style={{ textAlign: 'center', letterSpacing: '8px', fontSize: '1.2rem', marginTop: 10 }} />
+                     <input type="password" id="admin-pin-auth" title="Admin Verification PIN" aria-label="Admin Verification PIN" placeholder="Enter admin PIN" className="portal-input portal-pin-input-centered" />
                   </div>
-                  <div className="portal-modal-footer" style={{ justifyContent: 'center' }}>
+                  <div className="portal-modal-footer portal-footer-justify-center">
                      <button className="portal-btn-secondary" onClick={() => setDeletingVendor(null)}>Cancel</button>
-                     <button className="portal-btn-primary" style={{ background: 'var(--portal-danger)' }} onClick={() => { 
+                     <button className="portal-btn-primary portal-btn-danger-bg" onClick={() => { 
                         setDeletingVendor(null); 
                         showToast('Vendor deleted successfully', 'success');
                      }}>Authorize Deletion</button>
@@ -1044,10 +1134,10 @@ export const SuppliersTab = ({ suppliers, onUpdate, canManage }: { suppliers: an
 
 const PaymentsTab = ({ suppliers, canManage }: { suppliers: Supplier[], canManage: boolean }) => {
    const { showToast } = useToast();
-   const [settleVendor, setSettleVendor] = useState<any>(null);
+   const [settleVendor, setSettleVendor] = useState<Supplier | null>(null);
    const [amount, setAmount] = useState('');
    const [paymentMode, setPaymentMode] = useState('');
-   const [paymentMethods, setPaymentMethods] = useState<any[]>([]);
+   const [paymentMethods, setPaymentMethods] = useState<{ id: string; name: string }[]>([]);
    const [submitting, setSubmitting] = useState(false);
 
    useEffect(() => {
@@ -1075,8 +1165,9 @@ const PaymentsTab = ({ suppliers, canManage }: { suppliers: Supplier[], canManag
        setSettleVendor(null);
        setAmount('');
        invalidateAllAccountingKeys();
-     } catch (err: any) {
-       showToast(err.response?.data?.error || 'Failed to post settlement', 'error');
+     } catch (err) {
+       const error = err as { response?: { data?: { error?: string } } };
+       showToast(error.response?.data?.error || 'Failed to post settlement', 'error');
      } finally {
        setSubmitting(false);
      }
@@ -1100,12 +1191,12 @@ const PaymentsTab = ({ suppliers, canManage }: { suppliers: Supplier[], canManag
    };
 
    return (
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+      <div className="portal-flex-col-gap32">
          <div className="portal-card">
-            <div className="portal-card-header" style={{ marginBottom: '16px' }}>
-               <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800 }}><i className="fas fa-wallet mr-3" style={{ color: '#059669' }}></i>Financial Settlements</h3>
+            <div className="portal-card-header portal-card-header-mb16">
+               <h3 className="portal-card-title-md"><i className="fas fa-wallet mr-3 portal-icon-emerald"></i>Financial Settlements</h3>
             </div>
-            <p style={{ color: '#64748b', fontSize: '1rem', fontWeight: 600, margin: 0 }}>Monitor vendor procurement balances and settle outstanding financial obligations into the general ledger.</p>
+            <p className="portal-card-desc">Monitor vendor procurement balances and settle outstanding financial obligations into the general ledger.</p>
          </div>
 
          <div className="management-table-card">
@@ -1117,31 +1208,31 @@ const PaymentsTab = ({ suppliers, canManage }: { suppliers: Supplier[], canManag
                       <th>Gross Liabilities</th>
                       <th>Settled Amounts</th>
                       <th>Outstanding Balance</th>
-                      {canManage && <th style={{ textAlign: 'right' }}>Settle Liability</th>}
+                      {canManage && <th className="portal-th-align-right">Settle Liability</th>}
                     </tr>
                 </thead>
                 <tbody>
                     {(Array.isArray(suppliers) ? suppliers : []).length > 0 ? (Array.isArray(suppliers) ? suppliers : []).map((supp: Supplier) => (
                       <tr key={supp.id}>
-                          <td style={{ fontWeight: 800 }}>{supp.companyName}</td>
-                          <td style={{ fontWeight: 900, color: '#1e293b' }}>$10,613.00</td>
-                          <td style={{ fontWeight: 900, color: '#059669' }}>$3,754.00</td>
-                          <td style={{ fontWeight: 900, color: '#dc2626' }}>$6,859.00</td>
+                          <td className="portal-text-bold-dark">{supp.companyName}</td>
+                          <td className="portal-text-heavy-dark">$10,613.00</td>
+                          <td className="portal-text-heavy-emerald">$3,754.00</td>
+                          <td className="portal-text-heavy-red">$6,859.00</td>
                           {canManage && (
-                            <td style={{ textAlign: 'right' }}>
-                                <div className="action-buttons" style={{ justifyContent: 'flex-end' }}>
-                                  <button className="portal-btn-primary" title="Initiate Settlement" style={{ background: '#dcfce7', color: '#059669', border: '1px solid #bbf7d0', padding: '8px 16px', borderRadius: '10px' }} onClick={() => setSettleVendor(supp)}>
+                            <td className="portal-th-align-right">
+                                <div className="action-buttons portal-action-buttons-end">
+                                  <button className="portal-btn-primary portal-btn-emerald-pill" title="Initiate Settlement" onClick={() => setSettleVendor(supp)}>
                                     <i className="fas fa-plus mr-2"></i>Settle
                                   </button>
-                                  <button className="portal-btn-ghost" title="View Audit Trail" style={{ color: '#2563eb' }} onClick={() => exportAuditLogs(supp.companyName)}> <i className="fas fa-history"></i></button>
+                                  <button className="portal-btn-ghost portal-btn-icon-blue" title="View Audit Trail" aria-label="View Audit Trail" onClick={() => exportAuditLogs(supp.companyName)}> <i className="fas fa-history"></i></button>
                                 </div>
                             </td>
                           )}
                       </tr>
                     )) : (
-                      <tr><td colSpan={5} style={{ textAlign: 'center', padding: '80px', color: '#94a3b8' }}>
-                        <i className="fas fa-money-check-alt" style={{ fontSize: '3.5rem', display: 'block', marginBottom: '24px', opacity: 0.1 }}></i>
-                        <p style={{ fontWeight: 700 }}>No active vendor liabilities detected</p>
+                      <tr><td colSpan={5} className="portal-td-empty-padded">
+                        <i className="fas fa-money-check-alt portal-empty-icon-faint"></i>
+                        <p className="portal-text-bold-muted">No active vendor liabilities detected</p>
                       </td></tr>
                     )}
                 </tbody>
@@ -1151,37 +1242,38 @@ const PaymentsTab = ({ suppliers, canManage }: { suppliers: Supplier[], canManag
 
          {settleVendor && (
             <div className="portal-modal-overlay">
-               <div className="portal-modal-card animate-in zoom-in duration-200" style={{ maxWidth: '440px' }}>
-                  <div className="portal-modal-header" style={{ padding: '24px 32px' }}>
-                     <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 900 }}>Initiate Vendor Settlement</h3>
-                     <button className="portal-btn-ghost" style={{ padding: '8px' }} onClick={() => setSettleVendor(null)}>
+               <div className="portal-modal-card animate-in zoom-in duration-200 portal-modal-card-440">
+                  <div className="portal-modal-header portal-modal-header-pad-24-32">
+                     <h3 className="portal-modal-header-title-md">Initiate Vendor Settlement</h3>
+                     <button className="portal-btn-ghost portal-modal-close-btn-lg" title="Close Modal" aria-label="Close Modal" onClick={() => setSettleVendor(null)}>
                         <i className="fas fa-times"></i>
                      </button>
                   </div>
-                  <div className="portal-modal-body" style={{ padding: '32px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                     <div className="portal-card" style={{ padding: '16px', background: '#f8fafc', border: '1px solid #e2e8f0', marginBottom: 0 }}>
-                        <p style={{ margin: 0, fontWeight: 700, color: '#64748b', fontSize: '0.8rem', textTransform: 'uppercase' }}>Vendor Entity</p>
-                        <h4 style={{ margin: '4px 0 0 0', fontSize: '1.1rem', color: '#1e293b', fontWeight: 900 }}>{settleVendor.companyName}</h4>
+                  <div className="portal-modal-body portal-modal-body-pad32-gap20">
+                     <div className="portal-card portal-card-summary-box">
+                        <p className="portal-card-summary-label">Vendor Entity</p>
+                        <h4 className="portal-card-summary-title">{settleVendor.companyName}</h4>
                      </div>
                      <div className="form-group">
                         <label className="portal-label">Amount to Settle (USD) *</label>
                         <input 
                           type="number" 
                           step="0.01"
-                          className="portal-input" 
+                          className="portal-input portal-input-emerald-lg" 
                           placeholder="0.00" 
                           value={amount}
                           onChange={e => setAmount(e.target.value)}
-                          style={{ fontSize: '1.5rem', fontWeight: 900, color: '#059669', height: '56px' }} 
                         />
                      </div>
                      <div className="form-group">
-                        <label className="portal-label">Payment Method (Registered Gateway) *</label>
+                        <label htmlFor="payment-method-select" className="portal-label">Payment Method (Registered Gateway) *</label>
                         <select 
-                          className="portal-input"
+                          id="payment-method-select"
+                          title="Payment Method"
+                          aria-label="Payment Method"
+                          className="portal-input portal-input-height-52"
                           value={paymentMode}
                           onChange={e => setPaymentMode(e.target.value)}
-                          style={{ fontWeight: 800, height: '52px' }}
                         >
                            {paymentMethods.map(pm => (
                              <option key={pm.id} value={pm.name}>{pm.name}</option>
@@ -1196,12 +1288,11 @@ const PaymentsTab = ({ suppliers, canManage }: { suppliers: Supplier[], canManag
                         </select>
                      </div>
                   </div>
-                  <div className="portal-modal-footer" style={{ padding: '24px 32px', background: '#f8fafc' }}>
-                     <button className="portal-btn-ghost" onClick={() => setSettleVendor(null)} style={{ fontWeight: 800 }}>Cancel</button>
+                  <div className="portal-modal-footer portal-modal-footer-pad-24-32">
+                     <button className="portal-btn-ghost portal-btn-ghost-bold" onClick={() => setSettleVendor(null)}>Cancel</button>
                      <button 
-                       className="portal-btn-primary" 
+                       className="portal-btn-primary portal-btn-emerald-solid" 
                        disabled={submitting}
-                       style={{ background: '#059669', borderColor: '#059669', padding: '12px 28px', fontWeight: 900 }} 
                        onClick={handleSettle}
                      >
                         {submitting ? <i className="fas fa-spinner fa-spin mr-2"></i> : <i className="fas fa-check-circle mr-2"></i>}

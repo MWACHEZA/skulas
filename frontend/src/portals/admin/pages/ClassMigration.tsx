@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { useAuth } from '../../../contexts/AuthContext';
@@ -8,6 +8,9 @@ interface SchoolClass {
   id: string;
   name: string;
   level: string;
+  _count?: {
+    students?: number;
+  };
 }
 
 interface Student {
@@ -15,6 +18,11 @@ interface Student {
   studentId: string;
   name: string;
   part: number;
+  class?: {
+    id: string;
+    name: string;
+    level: string;
+  } | null;
 }
 
 export default function ClassMigration() {
@@ -61,9 +69,18 @@ export default function ClassMigration() {
     return `Year ${part}`;
   };
 
+  const fetchClasses = useCallback(async () => {
+    try {
+      const res = await api.get('/api/classes');
+      setClasses(Array.isArray(res.data) ? res.data : []);
+    } catch {
+      showToast('Failed to load classes', 'error');
+    }
+  }, [showToast]);
+
   useEffect(() => {
     fetchClasses();
-  }, []);
+  }, [fetchClasses]);
 
   useEffect(() => {
     if (Array.isArray(classes)) {
@@ -74,15 +91,6 @@ export default function ClassMigration() {
       setBulkMappings(initial);
     }
   }, [classes]);
-
-  const fetchClasses = async () => {
-    try {
-      const res = await api.get('/api/classes');
-      setClasses(Array.isArray(res.data) ? res.data : []);
-    } catch {
-      showToast('Failed to load classes', 'error');
-    }
-  };
 
   const loadStudents = async () => {
     if (!sourceClassId) {
@@ -107,7 +115,7 @@ export default function ClassMigration() {
 
   const handleBulkMigrate = async () => {
     const mappingsToSend = Object.entries(bulkMappings)
-      .filter(([_, value]) => !!value.targetClassId)
+      .filter(([, value]) => !!value.targetClassId)
       .map(([sourceClassId, value]) => ({
         sourceClassId,
         targetClassId: value.targetClassId,
@@ -137,9 +145,9 @@ export default function ClassMigration() {
         resetMappings[c.id] = { targetClassId: '', targetPart: 1 };
       });
       setBulkMappings(resetMappings);
-    } catch (err: any) {
-      showToast(err.response?.data?.error || 'Bulk migration failed', 'error');
-    
+    } catch (err) {
+      const error = err as { response?: { data?: { error?: string } } };
+      showToast(error.response?.data?.error || 'Bulk migration failed', 'error');
     } finally {
       setLoading(false);
     }
@@ -154,7 +162,7 @@ export default function ClassMigration() {
       <tr>
         <td style="border: 1px solid #e2e8f0; padding: 10px; font-family: monospace;">${s.studentId}</td>
         <td style="border: 1px solid #e2e8f0; padding: 10px; font-weight: bold;">${s.name}</td>
-        <td style="border: 1px solid #e2e8f0; padding: 10px;">${getYearValueLabel(schoolType, s.part)}</td>
+        <td style="border: 1px solid #e2e8f0; padding: 10px;">${sourceClass ? sourceClass.name : getYearValueLabel(schoolType, s.part)}</td>
       </tr>
     `).join('');
     
@@ -200,11 +208,12 @@ export default function ClassMigration() {
 
   const handleExportExcel = () => {
     const yearLabel = getYearLabel(schoolType);
+    const sourceClass = classes.find(c => c.id === sourceClassId);
     const headers = ['Student ID', 'Name', `Current ${yearLabel}`];
     const rows = students.map(s => [
       s.studentId,
       s.name,
-      getYearValueLabel(schoolType, s.part)
+      sourceClass ? sourceClass.name : getYearValueLabel(schoolType, s.part)
     ]);
     const csvContent = [headers, ...rows]
       .map(e => e.map(val => `"${String(val).replace(/"/g, '""')}"`).join(","))
@@ -227,7 +236,7 @@ export default function ClassMigration() {
       <tr>
         <td style="border: 1px solid #cccccc; padding: 8px; font-family: Courier New;">${s.studentId}</td>
         <td style="border: 1px solid #cccccc; padding: 8px; font-weight: bold;">${s.name}</td>
-        <td style="border: 1px solid #cccccc; padding: 8px;">${getYearValueLabel(schoolType, s.part)}</td>
+        <td style="border: 1px solid #cccccc; padding: 8px;">${sourceClass ? sourceClass.name : getYearValueLabel(schoolType, s.part)}</td>
       </tr>
     `).join('');
     
@@ -285,9 +294,9 @@ export default function ClassMigration() {
       });
       showToast('Students migrated successfully', 'success');
       loadStudents();
-    } catch (err: any) {
-      showToast(err.response?.data?.error || 'Migration failed', 'error');
-    
+    } catch (err) {
+      const error = err as { response?: { data?: { error?: string } } };
+      showToast(error.response?.data?.error || 'Migration failed', 'error');
     }
   };
 
@@ -382,7 +391,7 @@ export default function ClassMigration() {
                         </th>
                         <th>Student ID</th>
                         <th>Name</th>
-                        <th>Current {getYearLabel(schoolType)}</th>
+                        <th>Current Class</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -401,7 +410,9 @@ export default function ClassMigration() {
                           </td>
                           <td style={{ fontFamily: 'monospace', fontSize: '0.8rem', fontWeight: 700, color: '#64748b' }}>{s.studentId}</td>
                           <td style={{ fontWeight: 700 }}>{s.name}</td>
-                          <td style={{ fontWeight: 600, color: '#64748b' }}>{getYearValueLabel(schoolType, s.part)}</td>
+                          <td style={{ fontWeight: 600, color: '#64748b' }}>
+                            {s.class?.name || classes.find(c => c.id === sourceClassId)?.name || getYearValueLabel(schoolType, s.part)}
+                          </td>
                         </tr>
                       ))}
                     </tbody>
@@ -475,7 +486,7 @@ export default function ClassMigration() {
               <tbody>
                 {(Array.isArray(classes) ? classes : []).map(c => {
                   const mapping = bulkMappings[c.id] || { targetClassId: '', targetPart: 1 };
-                  const studentCount = (c as any)._count?.students ?? 0;
+                  const studentCount = c._count?.students ?? 0;
 
                   return (
                     <tr key={c.id}>

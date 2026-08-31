@@ -152,8 +152,9 @@ model School {
   paymentPlans      PaymentPlan[]
   meetingMinutes    MeetingMinutes[]
   projectFundings   ProjectFunding[]
-  sportingEquipment SportingEquipment[]
-  ClinicPatient     ClinicPatient[]
+  sportingEquipment    SportingEquipment[]
+  ClinicPatient        ClinicPatient[]
+  clinicInventoryItems ClinicInventoryItem[]
 
   // ── Ledger relations ──────────────────────────────────
   chartOfAccounts       ChartOfAccount[]
@@ -1193,6 +1194,7 @@ model SchoolSetting {
 
   idCardTemplateFront String? // Path to front face of ID card template image
   idCardTemplateBack  String? // Path to back face of ID card template image
+  setupStatus         Json?   // Guided onboarding wizard state & stage completion progress
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -2854,26 +2856,33 @@ model ProjectFunding {
 }
 
 model ClinicPatient {
-  id             String    @id @default(cuid())
-  schoolId       String
-  school         School    @relation(fields: [schoolId], references: [id], onDelete: Cascade)
-  userId         String?   @unique
-  user           User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  firstName      String?
-  lastName       String?
-  dob            DateTime?
-  gender         String?
-  contactNumber  String?
-  address        String?
-  medicalHistory String?
+  id                String    @id @default(cuid())
+  schoolId          String
+  school            School    @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  userId            String?   @unique
+  user              User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  mrn               String?   // Medical Record Number (e.g. MRN-2026-0001)
+  firstName         String?
+  lastName          String?
+  dob               DateTime?
+  gender            String?
+  contactNumber     String?
+  address           String?
+  bloodType         String?   // e.g. A+, O-, B+
+  allergies         String?   // e.g. Penicillin, Peanuts
+  chronicConditions String?   // e.g. Asthma, Diabetes Type 1
+  guardianName      String?
+  guardianContact   String?
+  medicalHistory    String?
 
-  visits        ClinicVisit[]
-  appointments  ClinicAppointment[]
-  complaints    ClinicComplaint[]
-  emergencies   ClinicEmergency[]
-  immunizations ClinicImmunization[]
-  referrals     ClinicReferral[]
+  visits           ClinicVisit[]
+  appointments     ClinicAppointment[]
+  complaints       ClinicComplaint[]
+  emergencies      ClinicEmergency[]
+  immunizations    ClinicImmunization[]
+  referrals        ClinicReferral[]
   hospitalizations ClinicHospitalization[]
+  dispensings      ClinicDispensingLog[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -2931,35 +2940,42 @@ model ClinicEmergency {
 }
 
 model ClinicImmunization {
-  id        String         @id @default(cuid())
-  userId    String?
-  user      User?          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  patientId String?
-  patient   ClinicPatient? @relation(fields: [patientId], references: [id], onDelete: Cascade)
-  title     String
-  details   String
-  date      DateTime       @default(now())
-  schoolId  String
-  createdAt DateTime       @default(now())
-  updatedAt DateTime       @updatedAt
+  id             String         @id @default(cuid())
+  userId         String?
+  user           User?          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  patientId      String?
+  patient        ClinicPatient? @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  title          String
+  details        String?
+  vaccine        String?        // e.g. Tetanus Toxoid, BCG, Oral Polio
+  doseNumber     Int?           @default(1)
+  nextDueDate    DateTime?
+  administeredBy String?
+  date           DateTime       @default(now())
+  schoolId       String
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
 
   @@index([schoolId])
 }
 
 model ClinicReferral {
-  id        String         @id @default(cuid())
-  userId    String?
-  user      User?          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  patientId String?
-  patient   ClinicPatient? @relation(fields: [patientId], references: [id], onDelete: Cascade)
-  title     String
-  details   String
-  date      DateTime       @default(now())
-  to        String
-  address   String
-  schoolId  String
-  createdAt DateTime       @default(now())
-  updatedAt DateTime       @updatedAt
+  id           String         @id @default(cuid())
+  userId       String?
+  user         User?          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  patientId    String?
+  patient      ClinicPatient? @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  title        String
+  details      String
+  date         DateTime       @default(now())
+  to           String
+  address      String
+  urgency      String?        @default("ROUTINE") // ROUTINE, URGENT, EMERGENCY
+  status       String         @default("PENDING") // PENDING, COMPLETED, CANCELLED
+  outcomeNotes String?
+  schoolId     String
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
 
   @@index([schoolId])
 }
@@ -2992,8 +3008,11 @@ model ClinicVisit {
   prescription        String?
   notes               String?
 
+  // Dispensing logs tied to this visit
+  dispensings ClinicDispensingLog[]
+
   // Follow-up
-  status    String   @default("OPEN") // OPEN, ADMITTED, REFERRED, DISCHARGED
+  status    String   @default("OPEN") // OPEN, CHECK_IN, TRIAGE, CONSULTATION, PRESCRIBED, DISPENSED, BILLED, DISCHARGED
   visitDate DateTime @default(now())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -3001,6 +3020,50 @@ model ClinicVisit {
   @@index([schoolId])
   @@index([userId])
   @@index([patientId])
+}
+
+model ClinicInventoryItem {
+  id           String   @id @default(cuid())
+  schoolId     String
+  school       School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  name         String
+  category     String   @default("MEDICATION") // MEDICATION, CONSUMABLE, EQUIPMENT
+  batchNumber  String?
+  expiryDate   DateTime?
+  unit         String   @default("tablets") // tablets, bottles, vials, packs, boxes
+  stock        Int      @default(0)
+  reorderLevel Int      @default(10)
+  unitCost     Float    @default(0)
+  unitPrice    Float    @default(0)
+  location     String?  // Main Sick Bay, Shelf A, Outreach Bin 2
+  
+  dispensings  ClinicDispensingLog[]
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([schoolId])
+}
+
+model ClinicDispensingLog {
+  id           String              @id @default(cuid())
+  schoolId     String
+  itemId       String
+  item         ClinicInventoryItem @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  visitId      String?
+  visit        ClinicVisit?        @relation(fields: [visitId], references: [id], onDelete: SetNull)
+  patientId    String?
+  patient      ClinicPatient?      @relation(fields: [patientId], references: [id], onDelete: SetNull)
+  quantity     Int
+  unitCost     Float               @default(0)
+  totalPrice   Float               @default(0)
+  dispensedBy  String?
+  notes        String?
+  dispensedAt  DateTime            @default(now())
+
+  @@index([schoolId])
+  @@index([itemId])
+  @@index([visitId])
 }
 
 model ClinicHospitalization {
@@ -3119,16 +3182,20 @@ model PrefectMeeting {
 }
 
 model PrefectReport {
-  id           String   @id @default(cuid())
-  studentName  String
-  category     String
-  narrative    String
-  reportedById String
-  reportedBy   User     @relation(fields: [reportedById], references: [id], onDelete: Cascade)
-  schoolId     String
-  school       School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id                 String   @id @default(cuid())
+  studentName        String
+  category           String
+  narrative          String
+  reportedById       String
+  reportedBy         User     @relation(fields: [reportedById], references: [id], onDelete: Cascade)
+  schoolId           String
+  school             School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  hasPunishment      Boolean  @default(false)
+  punishment         String?
+  punishmentLocation String?
+  punishmentStatus   String?  @default("PENDING") // PENDING, CLEARED
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
 
   @@index([schoolId])
   @@index([reportedById])

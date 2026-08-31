@@ -23,6 +23,8 @@ exports.FeeGroupSchema = zod_1.z.object({
     billingType: zod_1.z.string().min(1, 'Billing Type/Period is required'),
     isRecurring: zod_1.z.boolean().optional(),
     remindersEnabled: zod_1.z.boolean().optional(),
+    incomeAccountId: zod_1.z.string().optional().nullable().transform(v => v === '' ? null : v),
+    arAccountId: zod_1.z.string().optional().nullable().transform(v => v === '' ? null : v),
 });
 exports.RevenueAllocationSchema = zod_1.z.object({
     name: zod_1.z.string().min(1, 'Name is required'),

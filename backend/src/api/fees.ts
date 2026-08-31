@@ -19,60 +19,64 @@ const upload = multer({ storage: multer.memoryStorage() });
 router.get('/stats', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req: AuthRequest, res: Response) => {
   const schoolId = req.user!.schoolId!;
   try {
-    // 1. Grand Totals (use aggregate instead of pulling all rows)
-    const totals = await prisma.fee.aggregate({
-      where: { schoolId },
-      _sum: { amount: true, discount: true, paid: true }
+    // 1. Get the Student Accounts Receivable account (Code 1210)
+    const arAccount = await prisma.chartOfAccount.findFirst({
+      where: { schoolId, code: '1210', isActive: true }
     });
 
-    const sumAmount = totals._sum.amount || 0;
-    const sumDiscount = totals._sum.discount || 0;
-    const totalCollected = totals._sum.paid || 0;
-    const totalBilled = Math.max(0, sumAmount - sumDiscount);
+    let totalBilled = 0;
+    let totalCollected = 0;
+    let outstanding = 0;
+    let collectionRate = 0;
+    let collectionByClass: any[] = [];
+    let topDefaulters: any[] = [];
 
-    // 2. Collection by class (DB level grouping via raw SQL for relation joins)
-    const classStats: any[] = await prisma.$queryRaw`
-      SELECT c.name as "className", 
-             SUM(GREATEST(0, f.amount - f.discount)) as "billed", 
-             SUM(f.paid) as "collected"
-      FROM "Fee" f
-      JOIN "Student" s ON f."studentId" = s.id
-      LEFT JOIN "SchoolClass" c ON s."classId" = c.id
-      WHERE f."schoolId" = ${schoolId} AND s.status = 'Enrolled'
-      GROUP BY c.id, c.name
-    `;
+    if (arAccount) {
+      // 1. Grand Totals from the Ledger (AR Account)
+      // Debits = Billed invoices, Credits = Payments collected
+      const totals = await prisma.journalEntryLine.aggregate({
+        where: {
+          accountId: arAccount.id,
+          journalEntry: { status: 'POSTED' }
+        },
+        _sum: { debit: true, credit: true }
+      });
 
-    const collectionByClass = classStats.map(stat => {
-      const billed = Number(stat.billed) || 0;
-      const collected = Number(stat.collected) || 0;
-      const pct = billed > 0 ? Math.round((collected / billed) * 100) : 0;
-      return { className: stat.className || 'Unassigned', pct };
-    }).sort((a, b) => b.pct - a.pct);
+      totalBilled = totals._sum.debit || 0;
+      totalCollected = totals._sum.credit || 0;
+      outstanding = Math.max(0, totalBilled - totalCollected);
+      collectionRate = totalBilled > 0 ? Math.round((totalCollected / totalBilled) * 100) : 0;
 
-    // 3. Top defaulters (Calculated entirely in DB)
-    const defaultersRaw: any[] = await prisma.$queryRaw`
-      SELECT s.name as "studentName", c.name as "className", 
-             SUM(GREATEST(0, f.amount - f.discount) - f.paid) as "arrears"
-      FROM "Fee" f
-      JOIN "Student" s ON f."studentId" = s.id
-      LEFT JOIN "SchoolClass" c ON s."classId" = c.id
-      WHERE f."schoolId" = ${schoolId} 
-        AND f.status IN ('unpaid', 'partial', 'overdue')
-        AND s.status = 'Enrolled'
-      GROUP BY s.id, s.name, c.name
-      HAVING SUM(GREATEST(0, f.amount - f.discount) - f.paid) > 0
-      ORDER BY "arrears" DESC
-      LIMIT 5
-    `;
+      // 2. Collection by class (Calculated from Ledger lines with studentIds)
+      const classStatsRaw: any[] = await prisma.$queryRaw`
+        SELECT c.name as "className",
+               SUM(l.debit) as "billed",
+               SUM(l.credit) as "collected"
+        FROM "JournalEntryLine" l
+        JOIN "JournalEntry" je ON l."journalEntryId" = je.id
+        JOIN "Student" s ON l."studentId" = s.id
+        LEFT JOIN "SchoolClass" c ON s."classId" = c.id
+        WHERE l."accountId" = ${arAccount.id} 
+          AND je.status = 'POSTED'
+          AND s.status = 'Enrolled'
+        GROUP BY c.id, c.name
+      `;
 
-    const topDefaulters = defaultersRaw.map(d => ({
-      studentName: d.studentName || 'Unknown',
-      className: d.className || 'Unassigned',
-      arrears: Number(d.arrears) || 0
-    }));
+      collectionByClass = classStatsRaw.map(stat => {
+        const billed = Number(stat.billed) || 0;
+        const collected = Number(stat.collected) || 0;
+        const pct = billed > 0 ? Math.round((collected / billed) * 100) : 0;
+        return { className: stat.className || 'Unassigned', pct };
+      }).sort((a, b) => b.pct - a.pct);
 
-    const outstanding = Math.max(0, totalBilled - totalCollected);
-    const collectionRate = totalBilled > 0 ? Math.round((totalCollected / totalBilled) * 100) : 0;
+      // 3. Top defaulters (Using LedgerService AR Aging)
+      const aging = await LedgerService.arAging(schoolId, new Date());
+      topDefaulters = aging.slice(0, 5).map(a => ({
+        studentName: a.studentName,
+        className: a.className || 'Unassigned',
+        arrears: a.total
+      }));
+    }
 
     res.json({
       totalBilled,

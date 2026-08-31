@@ -66,17 +66,42 @@ export async function seedFinance(
   for (const student of students) {
 
     // Student Wallet
-    await prisma.studentWallet.upsert({
+    const wallet = await prisma.studentWallet.upsert({
       where: { studentId: student.id },
       update: {},
-      create: { studentId: student.id, balance: 50 }
+      create: { studentId: student.id }
     });
+
+    const txCount = await prisma.walletTransaction.count({
+      where: { walletId: wallet.id }
+    });
+    if (txCount === 0) {
+      await prisma.walletTransaction.create({
+        data: {
+          walletId: wallet.id,
+          amount: 50,
+          type: 'DEPOSIT',
+          description: 'Initial Seed Deposit'
+        }
+      });
+    }
   }
 
   // 3. Uniform & Tuckshop
   for (let i = 0; i < 10; i++) {
     const uniform = await prisma.uniformItem.create({
-      data: { name: `Uniform Item ${i + 1}`, orderPrice: 5, sellingPrice: 10, stockLevel: 100, schoolId: school.id }
+      data: { name: `Uniform Item ${i + 1}`, orderPrice: 5, sellingPrice: 10, schoolId: school.id }
+    });
+
+    await prisma.uniformStockMovement.create({
+      data: {
+        itemId: uniform.id,
+        quantity: 100,
+        movementType: 'PURCHASE_IN',
+        unitCost: 5,
+        totalCost: 500,
+        schoolId: school.id
+      }
     });
 
     const tuckshopItem = await prisma.tuckshopItem.create({

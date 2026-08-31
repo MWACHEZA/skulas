@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useToast } from '../../../context/ToastContext';
 import { useAuth } from '../../../contexts/AuthContext';
 import api from '../../../lib/api';
@@ -44,7 +44,13 @@ export default function ChaplaincyDashboard() {
   const [showReflectionModal, setShowReflectionModal] = useState(false);
 
   // Form states
-  const [serviceForm, setServiceForm] = useState({
+  const [serviceForm, setServiceForm] = useState<{
+    title: string;
+    type: ChurchEvent['type'];
+    date: string;
+    theme: string;
+    status: ChurchEvent['status'];
+  }>({
     title: '',
     type: 'SUNDAY_SERVICE',
     date: '',
@@ -54,15 +60,11 @@ export default function ChaplaincyDashboard() {
   const [reflectionText, setReflectionText] = useState('');
   const [saving, setSaving] = useState(false);
 
+  const chaplaincyRoles = ['School Chaplain', 'Church Prefect', 'Chaplain', 'Pastor', 'Reverend', 'Religious Coordinator'];
   const isAuthorized = user?.role === 'SCHOOL_ADMIN' || 
-                       user?.secondaryRoles?.includes('School Chaplain') || 
-                       user?.secondaryRoles?.includes('Church Prefect');
+                       user?.secondaryRoles?.some((r: string) => chaplaincyRoles.includes(r));
 
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true);
     try {
       const [eventsRes, teamRes, statsRes] = await Promise.all([
@@ -76,11 +78,14 @@ export default function ChaplaincyDashboard() {
     } catch (err) {
       console.error('Failed to load chaplaincy data:', err);
       showToast('Error loading chaplaincy dashboard details', 'error');
-    
     } finally {
       setLoading(false);
     }
-  };
+  }, [showToast]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   const handleScheduleService = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -102,9 +107,8 @@ export default function ChaplaincyDashboard() {
         status: 'PLANNED'
       });
       fetchData();
-    } catch (err) {
+    } catch {
       showToast('Failed to schedule service', 'error');
-    
     } finally {
       setSaving(false);
     }
@@ -123,9 +127,8 @@ export default function ChaplaincyDashboard() {
       showToast('Spiritual reflection broadcasted successfully to all portals!', 'success');
       setShowReflectionModal(false);
       setReflectionText('');
-    } catch (err) {
+    } catch {
       showToast('Failed to broadcast reflection', 'error');
-    
     } finally {
       setSaving(false);
     }
@@ -372,7 +375,7 @@ export default function ChaplaincyDashboard() {
                     <div>
                       <div style={{ fontWeight: 700, fontSize: '0.92rem' }}>{member.name}</div>
                       <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: 2 }}>
-                        {member.secondaryRoles.find(r => ['School Chaplain', 'Church Prefect'].includes(r)) || member.role}
+                        {member.secondaryRoles.find(r => ['School Chaplain', 'Church Prefect', 'Chaplain', 'Pastor', 'Reverend', 'Religious Coordinator'].includes(r)) || member.role}
                       </div>
                     </div>
                   </div>
@@ -413,7 +416,7 @@ export default function ChaplaincyDashboard() {
                     <select 
                       className="portal-input"
                       value={serviceForm.type}
-                      onChange={e => setServiceForm({ ...serviceForm, type: e.target.value as any })}
+                      onChange={e => setServiceForm({ ...serviceForm, type: e.target.value as ChurchEvent['type'] })}
                     >
                       <option value="ASSEMBLY">Morning Assembly</option>
                       <option value="SUNDAY_SERVICE">Sunday Service</option>
@@ -426,7 +429,7 @@ export default function ChaplaincyDashboard() {
                     <select 
                       className="portal-input"
                       value={serviceForm.status}
-                      onChange={e => setServiceForm({ ...serviceForm, status: e.target.value as any })}
+                      onChange={e => setServiceForm({ ...serviceForm, status: e.target.value as ChurchEvent['status'] })}
                     >
                       <option value="PLANNED">Planned</option>
                       <option value="CONFIRMED">Confirmed</option>

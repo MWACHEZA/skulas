@@ -684,6 +684,16 @@ export type ClinicReferral = $Result.DefaultSelection<Prisma.$ClinicReferralPayl
  */
 export type ClinicVisit = $Result.DefaultSelection<Prisma.$ClinicVisitPayload>
 /**
+ * Model ClinicInventoryItem
+ * 
+ */
+export type ClinicInventoryItem = $Result.DefaultSelection<Prisma.$ClinicInventoryItemPayload>
+/**
+ * Model ClinicDispensingLog
+ * 
+ */
+export type ClinicDispensingLog = $Result.DefaultSelection<Prisma.$ClinicDispensingLogPayload>
+/**
  * Model ClinicHospitalization
  * 
  */
@@ -2273,6 +2283,26 @@ export class PrismaClient<
   get clinicVisit(): Prisma.ClinicVisitDelegate<ExtArgs>;
 
   /**
+   * `prisma.clinicInventoryItem`: Exposes CRUD operations for the **ClinicInventoryItem** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more ClinicInventoryItems
+    * const clinicInventoryItems = await prisma.clinicInventoryItem.findMany()
+    * ```
+    */
+  get clinicInventoryItem(): Prisma.ClinicInventoryItemDelegate<ExtArgs>;
+
+  /**
+   * `prisma.clinicDispensingLog`: Exposes CRUD operations for the **ClinicDispensingLog** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more ClinicDispensingLogs
+    * const clinicDispensingLogs = await prisma.clinicDispensingLog.findMany()
+    * ```
+    */
+  get clinicDispensingLog(): Prisma.ClinicDispensingLogDelegate<ExtArgs>;
+
+  /**
    * `prisma.clinicHospitalization`: Exposes CRUD operations for the **ClinicHospitalization** model.
     * Example usage:
     * ```ts
@@ -3036,6 +3066,8 @@ export namespace Prisma {
     ClinicImmunization: 'ClinicImmunization',
     ClinicReferral: 'ClinicReferral',
     ClinicVisit: 'ClinicVisit',
+    ClinicInventoryItem: 'ClinicInventoryItem',
+    ClinicDispensingLog: 'ClinicDispensingLog',
     ClinicHospitalization: 'ClinicHospitalization',
     FarmLivestockBatch: 'FarmLivestockBatch',
     FarmCropCycle: 'FarmCropCycle',
@@ -3070,7 +3102,7 @@ export namespace Prisma {
 
   export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> = {
     meta: {
-      modelProps: "plan" | "school" | "gradingScale" | "hostelCategory" | "hostelRoom" | "uniformItem" | "uniformStockOrder" | "uniformStockOrderItem" | "uniformSale" | "uniformSaleItem" | "uniformSupplierPayment" | "accountCategory" | "liability" | "income" | "expense" | "user" | "userSession" | "teacher" | "student" | "schoolClass" | "section" | "subject" | "teacherSubject" | "classSubjectTeacher" | "grade" | "faculty" | "department" | "attendance" | "staffAttendance" | "fee" | "feeLineItem" | "assignment" | "questionPaper" | "timetableSlot" | "announcement" | "auditLog" | "book" | "studentHouse" | "chaplaincyEvent" | "holiday" | "libraryCategory" | "bookLoan" | "assignmentSubmission" | "news" | "schoolSetting" | "paymentPlan" | "gallery" | "club" | "sport" | "sportingEquipment" | "application" | "supplier" | "schoolSupplier" | "parent" | "parentStudent" | "tender" | "tenderBid" | "purchaseOrder" | "invoice" | "message" | "supportTicket" | "staffLeave" | "asset" | "assetIncident" | "assetMaintenance" | "transportRoute" | "schoolEvent" | "tuckshopItem" | "tuckshopSale" | "digitalResource" | "syllabus" | "lessonPlan" | "salaryStub" | "shiftAssignment" | "applicantDocument" | "applicantTimeline" | "academicReport" | "reportTemplate" | "requisition" | "hostel" | "room" | "boardingLog" | "visitorLog" | "admissionInquiry" | "phoneCallLog" | "frontOfficeComplaint" | "securityIncident" | "weeklyMenu" | "transferAuthorization" | "supervisorAssignment" | "extensionRequest" | "progressReport" | "paymentMethod" | "feeGroup" | "feeGroupClassAmount" | "physicalProduct" | "physicalProductConsumption" | "feeReminderLog" | "studentPayment" | "communicationLog" | "notificationQueue" | "revenueAllocation" | "payrollAllowance" | "payrollDeduction" | "taxTable" | "taxBand" | "employeeProfile" | "termlyComment" | "payrollRun" | "payrollEntry" | "cBTExam" | "cBTQuestion" | "cBTResult" | "liveClass" | "award" | "course" | "courseEnrollment" | "studyMaterial" | "websiteSettings" | "websiteInquiry" | "noticeboard" | "vacancy" | "jobApplication" | "schoolVehicle" | "schoolTransport" | "meetingMinutes" | "projectFunding" | "clinicPatient" | "clinicAppointment" | "clinicComplaint" | "clinicEmergency" | "clinicImmunization" | "clinicReferral" | "clinicVisit" | "clinicHospitalization" | "farmLivestockBatch" | "farmCropCycle" | "farmInventoryItem" | "diningHallReport" | "prefectDuty" | "prefectMeeting" | "prefectReport" | "studentWallet" | "walletTransaction" | "schoolSequence" | "icd10Code" | "chartOfAccount" | "journalEntry" | "journalEntryLine" | "accountingPeriod" | "uniformStockMovement" | "bankStatement" | "bankStatementLine"
+      modelProps: "plan" | "school" | "gradingScale" | "hostelCategory" | "hostelRoom" | "uniformItem" | "uniformStockOrder" | "uniformStockOrderItem" | "uniformSale" | "uniformSaleItem" | "uniformSupplierPayment" | "accountCategory" | "liability" | "income" | "expense" | "user" | "userSession" | "teacher" | "student" | "schoolClass" | "section" | "subject" | "teacherSubject" | "classSubjectTeacher" | "grade" | "faculty" | "department" | "attendance" | "staffAttendance" | "fee" | "feeLineItem" | "assignment" | "questionPaper" | "timetableSlot" | "announcement" | "auditLog" | "book" | "studentHouse" | "chaplaincyEvent" | "holiday" | "libraryCategory" | "bookLoan" | "assignmentSubmission" | "news" | "schoolSetting" | "paymentPlan" | "gallery" | "club" | "sport" | "sportingEquipment" | "application" | "supplier" | "schoolSupplier" | "parent" | "parentStudent" | "tender" | "tenderBid" | "purchaseOrder" | "invoice" | "message" | "supportTicket" | "staffLeave" | "asset" | "assetIncident" | "assetMaintenance" | "transportRoute" | "schoolEvent" | "tuckshopItem" | "tuckshopSale" | "digitalResource" | "syllabus" | "lessonPlan" | "salaryStub" | "shiftAssignment" | "applicantDocument" | "applicantTimeline" | "academicReport" | "reportTemplate" | "requisition" | "hostel" | "room" | "boardingLog" | "visitorLog" | "admissionInquiry" | "phoneCallLog" | "frontOfficeComplaint" | "securityIncident" | "weeklyMenu" | "transferAuthorization" | "supervisorAssignment" | "extensionRequest" | "progressReport" | "paymentMethod" | "feeGroup" | "feeGroupClassAmount" | "physicalProduct" | "physicalProductConsumption" | "feeReminderLog" | "studentPayment" | "communicationLog" | "notificationQueue" | "revenueAllocation" | "payrollAllowance" | "payrollDeduction" | "taxTable" | "taxBand" | "employeeProfile" | "termlyComment" | "payrollRun" | "payrollEntry" | "cBTExam" | "cBTQuestion" | "cBTResult" | "liveClass" | "award" | "course" | "courseEnrollment" | "studyMaterial" | "websiteSettings" | "websiteInquiry" | "noticeboard" | "vacancy" | "jobApplication" | "schoolVehicle" | "schoolTransport" | "meetingMinutes" | "projectFunding" | "clinicPatient" | "clinicAppointment" | "clinicComplaint" | "clinicEmergency" | "clinicImmunization" | "clinicReferral" | "clinicVisit" | "clinicInventoryItem" | "clinicDispensingLog" | "clinicHospitalization" | "farmLivestockBatch" | "farmCropCycle" | "farmInventoryItem" | "diningHallReport" | "prefectDuty" | "prefectMeeting" | "prefectReport" | "studentWallet" | "walletTransaction" | "schoolSequence" | "icd10Code" | "chartOfAccount" | "journalEntry" | "journalEntryLine" | "accountingPeriod" | "uniformStockMovement" | "bankStatement" | "bankStatementLine"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -12454,6 +12486,146 @@ export namespace Prisma {
           }
         }
       }
+      ClinicInventoryItem: {
+        payload: Prisma.$ClinicInventoryItemPayload<ExtArgs>
+        fields: Prisma.ClinicInventoryItemFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ClinicInventoryItemFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ClinicInventoryItemPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ClinicInventoryItemFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ClinicInventoryItemPayload>
+          }
+          findFirst: {
+            args: Prisma.ClinicInventoryItemFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ClinicInventoryItemPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ClinicInventoryItemFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ClinicInventoryItemPayload>
+          }
+          findMany: {
+            args: Prisma.ClinicInventoryItemFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ClinicInventoryItemPayload>[]
+          }
+          create: {
+            args: Prisma.ClinicInventoryItemCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ClinicInventoryItemPayload>
+          }
+          createMany: {
+            args: Prisma.ClinicInventoryItemCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.ClinicInventoryItemCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ClinicInventoryItemPayload>[]
+          }
+          delete: {
+            args: Prisma.ClinicInventoryItemDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ClinicInventoryItemPayload>
+          }
+          update: {
+            args: Prisma.ClinicInventoryItemUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ClinicInventoryItemPayload>
+          }
+          deleteMany: {
+            args: Prisma.ClinicInventoryItemDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ClinicInventoryItemUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.ClinicInventoryItemUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ClinicInventoryItemPayload>
+          }
+          aggregate: {
+            args: Prisma.ClinicInventoryItemAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateClinicInventoryItem>
+          }
+          groupBy: {
+            args: Prisma.ClinicInventoryItemGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ClinicInventoryItemGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ClinicInventoryItemCountArgs<ExtArgs>
+            result: $Utils.Optional<ClinicInventoryItemCountAggregateOutputType> | number
+          }
+        }
+      }
+      ClinicDispensingLog: {
+        payload: Prisma.$ClinicDispensingLogPayload<ExtArgs>
+        fields: Prisma.ClinicDispensingLogFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ClinicDispensingLogFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ClinicDispensingLogPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ClinicDispensingLogFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ClinicDispensingLogPayload>
+          }
+          findFirst: {
+            args: Prisma.ClinicDispensingLogFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ClinicDispensingLogPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ClinicDispensingLogFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ClinicDispensingLogPayload>
+          }
+          findMany: {
+            args: Prisma.ClinicDispensingLogFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ClinicDispensingLogPayload>[]
+          }
+          create: {
+            args: Prisma.ClinicDispensingLogCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ClinicDispensingLogPayload>
+          }
+          createMany: {
+            args: Prisma.ClinicDispensingLogCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.ClinicDispensingLogCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ClinicDispensingLogPayload>[]
+          }
+          delete: {
+            args: Prisma.ClinicDispensingLogDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ClinicDispensingLogPayload>
+          }
+          update: {
+            args: Prisma.ClinicDispensingLogUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ClinicDispensingLogPayload>
+          }
+          deleteMany: {
+            args: Prisma.ClinicDispensingLogDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ClinicDispensingLogUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.ClinicDispensingLogUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ClinicDispensingLogPayload>
+          }
+          aggregate: {
+            args: Prisma.ClinicDispensingLogAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateClinicDispensingLog>
+          }
+          groupBy: {
+            args: Prisma.ClinicDispensingLogGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ClinicDispensingLogGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ClinicDispensingLogCountArgs<ExtArgs>
+            result: $Utils.Optional<ClinicDispensingLogCountAggregateOutputType> | number
+          }
+        }
+      }
       ClinicHospitalization: {
         payload: Prisma.$ClinicHospitalizationPayload<ExtArgs>
         fields: Prisma.ClinicHospitalizationFieldRefs
@@ -14069,6 +14241,7 @@ export namespace Prisma {
     projectFundings: number
     sportingEquipment: number
     ClinicPatient: number
+    clinicInventoryItems: number
     chartOfAccounts: number
     journalEntries: number
     accountingPeriods: number
@@ -14170,6 +14343,7 @@ export namespace Prisma {
     projectFundings?: boolean | SchoolCountOutputTypeCountProjectFundingsArgs
     sportingEquipment?: boolean | SchoolCountOutputTypeCountSportingEquipmentArgs
     ClinicPatient?: boolean | SchoolCountOutputTypeCountClinicPatientArgs
+    clinicInventoryItems?: boolean | SchoolCountOutputTypeCountClinicInventoryItemsArgs
     chartOfAccounts?: boolean | SchoolCountOutputTypeCountChartOfAccountsArgs
     journalEntries?: boolean | SchoolCountOutputTypeCountJournalEntriesArgs
     accountingPeriods?: boolean | SchoolCountOutputTypeCountAccountingPeriodsArgs
@@ -14837,6 +15011,13 @@ export namespace Prisma {
    */
   export type SchoolCountOutputTypeCountClinicPatientArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ClinicPatientWhereInput
+  }
+
+  /**
+   * SchoolCountOutputType without action
+   */
+  export type SchoolCountOutputTypeCountClinicInventoryItemsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ClinicInventoryItemWhereInput
   }
 
   /**
@@ -17139,6 +17320,7 @@ export namespace Prisma {
     immunizations: number
     referrals: number
     hospitalizations: number
+    dispensings: number
   }
 
   export type ClinicPatientCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -17149,6 +17331,7 @@ export namespace Prisma {
     immunizations?: boolean | ClinicPatientCountOutputTypeCountImmunizationsArgs
     referrals?: boolean | ClinicPatientCountOutputTypeCountReferralsArgs
     hospitalizations?: boolean | ClinicPatientCountOutputTypeCountHospitalizationsArgs
+    dispensings?: boolean | ClinicPatientCountOutputTypeCountDispensingsArgs
   }
 
   // Custom InputTypes
@@ -17209,6 +17392,75 @@ export namespace Prisma {
    */
   export type ClinicPatientCountOutputTypeCountHospitalizationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ClinicHospitalizationWhereInput
+  }
+
+  /**
+   * ClinicPatientCountOutputType without action
+   */
+  export type ClinicPatientCountOutputTypeCountDispensingsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ClinicDispensingLogWhereInput
+  }
+
+
+  /**
+   * Count Type ClinicVisitCountOutputType
+   */
+
+  export type ClinicVisitCountOutputType = {
+    dispensings: number
+  }
+
+  export type ClinicVisitCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    dispensings?: boolean | ClinicVisitCountOutputTypeCountDispensingsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * ClinicVisitCountOutputType without action
+   */
+  export type ClinicVisitCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ClinicVisitCountOutputType
+     */
+    select?: ClinicVisitCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * ClinicVisitCountOutputType without action
+   */
+  export type ClinicVisitCountOutputTypeCountDispensingsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ClinicDispensingLogWhereInput
+  }
+
+
+  /**
+   * Count Type ClinicInventoryItemCountOutputType
+   */
+
+  export type ClinicInventoryItemCountOutputType = {
+    dispensings: number
+  }
+
+  export type ClinicInventoryItemCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    dispensings?: boolean | ClinicInventoryItemCountOutputTypeCountDispensingsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * ClinicInventoryItemCountOutputType without action
+   */
+  export type ClinicInventoryItemCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ClinicInventoryItemCountOutputType
+     */
+    select?: ClinicInventoryItemCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * ClinicInventoryItemCountOutputType without action
+   */
+  export type ClinicInventoryItemCountOutputTypeCountDispensingsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ClinicDispensingLogWhereInput
   }
 
 
@@ -18722,6 +18974,7 @@ export namespace Prisma {
     projectFundings?: boolean | School$projectFundingsArgs<ExtArgs>
     sportingEquipment?: boolean | School$sportingEquipmentArgs<ExtArgs>
     ClinicPatient?: boolean | School$ClinicPatientArgs<ExtArgs>
+    clinicInventoryItems?: boolean | School$clinicInventoryItemsArgs<ExtArgs>
     chartOfAccounts?: boolean | School$chartOfAccountsArgs<ExtArgs>
     journalEntries?: boolean | School$journalEntriesArgs<ExtArgs>
     accountingPeriods?: boolean | School$accountingPeriodsArgs<ExtArgs>
@@ -18875,6 +19128,7 @@ export namespace Prisma {
     projectFundings?: boolean | School$projectFundingsArgs<ExtArgs>
     sportingEquipment?: boolean | School$sportingEquipmentArgs<ExtArgs>
     ClinicPatient?: boolean | School$ClinicPatientArgs<ExtArgs>
+    clinicInventoryItems?: boolean | School$clinicInventoryItemsArgs<ExtArgs>
     chartOfAccounts?: boolean | School$chartOfAccountsArgs<ExtArgs>
     journalEntries?: boolean | School$journalEntriesArgs<ExtArgs>
     accountingPeriods?: boolean | School$accountingPeriodsArgs<ExtArgs>
@@ -18986,6 +19240,7 @@ export namespace Prisma {
       projectFundings: Prisma.$ProjectFundingPayload<ExtArgs>[]
       sportingEquipment: Prisma.$SportingEquipmentPayload<ExtArgs>[]
       ClinicPatient: Prisma.$ClinicPatientPayload<ExtArgs>[]
+      clinicInventoryItems: Prisma.$ClinicInventoryItemPayload<ExtArgs>[]
       chartOfAccounts: Prisma.$ChartOfAccountPayload<ExtArgs>[]
       journalEntries: Prisma.$JournalEntryPayload<ExtArgs>[]
       accountingPeriods: Prisma.$AccountingPeriodPayload<ExtArgs>[]
@@ -19474,6 +19729,7 @@ export namespace Prisma {
     projectFundings<T extends School$projectFundingsArgs<ExtArgs> = {}>(args?: Subset<T, School$projectFundingsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProjectFundingPayload<ExtArgs>, T, "findMany"> | Null>
     sportingEquipment<T extends School$sportingEquipmentArgs<ExtArgs> = {}>(args?: Subset<T, School$sportingEquipmentArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SportingEquipmentPayload<ExtArgs>, T, "findMany"> | Null>
     ClinicPatient<T extends School$ClinicPatientArgs<ExtArgs> = {}>(args?: Subset<T, School$ClinicPatientArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ClinicPatientPayload<ExtArgs>, T, "findMany"> | Null>
+    clinicInventoryItems<T extends School$clinicInventoryItemsArgs<ExtArgs> = {}>(args?: Subset<T, School$clinicInventoryItemsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ClinicInventoryItemPayload<ExtArgs>, T, "findMany"> | Null>
     chartOfAccounts<T extends School$chartOfAccountsArgs<ExtArgs> = {}>(args?: Subset<T, School$chartOfAccountsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ChartOfAccountPayload<ExtArgs>, T, "findMany"> | Null>
     journalEntries<T extends School$journalEntriesArgs<ExtArgs> = {}>(args?: Subset<T, School$journalEntriesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$JournalEntryPayload<ExtArgs>, T, "findMany"> | Null>
     accountingPeriods<T extends School$accountingPeriodsArgs<ExtArgs> = {}>(args?: Subset<T, School$accountingPeriodsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AccountingPeriodPayload<ExtArgs>, T, "findMany"> | Null>
@@ -21748,6 +22004,26 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: ClinicPatientScalarFieldEnum | ClinicPatientScalarFieldEnum[]
+  }
+
+  /**
+   * School.clinicInventoryItems
+   */
+  export type School$clinicInventoryItemsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ClinicInventoryItem
+     */
+    select?: ClinicInventoryItemSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ClinicInventoryItemInclude<ExtArgs> | null
+    where?: ClinicInventoryItemWhereInput
+    orderBy?: ClinicInventoryItemOrderByWithRelationInput | ClinicInventoryItemOrderByWithRelationInput[]
+    cursor?: ClinicInventoryItemWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ClinicInventoryItemScalarFieldEnum | ClinicInventoryItemScalarFieldEnum[]
   }
 
   /**
@@ -68827,6 +69103,7 @@ export namespace Prisma {
     gateRequiredType: number
     idCardTemplateFront: number
     idCardTemplateBack: number
+    setupStatus: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -69047,6 +69324,7 @@ export namespace Prisma {
     gateRequiredType?: true
     idCardTemplateFront?: true
     idCardTemplateBack?: true
+    setupStatus?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -69202,6 +69480,7 @@ export namespace Prisma {
     gateRequiredType: string
     idCardTemplateFront: string | null
     idCardTemplateBack: string | null
+    setupStatus: JsonValue | null
     createdAt: Date
     updatedAt: Date
     _count: SchoolSettingCountAggregateOutputType | null
@@ -69289,6 +69568,7 @@ export namespace Prisma {
     gateRequiredType?: boolean
     idCardTemplateFront?: boolean
     idCardTemplateBack?: boolean
+    setupStatus?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     school?: boolean | SchoolDefaultArgs<ExtArgs>
@@ -69358,6 +69638,7 @@ export namespace Prisma {
     gateRequiredType?: boolean
     idCardTemplateFront?: boolean
     idCardTemplateBack?: boolean
+    setupStatus?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     school?: boolean | SchoolDefaultArgs<ExtArgs>
@@ -69427,6 +69708,7 @@ export namespace Prisma {
     gateRequiredType?: boolean
     idCardTemplateFront?: boolean
     idCardTemplateBack?: boolean
+    setupStatus?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
@@ -69507,6 +69789,7 @@ export namespace Prisma {
       gateRequiredType: string
       idCardTemplateFront: string | null
       idCardTemplateBack: string | null
+      setupStatus: Prisma.JsonValue | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["schoolSetting"]>
@@ -69966,6 +70249,7 @@ export namespace Prisma {
     readonly gateRequiredType: FieldRef<"SchoolSetting", 'String'>
     readonly idCardTemplateFront: FieldRef<"SchoolSetting", 'String'>
     readonly idCardTemplateBack: FieldRef<"SchoolSetting", 'String'>
+    readonly setupStatus: FieldRef<"SchoolSetting", 'Json'>
     readonly createdAt: FieldRef<"SchoolSetting", 'DateTime'>
     readonly updatedAt: FieldRef<"SchoolSetting", 'DateTime'>
   }
@@ -154872,12 +155156,18 @@ export namespace Prisma {
     id: string | null
     schoolId: string | null
     userId: string | null
+    mrn: string | null
     firstName: string | null
     lastName: string | null
     dob: Date | null
     gender: string | null
     contactNumber: string | null
     address: string | null
+    bloodType: string | null
+    allergies: string | null
+    chronicConditions: string | null
+    guardianName: string | null
+    guardianContact: string | null
     medicalHistory: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -154887,12 +155177,18 @@ export namespace Prisma {
     id: string | null
     schoolId: string | null
     userId: string | null
+    mrn: string | null
     firstName: string | null
     lastName: string | null
     dob: Date | null
     gender: string | null
     contactNumber: string | null
     address: string | null
+    bloodType: string | null
+    allergies: string | null
+    chronicConditions: string | null
+    guardianName: string | null
+    guardianContact: string | null
     medicalHistory: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -154902,12 +155198,18 @@ export namespace Prisma {
     id: number
     schoolId: number
     userId: number
+    mrn: number
     firstName: number
     lastName: number
     dob: number
     gender: number
     contactNumber: number
     address: number
+    bloodType: number
+    allergies: number
+    chronicConditions: number
+    guardianName: number
+    guardianContact: number
     medicalHistory: number
     createdAt: number
     updatedAt: number
@@ -154919,12 +155221,18 @@ export namespace Prisma {
     id?: true
     schoolId?: true
     userId?: true
+    mrn?: true
     firstName?: true
     lastName?: true
     dob?: true
     gender?: true
     contactNumber?: true
     address?: true
+    bloodType?: true
+    allergies?: true
+    chronicConditions?: true
+    guardianName?: true
+    guardianContact?: true
     medicalHistory?: true
     createdAt?: true
     updatedAt?: true
@@ -154934,12 +155242,18 @@ export namespace Prisma {
     id?: true
     schoolId?: true
     userId?: true
+    mrn?: true
     firstName?: true
     lastName?: true
     dob?: true
     gender?: true
     contactNumber?: true
     address?: true
+    bloodType?: true
+    allergies?: true
+    chronicConditions?: true
+    guardianName?: true
+    guardianContact?: true
     medicalHistory?: true
     createdAt?: true
     updatedAt?: true
@@ -154949,12 +155263,18 @@ export namespace Prisma {
     id?: true
     schoolId?: true
     userId?: true
+    mrn?: true
     firstName?: true
     lastName?: true
     dob?: true
     gender?: true
     contactNumber?: true
     address?: true
+    bloodType?: true
+    allergies?: true
+    chronicConditions?: true
+    guardianName?: true
+    guardianContact?: true
     medicalHistory?: true
     createdAt?: true
     updatedAt?: true
@@ -155037,12 +155357,18 @@ export namespace Prisma {
     id: string
     schoolId: string
     userId: string | null
+    mrn: string | null
     firstName: string | null
     lastName: string | null
     dob: Date | null
     gender: string | null
     contactNumber: string | null
     address: string | null
+    bloodType: string | null
+    allergies: string | null
+    chronicConditions: string | null
+    guardianName: string | null
+    guardianContact: string | null
     medicalHistory: string | null
     createdAt: Date
     updatedAt: Date
@@ -155069,12 +155395,18 @@ export namespace Prisma {
     id?: boolean
     schoolId?: boolean
     userId?: boolean
+    mrn?: boolean
     firstName?: boolean
     lastName?: boolean
     dob?: boolean
     gender?: boolean
     contactNumber?: boolean
     address?: boolean
+    bloodType?: boolean
+    allergies?: boolean
+    chronicConditions?: boolean
+    guardianName?: boolean
+    guardianContact?: boolean
     medicalHistory?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -155087,6 +155419,7 @@ export namespace Prisma {
     immunizations?: boolean | ClinicPatient$immunizationsArgs<ExtArgs>
     referrals?: boolean | ClinicPatient$referralsArgs<ExtArgs>
     hospitalizations?: boolean | ClinicPatient$hospitalizationsArgs<ExtArgs>
+    dispensings?: boolean | ClinicPatient$dispensingsArgs<ExtArgs>
     _count?: boolean | ClinicPatientCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["clinicPatient"]>
 
@@ -155094,12 +155427,18 @@ export namespace Prisma {
     id?: boolean
     schoolId?: boolean
     userId?: boolean
+    mrn?: boolean
     firstName?: boolean
     lastName?: boolean
     dob?: boolean
     gender?: boolean
     contactNumber?: boolean
     address?: boolean
+    bloodType?: boolean
+    allergies?: boolean
+    chronicConditions?: boolean
+    guardianName?: boolean
+    guardianContact?: boolean
     medicalHistory?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -155111,12 +155450,18 @@ export namespace Prisma {
     id?: boolean
     schoolId?: boolean
     userId?: boolean
+    mrn?: boolean
     firstName?: boolean
     lastName?: boolean
     dob?: boolean
     gender?: boolean
     contactNumber?: boolean
     address?: boolean
+    bloodType?: boolean
+    allergies?: boolean
+    chronicConditions?: boolean
+    guardianName?: boolean
+    guardianContact?: boolean
     medicalHistory?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -155132,6 +155477,7 @@ export namespace Prisma {
     immunizations?: boolean | ClinicPatient$immunizationsArgs<ExtArgs>
     referrals?: boolean | ClinicPatient$referralsArgs<ExtArgs>
     hospitalizations?: boolean | ClinicPatient$hospitalizationsArgs<ExtArgs>
+    dispensings?: boolean | ClinicPatient$dispensingsArgs<ExtArgs>
     _count?: boolean | ClinicPatientCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type ClinicPatientIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -155151,17 +155497,24 @@ export namespace Prisma {
       immunizations: Prisma.$ClinicImmunizationPayload<ExtArgs>[]
       referrals: Prisma.$ClinicReferralPayload<ExtArgs>[]
       hospitalizations: Prisma.$ClinicHospitalizationPayload<ExtArgs>[]
+      dispensings: Prisma.$ClinicDispensingLogPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
       schoolId: string
       userId: string | null
+      mrn: string | null
       firstName: string | null
       lastName: string | null
       dob: Date | null
       gender: string | null
       contactNumber: string | null
       address: string | null
+      bloodType: string | null
+      allergies: string | null
+      chronicConditions: string | null
+      guardianName: string | null
+      guardianContact: string | null
       medicalHistory: string | null
       createdAt: Date
       updatedAt: Date
@@ -155538,6 +155891,7 @@ export namespace Prisma {
     immunizations<T extends ClinicPatient$immunizationsArgs<ExtArgs> = {}>(args?: Subset<T, ClinicPatient$immunizationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ClinicImmunizationPayload<ExtArgs>, T, "findMany"> | Null>
     referrals<T extends ClinicPatient$referralsArgs<ExtArgs> = {}>(args?: Subset<T, ClinicPatient$referralsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ClinicReferralPayload<ExtArgs>, T, "findMany"> | Null>
     hospitalizations<T extends ClinicPatient$hospitalizationsArgs<ExtArgs> = {}>(args?: Subset<T, ClinicPatient$hospitalizationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ClinicHospitalizationPayload<ExtArgs>, T, "findMany"> | Null>
+    dispensings<T extends ClinicPatient$dispensingsArgs<ExtArgs> = {}>(args?: Subset<T, ClinicPatient$dispensingsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ClinicDispensingLogPayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -155570,12 +155924,18 @@ export namespace Prisma {
     readonly id: FieldRef<"ClinicPatient", 'String'>
     readonly schoolId: FieldRef<"ClinicPatient", 'String'>
     readonly userId: FieldRef<"ClinicPatient", 'String'>
+    readonly mrn: FieldRef<"ClinicPatient", 'String'>
     readonly firstName: FieldRef<"ClinicPatient", 'String'>
     readonly lastName: FieldRef<"ClinicPatient", 'String'>
     readonly dob: FieldRef<"ClinicPatient", 'DateTime'>
     readonly gender: FieldRef<"ClinicPatient", 'String'>
     readonly contactNumber: FieldRef<"ClinicPatient", 'String'>
     readonly address: FieldRef<"ClinicPatient", 'String'>
+    readonly bloodType: FieldRef<"ClinicPatient", 'String'>
+    readonly allergies: FieldRef<"ClinicPatient", 'String'>
+    readonly chronicConditions: FieldRef<"ClinicPatient", 'String'>
+    readonly guardianName: FieldRef<"ClinicPatient", 'String'>
+    readonly guardianContact: FieldRef<"ClinicPatient", 'String'>
     readonly medicalHistory: FieldRef<"ClinicPatient", 'String'>
     readonly createdAt: FieldRef<"ClinicPatient", 'DateTime'>
     readonly updatedAt: FieldRef<"ClinicPatient", 'DateTime'>
@@ -156049,6 +156409,26 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: ClinicHospitalizationScalarFieldEnum | ClinicHospitalizationScalarFieldEnum[]
+  }
+
+  /**
+   * ClinicPatient.dispensings
+   */
+  export type ClinicPatient$dispensingsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ClinicDispensingLog
+     */
+    select?: ClinicDispensingLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ClinicDispensingLogInclude<ExtArgs> | null
+    where?: ClinicDispensingLogWhereInput
+    orderBy?: ClinicDispensingLogOrderByWithRelationInput | ClinicDispensingLogOrderByWithRelationInput[]
+    cursor?: ClinicDispensingLogWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ClinicDispensingLogScalarFieldEnum | ClinicDispensingLogScalarFieldEnum[]
   }
 
   /**
@@ -159126,8 +159506,18 @@ export namespace Prisma {
 
   export type AggregateClinicImmunization = {
     _count: ClinicImmunizationCountAggregateOutputType | null
+    _avg: ClinicImmunizationAvgAggregateOutputType | null
+    _sum: ClinicImmunizationSumAggregateOutputType | null
     _min: ClinicImmunizationMinAggregateOutputType | null
     _max: ClinicImmunizationMaxAggregateOutputType | null
+  }
+
+  export type ClinicImmunizationAvgAggregateOutputType = {
+    doseNumber: number | null
+  }
+
+  export type ClinicImmunizationSumAggregateOutputType = {
+    doseNumber: number | null
   }
 
   export type ClinicImmunizationMinAggregateOutputType = {
@@ -159136,6 +159526,10 @@ export namespace Prisma {
     patientId: string | null
     title: string | null
     details: string | null
+    vaccine: string | null
+    doseNumber: number | null
+    nextDueDate: Date | null
+    administeredBy: string | null
     date: Date | null
     schoolId: string | null
     createdAt: Date | null
@@ -159148,6 +159542,10 @@ export namespace Prisma {
     patientId: string | null
     title: string | null
     details: string | null
+    vaccine: string | null
+    doseNumber: number | null
+    nextDueDate: Date | null
+    administeredBy: string | null
     date: Date | null
     schoolId: string | null
     createdAt: Date | null
@@ -159160,6 +159558,10 @@ export namespace Prisma {
     patientId: number
     title: number
     details: number
+    vaccine: number
+    doseNumber: number
+    nextDueDate: number
+    administeredBy: number
     date: number
     schoolId: number
     createdAt: number
@@ -159168,12 +159570,24 @@ export namespace Prisma {
   }
 
 
+  export type ClinicImmunizationAvgAggregateInputType = {
+    doseNumber?: true
+  }
+
+  export type ClinicImmunizationSumAggregateInputType = {
+    doseNumber?: true
+  }
+
   export type ClinicImmunizationMinAggregateInputType = {
     id?: true
     userId?: true
     patientId?: true
     title?: true
     details?: true
+    vaccine?: true
+    doseNumber?: true
+    nextDueDate?: true
+    administeredBy?: true
     date?: true
     schoolId?: true
     createdAt?: true
@@ -159186,6 +159600,10 @@ export namespace Prisma {
     patientId?: true
     title?: true
     details?: true
+    vaccine?: true
+    doseNumber?: true
+    nextDueDate?: true
+    administeredBy?: true
     date?: true
     schoolId?: true
     createdAt?: true
@@ -159198,6 +159616,10 @@ export namespace Prisma {
     patientId?: true
     title?: true
     details?: true
+    vaccine?: true
+    doseNumber?: true
+    nextDueDate?: true
+    administeredBy?: true
     date?: true
     schoolId?: true
     createdAt?: true
@@ -159243,6 +159665,18 @@ export namespace Prisma {
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
+     * Select which fields to average
+    **/
+    _avg?: ClinicImmunizationAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: ClinicImmunizationSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: ClinicImmunizationMinAggregateInputType
@@ -159273,6 +159707,8 @@ export namespace Prisma {
     take?: number
     skip?: number
     _count?: ClinicImmunizationCountAggregateInputType | true
+    _avg?: ClinicImmunizationAvgAggregateInputType
+    _sum?: ClinicImmunizationSumAggregateInputType
     _min?: ClinicImmunizationMinAggregateInputType
     _max?: ClinicImmunizationMaxAggregateInputType
   }
@@ -159282,12 +159718,18 @@ export namespace Prisma {
     userId: string | null
     patientId: string | null
     title: string
-    details: string
+    details: string | null
+    vaccine: string | null
+    doseNumber: number | null
+    nextDueDate: Date | null
+    administeredBy: string | null
     date: Date
     schoolId: string
     createdAt: Date
     updatedAt: Date
     _count: ClinicImmunizationCountAggregateOutputType | null
+    _avg: ClinicImmunizationAvgAggregateOutputType | null
+    _sum: ClinicImmunizationSumAggregateOutputType | null
     _min: ClinicImmunizationMinAggregateOutputType | null
     _max: ClinicImmunizationMaxAggregateOutputType | null
   }
@@ -159312,6 +159754,10 @@ export namespace Prisma {
     patientId?: boolean
     title?: boolean
     details?: boolean
+    vaccine?: boolean
+    doseNumber?: boolean
+    nextDueDate?: boolean
+    administeredBy?: boolean
     date?: boolean
     schoolId?: boolean
     createdAt?: boolean
@@ -159326,6 +159772,10 @@ export namespace Prisma {
     patientId?: boolean
     title?: boolean
     details?: boolean
+    vaccine?: boolean
+    doseNumber?: boolean
+    nextDueDate?: boolean
+    administeredBy?: boolean
     date?: boolean
     schoolId?: boolean
     createdAt?: boolean
@@ -159340,6 +159790,10 @@ export namespace Prisma {
     patientId?: boolean
     title?: boolean
     details?: boolean
+    vaccine?: boolean
+    doseNumber?: boolean
+    nextDueDate?: boolean
+    administeredBy?: boolean
     date?: boolean
     schoolId?: boolean
     createdAt?: boolean
@@ -159366,7 +159820,11 @@ export namespace Prisma {
       userId: string | null
       patientId: string | null
       title: string
-      details: string
+      details: string | null
+      vaccine: string | null
+      doseNumber: number | null
+      nextDueDate: Date | null
+      administeredBy: string | null
       date: Date
       schoolId: string
       createdAt: Date
@@ -159771,6 +160229,10 @@ export namespace Prisma {
     readonly patientId: FieldRef<"ClinicImmunization", 'String'>
     readonly title: FieldRef<"ClinicImmunization", 'String'>
     readonly details: FieldRef<"ClinicImmunization", 'String'>
+    readonly vaccine: FieldRef<"ClinicImmunization", 'String'>
+    readonly doseNumber: FieldRef<"ClinicImmunization", 'Int'>
+    readonly nextDueDate: FieldRef<"ClinicImmunization", 'DateTime'>
+    readonly administeredBy: FieldRef<"ClinicImmunization", 'String'>
     readonly date: FieldRef<"ClinicImmunization", 'DateTime'>
     readonly schoolId: FieldRef<"ClinicImmunization", 'String'>
     readonly createdAt: FieldRef<"ClinicImmunization", 'DateTime'>
@@ -160156,6 +160618,9 @@ export namespace Prisma {
     date: Date | null
     to: string | null
     address: string | null
+    urgency: string | null
+    status: string | null
+    outcomeNotes: string | null
     schoolId: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -160170,6 +160635,9 @@ export namespace Prisma {
     date: Date | null
     to: string | null
     address: string | null
+    urgency: string | null
+    status: string | null
+    outcomeNotes: string | null
     schoolId: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -160184,6 +160652,9 @@ export namespace Prisma {
     date: number
     to: number
     address: number
+    urgency: number
+    status: number
+    outcomeNotes: number
     schoolId: number
     createdAt: number
     updatedAt: number
@@ -160200,6 +160671,9 @@ export namespace Prisma {
     date?: true
     to?: true
     address?: true
+    urgency?: true
+    status?: true
+    outcomeNotes?: true
     schoolId?: true
     createdAt?: true
     updatedAt?: true
@@ -160214,6 +160688,9 @@ export namespace Prisma {
     date?: true
     to?: true
     address?: true
+    urgency?: true
+    status?: true
+    outcomeNotes?: true
     schoolId?: true
     createdAt?: true
     updatedAt?: true
@@ -160228,6 +160705,9 @@ export namespace Prisma {
     date?: true
     to?: true
     address?: true
+    urgency?: true
+    status?: true
+    outcomeNotes?: true
     schoolId?: true
     createdAt?: true
     updatedAt?: true
@@ -160315,6 +160795,9 @@ export namespace Prisma {
     date: Date
     to: string
     address: string
+    urgency: string | null
+    status: string
+    outcomeNotes: string | null
     schoolId: string
     createdAt: Date
     updatedAt: Date
@@ -160346,6 +160829,9 @@ export namespace Prisma {
     date?: boolean
     to?: boolean
     address?: boolean
+    urgency?: boolean
+    status?: boolean
+    outcomeNotes?: boolean
     schoolId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -160362,6 +160848,9 @@ export namespace Prisma {
     date?: boolean
     to?: boolean
     address?: boolean
+    urgency?: boolean
+    status?: boolean
+    outcomeNotes?: boolean
     schoolId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -160378,6 +160867,9 @@ export namespace Prisma {
     date?: boolean
     to?: boolean
     address?: boolean
+    urgency?: boolean
+    status?: boolean
+    outcomeNotes?: boolean
     schoolId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -160407,6 +160899,9 @@ export namespace Prisma {
       date: Date
       to: string
       address: string
+      urgency: string | null
+      status: string
+      outcomeNotes: string | null
       schoolId: string
       createdAt: Date
       updatedAt: Date
@@ -160813,6 +161308,9 @@ export namespace Prisma {
     readonly date: FieldRef<"ClinicReferral", 'DateTime'>
     readonly to: FieldRef<"ClinicReferral", 'String'>
     readonly address: FieldRef<"ClinicReferral", 'String'>
+    readonly urgency: FieldRef<"ClinicReferral", 'String'>
+    readonly status: FieldRef<"ClinicReferral", 'String'>
+    readonly outcomeNotes: FieldRef<"ClinicReferral", 'String'>
     readonly schoolId: FieldRef<"ClinicReferral", 'String'>
     readonly createdAt: FieldRef<"ClinicReferral", 'DateTime'>
     readonly updatedAt: FieldRef<"ClinicReferral", 'DateTime'>
@@ -161543,6 +162041,8 @@ export namespace Prisma {
     user?: boolean | ClinicVisit$userArgs<ExtArgs>
     patient?: boolean | ClinicVisit$patientArgs<ExtArgs>
     school?: boolean | SchoolDefaultArgs<ExtArgs>
+    dispensings?: boolean | ClinicVisit$dispensingsArgs<ExtArgs>
+    _count?: boolean | ClinicVisitCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["clinicVisit"]>
 
   export type ClinicVisitSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -161604,6 +162104,8 @@ export namespace Prisma {
     user?: boolean | ClinicVisit$userArgs<ExtArgs>
     patient?: boolean | ClinicVisit$patientArgs<ExtArgs>
     school?: boolean | SchoolDefaultArgs<ExtArgs>
+    dispensings?: boolean | ClinicVisit$dispensingsArgs<ExtArgs>
+    _count?: boolean | ClinicVisitCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type ClinicVisitIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | ClinicVisit$userArgs<ExtArgs>
@@ -161617,6 +162119,7 @@ export namespace Prisma {
       user: Prisma.$UserPayload<ExtArgs> | null
       patient: Prisma.$ClinicPatientPayload<ExtArgs> | null
       school: Prisma.$SchoolPayload<ExtArgs>
+      dispensings: Prisma.$ClinicDispensingLogPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -162009,6 +162512,7 @@ export namespace Prisma {
     user<T extends ClinicVisit$userArgs<ExtArgs> = {}>(args?: Subset<T, ClinicVisit$userArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     patient<T extends ClinicVisit$patientArgs<ExtArgs> = {}>(args?: Subset<T, ClinicVisit$patientArgs<ExtArgs>>): Prisma__ClinicPatientClient<$Result.GetResult<Prisma.$ClinicPatientPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     school<T extends SchoolDefaultArgs<ExtArgs> = {}>(args?: Subset<T, SchoolDefaultArgs<ExtArgs>>): Prisma__SchoolClient<$Result.GetResult<Prisma.$SchoolPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    dispensings<T extends ClinicVisit$dispensingsArgs<ExtArgs> = {}>(args?: Subset<T, ClinicVisit$dispensingsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ClinicDispensingLogPayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -162409,6 +162913,26 @@ export namespace Prisma {
   }
 
   /**
+   * ClinicVisit.dispensings
+   */
+  export type ClinicVisit$dispensingsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ClinicDispensingLog
+     */
+    select?: ClinicDispensingLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ClinicDispensingLogInclude<ExtArgs> | null
+    where?: ClinicDispensingLogWhereInput
+    orderBy?: ClinicDispensingLogOrderByWithRelationInput | ClinicDispensingLogOrderByWithRelationInput[]
+    cursor?: ClinicDispensingLogWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ClinicDispensingLogScalarFieldEnum | ClinicDispensingLogScalarFieldEnum[]
+  }
+
+  /**
    * ClinicVisit without action
    */
   export type ClinicVisitDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -162420,6 +162944,2208 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: ClinicVisitInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model ClinicInventoryItem
+   */
+
+  export type AggregateClinicInventoryItem = {
+    _count: ClinicInventoryItemCountAggregateOutputType | null
+    _avg: ClinicInventoryItemAvgAggregateOutputType | null
+    _sum: ClinicInventoryItemSumAggregateOutputType | null
+    _min: ClinicInventoryItemMinAggregateOutputType | null
+    _max: ClinicInventoryItemMaxAggregateOutputType | null
+  }
+
+  export type ClinicInventoryItemAvgAggregateOutputType = {
+    stock: number | null
+    reorderLevel: number | null
+    unitCost: number | null
+    unitPrice: number | null
+  }
+
+  export type ClinicInventoryItemSumAggregateOutputType = {
+    stock: number | null
+    reorderLevel: number | null
+    unitCost: number | null
+    unitPrice: number | null
+  }
+
+  export type ClinicInventoryItemMinAggregateOutputType = {
+    id: string | null
+    schoolId: string | null
+    name: string | null
+    category: string | null
+    batchNumber: string | null
+    expiryDate: Date | null
+    unit: string | null
+    stock: number | null
+    reorderLevel: number | null
+    unitCost: number | null
+    unitPrice: number | null
+    location: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type ClinicInventoryItemMaxAggregateOutputType = {
+    id: string | null
+    schoolId: string | null
+    name: string | null
+    category: string | null
+    batchNumber: string | null
+    expiryDate: Date | null
+    unit: string | null
+    stock: number | null
+    reorderLevel: number | null
+    unitCost: number | null
+    unitPrice: number | null
+    location: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type ClinicInventoryItemCountAggregateOutputType = {
+    id: number
+    schoolId: number
+    name: number
+    category: number
+    batchNumber: number
+    expiryDate: number
+    unit: number
+    stock: number
+    reorderLevel: number
+    unitCost: number
+    unitPrice: number
+    location: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type ClinicInventoryItemAvgAggregateInputType = {
+    stock?: true
+    reorderLevel?: true
+    unitCost?: true
+    unitPrice?: true
+  }
+
+  export type ClinicInventoryItemSumAggregateInputType = {
+    stock?: true
+    reorderLevel?: true
+    unitCost?: true
+    unitPrice?: true
+  }
+
+  export type ClinicInventoryItemMinAggregateInputType = {
+    id?: true
+    schoolId?: true
+    name?: true
+    category?: true
+    batchNumber?: true
+    expiryDate?: true
+    unit?: true
+    stock?: true
+    reorderLevel?: true
+    unitCost?: true
+    unitPrice?: true
+    location?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type ClinicInventoryItemMaxAggregateInputType = {
+    id?: true
+    schoolId?: true
+    name?: true
+    category?: true
+    batchNumber?: true
+    expiryDate?: true
+    unit?: true
+    stock?: true
+    reorderLevel?: true
+    unitCost?: true
+    unitPrice?: true
+    location?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type ClinicInventoryItemCountAggregateInputType = {
+    id?: true
+    schoolId?: true
+    name?: true
+    category?: true
+    batchNumber?: true
+    expiryDate?: true
+    unit?: true
+    stock?: true
+    reorderLevel?: true
+    unitCost?: true
+    unitPrice?: true
+    location?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type ClinicInventoryItemAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ClinicInventoryItem to aggregate.
+     */
+    where?: ClinicInventoryItemWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ClinicInventoryItems to fetch.
+     */
+    orderBy?: ClinicInventoryItemOrderByWithRelationInput | ClinicInventoryItemOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ClinicInventoryItemWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ClinicInventoryItems from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ClinicInventoryItems.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned ClinicInventoryItems
+    **/
+    _count?: true | ClinicInventoryItemCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: ClinicInventoryItemAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: ClinicInventoryItemSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ClinicInventoryItemMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ClinicInventoryItemMaxAggregateInputType
+  }
+
+  export type GetClinicInventoryItemAggregateType<T extends ClinicInventoryItemAggregateArgs> = {
+        [P in keyof T & keyof AggregateClinicInventoryItem]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateClinicInventoryItem[P]>
+      : GetScalarType<T[P], AggregateClinicInventoryItem[P]>
+  }
+
+
+
+
+  export type ClinicInventoryItemGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ClinicInventoryItemWhereInput
+    orderBy?: ClinicInventoryItemOrderByWithAggregationInput | ClinicInventoryItemOrderByWithAggregationInput[]
+    by: ClinicInventoryItemScalarFieldEnum[] | ClinicInventoryItemScalarFieldEnum
+    having?: ClinicInventoryItemScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ClinicInventoryItemCountAggregateInputType | true
+    _avg?: ClinicInventoryItemAvgAggregateInputType
+    _sum?: ClinicInventoryItemSumAggregateInputType
+    _min?: ClinicInventoryItemMinAggregateInputType
+    _max?: ClinicInventoryItemMaxAggregateInputType
+  }
+
+  export type ClinicInventoryItemGroupByOutputType = {
+    id: string
+    schoolId: string
+    name: string
+    category: string
+    batchNumber: string | null
+    expiryDate: Date | null
+    unit: string
+    stock: number
+    reorderLevel: number
+    unitCost: number
+    unitPrice: number
+    location: string | null
+    createdAt: Date
+    updatedAt: Date
+    _count: ClinicInventoryItemCountAggregateOutputType | null
+    _avg: ClinicInventoryItemAvgAggregateOutputType | null
+    _sum: ClinicInventoryItemSumAggregateOutputType | null
+    _min: ClinicInventoryItemMinAggregateOutputType | null
+    _max: ClinicInventoryItemMaxAggregateOutputType | null
+  }
+
+  type GetClinicInventoryItemGroupByPayload<T extends ClinicInventoryItemGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ClinicInventoryItemGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ClinicInventoryItemGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ClinicInventoryItemGroupByOutputType[P]>
+            : GetScalarType<T[P], ClinicInventoryItemGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ClinicInventoryItemSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    schoolId?: boolean
+    name?: boolean
+    category?: boolean
+    batchNumber?: boolean
+    expiryDate?: boolean
+    unit?: boolean
+    stock?: boolean
+    reorderLevel?: boolean
+    unitCost?: boolean
+    unitPrice?: boolean
+    location?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    school?: boolean | SchoolDefaultArgs<ExtArgs>
+    dispensings?: boolean | ClinicInventoryItem$dispensingsArgs<ExtArgs>
+    _count?: boolean | ClinicInventoryItemCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["clinicInventoryItem"]>
+
+  export type ClinicInventoryItemSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    schoolId?: boolean
+    name?: boolean
+    category?: boolean
+    batchNumber?: boolean
+    expiryDate?: boolean
+    unit?: boolean
+    stock?: boolean
+    reorderLevel?: boolean
+    unitCost?: boolean
+    unitPrice?: boolean
+    location?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    school?: boolean | SchoolDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["clinicInventoryItem"]>
+
+  export type ClinicInventoryItemSelectScalar = {
+    id?: boolean
+    schoolId?: boolean
+    name?: boolean
+    category?: boolean
+    batchNumber?: boolean
+    expiryDate?: boolean
+    unit?: boolean
+    stock?: boolean
+    reorderLevel?: boolean
+    unitCost?: boolean
+    unitPrice?: boolean
+    location?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type ClinicInventoryItemInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    school?: boolean | SchoolDefaultArgs<ExtArgs>
+    dispensings?: boolean | ClinicInventoryItem$dispensingsArgs<ExtArgs>
+    _count?: boolean | ClinicInventoryItemCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type ClinicInventoryItemIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    school?: boolean | SchoolDefaultArgs<ExtArgs>
+  }
+
+  export type $ClinicInventoryItemPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "ClinicInventoryItem"
+    objects: {
+      school: Prisma.$SchoolPayload<ExtArgs>
+      dispensings: Prisma.$ClinicDispensingLogPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      schoolId: string
+      name: string
+      category: string
+      batchNumber: string | null
+      expiryDate: Date | null
+      unit: string
+      stock: number
+      reorderLevel: number
+      unitCost: number
+      unitPrice: number
+      location: string | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["clinicInventoryItem"]>
+    composites: {}
+  }
+
+  type ClinicInventoryItemGetPayload<S extends boolean | null | undefined | ClinicInventoryItemDefaultArgs> = $Result.GetResult<Prisma.$ClinicInventoryItemPayload, S>
+
+  type ClinicInventoryItemCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<ClinicInventoryItemFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: ClinicInventoryItemCountAggregateInputType | true
+    }
+
+  export interface ClinicInventoryItemDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['ClinicInventoryItem'], meta: { name: 'ClinicInventoryItem' } }
+    /**
+     * Find zero or one ClinicInventoryItem that matches the filter.
+     * @param {ClinicInventoryItemFindUniqueArgs} args - Arguments to find a ClinicInventoryItem
+     * @example
+     * // Get one ClinicInventoryItem
+     * const clinicInventoryItem = await prisma.clinicInventoryItem.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ClinicInventoryItemFindUniqueArgs>(args: SelectSubset<T, ClinicInventoryItemFindUniqueArgs<ExtArgs>>): Prisma__ClinicInventoryItemClient<$Result.GetResult<Prisma.$ClinicInventoryItemPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one ClinicInventoryItem that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {ClinicInventoryItemFindUniqueOrThrowArgs} args - Arguments to find a ClinicInventoryItem
+     * @example
+     * // Get one ClinicInventoryItem
+     * const clinicInventoryItem = await prisma.clinicInventoryItem.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ClinicInventoryItemFindUniqueOrThrowArgs>(args: SelectSubset<T, ClinicInventoryItemFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ClinicInventoryItemClient<$Result.GetResult<Prisma.$ClinicInventoryItemPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first ClinicInventoryItem that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ClinicInventoryItemFindFirstArgs} args - Arguments to find a ClinicInventoryItem
+     * @example
+     * // Get one ClinicInventoryItem
+     * const clinicInventoryItem = await prisma.clinicInventoryItem.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ClinicInventoryItemFindFirstArgs>(args?: SelectSubset<T, ClinicInventoryItemFindFirstArgs<ExtArgs>>): Prisma__ClinicInventoryItemClient<$Result.GetResult<Prisma.$ClinicInventoryItemPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first ClinicInventoryItem that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ClinicInventoryItemFindFirstOrThrowArgs} args - Arguments to find a ClinicInventoryItem
+     * @example
+     * // Get one ClinicInventoryItem
+     * const clinicInventoryItem = await prisma.clinicInventoryItem.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ClinicInventoryItemFindFirstOrThrowArgs>(args?: SelectSubset<T, ClinicInventoryItemFindFirstOrThrowArgs<ExtArgs>>): Prisma__ClinicInventoryItemClient<$Result.GetResult<Prisma.$ClinicInventoryItemPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more ClinicInventoryItems that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ClinicInventoryItemFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all ClinicInventoryItems
+     * const clinicInventoryItems = await prisma.clinicInventoryItem.findMany()
+     * 
+     * // Get first 10 ClinicInventoryItems
+     * const clinicInventoryItems = await prisma.clinicInventoryItem.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const clinicInventoryItemWithIdOnly = await prisma.clinicInventoryItem.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ClinicInventoryItemFindManyArgs>(args?: SelectSubset<T, ClinicInventoryItemFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ClinicInventoryItemPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a ClinicInventoryItem.
+     * @param {ClinicInventoryItemCreateArgs} args - Arguments to create a ClinicInventoryItem.
+     * @example
+     * // Create one ClinicInventoryItem
+     * const ClinicInventoryItem = await prisma.clinicInventoryItem.create({
+     *   data: {
+     *     // ... data to create a ClinicInventoryItem
+     *   }
+     * })
+     * 
+     */
+    create<T extends ClinicInventoryItemCreateArgs>(args: SelectSubset<T, ClinicInventoryItemCreateArgs<ExtArgs>>): Prisma__ClinicInventoryItemClient<$Result.GetResult<Prisma.$ClinicInventoryItemPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many ClinicInventoryItems.
+     * @param {ClinicInventoryItemCreateManyArgs} args - Arguments to create many ClinicInventoryItems.
+     * @example
+     * // Create many ClinicInventoryItems
+     * const clinicInventoryItem = await prisma.clinicInventoryItem.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ClinicInventoryItemCreateManyArgs>(args?: SelectSubset<T, ClinicInventoryItemCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many ClinicInventoryItems and returns the data saved in the database.
+     * @param {ClinicInventoryItemCreateManyAndReturnArgs} args - Arguments to create many ClinicInventoryItems.
+     * @example
+     * // Create many ClinicInventoryItems
+     * const clinicInventoryItem = await prisma.clinicInventoryItem.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many ClinicInventoryItems and only return the `id`
+     * const clinicInventoryItemWithIdOnly = await prisma.clinicInventoryItem.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends ClinicInventoryItemCreateManyAndReturnArgs>(args?: SelectSubset<T, ClinicInventoryItemCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ClinicInventoryItemPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a ClinicInventoryItem.
+     * @param {ClinicInventoryItemDeleteArgs} args - Arguments to delete one ClinicInventoryItem.
+     * @example
+     * // Delete one ClinicInventoryItem
+     * const ClinicInventoryItem = await prisma.clinicInventoryItem.delete({
+     *   where: {
+     *     // ... filter to delete one ClinicInventoryItem
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ClinicInventoryItemDeleteArgs>(args: SelectSubset<T, ClinicInventoryItemDeleteArgs<ExtArgs>>): Prisma__ClinicInventoryItemClient<$Result.GetResult<Prisma.$ClinicInventoryItemPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one ClinicInventoryItem.
+     * @param {ClinicInventoryItemUpdateArgs} args - Arguments to update one ClinicInventoryItem.
+     * @example
+     * // Update one ClinicInventoryItem
+     * const clinicInventoryItem = await prisma.clinicInventoryItem.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ClinicInventoryItemUpdateArgs>(args: SelectSubset<T, ClinicInventoryItemUpdateArgs<ExtArgs>>): Prisma__ClinicInventoryItemClient<$Result.GetResult<Prisma.$ClinicInventoryItemPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more ClinicInventoryItems.
+     * @param {ClinicInventoryItemDeleteManyArgs} args - Arguments to filter ClinicInventoryItems to delete.
+     * @example
+     * // Delete a few ClinicInventoryItems
+     * const { count } = await prisma.clinicInventoryItem.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ClinicInventoryItemDeleteManyArgs>(args?: SelectSubset<T, ClinicInventoryItemDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ClinicInventoryItems.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ClinicInventoryItemUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many ClinicInventoryItems
+     * const clinicInventoryItem = await prisma.clinicInventoryItem.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ClinicInventoryItemUpdateManyArgs>(args: SelectSubset<T, ClinicInventoryItemUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one ClinicInventoryItem.
+     * @param {ClinicInventoryItemUpsertArgs} args - Arguments to update or create a ClinicInventoryItem.
+     * @example
+     * // Update or create a ClinicInventoryItem
+     * const clinicInventoryItem = await prisma.clinicInventoryItem.upsert({
+     *   create: {
+     *     // ... data to create a ClinicInventoryItem
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the ClinicInventoryItem we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ClinicInventoryItemUpsertArgs>(args: SelectSubset<T, ClinicInventoryItemUpsertArgs<ExtArgs>>): Prisma__ClinicInventoryItemClient<$Result.GetResult<Prisma.$ClinicInventoryItemPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of ClinicInventoryItems.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ClinicInventoryItemCountArgs} args - Arguments to filter ClinicInventoryItems to count.
+     * @example
+     * // Count the number of ClinicInventoryItems
+     * const count = await prisma.clinicInventoryItem.count({
+     *   where: {
+     *     // ... the filter for the ClinicInventoryItems we want to count
+     *   }
+     * })
+    **/
+    count<T extends ClinicInventoryItemCountArgs>(
+      args?: Subset<T, ClinicInventoryItemCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ClinicInventoryItemCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a ClinicInventoryItem.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ClinicInventoryItemAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ClinicInventoryItemAggregateArgs>(args: Subset<T, ClinicInventoryItemAggregateArgs>): Prisma.PrismaPromise<GetClinicInventoryItemAggregateType<T>>
+
+    /**
+     * Group by ClinicInventoryItem.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ClinicInventoryItemGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ClinicInventoryItemGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ClinicInventoryItemGroupByArgs['orderBy'] }
+        : { orderBy?: ClinicInventoryItemGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ClinicInventoryItemGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetClinicInventoryItemGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the ClinicInventoryItem model
+   */
+  readonly fields: ClinicInventoryItemFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for ClinicInventoryItem.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ClinicInventoryItemClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    school<T extends SchoolDefaultArgs<ExtArgs> = {}>(args?: Subset<T, SchoolDefaultArgs<ExtArgs>>): Prisma__SchoolClient<$Result.GetResult<Prisma.$SchoolPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    dispensings<T extends ClinicInventoryItem$dispensingsArgs<ExtArgs> = {}>(args?: Subset<T, ClinicInventoryItem$dispensingsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ClinicDispensingLogPayload<ExtArgs>, T, "findMany"> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the ClinicInventoryItem model
+   */ 
+  interface ClinicInventoryItemFieldRefs {
+    readonly id: FieldRef<"ClinicInventoryItem", 'String'>
+    readonly schoolId: FieldRef<"ClinicInventoryItem", 'String'>
+    readonly name: FieldRef<"ClinicInventoryItem", 'String'>
+    readonly category: FieldRef<"ClinicInventoryItem", 'String'>
+    readonly batchNumber: FieldRef<"ClinicInventoryItem", 'String'>
+    readonly expiryDate: FieldRef<"ClinicInventoryItem", 'DateTime'>
+    readonly unit: FieldRef<"ClinicInventoryItem", 'String'>
+    readonly stock: FieldRef<"ClinicInventoryItem", 'Int'>
+    readonly reorderLevel: FieldRef<"ClinicInventoryItem", 'Int'>
+    readonly unitCost: FieldRef<"ClinicInventoryItem", 'Float'>
+    readonly unitPrice: FieldRef<"ClinicInventoryItem", 'Float'>
+    readonly location: FieldRef<"ClinicInventoryItem", 'String'>
+    readonly createdAt: FieldRef<"ClinicInventoryItem", 'DateTime'>
+    readonly updatedAt: FieldRef<"ClinicInventoryItem", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * ClinicInventoryItem findUnique
+   */
+  export type ClinicInventoryItemFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ClinicInventoryItem
+     */
+    select?: ClinicInventoryItemSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ClinicInventoryItemInclude<ExtArgs> | null
+    /**
+     * Filter, which ClinicInventoryItem to fetch.
+     */
+    where: ClinicInventoryItemWhereUniqueInput
+  }
+
+  /**
+   * ClinicInventoryItem findUniqueOrThrow
+   */
+  export type ClinicInventoryItemFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ClinicInventoryItem
+     */
+    select?: ClinicInventoryItemSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ClinicInventoryItemInclude<ExtArgs> | null
+    /**
+     * Filter, which ClinicInventoryItem to fetch.
+     */
+    where: ClinicInventoryItemWhereUniqueInput
+  }
+
+  /**
+   * ClinicInventoryItem findFirst
+   */
+  export type ClinicInventoryItemFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ClinicInventoryItem
+     */
+    select?: ClinicInventoryItemSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ClinicInventoryItemInclude<ExtArgs> | null
+    /**
+     * Filter, which ClinicInventoryItem to fetch.
+     */
+    where?: ClinicInventoryItemWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ClinicInventoryItems to fetch.
+     */
+    orderBy?: ClinicInventoryItemOrderByWithRelationInput | ClinicInventoryItemOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ClinicInventoryItems.
+     */
+    cursor?: ClinicInventoryItemWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ClinicInventoryItems from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ClinicInventoryItems.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ClinicInventoryItems.
+     */
+    distinct?: ClinicInventoryItemScalarFieldEnum | ClinicInventoryItemScalarFieldEnum[]
+  }
+
+  /**
+   * ClinicInventoryItem findFirstOrThrow
+   */
+  export type ClinicInventoryItemFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ClinicInventoryItem
+     */
+    select?: ClinicInventoryItemSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ClinicInventoryItemInclude<ExtArgs> | null
+    /**
+     * Filter, which ClinicInventoryItem to fetch.
+     */
+    where?: ClinicInventoryItemWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ClinicInventoryItems to fetch.
+     */
+    orderBy?: ClinicInventoryItemOrderByWithRelationInput | ClinicInventoryItemOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ClinicInventoryItems.
+     */
+    cursor?: ClinicInventoryItemWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ClinicInventoryItems from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ClinicInventoryItems.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ClinicInventoryItems.
+     */
+    distinct?: ClinicInventoryItemScalarFieldEnum | ClinicInventoryItemScalarFieldEnum[]
+  }
+
+  /**
+   * ClinicInventoryItem findMany
+   */
+  export type ClinicInventoryItemFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ClinicInventoryItem
+     */
+    select?: ClinicInventoryItemSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ClinicInventoryItemInclude<ExtArgs> | null
+    /**
+     * Filter, which ClinicInventoryItems to fetch.
+     */
+    where?: ClinicInventoryItemWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ClinicInventoryItems to fetch.
+     */
+    orderBy?: ClinicInventoryItemOrderByWithRelationInput | ClinicInventoryItemOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing ClinicInventoryItems.
+     */
+    cursor?: ClinicInventoryItemWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ClinicInventoryItems from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ClinicInventoryItems.
+     */
+    skip?: number
+    distinct?: ClinicInventoryItemScalarFieldEnum | ClinicInventoryItemScalarFieldEnum[]
+  }
+
+  /**
+   * ClinicInventoryItem create
+   */
+  export type ClinicInventoryItemCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ClinicInventoryItem
+     */
+    select?: ClinicInventoryItemSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ClinicInventoryItemInclude<ExtArgs> | null
+    /**
+     * The data needed to create a ClinicInventoryItem.
+     */
+    data: XOR<ClinicInventoryItemCreateInput, ClinicInventoryItemUncheckedCreateInput>
+  }
+
+  /**
+   * ClinicInventoryItem createMany
+   */
+  export type ClinicInventoryItemCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many ClinicInventoryItems.
+     */
+    data: ClinicInventoryItemCreateManyInput | ClinicInventoryItemCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * ClinicInventoryItem createManyAndReturn
+   */
+  export type ClinicInventoryItemCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ClinicInventoryItem
+     */
+    select?: ClinicInventoryItemSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many ClinicInventoryItems.
+     */
+    data: ClinicInventoryItemCreateManyInput | ClinicInventoryItemCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ClinicInventoryItemIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * ClinicInventoryItem update
+   */
+  export type ClinicInventoryItemUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ClinicInventoryItem
+     */
+    select?: ClinicInventoryItemSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ClinicInventoryItemInclude<ExtArgs> | null
+    /**
+     * The data needed to update a ClinicInventoryItem.
+     */
+    data: XOR<ClinicInventoryItemUpdateInput, ClinicInventoryItemUncheckedUpdateInput>
+    /**
+     * Choose, which ClinicInventoryItem to update.
+     */
+    where: ClinicInventoryItemWhereUniqueInput
+  }
+
+  /**
+   * ClinicInventoryItem updateMany
+   */
+  export type ClinicInventoryItemUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update ClinicInventoryItems.
+     */
+    data: XOR<ClinicInventoryItemUpdateManyMutationInput, ClinicInventoryItemUncheckedUpdateManyInput>
+    /**
+     * Filter which ClinicInventoryItems to update
+     */
+    where?: ClinicInventoryItemWhereInput
+  }
+
+  /**
+   * ClinicInventoryItem upsert
+   */
+  export type ClinicInventoryItemUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ClinicInventoryItem
+     */
+    select?: ClinicInventoryItemSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ClinicInventoryItemInclude<ExtArgs> | null
+    /**
+     * The filter to search for the ClinicInventoryItem to update in case it exists.
+     */
+    where: ClinicInventoryItemWhereUniqueInput
+    /**
+     * In case the ClinicInventoryItem found by the `where` argument doesn't exist, create a new ClinicInventoryItem with this data.
+     */
+    create: XOR<ClinicInventoryItemCreateInput, ClinicInventoryItemUncheckedCreateInput>
+    /**
+     * In case the ClinicInventoryItem was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ClinicInventoryItemUpdateInput, ClinicInventoryItemUncheckedUpdateInput>
+  }
+
+  /**
+   * ClinicInventoryItem delete
+   */
+  export type ClinicInventoryItemDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ClinicInventoryItem
+     */
+    select?: ClinicInventoryItemSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ClinicInventoryItemInclude<ExtArgs> | null
+    /**
+     * Filter which ClinicInventoryItem to delete.
+     */
+    where: ClinicInventoryItemWhereUniqueInput
+  }
+
+  /**
+   * ClinicInventoryItem deleteMany
+   */
+  export type ClinicInventoryItemDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ClinicInventoryItems to delete
+     */
+    where?: ClinicInventoryItemWhereInput
+  }
+
+  /**
+   * ClinicInventoryItem.dispensings
+   */
+  export type ClinicInventoryItem$dispensingsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ClinicDispensingLog
+     */
+    select?: ClinicDispensingLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ClinicDispensingLogInclude<ExtArgs> | null
+    where?: ClinicDispensingLogWhereInput
+    orderBy?: ClinicDispensingLogOrderByWithRelationInput | ClinicDispensingLogOrderByWithRelationInput[]
+    cursor?: ClinicDispensingLogWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ClinicDispensingLogScalarFieldEnum | ClinicDispensingLogScalarFieldEnum[]
+  }
+
+  /**
+   * ClinicInventoryItem without action
+   */
+  export type ClinicInventoryItemDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ClinicInventoryItem
+     */
+    select?: ClinicInventoryItemSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ClinicInventoryItemInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model ClinicDispensingLog
+   */
+
+  export type AggregateClinicDispensingLog = {
+    _count: ClinicDispensingLogCountAggregateOutputType | null
+    _avg: ClinicDispensingLogAvgAggregateOutputType | null
+    _sum: ClinicDispensingLogSumAggregateOutputType | null
+    _min: ClinicDispensingLogMinAggregateOutputType | null
+    _max: ClinicDispensingLogMaxAggregateOutputType | null
+  }
+
+  export type ClinicDispensingLogAvgAggregateOutputType = {
+    quantity: number | null
+    unitCost: number | null
+    totalPrice: number | null
+  }
+
+  export type ClinicDispensingLogSumAggregateOutputType = {
+    quantity: number | null
+    unitCost: number | null
+    totalPrice: number | null
+  }
+
+  export type ClinicDispensingLogMinAggregateOutputType = {
+    id: string | null
+    schoolId: string | null
+    itemId: string | null
+    visitId: string | null
+    patientId: string | null
+    quantity: number | null
+    unitCost: number | null
+    totalPrice: number | null
+    dispensedBy: string | null
+    notes: string | null
+    dispensedAt: Date | null
+  }
+
+  export type ClinicDispensingLogMaxAggregateOutputType = {
+    id: string | null
+    schoolId: string | null
+    itemId: string | null
+    visitId: string | null
+    patientId: string | null
+    quantity: number | null
+    unitCost: number | null
+    totalPrice: number | null
+    dispensedBy: string | null
+    notes: string | null
+    dispensedAt: Date | null
+  }
+
+  export type ClinicDispensingLogCountAggregateOutputType = {
+    id: number
+    schoolId: number
+    itemId: number
+    visitId: number
+    patientId: number
+    quantity: number
+    unitCost: number
+    totalPrice: number
+    dispensedBy: number
+    notes: number
+    dispensedAt: number
+    _all: number
+  }
+
+
+  export type ClinicDispensingLogAvgAggregateInputType = {
+    quantity?: true
+    unitCost?: true
+    totalPrice?: true
+  }
+
+  export type ClinicDispensingLogSumAggregateInputType = {
+    quantity?: true
+    unitCost?: true
+    totalPrice?: true
+  }
+
+  export type ClinicDispensingLogMinAggregateInputType = {
+    id?: true
+    schoolId?: true
+    itemId?: true
+    visitId?: true
+    patientId?: true
+    quantity?: true
+    unitCost?: true
+    totalPrice?: true
+    dispensedBy?: true
+    notes?: true
+    dispensedAt?: true
+  }
+
+  export type ClinicDispensingLogMaxAggregateInputType = {
+    id?: true
+    schoolId?: true
+    itemId?: true
+    visitId?: true
+    patientId?: true
+    quantity?: true
+    unitCost?: true
+    totalPrice?: true
+    dispensedBy?: true
+    notes?: true
+    dispensedAt?: true
+  }
+
+  export type ClinicDispensingLogCountAggregateInputType = {
+    id?: true
+    schoolId?: true
+    itemId?: true
+    visitId?: true
+    patientId?: true
+    quantity?: true
+    unitCost?: true
+    totalPrice?: true
+    dispensedBy?: true
+    notes?: true
+    dispensedAt?: true
+    _all?: true
+  }
+
+  export type ClinicDispensingLogAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ClinicDispensingLog to aggregate.
+     */
+    where?: ClinicDispensingLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ClinicDispensingLogs to fetch.
+     */
+    orderBy?: ClinicDispensingLogOrderByWithRelationInput | ClinicDispensingLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ClinicDispensingLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ClinicDispensingLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ClinicDispensingLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned ClinicDispensingLogs
+    **/
+    _count?: true | ClinicDispensingLogCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: ClinicDispensingLogAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: ClinicDispensingLogSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ClinicDispensingLogMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ClinicDispensingLogMaxAggregateInputType
+  }
+
+  export type GetClinicDispensingLogAggregateType<T extends ClinicDispensingLogAggregateArgs> = {
+        [P in keyof T & keyof AggregateClinicDispensingLog]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateClinicDispensingLog[P]>
+      : GetScalarType<T[P], AggregateClinicDispensingLog[P]>
+  }
+
+
+
+
+  export type ClinicDispensingLogGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ClinicDispensingLogWhereInput
+    orderBy?: ClinicDispensingLogOrderByWithAggregationInput | ClinicDispensingLogOrderByWithAggregationInput[]
+    by: ClinicDispensingLogScalarFieldEnum[] | ClinicDispensingLogScalarFieldEnum
+    having?: ClinicDispensingLogScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ClinicDispensingLogCountAggregateInputType | true
+    _avg?: ClinicDispensingLogAvgAggregateInputType
+    _sum?: ClinicDispensingLogSumAggregateInputType
+    _min?: ClinicDispensingLogMinAggregateInputType
+    _max?: ClinicDispensingLogMaxAggregateInputType
+  }
+
+  export type ClinicDispensingLogGroupByOutputType = {
+    id: string
+    schoolId: string
+    itemId: string
+    visitId: string | null
+    patientId: string | null
+    quantity: number
+    unitCost: number
+    totalPrice: number
+    dispensedBy: string | null
+    notes: string | null
+    dispensedAt: Date
+    _count: ClinicDispensingLogCountAggregateOutputType | null
+    _avg: ClinicDispensingLogAvgAggregateOutputType | null
+    _sum: ClinicDispensingLogSumAggregateOutputType | null
+    _min: ClinicDispensingLogMinAggregateOutputType | null
+    _max: ClinicDispensingLogMaxAggregateOutputType | null
+  }
+
+  type GetClinicDispensingLogGroupByPayload<T extends ClinicDispensingLogGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ClinicDispensingLogGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ClinicDispensingLogGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ClinicDispensingLogGroupByOutputType[P]>
+            : GetScalarType<T[P], ClinicDispensingLogGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ClinicDispensingLogSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    schoolId?: boolean
+    itemId?: boolean
+    visitId?: boolean
+    patientId?: boolean
+    quantity?: boolean
+    unitCost?: boolean
+    totalPrice?: boolean
+    dispensedBy?: boolean
+    notes?: boolean
+    dispensedAt?: boolean
+    item?: boolean | ClinicInventoryItemDefaultArgs<ExtArgs>
+    visit?: boolean | ClinicDispensingLog$visitArgs<ExtArgs>
+    patient?: boolean | ClinicDispensingLog$patientArgs<ExtArgs>
+  }, ExtArgs["result"]["clinicDispensingLog"]>
+
+  export type ClinicDispensingLogSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    schoolId?: boolean
+    itemId?: boolean
+    visitId?: boolean
+    patientId?: boolean
+    quantity?: boolean
+    unitCost?: boolean
+    totalPrice?: boolean
+    dispensedBy?: boolean
+    notes?: boolean
+    dispensedAt?: boolean
+    item?: boolean | ClinicInventoryItemDefaultArgs<ExtArgs>
+    visit?: boolean | ClinicDispensingLog$visitArgs<ExtArgs>
+    patient?: boolean | ClinicDispensingLog$patientArgs<ExtArgs>
+  }, ExtArgs["result"]["clinicDispensingLog"]>
+
+  export type ClinicDispensingLogSelectScalar = {
+    id?: boolean
+    schoolId?: boolean
+    itemId?: boolean
+    visitId?: boolean
+    patientId?: boolean
+    quantity?: boolean
+    unitCost?: boolean
+    totalPrice?: boolean
+    dispensedBy?: boolean
+    notes?: boolean
+    dispensedAt?: boolean
+  }
+
+  export type ClinicDispensingLogInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    item?: boolean | ClinicInventoryItemDefaultArgs<ExtArgs>
+    visit?: boolean | ClinicDispensingLog$visitArgs<ExtArgs>
+    patient?: boolean | ClinicDispensingLog$patientArgs<ExtArgs>
+  }
+  export type ClinicDispensingLogIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    item?: boolean | ClinicInventoryItemDefaultArgs<ExtArgs>
+    visit?: boolean | ClinicDispensingLog$visitArgs<ExtArgs>
+    patient?: boolean | ClinicDispensingLog$patientArgs<ExtArgs>
+  }
+
+  export type $ClinicDispensingLogPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "ClinicDispensingLog"
+    objects: {
+      item: Prisma.$ClinicInventoryItemPayload<ExtArgs>
+      visit: Prisma.$ClinicVisitPayload<ExtArgs> | null
+      patient: Prisma.$ClinicPatientPayload<ExtArgs> | null
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      schoolId: string
+      itemId: string
+      visitId: string | null
+      patientId: string | null
+      quantity: number
+      unitCost: number
+      totalPrice: number
+      dispensedBy: string | null
+      notes: string | null
+      dispensedAt: Date
+    }, ExtArgs["result"]["clinicDispensingLog"]>
+    composites: {}
+  }
+
+  type ClinicDispensingLogGetPayload<S extends boolean | null | undefined | ClinicDispensingLogDefaultArgs> = $Result.GetResult<Prisma.$ClinicDispensingLogPayload, S>
+
+  type ClinicDispensingLogCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<ClinicDispensingLogFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: ClinicDispensingLogCountAggregateInputType | true
+    }
+
+  export interface ClinicDispensingLogDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['ClinicDispensingLog'], meta: { name: 'ClinicDispensingLog' } }
+    /**
+     * Find zero or one ClinicDispensingLog that matches the filter.
+     * @param {ClinicDispensingLogFindUniqueArgs} args - Arguments to find a ClinicDispensingLog
+     * @example
+     * // Get one ClinicDispensingLog
+     * const clinicDispensingLog = await prisma.clinicDispensingLog.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ClinicDispensingLogFindUniqueArgs>(args: SelectSubset<T, ClinicDispensingLogFindUniqueArgs<ExtArgs>>): Prisma__ClinicDispensingLogClient<$Result.GetResult<Prisma.$ClinicDispensingLogPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one ClinicDispensingLog that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {ClinicDispensingLogFindUniqueOrThrowArgs} args - Arguments to find a ClinicDispensingLog
+     * @example
+     * // Get one ClinicDispensingLog
+     * const clinicDispensingLog = await prisma.clinicDispensingLog.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ClinicDispensingLogFindUniqueOrThrowArgs>(args: SelectSubset<T, ClinicDispensingLogFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ClinicDispensingLogClient<$Result.GetResult<Prisma.$ClinicDispensingLogPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first ClinicDispensingLog that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ClinicDispensingLogFindFirstArgs} args - Arguments to find a ClinicDispensingLog
+     * @example
+     * // Get one ClinicDispensingLog
+     * const clinicDispensingLog = await prisma.clinicDispensingLog.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ClinicDispensingLogFindFirstArgs>(args?: SelectSubset<T, ClinicDispensingLogFindFirstArgs<ExtArgs>>): Prisma__ClinicDispensingLogClient<$Result.GetResult<Prisma.$ClinicDispensingLogPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first ClinicDispensingLog that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ClinicDispensingLogFindFirstOrThrowArgs} args - Arguments to find a ClinicDispensingLog
+     * @example
+     * // Get one ClinicDispensingLog
+     * const clinicDispensingLog = await prisma.clinicDispensingLog.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ClinicDispensingLogFindFirstOrThrowArgs>(args?: SelectSubset<T, ClinicDispensingLogFindFirstOrThrowArgs<ExtArgs>>): Prisma__ClinicDispensingLogClient<$Result.GetResult<Prisma.$ClinicDispensingLogPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more ClinicDispensingLogs that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ClinicDispensingLogFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all ClinicDispensingLogs
+     * const clinicDispensingLogs = await prisma.clinicDispensingLog.findMany()
+     * 
+     * // Get first 10 ClinicDispensingLogs
+     * const clinicDispensingLogs = await prisma.clinicDispensingLog.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const clinicDispensingLogWithIdOnly = await prisma.clinicDispensingLog.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ClinicDispensingLogFindManyArgs>(args?: SelectSubset<T, ClinicDispensingLogFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ClinicDispensingLogPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a ClinicDispensingLog.
+     * @param {ClinicDispensingLogCreateArgs} args - Arguments to create a ClinicDispensingLog.
+     * @example
+     * // Create one ClinicDispensingLog
+     * const ClinicDispensingLog = await prisma.clinicDispensingLog.create({
+     *   data: {
+     *     // ... data to create a ClinicDispensingLog
+     *   }
+     * })
+     * 
+     */
+    create<T extends ClinicDispensingLogCreateArgs>(args: SelectSubset<T, ClinicDispensingLogCreateArgs<ExtArgs>>): Prisma__ClinicDispensingLogClient<$Result.GetResult<Prisma.$ClinicDispensingLogPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many ClinicDispensingLogs.
+     * @param {ClinicDispensingLogCreateManyArgs} args - Arguments to create many ClinicDispensingLogs.
+     * @example
+     * // Create many ClinicDispensingLogs
+     * const clinicDispensingLog = await prisma.clinicDispensingLog.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ClinicDispensingLogCreateManyArgs>(args?: SelectSubset<T, ClinicDispensingLogCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many ClinicDispensingLogs and returns the data saved in the database.
+     * @param {ClinicDispensingLogCreateManyAndReturnArgs} args - Arguments to create many ClinicDispensingLogs.
+     * @example
+     * // Create many ClinicDispensingLogs
+     * const clinicDispensingLog = await prisma.clinicDispensingLog.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many ClinicDispensingLogs and only return the `id`
+     * const clinicDispensingLogWithIdOnly = await prisma.clinicDispensingLog.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends ClinicDispensingLogCreateManyAndReturnArgs>(args?: SelectSubset<T, ClinicDispensingLogCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ClinicDispensingLogPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a ClinicDispensingLog.
+     * @param {ClinicDispensingLogDeleteArgs} args - Arguments to delete one ClinicDispensingLog.
+     * @example
+     * // Delete one ClinicDispensingLog
+     * const ClinicDispensingLog = await prisma.clinicDispensingLog.delete({
+     *   where: {
+     *     // ... filter to delete one ClinicDispensingLog
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ClinicDispensingLogDeleteArgs>(args: SelectSubset<T, ClinicDispensingLogDeleteArgs<ExtArgs>>): Prisma__ClinicDispensingLogClient<$Result.GetResult<Prisma.$ClinicDispensingLogPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one ClinicDispensingLog.
+     * @param {ClinicDispensingLogUpdateArgs} args - Arguments to update one ClinicDispensingLog.
+     * @example
+     * // Update one ClinicDispensingLog
+     * const clinicDispensingLog = await prisma.clinicDispensingLog.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ClinicDispensingLogUpdateArgs>(args: SelectSubset<T, ClinicDispensingLogUpdateArgs<ExtArgs>>): Prisma__ClinicDispensingLogClient<$Result.GetResult<Prisma.$ClinicDispensingLogPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more ClinicDispensingLogs.
+     * @param {ClinicDispensingLogDeleteManyArgs} args - Arguments to filter ClinicDispensingLogs to delete.
+     * @example
+     * // Delete a few ClinicDispensingLogs
+     * const { count } = await prisma.clinicDispensingLog.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ClinicDispensingLogDeleteManyArgs>(args?: SelectSubset<T, ClinicDispensingLogDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ClinicDispensingLogs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ClinicDispensingLogUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many ClinicDispensingLogs
+     * const clinicDispensingLog = await prisma.clinicDispensingLog.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ClinicDispensingLogUpdateManyArgs>(args: SelectSubset<T, ClinicDispensingLogUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one ClinicDispensingLog.
+     * @param {ClinicDispensingLogUpsertArgs} args - Arguments to update or create a ClinicDispensingLog.
+     * @example
+     * // Update or create a ClinicDispensingLog
+     * const clinicDispensingLog = await prisma.clinicDispensingLog.upsert({
+     *   create: {
+     *     // ... data to create a ClinicDispensingLog
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the ClinicDispensingLog we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ClinicDispensingLogUpsertArgs>(args: SelectSubset<T, ClinicDispensingLogUpsertArgs<ExtArgs>>): Prisma__ClinicDispensingLogClient<$Result.GetResult<Prisma.$ClinicDispensingLogPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of ClinicDispensingLogs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ClinicDispensingLogCountArgs} args - Arguments to filter ClinicDispensingLogs to count.
+     * @example
+     * // Count the number of ClinicDispensingLogs
+     * const count = await prisma.clinicDispensingLog.count({
+     *   where: {
+     *     // ... the filter for the ClinicDispensingLogs we want to count
+     *   }
+     * })
+    **/
+    count<T extends ClinicDispensingLogCountArgs>(
+      args?: Subset<T, ClinicDispensingLogCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ClinicDispensingLogCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a ClinicDispensingLog.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ClinicDispensingLogAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ClinicDispensingLogAggregateArgs>(args: Subset<T, ClinicDispensingLogAggregateArgs>): Prisma.PrismaPromise<GetClinicDispensingLogAggregateType<T>>
+
+    /**
+     * Group by ClinicDispensingLog.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ClinicDispensingLogGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ClinicDispensingLogGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ClinicDispensingLogGroupByArgs['orderBy'] }
+        : { orderBy?: ClinicDispensingLogGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ClinicDispensingLogGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetClinicDispensingLogGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the ClinicDispensingLog model
+   */
+  readonly fields: ClinicDispensingLogFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for ClinicDispensingLog.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ClinicDispensingLogClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    item<T extends ClinicInventoryItemDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ClinicInventoryItemDefaultArgs<ExtArgs>>): Prisma__ClinicInventoryItemClient<$Result.GetResult<Prisma.$ClinicInventoryItemPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    visit<T extends ClinicDispensingLog$visitArgs<ExtArgs> = {}>(args?: Subset<T, ClinicDispensingLog$visitArgs<ExtArgs>>): Prisma__ClinicVisitClient<$Result.GetResult<Prisma.$ClinicVisitPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    patient<T extends ClinicDispensingLog$patientArgs<ExtArgs> = {}>(args?: Subset<T, ClinicDispensingLog$patientArgs<ExtArgs>>): Prisma__ClinicPatientClient<$Result.GetResult<Prisma.$ClinicPatientPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the ClinicDispensingLog model
+   */ 
+  interface ClinicDispensingLogFieldRefs {
+    readonly id: FieldRef<"ClinicDispensingLog", 'String'>
+    readonly schoolId: FieldRef<"ClinicDispensingLog", 'String'>
+    readonly itemId: FieldRef<"ClinicDispensingLog", 'String'>
+    readonly visitId: FieldRef<"ClinicDispensingLog", 'String'>
+    readonly patientId: FieldRef<"ClinicDispensingLog", 'String'>
+    readonly quantity: FieldRef<"ClinicDispensingLog", 'Int'>
+    readonly unitCost: FieldRef<"ClinicDispensingLog", 'Float'>
+    readonly totalPrice: FieldRef<"ClinicDispensingLog", 'Float'>
+    readonly dispensedBy: FieldRef<"ClinicDispensingLog", 'String'>
+    readonly notes: FieldRef<"ClinicDispensingLog", 'String'>
+    readonly dispensedAt: FieldRef<"ClinicDispensingLog", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * ClinicDispensingLog findUnique
+   */
+  export type ClinicDispensingLogFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ClinicDispensingLog
+     */
+    select?: ClinicDispensingLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ClinicDispensingLogInclude<ExtArgs> | null
+    /**
+     * Filter, which ClinicDispensingLog to fetch.
+     */
+    where: ClinicDispensingLogWhereUniqueInput
+  }
+
+  /**
+   * ClinicDispensingLog findUniqueOrThrow
+   */
+  export type ClinicDispensingLogFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ClinicDispensingLog
+     */
+    select?: ClinicDispensingLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ClinicDispensingLogInclude<ExtArgs> | null
+    /**
+     * Filter, which ClinicDispensingLog to fetch.
+     */
+    where: ClinicDispensingLogWhereUniqueInput
+  }
+
+  /**
+   * ClinicDispensingLog findFirst
+   */
+  export type ClinicDispensingLogFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ClinicDispensingLog
+     */
+    select?: ClinicDispensingLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ClinicDispensingLogInclude<ExtArgs> | null
+    /**
+     * Filter, which ClinicDispensingLog to fetch.
+     */
+    where?: ClinicDispensingLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ClinicDispensingLogs to fetch.
+     */
+    orderBy?: ClinicDispensingLogOrderByWithRelationInput | ClinicDispensingLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ClinicDispensingLogs.
+     */
+    cursor?: ClinicDispensingLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ClinicDispensingLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ClinicDispensingLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ClinicDispensingLogs.
+     */
+    distinct?: ClinicDispensingLogScalarFieldEnum | ClinicDispensingLogScalarFieldEnum[]
+  }
+
+  /**
+   * ClinicDispensingLog findFirstOrThrow
+   */
+  export type ClinicDispensingLogFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ClinicDispensingLog
+     */
+    select?: ClinicDispensingLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ClinicDispensingLogInclude<ExtArgs> | null
+    /**
+     * Filter, which ClinicDispensingLog to fetch.
+     */
+    where?: ClinicDispensingLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ClinicDispensingLogs to fetch.
+     */
+    orderBy?: ClinicDispensingLogOrderByWithRelationInput | ClinicDispensingLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ClinicDispensingLogs.
+     */
+    cursor?: ClinicDispensingLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ClinicDispensingLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ClinicDispensingLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ClinicDispensingLogs.
+     */
+    distinct?: ClinicDispensingLogScalarFieldEnum | ClinicDispensingLogScalarFieldEnum[]
+  }
+
+  /**
+   * ClinicDispensingLog findMany
+   */
+  export type ClinicDispensingLogFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ClinicDispensingLog
+     */
+    select?: ClinicDispensingLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ClinicDispensingLogInclude<ExtArgs> | null
+    /**
+     * Filter, which ClinicDispensingLogs to fetch.
+     */
+    where?: ClinicDispensingLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ClinicDispensingLogs to fetch.
+     */
+    orderBy?: ClinicDispensingLogOrderByWithRelationInput | ClinicDispensingLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing ClinicDispensingLogs.
+     */
+    cursor?: ClinicDispensingLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ClinicDispensingLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ClinicDispensingLogs.
+     */
+    skip?: number
+    distinct?: ClinicDispensingLogScalarFieldEnum | ClinicDispensingLogScalarFieldEnum[]
+  }
+
+  /**
+   * ClinicDispensingLog create
+   */
+  export type ClinicDispensingLogCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ClinicDispensingLog
+     */
+    select?: ClinicDispensingLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ClinicDispensingLogInclude<ExtArgs> | null
+    /**
+     * The data needed to create a ClinicDispensingLog.
+     */
+    data: XOR<ClinicDispensingLogCreateInput, ClinicDispensingLogUncheckedCreateInput>
+  }
+
+  /**
+   * ClinicDispensingLog createMany
+   */
+  export type ClinicDispensingLogCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many ClinicDispensingLogs.
+     */
+    data: ClinicDispensingLogCreateManyInput | ClinicDispensingLogCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * ClinicDispensingLog createManyAndReturn
+   */
+  export type ClinicDispensingLogCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ClinicDispensingLog
+     */
+    select?: ClinicDispensingLogSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many ClinicDispensingLogs.
+     */
+    data: ClinicDispensingLogCreateManyInput | ClinicDispensingLogCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ClinicDispensingLogIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * ClinicDispensingLog update
+   */
+  export type ClinicDispensingLogUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ClinicDispensingLog
+     */
+    select?: ClinicDispensingLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ClinicDispensingLogInclude<ExtArgs> | null
+    /**
+     * The data needed to update a ClinicDispensingLog.
+     */
+    data: XOR<ClinicDispensingLogUpdateInput, ClinicDispensingLogUncheckedUpdateInput>
+    /**
+     * Choose, which ClinicDispensingLog to update.
+     */
+    where: ClinicDispensingLogWhereUniqueInput
+  }
+
+  /**
+   * ClinicDispensingLog updateMany
+   */
+  export type ClinicDispensingLogUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update ClinicDispensingLogs.
+     */
+    data: XOR<ClinicDispensingLogUpdateManyMutationInput, ClinicDispensingLogUncheckedUpdateManyInput>
+    /**
+     * Filter which ClinicDispensingLogs to update
+     */
+    where?: ClinicDispensingLogWhereInput
+  }
+
+  /**
+   * ClinicDispensingLog upsert
+   */
+  export type ClinicDispensingLogUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ClinicDispensingLog
+     */
+    select?: ClinicDispensingLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ClinicDispensingLogInclude<ExtArgs> | null
+    /**
+     * The filter to search for the ClinicDispensingLog to update in case it exists.
+     */
+    where: ClinicDispensingLogWhereUniqueInput
+    /**
+     * In case the ClinicDispensingLog found by the `where` argument doesn't exist, create a new ClinicDispensingLog with this data.
+     */
+    create: XOR<ClinicDispensingLogCreateInput, ClinicDispensingLogUncheckedCreateInput>
+    /**
+     * In case the ClinicDispensingLog was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ClinicDispensingLogUpdateInput, ClinicDispensingLogUncheckedUpdateInput>
+  }
+
+  /**
+   * ClinicDispensingLog delete
+   */
+  export type ClinicDispensingLogDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ClinicDispensingLog
+     */
+    select?: ClinicDispensingLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ClinicDispensingLogInclude<ExtArgs> | null
+    /**
+     * Filter which ClinicDispensingLog to delete.
+     */
+    where: ClinicDispensingLogWhereUniqueInput
+  }
+
+  /**
+   * ClinicDispensingLog deleteMany
+   */
+  export type ClinicDispensingLogDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ClinicDispensingLogs to delete
+     */
+    where?: ClinicDispensingLogWhereInput
+  }
+
+  /**
+   * ClinicDispensingLog.visit
+   */
+  export type ClinicDispensingLog$visitArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ClinicVisit
+     */
+    select?: ClinicVisitSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ClinicVisitInclude<ExtArgs> | null
+    where?: ClinicVisitWhereInput
+  }
+
+  /**
+   * ClinicDispensingLog.patient
+   */
+  export type ClinicDispensingLog$patientArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ClinicPatient
+     */
+    select?: ClinicPatientSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ClinicPatientInclude<ExtArgs> | null
+    where?: ClinicPatientWhereInput
+  }
+
+  /**
+   * ClinicDispensingLog without action
+   */
+  export type ClinicDispensingLogDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ClinicDispensingLog
+     */
+    select?: ClinicDispensingLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ClinicDispensingLogInclude<ExtArgs> | null
   }
 
 
@@ -169427,6 +172153,10 @@ export namespace Prisma {
     narrative: string | null
     reportedById: string | null
     schoolId: string | null
+    hasPunishment: boolean | null
+    punishment: string | null
+    punishmentLocation: string | null
+    punishmentStatus: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -169438,6 +172168,10 @@ export namespace Prisma {
     narrative: string | null
     reportedById: string | null
     schoolId: string | null
+    hasPunishment: boolean | null
+    punishment: string | null
+    punishmentLocation: string | null
+    punishmentStatus: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -169449,6 +172183,10 @@ export namespace Prisma {
     narrative: number
     reportedById: number
     schoolId: number
+    hasPunishment: number
+    punishment: number
+    punishmentLocation: number
+    punishmentStatus: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -169462,6 +172200,10 @@ export namespace Prisma {
     narrative?: true
     reportedById?: true
     schoolId?: true
+    hasPunishment?: true
+    punishment?: true
+    punishmentLocation?: true
+    punishmentStatus?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -169473,6 +172215,10 @@ export namespace Prisma {
     narrative?: true
     reportedById?: true
     schoolId?: true
+    hasPunishment?: true
+    punishment?: true
+    punishmentLocation?: true
+    punishmentStatus?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -169484,6 +172230,10 @@ export namespace Prisma {
     narrative?: true
     reportedById?: true
     schoolId?: true
+    hasPunishment?: true
+    punishment?: true
+    punishmentLocation?: true
+    punishmentStatus?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -169568,6 +172318,10 @@ export namespace Prisma {
     narrative: string
     reportedById: string
     schoolId: string
+    hasPunishment: boolean
+    punishment: string | null
+    punishmentLocation: string | null
+    punishmentStatus: string | null
     createdAt: Date
     updatedAt: Date
     _count: PrefectReportCountAggregateOutputType | null
@@ -169596,6 +172350,10 @@ export namespace Prisma {
     narrative?: boolean
     reportedById?: boolean
     schoolId?: boolean
+    hasPunishment?: boolean
+    punishment?: boolean
+    punishmentLocation?: boolean
+    punishmentStatus?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     reportedBy?: boolean | UserDefaultArgs<ExtArgs>
@@ -169609,6 +172367,10 @@ export namespace Prisma {
     narrative?: boolean
     reportedById?: boolean
     schoolId?: boolean
+    hasPunishment?: boolean
+    punishment?: boolean
+    punishmentLocation?: boolean
+    punishmentStatus?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     reportedBy?: boolean | UserDefaultArgs<ExtArgs>
@@ -169622,6 +172384,10 @@ export namespace Prisma {
     narrative?: boolean
     reportedById?: boolean
     schoolId?: boolean
+    hasPunishment?: boolean
+    punishment?: boolean
+    punishmentLocation?: boolean
+    punishmentStatus?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
@@ -169648,6 +172414,10 @@ export namespace Prisma {
       narrative: string
       reportedById: string
       schoolId: string
+      hasPunishment: boolean
+      punishment: string | null
+      punishmentLocation: string | null
+      punishmentStatus: string | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["prefectReport"]>
@@ -170051,6 +172821,10 @@ export namespace Prisma {
     readonly narrative: FieldRef<"PrefectReport", 'String'>
     readonly reportedById: FieldRef<"PrefectReport", 'String'>
     readonly schoolId: FieldRef<"PrefectReport", 'String'>
+    readonly hasPunishment: FieldRef<"PrefectReport", 'Boolean'>
+    readonly punishment: FieldRef<"PrefectReport", 'String'>
+    readonly punishmentLocation: FieldRef<"PrefectReport", 'String'>
+    readonly punishmentStatus: FieldRef<"PrefectReport", 'String'>
     readonly createdAt: FieldRef<"PrefectReport", 'DateTime'>
     readonly updatedAt: FieldRef<"PrefectReport", 'DateTime'>
   }
@@ -182376,6 +185150,7 @@ export namespace Prisma {
     gateRequiredType: 'gateRequiredType',
     idCardTemplateFront: 'idCardTemplateFront',
     idCardTemplateBack: 'idCardTemplateBack',
+    setupStatus: 'setupStatus',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -183746,12 +186521,18 @@ export namespace Prisma {
     id: 'id',
     schoolId: 'schoolId',
     userId: 'userId',
+    mrn: 'mrn',
     firstName: 'firstName',
     lastName: 'lastName',
     dob: 'dob',
     gender: 'gender',
     contactNumber: 'contactNumber',
     address: 'address',
+    bloodType: 'bloodType',
+    allergies: 'allergies',
+    chronicConditions: 'chronicConditions',
+    guardianName: 'guardianName',
+    guardianContact: 'guardianContact',
     medicalHistory: 'medicalHistory',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
@@ -183813,6 +186594,10 @@ export namespace Prisma {
     patientId: 'patientId',
     title: 'title',
     details: 'details',
+    vaccine: 'vaccine',
+    doseNumber: 'doseNumber',
+    nextDueDate: 'nextDueDate',
+    administeredBy: 'administeredBy',
     date: 'date',
     schoolId: 'schoolId',
     createdAt: 'createdAt',
@@ -183831,6 +186616,9 @@ export namespace Prisma {
     date: 'date',
     to: 'to',
     address: 'address',
+    urgency: 'urgency',
+    status: 'status',
+    outcomeNotes: 'outcomeNotes',
     schoolId: 'schoolId',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
@@ -183866,6 +186654,43 @@ export namespace Prisma {
   };
 
   export type ClinicVisitScalarFieldEnum = (typeof ClinicVisitScalarFieldEnum)[keyof typeof ClinicVisitScalarFieldEnum]
+
+
+  export const ClinicInventoryItemScalarFieldEnum: {
+    id: 'id',
+    schoolId: 'schoolId',
+    name: 'name',
+    category: 'category',
+    batchNumber: 'batchNumber',
+    expiryDate: 'expiryDate',
+    unit: 'unit',
+    stock: 'stock',
+    reorderLevel: 'reorderLevel',
+    unitCost: 'unitCost',
+    unitPrice: 'unitPrice',
+    location: 'location',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type ClinicInventoryItemScalarFieldEnum = (typeof ClinicInventoryItemScalarFieldEnum)[keyof typeof ClinicInventoryItemScalarFieldEnum]
+
+
+  export const ClinicDispensingLogScalarFieldEnum: {
+    id: 'id',
+    schoolId: 'schoolId',
+    itemId: 'itemId',
+    visitId: 'visitId',
+    patientId: 'patientId',
+    quantity: 'quantity',
+    unitCost: 'unitCost',
+    totalPrice: 'totalPrice',
+    dispensedBy: 'dispensedBy',
+    notes: 'notes',
+    dispensedAt: 'dispensedAt'
+  };
+
+  export type ClinicDispensingLogScalarFieldEnum = (typeof ClinicDispensingLogScalarFieldEnum)[keyof typeof ClinicDispensingLogScalarFieldEnum]
 
 
   export const ClinicHospitalizationScalarFieldEnum: {
@@ -183981,6 +186806,10 @@ export namespace Prisma {
     narrative: 'narrative',
     reportedById: 'reportedById',
     schoolId: 'schoolId',
+    hasPunishment: 'hasPunishment',
+    punishment: 'punishment',
+    punishmentLocation: 'punishmentLocation',
+    punishmentStatus: 'punishmentStatus',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -184480,6 +187309,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingListRelationFilter
     sportingEquipment?: SportingEquipmentListRelationFilter
     ClinicPatient?: ClinicPatientListRelationFilter
+    clinicInventoryItems?: ClinicInventoryItemListRelationFilter
     chartOfAccounts?: ChartOfAccountListRelationFilter
     journalEntries?: JournalEntryListRelationFilter
     accountingPeriods?: AccountingPeriodListRelationFilter
@@ -184605,6 +187435,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingOrderByRelationAggregateInput
     sportingEquipment?: SportingEquipmentOrderByRelationAggregateInput
     ClinicPatient?: ClinicPatientOrderByRelationAggregateInput
+    clinicInventoryItems?: ClinicInventoryItemOrderByRelationAggregateInput
     chartOfAccounts?: ChartOfAccountOrderByRelationAggregateInput
     journalEntries?: JournalEntryOrderByRelationAggregateInput
     accountingPeriods?: AccountingPeriodOrderByRelationAggregateInput
@@ -184733,6 +187564,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingListRelationFilter
     sportingEquipment?: SportingEquipmentListRelationFilter
     ClinicPatient?: ClinicPatientListRelationFilter
+    clinicInventoryItems?: ClinicInventoryItemListRelationFilter
     chartOfAccounts?: ChartOfAccountListRelationFilter
     journalEntries?: JournalEntryListRelationFilter
     accountingPeriods?: AccountingPeriodListRelationFilter
@@ -188993,6 +191825,7 @@ export namespace Prisma {
     gateRequiredType?: StringFilter<"SchoolSetting"> | string
     idCardTemplateFront?: StringNullableFilter<"SchoolSetting"> | string | null
     idCardTemplateBack?: StringNullableFilter<"SchoolSetting"> | string | null
+    setupStatus?: JsonNullableFilter<"SchoolSetting">
     createdAt?: DateTimeFilter<"SchoolSetting"> | Date | string
     updatedAt?: DateTimeFilter<"SchoolSetting"> | Date | string
     school?: XOR<SchoolRelationFilter, SchoolWhereInput>
@@ -189062,6 +191895,7 @@ export namespace Prisma {
     gateRequiredType?: SortOrder
     idCardTemplateFront?: SortOrderInput | SortOrder
     idCardTemplateBack?: SortOrderInput | SortOrder
+    setupStatus?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     school?: SchoolOrderByWithRelationInput
@@ -189134,6 +191968,7 @@ export namespace Prisma {
     gateRequiredType?: StringFilter<"SchoolSetting"> | string
     idCardTemplateFront?: StringNullableFilter<"SchoolSetting"> | string | null
     idCardTemplateBack?: StringNullableFilter<"SchoolSetting"> | string | null
+    setupStatus?: JsonNullableFilter<"SchoolSetting">
     createdAt?: DateTimeFilter<"SchoolSetting"> | Date | string
     updatedAt?: DateTimeFilter<"SchoolSetting"> | Date | string
     school?: XOR<SchoolRelationFilter, SchoolWhereInput>
@@ -189203,6 +192038,7 @@ export namespace Prisma {
     gateRequiredType?: SortOrder
     idCardTemplateFront?: SortOrderInput | SortOrder
     idCardTemplateBack?: SortOrderInput | SortOrder
+    setupStatus?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: SchoolSettingCountOrderByAggregateInput
@@ -189279,6 +192115,7 @@ export namespace Prisma {
     gateRequiredType?: StringWithAggregatesFilter<"SchoolSetting"> | string
     idCardTemplateFront?: StringNullableWithAggregatesFilter<"SchoolSetting"> | string | null
     idCardTemplateBack?: StringNullableWithAggregatesFilter<"SchoolSetting"> | string | null
+    setupStatus?: JsonNullableWithAggregatesFilter<"SchoolSetting">
     createdAt?: DateTimeWithAggregatesFilter<"SchoolSetting"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"SchoolSetting"> | Date | string
   }
@@ -196443,12 +199280,18 @@ export namespace Prisma {
     id?: StringFilter<"ClinicPatient"> | string
     schoolId?: StringFilter<"ClinicPatient"> | string
     userId?: StringNullableFilter<"ClinicPatient"> | string | null
+    mrn?: StringNullableFilter<"ClinicPatient"> | string | null
     firstName?: StringNullableFilter<"ClinicPatient"> | string | null
     lastName?: StringNullableFilter<"ClinicPatient"> | string | null
     dob?: DateTimeNullableFilter<"ClinicPatient"> | Date | string | null
     gender?: StringNullableFilter<"ClinicPatient"> | string | null
     contactNumber?: StringNullableFilter<"ClinicPatient"> | string | null
     address?: StringNullableFilter<"ClinicPatient"> | string | null
+    bloodType?: StringNullableFilter<"ClinicPatient"> | string | null
+    allergies?: StringNullableFilter<"ClinicPatient"> | string | null
+    chronicConditions?: StringNullableFilter<"ClinicPatient"> | string | null
+    guardianName?: StringNullableFilter<"ClinicPatient"> | string | null
+    guardianContact?: StringNullableFilter<"ClinicPatient"> | string | null
     medicalHistory?: StringNullableFilter<"ClinicPatient"> | string | null
     createdAt?: DateTimeFilter<"ClinicPatient"> | Date | string
     updatedAt?: DateTimeFilter<"ClinicPatient"> | Date | string
@@ -196461,18 +199304,25 @@ export namespace Prisma {
     immunizations?: ClinicImmunizationListRelationFilter
     referrals?: ClinicReferralListRelationFilter
     hospitalizations?: ClinicHospitalizationListRelationFilter
+    dispensings?: ClinicDispensingLogListRelationFilter
   }
 
   export type ClinicPatientOrderByWithRelationInput = {
     id?: SortOrder
     schoolId?: SortOrder
     userId?: SortOrderInput | SortOrder
+    mrn?: SortOrderInput | SortOrder
     firstName?: SortOrderInput | SortOrder
     lastName?: SortOrderInput | SortOrder
     dob?: SortOrderInput | SortOrder
     gender?: SortOrderInput | SortOrder
     contactNumber?: SortOrderInput | SortOrder
     address?: SortOrderInput | SortOrder
+    bloodType?: SortOrderInput | SortOrder
+    allergies?: SortOrderInput | SortOrder
+    chronicConditions?: SortOrderInput | SortOrder
+    guardianName?: SortOrderInput | SortOrder
+    guardianContact?: SortOrderInput | SortOrder
     medicalHistory?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -196485,6 +199335,7 @@ export namespace Prisma {
     immunizations?: ClinicImmunizationOrderByRelationAggregateInput
     referrals?: ClinicReferralOrderByRelationAggregateInput
     hospitalizations?: ClinicHospitalizationOrderByRelationAggregateInput
+    dispensings?: ClinicDispensingLogOrderByRelationAggregateInput
   }
 
   export type ClinicPatientWhereUniqueInput = Prisma.AtLeast<{
@@ -196494,12 +199345,18 @@ export namespace Prisma {
     OR?: ClinicPatientWhereInput[]
     NOT?: ClinicPatientWhereInput | ClinicPatientWhereInput[]
     schoolId?: StringFilter<"ClinicPatient"> | string
+    mrn?: StringNullableFilter<"ClinicPatient"> | string | null
     firstName?: StringNullableFilter<"ClinicPatient"> | string | null
     lastName?: StringNullableFilter<"ClinicPatient"> | string | null
     dob?: DateTimeNullableFilter<"ClinicPatient"> | Date | string | null
     gender?: StringNullableFilter<"ClinicPatient"> | string | null
     contactNumber?: StringNullableFilter<"ClinicPatient"> | string | null
     address?: StringNullableFilter<"ClinicPatient"> | string | null
+    bloodType?: StringNullableFilter<"ClinicPatient"> | string | null
+    allergies?: StringNullableFilter<"ClinicPatient"> | string | null
+    chronicConditions?: StringNullableFilter<"ClinicPatient"> | string | null
+    guardianName?: StringNullableFilter<"ClinicPatient"> | string | null
+    guardianContact?: StringNullableFilter<"ClinicPatient"> | string | null
     medicalHistory?: StringNullableFilter<"ClinicPatient"> | string | null
     createdAt?: DateTimeFilter<"ClinicPatient"> | Date | string
     updatedAt?: DateTimeFilter<"ClinicPatient"> | Date | string
@@ -196512,18 +199369,25 @@ export namespace Prisma {
     immunizations?: ClinicImmunizationListRelationFilter
     referrals?: ClinicReferralListRelationFilter
     hospitalizations?: ClinicHospitalizationListRelationFilter
+    dispensings?: ClinicDispensingLogListRelationFilter
   }, "id" | "userId">
 
   export type ClinicPatientOrderByWithAggregationInput = {
     id?: SortOrder
     schoolId?: SortOrder
     userId?: SortOrderInput | SortOrder
+    mrn?: SortOrderInput | SortOrder
     firstName?: SortOrderInput | SortOrder
     lastName?: SortOrderInput | SortOrder
     dob?: SortOrderInput | SortOrder
     gender?: SortOrderInput | SortOrder
     contactNumber?: SortOrderInput | SortOrder
     address?: SortOrderInput | SortOrder
+    bloodType?: SortOrderInput | SortOrder
+    allergies?: SortOrderInput | SortOrder
+    chronicConditions?: SortOrderInput | SortOrder
+    guardianName?: SortOrderInput | SortOrder
+    guardianContact?: SortOrderInput | SortOrder
     medicalHistory?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -196539,12 +199403,18 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"ClinicPatient"> | string
     schoolId?: StringWithAggregatesFilter<"ClinicPatient"> | string
     userId?: StringNullableWithAggregatesFilter<"ClinicPatient"> | string | null
+    mrn?: StringNullableWithAggregatesFilter<"ClinicPatient"> | string | null
     firstName?: StringNullableWithAggregatesFilter<"ClinicPatient"> | string | null
     lastName?: StringNullableWithAggregatesFilter<"ClinicPatient"> | string | null
     dob?: DateTimeNullableWithAggregatesFilter<"ClinicPatient"> | Date | string | null
     gender?: StringNullableWithAggregatesFilter<"ClinicPatient"> | string | null
     contactNumber?: StringNullableWithAggregatesFilter<"ClinicPatient"> | string | null
     address?: StringNullableWithAggregatesFilter<"ClinicPatient"> | string | null
+    bloodType?: StringNullableWithAggregatesFilter<"ClinicPatient"> | string | null
+    allergies?: StringNullableWithAggregatesFilter<"ClinicPatient"> | string | null
+    chronicConditions?: StringNullableWithAggregatesFilter<"ClinicPatient"> | string | null
+    guardianName?: StringNullableWithAggregatesFilter<"ClinicPatient"> | string | null
+    guardianContact?: StringNullableWithAggregatesFilter<"ClinicPatient"> | string | null
     medicalHistory?: StringNullableWithAggregatesFilter<"ClinicPatient"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"ClinicPatient"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"ClinicPatient"> | Date | string
@@ -196799,7 +199669,11 @@ export namespace Prisma {
     userId?: StringNullableFilter<"ClinicImmunization"> | string | null
     patientId?: StringNullableFilter<"ClinicImmunization"> | string | null
     title?: StringFilter<"ClinicImmunization"> | string
-    details?: StringFilter<"ClinicImmunization"> | string
+    details?: StringNullableFilter<"ClinicImmunization"> | string | null
+    vaccine?: StringNullableFilter<"ClinicImmunization"> | string | null
+    doseNumber?: IntNullableFilter<"ClinicImmunization"> | number | null
+    nextDueDate?: DateTimeNullableFilter<"ClinicImmunization"> | Date | string | null
+    administeredBy?: StringNullableFilter<"ClinicImmunization"> | string | null
     date?: DateTimeFilter<"ClinicImmunization"> | Date | string
     schoolId?: StringFilter<"ClinicImmunization"> | string
     createdAt?: DateTimeFilter<"ClinicImmunization"> | Date | string
@@ -196813,7 +199687,11 @@ export namespace Prisma {
     userId?: SortOrderInput | SortOrder
     patientId?: SortOrderInput | SortOrder
     title?: SortOrder
-    details?: SortOrder
+    details?: SortOrderInput | SortOrder
+    vaccine?: SortOrderInput | SortOrder
+    doseNumber?: SortOrderInput | SortOrder
+    nextDueDate?: SortOrderInput | SortOrder
+    administeredBy?: SortOrderInput | SortOrder
     date?: SortOrder
     schoolId?: SortOrder
     createdAt?: SortOrder
@@ -196830,7 +199708,11 @@ export namespace Prisma {
     userId?: StringNullableFilter<"ClinicImmunization"> | string | null
     patientId?: StringNullableFilter<"ClinicImmunization"> | string | null
     title?: StringFilter<"ClinicImmunization"> | string
-    details?: StringFilter<"ClinicImmunization"> | string
+    details?: StringNullableFilter<"ClinicImmunization"> | string | null
+    vaccine?: StringNullableFilter<"ClinicImmunization"> | string | null
+    doseNumber?: IntNullableFilter<"ClinicImmunization"> | number | null
+    nextDueDate?: DateTimeNullableFilter<"ClinicImmunization"> | Date | string | null
+    administeredBy?: StringNullableFilter<"ClinicImmunization"> | string | null
     date?: DateTimeFilter<"ClinicImmunization"> | Date | string
     schoolId?: StringFilter<"ClinicImmunization"> | string
     createdAt?: DateTimeFilter<"ClinicImmunization"> | Date | string
@@ -196844,14 +199726,20 @@ export namespace Prisma {
     userId?: SortOrderInput | SortOrder
     patientId?: SortOrderInput | SortOrder
     title?: SortOrder
-    details?: SortOrder
+    details?: SortOrderInput | SortOrder
+    vaccine?: SortOrderInput | SortOrder
+    doseNumber?: SortOrderInput | SortOrder
+    nextDueDate?: SortOrderInput | SortOrder
+    administeredBy?: SortOrderInput | SortOrder
     date?: SortOrder
     schoolId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: ClinicImmunizationCountOrderByAggregateInput
+    _avg?: ClinicImmunizationAvgOrderByAggregateInput
     _max?: ClinicImmunizationMaxOrderByAggregateInput
     _min?: ClinicImmunizationMinOrderByAggregateInput
+    _sum?: ClinicImmunizationSumOrderByAggregateInput
   }
 
   export type ClinicImmunizationScalarWhereWithAggregatesInput = {
@@ -196862,7 +199750,11 @@ export namespace Prisma {
     userId?: StringNullableWithAggregatesFilter<"ClinicImmunization"> | string | null
     patientId?: StringNullableWithAggregatesFilter<"ClinicImmunization"> | string | null
     title?: StringWithAggregatesFilter<"ClinicImmunization"> | string
-    details?: StringWithAggregatesFilter<"ClinicImmunization"> | string
+    details?: StringNullableWithAggregatesFilter<"ClinicImmunization"> | string | null
+    vaccine?: StringNullableWithAggregatesFilter<"ClinicImmunization"> | string | null
+    doseNumber?: IntNullableWithAggregatesFilter<"ClinicImmunization"> | number | null
+    nextDueDate?: DateTimeNullableWithAggregatesFilter<"ClinicImmunization"> | Date | string | null
+    administeredBy?: StringNullableWithAggregatesFilter<"ClinicImmunization"> | string | null
     date?: DateTimeWithAggregatesFilter<"ClinicImmunization"> | Date | string
     schoolId?: StringWithAggregatesFilter<"ClinicImmunization"> | string
     createdAt?: DateTimeWithAggregatesFilter<"ClinicImmunization"> | Date | string
@@ -196881,6 +199773,9 @@ export namespace Prisma {
     date?: DateTimeFilter<"ClinicReferral"> | Date | string
     to?: StringFilter<"ClinicReferral"> | string
     address?: StringFilter<"ClinicReferral"> | string
+    urgency?: StringNullableFilter<"ClinicReferral"> | string | null
+    status?: StringFilter<"ClinicReferral"> | string
+    outcomeNotes?: StringNullableFilter<"ClinicReferral"> | string | null
     schoolId?: StringFilter<"ClinicReferral"> | string
     createdAt?: DateTimeFilter<"ClinicReferral"> | Date | string
     updatedAt?: DateTimeFilter<"ClinicReferral"> | Date | string
@@ -196897,6 +199792,9 @@ export namespace Prisma {
     date?: SortOrder
     to?: SortOrder
     address?: SortOrder
+    urgency?: SortOrderInput | SortOrder
+    status?: SortOrder
+    outcomeNotes?: SortOrderInput | SortOrder
     schoolId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -196916,6 +199814,9 @@ export namespace Prisma {
     date?: DateTimeFilter<"ClinicReferral"> | Date | string
     to?: StringFilter<"ClinicReferral"> | string
     address?: StringFilter<"ClinicReferral"> | string
+    urgency?: StringNullableFilter<"ClinicReferral"> | string | null
+    status?: StringFilter<"ClinicReferral"> | string
+    outcomeNotes?: StringNullableFilter<"ClinicReferral"> | string | null
     schoolId?: StringFilter<"ClinicReferral"> | string
     createdAt?: DateTimeFilter<"ClinicReferral"> | Date | string
     updatedAt?: DateTimeFilter<"ClinicReferral"> | Date | string
@@ -196932,6 +199833,9 @@ export namespace Prisma {
     date?: SortOrder
     to?: SortOrder
     address?: SortOrder
+    urgency?: SortOrderInput | SortOrder
+    status?: SortOrder
+    outcomeNotes?: SortOrderInput | SortOrder
     schoolId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -196952,6 +199856,9 @@ export namespace Prisma {
     date?: DateTimeWithAggregatesFilter<"ClinicReferral"> | Date | string
     to?: StringWithAggregatesFilter<"ClinicReferral"> | string
     address?: StringWithAggregatesFilter<"ClinicReferral"> | string
+    urgency?: StringNullableWithAggregatesFilter<"ClinicReferral"> | string | null
+    status?: StringWithAggregatesFilter<"ClinicReferral"> | string
+    outcomeNotes?: StringNullableWithAggregatesFilter<"ClinicReferral"> | string | null
     schoolId?: StringWithAggregatesFilter<"ClinicReferral"> | string
     createdAt?: DateTimeWithAggregatesFilter<"ClinicReferral"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"ClinicReferral"> | Date | string
@@ -196987,6 +199894,7 @@ export namespace Prisma {
     user?: XOR<UserNullableRelationFilter, UserWhereInput> | null
     patient?: XOR<ClinicPatientNullableRelationFilter, ClinicPatientWhereInput> | null
     school?: XOR<SchoolRelationFilter, SchoolWhereInput>
+    dispensings?: ClinicDispensingLogListRelationFilter
   }
 
   export type ClinicVisitOrderByWithRelationInput = {
@@ -197016,6 +199924,7 @@ export namespace Prisma {
     user?: UserOrderByWithRelationInput
     patient?: ClinicPatientOrderByWithRelationInput
     school?: SchoolOrderByWithRelationInput
+    dispensings?: ClinicDispensingLogOrderByRelationAggregateInput
   }
 
   export type ClinicVisitWhereUniqueInput = Prisma.AtLeast<{
@@ -197048,6 +199957,7 @@ export namespace Prisma {
     user?: XOR<UserNullableRelationFilter, UserWhereInput> | null
     patient?: XOR<ClinicPatientNullableRelationFilter, ClinicPatientWhereInput> | null
     school?: XOR<SchoolRelationFilter, SchoolWhereInput>
+    dispensings?: ClinicDispensingLogListRelationFilter
   }, "id" | "visitCode">
 
   export type ClinicVisitOrderByWithAggregationInput = {
@@ -197108,6 +200018,204 @@ export namespace Prisma {
     visitDate?: DateTimeWithAggregatesFilter<"ClinicVisit"> | Date | string
     createdAt?: DateTimeWithAggregatesFilter<"ClinicVisit"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"ClinicVisit"> | Date | string
+  }
+
+  export type ClinicInventoryItemWhereInput = {
+    AND?: ClinicInventoryItemWhereInput | ClinicInventoryItemWhereInput[]
+    OR?: ClinicInventoryItemWhereInput[]
+    NOT?: ClinicInventoryItemWhereInput | ClinicInventoryItemWhereInput[]
+    id?: StringFilter<"ClinicInventoryItem"> | string
+    schoolId?: StringFilter<"ClinicInventoryItem"> | string
+    name?: StringFilter<"ClinicInventoryItem"> | string
+    category?: StringFilter<"ClinicInventoryItem"> | string
+    batchNumber?: StringNullableFilter<"ClinicInventoryItem"> | string | null
+    expiryDate?: DateTimeNullableFilter<"ClinicInventoryItem"> | Date | string | null
+    unit?: StringFilter<"ClinicInventoryItem"> | string
+    stock?: IntFilter<"ClinicInventoryItem"> | number
+    reorderLevel?: IntFilter<"ClinicInventoryItem"> | number
+    unitCost?: FloatFilter<"ClinicInventoryItem"> | number
+    unitPrice?: FloatFilter<"ClinicInventoryItem"> | number
+    location?: StringNullableFilter<"ClinicInventoryItem"> | string | null
+    createdAt?: DateTimeFilter<"ClinicInventoryItem"> | Date | string
+    updatedAt?: DateTimeFilter<"ClinicInventoryItem"> | Date | string
+    school?: XOR<SchoolRelationFilter, SchoolWhereInput>
+    dispensings?: ClinicDispensingLogListRelationFilter
+  }
+
+  export type ClinicInventoryItemOrderByWithRelationInput = {
+    id?: SortOrder
+    schoolId?: SortOrder
+    name?: SortOrder
+    category?: SortOrder
+    batchNumber?: SortOrderInput | SortOrder
+    expiryDate?: SortOrderInput | SortOrder
+    unit?: SortOrder
+    stock?: SortOrder
+    reorderLevel?: SortOrder
+    unitCost?: SortOrder
+    unitPrice?: SortOrder
+    location?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    school?: SchoolOrderByWithRelationInput
+    dispensings?: ClinicDispensingLogOrderByRelationAggregateInput
+  }
+
+  export type ClinicInventoryItemWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: ClinicInventoryItemWhereInput | ClinicInventoryItemWhereInput[]
+    OR?: ClinicInventoryItemWhereInput[]
+    NOT?: ClinicInventoryItemWhereInput | ClinicInventoryItemWhereInput[]
+    schoolId?: StringFilter<"ClinicInventoryItem"> | string
+    name?: StringFilter<"ClinicInventoryItem"> | string
+    category?: StringFilter<"ClinicInventoryItem"> | string
+    batchNumber?: StringNullableFilter<"ClinicInventoryItem"> | string | null
+    expiryDate?: DateTimeNullableFilter<"ClinicInventoryItem"> | Date | string | null
+    unit?: StringFilter<"ClinicInventoryItem"> | string
+    stock?: IntFilter<"ClinicInventoryItem"> | number
+    reorderLevel?: IntFilter<"ClinicInventoryItem"> | number
+    unitCost?: FloatFilter<"ClinicInventoryItem"> | number
+    unitPrice?: FloatFilter<"ClinicInventoryItem"> | number
+    location?: StringNullableFilter<"ClinicInventoryItem"> | string | null
+    createdAt?: DateTimeFilter<"ClinicInventoryItem"> | Date | string
+    updatedAt?: DateTimeFilter<"ClinicInventoryItem"> | Date | string
+    school?: XOR<SchoolRelationFilter, SchoolWhereInput>
+    dispensings?: ClinicDispensingLogListRelationFilter
+  }, "id">
+
+  export type ClinicInventoryItemOrderByWithAggregationInput = {
+    id?: SortOrder
+    schoolId?: SortOrder
+    name?: SortOrder
+    category?: SortOrder
+    batchNumber?: SortOrderInput | SortOrder
+    expiryDate?: SortOrderInput | SortOrder
+    unit?: SortOrder
+    stock?: SortOrder
+    reorderLevel?: SortOrder
+    unitCost?: SortOrder
+    unitPrice?: SortOrder
+    location?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: ClinicInventoryItemCountOrderByAggregateInput
+    _avg?: ClinicInventoryItemAvgOrderByAggregateInput
+    _max?: ClinicInventoryItemMaxOrderByAggregateInput
+    _min?: ClinicInventoryItemMinOrderByAggregateInput
+    _sum?: ClinicInventoryItemSumOrderByAggregateInput
+  }
+
+  export type ClinicInventoryItemScalarWhereWithAggregatesInput = {
+    AND?: ClinicInventoryItemScalarWhereWithAggregatesInput | ClinicInventoryItemScalarWhereWithAggregatesInput[]
+    OR?: ClinicInventoryItemScalarWhereWithAggregatesInput[]
+    NOT?: ClinicInventoryItemScalarWhereWithAggregatesInput | ClinicInventoryItemScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"ClinicInventoryItem"> | string
+    schoolId?: StringWithAggregatesFilter<"ClinicInventoryItem"> | string
+    name?: StringWithAggregatesFilter<"ClinicInventoryItem"> | string
+    category?: StringWithAggregatesFilter<"ClinicInventoryItem"> | string
+    batchNumber?: StringNullableWithAggregatesFilter<"ClinicInventoryItem"> | string | null
+    expiryDate?: DateTimeNullableWithAggregatesFilter<"ClinicInventoryItem"> | Date | string | null
+    unit?: StringWithAggregatesFilter<"ClinicInventoryItem"> | string
+    stock?: IntWithAggregatesFilter<"ClinicInventoryItem"> | number
+    reorderLevel?: IntWithAggregatesFilter<"ClinicInventoryItem"> | number
+    unitCost?: FloatWithAggregatesFilter<"ClinicInventoryItem"> | number
+    unitPrice?: FloatWithAggregatesFilter<"ClinicInventoryItem"> | number
+    location?: StringNullableWithAggregatesFilter<"ClinicInventoryItem"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"ClinicInventoryItem"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"ClinicInventoryItem"> | Date | string
+  }
+
+  export type ClinicDispensingLogWhereInput = {
+    AND?: ClinicDispensingLogWhereInput | ClinicDispensingLogWhereInput[]
+    OR?: ClinicDispensingLogWhereInput[]
+    NOT?: ClinicDispensingLogWhereInput | ClinicDispensingLogWhereInput[]
+    id?: StringFilter<"ClinicDispensingLog"> | string
+    schoolId?: StringFilter<"ClinicDispensingLog"> | string
+    itemId?: StringFilter<"ClinicDispensingLog"> | string
+    visitId?: StringNullableFilter<"ClinicDispensingLog"> | string | null
+    patientId?: StringNullableFilter<"ClinicDispensingLog"> | string | null
+    quantity?: IntFilter<"ClinicDispensingLog"> | number
+    unitCost?: FloatFilter<"ClinicDispensingLog"> | number
+    totalPrice?: FloatFilter<"ClinicDispensingLog"> | number
+    dispensedBy?: StringNullableFilter<"ClinicDispensingLog"> | string | null
+    notes?: StringNullableFilter<"ClinicDispensingLog"> | string | null
+    dispensedAt?: DateTimeFilter<"ClinicDispensingLog"> | Date | string
+    item?: XOR<ClinicInventoryItemRelationFilter, ClinicInventoryItemWhereInput>
+    visit?: XOR<ClinicVisitNullableRelationFilter, ClinicVisitWhereInput> | null
+    patient?: XOR<ClinicPatientNullableRelationFilter, ClinicPatientWhereInput> | null
+  }
+
+  export type ClinicDispensingLogOrderByWithRelationInput = {
+    id?: SortOrder
+    schoolId?: SortOrder
+    itemId?: SortOrder
+    visitId?: SortOrderInput | SortOrder
+    patientId?: SortOrderInput | SortOrder
+    quantity?: SortOrder
+    unitCost?: SortOrder
+    totalPrice?: SortOrder
+    dispensedBy?: SortOrderInput | SortOrder
+    notes?: SortOrderInput | SortOrder
+    dispensedAt?: SortOrder
+    item?: ClinicInventoryItemOrderByWithRelationInput
+    visit?: ClinicVisitOrderByWithRelationInput
+    patient?: ClinicPatientOrderByWithRelationInput
+  }
+
+  export type ClinicDispensingLogWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: ClinicDispensingLogWhereInput | ClinicDispensingLogWhereInput[]
+    OR?: ClinicDispensingLogWhereInput[]
+    NOT?: ClinicDispensingLogWhereInput | ClinicDispensingLogWhereInput[]
+    schoolId?: StringFilter<"ClinicDispensingLog"> | string
+    itemId?: StringFilter<"ClinicDispensingLog"> | string
+    visitId?: StringNullableFilter<"ClinicDispensingLog"> | string | null
+    patientId?: StringNullableFilter<"ClinicDispensingLog"> | string | null
+    quantity?: IntFilter<"ClinicDispensingLog"> | number
+    unitCost?: FloatFilter<"ClinicDispensingLog"> | number
+    totalPrice?: FloatFilter<"ClinicDispensingLog"> | number
+    dispensedBy?: StringNullableFilter<"ClinicDispensingLog"> | string | null
+    notes?: StringNullableFilter<"ClinicDispensingLog"> | string | null
+    dispensedAt?: DateTimeFilter<"ClinicDispensingLog"> | Date | string
+    item?: XOR<ClinicInventoryItemRelationFilter, ClinicInventoryItemWhereInput>
+    visit?: XOR<ClinicVisitNullableRelationFilter, ClinicVisitWhereInput> | null
+    patient?: XOR<ClinicPatientNullableRelationFilter, ClinicPatientWhereInput> | null
+  }, "id">
+
+  export type ClinicDispensingLogOrderByWithAggregationInput = {
+    id?: SortOrder
+    schoolId?: SortOrder
+    itemId?: SortOrder
+    visitId?: SortOrderInput | SortOrder
+    patientId?: SortOrderInput | SortOrder
+    quantity?: SortOrder
+    unitCost?: SortOrder
+    totalPrice?: SortOrder
+    dispensedBy?: SortOrderInput | SortOrder
+    notes?: SortOrderInput | SortOrder
+    dispensedAt?: SortOrder
+    _count?: ClinicDispensingLogCountOrderByAggregateInput
+    _avg?: ClinicDispensingLogAvgOrderByAggregateInput
+    _max?: ClinicDispensingLogMaxOrderByAggregateInput
+    _min?: ClinicDispensingLogMinOrderByAggregateInput
+    _sum?: ClinicDispensingLogSumOrderByAggregateInput
+  }
+
+  export type ClinicDispensingLogScalarWhereWithAggregatesInput = {
+    AND?: ClinicDispensingLogScalarWhereWithAggregatesInput | ClinicDispensingLogScalarWhereWithAggregatesInput[]
+    OR?: ClinicDispensingLogScalarWhereWithAggregatesInput[]
+    NOT?: ClinicDispensingLogScalarWhereWithAggregatesInput | ClinicDispensingLogScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"ClinicDispensingLog"> | string
+    schoolId?: StringWithAggregatesFilter<"ClinicDispensingLog"> | string
+    itemId?: StringWithAggregatesFilter<"ClinicDispensingLog"> | string
+    visitId?: StringNullableWithAggregatesFilter<"ClinicDispensingLog"> | string | null
+    patientId?: StringNullableWithAggregatesFilter<"ClinicDispensingLog"> | string | null
+    quantity?: IntWithAggregatesFilter<"ClinicDispensingLog"> | number
+    unitCost?: FloatWithAggregatesFilter<"ClinicDispensingLog"> | number
+    totalPrice?: FloatWithAggregatesFilter<"ClinicDispensingLog"> | number
+    dispensedBy?: StringNullableWithAggregatesFilter<"ClinicDispensingLog"> | string | null
+    notes?: StringNullableWithAggregatesFilter<"ClinicDispensingLog"> | string | null
+    dispensedAt?: DateTimeWithAggregatesFilter<"ClinicDispensingLog"> | Date | string
   }
 
   export type ClinicHospitalizationWhereInput = {
@@ -197663,6 +200771,10 @@ export namespace Prisma {
     narrative?: StringFilter<"PrefectReport"> | string
     reportedById?: StringFilter<"PrefectReport"> | string
     schoolId?: StringFilter<"PrefectReport"> | string
+    hasPunishment?: BoolFilter<"PrefectReport"> | boolean
+    punishment?: StringNullableFilter<"PrefectReport"> | string | null
+    punishmentLocation?: StringNullableFilter<"PrefectReport"> | string | null
+    punishmentStatus?: StringNullableFilter<"PrefectReport"> | string | null
     createdAt?: DateTimeFilter<"PrefectReport"> | Date | string
     updatedAt?: DateTimeFilter<"PrefectReport"> | Date | string
     reportedBy?: XOR<UserRelationFilter, UserWhereInput>
@@ -197676,6 +200788,10 @@ export namespace Prisma {
     narrative?: SortOrder
     reportedById?: SortOrder
     schoolId?: SortOrder
+    hasPunishment?: SortOrder
+    punishment?: SortOrderInput | SortOrder
+    punishmentLocation?: SortOrderInput | SortOrder
+    punishmentStatus?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     reportedBy?: UserOrderByWithRelationInput
@@ -197692,6 +200808,10 @@ export namespace Prisma {
     narrative?: StringFilter<"PrefectReport"> | string
     reportedById?: StringFilter<"PrefectReport"> | string
     schoolId?: StringFilter<"PrefectReport"> | string
+    hasPunishment?: BoolFilter<"PrefectReport"> | boolean
+    punishment?: StringNullableFilter<"PrefectReport"> | string | null
+    punishmentLocation?: StringNullableFilter<"PrefectReport"> | string | null
+    punishmentStatus?: StringNullableFilter<"PrefectReport"> | string | null
     createdAt?: DateTimeFilter<"PrefectReport"> | Date | string
     updatedAt?: DateTimeFilter<"PrefectReport"> | Date | string
     reportedBy?: XOR<UserRelationFilter, UserWhereInput>
@@ -197705,6 +200825,10 @@ export namespace Prisma {
     narrative?: SortOrder
     reportedById?: SortOrder
     schoolId?: SortOrder
+    hasPunishment?: SortOrder
+    punishment?: SortOrderInput | SortOrder
+    punishmentLocation?: SortOrderInput | SortOrder
+    punishmentStatus?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: PrefectReportCountOrderByAggregateInput
@@ -197722,6 +200846,10 @@ export namespace Prisma {
     narrative?: StringWithAggregatesFilter<"PrefectReport"> | string
     reportedById?: StringWithAggregatesFilter<"PrefectReport"> | string
     schoolId?: StringWithAggregatesFilter<"PrefectReport"> | string
+    hasPunishment?: BoolWithAggregatesFilter<"PrefectReport"> | boolean
+    punishment?: StringNullableWithAggregatesFilter<"PrefectReport"> | string | null
+    punishmentLocation?: StringNullableWithAggregatesFilter<"PrefectReport"> | string | null
+    punishmentStatus?: StringNullableWithAggregatesFilter<"PrefectReport"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"PrefectReport"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"PrefectReport"> | Date | string
   }
@@ -198799,6 +201927,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -198923,6 +202052,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -199047,6 +202177,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -199171,6 +202302,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -203779,6 +206911,7 @@ export namespace Prisma {
     gateRequiredType?: string
     idCardTemplateFront?: string | null
     idCardTemplateBack?: string | null
+    setupStatus?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     school: SchoolCreateNestedOneWithoutSchoolSettingInput
@@ -203848,6 +206981,7 @@ export namespace Prisma {
     gateRequiredType?: string
     idCardTemplateFront?: string | null
     idCardTemplateBack?: string | null
+    setupStatus?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -203915,6 +207049,7 @@ export namespace Prisma {
     gateRequiredType?: StringFieldUpdateOperationsInput | string
     idCardTemplateFront?: NullableStringFieldUpdateOperationsInput | string | null
     idCardTemplateBack?: NullableStringFieldUpdateOperationsInput | string | null
+    setupStatus?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     school?: SchoolUpdateOneRequiredWithoutSchoolSettingNestedInput
@@ -203984,6 +207119,7 @@ export namespace Prisma {
     gateRequiredType?: StringFieldUpdateOperationsInput | string
     idCardTemplateFront?: NullableStringFieldUpdateOperationsInput | string | null
     idCardTemplateBack?: NullableStringFieldUpdateOperationsInput | string | null
+    setupStatus?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -204052,6 +207188,7 @@ export namespace Prisma {
     gateRequiredType?: string
     idCardTemplateFront?: string | null
     idCardTemplateBack?: string | null
+    setupStatus?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -204119,6 +207256,7 @@ export namespace Prisma {
     gateRequiredType?: StringFieldUpdateOperationsInput | string
     idCardTemplateFront?: NullableStringFieldUpdateOperationsInput | string | null
     idCardTemplateBack?: NullableStringFieldUpdateOperationsInput | string | null
+    setupStatus?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -204187,6 +207325,7 @@ export namespace Prisma {
     gateRequiredType?: StringFieldUpdateOperationsInput | string
     idCardTemplateFront?: NullableStringFieldUpdateOperationsInput | string | null
     idCardTemplateBack?: NullableStringFieldUpdateOperationsInput | string | null
+    setupStatus?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -211990,12 +215129,18 @@ export namespace Prisma {
 
   export type ClinicPatientCreateInput = {
     id?: string
+    mrn?: string | null
     firstName?: string | null
     lastName?: string | null
     dob?: Date | string | null
     gender?: string | null
     contactNumber?: string | null
     address?: string | null
+    bloodType?: string | null
+    allergies?: string | null
+    chronicConditions?: string | null
+    guardianName?: string | null
+    guardianContact?: string | null
     medicalHistory?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -212008,18 +215153,25 @@ export namespace Prisma {
     immunizations?: ClinicImmunizationCreateNestedManyWithoutPatientInput
     referrals?: ClinicReferralCreateNestedManyWithoutPatientInput
     hospitalizations?: ClinicHospitalizationCreateNestedManyWithoutPatientInput
+    dispensings?: ClinicDispensingLogCreateNestedManyWithoutPatientInput
   }
 
   export type ClinicPatientUncheckedCreateInput = {
     id?: string
     schoolId: string
     userId?: string | null
+    mrn?: string | null
     firstName?: string | null
     lastName?: string | null
     dob?: Date | string | null
     gender?: string | null
     contactNumber?: string | null
     address?: string | null
+    bloodType?: string | null
+    allergies?: string | null
+    chronicConditions?: string | null
+    guardianName?: string | null
+    guardianContact?: string | null
     medicalHistory?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -212030,16 +215182,23 @@ export namespace Prisma {
     immunizations?: ClinicImmunizationUncheckedCreateNestedManyWithoutPatientInput
     referrals?: ClinicReferralUncheckedCreateNestedManyWithoutPatientInput
     hospitalizations?: ClinicHospitalizationUncheckedCreateNestedManyWithoutPatientInput
+    dispensings?: ClinicDispensingLogUncheckedCreateNestedManyWithoutPatientInput
   }
 
   export type ClinicPatientUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
+    mrn?: NullableStringFieldUpdateOperationsInput | string | null
     firstName?: NullableStringFieldUpdateOperationsInput | string | null
     lastName?: NullableStringFieldUpdateOperationsInput | string | null
     dob?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     contactNumber?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
+    bloodType?: NullableStringFieldUpdateOperationsInput | string | null
+    allergies?: NullableStringFieldUpdateOperationsInput | string | null
+    chronicConditions?: NullableStringFieldUpdateOperationsInput | string | null
+    guardianName?: NullableStringFieldUpdateOperationsInput | string | null
+    guardianContact?: NullableStringFieldUpdateOperationsInput | string | null
     medicalHistory?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -212052,18 +215211,25 @@ export namespace Prisma {
     immunizations?: ClinicImmunizationUpdateManyWithoutPatientNestedInput
     referrals?: ClinicReferralUpdateManyWithoutPatientNestedInput
     hospitalizations?: ClinicHospitalizationUpdateManyWithoutPatientNestedInput
+    dispensings?: ClinicDispensingLogUpdateManyWithoutPatientNestedInput
   }
 
   export type ClinicPatientUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     schoolId?: StringFieldUpdateOperationsInput | string
     userId?: NullableStringFieldUpdateOperationsInput | string | null
+    mrn?: NullableStringFieldUpdateOperationsInput | string | null
     firstName?: NullableStringFieldUpdateOperationsInput | string | null
     lastName?: NullableStringFieldUpdateOperationsInput | string | null
     dob?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     contactNumber?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
+    bloodType?: NullableStringFieldUpdateOperationsInput | string | null
+    allergies?: NullableStringFieldUpdateOperationsInput | string | null
+    chronicConditions?: NullableStringFieldUpdateOperationsInput | string | null
+    guardianName?: NullableStringFieldUpdateOperationsInput | string | null
+    guardianContact?: NullableStringFieldUpdateOperationsInput | string | null
     medicalHistory?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -212074,18 +215240,25 @@ export namespace Prisma {
     immunizations?: ClinicImmunizationUncheckedUpdateManyWithoutPatientNestedInput
     referrals?: ClinicReferralUncheckedUpdateManyWithoutPatientNestedInput
     hospitalizations?: ClinicHospitalizationUncheckedUpdateManyWithoutPatientNestedInput
+    dispensings?: ClinicDispensingLogUncheckedUpdateManyWithoutPatientNestedInput
   }
 
   export type ClinicPatientCreateManyInput = {
     id?: string
     schoolId: string
     userId?: string | null
+    mrn?: string | null
     firstName?: string | null
     lastName?: string | null
     dob?: Date | string | null
     gender?: string | null
     contactNumber?: string | null
     address?: string | null
+    bloodType?: string | null
+    allergies?: string | null
+    chronicConditions?: string | null
+    guardianName?: string | null
+    guardianContact?: string | null
     medicalHistory?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -212093,12 +215266,18 @@ export namespace Prisma {
 
   export type ClinicPatientUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
+    mrn?: NullableStringFieldUpdateOperationsInput | string | null
     firstName?: NullableStringFieldUpdateOperationsInput | string | null
     lastName?: NullableStringFieldUpdateOperationsInput | string | null
     dob?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     contactNumber?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
+    bloodType?: NullableStringFieldUpdateOperationsInput | string | null
+    allergies?: NullableStringFieldUpdateOperationsInput | string | null
+    chronicConditions?: NullableStringFieldUpdateOperationsInput | string | null
+    guardianName?: NullableStringFieldUpdateOperationsInput | string | null
+    guardianContact?: NullableStringFieldUpdateOperationsInput | string | null
     medicalHistory?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -212108,12 +215287,18 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     schoolId?: StringFieldUpdateOperationsInput | string
     userId?: NullableStringFieldUpdateOperationsInput | string | null
+    mrn?: NullableStringFieldUpdateOperationsInput | string | null
     firstName?: NullableStringFieldUpdateOperationsInput | string | null
     lastName?: NullableStringFieldUpdateOperationsInput | string | null
     dob?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     contactNumber?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
+    bloodType?: NullableStringFieldUpdateOperationsInput | string | null
+    allergies?: NullableStringFieldUpdateOperationsInput | string | null
+    chronicConditions?: NullableStringFieldUpdateOperationsInput | string | null
+    guardianName?: NullableStringFieldUpdateOperationsInput | string | null
+    guardianContact?: NullableStringFieldUpdateOperationsInput | string | null
     medicalHistory?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -212383,7 +215568,11 @@ export namespace Prisma {
   export type ClinicImmunizationCreateInput = {
     id?: string
     title: string
-    details: string
+    details?: string | null
+    vaccine?: string | null
+    doseNumber?: number | null
+    nextDueDate?: Date | string | null
+    administeredBy?: string | null
     date?: Date | string
     schoolId: string
     createdAt?: Date | string
@@ -212397,7 +215586,11 @@ export namespace Prisma {
     userId?: string | null
     patientId?: string | null
     title: string
-    details: string
+    details?: string | null
+    vaccine?: string | null
+    doseNumber?: number | null
+    nextDueDate?: Date | string | null
+    administeredBy?: string | null
     date?: Date | string
     schoolId: string
     createdAt?: Date | string
@@ -212407,7 +215600,11 @@ export namespace Prisma {
   export type ClinicImmunizationUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
-    details?: StringFieldUpdateOperationsInput | string
+    details?: NullableStringFieldUpdateOperationsInput | string | null
+    vaccine?: NullableStringFieldUpdateOperationsInput | string | null
+    doseNumber?: NullableIntFieldUpdateOperationsInput | number | null
+    nextDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    administeredBy?: NullableStringFieldUpdateOperationsInput | string | null
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     schoolId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -212421,7 +215618,11 @@ export namespace Prisma {
     userId?: NullableStringFieldUpdateOperationsInput | string | null
     patientId?: NullableStringFieldUpdateOperationsInput | string | null
     title?: StringFieldUpdateOperationsInput | string
-    details?: StringFieldUpdateOperationsInput | string
+    details?: NullableStringFieldUpdateOperationsInput | string | null
+    vaccine?: NullableStringFieldUpdateOperationsInput | string | null
+    doseNumber?: NullableIntFieldUpdateOperationsInput | number | null
+    nextDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    administeredBy?: NullableStringFieldUpdateOperationsInput | string | null
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     schoolId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -212433,7 +215634,11 @@ export namespace Prisma {
     userId?: string | null
     patientId?: string | null
     title: string
-    details: string
+    details?: string | null
+    vaccine?: string | null
+    doseNumber?: number | null
+    nextDueDate?: Date | string | null
+    administeredBy?: string | null
     date?: Date | string
     schoolId: string
     createdAt?: Date | string
@@ -212443,7 +215648,11 @@ export namespace Prisma {
   export type ClinicImmunizationUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
-    details?: StringFieldUpdateOperationsInput | string
+    details?: NullableStringFieldUpdateOperationsInput | string | null
+    vaccine?: NullableStringFieldUpdateOperationsInput | string | null
+    doseNumber?: NullableIntFieldUpdateOperationsInput | number | null
+    nextDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    administeredBy?: NullableStringFieldUpdateOperationsInput | string | null
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     schoolId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -212455,7 +215664,11 @@ export namespace Prisma {
     userId?: NullableStringFieldUpdateOperationsInput | string | null
     patientId?: NullableStringFieldUpdateOperationsInput | string | null
     title?: StringFieldUpdateOperationsInput | string
-    details?: StringFieldUpdateOperationsInput | string
+    details?: NullableStringFieldUpdateOperationsInput | string | null
+    vaccine?: NullableStringFieldUpdateOperationsInput | string | null
+    doseNumber?: NullableIntFieldUpdateOperationsInput | number | null
+    nextDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    administeredBy?: NullableStringFieldUpdateOperationsInput | string | null
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     schoolId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -212469,6 +215682,9 @@ export namespace Prisma {
     date?: Date | string
     to: string
     address: string
+    urgency?: string | null
+    status?: string
+    outcomeNotes?: string | null
     schoolId: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -212485,6 +215701,9 @@ export namespace Prisma {
     date?: Date | string
     to: string
     address: string
+    urgency?: string | null
+    status?: string
+    outcomeNotes?: string | null
     schoolId: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -212497,6 +215716,9 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     to?: StringFieldUpdateOperationsInput | string
     address?: StringFieldUpdateOperationsInput | string
+    urgency?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    outcomeNotes?: NullableStringFieldUpdateOperationsInput | string | null
     schoolId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -212513,6 +215735,9 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     to?: StringFieldUpdateOperationsInput | string
     address?: StringFieldUpdateOperationsInput | string
+    urgency?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    outcomeNotes?: NullableStringFieldUpdateOperationsInput | string | null
     schoolId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -212527,6 +215752,9 @@ export namespace Prisma {
     date?: Date | string
     to: string
     address: string
+    urgency?: string | null
+    status?: string
+    outcomeNotes?: string | null
     schoolId: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -212539,6 +215767,9 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     to?: StringFieldUpdateOperationsInput | string
     address?: StringFieldUpdateOperationsInput | string
+    urgency?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    outcomeNotes?: NullableStringFieldUpdateOperationsInput | string | null
     schoolId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -212553,6 +215784,9 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     to?: StringFieldUpdateOperationsInput | string
     address?: StringFieldUpdateOperationsInput | string
+    urgency?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    outcomeNotes?: NullableStringFieldUpdateOperationsInput | string | null
     schoolId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -212582,6 +215816,7 @@ export namespace Prisma {
     user?: UserCreateNestedOneWithoutClinicVisitsInput
     patient?: ClinicPatientCreateNestedOneWithoutVisitsInput
     school: SchoolCreateNestedOneWithoutClinicVisitsInput
+    dispensings?: ClinicDispensingLogCreateNestedManyWithoutVisitInput
   }
 
   export type ClinicVisitUncheckedCreateInput = {
@@ -212608,6 +215843,7 @@ export namespace Prisma {
     visitDate?: Date | string
     createdAt?: Date | string
     updatedAt?: Date | string
+    dispensings?: ClinicDispensingLogUncheckedCreateNestedManyWithoutVisitInput
   }
 
   export type ClinicVisitUpdateInput = {
@@ -212634,6 +215870,7 @@ export namespace Prisma {
     user?: UserUpdateOneWithoutClinicVisitsNestedInput
     patient?: ClinicPatientUpdateOneWithoutVisitsNestedInput
     school?: SchoolUpdateOneRequiredWithoutClinicVisitsNestedInput
+    dispensings?: ClinicDispensingLogUpdateManyWithoutVisitNestedInput
   }
 
   export type ClinicVisitUncheckedUpdateInput = {
@@ -212660,6 +215897,7 @@ export namespace Prisma {
     visitDate?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    dispensings?: ClinicDispensingLogUncheckedUpdateManyWithoutVisitNestedInput
   }
 
   export type ClinicVisitCreateManyInput = {
@@ -212735,6 +215973,223 @@ export namespace Prisma {
     visitDate?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ClinicInventoryItemCreateInput = {
+    id?: string
+    name: string
+    category?: string
+    batchNumber?: string | null
+    expiryDate?: Date | string | null
+    unit?: string
+    stock?: number
+    reorderLevel?: number
+    unitCost?: number
+    unitPrice?: number
+    location?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    school: SchoolCreateNestedOneWithoutClinicInventoryItemsInput
+    dispensings?: ClinicDispensingLogCreateNestedManyWithoutItemInput
+  }
+
+  export type ClinicInventoryItemUncheckedCreateInput = {
+    id?: string
+    schoolId: string
+    name: string
+    category?: string
+    batchNumber?: string | null
+    expiryDate?: Date | string | null
+    unit?: string
+    stock?: number
+    reorderLevel?: number
+    unitCost?: number
+    unitPrice?: number
+    location?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    dispensings?: ClinicDispensingLogUncheckedCreateNestedManyWithoutItemInput
+  }
+
+  export type ClinicInventoryItemUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    batchNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    expiryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    unit?: StringFieldUpdateOperationsInput | string
+    stock?: IntFieldUpdateOperationsInput | number
+    reorderLevel?: IntFieldUpdateOperationsInput | number
+    unitCost?: FloatFieldUpdateOperationsInput | number
+    unitPrice?: FloatFieldUpdateOperationsInput | number
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    school?: SchoolUpdateOneRequiredWithoutClinicInventoryItemsNestedInput
+    dispensings?: ClinicDispensingLogUpdateManyWithoutItemNestedInput
+  }
+
+  export type ClinicInventoryItemUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    schoolId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    batchNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    expiryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    unit?: StringFieldUpdateOperationsInput | string
+    stock?: IntFieldUpdateOperationsInput | number
+    reorderLevel?: IntFieldUpdateOperationsInput | number
+    unitCost?: FloatFieldUpdateOperationsInput | number
+    unitPrice?: FloatFieldUpdateOperationsInput | number
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    dispensings?: ClinicDispensingLogUncheckedUpdateManyWithoutItemNestedInput
+  }
+
+  export type ClinicInventoryItemCreateManyInput = {
+    id?: string
+    schoolId: string
+    name: string
+    category?: string
+    batchNumber?: string | null
+    expiryDate?: Date | string | null
+    unit?: string
+    stock?: number
+    reorderLevel?: number
+    unitCost?: number
+    unitPrice?: number
+    location?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ClinicInventoryItemUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    batchNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    expiryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    unit?: StringFieldUpdateOperationsInput | string
+    stock?: IntFieldUpdateOperationsInput | number
+    reorderLevel?: IntFieldUpdateOperationsInput | number
+    unitCost?: FloatFieldUpdateOperationsInput | number
+    unitPrice?: FloatFieldUpdateOperationsInput | number
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ClinicInventoryItemUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    schoolId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    batchNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    expiryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    unit?: StringFieldUpdateOperationsInput | string
+    stock?: IntFieldUpdateOperationsInput | number
+    reorderLevel?: IntFieldUpdateOperationsInput | number
+    unitCost?: FloatFieldUpdateOperationsInput | number
+    unitPrice?: FloatFieldUpdateOperationsInput | number
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ClinicDispensingLogCreateInput = {
+    id?: string
+    schoolId: string
+    quantity: number
+    unitCost?: number
+    totalPrice?: number
+    dispensedBy?: string | null
+    notes?: string | null
+    dispensedAt?: Date | string
+    item: ClinicInventoryItemCreateNestedOneWithoutDispensingsInput
+    visit?: ClinicVisitCreateNestedOneWithoutDispensingsInput
+    patient?: ClinicPatientCreateNestedOneWithoutDispensingsInput
+  }
+
+  export type ClinicDispensingLogUncheckedCreateInput = {
+    id?: string
+    schoolId: string
+    itemId: string
+    visitId?: string | null
+    patientId?: string | null
+    quantity: number
+    unitCost?: number
+    totalPrice?: number
+    dispensedBy?: string | null
+    notes?: string | null
+    dispensedAt?: Date | string
+  }
+
+  export type ClinicDispensingLogUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    schoolId?: StringFieldUpdateOperationsInput | string
+    quantity?: IntFieldUpdateOperationsInput | number
+    unitCost?: FloatFieldUpdateOperationsInput | number
+    totalPrice?: FloatFieldUpdateOperationsInput | number
+    dispensedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    dispensedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    item?: ClinicInventoryItemUpdateOneRequiredWithoutDispensingsNestedInput
+    visit?: ClinicVisitUpdateOneWithoutDispensingsNestedInput
+    patient?: ClinicPatientUpdateOneWithoutDispensingsNestedInput
+  }
+
+  export type ClinicDispensingLogUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    schoolId?: StringFieldUpdateOperationsInput | string
+    itemId?: StringFieldUpdateOperationsInput | string
+    visitId?: NullableStringFieldUpdateOperationsInput | string | null
+    patientId?: NullableStringFieldUpdateOperationsInput | string | null
+    quantity?: IntFieldUpdateOperationsInput | number
+    unitCost?: FloatFieldUpdateOperationsInput | number
+    totalPrice?: FloatFieldUpdateOperationsInput | number
+    dispensedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    dispensedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ClinicDispensingLogCreateManyInput = {
+    id?: string
+    schoolId: string
+    itemId: string
+    visitId?: string | null
+    patientId?: string | null
+    quantity: number
+    unitCost?: number
+    totalPrice?: number
+    dispensedBy?: string | null
+    notes?: string | null
+    dispensedAt?: Date | string
+  }
+
+  export type ClinicDispensingLogUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    schoolId?: StringFieldUpdateOperationsInput | string
+    quantity?: IntFieldUpdateOperationsInput | number
+    unitCost?: FloatFieldUpdateOperationsInput | number
+    totalPrice?: FloatFieldUpdateOperationsInput | number
+    dispensedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    dispensedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ClinicDispensingLogUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    schoolId?: StringFieldUpdateOperationsInput | string
+    itemId?: StringFieldUpdateOperationsInput | string
+    visitId?: NullableStringFieldUpdateOperationsInput | string | null
+    patientId?: NullableStringFieldUpdateOperationsInput | string | null
+    quantity?: IntFieldUpdateOperationsInput | number
+    unitCost?: FloatFieldUpdateOperationsInput | number
+    totalPrice?: FloatFieldUpdateOperationsInput | number
+    dispensedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    dispensedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ClinicHospitalizationCreateInput = {
@@ -213327,6 +216782,10 @@ export namespace Prisma {
     studentName: string
     category: string
     narrative: string
+    hasPunishment?: boolean
+    punishment?: string | null
+    punishmentLocation?: string | null
+    punishmentStatus?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     reportedBy: UserCreateNestedOneWithoutPrefectReportsInput
@@ -213340,6 +216799,10 @@ export namespace Prisma {
     narrative: string
     reportedById: string
     schoolId: string
+    hasPunishment?: boolean
+    punishment?: string | null
+    punishmentLocation?: string | null
+    punishmentStatus?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -213349,6 +216812,10 @@ export namespace Prisma {
     studentName?: StringFieldUpdateOperationsInput | string
     category?: StringFieldUpdateOperationsInput | string
     narrative?: StringFieldUpdateOperationsInput | string
+    hasPunishment?: BoolFieldUpdateOperationsInput | boolean
+    punishment?: NullableStringFieldUpdateOperationsInput | string | null
+    punishmentLocation?: NullableStringFieldUpdateOperationsInput | string | null
+    punishmentStatus?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     reportedBy?: UserUpdateOneRequiredWithoutPrefectReportsNestedInput
@@ -213362,6 +216829,10 @@ export namespace Prisma {
     narrative?: StringFieldUpdateOperationsInput | string
     reportedById?: StringFieldUpdateOperationsInput | string
     schoolId?: StringFieldUpdateOperationsInput | string
+    hasPunishment?: BoolFieldUpdateOperationsInput | boolean
+    punishment?: NullableStringFieldUpdateOperationsInput | string | null
+    punishmentLocation?: NullableStringFieldUpdateOperationsInput | string | null
+    punishmentStatus?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -213373,6 +216844,10 @@ export namespace Prisma {
     narrative: string
     reportedById: string
     schoolId: string
+    hasPunishment?: boolean
+    punishment?: string | null
+    punishmentLocation?: string | null
+    punishmentStatus?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -213382,6 +216857,10 @@ export namespace Prisma {
     studentName?: StringFieldUpdateOperationsInput | string
     category?: StringFieldUpdateOperationsInput | string
     narrative?: StringFieldUpdateOperationsInput | string
+    hasPunishment?: BoolFieldUpdateOperationsInput | boolean
+    punishment?: NullableStringFieldUpdateOperationsInput | string | null
+    punishmentLocation?: NullableStringFieldUpdateOperationsInput | string | null
+    punishmentStatus?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -213393,6 +216872,10 @@ export namespace Prisma {
     narrative?: StringFieldUpdateOperationsInput | string
     reportedById?: StringFieldUpdateOperationsInput | string
     schoolId?: StringFieldUpdateOperationsInput | string
+    hasPunishment?: BoolFieldUpdateOperationsInput | boolean
+    punishment?: NullableStringFieldUpdateOperationsInput | string | null
+    punishmentLocation?: NullableStringFieldUpdateOperationsInput | string | null
+    punishmentStatus?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -215113,6 +218596,12 @@ export namespace Prisma {
     none?: ClinicPatientWhereInput
   }
 
+  export type ClinicInventoryItemListRelationFilter = {
+    every?: ClinicInventoryItemWhereInput
+    some?: ClinicInventoryItemWhereInput
+    none?: ClinicInventoryItemWhereInput
+  }
+
   export type ChartOfAccountListRelationFilter = {
     every?: ChartOfAccountWhereInput
     some?: ChartOfAccountWhereInput
@@ -215513,6 +219002,10 @@ export namespace Prisma {
   }
 
   export type ClinicPatientOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type ClinicInventoryItemOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -218320,6 +221813,7 @@ export namespace Prisma {
     gateRequiredType?: SortOrder
     idCardTemplateFront?: SortOrder
     idCardTemplateBack?: SortOrder
+    setupStatus?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -222475,7 +225969,17 @@ export namespace Prisma {
     none?: ClinicEmergencyWhereInput
   }
 
+  export type ClinicDispensingLogListRelationFilter = {
+    every?: ClinicDispensingLogWhereInput
+    some?: ClinicDispensingLogWhereInput
+    none?: ClinicDispensingLogWhereInput
+  }
+
   export type ClinicEmergencyOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type ClinicDispensingLogOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -222483,12 +225987,18 @@ export namespace Prisma {
     id?: SortOrder
     schoolId?: SortOrder
     userId?: SortOrder
+    mrn?: SortOrder
     firstName?: SortOrder
     lastName?: SortOrder
     dob?: SortOrder
     gender?: SortOrder
     contactNumber?: SortOrder
     address?: SortOrder
+    bloodType?: SortOrder
+    allergies?: SortOrder
+    chronicConditions?: SortOrder
+    guardianName?: SortOrder
+    guardianContact?: SortOrder
     medicalHistory?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -222498,12 +226008,18 @@ export namespace Prisma {
     id?: SortOrder
     schoolId?: SortOrder
     userId?: SortOrder
+    mrn?: SortOrder
     firstName?: SortOrder
     lastName?: SortOrder
     dob?: SortOrder
     gender?: SortOrder
     contactNumber?: SortOrder
     address?: SortOrder
+    bloodType?: SortOrder
+    allergies?: SortOrder
+    chronicConditions?: SortOrder
+    guardianName?: SortOrder
+    guardianContact?: SortOrder
     medicalHistory?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -222513,12 +226029,18 @@ export namespace Prisma {
     id?: SortOrder
     schoolId?: SortOrder
     userId?: SortOrder
+    mrn?: SortOrder
     firstName?: SortOrder
     lastName?: SortOrder
     dob?: SortOrder
     gender?: SortOrder
     contactNumber?: SortOrder
     address?: SortOrder
+    bloodType?: SortOrder
+    allergies?: SortOrder
+    chronicConditions?: SortOrder
+    guardianName?: SortOrder
+    guardianContact?: SortOrder
     medicalHistory?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -222644,10 +226166,18 @@ export namespace Prisma {
     patientId?: SortOrder
     title?: SortOrder
     details?: SortOrder
+    vaccine?: SortOrder
+    doseNumber?: SortOrder
+    nextDueDate?: SortOrder
+    administeredBy?: SortOrder
     date?: SortOrder
     schoolId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+  }
+
+  export type ClinicImmunizationAvgOrderByAggregateInput = {
+    doseNumber?: SortOrder
   }
 
   export type ClinicImmunizationMaxOrderByAggregateInput = {
@@ -222656,6 +226186,10 @@ export namespace Prisma {
     patientId?: SortOrder
     title?: SortOrder
     details?: SortOrder
+    vaccine?: SortOrder
+    doseNumber?: SortOrder
+    nextDueDate?: SortOrder
+    administeredBy?: SortOrder
     date?: SortOrder
     schoolId?: SortOrder
     createdAt?: SortOrder
@@ -222668,10 +226202,18 @@ export namespace Prisma {
     patientId?: SortOrder
     title?: SortOrder
     details?: SortOrder
+    vaccine?: SortOrder
+    doseNumber?: SortOrder
+    nextDueDate?: SortOrder
+    administeredBy?: SortOrder
     date?: SortOrder
     schoolId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+  }
+
+  export type ClinicImmunizationSumOrderByAggregateInput = {
+    doseNumber?: SortOrder
   }
 
   export type ClinicReferralCountOrderByAggregateInput = {
@@ -222683,6 +226225,9 @@ export namespace Prisma {
     date?: SortOrder
     to?: SortOrder
     address?: SortOrder
+    urgency?: SortOrder
+    status?: SortOrder
+    outcomeNotes?: SortOrder
     schoolId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -222697,6 +226242,9 @@ export namespace Prisma {
     date?: SortOrder
     to?: SortOrder
     address?: SortOrder
+    urgency?: SortOrder
+    status?: SortOrder
+    outcomeNotes?: SortOrder
     schoolId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -222711,6 +226259,9 @@ export namespace Prisma {
     date?: SortOrder
     to?: SortOrder
     address?: SortOrder
+    urgency?: SortOrder
+    status?: SortOrder
+    outcomeNotes?: SortOrder
     schoolId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -222810,6 +226361,135 @@ export namespace Prisma {
     weight?: SortOrder
     height?: SortOrder
     oxygenSaturation?: SortOrder
+  }
+
+  export type ClinicInventoryItemCountOrderByAggregateInput = {
+    id?: SortOrder
+    schoolId?: SortOrder
+    name?: SortOrder
+    category?: SortOrder
+    batchNumber?: SortOrder
+    expiryDate?: SortOrder
+    unit?: SortOrder
+    stock?: SortOrder
+    reorderLevel?: SortOrder
+    unitCost?: SortOrder
+    unitPrice?: SortOrder
+    location?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ClinicInventoryItemAvgOrderByAggregateInput = {
+    stock?: SortOrder
+    reorderLevel?: SortOrder
+    unitCost?: SortOrder
+    unitPrice?: SortOrder
+  }
+
+  export type ClinicInventoryItemMaxOrderByAggregateInput = {
+    id?: SortOrder
+    schoolId?: SortOrder
+    name?: SortOrder
+    category?: SortOrder
+    batchNumber?: SortOrder
+    expiryDate?: SortOrder
+    unit?: SortOrder
+    stock?: SortOrder
+    reorderLevel?: SortOrder
+    unitCost?: SortOrder
+    unitPrice?: SortOrder
+    location?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ClinicInventoryItemMinOrderByAggregateInput = {
+    id?: SortOrder
+    schoolId?: SortOrder
+    name?: SortOrder
+    category?: SortOrder
+    batchNumber?: SortOrder
+    expiryDate?: SortOrder
+    unit?: SortOrder
+    stock?: SortOrder
+    reorderLevel?: SortOrder
+    unitCost?: SortOrder
+    unitPrice?: SortOrder
+    location?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ClinicInventoryItemSumOrderByAggregateInput = {
+    stock?: SortOrder
+    reorderLevel?: SortOrder
+    unitCost?: SortOrder
+    unitPrice?: SortOrder
+  }
+
+  export type ClinicInventoryItemRelationFilter = {
+    is?: ClinicInventoryItemWhereInput
+    isNot?: ClinicInventoryItemWhereInput
+  }
+
+  export type ClinicVisitNullableRelationFilter = {
+    is?: ClinicVisitWhereInput | null
+    isNot?: ClinicVisitWhereInput | null
+  }
+
+  export type ClinicDispensingLogCountOrderByAggregateInput = {
+    id?: SortOrder
+    schoolId?: SortOrder
+    itemId?: SortOrder
+    visitId?: SortOrder
+    patientId?: SortOrder
+    quantity?: SortOrder
+    unitCost?: SortOrder
+    totalPrice?: SortOrder
+    dispensedBy?: SortOrder
+    notes?: SortOrder
+    dispensedAt?: SortOrder
+  }
+
+  export type ClinicDispensingLogAvgOrderByAggregateInput = {
+    quantity?: SortOrder
+    unitCost?: SortOrder
+    totalPrice?: SortOrder
+  }
+
+  export type ClinicDispensingLogMaxOrderByAggregateInput = {
+    id?: SortOrder
+    schoolId?: SortOrder
+    itemId?: SortOrder
+    visitId?: SortOrder
+    patientId?: SortOrder
+    quantity?: SortOrder
+    unitCost?: SortOrder
+    totalPrice?: SortOrder
+    dispensedBy?: SortOrder
+    notes?: SortOrder
+    dispensedAt?: SortOrder
+  }
+
+  export type ClinicDispensingLogMinOrderByAggregateInput = {
+    id?: SortOrder
+    schoolId?: SortOrder
+    itemId?: SortOrder
+    visitId?: SortOrder
+    patientId?: SortOrder
+    quantity?: SortOrder
+    unitCost?: SortOrder
+    totalPrice?: SortOrder
+    dispensedBy?: SortOrder
+    notes?: SortOrder
+    dispensedAt?: SortOrder
+  }
+
+  export type ClinicDispensingLogSumOrderByAggregateInput = {
+    quantity?: SortOrder
+    unitCost?: SortOrder
+    totalPrice?: SortOrder
   }
 
   export type ClinicHospitalizationCountOrderByAggregateInput = {
@@ -223086,6 +226766,10 @@ export namespace Prisma {
     narrative?: SortOrder
     reportedById?: SortOrder
     schoolId?: SortOrder
+    hasPunishment?: SortOrder
+    punishment?: SortOrder
+    punishmentLocation?: SortOrder
+    punishmentStatus?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -223097,6 +226781,10 @@ export namespace Prisma {
     narrative?: SortOrder
     reportedById?: SortOrder
     schoolId?: SortOrder
+    hasPunishment?: SortOrder
+    punishment?: SortOrder
+    punishmentLocation?: SortOrder
+    punishmentStatus?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -223108,6 +226796,10 @@ export namespace Prisma {
     narrative?: SortOrder
     reportedById?: SortOrder
     schoolId?: SortOrder
+    hasPunishment?: SortOrder
+    punishment?: SortOrder
+    punishmentLocation?: SortOrder
+    punishmentStatus?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -224419,6 +228111,13 @@ export namespace Prisma {
     connect?: ClinicPatientWhereUniqueInput | ClinicPatientWhereUniqueInput[]
   }
 
+  export type ClinicInventoryItemCreateNestedManyWithoutSchoolInput = {
+    create?: XOR<ClinicInventoryItemCreateWithoutSchoolInput, ClinicInventoryItemUncheckedCreateWithoutSchoolInput> | ClinicInventoryItemCreateWithoutSchoolInput[] | ClinicInventoryItemUncheckedCreateWithoutSchoolInput[]
+    connectOrCreate?: ClinicInventoryItemCreateOrConnectWithoutSchoolInput | ClinicInventoryItemCreateOrConnectWithoutSchoolInput[]
+    createMany?: ClinicInventoryItemCreateManySchoolInputEnvelope
+    connect?: ClinicInventoryItemWhereUniqueInput | ClinicInventoryItemWhereUniqueInput[]
+  }
+
   export type ChartOfAccountCreateNestedManyWithoutSchoolInput = {
     create?: XOR<ChartOfAccountCreateWithoutSchoolInput, ChartOfAccountUncheckedCreateWithoutSchoolInput> | ChartOfAccountCreateWithoutSchoolInput[] | ChartOfAccountUncheckedCreateWithoutSchoolInput[]
     connectOrCreate?: ChartOfAccountCreateOrConnectWithoutSchoolInput | ChartOfAccountCreateOrConnectWithoutSchoolInput[]
@@ -225121,6 +228820,13 @@ export namespace Prisma {
     connectOrCreate?: ClinicPatientCreateOrConnectWithoutSchoolInput | ClinicPatientCreateOrConnectWithoutSchoolInput[]
     createMany?: ClinicPatientCreateManySchoolInputEnvelope
     connect?: ClinicPatientWhereUniqueInput | ClinicPatientWhereUniqueInput[]
+  }
+
+  export type ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput = {
+    create?: XOR<ClinicInventoryItemCreateWithoutSchoolInput, ClinicInventoryItemUncheckedCreateWithoutSchoolInput> | ClinicInventoryItemCreateWithoutSchoolInput[] | ClinicInventoryItemUncheckedCreateWithoutSchoolInput[]
+    connectOrCreate?: ClinicInventoryItemCreateOrConnectWithoutSchoolInput | ClinicInventoryItemCreateOrConnectWithoutSchoolInput[]
+    createMany?: ClinicInventoryItemCreateManySchoolInputEnvelope
+    connect?: ClinicInventoryItemWhereUniqueInput | ClinicInventoryItemWhereUniqueInput[]
   }
 
   export type ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput = {
@@ -226509,6 +230215,20 @@ export namespace Prisma {
     update?: ClinicPatientUpdateWithWhereUniqueWithoutSchoolInput | ClinicPatientUpdateWithWhereUniqueWithoutSchoolInput[]
     updateMany?: ClinicPatientUpdateManyWithWhereWithoutSchoolInput | ClinicPatientUpdateManyWithWhereWithoutSchoolInput[]
     deleteMany?: ClinicPatientScalarWhereInput | ClinicPatientScalarWhereInput[]
+  }
+
+  export type ClinicInventoryItemUpdateManyWithoutSchoolNestedInput = {
+    create?: XOR<ClinicInventoryItemCreateWithoutSchoolInput, ClinicInventoryItemUncheckedCreateWithoutSchoolInput> | ClinicInventoryItemCreateWithoutSchoolInput[] | ClinicInventoryItemUncheckedCreateWithoutSchoolInput[]
+    connectOrCreate?: ClinicInventoryItemCreateOrConnectWithoutSchoolInput | ClinicInventoryItemCreateOrConnectWithoutSchoolInput[]
+    upsert?: ClinicInventoryItemUpsertWithWhereUniqueWithoutSchoolInput | ClinicInventoryItemUpsertWithWhereUniqueWithoutSchoolInput[]
+    createMany?: ClinicInventoryItemCreateManySchoolInputEnvelope
+    set?: ClinicInventoryItemWhereUniqueInput | ClinicInventoryItemWhereUniqueInput[]
+    disconnect?: ClinicInventoryItemWhereUniqueInput | ClinicInventoryItemWhereUniqueInput[]
+    delete?: ClinicInventoryItemWhereUniqueInput | ClinicInventoryItemWhereUniqueInput[]
+    connect?: ClinicInventoryItemWhereUniqueInput | ClinicInventoryItemWhereUniqueInput[]
+    update?: ClinicInventoryItemUpdateWithWhereUniqueWithoutSchoolInput | ClinicInventoryItemUpdateWithWhereUniqueWithoutSchoolInput[]
+    updateMany?: ClinicInventoryItemUpdateManyWithWhereWithoutSchoolInput | ClinicInventoryItemUpdateManyWithWhereWithoutSchoolInput[]
+    deleteMany?: ClinicInventoryItemScalarWhereInput | ClinicInventoryItemScalarWhereInput[]
   }
 
   export type ChartOfAccountUpdateManyWithoutSchoolNestedInput = {
@@ -227911,6 +231631,20 @@ export namespace Prisma {
     update?: ClinicPatientUpdateWithWhereUniqueWithoutSchoolInput | ClinicPatientUpdateWithWhereUniqueWithoutSchoolInput[]
     updateMany?: ClinicPatientUpdateManyWithWhereWithoutSchoolInput | ClinicPatientUpdateManyWithWhereWithoutSchoolInput[]
     deleteMany?: ClinicPatientScalarWhereInput | ClinicPatientScalarWhereInput[]
+  }
+
+  export type ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput = {
+    create?: XOR<ClinicInventoryItemCreateWithoutSchoolInput, ClinicInventoryItemUncheckedCreateWithoutSchoolInput> | ClinicInventoryItemCreateWithoutSchoolInput[] | ClinicInventoryItemUncheckedCreateWithoutSchoolInput[]
+    connectOrCreate?: ClinicInventoryItemCreateOrConnectWithoutSchoolInput | ClinicInventoryItemCreateOrConnectWithoutSchoolInput[]
+    upsert?: ClinicInventoryItemUpsertWithWhereUniqueWithoutSchoolInput | ClinicInventoryItemUpsertWithWhereUniqueWithoutSchoolInput[]
+    createMany?: ClinicInventoryItemCreateManySchoolInputEnvelope
+    set?: ClinicInventoryItemWhereUniqueInput | ClinicInventoryItemWhereUniqueInput[]
+    disconnect?: ClinicInventoryItemWhereUniqueInput | ClinicInventoryItemWhereUniqueInput[]
+    delete?: ClinicInventoryItemWhereUniqueInput | ClinicInventoryItemWhereUniqueInput[]
+    connect?: ClinicInventoryItemWhereUniqueInput | ClinicInventoryItemWhereUniqueInput[]
+    update?: ClinicInventoryItemUpdateWithWhereUniqueWithoutSchoolInput | ClinicInventoryItemUpdateWithWhereUniqueWithoutSchoolInput[]
+    updateMany?: ClinicInventoryItemUpdateManyWithWhereWithoutSchoolInput | ClinicInventoryItemUpdateManyWithWhereWithoutSchoolInput[]
+    deleteMany?: ClinicInventoryItemScalarWhereInput | ClinicInventoryItemScalarWhereInput[]
   }
 
   export type ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput = {
@@ -238009,6 +241743,13 @@ export namespace Prisma {
     connect?: ClinicHospitalizationWhereUniqueInput | ClinicHospitalizationWhereUniqueInput[]
   }
 
+  export type ClinicDispensingLogCreateNestedManyWithoutPatientInput = {
+    create?: XOR<ClinicDispensingLogCreateWithoutPatientInput, ClinicDispensingLogUncheckedCreateWithoutPatientInput> | ClinicDispensingLogCreateWithoutPatientInput[] | ClinicDispensingLogUncheckedCreateWithoutPatientInput[]
+    connectOrCreate?: ClinicDispensingLogCreateOrConnectWithoutPatientInput | ClinicDispensingLogCreateOrConnectWithoutPatientInput[]
+    createMany?: ClinicDispensingLogCreateManyPatientInputEnvelope
+    connect?: ClinicDispensingLogWhereUniqueInput | ClinicDispensingLogWhereUniqueInput[]
+  }
+
   export type ClinicVisitUncheckedCreateNestedManyWithoutPatientInput = {
     create?: XOR<ClinicVisitCreateWithoutPatientInput, ClinicVisitUncheckedCreateWithoutPatientInput> | ClinicVisitCreateWithoutPatientInput[] | ClinicVisitUncheckedCreateWithoutPatientInput[]
     connectOrCreate?: ClinicVisitCreateOrConnectWithoutPatientInput | ClinicVisitCreateOrConnectWithoutPatientInput[]
@@ -238056,6 +241797,13 @@ export namespace Prisma {
     connectOrCreate?: ClinicHospitalizationCreateOrConnectWithoutPatientInput | ClinicHospitalizationCreateOrConnectWithoutPatientInput[]
     createMany?: ClinicHospitalizationCreateManyPatientInputEnvelope
     connect?: ClinicHospitalizationWhereUniqueInput | ClinicHospitalizationWhereUniqueInput[]
+  }
+
+  export type ClinicDispensingLogUncheckedCreateNestedManyWithoutPatientInput = {
+    create?: XOR<ClinicDispensingLogCreateWithoutPatientInput, ClinicDispensingLogUncheckedCreateWithoutPatientInput> | ClinicDispensingLogCreateWithoutPatientInput[] | ClinicDispensingLogUncheckedCreateWithoutPatientInput[]
+    connectOrCreate?: ClinicDispensingLogCreateOrConnectWithoutPatientInput | ClinicDispensingLogCreateOrConnectWithoutPatientInput[]
+    createMany?: ClinicDispensingLogCreateManyPatientInputEnvelope
+    connect?: ClinicDispensingLogWhereUniqueInput | ClinicDispensingLogWhereUniqueInput[]
   }
 
   export type SchoolUpdateOneRequiredWithoutClinicPatientNestedInput = {
@@ -238174,6 +241922,20 @@ export namespace Prisma {
     deleteMany?: ClinicHospitalizationScalarWhereInput | ClinicHospitalizationScalarWhereInput[]
   }
 
+  export type ClinicDispensingLogUpdateManyWithoutPatientNestedInput = {
+    create?: XOR<ClinicDispensingLogCreateWithoutPatientInput, ClinicDispensingLogUncheckedCreateWithoutPatientInput> | ClinicDispensingLogCreateWithoutPatientInput[] | ClinicDispensingLogUncheckedCreateWithoutPatientInput[]
+    connectOrCreate?: ClinicDispensingLogCreateOrConnectWithoutPatientInput | ClinicDispensingLogCreateOrConnectWithoutPatientInput[]
+    upsert?: ClinicDispensingLogUpsertWithWhereUniqueWithoutPatientInput | ClinicDispensingLogUpsertWithWhereUniqueWithoutPatientInput[]
+    createMany?: ClinicDispensingLogCreateManyPatientInputEnvelope
+    set?: ClinicDispensingLogWhereUniqueInput | ClinicDispensingLogWhereUniqueInput[]
+    disconnect?: ClinicDispensingLogWhereUniqueInput | ClinicDispensingLogWhereUniqueInput[]
+    delete?: ClinicDispensingLogWhereUniqueInput | ClinicDispensingLogWhereUniqueInput[]
+    connect?: ClinicDispensingLogWhereUniqueInput | ClinicDispensingLogWhereUniqueInput[]
+    update?: ClinicDispensingLogUpdateWithWhereUniqueWithoutPatientInput | ClinicDispensingLogUpdateWithWhereUniqueWithoutPatientInput[]
+    updateMany?: ClinicDispensingLogUpdateManyWithWhereWithoutPatientInput | ClinicDispensingLogUpdateManyWithWhereWithoutPatientInput[]
+    deleteMany?: ClinicDispensingLogScalarWhereInput | ClinicDispensingLogScalarWhereInput[]
+  }
+
   export type ClinicVisitUncheckedUpdateManyWithoutPatientNestedInput = {
     create?: XOR<ClinicVisitCreateWithoutPatientInput, ClinicVisitUncheckedCreateWithoutPatientInput> | ClinicVisitCreateWithoutPatientInput[] | ClinicVisitUncheckedCreateWithoutPatientInput[]
     connectOrCreate?: ClinicVisitCreateOrConnectWithoutPatientInput | ClinicVisitCreateOrConnectWithoutPatientInput[]
@@ -238270,6 +242032,20 @@ export namespace Prisma {
     update?: ClinicHospitalizationUpdateWithWhereUniqueWithoutPatientInput | ClinicHospitalizationUpdateWithWhereUniqueWithoutPatientInput[]
     updateMany?: ClinicHospitalizationUpdateManyWithWhereWithoutPatientInput | ClinicHospitalizationUpdateManyWithWhereWithoutPatientInput[]
     deleteMany?: ClinicHospitalizationScalarWhereInput | ClinicHospitalizationScalarWhereInput[]
+  }
+
+  export type ClinicDispensingLogUncheckedUpdateManyWithoutPatientNestedInput = {
+    create?: XOR<ClinicDispensingLogCreateWithoutPatientInput, ClinicDispensingLogUncheckedCreateWithoutPatientInput> | ClinicDispensingLogCreateWithoutPatientInput[] | ClinicDispensingLogUncheckedCreateWithoutPatientInput[]
+    connectOrCreate?: ClinicDispensingLogCreateOrConnectWithoutPatientInput | ClinicDispensingLogCreateOrConnectWithoutPatientInput[]
+    upsert?: ClinicDispensingLogUpsertWithWhereUniqueWithoutPatientInput | ClinicDispensingLogUpsertWithWhereUniqueWithoutPatientInput[]
+    createMany?: ClinicDispensingLogCreateManyPatientInputEnvelope
+    set?: ClinicDispensingLogWhereUniqueInput | ClinicDispensingLogWhereUniqueInput[]
+    disconnect?: ClinicDispensingLogWhereUniqueInput | ClinicDispensingLogWhereUniqueInput[]
+    delete?: ClinicDispensingLogWhereUniqueInput | ClinicDispensingLogWhereUniqueInput[]
+    connect?: ClinicDispensingLogWhereUniqueInput | ClinicDispensingLogWhereUniqueInput[]
+    update?: ClinicDispensingLogUpdateWithWhereUniqueWithoutPatientInput | ClinicDispensingLogUpdateWithWhereUniqueWithoutPatientInput[]
+    updateMany?: ClinicDispensingLogUpdateManyWithWhereWithoutPatientInput | ClinicDispensingLogUpdateManyWithWhereWithoutPatientInput[]
+    deleteMany?: ClinicDispensingLogScalarWhereInput | ClinicDispensingLogScalarWhereInput[]
   }
 
   export type UserCreateNestedOneWithoutClinicAppointmentsInput = {
@@ -238434,6 +242210,20 @@ export namespace Prisma {
     connect?: SchoolWhereUniqueInput
   }
 
+  export type ClinicDispensingLogCreateNestedManyWithoutVisitInput = {
+    create?: XOR<ClinicDispensingLogCreateWithoutVisitInput, ClinicDispensingLogUncheckedCreateWithoutVisitInput> | ClinicDispensingLogCreateWithoutVisitInput[] | ClinicDispensingLogUncheckedCreateWithoutVisitInput[]
+    connectOrCreate?: ClinicDispensingLogCreateOrConnectWithoutVisitInput | ClinicDispensingLogCreateOrConnectWithoutVisitInput[]
+    createMany?: ClinicDispensingLogCreateManyVisitInputEnvelope
+    connect?: ClinicDispensingLogWhereUniqueInput | ClinicDispensingLogWhereUniqueInput[]
+  }
+
+  export type ClinicDispensingLogUncheckedCreateNestedManyWithoutVisitInput = {
+    create?: XOR<ClinicDispensingLogCreateWithoutVisitInput, ClinicDispensingLogUncheckedCreateWithoutVisitInput> | ClinicDispensingLogCreateWithoutVisitInput[] | ClinicDispensingLogUncheckedCreateWithoutVisitInput[]
+    connectOrCreate?: ClinicDispensingLogCreateOrConnectWithoutVisitInput | ClinicDispensingLogCreateOrConnectWithoutVisitInput[]
+    createMany?: ClinicDispensingLogCreateManyVisitInputEnvelope
+    connect?: ClinicDispensingLogWhereUniqueInput | ClinicDispensingLogWhereUniqueInput[]
+  }
+
   export type UserUpdateOneWithoutClinicVisitsNestedInput = {
     create?: XOR<UserCreateWithoutClinicVisitsInput, UserUncheckedCreateWithoutClinicVisitsInput>
     connectOrCreate?: UserCreateOrConnectWithoutClinicVisitsInput
@@ -238460,6 +242250,136 @@ export namespace Prisma {
     upsert?: SchoolUpsertWithoutClinicVisitsInput
     connect?: SchoolWhereUniqueInput
     update?: XOR<XOR<SchoolUpdateToOneWithWhereWithoutClinicVisitsInput, SchoolUpdateWithoutClinicVisitsInput>, SchoolUncheckedUpdateWithoutClinicVisitsInput>
+  }
+
+  export type ClinicDispensingLogUpdateManyWithoutVisitNestedInput = {
+    create?: XOR<ClinicDispensingLogCreateWithoutVisitInput, ClinicDispensingLogUncheckedCreateWithoutVisitInput> | ClinicDispensingLogCreateWithoutVisitInput[] | ClinicDispensingLogUncheckedCreateWithoutVisitInput[]
+    connectOrCreate?: ClinicDispensingLogCreateOrConnectWithoutVisitInput | ClinicDispensingLogCreateOrConnectWithoutVisitInput[]
+    upsert?: ClinicDispensingLogUpsertWithWhereUniqueWithoutVisitInput | ClinicDispensingLogUpsertWithWhereUniqueWithoutVisitInput[]
+    createMany?: ClinicDispensingLogCreateManyVisitInputEnvelope
+    set?: ClinicDispensingLogWhereUniqueInput | ClinicDispensingLogWhereUniqueInput[]
+    disconnect?: ClinicDispensingLogWhereUniqueInput | ClinicDispensingLogWhereUniqueInput[]
+    delete?: ClinicDispensingLogWhereUniqueInput | ClinicDispensingLogWhereUniqueInput[]
+    connect?: ClinicDispensingLogWhereUniqueInput | ClinicDispensingLogWhereUniqueInput[]
+    update?: ClinicDispensingLogUpdateWithWhereUniqueWithoutVisitInput | ClinicDispensingLogUpdateWithWhereUniqueWithoutVisitInput[]
+    updateMany?: ClinicDispensingLogUpdateManyWithWhereWithoutVisitInput | ClinicDispensingLogUpdateManyWithWhereWithoutVisitInput[]
+    deleteMany?: ClinicDispensingLogScalarWhereInput | ClinicDispensingLogScalarWhereInput[]
+  }
+
+  export type ClinicDispensingLogUncheckedUpdateManyWithoutVisitNestedInput = {
+    create?: XOR<ClinicDispensingLogCreateWithoutVisitInput, ClinicDispensingLogUncheckedCreateWithoutVisitInput> | ClinicDispensingLogCreateWithoutVisitInput[] | ClinicDispensingLogUncheckedCreateWithoutVisitInput[]
+    connectOrCreate?: ClinicDispensingLogCreateOrConnectWithoutVisitInput | ClinicDispensingLogCreateOrConnectWithoutVisitInput[]
+    upsert?: ClinicDispensingLogUpsertWithWhereUniqueWithoutVisitInput | ClinicDispensingLogUpsertWithWhereUniqueWithoutVisitInput[]
+    createMany?: ClinicDispensingLogCreateManyVisitInputEnvelope
+    set?: ClinicDispensingLogWhereUniqueInput | ClinicDispensingLogWhereUniqueInput[]
+    disconnect?: ClinicDispensingLogWhereUniqueInput | ClinicDispensingLogWhereUniqueInput[]
+    delete?: ClinicDispensingLogWhereUniqueInput | ClinicDispensingLogWhereUniqueInput[]
+    connect?: ClinicDispensingLogWhereUniqueInput | ClinicDispensingLogWhereUniqueInput[]
+    update?: ClinicDispensingLogUpdateWithWhereUniqueWithoutVisitInput | ClinicDispensingLogUpdateWithWhereUniqueWithoutVisitInput[]
+    updateMany?: ClinicDispensingLogUpdateManyWithWhereWithoutVisitInput | ClinicDispensingLogUpdateManyWithWhereWithoutVisitInput[]
+    deleteMany?: ClinicDispensingLogScalarWhereInput | ClinicDispensingLogScalarWhereInput[]
+  }
+
+  export type SchoolCreateNestedOneWithoutClinicInventoryItemsInput = {
+    create?: XOR<SchoolCreateWithoutClinicInventoryItemsInput, SchoolUncheckedCreateWithoutClinicInventoryItemsInput>
+    connectOrCreate?: SchoolCreateOrConnectWithoutClinicInventoryItemsInput
+    connect?: SchoolWhereUniqueInput
+  }
+
+  export type ClinicDispensingLogCreateNestedManyWithoutItemInput = {
+    create?: XOR<ClinicDispensingLogCreateWithoutItemInput, ClinicDispensingLogUncheckedCreateWithoutItemInput> | ClinicDispensingLogCreateWithoutItemInput[] | ClinicDispensingLogUncheckedCreateWithoutItemInput[]
+    connectOrCreate?: ClinicDispensingLogCreateOrConnectWithoutItemInput | ClinicDispensingLogCreateOrConnectWithoutItemInput[]
+    createMany?: ClinicDispensingLogCreateManyItemInputEnvelope
+    connect?: ClinicDispensingLogWhereUniqueInput | ClinicDispensingLogWhereUniqueInput[]
+  }
+
+  export type ClinicDispensingLogUncheckedCreateNestedManyWithoutItemInput = {
+    create?: XOR<ClinicDispensingLogCreateWithoutItemInput, ClinicDispensingLogUncheckedCreateWithoutItemInput> | ClinicDispensingLogCreateWithoutItemInput[] | ClinicDispensingLogUncheckedCreateWithoutItemInput[]
+    connectOrCreate?: ClinicDispensingLogCreateOrConnectWithoutItemInput | ClinicDispensingLogCreateOrConnectWithoutItemInput[]
+    createMany?: ClinicDispensingLogCreateManyItemInputEnvelope
+    connect?: ClinicDispensingLogWhereUniqueInput | ClinicDispensingLogWhereUniqueInput[]
+  }
+
+  export type SchoolUpdateOneRequiredWithoutClinicInventoryItemsNestedInput = {
+    create?: XOR<SchoolCreateWithoutClinicInventoryItemsInput, SchoolUncheckedCreateWithoutClinicInventoryItemsInput>
+    connectOrCreate?: SchoolCreateOrConnectWithoutClinicInventoryItemsInput
+    upsert?: SchoolUpsertWithoutClinicInventoryItemsInput
+    connect?: SchoolWhereUniqueInput
+    update?: XOR<XOR<SchoolUpdateToOneWithWhereWithoutClinicInventoryItemsInput, SchoolUpdateWithoutClinicInventoryItemsInput>, SchoolUncheckedUpdateWithoutClinicInventoryItemsInput>
+  }
+
+  export type ClinicDispensingLogUpdateManyWithoutItemNestedInput = {
+    create?: XOR<ClinicDispensingLogCreateWithoutItemInput, ClinicDispensingLogUncheckedCreateWithoutItemInput> | ClinicDispensingLogCreateWithoutItemInput[] | ClinicDispensingLogUncheckedCreateWithoutItemInput[]
+    connectOrCreate?: ClinicDispensingLogCreateOrConnectWithoutItemInput | ClinicDispensingLogCreateOrConnectWithoutItemInput[]
+    upsert?: ClinicDispensingLogUpsertWithWhereUniqueWithoutItemInput | ClinicDispensingLogUpsertWithWhereUniqueWithoutItemInput[]
+    createMany?: ClinicDispensingLogCreateManyItemInputEnvelope
+    set?: ClinicDispensingLogWhereUniqueInput | ClinicDispensingLogWhereUniqueInput[]
+    disconnect?: ClinicDispensingLogWhereUniqueInput | ClinicDispensingLogWhereUniqueInput[]
+    delete?: ClinicDispensingLogWhereUniqueInput | ClinicDispensingLogWhereUniqueInput[]
+    connect?: ClinicDispensingLogWhereUniqueInput | ClinicDispensingLogWhereUniqueInput[]
+    update?: ClinicDispensingLogUpdateWithWhereUniqueWithoutItemInput | ClinicDispensingLogUpdateWithWhereUniqueWithoutItemInput[]
+    updateMany?: ClinicDispensingLogUpdateManyWithWhereWithoutItemInput | ClinicDispensingLogUpdateManyWithWhereWithoutItemInput[]
+    deleteMany?: ClinicDispensingLogScalarWhereInput | ClinicDispensingLogScalarWhereInput[]
+  }
+
+  export type ClinicDispensingLogUncheckedUpdateManyWithoutItemNestedInput = {
+    create?: XOR<ClinicDispensingLogCreateWithoutItemInput, ClinicDispensingLogUncheckedCreateWithoutItemInput> | ClinicDispensingLogCreateWithoutItemInput[] | ClinicDispensingLogUncheckedCreateWithoutItemInput[]
+    connectOrCreate?: ClinicDispensingLogCreateOrConnectWithoutItemInput | ClinicDispensingLogCreateOrConnectWithoutItemInput[]
+    upsert?: ClinicDispensingLogUpsertWithWhereUniqueWithoutItemInput | ClinicDispensingLogUpsertWithWhereUniqueWithoutItemInput[]
+    createMany?: ClinicDispensingLogCreateManyItemInputEnvelope
+    set?: ClinicDispensingLogWhereUniqueInput | ClinicDispensingLogWhereUniqueInput[]
+    disconnect?: ClinicDispensingLogWhereUniqueInput | ClinicDispensingLogWhereUniqueInput[]
+    delete?: ClinicDispensingLogWhereUniqueInput | ClinicDispensingLogWhereUniqueInput[]
+    connect?: ClinicDispensingLogWhereUniqueInput | ClinicDispensingLogWhereUniqueInput[]
+    update?: ClinicDispensingLogUpdateWithWhereUniqueWithoutItemInput | ClinicDispensingLogUpdateWithWhereUniqueWithoutItemInput[]
+    updateMany?: ClinicDispensingLogUpdateManyWithWhereWithoutItemInput | ClinicDispensingLogUpdateManyWithWhereWithoutItemInput[]
+    deleteMany?: ClinicDispensingLogScalarWhereInput | ClinicDispensingLogScalarWhereInput[]
+  }
+
+  export type ClinicInventoryItemCreateNestedOneWithoutDispensingsInput = {
+    create?: XOR<ClinicInventoryItemCreateWithoutDispensingsInput, ClinicInventoryItemUncheckedCreateWithoutDispensingsInput>
+    connectOrCreate?: ClinicInventoryItemCreateOrConnectWithoutDispensingsInput
+    connect?: ClinicInventoryItemWhereUniqueInput
+  }
+
+  export type ClinicVisitCreateNestedOneWithoutDispensingsInput = {
+    create?: XOR<ClinicVisitCreateWithoutDispensingsInput, ClinicVisitUncheckedCreateWithoutDispensingsInput>
+    connectOrCreate?: ClinicVisitCreateOrConnectWithoutDispensingsInput
+    connect?: ClinicVisitWhereUniqueInput
+  }
+
+  export type ClinicPatientCreateNestedOneWithoutDispensingsInput = {
+    create?: XOR<ClinicPatientCreateWithoutDispensingsInput, ClinicPatientUncheckedCreateWithoutDispensingsInput>
+    connectOrCreate?: ClinicPatientCreateOrConnectWithoutDispensingsInput
+    connect?: ClinicPatientWhereUniqueInput
+  }
+
+  export type ClinicInventoryItemUpdateOneRequiredWithoutDispensingsNestedInput = {
+    create?: XOR<ClinicInventoryItemCreateWithoutDispensingsInput, ClinicInventoryItemUncheckedCreateWithoutDispensingsInput>
+    connectOrCreate?: ClinicInventoryItemCreateOrConnectWithoutDispensingsInput
+    upsert?: ClinicInventoryItemUpsertWithoutDispensingsInput
+    connect?: ClinicInventoryItemWhereUniqueInput
+    update?: XOR<XOR<ClinicInventoryItemUpdateToOneWithWhereWithoutDispensingsInput, ClinicInventoryItemUpdateWithoutDispensingsInput>, ClinicInventoryItemUncheckedUpdateWithoutDispensingsInput>
+  }
+
+  export type ClinicVisitUpdateOneWithoutDispensingsNestedInput = {
+    create?: XOR<ClinicVisitCreateWithoutDispensingsInput, ClinicVisitUncheckedCreateWithoutDispensingsInput>
+    connectOrCreate?: ClinicVisitCreateOrConnectWithoutDispensingsInput
+    upsert?: ClinicVisitUpsertWithoutDispensingsInput
+    disconnect?: ClinicVisitWhereInput | boolean
+    delete?: ClinicVisitWhereInput | boolean
+    connect?: ClinicVisitWhereUniqueInput
+    update?: XOR<XOR<ClinicVisitUpdateToOneWithWhereWithoutDispensingsInput, ClinicVisitUpdateWithoutDispensingsInput>, ClinicVisitUncheckedUpdateWithoutDispensingsInput>
+  }
+
+  export type ClinicPatientUpdateOneWithoutDispensingsNestedInput = {
+    create?: XOR<ClinicPatientCreateWithoutDispensingsInput, ClinicPatientUncheckedCreateWithoutDispensingsInput>
+    connectOrCreate?: ClinicPatientCreateOrConnectWithoutDispensingsInput
+    upsert?: ClinicPatientUpsertWithoutDispensingsInput
+    disconnect?: ClinicPatientWhereInput | boolean
+    delete?: ClinicPatientWhereInput | boolean
+    connect?: ClinicPatientWhereUniqueInput
+    update?: XOR<XOR<ClinicPatientUpdateToOneWithWhereWithoutDispensingsInput, ClinicPatientUpdateWithoutDispensingsInput>, ClinicPatientUncheckedUpdateWithoutDispensingsInput>
   }
 
   export type UserCreateNestedOneWithoutClinicHospitalizationsInput = {
@@ -239542,6 +243462,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -239665,6 +243586,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -240208,6 +244130,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     user?: UserCreateNestedOneWithoutClinicVisitsInput
     patient?: ClinicPatientCreateNestedOneWithoutVisitsInput
+    dispensings?: ClinicDispensingLogCreateNestedManyWithoutVisitInput
   }
 
   export type ClinicVisitUncheckedCreateWithoutSchoolInput = {
@@ -240233,6 +244156,7 @@ export namespace Prisma {
     visitDate?: Date | string
     createdAt?: Date | string
     updatedAt?: Date | string
+    dispensings?: ClinicDispensingLogUncheckedCreateNestedManyWithoutVisitInput
   }
 
   export type ClinicVisitCreateOrConnectWithoutSchoolInput = {
@@ -240830,6 +244754,10 @@ export namespace Prisma {
     studentName: string
     category: string
     narrative: string
+    hasPunishment?: boolean
+    punishment?: string | null
+    punishmentLocation?: string | null
+    punishmentStatus?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     reportedBy: UserCreateNestedOneWithoutPrefectReportsInput
@@ -240841,6 +244769,10 @@ export namespace Prisma {
     category: string
     narrative: string
     reportedById: string
+    hasPunishment?: boolean
+    punishment?: string | null
+    punishmentLocation?: string | null
+    punishmentStatus?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -243032,6 +246964,7 @@ export namespace Prisma {
     gateRequiredType?: string
     idCardTemplateFront?: string | null
     idCardTemplateBack?: string | null
+    setupStatus?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -243099,6 +247032,7 @@ export namespace Prisma {
     gateRequiredType?: string
     idCardTemplateFront?: string | null
     idCardTemplateBack?: string | null
+    setupStatus?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -243648,12 +247582,18 @@ export namespace Prisma {
 
   export type ClinicPatientCreateWithoutSchoolInput = {
     id?: string
+    mrn?: string | null
     firstName?: string | null
     lastName?: string | null
     dob?: Date | string | null
     gender?: string | null
     contactNumber?: string | null
     address?: string | null
+    bloodType?: string | null
+    allergies?: string | null
+    chronicConditions?: string | null
+    guardianName?: string | null
+    guardianContact?: string | null
     medicalHistory?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -243665,17 +247605,24 @@ export namespace Prisma {
     immunizations?: ClinicImmunizationCreateNestedManyWithoutPatientInput
     referrals?: ClinicReferralCreateNestedManyWithoutPatientInput
     hospitalizations?: ClinicHospitalizationCreateNestedManyWithoutPatientInput
+    dispensings?: ClinicDispensingLogCreateNestedManyWithoutPatientInput
   }
 
   export type ClinicPatientUncheckedCreateWithoutSchoolInput = {
     id?: string
     userId?: string | null
+    mrn?: string | null
     firstName?: string | null
     lastName?: string | null
     dob?: Date | string | null
     gender?: string | null
     contactNumber?: string | null
     address?: string | null
+    bloodType?: string | null
+    allergies?: string | null
+    chronicConditions?: string | null
+    guardianName?: string | null
+    guardianContact?: string | null
     medicalHistory?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -243686,6 +247633,7 @@ export namespace Prisma {
     immunizations?: ClinicImmunizationUncheckedCreateNestedManyWithoutPatientInput
     referrals?: ClinicReferralUncheckedCreateNestedManyWithoutPatientInput
     hospitalizations?: ClinicHospitalizationUncheckedCreateNestedManyWithoutPatientInput
+    dispensings?: ClinicDispensingLogUncheckedCreateNestedManyWithoutPatientInput
   }
 
   export type ClinicPatientCreateOrConnectWithoutSchoolInput = {
@@ -243695,6 +247643,50 @@ export namespace Prisma {
 
   export type ClinicPatientCreateManySchoolInputEnvelope = {
     data: ClinicPatientCreateManySchoolInput | ClinicPatientCreateManySchoolInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type ClinicInventoryItemCreateWithoutSchoolInput = {
+    id?: string
+    name: string
+    category?: string
+    batchNumber?: string | null
+    expiryDate?: Date | string | null
+    unit?: string
+    stock?: number
+    reorderLevel?: number
+    unitCost?: number
+    unitPrice?: number
+    location?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    dispensings?: ClinicDispensingLogCreateNestedManyWithoutItemInput
+  }
+
+  export type ClinicInventoryItemUncheckedCreateWithoutSchoolInput = {
+    id?: string
+    name: string
+    category?: string
+    batchNumber?: string | null
+    expiryDate?: Date | string | null
+    unit?: string
+    stock?: number
+    reorderLevel?: number
+    unitCost?: number
+    unitPrice?: number
+    location?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    dispensings?: ClinicDispensingLogUncheckedCreateNestedManyWithoutItemInput
+  }
+
+  export type ClinicInventoryItemCreateOrConnectWithoutSchoolInput = {
+    where: ClinicInventoryItemWhereUniqueInput
+    create: XOR<ClinicInventoryItemCreateWithoutSchoolInput, ClinicInventoryItemUncheckedCreateWithoutSchoolInput>
+  }
+
+  export type ClinicInventoryItemCreateManySchoolInputEnvelope = {
+    data: ClinicInventoryItemCreateManySchoolInput | ClinicInventoryItemCreateManySchoolInput[]
     skipDuplicates?: boolean
   }
 
@@ -244732,6 +248724,10 @@ export namespace Prisma {
     narrative?: StringFilter<"PrefectReport"> | string
     reportedById?: StringFilter<"PrefectReport"> | string
     schoolId?: StringFilter<"PrefectReport"> | string
+    hasPunishment?: BoolFilter<"PrefectReport"> | boolean
+    punishment?: StringNullableFilter<"PrefectReport"> | string | null
+    punishmentLocation?: StringNullableFilter<"PrefectReport"> | string | null
+    punishmentStatus?: StringNullableFilter<"PrefectReport"> | string | null
     createdAt?: DateTimeFilter<"PrefectReport"> | Date | string
     updatedAt?: DateTimeFilter<"PrefectReport"> | Date | string
   }
@@ -246653,6 +250649,7 @@ export namespace Prisma {
     gateRequiredType?: StringFieldUpdateOperationsInput | string
     idCardTemplateFront?: NullableStringFieldUpdateOperationsInput | string | null
     idCardTemplateBack?: NullableStringFieldUpdateOperationsInput | string | null
+    setupStatus?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -246720,6 +250717,7 @@ export namespace Prisma {
     gateRequiredType?: StringFieldUpdateOperationsInput | string
     idCardTemplateFront?: NullableStringFieldUpdateOperationsInput | string | null
     idCardTemplateBack?: NullableStringFieldUpdateOperationsInput | string | null
+    setupStatus?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -247234,15 +251232,57 @@ export namespace Prisma {
     id?: StringFilter<"ClinicPatient"> | string
     schoolId?: StringFilter<"ClinicPatient"> | string
     userId?: StringNullableFilter<"ClinicPatient"> | string | null
+    mrn?: StringNullableFilter<"ClinicPatient"> | string | null
     firstName?: StringNullableFilter<"ClinicPatient"> | string | null
     lastName?: StringNullableFilter<"ClinicPatient"> | string | null
     dob?: DateTimeNullableFilter<"ClinicPatient"> | Date | string | null
     gender?: StringNullableFilter<"ClinicPatient"> | string | null
     contactNumber?: StringNullableFilter<"ClinicPatient"> | string | null
     address?: StringNullableFilter<"ClinicPatient"> | string | null
+    bloodType?: StringNullableFilter<"ClinicPatient"> | string | null
+    allergies?: StringNullableFilter<"ClinicPatient"> | string | null
+    chronicConditions?: StringNullableFilter<"ClinicPatient"> | string | null
+    guardianName?: StringNullableFilter<"ClinicPatient"> | string | null
+    guardianContact?: StringNullableFilter<"ClinicPatient"> | string | null
     medicalHistory?: StringNullableFilter<"ClinicPatient"> | string | null
     createdAt?: DateTimeFilter<"ClinicPatient"> | Date | string
     updatedAt?: DateTimeFilter<"ClinicPatient"> | Date | string
+  }
+
+  export type ClinicInventoryItemUpsertWithWhereUniqueWithoutSchoolInput = {
+    where: ClinicInventoryItemWhereUniqueInput
+    update: XOR<ClinicInventoryItemUpdateWithoutSchoolInput, ClinicInventoryItemUncheckedUpdateWithoutSchoolInput>
+    create: XOR<ClinicInventoryItemCreateWithoutSchoolInput, ClinicInventoryItemUncheckedCreateWithoutSchoolInput>
+  }
+
+  export type ClinicInventoryItemUpdateWithWhereUniqueWithoutSchoolInput = {
+    where: ClinicInventoryItemWhereUniqueInput
+    data: XOR<ClinicInventoryItemUpdateWithoutSchoolInput, ClinicInventoryItemUncheckedUpdateWithoutSchoolInput>
+  }
+
+  export type ClinicInventoryItemUpdateManyWithWhereWithoutSchoolInput = {
+    where: ClinicInventoryItemScalarWhereInput
+    data: XOR<ClinicInventoryItemUpdateManyMutationInput, ClinicInventoryItemUncheckedUpdateManyWithoutSchoolInput>
+  }
+
+  export type ClinicInventoryItemScalarWhereInput = {
+    AND?: ClinicInventoryItemScalarWhereInput | ClinicInventoryItemScalarWhereInput[]
+    OR?: ClinicInventoryItemScalarWhereInput[]
+    NOT?: ClinicInventoryItemScalarWhereInput | ClinicInventoryItemScalarWhereInput[]
+    id?: StringFilter<"ClinicInventoryItem"> | string
+    schoolId?: StringFilter<"ClinicInventoryItem"> | string
+    name?: StringFilter<"ClinicInventoryItem"> | string
+    category?: StringFilter<"ClinicInventoryItem"> | string
+    batchNumber?: StringNullableFilter<"ClinicInventoryItem"> | string | null
+    expiryDate?: DateTimeNullableFilter<"ClinicInventoryItem"> | Date | string | null
+    unit?: StringFilter<"ClinicInventoryItem"> | string
+    stock?: IntFilter<"ClinicInventoryItem"> | number
+    reorderLevel?: IntFilter<"ClinicInventoryItem"> | number
+    unitCost?: FloatFilter<"ClinicInventoryItem"> | number
+    unitPrice?: FloatFilter<"ClinicInventoryItem"> | number
+    location?: StringNullableFilter<"ClinicInventoryItem"> | string | null
+    createdAt?: DateTimeFilter<"ClinicInventoryItem"> | Date | string
+    updatedAt?: DateTimeFilter<"ClinicInventoryItem"> | Date | string
   }
 
   export type ChartOfAccountUpsertWithWhereUniqueWithoutSchoolInput = {
@@ -247524,6 +251564,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -247647,6 +251688,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -247786,6 +251828,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -247909,6 +251952,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -248032,6 +252076,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -248155,6 +252200,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -248332,6 +252378,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -248455,6 +252502,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -248594,6 +252642,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -248717,6 +252766,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -248894,6 +252944,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -249017,6 +253068,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -249156,6 +253208,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -249279,6 +253332,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -249512,6 +253566,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -249635,6 +253690,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -249879,6 +253935,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -250002,6 +254059,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -250222,6 +254280,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -250345,6 +254404,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -250804,6 +254864,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -250927,6 +254988,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -251290,6 +255352,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -251413,6 +255476,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -251735,6 +255799,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -251858,6 +255923,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -252050,6 +256116,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -252173,6 +256240,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -252296,6 +256364,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -252419,6 +256488,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -252660,6 +256730,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -252783,6 +256854,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -252981,6 +257053,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -253104,6 +257177,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -253276,6 +257350,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -253399,6 +257474,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -253549,6 +257625,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -253672,6 +257749,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -253844,6 +257922,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -253967,6 +258046,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -254117,6 +258197,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -254240,6 +258321,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -254412,6 +258494,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -254535,6 +258618,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -254756,6 +258840,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -254879,6 +258964,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -255692,6 +259778,10 @@ export namespace Prisma {
     studentName: string
     category: string
     narrative: string
+    hasPunishment?: boolean
+    punishment?: string | null
+    punishmentLocation?: string | null
+    punishmentStatus?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     school: SchoolCreateNestedOneWithoutPrefectReportsInput
@@ -255703,6 +259793,10 @@ export namespace Prisma {
     category: string
     narrative: string
     schoolId: string
+    hasPunishment?: boolean
+    punishment?: string | null
+    punishmentLocation?: string | null
+    punishmentStatus?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -256420,7 +260514,11 @@ export namespace Prisma {
   export type ClinicImmunizationCreateWithoutUserInput = {
     id?: string
     title: string
-    details: string
+    details?: string | null
+    vaccine?: string | null
+    doseNumber?: number | null
+    nextDueDate?: Date | string | null
+    administeredBy?: string | null
     date?: Date | string
     schoolId: string
     createdAt?: Date | string
@@ -256432,7 +260530,11 @@ export namespace Prisma {
     id?: string
     patientId?: string | null
     title: string
-    details: string
+    details?: string | null
+    vaccine?: string | null
+    doseNumber?: number | null
+    nextDueDate?: Date | string | null
+    administeredBy?: string | null
     date?: Date | string
     schoolId: string
     createdAt?: Date | string
@@ -256456,6 +260558,9 @@ export namespace Prisma {
     date?: Date | string
     to: string
     address: string
+    urgency?: string | null
+    status?: string
+    outcomeNotes?: string | null
     schoolId: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -256470,6 +260575,9 @@ export namespace Prisma {
     date?: Date | string
     to: string
     address: string
+    urgency?: string | null
+    status?: string
+    outcomeNotes?: string | null
     schoolId: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -256508,6 +260616,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     patient?: ClinicPatientCreateNestedOneWithoutVisitsInput
     school: SchoolCreateNestedOneWithoutClinicVisitsInput
+    dispensings?: ClinicDispensingLogCreateNestedManyWithoutVisitInput
   }
 
   export type ClinicVisitUncheckedCreateWithoutUserInput = {
@@ -256533,6 +260642,7 @@ export namespace Prisma {
     visitDate?: Date | string
     createdAt?: Date | string
     updatedAt?: Date | string
+    dispensings?: ClinicDispensingLogUncheckedCreateNestedManyWithoutVisitInput
   }
 
   export type ClinicVisitCreateOrConnectWithoutUserInput = {
@@ -256583,12 +260693,18 @@ export namespace Prisma {
 
   export type ClinicPatientCreateWithoutUserInput = {
     id?: string
+    mrn?: string | null
     firstName?: string | null
     lastName?: string | null
     dob?: Date | string | null
     gender?: string | null
     contactNumber?: string | null
     address?: string | null
+    bloodType?: string | null
+    allergies?: string | null
+    chronicConditions?: string | null
+    guardianName?: string | null
+    guardianContact?: string | null
     medicalHistory?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -256600,17 +260716,24 @@ export namespace Prisma {
     immunizations?: ClinicImmunizationCreateNestedManyWithoutPatientInput
     referrals?: ClinicReferralCreateNestedManyWithoutPatientInput
     hospitalizations?: ClinicHospitalizationCreateNestedManyWithoutPatientInput
+    dispensings?: ClinicDispensingLogCreateNestedManyWithoutPatientInput
   }
 
   export type ClinicPatientUncheckedCreateWithoutUserInput = {
     id?: string
     schoolId: string
+    mrn?: string | null
     firstName?: string | null
     lastName?: string | null
     dob?: Date | string | null
     gender?: string | null
     contactNumber?: string | null
     address?: string | null
+    bloodType?: string | null
+    allergies?: string | null
+    chronicConditions?: string | null
+    guardianName?: string | null
+    guardianContact?: string | null
     medicalHistory?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -256621,6 +260744,7 @@ export namespace Prisma {
     immunizations?: ClinicImmunizationUncheckedCreateNestedManyWithoutPatientInput
     referrals?: ClinicReferralUncheckedCreateNestedManyWithoutPatientInput
     hospitalizations?: ClinicHospitalizationUncheckedCreateNestedManyWithoutPatientInput
+    dispensings?: ClinicDispensingLogUncheckedCreateNestedManyWithoutPatientInput
   }
 
   export type ClinicPatientCreateOrConnectWithoutUserInput = {
@@ -256803,6 +260927,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -256926,6 +261051,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -258035,7 +262161,11 @@ export namespace Prisma {
     userId?: StringNullableFilter<"ClinicImmunization"> | string | null
     patientId?: StringNullableFilter<"ClinicImmunization"> | string | null
     title?: StringFilter<"ClinicImmunization"> | string
-    details?: StringFilter<"ClinicImmunization"> | string
+    details?: StringNullableFilter<"ClinicImmunization"> | string | null
+    vaccine?: StringNullableFilter<"ClinicImmunization"> | string | null
+    doseNumber?: IntNullableFilter<"ClinicImmunization"> | number | null
+    nextDueDate?: DateTimeNullableFilter<"ClinicImmunization"> | Date | string | null
+    administeredBy?: StringNullableFilter<"ClinicImmunization"> | string | null
     date?: DateTimeFilter<"ClinicImmunization"> | Date | string
     schoolId?: StringFilter<"ClinicImmunization"> | string
     createdAt?: DateTimeFilter<"ClinicImmunization"> | Date | string
@@ -258070,6 +262200,9 @@ export namespace Prisma {
     date?: DateTimeFilter<"ClinicReferral"> | Date | string
     to?: StringFilter<"ClinicReferral"> | string
     address?: StringFilter<"ClinicReferral"> | string
+    urgency?: StringNullableFilter<"ClinicReferral"> | string | null
+    status?: StringFilter<"ClinicReferral"> | string
+    outcomeNotes?: StringNullableFilter<"ClinicReferral"> | string | null
     schoolId?: StringFilter<"ClinicReferral"> | string
     createdAt?: DateTimeFilter<"ClinicReferral"> | Date | string
     updatedAt?: DateTimeFilter<"ClinicReferral"> | Date | string
@@ -258120,12 +262253,18 @@ export namespace Prisma {
 
   export type ClinicPatientUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
+    mrn?: NullableStringFieldUpdateOperationsInput | string | null
     firstName?: NullableStringFieldUpdateOperationsInput | string | null
     lastName?: NullableStringFieldUpdateOperationsInput | string | null
     dob?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     contactNumber?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
+    bloodType?: NullableStringFieldUpdateOperationsInput | string | null
+    allergies?: NullableStringFieldUpdateOperationsInput | string | null
+    chronicConditions?: NullableStringFieldUpdateOperationsInput | string | null
+    guardianName?: NullableStringFieldUpdateOperationsInput | string | null
+    guardianContact?: NullableStringFieldUpdateOperationsInput | string | null
     medicalHistory?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -258137,17 +262276,24 @@ export namespace Prisma {
     immunizations?: ClinicImmunizationUpdateManyWithoutPatientNestedInput
     referrals?: ClinicReferralUpdateManyWithoutPatientNestedInput
     hospitalizations?: ClinicHospitalizationUpdateManyWithoutPatientNestedInput
+    dispensings?: ClinicDispensingLogUpdateManyWithoutPatientNestedInput
   }
 
   export type ClinicPatientUncheckedUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     schoolId?: StringFieldUpdateOperationsInput | string
+    mrn?: NullableStringFieldUpdateOperationsInput | string | null
     firstName?: NullableStringFieldUpdateOperationsInput | string | null
     lastName?: NullableStringFieldUpdateOperationsInput | string | null
     dob?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     contactNumber?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
+    bloodType?: NullableStringFieldUpdateOperationsInput | string | null
+    allergies?: NullableStringFieldUpdateOperationsInput | string | null
+    chronicConditions?: NullableStringFieldUpdateOperationsInput | string | null
+    guardianName?: NullableStringFieldUpdateOperationsInput | string | null
+    guardianContact?: NullableStringFieldUpdateOperationsInput | string | null
     medicalHistory?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -258158,6 +262304,7 @@ export namespace Prisma {
     immunizations?: ClinicImmunizationUncheckedUpdateManyWithoutPatientNestedInput
     referrals?: ClinicReferralUncheckedUpdateManyWithoutPatientNestedInput
     hospitalizations?: ClinicHospitalizationUncheckedUpdateManyWithoutPatientNestedInput
+    dispensings?: ClinicDispensingLogUncheckedUpdateManyWithoutPatientNestedInput
   }
 
   export type UserCreateWithoutSessionsInput = {
@@ -258675,6 +262822,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -258798,6 +262946,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -259585,6 +263734,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -259708,6 +263858,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -260291,6 +264442,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -260414,6 +264566,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -261522,6 +265675,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -261645,6 +265799,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -262323,6 +266478,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -262446,6 +266602,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -263333,6 +267490,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -263456,6 +267614,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -263829,6 +267988,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -263952,6 +268112,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -264197,6 +268358,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -264320,6 +268482,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -264520,6 +268683,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -264643,6 +268807,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -265295,6 +269460,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -265418,6 +269584,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -266576,6 +270743,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -266699,6 +270867,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -267119,6 +271288,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -267242,6 +271412,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -267365,6 +271536,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -267488,6 +271660,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -267677,6 +271850,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -267800,6 +271974,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -268003,6 +272178,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -268126,6 +272302,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -268735,6 +272912,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -268858,6 +273036,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -269464,6 +273643,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -269587,6 +273767,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -269999,6 +274180,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -270122,6 +274304,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -270376,6 +274559,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -270499,6 +274683,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -270775,6 +274960,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -270898,6 +275084,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -271273,6 +275460,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -271396,6 +275584,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -271780,6 +275969,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -271903,6 +276093,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -272331,6 +276522,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -272454,6 +276646,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -272790,6 +276983,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -272913,6 +277107,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -273148,6 +277343,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -273271,6 +277467,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -273534,6 +277731,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -273657,6 +277855,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -273890,6 +278089,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -274013,6 +278213,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -274274,6 +278475,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -274397,6 +278599,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -274520,6 +278723,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -274643,6 +278847,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -274782,6 +278987,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -274905,6 +279111,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -275159,6 +279366,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -275282,6 +279490,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -275558,6 +279767,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -275681,6 +279891,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -276024,6 +280235,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -276147,6 +280359,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -276510,6 +280723,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -276633,6 +280847,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -276756,6 +280971,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -276879,6 +281095,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -277378,6 +281595,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -277501,6 +281719,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -277856,6 +282075,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -277979,6 +282199,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -278118,6 +282339,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -278241,6 +282463,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -278364,6 +282587,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -278487,6 +282711,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -278626,6 +282851,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -278749,6 +282975,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -278872,6 +283099,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -278995,6 +283223,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -279192,6 +283421,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -279315,6 +283545,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -279789,6 +284020,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -279912,6 +284144,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -280404,6 +284637,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -280527,6 +284761,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -280846,6 +285081,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -280969,6 +285205,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -281316,6 +285553,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -281439,6 +285677,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -281562,6 +285801,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -281685,6 +285925,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -281824,6 +286065,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -281947,6 +286189,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -282070,6 +286313,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -282193,6 +286437,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -282332,6 +286577,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -282455,6 +286701,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -282578,6 +286825,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -282701,6 +286949,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -283122,6 +287371,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -283245,6 +287495,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -283662,6 +287913,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -283785,6 +288037,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -283924,6 +288177,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -284047,6 +288301,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -284170,6 +288425,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -284293,6 +288549,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -284588,6 +288845,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -284711,6 +288969,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -284850,6 +289109,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -284973,6 +289233,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -285144,6 +289405,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -285267,6 +289529,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -285574,6 +289837,7 @@ export namespace Prisma {
     meetingMinutes?: MeetingMinutesCreateNestedManyWithoutSchoolInput
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -285697,6 +289961,7 @@ export namespace Prisma {
     meetingMinutes?: MeetingMinutesUncheckedCreateNestedManyWithoutSchoolInput
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -286016,6 +290281,7 @@ export namespace Prisma {
     meetingMinutes?: MeetingMinutesUpdateManyWithoutSchoolNestedInput
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -286139,6 +290405,7 @@ export namespace Prisma {
     meetingMinutes?: MeetingMinutesUncheckedUpdateManyWithoutSchoolNestedInput
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -286262,6 +290529,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -286385,6 +290653,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -286574,6 +290843,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -286697,6 +290967,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -287477,6 +291748,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -287600,6 +291872,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -287786,6 +292059,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -287909,6 +292183,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -289730,6 +294005,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -289853,6 +294129,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -290203,6 +294480,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -290326,6 +294604,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -290996,6 +295275,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -291119,6 +295399,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -291286,6 +295567,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -291409,6 +295691,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -291967,6 +296250,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -292090,6 +296374,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -292387,6 +296672,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -292510,6 +296796,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -292839,6 +297126,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -292962,6 +297250,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -293315,6 +297604,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -293438,6 +297728,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -294645,6 +298936,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -294768,6 +299060,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -294907,6 +299200,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -295030,6 +299324,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -295722,6 +300017,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -295845,6 +300141,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -296614,6 +300911,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -296737,6 +301035,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -296945,6 +301244,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -297068,6 +301368,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -297449,6 +301750,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -297572,6 +301874,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -299202,6 +303505,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -299325,6 +303629,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -299464,6 +303769,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -299587,6 +303893,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -299841,6 +304148,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -299964,6 +304272,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -300092,6 +304401,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -300215,6 +304525,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -300491,6 +304802,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -300614,6 +304926,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -300748,6 +305061,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -300871,6 +305185,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -301232,6 +305547,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -301355,6 +305671,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -301726,6 +306043,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -301849,6 +306167,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -302123,6 +306442,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -302246,6 +306566,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -302542,6 +306863,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -302665,6 +306987,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -302962,6 +307285,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -303085,6 +307409,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -303410,6 +307735,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -303533,6 +307859,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -303656,6 +307983,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -303779,6 +308107,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -303918,6 +308247,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -304041,6 +308371,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -304164,6 +308495,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -304287,6 +308619,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -304531,6 +308864,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -304654,6 +308988,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -305017,6 +309352,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -305140,6 +309476,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -305311,6 +309648,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -305434,6 +309772,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -305600,6 +309939,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -305723,6 +310063,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -305895,6 +310236,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -306018,6 +310360,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -306292,6 +310635,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -306415,6 +310759,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -306711,6 +311056,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -306834,6 +311180,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -307157,6 +311504,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -307280,6 +311628,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -307631,6 +311980,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -307754,6 +312104,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -308159,6 +312510,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -308282,6 +312634,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -308715,6 +313068,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -308838,6 +313192,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -308961,6 +313316,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -309084,6 +313440,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -309262,6 +313619,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -309385,6 +313743,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -309524,6 +313883,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -309647,6 +314007,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -309786,6 +314147,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -309909,6 +314271,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -310032,6 +314395,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -310155,6 +314519,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -310294,6 +314659,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -310417,6 +314783,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -310540,6 +314907,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -310663,6 +315031,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -310834,6 +315203,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -310957,6 +315327,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -311306,6 +315677,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -311429,6 +315801,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -311705,6 +316078,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -311828,6 +316202,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -312102,6 +316477,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -312225,6 +316601,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -312521,6 +316898,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -312644,6 +317022,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -312767,6 +317146,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -312890,6 +317270,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -313073,6 +317454,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -313196,6 +317578,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -313503,6 +317886,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -313626,6 +318010,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -313945,6 +318330,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -314068,6 +318454,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -314324,6 +318711,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -314447,6 +318835,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -314805,6 +319194,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -314928,6 +319318,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -315307,6 +319698,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -315430,6 +319822,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -315751,6 +320144,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -315874,6 +320268,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -316191,6 +320586,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -316314,6 +320710,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -316584,6 +320981,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -316707,6 +321105,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -316967,6 +321366,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -317090,6 +321490,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -317433,6 +321834,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -317556,6 +321958,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -318289,6 +322692,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -318412,6 +322816,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -318792,6 +323197,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -318915,6 +323321,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -319297,6 +323704,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -319420,6 +323828,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -319559,6 +323968,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -319682,6 +324092,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -319805,6 +324216,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -319928,6 +324340,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -320067,6 +324480,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -320190,6 +324604,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -320313,6 +324728,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -320436,6 +324852,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -320575,6 +324992,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -320698,6 +325116,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -320821,6 +325240,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -320944,6 +325364,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -321307,6 +325728,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -321430,6 +325852,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -321757,6 +326180,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -321880,6 +326304,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -322078,6 +326503,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -322201,6 +326627,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -322389,6 +326816,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -322512,6 +326940,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -322681,6 +327110,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -322804,6 +327234,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -322943,6 +327374,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -323066,6 +327498,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -323271,6 +327704,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -323394,6 +327828,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -323595,6 +328030,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -323718,6 +328154,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -323857,6 +328294,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -323980,6 +328418,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -324103,6 +328542,7 @@ export namespace Prisma {
     meetingMinutes?: MeetingMinutesCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -324226,6 +328666,7 @@ export namespace Prisma {
     meetingMinutes?: MeetingMinutesUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -324365,6 +328806,7 @@ export namespace Prisma {
     meetingMinutes?: MeetingMinutesUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -324488,6 +328930,7 @@ export namespace Prisma {
     meetingMinutes?: MeetingMinutesUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -324611,6 +329054,7 @@ export namespace Prisma {
     meetingMinutes?: MeetingMinutesCreateNestedManyWithoutSchoolInput
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -324734,6 +329178,7 @@ export namespace Prisma {
     meetingMinutes?: MeetingMinutesUncheckedCreateNestedManyWithoutSchoolInput
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -324900,6 +329345,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     user?: UserCreateNestedOneWithoutClinicVisitsInput
     school: SchoolCreateNestedOneWithoutClinicVisitsInput
+    dispensings?: ClinicDispensingLogCreateNestedManyWithoutVisitInput
   }
 
   export type ClinicVisitUncheckedCreateWithoutPatientInput = {
@@ -324925,6 +329371,7 @@ export namespace Prisma {
     visitDate?: Date | string
     createdAt?: Date | string
     updatedAt?: Date | string
+    dispensings?: ClinicDispensingLogUncheckedCreateNestedManyWithoutVisitInput
   }
 
   export type ClinicVisitCreateOrConnectWithoutPatientInput = {
@@ -325040,7 +329487,11 @@ export namespace Prisma {
   export type ClinicImmunizationCreateWithoutPatientInput = {
     id?: string
     title: string
-    details: string
+    details?: string | null
+    vaccine?: string | null
+    doseNumber?: number | null
+    nextDueDate?: Date | string | null
+    administeredBy?: string | null
     date?: Date | string
     schoolId: string
     createdAt?: Date | string
@@ -325052,7 +329503,11 @@ export namespace Prisma {
     id?: string
     userId?: string | null
     title: string
-    details: string
+    details?: string | null
+    vaccine?: string | null
+    doseNumber?: number | null
+    nextDueDate?: Date | string | null
+    administeredBy?: string | null
     date?: Date | string
     schoolId: string
     createdAt?: Date | string
@@ -325076,6 +329531,9 @@ export namespace Prisma {
     date?: Date | string
     to: string
     address: string
+    urgency?: string | null
+    status?: string
+    outcomeNotes?: string | null
     schoolId: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -325090,6 +329548,9 @@ export namespace Prisma {
     date?: Date | string
     to: string
     address: string
+    urgency?: string | null
+    status?: string
+    outcomeNotes?: string | null
     schoolId: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -325138,6 +329599,42 @@ export namespace Prisma {
 
   export type ClinicHospitalizationCreateManyPatientInputEnvelope = {
     data: ClinicHospitalizationCreateManyPatientInput | ClinicHospitalizationCreateManyPatientInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type ClinicDispensingLogCreateWithoutPatientInput = {
+    id?: string
+    schoolId: string
+    quantity: number
+    unitCost?: number
+    totalPrice?: number
+    dispensedBy?: string | null
+    notes?: string | null
+    dispensedAt?: Date | string
+    item: ClinicInventoryItemCreateNestedOneWithoutDispensingsInput
+    visit?: ClinicVisitCreateNestedOneWithoutDispensingsInput
+  }
+
+  export type ClinicDispensingLogUncheckedCreateWithoutPatientInput = {
+    id?: string
+    schoolId: string
+    itemId: string
+    visitId?: string | null
+    quantity: number
+    unitCost?: number
+    totalPrice?: number
+    dispensedBy?: string | null
+    notes?: string | null
+    dispensedAt?: Date | string
+  }
+
+  export type ClinicDispensingLogCreateOrConnectWithoutPatientInput = {
+    where: ClinicDispensingLogWhereUniqueInput
+    create: XOR<ClinicDispensingLogCreateWithoutPatientInput, ClinicDispensingLogUncheckedCreateWithoutPatientInput>
+  }
+
+  export type ClinicDispensingLogCreateManyPatientInputEnvelope = {
+    data: ClinicDispensingLogCreateManyPatientInput | ClinicDispensingLogCreateManyPatientInput[]
     skipDuplicates?: boolean
   }
 
@@ -325268,6 +329765,7 @@ export namespace Prisma {
     meetingMinutes?: MeetingMinutesUpdateManyWithoutSchoolNestedInput
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -325391,6 +329889,7 @@ export namespace Prisma {
     meetingMinutes?: MeetingMinutesUncheckedUpdateManyWithoutSchoolNestedInput
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -325662,6 +330161,39 @@ export namespace Prisma {
     data: XOR<ClinicHospitalizationUpdateManyMutationInput, ClinicHospitalizationUncheckedUpdateManyWithoutPatientInput>
   }
 
+  export type ClinicDispensingLogUpsertWithWhereUniqueWithoutPatientInput = {
+    where: ClinicDispensingLogWhereUniqueInput
+    update: XOR<ClinicDispensingLogUpdateWithoutPatientInput, ClinicDispensingLogUncheckedUpdateWithoutPatientInput>
+    create: XOR<ClinicDispensingLogCreateWithoutPatientInput, ClinicDispensingLogUncheckedCreateWithoutPatientInput>
+  }
+
+  export type ClinicDispensingLogUpdateWithWhereUniqueWithoutPatientInput = {
+    where: ClinicDispensingLogWhereUniqueInput
+    data: XOR<ClinicDispensingLogUpdateWithoutPatientInput, ClinicDispensingLogUncheckedUpdateWithoutPatientInput>
+  }
+
+  export type ClinicDispensingLogUpdateManyWithWhereWithoutPatientInput = {
+    where: ClinicDispensingLogScalarWhereInput
+    data: XOR<ClinicDispensingLogUpdateManyMutationInput, ClinicDispensingLogUncheckedUpdateManyWithoutPatientInput>
+  }
+
+  export type ClinicDispensingLogScalarWhereInput = {
+    AND?: ClinicDispensingLogScalarWhereInput | ClinicDispensingLogScalarWhereInput[]
+    OR?: ClinicDispensingLogScalarWhereInput[]
+    NOT?: ClinicDispensingLogScalarWhereInput | ClinicDispensingLogScalarWhereInput[]
+    id?: StringFilter<"ClinicDispensingLog"> | string
+    schoolId?: StringFilter<"ClinicDispensingLog"> | string
+    itemId?: StringFilter<"ClinicDispensingLog"> | string
+    visitId?: StringNullableFilter<"ClinicDispensingLog"> | string | null
+    patientId?: StringNullableFilter<"ClinicDispensingLog"> | string | null
+    quantity?: IntFilter<"ClinicDispensingLog"> | number
+    unitCost?: FloatFilter<"ClinicDispensingLog"> | number
+    totalPrice?: FloatFilter<"ClinicDispensingLog"> | number
+    dispensedBy?: StringNullableFilter<"ClinicDispensingLog"> | string | null
+    notes?: StringNullableFilter<"ClinicDispensingLog"> | string | null
+    dispensedAt?: DateTimeFilter<"ClinicDispensingLog"> | Date | string
+  }
+
   export type UserCreateWithoutClinicAppointmentsInput = {
     id?: string
     email: string
@@ -325795,12 +330327,18 @@ export namespace Prisma {
 
   export type ClinicPatientCreateWithoutAppointmentsInput = {
     id?: string
+    mrn?: string | null
     firstName?: string | null
     lastName?: string | null
     dob?: Date | string | null
     gender?: string | null
     contactNumber?: string | null
     address?: string | null
+    bloodType?: string | null
+    allergies?: string | null
+    chronicConditions?: string | null
+    guardianName?: string | null
+    guardianContact?: string | null
     medicalHistory?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -325812,18 +330350,25 @@ export namespace Prisma {
     immunizations?: ClinicImmunizationCreateNestedManyWithoutPatientInput
     referrals?: ClinicReferralCreateNestedManyWithoutPatientInput
     hospitalizations?: ClinicHospitalizationCreateNestedManyWithoutPatientInput
+    dispensings?: ClinicDispensingLogCreateNestedManyWithoutPatientInput
   }
 
   export type ClinicPatientUncheckedCreateWithoutAppointmentsInput = {
     id?: string
     schoolId: string
     userId?: string | null
+    mrn?: string | null
     firstName?: string | null
     lastName?: string | null
     dob?: Date | string | null
     gender?: string | null
     contactNumber?: string | null
     address?: string | null
+    bloodType?: string | null
+    allergies?: string | null
+    chronicConditions?: string | null
+    guardianName?: string | null
+    guardianContact?: string | null
     medicalHistory?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -325833,6 +330378,7 @@ export namespace Prisma {
     immunizations?: ClinicImmunizationUncheckedCreateNestedManyWithoutPatientInput
     referrals?: ClinicReferralUncheckedCreateNestedManyWithoutPatientInput
     hospitalizations?: ClinicHospitalizationUncheckedCreateNestedManyWithoutPatientInput
+    dispensings?: ClinicDispensingLogUncheckedCreateNestedManyWithoutPatientInput
   }
 
   export type ClinicPatientCreateOrConnectWithoutAppointmentsInput = {
@@ -325990,12 +330536,18 @@ export namespace Prisma {
 
   export type ClinicPatientUpdateWithoutAppointmentsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    mrn?: NullableStringFieldUpdateOperationsInput | string | null
     firstName?: NullableStringFieldUpdateOperationsInput | string | null
     lastName?: NullableStringFieldUpdateOperationsInput | string | null
     dob?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     contactNumber?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
+    bloodType?: NullableStringFieldUpdateOperationsInput | string | null
+    allergies?: NullableStringFieldUpdateOperationsInput | string | null
+    chronicConditions?: NullableStringFieldUpdateOperationsInput | string | null
+    guardianName?: NullableStringFieldUpdateOperationsInput | string | null
+    guardianContact?: NullableStringFieldUpdateOperationsInput | string | null
     medicalHistory?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -326007,18 +330559,25 @@ export namespace Prisma {
     immunizations?: ClinicImmunizationUpdateManyWithoutPatientNestedInput
     referrals?: ClinicReferralUpdateManyWithoutPatientNestedInput
     hospitalizations?: ClinicHospitalizationUpdateManyWithoutPatientNestedInput
+    dispensings?: ClinicDispensingLogUpdateManyWithoutPatientNestedInput
   }
 
   export type ClinicPatientUncheckedUpdateWithoutAppointmentsInput = {
     id?: StringFieldUpdateOperationsInput | string
     schoolId?: StringFieldUpdateOperationsInput | string
     userId?: NullableStringFieldUpdateOperationsInput | string | null
+    mrn?: NullableStringFieldUpdateOperationsInput | string | null
     firstName?: NullableStringFieldUpdateOperationsInput | string | null
     lastName?: NullableStringFieldUpdateOperationsInput | string | null
     dob?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     contactNumber?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
+    bloodType?: NullableStringFieldUpdateOperationsInput | string | null
+    allergies?: NullableStringFieldUpdateOperationsInput | string | null
+    chronicConditions?: NullableStringFieldUpdateOperationsInput | string | null
+    guardianName?: NullableStringFieldUpdateOperationsInput | string | null
+    guardianContact?: NullableStringFieldUpdateOperationsInput | string | null
     medicalHistory?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -326028,6 +330587,7 @@ export namespace Prisma {
     immunizations?: ClinicImmunizationUncheckedUpdateManyWithoutPatientNestedInput
     referrals?: ClinicReferralUncheckedUpdateManyWithoutPatientNestedInput
     hospitalizations?: ClinicHospitalizationUncheckedUpdateManyWithoutPatientNestedInput
+    dispensings?: ClinicDispensingLogUncheckedUpdateManyWithoutPatientNestedInput
   }
 
   export type UserCreateWithoutClinicComplaintsInput = {
@@ -326163,12 +330723,18 @@ export namespace Prisma {
 
   export type ClinicPatientCreateWithoutComplaintsInput = {
     id?: string
+    mrn?: string | null
     firstName?: string | null
     lastName?: string | null
     dob?: Date | string | null
     gender?: string | null
     contactNumber?: string | null
     address?: string | null
+    bloodType?: string | null
+    allergies?: string | null
+    chronicConditions?: string | null
+    guardianName?: string | null
+    guardianContact?: string | null
     medicalHistory?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -326180,18 +330746,25 @@ export namespace Prisma {
     immunizations?: ClinicImmunizationCreateNestedManyWithoutPatientInput
     referrals?: ClinicReferralCreateNestedManyWithoutPatientInput
     hospitalizations?: ClinicHospitalizationCreateNestedManyWithoutPatientInput
+    dispensings?: ClinicDispensingLogCreateNestedManyWithoutPatientInput
   }
 
   export type ClinicPatientUncheckedCreateWithoutComplaintsInput = {
     id?: string
     schoolId: string
     userId?: string | null
+    mrn?: string | null
     firstName?: string | null
     lastName?: string | null
     dob?: Date | string | null
     gender?: string | null
     contactNumber?: string | null
     address?: string | null
+    bloodType?: string | null
+    allergies?: string | null
+    chronicConditions?: string | null
+    guardianName?: string | null
+    guardianContact?: string | null
     medicalHistory?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -326201,6 +330774,7 @@ export namespace Prisma {
     immunizations?: ClinicImmunizationUncheckedCreateNestedManyWithoutPatientInput
     referrals?: ClinicReferralUncheckedCreateNestedManyWithoutPatientInput
     hospitalizations?: ClinicHospitalizationUncheckedCreateNestedManyWithoutPatientInput
+    dispensings?: ClinicDispensingLogUncheckedCreateNestedManyWithoutPatientInput
   }
 
   export type ClinicPatientCreateOrConnectWithoutComplaintsInput = {
@@ -326358,12 +330932,18 @@ export namespace Prisma {
 
   export type ClinicPatientUpdateWithoutComplaintsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    mrn?: NullableStringFieldUpdateOperationsInput | string | null
     firstName?: NullableStringFieldUpdateOperationsInput | string | null
     lastName?: NullableStringFieldUpdateOperationsInput | string | null
     dob?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     contactNumber?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
+    bloodType?: NullableStringFieldUpdateOperationsInput | string | null
+    allergies?: NullableStringFieldUpdateOperationsInput | string | null
+    chronicConditions?: NullableStringFieldUpdateOperationsInput | string | null
+    guardianName?: NullableStringFieldUpdateOperationsInput | string | null
+    guardianContact?: NullableStringFieldUpdateOperationsInput | string | null
     medicalHistory?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -326375,18 +330955,25 @@ export namespace Prisma {
     immunizations?: ClinicImmunizationUpdateManyWithoutPatientNestedInput
     referrals?: ClinicReferralUpdateManyWithoutPatientNestedInput
     hospitalizations?: ClinicHospitalizationUpdateManyWithoutPatientNestedInput
+    dispensings?: ClinicDispensingLogUpdateManyWithoutPatientNestedInput
   }
 
   export type ClinicPatientUncheckedUpdateWithoutComplaintsInput = {
     id?: StringFieldUpdateOperationsInput | string
     schoolId?: StringFieldUpdateOperationsInput | string
     userId?: NullableStringFieldUpdateOperationsInput | string | null
+    mrn?: NullableStringFieldUpdateOperationsInput | string | null
     firstName?: NullableStringFieldUpdateOperationsInput | string | null
     lastName?: NullableStringFieldUpdateOperationsInput | string | null
     dob?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     contactNumber?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
+    bloodType?: NullableStringFieldUpdateOperationsInput | string | null
+    allergies?: NullableStringFieldUpdateOperationsInput | string | null
+    chronicConditions?: NullableStringFieldUpdateOperationsInput | string | null
+    guardianName?: NullableStringFieldUpdateOperationsInput | string | null
+    guardianContact?: NullableStringFieldUpdateOperationsInput | string | null
     medicalHistory?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -326396,16 +330983,23 @@ export namespace Prisma {
     immunizations?: ClinicImmunizationUncheckedUpdateManyWithoutPatientNestedInput
     referrals?: ClinicReferralUncheckedUpdateManyWithoutPatientNestedInput
     hospitalizations?: ClinicHospitalizationUncheckedUpdateManyWithoutPatientNestedInput
+    dispensings?: ClinicDispensingLogUncheckedUpdateManyWithoutPatientNestedInput
   }
 
   export type ClinicPatientCreateWithoutEmergenciesInput = {
     id?: string
+    mrn?: string | null
     firstName?: string | null
     lastName?: string | null
     dob?: Date | string | null
     gender?: string | null
     contactNumber?: string | null
     address?: string | null
+    bloodType?: string | null
+    allergies?: string | null
+    chronicConditions?: string | null
+    guardianName?: string | null
+    guardianContact?: string | null
     medicalHistory?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -326417,18 +331011,25 @@ export namespace Prisma {
     immunizations?: ClinicImmunizationCreateNestedManyWithoutPatientInput
     referrals?: ClinicReferralCreateNestedManyWithoutPatientInput
     hospitalizations?: ClinicHospitalizationCreateNestedManyWithoutPatientInput
+    dispensings?: ClinicDispensingLogCreateNestedManyWithoutPatientInput
   }
 
   export type ClinicPatientUncheckedCreateWithoutEmergenciesInput = {
     id?: string
     schoolId: string
     userId?: string | null
+    mrn?: string | null
     firstName?: string | null
     lastName?: string | null
     dob?: Date | string | null
     gender?: string | null
     contactNumber?: string | null
     address?: string | null
+    bloodType?: string | null
+    allergies?: string | null
+    chronicConditions?: string | null
+    guardianName?: string | null
+    guardianContact?: string | null
     medicalHistory?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -326438,6 +331039,7 @@ export namespace Prisma {
     immunizations?: ClinicImmunizationUncheckedCreateNestedManyWithoutPatientInput
     referrals?: ClinicReferralUncheckedCreateNestedManyWithoutPatientInput
     hospitalizations?: ClinicHospitalizationUncheckedCreateNestedManyWithoutPatientInput
+    dispensings?: ClinicDispensingLogUncheckedCreateNestedManyWithoutPatientInput
   }
 
   export type ClinicPatientCreateOrConnectWithoutEmergenciesInput = {
@@ -326458,12 +331060,18 @@ export namespace Prisma {
 
   export type ClinicPatientUpdateWithoutEmergenciesInput = {
     id?: StringFieldUpdateOperationsInput | string
+    mrn?: NullableStringFieldUpdateOperationsInput | string | null
     firstName?: NullableStringFieldUpdateOperationsInput | string | null
     lastName?: NullableStringFieldUpdateOperationsInput | string | null
     dob?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     contactNumber?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
+    bloodType?: NullableStringFieldUpdateOperationsInput | string | null
+    allergies?: NullableStringFieldUpdateOperationsInput | string | null
+    chronicConditions?: NullableStringFieldUpdateOperationsInput | string | null
+    guardianName?: NullableStringFieldUpdateOperationsInput | string | null
+    guardianContact?: NullableStringFieldUpdateOperationsInput | string | null
     medicalHistory?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -326475,18 +331083,25 @@ export namespace Prisma {
     immunizations?: ClinicImmunizationUpdateManyWithoutPatientNestedInput
     referrals?: ClinicReferralUpdateManyWithoutPatientNestedInput
     hospitalizations?: ClinicHospitalizationUpdateManyWithoutPatientNestedInput
+    dispensings?: ClinicDispensingLogUpdateManyWithoutPatientNestedInput
   }
 
   export type ClinicPatientUncheckedUpdateWithoutEmergenciesInput = {
     id?: StringFieldUpdateOperationsInput | string
     schoolId?: StringFieldUpdateOperationsInput | string
     userId?: NullableStringFieldUpdateOperationsInput | string | null
+    mrn?: NullableStringFieldUpdateOperationsInput | string | null
     firstName?: NullableStringFieldUpdateOperationsInput | string | null
     lastName?: NullableStringFieldUpdateOperationsInput | string | null
     dob?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     contactNumber?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
+    bloodType?: NullableStringFieldUpdateOperationsInput | string | null
+    allergies?: NullableStringFieldUpdateOperationsInput | string | null
+    chronicConditions?: NullableStringFieldUpdateOperationsInput | string | null
+    guardianName?: NullableStringFieldUpdateOperationsInput | string | null
+    guardianContact?: NullableStringFieldUpdateOperationsInput | string | null
     medicalHistory?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -326496,6 +331111,7 @@ export namespace Prisma {
     immunizations?: ClinicImmunizationUncheckedUpdateManyWithoutPatientNestedInput
     referrals?: ClinicReferralUncheckedUpdateManyWithoutPatientNestedInput
     hospitalizations?: ClinicHospitalizationUncheckedUpdateManyWithoutPatientNestedInput
+    dispensings?: ClinicDispensingLogUncheckedUpdateManyWithoutPatientNestedInput
   }
 
   export type UserCreateWithoutClinicImmunizationsInput = {
@@ -326631,12 +331247,18 @@ export namespace Prisma {
 
   export type ClinicPatientCreateWithoutImmunizationsInput = {
     id?: string
+    mrn?: string | null
     firstName?: string | null
     lastName?: string | null
     dob?: Date | string | null
     gender?: string | null
     contactNumber?: string | null
     address?: string | null
+    bloodType?: string | null
+    allergies?: string | null
+    chronicConditions?: string | null
+    guardianName?: string | null
+    guardianContact?: string | null
     medicalHistory?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -326648,18 +331270,25 @@ export namespace Prisma {
     emergencies?: ClinicEmergencyCreateNestedManyWithoutPatientInput
     referrals?: ClinicReferralCreateNestedManyWithoutPatientInput
     hospitalizations?: ClinicHospitalizationCreateNestedManyWithoutPatientInput
+    dispensings?: ClinicDispensingLogCreateNestedManyWithoutPatientInput
   }
 
   export type ClinicPatientUncheckedCreateWithoutImmunizationsInput = {
     id?: string
     schoolId: string
     userId?: string | null
+    mrn?: string | null
     firstName?: string | null
     lastName?: string | null
     dob?: Date | string | null
     gender?: string | null
     contactNumber?: string | null
     address?: string | null
+    bloodType?: string | null
+    allergies?: string | null
+    chronicConditions?: string | null
+    guardianName?: string | null
+    guardianContact?: string | null
     medicalHistory?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -326669,6 +331298,7 @@ export namespace Prisma {
     emergencies?: ClinicEmergencyUncheckedCreateNestedManyWithoutPatientInput
     referrals?: ClinicReferralUncheckedCreateNestedManyWithoutPatientInput
     hospitalizations?: ClinicHospitalizationUncheckedCreateNestedManyWithoutPatientInput
+    dispensings?: ClinicDispensingLogUncheckedCreateNestedManyWithoutPatientInput
   }
 
   export type ClinicPatientCreateOrConnectWithoutImmunizationsInput = {
@@ -326826,12 +331456,18 @@ export namespace Prisma {
 
   export type ClinicPatientUpdateWithoutImmunizationsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    mrn?: NullableStringFieldUpdateOperationsInput | string | null
     firstName?: NullableStringFieldUpdateOperationsInput | string | null
     lastName?: NullableStringFieldUpdateOperationsInput | string | null
     dob?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     contactNumber?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
+    bloodType?: NullableStringFieldUpdateOperationsInput | string | null
+    allergies?: NullableStringFieldUpdateOperationsInput | string | null
+    chronicConditions?: NullableStringFieldUpdateOperationsInput | string | null
+    guardianName?: NullableStringFieldUpdateOperationsInput | string | null
+    guardianContact?: NullableStringFieldUpdateOperationsInput | string | null
     medicalHistory?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -326843,18 +331479,25 @@ export namespace Prisma {
     emergencies?: ClinicEmergencyUpdateManyWithoutPatientNestedInput
     referrals?: ClinicReferralUpdateManyWithoutPatientNestedInput
     hospitalizations?: ClinicHospitalizationUpdateManyWithoutPatientNestedInput
+    dispensings?: ClinicDispensingLogUpdateManyWithoutPatientNestedInput
   }
 
   export type ClinicPatientUncheckedUpdateWithoutImmunizationsInput = {
     id?: StringFieldUpdateOperationsInput | string
     schoolId?: StringFieldUpdateOperationsInput | string
     userId?: NullableStringFieldUpdateOperationsInput | string | null
+    mrn?: NullableStringFieldUpdateOperationsInput | string | null
     firstName?: NullableStringFieldUpdateOperationsInput | string | null
     lastName?: NullableStringFieldUpdateOperationsInput | string | null
     dob?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     contactNumber?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
+    bloodType?: NullableStringFieldUpdateOperationsInput | string | null
+    allergies?: NullableStringFieldUpdateOperationsInput | string | null
+    chronicConditions?: NullableStringFieldUpdateOperationsInput | string | null
+    guardianName?: NullableStringFieldUpdateOperationsInput | string | null
+    guardianContact?: NullableStringFieldUpdateOperationsInput | string | null
     medicalHistory?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -326864,6 +331507,7 @@ export namespace Prisma {
     emergencies?: ClinicEmergencyUncheckedUpdateManyWithoutPatientNestedInput
     referrals?: ClinicReferralUncheckedUpdateManyWithoutPatientNestedInput
     hospitalizations?: ClinicHospitalizationUncheckedUpdateManyWithoutPatientNestedInput
+    dispensings?: ClinicDispensingLogUncheckedUpdateManyWithoutPatientNestedInput
   }
 
   export type UserCreateWithoutClinicReferralsInput = {
@@ -326999,12 +331643,18 @@ export namespace Prisma {
 
   export type ClinicPatientCreateWithoutReferralsInput = {
     id?: string
+    mrn?: string | null
     firstName?: string | null
     lastName?: string | null
     dob?: Date | string | null
     gender?: string | null
     contactNumber?: string | null
     address?: string | null
+    bloodType?: string | null
+    allergies?: string | null
+    chronicConditions?: string | null
+    guardianName?: string | null
+    guardianContact?: string | null
     medicalHistory?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -327016,18 +331666,25 @@ export namespace Prisma {
     emergencies?: ClinicEmergencyCreateNestedManyWithoutPatientInput
     immunizations?: ClinicImmunizationCreateNestedManyWithoutPatientInput
     hospitalizations?: ClinicHospitalizationCreateNestedManyWithoutPatientInput
+    dispensings?: ClinicDispensingLogCreateNestedManyWithoutPatientInput
   }
 
   export type ClinicPatientUncheckedCreateWithoutReferralsInput = {
     id?: string
     schoolId: string
     userId?: string | null
+    mrn?: string | null
     firstName?: string | null
     lastName?: string | null
     dob?: Date | string | null
     gender?: string | null
     contactNumber?: string | null
     address?: string | null
+    bloodType?: string | null
+    allergies?: string | null
+    chronicConditions?: string | null
+    guardianName?: string | null
+    guardianContact?: string | null
     medicalHistory?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -327037,6 +331694,7 @@ export namespace Prisma {
     emergencies?: ClinicEmergencyUncheckedCreateNestedManyWithoutPatientInput
     immunizations?: ClinicImmunizationUncheckedCreateNestedManyWithoutPatientInput
     hospitalizations?: ClinicHospitalizationUncheckedCreateNestedManyWithoutPatientInput
+    dispensings?: ClinicDispensingLogUncheckedCreateNestedManyWithoutPatientInput
   }
 
   export type ClinicPatientCreateOrConnectWithoutReferralsInput = {
@@ -327194,12 +331852,18 @@ export namespace Prisma {
 
   export type ClinicPatientUpdateWithoutReferralsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    mrn?: NullableStringFieldUpdateOperationsInput | string | null
     firstName?: NullableStringFieldUpdateOperationsInput | string | null
     lastName?: NullableStringFieldUpdateOperationsInput | string | null
     dob?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     contactNumber?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
+    bloodType?: NullableStringFieldUpdateOperationsInput | string | null
+    allergies?: NullableStringFieldUpdateOperationsInput | string | null
+    chronicConditions?: NullableStringFieldUpdateOperationsInput | string | null
+    guardianName?: NullableStringFieldUpdateOperationsInput | string | null
+    guardianContact?: NullableStringFieldUpdateOperationsInput | string | null
     medicalHistory?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -327211,18 +331875,25 @@ export namespace Prisma {
     emergencies?: ClinicEmergencyUpdateManyWithoutPatientNestedInput
     immunizations?: ClinicImmunizationUpdateManyWithoutPatientNestedInput
     hospitalizations?: ClinicHospitalizationUpdateManyWithoutPatientNestedInput
+    dispensings?: ClinicDispensingLogUpdateManyWithoutPatientNestedInput
   }
 
   export type ClinicPatientUncheckedUpdateWithoutReferralsInput = {
     id?: StringFieldUpdateOperationsInput | string
     schoolId?: StringFieldUpdateOperationsInput | string
     userId?: NullableStringFieldUpdateOperationsInput | string | null
+    mrn?: NullableStringFieldUpdateOperationsInput | string | null
     firstName?: NullableStringFieldUpdateOperationsInput | string | null
     lastName?: NullableStringFieldUpdateOperationsInput | string | null
     dob?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     contactNumber?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
+    bloodType?: NullableStringFieldUpdateOperationsInput | string | null
+    allergies?: NullableStringFieldUpdateOperationsInput | string | null
+    chronicConditions?: NullableStringFieldUpdateOperationsInput | string | null
+    guardianName?: NullableStringFieldUpdateOperationsInput | string | null
+    guardianContact?: NullableStringFieldUpdateOperationsInput | string | null
     medicalHistory?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -327232,6 +331903,7 @@ export namespace Prisma {
     emergencies?: ClinicEmergencyUncheckedUpdateManyWithoutPatientNestedInput
     immunizations?: ClinicImmunizationUncheckedUpdateManyWithoutPatientNestedInput
     hospitalizations?: ClinicHospitalizationUncheckedUpdateManyWithoutPatientNestedInput
+    dispensings?: ClinicDispensingLogUncheckedUpdateManyWithoutPatientNestedInput
   }
 
   export type UserCreateWithoutClinicVisitsInput = {
@@ -327367,12 +332039,18 @@ export namespace Prisma {
 
   export type ClinicPatientCreateWithoutVisitsInput = {
     id?: string
+    mrn?: string | null
     firstName?: string | null
     lastName?: string | null
     dob?: Date | string | null
     gender?: string | null
     contactNumber?: string | null
     address?: string | null
+    bloodType?: string | null
+    allergies?: string | null
+    chronicConditions?: string | null
+    guardianName?: string | null
+    guardianContact?: string | null
     medicalHistory?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -327384,18 +332062,25 @@ export namespace Prisma {
     immunizations?: ClinicImmunizationCreateNestedManyWithoutPatientInput
     referrals?: ClinicReferralCreateNestedManyWithoutPatientInput
     hospitalizations?: ClinicHospitalizationCreateNestedManyWithoutPatientInput
+    dispensings?: ClinicDispensingLogCreateNestedManyWithoutPatientInput
   }
 
   export type ClinicPatientUncheckedCreateWithoutVisitsInput = {
     id?: string
     schoolId: string
     userId?: string | null
+    mrn?: string | null
     firstName?: string | null
     lastName?: string | null
     dob?: Date | string | null
     gender?: string | null
     contactNumber?: string | null
     address?: string | null
+    bloodType?: string | null
+    allergies?: string | null
+    chronicConditions?: string | null
+    guardianName?: string | null
+    guardianContact?: string | null
     medicalHistory?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -327405,6 +332090,7 @@ export namespace Prisma {
     immunizations?: ClinicImmunizationUncheckedCreateNestedManyWithoutPatientInput
     referrals?: ClinicReferralUncheckedCreateNestedManyWithoutPatientInput
     hospitalizations?: ClinicHospitalizationUncheckedCreateNestedManyWithoutPatientInput
+    dispensings?: ClinicDispensingLogUncheckedCreateNestedManyWithoutPatientInput
   }
 
   export type ClinicPatientCreateOrConnectWithoutVisitsInput = {
@@ -327528,6 +332214,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -327651,6 +332338,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -327661,6 +332349,42 @@ export namespace Prisma {
   export type SchoolCreateOrConnectWithoutClinicVisitsInput = {
     where: SchoolWhereUniqueInput
     create: XOR<SchoolCreateWithoutClinicVisitsInput, SchoolUncheckedCreateWithoutClinicVisitsInput>
+  }
+
+  export type ClinicDispensingLogCreateWithoutVisitInput = {
+    id?: string
+    schoolId: string
+    quantity: number
+    unitCost?: number
+    totalPrice?: number
+    dispensedBy?: string | null
+    notes?: string | null
+    dispensedAt?: Date | string
+    item: ClinicInventoryItemCreateNestedOneWithoutDispensingsInput
+    patient?: ClinicPatientCreateNestedOneWithoutDispensingsInput
+  }
+
+  export type ClinicDispensingLogUncheckedCreateWithoutVisitInput = {
+    id?: string
+    schoolId: string
+    itemId: string
+    patientId?: string | null
+    quantity: number
+    unitCost?: number
+    totalPrice?: number
+    dispensedBy?: string | null
+    notes?: string | null
+    dispensedAt?: Date | string
+  }
+
+  export type ClinicDispensingLogCreateOrConnectWithoutVisitInput = {
+    where: ClinicDispensingLogWhereUniqueInput
+    create: XOR<ClinicDispensingLogCreateWithoutVisitInput, ClinicDispensingLogUncheckedCreateWithoutVisitInput>
+  }
+
+  export type ClinicDispensingLogCreateManyVisitInputEnvelope = {
+    data: ClinicDispensingLogCreateManyVisitInput | ClinicDispensingLogCreateManyVisitInput[]
+    skipDuplicates?: boolean
   }
 
   export type UserUpsertWithoutClinicVisitsInput = {
@@ -327813,12 +332537,18 @@ export namespace Prisma {
 
   export type ClinicPatientUpdateWithoutVisitsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    mrn?: NullableStringFieldUpdateOperationsInput | string | null
     firstName?: NullableStringFieldUpdateOperationsInput | string | null
     lastName?: NullableStringFieldUpdateOperationsInput | string | null
     dob?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     contactNumber?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
+    bloodType?: NullableStringFieldUpdateOperationsInput | string | null
+    allergies?: NullableStringFieldUpdateOperationsInput | string | null
+    chronicConditions?: NullableStringFieldUpdateOperationsInput | string | null
+    guardianName?: NullableStringFieldUpdateOperationsInput | string | null
+    guardianContact?: NullableStringFieldUpdateOperationsInput | string | null
     medicalHistory?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -327830,18 +332560,25 @@ export namespace Prisma {
     immunizations?: ClinicImmunizationUpdateManyWithoutPatientNestedInput
     referrals?: ClinicReferralUpdateManyWithoutPatientNestedInput
     hospitalizations?: ClinicHospitalizationUpdateManyWithoutPatientNestedInput
+    dispensings?: ClinicDispensingLogUpdateManyWithoutPatientNestedInput
   }
 
   export type ClinicPatientUncheckedUpdateWithoutVisitsInput = {
     id?: StringFieldUpdateOperationsInput | string
     schoolId?: StringFieldUpdateOperationsInput | string
     userId?: NullableStringFieldUpdateOperationsInput | string | null
+    mrn?: NullableStringFieldUpdateOperationsInput | string | null
     firstName?: NullableStringFieldUpdateOperationsInput | string | null
     lastName?: NullableStringFieldUpdateOperationsInput | string | null
     dob?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     contactNumber?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
+    bloodType?: NullableStringFieldUpdateOperationsInput | string | null
+    allergies?: NullableStringFieldUpdateOperationsInput | string | null
+    chronicConditions?: NullableStringFieldUpdateOperationsInput | string | null
+    guardianName?: NullableStringFieldUpdateOperationsInput | string | null
+    guardianContact?: NullableStringFieldUpdateOperationsInput | string | null
     medicalHistory?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -327851,6 +332588,7 @@ export namespace Prisma {
     immunizations?: ClinicImmunizationUncheckedUpdateManyWithoutPatientNestedInput
     referrals?: ClinicReferralUncheckedUpdateManyWithoutPatientNestedInput
     hospitalizations?: ClinicHospitalizationUncheckedUpdateManyWithoutPatientNestedInput
+    dispensings?: ClinicDispensingLogUncheckedUpdateManyWithoutPatientNestedInput
   }
 
   export type SchoolUpsertWithoutClinicVisitsInput = {
@@ -327980,6 +332718,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -328103,11 +332842,924 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+  }
+
+  export type ClinicDispensingLogUpsertWithWhereUniqueWithoutVisitInput = {
+    where: ClinicDispensingLogWhereUniqueInput
+    update: XOR<ClinicDispensingLogUpdateWithoutVisitInput, ClinicDispensingLogUncheckedUpdateWithoutVisitInput>
+    create: XOR<ClinicDispensingLogCreateWithoutVisitInput, ClinicDispensingLogUncheckedCreateWithoutVisitInput>
+  }
+
+  export type ClinicDispensingLogUpdateWithWhereUniqueWithoutVisitInput = {
+    where: ClinicDispensingLogWhereUniqueInput
+    data: XOR<ClinicDispensingLogUpdateWithoutVisitInput, ClinicDispensingLogUncheckedUpdateWithoutVisitInput>
+  }
+
+  export type ClinicDispensingLogUpdateManyWithWhereWithoutVisitInput = {
+    where: ClinicDispensingLogScalarWhereInput
+    data: XOR<ClinicDispensingLogUpdateManyMutationInput, ClinicDispensingLogUncheckedUpdateManyWithoutVisitInput>
+  }
+
+  export type SchoolCreateWithoutClinicInventoryItemsInput = {
+    id?: string
+    code: string
+    name: string
+    type: string
+    isCombined?: boolean
+    levels?: SchoolCreatelevelsInput | string[]
+    address?: string | null
+    country?: string | null
+    email: string
+    phone?: string | null
+    website?: string | null
+    status?: string
+    branding?: NullableJsonNullValueInput | InputJsonValue
+    customContent?: NullableJsonNullValueInput | InputJsonValue
+    hexcoCenterNumber?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    idCardTemplate?: string | null
+    settings?: NullableJsonNullValueInput | InputJsonValue
+    plan: PlanCreateNestedOneWithoutSchoolsInput
+    users?: UserCreateNestedManyWithoutSchoolInput
+    students?: StudentCreateNestedManyWithoutSchoolInput
+    teachers?: TeacherCreateNestedManyWithoutSchoolInput
+    news?: NewsCreateNestedManyWithoutSchoolInput
+    websiteInquiries?: WebsiteInquiryCreateNestedManyWithoutSchoolInput
+    noticeboards?: NoticeboardCreateNestedManyWithoutSchoolInput
+    clinicVisits?: ClinicVisitCreateNestedManyWithoutSchoolInput
+    clinicHospitalizations?: ClinicHospitalizationCreateNestedManyWithoutSchoolInput
+    vacancies?: VacancyCreateNestedManyWithoutSchoolInput
+    jobApplications?: JobApplicationCreateNestedManyWithoutSchoolInput
+    gallery?: GalleryCreateNestedManyWithoutSchoolInput
+    clubs?: ClubCreateNestedManyWithoutSchoolInput
+    sports?: SportCreateNestedManyWithoutSchoolInput
+    applications?: ApplicationCreateNestedManyWithoutSchoolInput
+    announcements?: AnnouncementCreateNestedManyWithoutSchoolInput
+    chaplaincyEvents?: ChaplaincyEventCreateNestedManyWithoutSchoolInput
+    diningHallReports?: DiningHallReportCreateNestedManyWithoutSchoolInput
+    farmLivestockBatches?: FarmLivestockBatchCreateNestedManyWithoutSchoolInput
+    farmCropCycles?: FarmCropCycleCreateNestedManyWithoutSchoolInput
+    farmInventoryItems?: FarmInventoryItemCreateNestedManyWithoutSchoolInput
+    prefectDuties?: PrefectDutyCreateNestedManyWithoutSchoolInput
+    prefectMeetings?: PrefectMeetingCreateNestedManyWithoutSchoolInput
+    prefectReports?: PrefectReportCreateNestedManyWithoutSchoolInput
+    staffAttendances?: StaffAttendanceCreateNestedManyWithoutSchoolInput
+    timetableSlots?: TimetableSlotCreateNestedManyWithoutSchoolInput
+    classes?: SchoolClassCreateNestedManyWithoutSchoolInput
+    subjects?: SubjectCreateNestedManyWithoutSchoolInput
+    books?: BookCreateNestedManyWithoutSchoolInput
+    grades?: GradeCreateNestedManyWithoutSchoolInput
+    attendance?: AttendanceCreateNestedManyWithoutSchoolInput
+    fees?: FeeCreateNestedManyWithoutSchoolInput
+    assignments?: AssignmentCreateNestedManyWithoutSchoolInput
+    bookLoans?: BookLoanCreateNestedManyWithoutSchoolInput
+    assignmentSubmissions?: AssignmentSubmissionCreateNestedManyWithoutSchoolInput
+    supervisorAssignments?: SupervisorAssignmentCreateNestedManyWithoutSchoolInput
+    extensionRequests?: ExtensionRequestCreateNestedManyWithoutSchoolInput
+    progressReports?: ProgressReportCreateNestedManyWithoutSchoolInput
+    tuckshopItems?: TuckshopItemCreateNestedManyWithoutSchoolInput
+    suppliers?: SchoolSupplierCreateNestedManyWithoutSchoolInput
+    assets?: AssetCreateNestedManyWithoutSchoolInput
+    reportTemplate?: ReportTemplateCreateNestedOneWithoutSchoolInput
+    websiteSettings?: WebsiteSettingsCreateNestedOneWithoutSchoolInput
+    requisitions?: RequisitionCreateNestedManyWithoutSchoolInput
+    auditLogs?: AuditLogCreateNestedManyWithoutSchoolInput
+    departments?: DepartmentCreateNestedManyWithoutSchoolInput
+    hostels?: HostelCreateNestedManyWithoutSchoolInput
+    weeklyMenus?: WeeklyMenuCreateNestedManyWithoutSchoolInput
+    originTransfers?: TransferAuthorizationCreateNestedManyWithoutOriginSchoolInput
+    targetTransfers?: TransferAuthorizationCreateNestedManyWithoutTargetSchoolInput
+    faculties?: FacultyCreateNestedManyWithoutSchoolInput
+    paymentMethods?: PaymentMethodCreateNestedManyWithoutSchoolInput
+    feeGroups?: FeeGroupCreateNestedManyWithoutSchoolInput
+    revenueAllocations?: RevenueAllocationCreateNestedManyWithoutSchoolInput
+    allowanceTypes?: PayrollAllowanceCreateNestedManyWithoutSchoolInput
+    deductionTypes?: PayrollDeductionCreateNestedManyWithoutSchoolInput
+    taxTables?: TaxTableCreateNestedManyWithoutSchoolInput
+    employeeProfiles?: EmployeeProfileCreateNestedManyWithoutSchoolInput
+    accountCategories?: AccountCategoryCreateNestedManyWithoutSchoolInput
+    liabilities?: LiabilityCreateNestedManyWithoutSchoolInput
+    incomes?: IncomeCreateNestedManyWithoutSchoolInput
+    expenses?: ExpenseCreateNestedManyWithoutSchoolInput
+    uniformItems?: UniformItemCreateNestedManyWithoutSchoolInput
+    uniformStockOrders?: UniformStockOrderCreateNestedManyWithoutSchoolInput
+    uniformSales?: UniformSaleCreateNestedManyWithoutSchoolInput
+    uniformSupplierPayments?: UniformSupplierPaymentCreateNestedManyWithoutSchoolInput
+    physicalProducts?: PhysicalProductCreateNestedManyWithoutSchoolInput
+    physicalProductConsumptions?: PhysicalProductConsumptionCreateNestedManyWithoutSchoolInput
+    feeReminderLogs?: FeeReminderLogCreateNestedManyWithoutSchoolInput
+    termlyComments?: TermlyCommentCreateNestedManyWithoutSchoolInput
+    payrollRuns?: PayrollRunCreateNestedManyWithoutSchoolInput
+    questionPapers?: QuestionPaperCreateNestedManyWithoutSchoolInput
+    payrollEntries?: PayrollEntryCreateNestedManyWithoutSchoolInput
+    gradingScales?: GradingScaleCreateNestedManyWithoutSchoolInput
+    studentPayments?: StudentPaymentCreateNestedManyWithoutSchoolInput
+    communicationLogs?: CommunicationLogCreateNestedManyWithoutSchoolInput
+    libraryCategories?: LibraryCategoryCreateNestedManyWithoutSchoolInput
+    sections?: SectionCreateNestedManyWithoutSchoolInput
+    studentHouses?: StudentHouseCreateNestedManyWithoutSchoolInput
+    holidays?: HolidayCreateNestedManyWithoutSchoolInput
+    schoolSetting?: SchoolSettingCreateNestedOneWithoutSchoolInput
+    CBTExam?: CBTExamCreateNestedManyWithoutSchoolInput
+    Syllabus?: SyllabusCreateNestedManyWithoutSchoolInput
+    LessonPlan?: LessonPlanCreateNestedManyWithoutSchoolInput
+    LiveClass?: LiveClassCreateNestedManyWithoutSchoolInput
+    Award?: AwardCreateNestedManyWithoutSchoolInput
+    Course?: CourseCreateNestedManyWithoutSchoolInput
+    StudyMaterial?: StudyMaterialCreateNestedManyWithoutSchoolInput
+    hostelCategories?: HostelCategoryCreateNestedManyWithoutSchoolInput
+    hostelRooms?: HostelRoomCreateNestedManyWithoutSchoolInput
+    SchoolVehicle?: SchoolVehicleCreateNestedManyWithoutSchoolInput
+    SchoolTransport?: SchoolTransportCreateNestedManyWithoutSchoolInput
+    paymentPlans?: PaymentPlanCreateNestedManyWithoutSchoolInput
+    meetingMinutes?: MeetingMinutesCreateNestedManyWithoutSchoolInput
+    projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
+    sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
+    ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
+    journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
+    accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
+    uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
+    bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+  }
+
+  export type SchoolUncheckedCreateWithoutClinicInventoryItemsInput = {
+    id?: string
+    code: string
+    name: string
+    type: string
+    isCombined?: boolean
+    levels?: SchoolCreatelevelsInput | string[]
+    address?: string | null
+    country?: string | null
+    email: string
+    phone?: string | null
+    website?: string | null
+    status?: string
+    planId: string
+    branding?: NullableJsonNullValueInput | InputJsonValue
+    customContent?: NullableJsonNullValueInput | InputJsonValue
+    hexcoCenterNumber?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    idCardTemplate?: string | null
+    settings?: NullableJsonNullValueInput | InputJsonValue
+    users?: UserUncheckedCreateNestedManyWithoutSchoolInput
+    students?: StudentUncheckedCreateNestedManyWithoutSchoolInput
+    teachers?: TeacherUncheckedCreateNestedManyWithoutSchoolInput
+    news?: NewsUncheckedCreateNestedManyWithoutSchoolInput
+    websiteInquiries?: WebsiteInquiryUncheckedCreateNestedManyWithoutSchoolInput
+    noticeboards?: NoticeboardUncheckedCreateNestedManyWithoutSchoolInput
+    clinicVisits?: ClinicVisitUncheckedCreateNestedManyWithoutSchoolInput
+    clinicHospitalizations?: ClinicHospitalizationUncheckedCreateNestedManyWithoutSchoolInput
+    vacancies?: VacancyUncheckedCreateNestedManyWithoutSchoolInput
+    jobApplications?: JobApplicationUncheckedCreateNestedManyWithoutSchoolInput
+    gallery?: GalleryUncheckedCreateNestedManyWithoutSchoolInput
+    clubs?: ClubUncheckedCreateNestedManyWithoutSchoolInput
+    sports?: SportUncheckedCreateNestedManyWithoutSchoolInput
+    applications?: ApplicationUncheckedCreateNestedManyWithoutSchoolInput
+    announcements?: AnnouncementUncheckedCreateNestedManyWithoutSchoolInput
+    chaplaincyEvents?: ChaplaincyEventUncheckedCreateNestedManyWithoutSchoolInput
+    diningHallReports?: DiningHallReportUncheckedCreateNestedManyWithoutSchoolInput
+    farmLivestockBatches?: FarmLivestockBatchUncheckedCreateNestedManyWithoutSchoolInput
+    farmCropCycles?: FarmCropCycleUncheckedCreateNestedManyWithoutSchoolInput
+    farmInventoryItems?: FarmInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
+    prefectDuties?: PrefectDutyUncheckedCreateNestedManyWithoutSchoolInput
+    prefectMeetings?: PrefectMeetingUncheckedCreateNestedManyWithoutSchoolInput
+    prefectReports?: PrefectReportUncheckedCreateNestedManyWithoutSchoolInput
+    staffAttendances?: StaffAttendanceUncheckedCreateNestedManyWithoutSchoolInput
+    timetableSlots?: TimetableSlotUncheckedCreateNestedManyWithoutSchoolInput
+    classes?: SchoolClassUncheckedCreateNestedManyWithoutSchoolInput
+    subjects?: SubjectUncheckedCreateNestedManyWithoutSchoolInput
+    books?: BookUncheckedCreateNestedManyWithoutSchoolInput
+    grades?: GradeUncheckedCreateNestedManyWithoutSchoolInput
+    attendance?: AttendanceUncheckedCreateNestedManyWithoutSchoolInput
+    fees?: FeeUncheckedCreateNestedManyWithoutSchoolInput
+    assignments?: AssignmentUncheckedCreateNestedManyWithoutSchoolInput
+    bookLoans?: BookLoanUncheckedCreateNestedManyWithoutSchoolInput
+    assignmentSubmissions?: AssignmentSubmissionUncheckedCreateNestedManyWithoutSchoolInput
+    supervisorAssignments?: SupervisorAssignmentUncheckedCreateNestedManyWithoutSchoolInput
+    extensionRequests?: ExtensionRequestUncheckedCreateNestedManyWithoutSchoolInput
+    progressReports?: ProgressReportUncheckedCreateNestedManyWithoutSchoolInput
+    tuckshopItems?: TuckshopItemUncheckedCreateNestedManyWithoutSchoolInput
+    suppliers?: SchoolSupplierUncheckedCreateNestedManyWithoutSchoolInput
+    assets?: AssetUncheckedCreateNestedManyWithoutSchoolInput
+    reportTemplate?: ReportTemplateUncheckedCreateNestedOneWithoutSchoolInput
+    websiteSettings?: WebsiteSettingsUncheckedCreateNestedOneWithoutSchoolInput
+    requisitions?: RequisitionUncheckedCreateNestedManyWithoutSchoolInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutSchoolInput
+    departments?: DepartmentUncheckedCreateNestedManyWithoutSchoolInput
+    hostels?: HostelUncheckedCreateNestedManyWithoutSchoolInput
+    weeklyMenus?: WeeklyMenuUncheckedCreateNestedManyWithoutSchoolInput
+    originTransfers?: TransferAuthorizationUncheckedCreateNestedManyWithoutOriginSchoolInput
+    targetTransfers?: TransferAuthorizationUncheckedCreateNestedManyWithoutTargetSchoolInput
+    faculties?: FacultyUncheckedCreateNestedManyWithoutSchoolInput
+    paymentMethods?: PaymentMethodUncheckedCreateNestedManyWithoutSchoolInput
+    feeGroups?: FeeGroupUncheckedCreateNestedManyWithoutSchoolInput
+    revenueAllocations?: RevenueAllocationUncheckedCreateNestedManyWithoutSchoolInput
+    allowanceTypes?: PayrollAllowanceUncheckedCreateNestedManyWithoutSchoolInput
+    deductionTypes?: PayrollDeductionUncheckedCreateNestedManyWithoutSchoolInput
+    taxTables?: TaxTableUncheckedCreateNestedManyWithoutSchoolInput
+    employeeProfiles?: EmployeeProfileUncheckedCreateNestedManyWithoutSchoolInput
+    accountCategories?: AccountCategoryUncheckedCreateNestedManyWithoutSchoolInput
+    liabilities?: LiabilityUncheckedCreateNestedManyWithoutSchoolInput
+    incomes?: IncomeUncheckedCreateNestedManyWithoutSchoolInput
+    expenses?: ExpenseUncheckedCreateNestedManyWithoutSchoolInput
+    uniformItems?: UniformItemUncheckedCreateNestedManyWithoutSchoolInput
+    uniformStockOrders?: UniformStockOrderUncheckedCreateNestedManyWithoutSchoolInput
+    uniformSales?: UniformSaleUncheckedCreateNestedManyWithoutSchoolInput
+    uniformSupplierPayments?: UniformSupplierPaymentUncheckedCreateNestedManyWithoutSchoolInput
+    physicalProducts?: PhysicalProductUncheckedCreateNestedManyWithoutSchoolInput
+    physicalProductConsumptions?: PhysicalProductConsumptionUncheckedCreateNestedManyWithoutSchoolInput
+    feeReminderLogs?: FeeReminderLogUncheckedCreateNestedManyWithoutSchoolInput
+    termlyComments?: TermlyCommentUncheckedCreateNestedManyWithoutSchoolInput
+    payrollRuns?: PayrollRunUncheckedCreateNestedManyWithoutSchoolInput
+    questionPapers?: QuestionPaperUncheckedCreateNestedManyWithoutSchoolInput
+    payrollEntries?: PayrollEntryUncheckedCreateNestedManyWithoutSchoolInput
+    gradingScales?: GradingScaleUncheckedCreateNestedManyWithoutSchoolInput
+    studentPayments?: StudentPaymentUncheckedCreateNestedManyWithoutSchoolInput
+    communicationLogs?: CommunicationLogUncheckedCreateNestedManyWithoutSchoolInput
+    libraryCategories?: LibraryCategoryUncheckedCreateNestedManyWithoutSchoolInput
+    sections?: SectionUncheckedCreateNestedManyWithoutSchoolInput
+    studentHouses?: StudentHouseUncheckedCreateNestedManyWithoutSchoolInput
+    holidays?: HolidayUncheckedCreateNestedManyWithoutSchoolInput
+    schoolSetting?: SchoolSettingUncheckedCreateNestedOneWithoutSchoolInput
+    CBTExam?: CBTExamUncheckedCreateNestedManyWithoutSchoolInput
+    Syllabus?: SyllabusUncheckedCreateNestedManyWithoutSchoolInput
+    LessonPlan?: LessonPlanUncheckedCreateNestedManyWithoutSchoolInput
+    LiveClass?: LiveClassUncheckedCreateNestedManyWithoutSchoolInput
+    Award?: AwardUncheckedCreateNestedManyWithoutSchoolInput
+    Course?: CourseUncheckedCreateNestedManyWithoutSchoolInput
+    StudyMaterial?: StudyMaterialUncheckedCreateNestedManyWithoutSchoolInput
+    hostelCategories?: HostelCategoryUncheckedCreateNestedManyWithoutSchoolInput
+    hostelRooms?: HostelRoomUncheckedCreateNestedManyWithoutSchoolInput
+    SchoolVehicle?: SchoolVehicleUncheckedCreateNestedManyWithoutSchoolInput
+    SchoolTransport?: SchoolTransportUncheckedCreateNestedManyWithoutSchoolInput
+    paymentPlans?: PaymentPlanUncheckedCreateNestedManyWithoutSchoolInput
+    meetingMinutes?: MeetingMinutesUncheckedCreateNestedManyWithoutSchoolInput
+    projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
+    sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
+    ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
+    journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
+    accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
+    uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+  }
+
+  export type SchoolCreateOrConnectWithoutClinicInventoryItemsInput = {
+    where: SchoolWhereUniqueInput
+    create: XOR<SchoolCreateWithoutClinicInventoryItemsInput, SchoolUncheckedCreateWithoutClinicInventoryItemsInput>
+  }
+
+  export type ClinicDispensingLogCreateWithoutItemInput = {
+    id?: string
+    schoolId: string
+    quantity: number
+    unitCost?: number
+    totalPrice?: number
+    dispensedBy?: string | null
+    notes?: string | null
+    dispensedAt?: Date | string
+    visit?: ClinicVisitCreateNestedOneWithoutDispensingsInput
+    patient?: ClinicPatientCreateNestedOneWithoutDispensingsInput
+  }
+
+  export type ClinicDispensingLogUncheckedCreateWithoutItemInput = {
+    id?: string
+    schoolId: string
+    visitId?: string | null
+    patientId?: string | null
+    quantity: number
+    unitCost?: number
+    totalPrice?: number
+    dispensedBy?: string | null
+    notes?: string | null
+    dispensedAt?: Date | string
+  }
+
+  export type ClinicDispensingLogCreateOrConnectWithoutItemInput = {
+    where: ClinicDispensingLogWhereUniqueInput
+    create: XOR<ClinicDispensingLogCreateWithoutItemInput, ClinicDispensingLogUncheckedCreateWithoutItemInput>
+  }
+
+  export type ClinicDispensingLogCreateManyItemInputEnvelope = {
+    data: ClinicDispensingLogCreateManyItemInput | ClinicDispensingLogCreateManyItemInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type SchoolUpsertWithoutClinicInventoryItemsInput = {
+    update: XOR<SchoolUpdateWithoutClinicInventoryItemsInput, SchoolUncheckedUpdateWithoutClinicInventoryItemsInput>
+    create: XOR<SchoolCreateWithoutClinicInventoryItemsInput, SchoolUncheckedCreateWithoutClinicInventoryItemsInput>
+    where?: SchoolWhereInput
+  }
+
+  export type SchoolUpdateToOneWithWhereWithoutClinicInventoryItemsInput = {
+    where?: SchoolWhereInput
+    data: XOR<SchoolUpdateWithoutClinicInventoryItemsInput, SchoolUncheckedUpdateWithoutClinicInventoryItemsInput>
+  }
+
+  export type SchoolUpdateWithoutClinicInventoryItemsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    isCombined?: BoolFieldUpdateOperationsInput | boolean
+    levels?: SchoolUpdatelevelsInput | string[]
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    branding?: NullableJsonNullValueInput | InputJsonValue
+    customContent?: NullableJsonNullValueInput | InputJsonValue
+    hexcoCenterNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    idCardTemplate?: NullableStringFieldUpdateOperationsInput | string | null
+    settings?: NullableJsonNullValueInput | InputJsonValue
+    plan?: PlanUpdateOneRequiredWithoutSchoolsNestedInput
+    users?: UserUpdateManyWithoutSchoolNestedInput
+    students?: StudentUpdateManyWithoutSchoolNestedInput
+    teachers?: TeacherUpdateManyWithoutSchoolNestedInput
+    news?: NewsUpdateManyWithoutSchoolNestedInput
+    websiteInquiries?: WebsiteInquiryUpdateManyWithoutSchoolNestedInput
+    noticeboards?: NoticeboardUpdateManyWithoutSchoolNestedInput
+    clinicVisits?: ClinicVisitUpdateManyWithoutSchoolNestedInput
+    clinicHospitalizations?: ClinicHospitalizationUpdateManyWithoutSchoolNestedInput
+    vacancies?: VacancyUpdateManyWithoutSchoolNestedInput
+    jobApplications?: JobApplicationUpdateManyWithoutSchoolNestedInput
+    gallery?: GalleryUpdateManyWithoutSchoolNestedInput
+    clubs?: ClubUpdateManyWithoutSchoolNestedInput
+    sports?: SportUpdateManyWithoutSchoolNestedInput
+    applications?: ApplicationUpdateManyWithoutSchoolNestedInput
+    announcements?: AnnouncementUpdateManyWithoutSchoolNestedInput
+    chaplaincyEvents?: ChaplaincyEventUpdateManyWithoutSchoolNestedInput
+    diningHallReports?: DiningHallReportUpdateManyWithoutSchoolNestedInput
+    farmLivestockBatches?: FarmLivestockBatchUpdateManyWithoutSchoolNestedInput
+    farmCropCycles?: FarmCropCycleUpdateManyWithoutSchoolNestedInput
+    farmInventoryItems?: FarmInventoryItemUpdateManyWithoutSchoolNestedInput
+    prefectDuties?: PrefectDutyUpdateManyWithoutSchoolNestedInput
+    prefectMeetings?: PrefectMeetingUpdateManyWithoutSchoolNestedInput
+    prefectReports?: PrefectReportUpdateManyWithoutSchoolNestedInput
+    staffAttendances?: StaffAttendanceUpdateManyWithoutSchoolNestedInput
+    timetableSlots?: TimetableSlotUpdateManyWithoutSchoolNestedInput
+    classes?: SchoolClassUpdateManyWithoutSchoolNestedInput
+    subjects?: SubjectUpdateManyWithoutSchoolNestedInput
+    books?: BookUpdateManyWithoutSchoolNestedInput
+    grades?: GradeUpdateManyWithoutSchoolNestedInput
+    attendance?: AttendanceUpdateManyWithoutSchoolNestedInput
+    fees?: FeeUpdateManyWithoutSchoolNestedInput
+    assignments?: AssignmentUpdateManyWithoutSchoolNestedInput
+    bookLoans?: BookLoanUpdateManyWithoutSchoolNestedInput
+    assignmentSubmissions?: AssignmentSubmissionUpdateManyWithoutSchoolNestedInput
+    supervisorAssignments?: SupervisorAssignmentUpdateManyWithoutSchoolNestedInput
+    extensionRequests?: ExtensionRequestUpdateManyWithoutSchoolNestedInput
+    progressReports?: ProgressReportUpdateManyWithoutSchoolNestedInput
+    tuckshopItems?: TuckshopItemUpdateManyWithoutSchoolNestedInput
+    suppliers?: SchoolSupplierUpdateManyWithoutSchoolNestedInput
+    assets?: AssetUpdateManyWithoutSchoolNestedInput
+    reportTemplate?: ReportTemplateUpdateOneWithoutSchoolNestedInput
+    websiteSettings?: WebsiteSettingsUpdateOneWithoutSchoolNestedInput
+    requisitions?: RequisitionUpdateManyWithoutSchoolNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutSchoolNestedInput
+    departments?: DepartmentUpdateManyWithoutSchoolNestedInput
+    hostels?: HostelUpdateManyWithoutSchoolNestedInput
+    weeklyMenus?: WeeklyMenuUpdateManyWithoutSchoolNestedInput
+    originTransfers?: TransferAuthorizationUpdateManyWithoutOriginSchoolNestedInput
+    targetTransfers?: TransferAuthorizationUpdateManyWithoutTargetSchoolNestedInput
+    faculties?: FacultyUpdateManyWithoutSchoolNestedInput
+    paymentMethods?: PaymentMethodUpdateManyWithoutSchoolNestedInput
+    feeGroups?: FeeGroupUpdateManyWithoutSchoolNestedInput
+    revenueAllocations?: RevenueAllocationUpdateManyWithoutSchoolNestedInput
+    allowanceTypes?: PayrollAllowanceUpdateManyWithoutSchoolNestedInput
+    deductionTypes?: PayrollDeductionUpdateManyWithoutSchoolNestedInput
+    taxTables?: TaxTableUpdateManyWithoutSchoolNestedInput
+    employeeProfiles?: EmployeeProfileUpdateManyWithoutSchoolNestedInput
+    accountCategories?: AccountCategoryUpdateManyWithoutSchoolNestedInput
+    liabilities?: LiabilityUpdateManyWithoutSchoolNestedInput
+    incomes?: IncomeUpdateManyWithoutSchoolNestedInput
+    expenses?: ExpenseUpdateManyWithoutSchoolNestedInput
+    uniformItems?: UniformItemUpdateManyWithoutSchoolNestedInput
+    uniformStockOrders?: UniformStockOrderUpdateManyWithoutSchoolNestedInput
+    uniformSales?: UniformSaleUpdateManyWithoutSchoolNestedInput
+    uniformSupplierPayments?: UniformSupplierPaymentUpdateManyWithoutSchoolNestedInput
+    physicalProducts?: PhysicalProductUpdateManyWithoutSchoolNestedInput
+    physicalProductConsumptions?: PhysicalProductConsumptionUpdateManyWithoutSchoolNestedInput
+    feeReminderLogs?: FeeReminderLogUpdateManyWithoutSchoolNestedInput
+    termlyComments?: TermlyCommentUpdateManyWithoutSchoolNestedInput
+    payrollRuns?: PayrollRunUpdateManyWithoutSchoolNestedInput
+    questionPapers?: QuestionPaperUpdateManyWithoutSchoolNestedInput
+    payrollEntries?: PayrollEntryUpdateManyWithoutSchoolNestedInput
+    gradingScales?: GradingScaleUpdateManyWithoutSchoolNestedInput
+    studentPayments?: StudentPaymentUpdateManyWithoutSchoolNestedInput
+    communicationLogs?: CommunicationLogUpdateManyWithoutSchoolNestedInput
+    libraryCategories?: LibraryCategoryUpdateManyWithoutSchoolNestedInput
+    sections?: SectionUpdateManyWithoutSchoolNestedInput
+    studentHouses?: StudentHouseUpdateManyWithoutSchoolNestedInput
+    holidays?: HolidayUpdateManyWithoutSchoolNestedInput
+    schoolSetting?: SchoolSettingUpdateOneWithoutSchoolNestedInput
+    CBTExam?: CBTExamUpdateManyWithoutSchoolNestedInput
+    Syllabus?: SyllabusUpdateManyWithoutSchoolNestedInput
+    LessonPlan?: LessonPlanUpdateManyWithoutSchoolNestedInput
+    LiveClass?: LiveClassUpdateManyWithoutSchoolNestedInput
+    Award?: AwardUpdateManyWithoutSchoolNestedInput
+    Course?: CourseUpdateManyWithoutSchoolNestedInput
+    StudyMaterial?: StudyMaterialUpdateManyWithoutSchoolNestedInput
+    hostelCategories?: HostelCategoryUpdateManyWithoutSchoolNestedInput
+    hostelRooms?: HostelRoomUpdateManyWithoutSchoolNestedInput
+    SchoolVehicle?: SchoolVehicleUpdateManyWithoutSchoolNestedInput
+    SchoolTransport?: SchoolTransportUpdateManyWithoutSchoolNestedInput
+    paymentPlans?: PaymentPlanUpdateManyWithoutSchoolNestedInput
+    meetingMinutes?: MeetingMinutesUpdateManyWithoutSchoolNestedInput
+    projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
+    sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
+    ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
+    journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
+    accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
+    uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
+    bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+  }
+
+  export type SchoolUncheckedUpdateWithoutClinicInventoryItemsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    isCombined?: BoolFieldUpdateOperationsInput | boolean
+    levels?: SchoolUpdatelevelsInput | string[]
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    planId?: StringFieldUpdateOperationsInput | string
+    branding?: NullableJsonNullValueInput | InputJsonValue
+    customContent?: NullableJsonNullValueInput | InputJsonValue
+    hexcoCenterNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    idCardTemplate?: NullableStringFieldUpdateOperationsInput | string | null
+    settings?: NullableJsonNullValueInput | InputJsonValue
+    users?: UserUncheckedUpdateManyWithoutSchoolNestedInput
+    students?: StudentUncheckedUpdateManyWithoutSchoolNestedInput
+    teachers?: TeacherUncheckedUpdateManyWithoutSchoolNestedInput
+    news?: NewsUncheckedUpdateManyWithoutSchoolNestedInput
+    websiteInquiries?: WebsiteInquiryUncheckedUpdateManyWithoutSchoolNestedInput
+    noticeboards?: NoticeboardUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicVisits?: ClinicVisitUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicHospitalizations?: ClinicHospitalizationUncheckedUpdateManyWithoutSchoolNestedInput
+    vacancies?: VacancyUncheckedUpdateManyWithoutSchoolNestedInput
+    jobApplications?: JobApplicationUncheckedUpdateManyWithoutSchoolNestedInput
+    gallery?: GalleryUncheckedUpdateManyWithoutSchoolNestedInput
+    clubs?: ClubUncheckedUpdateManyWithoutSchoolNestedInput
+    sports?: SportUncheckedUpdateManyWithoutSchoolNestedInput
+    applications?: ApplicationUncheckedUpdateManyWithoutSchoolNestedInput
+    announcements?: AnnouncementUncheckedUpdateManyWithoutSchoolNestedInput
+    chaplaincyEvents?: ChaplaincyEventUncheckedUpdateManyWithoutSchoolNestedInput
+    diningHallReports?: DiningHallReportUncheckedUpdateManyWithoutSchoolNestedInput
+    farmLivestockBatches?: FarmLivestockBatchUncheckedUpdateManyWithoutSchoolNestedInput
+    farmCropCycles?: FarmCropCycleUncheckedUpdateManyWithoutSchoolNestedInput
+    farmInventoryItems?: FarmInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
+    prefectDuties?: PrefectDutyUncheckedUpdateManyWithoutSchoolNestedInput
+    prefectMeetings?: PrefectMeetingUncheckedUpdateManyWithoutSchoolNestedInput
+    prefectReports?: PrefectReportUncheckedUpdateManyWithoutSchoolNestedInput
+    staffAttendances?: StaffAttendanceUncheckedUpdateManyWithoutSchoolNestedInput
+    timetableSlots?: TimetableSlotUncheckedUpdateManyWithoutSchoolNestedInput
+    classes?: SchoolClassUncheckedUpdateManyWithoutSchoolNestedInput
+    subjects?: SubjectUncheckedUpdateManyWithoutSchoolNestedInput
+    books?: BookUncheckedUpdateManyWithoutSchoolNestedInput
+    grades?: GradeUncheckedUpdateManyWithoutSchoolNestedInput
+    attendance?: AttendanceUncheckedUpdateManyWithoutSchoolNestedInput
+    fees?: FeeUncheckedUpdateManyWithoutSchoolNestedInput
+    assignments?: AssignmentUncheckedUpdateManyWithoutSchoolNestedInput
+    bookLoans?: BookLoanUncheckedUpdateManyWithoutSchoolNestedInput
+    assignmentSubmissions?: AssignmentSubmissionUncheckedUpdateManyWithoutSchoolNestedInput
+    supervisorAssignments?: SupervisorAssignmentUncheckedUpdateManyWithoutSchoolNestedInput
+    extensionRequests?: ExtensionRequestUncheckedUpdateManyWithoutSchoolNestedInput
+    progressReports?: ProgressReportUncheckedUpdateManyWithoutSchoolNestedInput
+    tuckshopItems?: TuckshopItemUncheckedUpdateManyWithoutSchoolNestedInput
+    suppliers?: SchoolSupplierUncheckedUpdateManyWithoutSchoolNestedInput
+    assets?: AssetUncheckedUpdateManyWithoutSchoolNestedInput
+    reportTemplate?: ReportTemplateUncheckedUpdateOneWithoutSchoolNestedInput
+    websiteSettings?: WebsiteSettingsUncheckedUpdateOneWithoutSchoolNestedInput
+    requisitions?: RequisitionUncheckedUpdateManyWithoutSchoolNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutSchoolNestedInput
+    departments?: DepartmentUncheckedUpdateManyWithoutSchoolNestedInput
+    hostels?: HostelUncheckedUpdateManyWithoutSchoolNestedInput
+    weeklyMenus?: WeeklyMenuUncheckedUpdateManyWithoutSchoolNestedInput
+    originTransfers?: TransferAuthorizationUncheckedUpdateManyWithoutOriginSchoolNestedInput
+    targetTransfers?: TransferAuthorizationUncheckedUpdateManyWithoutTargetSchoolNestedInput
+    faculties?: FacultyUncheckedUpdateManyWithoutSchoolNestedInput
+    paymentMethods?: PaymentMethodUncheckedUpdateManyWithoutSchoolNestedInput
+    feeGroups?: FeeGroupUncheckedUpdateManyWithoutSchoolNestedInput
+    revenueAllocations?: RevenueAllocationUncheckedUpdateManyWithoutSchoolNestedInput
+    allowanceTypes?: PayrollAllowanceUncheckedUpdateManyWithoutSchoolNestedInput
+    deductionTypes?: PayrollDeductionUncheckedUpdateManyWithoutSchoolNestedInput
+    taxTables?: TaxTableUncheckedUpdateManyWithoutSchoolNestedInput
+    employeeProfiles?: EmployeeProfileUncheckedUpdateManyWithoutSchoolNestedInput
+    accountCategories?: AccountCategoryUncheckedUpdateManyWithoutSchoolNestedInput
+    liabilities?: LiabilityUncheckedUpdateManyWithoutSchoolNestedInput
+    incomes?: IncomeUncheckedUpdateManyWithoutSchoolNestedInput
+    expenses?: ExpenseUncheckedUpdateManyWithoutSchoolNestedInput
+    uniformItems?: UniformItemUncheckedUpdateManyWithoutSchoolNestedInput
+    uniformStockOrders?: UniformStockOrderUncheckedUpdateManyWithoutSchoolNestedInput
+    uniformSales?: UniformSaleUncheckedUpdateManyWithoutSchoolNestedInput
+    uniformSupplierPayments?: UniformSupplierPaymentUncheckedUpdateManyWithoutSchoolNestedInput
+    physicalProducts?: PhysicalProductUncheckedUpdateManyWithoutSchoolNestedInput
+    physicalProductConsumptions?: PhysicalProductConsumptionUncheckedUpdateManyWithoutSchoolNestedInput
+    feeReminderLogs?: FeeReminderLogUncheckedUpdateManyWithoutSchoolNestedInput
+    termlyComments?: TermlyCommentUncheckedUpdateManyWithoutSchoolNestedInput
+    payrollRuns?: PayrollRunUncheckedUpdateManyWithoutSchoolNestedInput
+    questionPapers?: QuestionPaperUncheckedUpdateManyWithoutSchoolNestedInput
+    payrollEntries?: PayrollEntryUncheckedUpdateManyWithoutSchoolNestedInput
+    gradingScales?: GradingScaleUncheckedUpdateManyWithoutSchoolNestedInput
+    studentPayments?: StudentPaymentUncheckedUpdateManyWithoutSchoolNestedInput
+    communicationLogs?: CommunicationLogUncheckedUpdateManyWithoutSchoolNestedInput
+    libraryCategories?: LibraryCategoryUncheckedUpdateManyWithoutSchoolNestedInput
+    sections?: SectionUncheckedUpdateManyWithoutSchoolNestedInput
+    studentHouses?: StudentHouseUncheckedUpdateManyWithoutSchoolNestedInput
+    holidays?: HolidayUncheckedUpdateManyWithoutSchoolNestedInput
+    schoolSetting?: SchoolSettingUncheckedUpdateOneWithoutSchoolNestedInput
+    CBTExam?: CBTExamUncheckedUpdateManyWithoutSchoolNestedInput
+    Syllabus?: SyllabusUncheckedUpdateManyWithoutSchoolNestedInput
+    LessonPlan?: LessonPlanUncheckedUpdateManyWithoutSchoolNestedInput
+    LiveClass?: LiveClassUncheckedUpdateManyWithoutSchoolNestedInput
+    Award?: AwardUncheckedUpdateManyWithoutSchoolNestedInput
+    Course?: CourseUncheckedUpdateManyWithoutSchoolNestedInput
+    StudyMaterial?: StudyMaterialUncheckedUpdateManyWithoutSchoolNestedInput
+    hostelCategories?: HostelCategoryUncheckedUpdateManyWithoutSchoolNestedInput
+    hostelRooms?: HostelRoomUncheckedUpdateManyWithoutSchoolNestedInput
+    SchoolVehicle?: SchoolVehicleUncheckedUpdateManyWithoutSchoolNestedInput
+    SchoolTransport?: SchoolTransportUncheckedUpdateManyWithoutSchoolNestedInput
+    paymentPlans?: PaymentPlanUncheckedUpdateManyWithoutSchoolNestedInput
+    meetingMinutes?: MeetingMinutesUncheckedUpdateManyWithoutSchoolNestedInput
+    projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
+    sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
+    ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
+    journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
+    accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
+    uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+  }
+
+  export type ClinicDispensingLogUpsertWithWhereUniqueWithoutItemInput = {
+    where: ClinicDispensingLogWhereUniqueInput
+    update: XOR<ClinicDispensingLogUpdateWithoutItemInput, ClinicDispensingLogUncheckedUpdateWithoutItemInput>
+    create: XOR<ClinicDispensingLogCreateWithoutItemInput, ClinicDispensingLogUncheckedCreateWithoutItemInput>
+  }
+
+  export type ClinicDispensingLogUpdateWithWhereUniqueWithoutItemInput = {
+    where: ClinicDispensingLogWhereUniqueInput
+    data: XOR<ClinicDispensingLogUpdateWithoutItemInput, ClinicDispensingLogUncheckedUpdateWithoutItemInput>
+  }
+
+  export type ClinicDispensingLogUpdateManyWithWhereWithoutItemInput = {
+    where: ClinicDispensingLogScalarWhereInput
+    data: XOR<ClinicDispensingLogUpdateManyMutationInput, ClinicDispensingLogUncheckedUpdateManyWithoutItemInput>
+  }
+
+  export type ClinicInventoryItemCreateWithoutDispensingsInput = {
+    id?: string
+    name: string
+    category?: string
+    batchNumber?: string | null
+    expiryDate?: Date | string | null
+    unit?: string
+    stock?: number
+    reorderLevel?: number
+    unitCost?: number
+    unitPrice?: number
+    location?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    school: SchoolCreateNestedOneWithoutClinicInventoryItemsInput
+  }
+
+  export type ClinicInventoryItemUncheckedCreateWithoutDispensingsInput = {
+    id?: string
+    schoolId: string
+    name: string
+    category?: string
+    batchNumber?: string | null
+    expiryDate?: Date | string | null
+    unit?: string
+    stock?: number
+    reorderLevel?: number
+    unitCost?: number
+    unitPrice?: number
+    location?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ClinicInventoryItemCreateOrConnectWithoutDispensingsInput = {
+    where: ClinicInventoryItemWhereUniqueInput
+    create: XOR<ClinicInventoryItemCreateWithoutDispensingsInput, ClinicInventoryItemUncheckedCreateWithoutDispensingsInput>
+  }
+
+  export type ClinicVisitCreateWithoutDispensingsInput = {
+    id?: string
+    visitCode?: string | null
+    temperature?: number | null
+    bloodPressure?: string | null
+    heartRate?: number | null
+    respiratoryRate?: number | null
+    weight?: number | null
+    height?: number | null
+    oxygenSaturation?: number | null
+    presentingComplaint?: string | null
+    triageLevel?: string | null
+    conditionDetails?: string | null
+    diagnosis?: string | null
+    treatment?: string | null
+    prescription?: string | null
+    notes?: string | null
+    status?: string
+    visitDate?: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user?: UserCreateNestedOneWithoutClinicVisitsInput
+    patient?: ClinicPatientCreateNestedOneWithoutVisitsInput
+    school: SchoolCreateNestedOneWithoutClinicVisitsInput
+  }
+
+  export type ClinicVisitUncheckedCreateWithoutDispensingsInput = {
+    id?: string
+    visitCode?: string | null
+    userId?: string | null
+    patientId?: string | null
+    schoolId: string
+    temperature?: number | null
+    bloodPressure?: string | null
+    heartRate?: number | null
+    respiratoryRate?: number | null
+    weight?: number | null
+    height?: number | null
+    oxygenSaturation?: number | null
+    presentingComplaint?: string | null
+    triageLevel?: string | null
+    conditionDetails?: string | null
+    diagnosis?: string | null
+    treatment?: string | null
+    prescription?: string | null
+    notes?: string | null
+    status?: string
+    visitDate?: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ClinicVisitCreateOrConnectWithoutDispensingsInput = {
+    where: ClinicVisitWhereUniqueInput
+    create: XOR<ClinicVisitCreateWithoutDispensingsInput, ClinicVisitUncheckedCreateWithoutDispensingsInput>
+  }
+
+  export type ClinicPatientCreateWithoutDispensingsInput = {
+    id?: string
+    mrn?: string | null
+    firstName?: string | null
+    lastName?: string | null
+    dob?: Date | string | null
+    gender?: string | null
+    contactNumber?: string | null
+    address?: string | null
+    bloodType?: string | null
+    allergies?: string | null
+    chronicConditions?: string | null
+    guardianName?: string | null
+    guardianContact?: string | null
+    medicalHistory?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    school: SchoolCreateNestedOneWithoutClinicPatientInput
+    user?: UserCreateNestedOneWithoutClinicPatientInput
+    visits?: ClinicVisitCreateNestedManyWithoutPatientInput
+    appointments?: ClinicAppointmentCreateNestedManyWithoutPatientInput
+    complaints?: ClinicComplaintCreateNestedManyWithoutPatientInput
+    emergencies?: ClinicEmergencyCreateNestedManyWithoutPatientInput
+    immunizations?: ClinicImmunizationCreateNestedManyWithoutPatientInput
+    referrals?: ClinicReferralCreateNestedManyWithoutPatientInput
+    hospitalizations?: ClinicHospitalizationCreateNestedManyWithoutPatientInput
+  }
+
+  export type ClinicPatientUncheckedCreateWithoutDispensingsInput = {
+    id?: string
+    schoolId: string
+    userId?: string | null
+    mrn?: string | null
+    firstName?: string | null
+    lastName?: string | null
+    dob?: Date | string | null
+    gender?: string | null
+    contactNumber?: string | null
+    address?: string | null
+    bloodType?: string | null
+    allergies?: string | null
+    chronicConditions?: string | null
+    guardianName?: string | null
+    guardianContact?: string | null
+    medicalHistory?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    visits?: ClinicVisitUncheckedCreateNestedManyWithoutPatientInput
+    appointments?: ClinicAppointmentUncheckedCreateNestedManyWithoutPatientInput
+    complaints?: ClinicComplaintUncheckedCreateNestedManyWithoutPatientInput
+    emergencies?: ClinicEmergencyUncheckedCreateNestedManyWithoutPatientInput
+    immunizations?: ClinicImmunizationUncheckedCreateNestedManyWithoutPatientInput
+    referrals?: ClinicReferralUncheckedCreateNestedManyWithoutPatientInput
+    hospitalizations?: ClinicHospitalizationUncheckedCreateNestedManyWithoutPatientInput
+  }
+
+  export type ClinicPatientCreateOrConnectWithoutDispensingsInput = {
+    where: ClinicPatientWhereUniqueInput
+    create: XOR<ClinicPatientCreateWithoutDispensingsInput, ClinicPatientUncheckedCreateWithoutDispensingsInput>
+  }
+
+  export type ClinicInventoryItemUpsertWithoutDispensingsInput = {
+    update: XOR<ClinicInventoryItemUpdateWithoutDispensingsInput, ClinicInventoryItemUncheckedUpdateWithoutDispensingsInput>
+    create: XOR<ClinicInventoryItemCreateWithoutDispensingsInput, ClinicInventoryItemUncheckedCreateWithoutDispensingsInput>
+    where?: ClinicInventoryItemWhereInput
+  }
+
+  export type ClinicInventoryItemUpdateToOneWithWhereWithoutDispensingsInput = {
+    where?: ClinicInventoryItemWhereInput
+    data: XOR<ClinicInventoryItemUpdateWithoutDispensingsInput, ClinicInventoryItemUncheckedUpdateWithoutDispensingsInput>
+  }
+
+  export type ClinicInventoryItemUpdateWithoutDispensingsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    batchNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    expiryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    unit?: StringFieldUpdateOperationsInput | string
+    stock?: IntFieldUpdateOperationsInput | number
+    reorderLevel?: IntFieldUpdateOperationsInput | number
+    unitCost?: FloatFieldUpdateOperationsInput | number
+    unitPrice?: FloatFieldUpdateOperationsInput | number
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    school?: SchoolUpdateOneRequiredWithoutClinicInventoryItemsNestedInput
+  }
+
+  export type ClinicInventoryItemUncheckedUpdateWithoutDispensingsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    schoolId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    batchNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    expiryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    unit?: StringFieldUpdateOperationsInput | string
+    stock?: IntFieldUpdateOperationsInput | number
+    reorderLevel?: IntFieldUpdateOperationsInput | number
+    unitCost?: FloatFieldUpdateOperationsInput | number
+    unitPrice?: FloatFieldUpdateOperationsInput | number
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ClinicVisitUpsertWithoutDispensingsInput = {
+    update: XOR<ClinicVisitUpdateWithoutDispensingsInput, ClinicVisitUncheckedUpdateWithoutDispensingsInput>
+    create: XOR<ClinicVisitCreateWithoutDispensingsInput, ClinicVisitUncheckedCreateWithoutDispensingsInput>
+    where?: ClinicVisitWhereInput
+  }
+
+  export type ClinicVisitUpdateToOneWithWhereWithoutDispensingsInput = {
+    where?: ClinicVisitWhereInput
+    data: XOR<ClinicVisitUpdateWithoutDispensingsInput, ClinicVisitUncheckedUpdateWithoutDispensingsInput>
+  }
+
+  export type ClinicVisitUpdateWithoutDispensingsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    visitCode?: NullableStringFieldUpdateOperationsInput | string | null
+    temperature?: NullableFloatFieldUpdateOperationsInput | number | null
+    bloodPressure?: NullableStringFieldUpdateOperationsInput | string | null
+    heartRate?: NullableIntFieldUpdateOperationsInput | number | null
+    respiratoryRate?: NullableIntFieldUpdateOperationsInput | number | null
+    weight?: NullableFloatFieldUpdateOperationsInput | number | null
+    height?: NullableFloatFieldUpdateOperationsInput | number | null
+    oxygenSaturation?: NullableFloatFieldUpdateOperationsInput | number | null
+    presentingComplaint?: NullableStringFieldUpdateOperationsInput | string | null
+    triageLevel?: NullableStringFieldUpdateOperationsInput | string | null
+    conditionDetails?: NullableStringFieldUpdateOperationsInput | string | null
+    diagnosis?: NullableStringFieldUpdateOperationsInput | string | null
+    treatment?: NullableStringFieldUpdateOperationsInput | string | null
+    prescription?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    visitDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneWithoutClinicVisitsNestedInput
+    patient?: ClinicPatientUpdateOneWithoutVisitsNestedInput
+    school?: SchoolUpdateOneRequiredWithoutClinicVisitsNestedInput
+  }
+
+  export type ClinicVisitUncheckedUpdateWithoutDispensingsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    visitCode?: NullableStringFieldUpdateOperationsInput | string | null
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    patientId?: NullableStringFieldUpdateOperationsInput | string | null
+    schoolId?: StringFieldUpdateOperationsInput | string
+    temperature?: NullableFloatFieldUpdateOperationsInput | number | null
+    bloodPressure?: NullableStringFieldUpdateOperationsInput | string | null
+    heartRate?: NullableIntFieldUpdateOperationsInput | number | null
+    respiratoryRate?: NullableIntFieldUpdateOperationsInput | number | null
+    weight?: NullableFloatFieldUpdateOperationsInput | number | null
+    height?: NullableFloatFieldUpdateOperationsInput | number | null
+    oxygenSaturation?: NullableFloatFieldUpdateOperationsInput | number | null
+    presentingComplaint?: NullableStringFieldUpdateOperationsInput | string | null
+    triageLevel?: NullableStringFieldUpdateOperationsInput | string | null
+    conditionDetails?: NullableStringFieldUpdateOperationsInput | string | null
+    diagnosis?: NullableStringFieldUpdateOperationsInput | string | null
+    treatment?: NullableStringFieldUpdateOperationsInput | string | null
+    prescription?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    visitDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ClinicPatientUpsertWithoutDispensingsInput = {
+    update: XOR<ClinicPatientUpdateWithoutDispensingsInput, ClinicPatientUncheckedUpdateWithoutDispensingsInput>
+    create: XOR<ClinicPatientCreateWithoutDispensingsInput, ClinicPatientUncheckedCreateWithoutDispensingsInput>
+    where?: ClinicPatientWhereInput
+  }
+
+  export type ClinicPatientUpdateToOneWithWhereWithoutDispensingsInput = {
+    where?: ClinicPatientWhereInput
+    data: XOR<ClinicPatientUpdateWithoutDispensingsInput, ClinicPatientUncheckedUpdateWithoutDispensingsInput>
+  }
+
+  export type ClinicPatientUpdateWithoutDispensingsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    mrn?: NullableStringFieldUpdateOperationsInput | string | null
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
+    dob?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    gender?: NullableStringFieldUpdateOperationsInput | string | null
+    contactNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    bloodType?: NullableStringFieldUpdateOperationsInput | string | null
+    allergies?: NullableStringFieldUpdateOperationsInput | string | null
+    chronicConditions?: NullableStringFieldUpdateOperationsInput | string | null
+    guardianName?: NullableStringFieldUpdateOperationsInput | string | null
+    guardianContact?: NullableStringFieldUpdateOperationsInput | string | null
+    medicalHistory?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    school?: SchoolUpdateOneRequiredWithoutClinicPatientNestedInput
+    user?: UserUpdateOneWithoutClinicPatientNestedInput
+    visits?: ClinicVisitUpdateManyWithoutPatientNestedInput
+    appointments?: ClinicAppointmentUpdateManyWithoutPatientNestedInput
+    complaints?: ClinicComplaintUpdateManyWithoutPatientNestedInput
+    emergencies?: ClinicEmergencyUpdateManyWithoutPatientNestedInput
+    immunizations?: ClinicImmunizationUpdateManyWithoutPatientNestedInput
+    referrals?: ClinicReferralUpdateManyWithoutPatientNestedInput
+    hospitalizations?: ClinicHospitalizationUpdateManyWithoutPatientNestedInput
+  }
+
+  export type ClinicPatientUncheckedUpdateWithoutDispensingsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    schoolId?: StringFieldUpdateOperationsInput | string
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    mrn?: NullableStringFieldUpdateOperationsInput | string | null
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
+    dob?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    gender?: NullableStringFieldUpdateOperationsInput | string | null
+    contactNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    bloodType?: NullableStringFieldUpdateOperationsInput | string | null
+    allergies?: NullableStringFieldUpdateOperationsInput | string | null
+    chronicConditions?: NullableStringFieldUpdateOperationsInput | string | null
+    guardianName?: NullableStringFieldUpdateOperationsInput | string | null
+    guardianContact?: NullableStringFieldUpdateOperationsInput | string | null
+    medicalHistory?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    visits?: ClinicVisitUncheckedUpdateManyWithoutPatientNestedInput
+    appointments?: ClinicAppointmentUncheckedUpdateManyWithoutPatientNestedInput
+    complaints?: ClinicComplaintUncheckedUpdateManyWithoutPatientNestedInput
+    emergencies?: ClinicEmergencyUncheckedUpdateManyWithoutPatientNestedInput
+    immunizations?: ClinicImmunizationUncheckedUpdateManyWithoutPatientNestedInput
+    referrals?: ClinicReferralUncheckedUpdateManyWithoutPatientNestedInput
+    hospitalizations?: ClinicHospitalizationUncheckedUpdateManyWithoutPatientNestedInput
   }
 
   export type UserCreateWithoutClinicHospitalizationsInput = {
@@ -328243,12 +333895,18 @@ export namespace Prisma {
 
   export type ClinicPatientCreateWithoutHospitalizationsInput = {
     id?: string
+    mrn?: string | null
     firstName?: string | null
     lastName?: string | null
     dob?: Date | string | null
     gender?: string | null
     contactNumber?: string | null
     address?: string | null
+    bloodType?: string | null
+    allergies?: string | null
+    chronicConditions?: string | null
+    guardianName?: string | null
+    guardianContact?: string | null
     medicalHistory?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -328260,18 +333918,25 @@ export namespace Prisma {
     emergencies?: ClinicEmergencyCreateNestedManyWithoutPatientInput
     immunizations?: ClinicImmunizationCreateNestedManyWithoutPatientInput
     referrals?: ClinicReferralCreateNestedManyWithoutPatientInput
+    dispensings?: ClinicDispensingLogCreateNestedManyWithoutPatientInput
   }
 
   export type ClinicPatientUncheckedCreateWithoutHospitalizationsInput = {
     id?: string
     schoolId: string
     userId?: string | null
+    mrn?: string | null
     firstName?: string | null
     lastName?: string | null
     dob?: Date | string | null
     gender?: string | null
     contactNumber?: string | null
     address?: string | null
+    bloodType?: string | null
+    allergies?: string | null
+    chronicConditions?: string | null
+    guardianName?: string | null
+    guardianContact?: string | null
     medicalHistory?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -328281,6 +333946,7 @@ export namespace Prisma {
     emergencies?: ClinicEmergencyUncheckedCreateNestedManyWithoutPatientInput
     immunizations?: ClinicImmunizationUncheckedCreateNestedManyWithoutPatientInput
     referrals?: ClinicReferralUncheckedCreateNestedManyWithoutPatientInput
+    dispensings?: ClinicDispensingLogUncheckedCreateNestedManyWithoutPatientInput
   }
 
   export type ClinicPatientCreateOrConnectWithoutHospitalizationsInput = {
@@ -328404,6 +334070,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -328527,6 +334194,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -328689,12 +334357,18 @@ export namespace Prisma {
 
   export type ClinicPatientUpdateWithoutHospitalizationsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    mrn?: NullableStringFieldUpdateOperationsInput | string | null
     firstName?: NullableStringFieldUpdateOperationsInput | string | null
     lastName?: NullableStringFieldUpdateOperationsInput | string | null
     dob?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     contactNumber?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
+    bloodType?: NullableStringFieldUpdateOperationsInput | string | null
+    allergies?: NullableStringFieldUpdateOperationsInput | string | null
+    chronicConditions?: NullableStringFieldUpdateOperationsInput | string | null
+    guardianName?: NullableStringFieldUpdateOperationsInput | string | null
+    guardianContact?: NullableStringFieldUpdateOperationsInput | string | null
     medicalHistory?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -328706,18 +334380,25 @@ export namespace Prisma {
     emergencies?: ClinicEmergencyUpdateManyWithoutPatientNestedInput
     immunizations?: ClinicImmunizationUpdateManyWithoutPatientNestedInput
     referrals?: ClinicReferralUpdateManyWithoutPatientNestedInput
+    dispensings?: ClinicDispensingLogUpdateManyWithoutPatientNestedInput
   }
 
   export type ClinicPatientUncheckedUpdateWithoutHospitalizationsInput = {
     id?: StringFieldUpdateOperationsInput | string
     schoolId?: StringFieldUpdateOperationsInput | string
     userId?: NullableStringFieldUpdateOperationsInput | string | null
+    mrn?: NullableStringFieldUpdateOperationsInput | string | null
     firstName?: NullableStringFieldUpdateOperationsInput | string | null
     lastName?: NullableStringFieldUpdateOperationsInput | string | null
     dob?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     contactNumber?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
+    bloodType?: NullableStringFieldUpdateOperationsInput | string | null
+    allergies?: NullableStringFieldUpdateOperationsInput | string | null
+    chronicConditions?: NullableStringFieldUpdateOperationsInput | string | null
+    guardianName?: NullableStringFieldUpdateOperationsInput | string | null
+    guardianContact?: NullableStringFieldUpdateOperationsInput | string | null
     medicalHistory?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -328727,6 +334408,7 @@ export namespace Prisma {
     emergencies?: ClinicEmergencyUncheckedUpdateManyWithoutPatientNestedInput
     immunizations?: ClinicImmunizationUncheckedUpdateManyWithoutPatientNestedInput
     referrals?: ClinicReferralUncheckedUpdateManyWithoutPatientNestedInput
+    dispensings?: ClinicDispensingLogUncheckedUpdateManyWithoutPatientNestedInput
   }
 
   export type SchoolUpsertWithoutClinicHospitalizationsInput = {
@@ -328856,6 +334538,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -328979,6 +334662,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -329102,6 +334786,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -329225,6 +334910,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -329364,6 +335050,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -329487,6 +335174,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -329610,6 +335298,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -329733,6 +335422,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -329872,6 +335562,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -329995,6 +335686,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -330118,6 +335810,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -330241,6 +335934,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -330380,6 +336074,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -330503,6 +336198,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -330757,6 +336453,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -330880,6 +336577,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -331156,6 +336854,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -331279,6 +336978,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -331402,6 +337102,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -331525,6 +337226,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -331664,6 +337366,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -331787,6 +337490,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -331910,6 +337614,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -332033,6 +337738,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -332172,6 +337878,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -332295,6 +338002,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -332549,6 +338257,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -332672,6 +338381,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -332948,6 +338658,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -333071,6 +338782,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -333607,6 +339319,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
@@ -333730,6 +339443,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
@@ -334024,6 +339738,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
@@ -334147,6 +339862,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
@@ -334384,6 +340100,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
@@ -334507,6 +340224,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
@@ -334785,6 +340503,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
@@ -334908,6 +340627,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
@@ -335284,6 +341004,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
@@ -335407,6 +341128,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
@@ -335546,6 +341268,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
@@ -335669,6 +341392,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
@@ -335792,6 +341516,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -335915,6 +341640,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -336085,6 +341811,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -336208,6 +341935,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -336368,6 +342096,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
@@ -336491,6 +342220,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
     sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
     ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
     chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
@@ -336703,6 +342433,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -336826,6 +342557,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -337098,6 +342830,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
@@ -337221,6 +342954,7 @@ export namespace Prisma {
     projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
     sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
     ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
     chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
@@ -337607,6 +343341,10 @@ export namespace Prisma {
     category: string
     narrative: string
     reportedById: string
+    hasPunishment?: boolean
+    punishment?: string | null
+    punishmentLocation?: string | null
+    punishmentStatus?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -338485,13 +344223,35 @@ export namespace Prisma {
   export type ClinicPatientCreateManySchoolInput = {
     id?: string
     userId?: string | null
+    mrn?: string | null
     firstName?: string | null
     lastName?: string | null
     dob?: Date | string | null
     gender?: string | null
     contactNumber?: string | null
     address?: string | null
+    bloodType?: string | null
+    allergies?: string | null
+    chronicConditions?: string | null
+    guardianName?: string | null
+    guardianContact?: string | null
     medicalHistory?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ClinicInventoryItemCreateManySchoolInput = {
+    id?: string
+    name: string
+    category?: string
+    batchNumber?: string | null
+    expiryDate?: Date | string | null
+    unit?: string
+    stock?: number
+    reorderLevel?: number
+    unitCost?: number
+    unitPrice?: number
+    location?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -339076,6 +344836,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneWithoutClinicVisitsNestedInput
     patient?: ClinicPatientUpdateOneWithoutVisitsNestedInput
+    dispensings?: ClinicDispensingLogUpdateManyWithoutVisitNestedInput
   }
 
   export type ClinicVisitUncheckedUpdateWithoutSchoolInput = {
@@ -339101,6 +344862,7 @@ export namespace Prisma {
     visitDate?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    dispensings?: ClinicDispensingLogUncheckedUpdateManyWithoutVisitNestedInput
   }
 
   export type ClinicVisitUncheckedUpdateManyWithoutSchoolInput = {
@@ -339773,6 +345535,10 @@ export namespace Prisma {
     studentName?: StringFieldUpdateOperationsInput | string
     category?: StringFieldUpdateOperationsInput | string
     narrative?: StringFieldUpdateOperationsInput | string
+    hasPunishment?: BoolFieldUpdateOperationsInput | boolean
+    punishment?: NullableStringFieldUpdateOperationsInput | string | null
+    punishmentLocation?: NullableStringFieldUpdateOperationsInput | string | null
+    punishmentStatus?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     reportedBy?: UserUpdateOneRequiredWithoutPrefectReportsNestedInput
@@ -339784,6 +345550,10 @@ export namespace Prisma {
     category?: StringFieldUpdateOperationsInput | string
     narrative?: StringFieldUpdateOperationsInput | string
     reportedById?: StringFieldUpdateOperationsInput | string
+    hasPunishment?: BoolFieldUpdateOperationsInput | boolean
+    punishment?: NullableStringFieldUpdateOperationsInput | string | null
+    punishmentLocation?: NullableStringFieldUpdateOperationsInput | string | null
+    punishmentStatus?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -339794,6 +345564,10 @@ export namespace Prisma {
     category?: StringFieldUpdateOperationsInput | string
     narrative?: StringFieldUpdateOperationsInput | string
     reportedById?: StringFieldUpdateOperationsInput | string
+    hasPunishment?: BoolFieldUpdateOperationsInput | boolean
+    punishment?: NullableStringFieldUpdateOperationsInput | string | null
+    punishmentLocation?: NullableStringFieldUpdateOperationsInput | string | null
+    punishmentStatus?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -342549,12 +348323,18 @@ export namespace Prisma {
 
   export type ClinicPatientUpdateWithoutSchoolInput = {
     id?: StringFieldUpdateOperationsInput | string
+    mrn?: NullableStringFieldUpdateOperationsInput | string | null
     firstName?: NullableStringFieldUpdateOperationsInput | string | null
     lastName?: NullableStringFieldUpdateOperationsInput | string | null
     dob?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     contactNumber?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
+    bloodType?: NullableStringFieldUpdateOperationsInput | string | null
+    allergies?: NullableStringFieldUpdateOperationsInput | string | null
+    chronicConditions?: NullableStringFieldUpdateOperationsInput | string | null
+    guardianName?: NullableStringFieldUpdateOperationsInput | string | null
+    guardianContact?: NullableStringFieldUpdateOperationsInput | string | null
     medicalHistory?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -342566,17 +348346,24 @@ export namespace Prisma {
     immunizations?: ClinicImmunizationUpdateManyWithoutPatientNestedInput
     referrals?: ClinicReferralUpdateManyWithoutPatientNestedInput
     hospitalizations?: ClinicHospitalizationUpdateManyWithoutPatientNestedInput
+    dispensings?: ClinicDispensingLogUpdateManyWithoutPatientNestedInput
   }
 
   export type ClinicPatientUncheckedUpdateWithoutSchoolInput = {
     id?: StringFieldUpdateOperationsInput | string
     userId?: NullableStringFieldUpdateOperationsInput | string | null
+    mrn?: NullableStringFieldUpdateOperationsInput | string | null
     firstName?: NullableStringFieldUpdateOperationsInput | string | null
     lastName?: NullableStringFieldUpdateOperationsInput | string | null
     dob?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     contactNumber?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
+    bloodType?: NullableStringFieldUpdateOperationsInput | string | null
+    allergies?: NullableStringFieldUpdateOperationsInput | string | null
+    chronicConditions?: NullableStringFieldUpdateOperationsInput | string | null
+    guardianName?: NullableStringFieldUpdateOperationsInput | string | null
+    guardianContact?: NullableStringFieldUpdateOperationsInput | string | null
     medicalHistory?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -342587,18 +348374,75 @@ export namespace Prisma {
     immunizations?: ClinicImmunizationUncheckedUpdateManyWithoutPatientNestedInput
     referrals?: ClinicReferralUncheckedUpdateManyWithoutPatientNestedInput
     hospitalizations?: ClinicHospitalizationUncheckedUpdateManyWithoutPatientNestedInput
+    dispensings?: ClinicDispensingLogUncheckedUpdateManyWithoutPatientNestedInput
   }
 
   export type ClinicPatientUncheckedUpdateManyWithoutSchoolInput = {
     id?: StringFieldUpdateOperationsInput | string
     userId?: NullableStringFieldUpdateOperationsInput | string | null
+    mrn?: NullableStringFieldUpdateOperationsInput | string | null
     firstName?: NullableStringFieldUpdateOperationsInput | string | null
     lastName?: NullableStringFieldUpdateOperationsInput | string | null
     dob?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     contactNumber?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
+    bloodType?: NullableStringFieldUpdateOperationsInput | string | null
+    allergies?: NullableStringFieldUpdateOperationsInput | string | null
+    chronicConditions?: NullableStringFieldUpdateOperationsInput | string | null
+    guardianName?: NullableStringFieldUpdateOperationsInput | string | null
+    guardianContact?: NullableStringFieldUpdateOperationsInput | string | null
     medicalHistory?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ClinicInventoryItemUpdateWithoutSchoolInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    batchNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    expiryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    unit?: StringFieldUpdateOperationsInput | string
+    stock?: IntFieldUpdateOperationsInput | number
+    reorderLevel?: IntFieldUpdateOperationsInput | number
+    unitCost?: FloatFieldUpdateOperationsInput | number
+    unitPrice?: FloatFieldUpdateOperationsInput | number
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    dispensings?: ClinicDispensingLogUpdateManyWithoutItemNestedInput
+  }
+
+  export type ClinicInventoryItemUncheckedUpdateWithoutSchoolInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    batchNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    expiryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    unit?: StringFieldUpdateOperationsInput | string
+    stock?: IntFieldUpdateOperationsInput | number
+    reorderLevel?: IntFieldUpdateOperationsInput | number
+    unitCost?: FloatFieldUpdateOperationsInput | number
+    unitPrice?: FloatFieldUpdateOperationsInput | number
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    dispensings?: ClinicDispensingLogUncheckedUpdateManyWithoutItemNestedInput
+  }
+
+  export type ClinicInventoryItemUncheckedUpdateManyWithoutSchoolInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    batchNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    expiryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    unit?: StringFieldUpdateOperationsInput | string
+    stock?: IntFieldUpdateOperationsInput | number
+    reorderLevel?: IntFieldUpdateOperationsInput | number
+    unitCost?: FloatFieldUpdateOperationsInput | number
+    unitPrice?: FloatFieldUpdateOperationsInput | number
+    location?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -343433,6 +349277,10 @@ export namespace Prisma {
     category: string
     narrative: string
     schoolId: string
+    hasPunishment?: boolean
+    punishment?: string | null
+    punishmentLocation?: string | null
+    punishmentStatus?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -343699,7 +349547,11 @@ export namespace Prisma {
     id?: string
     patientId?: string | null
     title: string
-    details: string
+    details?: string | null
+    vaccine?: string | null
+    doseNumber?: number | null
+    nextDueDate?: Date | string | null
+    administeredBy?: string | null
     date?: Date | string
     schoolId: string
     createdAt?: Date | string
@@ -343714,6 +349566,9 @@ export namespace Prisma {
     date?: Date | string
     to: string
     address: string
+    urgency?: string | null
+    status?: string
+    outcomeNotes?: string | null
     schoolId: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -344301,6 +350156,10 @@ export namespace Prisma {
     studentName?: StringFieldUpdateOperationsInput | string
     category?: StringFieldUpdateOperationsInput | string
     narrative?: StringFieldUpdateOperationsInput | string
+    hasPunishment?: BoolFieldUpdateOperationsInput | boolean
+    punishment?: NullableStringFieldUpdateOperationsInput | string | null
+    punishmentLocation?: NullableStringFieldUpdateOperationsInput | string | null
+    punishmentStatus?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     school?: SchoolUpdateOneRequiredWithoutPrefectReportsNestedInput
@@ -344312,6 +350171,10 @@ export namespace Prisma {
     category?: StringFieldUpdateOperationsInput | string
     narrative?: StringFieldUpdateOperationsInput | string
     schoolId?: StringFieldUpdateOperationsInput | string
+    hasPunishment?: BoolFieldUpdateOperationsInput | boolean
+    punishment?: NullableStringFieldUpdateOperationsInput | string | null
+    punishmentLocation?: NullableStringFieldUpdateOperationsInput | string | null
+    punishmentStatus?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -344322,6 +350185,10 @@ export namespace Prisma {
     category?: StringFieldUpdateOperationsInput | string
     narrative?: StringFieldUpdateOperationsInput | string
     schoolId?: StringFieldUpdateOperationsInput | string
+    hasPunishment?: BoolFieldUpdateOperationsInput | boolean
+    punishment?: NullableStringFieldUpdateOperationsInput | string | null
+    punishmentLocation?: NullableStringFieldUpdateOperationsInput | string | null
+    punishmentStatus?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -345107,7 +350974,11 @@ export namespace Prisma {
   export type ClinicImmunizationUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
-    details?: StringFieldUpdateOperationsInput | string
+    details?: NullableStringFieldUpdateOperationsInput | string | null
+    vaccine?: NullableStringFieldUpdateOperationsInput | string | null
+    doseNumber?: NullableIntFieldUpdateOperationsInput | number | null
+    nextDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    administeredBy?: NullableStringFieldUpdateOperationsInput | string | null
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     schoolId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -345119,7 +350990,11 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     patientId?: NullableStringFieldUpdateOperationsInput | string | null
     title?: StringFieldUpdateOperationsInput | string
-    details?: StringFieldUpdateOperationsInput | string
+    details?: NullableStringFieldUpdateOperationsInput | string | null
+    vaccine?: NullableStringFieldUpdateOperationsInput | string | null
+    doseNumber?: NullableIntFieldUpdateOperationsInput | number | null
+    nextDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    administeredBy?: NullableStringFieldUpdateOperationsInput | string | null
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     schoolId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -345130,7 +351005,11 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     patientId?: NullableStringFieldUpdateOperationsInput | string | null
     title?: StringFieldUpdateOperationsInput | string
-    details?: StringFieldUpdateOperationsInput | string
+    details?: NullableStringFieldUpdateOperationsInput | string | null
+    vaccine?: NullableStringFieldUpdateOperationsInput | string | null
+    doseNumber?: NullableIntFieldUpdateOperationsInput | number | null
+    nextDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    administeredBy?: NullableStringFieldUpdateOperationsInput | string | null
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     schoolId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -345144,6 +351023,9 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     to?: StringFieldUpdateOperationsInput | string
     address?: StringFieldUpdateOperationsInput | string
+    urgency?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    outcomeNotes?: NullableStringFieldUpdateOperationsInput | string | null
     schoolId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -345158,6 +351040,9 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     to?: StringFieldUpdateOperationsInput | string
     address?: StringFieldUpdateOperationsInput | string
+    urgency?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    outcomeNotes?: NullableStringFieldUpdateOperationsInput | string | null
     schoolId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -345171,6 +351056,9 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     to?: StringFieldUpdateOperationsInput | string
     address?: StringFieldUpdateOperationsInput | string
+    urgency?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    outcomeNotes?: NullableStringFieldUpdateOperationsInput | string | null
     schoolId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -345199,6 +351087,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     patient?: ClinicPatientUpdateOneWithoutVisitsNestedInput
     school?: SchoolUpdateOneRequiredWithoutClinicVisitsNestedInput
+    dispensings?: ClinicDispensingLogUpdateManyWithoutVisitNestedInput
   }
 
   export type ClinicVisitUncheckedUpdateWithoutUserInput = {
@@ -345224,6 +351113,7 @@ export namespace Prisma {
     visitDate?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    dispensings?: ClinicDispensingLogUncheckedUpdateManyWithoutVisitNestedInput
   }
 
   export type ClinicVisitUncheckedUpdateManyWithoutUserInput = {
@@ -351983,7 +357873,11 @@ export namespace Prisma {
     id?: string
     userId?: string | null
     title: string
-    details: string
+    details?: string | null
+    vaccine?: string | null
+    doseNumber?: number | null
+    nextDueDate?: Date | string | null
+    administeredBy?: string | null
     date?: Date | string
     schoolId: string
     createdAt?: Date | string
@@ -351998,6 +357892,9 @@ export namespace Prisma {
     date?: Date | string
     to: string
     address: string
+    urgency?: string | null
+    status?: string
+    outcomeNotes?: string | null
     schoolId: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -352014,6 +357911,19 @@ export namespace Prisma {
     dischargeData?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
+  }
+
+  export type ClinicDispensingLogCreateManyPatientInput = {
+    id?: string
+    schoolId: string
+    itemId: string
+    visitId?: string | null
+    quantity: number
+    unitCost?: number
+    totalPrice?: number
+    dispensedBy?: string | null
+    notes?: string | null
+    dispensedAt?: Date | string
   }
 
   export type ClinicVisitUpdateWithoutPatientInput = {
@@ -352039,6 +357949,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneWithoutClinicVisitsNestedInput
     school?: SchoolUpdateOneRequiredWithoutClinicVisitsNestedInput
+    dispensings?: ClinicDispensingLogUpdateManyWithoutVisitNestedInput
   }
 
   export type ClinicVisitUncheckedUpdateWithoutPatientInput = {
@@ -352064,6 +357975,7 @@ export namespace Prisma {
     visitDate?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    dispensings?: ClinicDispensingLogUncheckedUpdateManyWithoutVisitNestedInput
   }
 
   export type ClinicVisitUncheckedUpdateManyWithoutPatientInput = {
@@ -352199,7 +358111,11 @@ export namespace Prisma {
   export type ClinicImmunizationUpdateWithoutPatientInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
-    details?: StringFieldUpdateOperationsInput | string
+    details?: NullableStringFieldUpdateOperationsInput | string | null
+    vaccine?: NullableStringFieldUpdateOperationsInput | string | null
+    doseNumber?: NullableIntFieldUpdateOperationsInput | number | null
+    nextDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    administeredBy?: NullableStringFieldUpdateOperationsInput | string | null
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     schoolId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -352211,7 +358127,11 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     userId?: NullableStringFieldUpdateOperationsInput | string | null
     title?: StringFieldUpdateOperationsInput | string
-    details?: StringFieldUpdateOperationsInput | string
+    details?: NullableStringFieldUpdateOperationsInput | string | null
+    vaccine?: NullableStringFieldUpdateOperationsInput | string | null
+    doseNumber?: NullableIntFieldUpdateOperationsInput | number | null
+    nextDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    administeredBy?: NullableStringFieldUpdateOperationsInput | string | null
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     schoolId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -352222,7 +358142,11 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     userId?: NullableStringFieldUpdateOperationsInput | string | null
     title?: StringFieldUpdateOperationsInput | string
-    details?: StringFieldUpdateOperationsInput | string
+    details?: NullableStringFieldUpdateOperationsInput | string | null
+    vaccine?: NullableStringFieldUpdateOperationsInput | string | null
+    doseNumber?: NullableIntFieldUpdateOperationsInput | number | null
+    nextDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    administeredBy?: NullableStringFieldUpdateOperationsInput | string | null
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     schoolId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -352236,6 +358160,9 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     to?: StringFieldUpdateOperationsInput | string
     address?: StringFieldUpdateOperationsInput | string
+    urgency?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    outcomeNotes?: NullableStringFieldUpdateOperationsInput | string | null
     schoolId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -352250,6 +358177,9 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     to?: StringFieldUpdateOperationsInput | string
     address?: StringFieldUpdateOperationsInput | string
+    urgency?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    outcomeNotes?: NullableStringFieldUpdateOperationsInput | string | null
     schoolId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -352263,6 +358193,9 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     to?: StringFieldUpdateOperationsInput | string
     address?: StringFieldUpdateOperationsInput | string
+    urgency?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    outcomeNotes?: NullableStringFieldUpdateOperationsInput | string | null
     schoolId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -352305,6 +358238,149 @@ export namespace Prisma {
     dischargeData?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ClinicDispensingLogUpdateWithoutPatientInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    schoolId?: StringFieldUpdateOperationsInput | string
+    quantity?: IntFieldUpdateOperationsInput | number
+    unitCost?: FloatFieldUpdateOperationsInput | number
+    totalPrice?: FloatFieldUpdateOperationsInput | number
+    dispensedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    dispensedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    item?: ClinicInventoryItemUpdateOneRequiredWithoutDispensingsNestedInput
+    visit?: ClinicVisitUpdateOneWithoutDispensingsNestedInput
+  }
+
+  export type ClinicDispensingLogUncheckedUpdateWithoutPatientInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    schoolId?: StringFieldUpdateOperationsInput | string
+    itemId?: StringFieldUpdateOperationsInput | string
+    visitId?: NullableStringFieldUpdateOperationsInput | string | null
+    quantity?: IntFieldUpdateOperationsInput | number
+    unitCost?: FloatFieldUpdateOperationsInput | number
+    totalPrice?: FloatFieldUpdateOperationsInput | number
+    dispensedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    dispensedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ClinicDispensingLogUncheckedUpdateManyWithoutPatientInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    schoolId?: StringFieldUpdateOperationsInput | string
+    itemId?: StringFieldUpdateOperationsInput | string
+    visitId?: NullableStringFieldUpdateOperationsInput | string | null
+    quantity?: IntFieldUpdateOperationsInput | number
+    unitCost?: FloatFieldUpdateOperationsInput | number
+    totalPrice?: FloatFieldUpdateOperationsInput | number
+    dispensedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    dispensedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ClinicDispensingLogCreateManyVisitInput = {
+    id?: string
+    schoolId: string
+    itemId: string
+    patientId?: string | null
+    quantity: number
+    unitCost?: number
+    totalPrice?: number
+    dispensedBy?: string | null
+    notes?: string | null
+    dispensedAt?: Date | string
+  }
+
+  export type ClinicDispensingLogUpdateWithoutVisitInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    schoolId?: StringFieldUpdateOperationsInput | string
+    quantity?: IntFieldUpdateOperationsInput | number
+    unitCost?: FloatFieldUpdateOperationsInput | number
+    totalPrice?: FloatFieldUpdateOperationsInput | number
+    dispensedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    dispensedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    item?: ClinicInventoryItemUpdateOneRequiredWithoutDispensingsNestedInput
+    patient?: ClinicPatientUpdateOneWithoutDispensingsNestedInput
+  }
+
+  export type ClinicDispensingLogUncheckedUpdateWithoutVisitInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    schoolId?: StringFieldUpdateOperationsInput | string
+    itemId?: StringFieldUpdateOperationsInput | string
+    patientId?: NullableStringFieldUpdateOperationsInput | string | null
+    quantity?: IntFieldUpdateOperationsInput | number
+    unitCost?: FloatFieldUpdateOperationsInput | number
+    totalPrice?: FloatFieldUpdateOperationsInput | number
+    dispensedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    dispensedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ClinicDispensingLogUncheckedUpdateManyWithoutVisitInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    schoolId?: StringFieldUpdateOperationsInput | string
+    itemId?: StringFieldUpdateOperationsInput | string
+    patientId?: NullableStringFieldUpdateOperationsInput | string | null
+    quantity?: IntFieldUpdateOperationsInput | number
+    unitCost?: FloatFieldUpdateOperationsInput | number
+    totalPrice?: FloatFieldUpdateOperationsInput | number
+    dispensedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    dispensedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ClinicDispensingLogCreateManyItemInput = {
+    id?: string
+    schoolId: string
+    visitId?: string | null
+    patientId?: string | null
+    quantity: number
+    unitCost?: number
+    totalPrice?: number
+    dispensedBy?: string | null
+    notes?: string | null
+    dispensedAt?: Date | string
+  }
+
+  export type ClinicDispensingLogUpdateWithoutItemInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    schoolId?: StringFieldUpdateOperationsInput | string
+    quantity?: IntFieldUpdateOperationsInput | number
+    unitCost?: FloatFieldUpdateOperationsInput | number
+    totalPrice?: FloatFieldUpdateOperationsInput | number
+    dispensedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    dispensedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    visit?: ClinicVisitUpdateOneWithoutDispensingsNestedInput
+    patient?: ClinicPatientUpdateOneWithoutDispensingsNestedInput
+  }
+
+  export type ClinicDispensingLogUncheckedUpdateWithoutItemInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    schoolId?: StringFieldUpdateOperationsInput | string
+    visitId?: NullableStringFieldUpdateOperationsInput | string | null
+    patientId?: NullableStringFieldUpdateOperationsInput | string | null
+    quantity?: IntFieldUpdateOperationsInput | number
+    unitCost?: FloatFieldUpdateOperationsInput | number
+    totalPrice?: FloatFieldUpdateOperationsInput | number
+    dispensedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    dispensedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ClinicDispensingLogUncheckedUpdateManyWithoutItemInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    schoolId?: StringFieldUpdateOperationsInput | string
+    visitId?: NullableStringFieldUpdateOperationsInput | string | null
+    patientId?: NullableStringFieldUpdateOperationsInput | string | null
+    quantity?: IntFieldUpdateOperationsInput | number
+    unitCost?: FloatFieldUpdateOperationsInput | number
+    totalPrice?: FloatFieldUpdateOperationsInput | number
+    dispensedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    dispensedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type WalletTransactionCreateManyWalletInput = {
@@ -352897,6 +358973,14 @@ export namespace Prisma {
      */
     export type ClinicPatientCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = ClinicPatientCountOutputTypeDefaultArgs<ExtArgs>
     /**
+     * @deprecated Use ClinicVisitCountOutputTypeDefaultArgs instead
+     */
+    export type ClinicVisitCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = ClinicVisitCountOutputTypeDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use ClinicInventoryItemCountOutputTypeDefaultArgs instead
+     */
+    export type ClinicInventoryItemCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = ClinicInventoryItemCountOutputTypeDefaultArgs<ExtArgs>
+    /**
      * @deprecated Use StudentWalletCountOutputTypeDefaultArgs instead
      */
     export type StudentWalletCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = StudentWalletCountOutputTypeDefaultArgs<ExtArgs>
@@ -353448,6 +359532,14 @@ export namespace Prisma {
      * @deprecated Use ClinicVisitDefaultArgs instead
      */
     export type ClinicVisitArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = ClinicVisitDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use ClinicInventoryItemDefaultArgs instead
+     */
+    export type ClinicInventoryItemArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = ClinicInventoryItemDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use ClinicDispensingLogDefaultArgs instead
+     */
+    export type ClinicDispensingLogArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = ClinicDispensingLogDefaultArgs<ExtArgs>
     /**
      * @deprecated Use ClinicHospitalizationDefaultArgs instead
      */

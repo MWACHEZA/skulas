@@ -12,9 +12,9 @@ router.use(requireAuth);
  * Helper to check if user has chaplaincy administrative permissions
  */
 const isChaplaincyAdmin = (user: any) => {
+  const chaplaincyRoles = ['School Chaplain', 'Church Prefect', 'Chaplain', 'Pastor', 'Reverend', 'Religious Coordinator'];
   return user.role === 'SCHOOL_ADMIN' || 
-         user.secondaryRoles.includes('School Chaplain') || 
-         user.secondaryRoles.includes('Church Prefect');
+         user.secondaryRoles.some((role: string) => chaplaincyRoles.includes(role));
 };
 
 /**
@@ -141,7 +141,7 @@ router.get('/team', async (req: AuthRequest, res: Response) => {
       where: {
         schoolId: req.user!.schoolId!,
         secondaryRoles: {
-          hasSome: ['School Chaplain', 'Church Prefect']
+          hasSome: ['School Chaplain', 'Church Prefect', 'Chaplain', 'Pastor', 'Reverend', 'Religious Coordinator']
         }
       },
       select: {
@@ -157,6 +157,28 @@ router.get('/team', async (req: AuthRequest, res: Response) => {
   } catch (error) {
     console.error('Fetch chaplaincy team error:', error);
     res.status(500).json({ error: 'Failed to fetch chaplaincy team list' });
+  }
+});
+
+/**
+ * @route   GET /api/chaplaincy/latest-reflection
+ * @desc    Fetch the latest daily reflection for the current school
+ */
+router.get('/latest-reflection', async (req: AuthRequest, res: Response) => {
+  try {
+    const reflection = await prisma.announcement.findFirst({
+      where: {
+        schoolId: req.user!.schoolId!,
+        title: 'Daily Reflection',
+      },
+      orderBy: {
+        publishedAt: 'desc',
+      },
+    });
+    res.json(reflection || null);
+  } catch (error) {
+    console.error('Fetch latest reflection error:', error);
+    res.status(500).json({ error: 'Failed to fetch latest reflection' });
   }
 });
 

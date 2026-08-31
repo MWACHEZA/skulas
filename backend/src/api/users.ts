@@ -20,6 +20,44 @@ const SCHOOL_ADMIN_ASSIGNABLE_ROLES = [
 ];
 
 /**
+ * @route   GET /api/users/search
+ * @desc    Search registered users (students and staff) in the school by name or ID
+ */
+router.get('/search', requireAuth, async (req: AuthRequest, res: Response) => {
+  const { query, role } = req.query;
+  const searchTerm = query ? String(query).trim() : '';
+
+  try {
+    const users = await prisma.user.findMany({
+      where: {
+        schoolId: req.user!.schoolId!,
+        ...(role ? { role: String(role).toUpperCase() } : {}),
+        OR: [
+          { name: { contains: searchTerm, mode: 'insensitive' } },
+          { email: { contains: searchTerm, mode: 'insensitive' } },
+          { staffId: { contains: searchTerm, mode: 'insensitive' } }
+        ]
+      },
+      select: {
+        id: true,
+        name: true,
+        role: true,
+        secondaryRoles: true,
+        email: true,
+        staffId: true,
+      },
+      take: 20,
+      orderBy: { name: 'asc' }
+    });
+
+    res.json(users);
+  } catch (error) {
+    console.error('User search error:', error);
+    res.status(500).json({ error: 'Failed to search users' });
+  }
+});
+
+/**
  * @route   GET /api/users/me
  * @desc    Get current user profile
  */
@@ -225,7 +263,7 @@ router.post('/', requireAuth, staffDocumentUpload.fields([
     category, section, dormitory, age, clubId,
     prevSchoolName, purposeForLeaving, dateAdmitted, studentHouseId,
     // Onboarding additional fields
-    programLevel, studyMode, researchTitle, standing, part, boardingStatus, guardianName, title
+    programLevel, studyMode, researchTitle, standing, part, boardingStatus, guardianName, title, religion
   } = req.body;
   const normalizedEmail = (email || '').trim().toLowerCase();
 
@@ -299,6 +337,7 @@ router.post('/', requireAuth, staffDocumentUpload.fields([
           secondaryRoles,
           avatar,
           phone,
+          religion,
           staffId: staffId || studentId || vendorNo || generatedId,
           schoolId,
           departmentId: (role === 'TEACHER' && !departmentId) ? req.body.departmentId : departmentId, // Fallback for teacher specific logic if needed
@@ -559,7 +598,7 @@ router.put('/:id', requireAuth, requireRole('SCHOOL_ADMIN'), staffDocumentUpload
 ]), async (req: AuthRequest, res: Response) => {
   const id = req.params.id as string;
   const { 
-    name, email, phone, role, status, departmentId, secondaryRoles,
+    name, email, phone, role, status, departmentId, secondaryRoles, religion,
     bloodGroup, dateAssumedPost, dateOfLeaving, designation,
     accountNumber, accountHolderName, bankName, bankBranch, branchCode, accountType,
     accountNumberZig, accountHolderNameZig, bankNameZig, bankBranchZig, branchCodeZig, accountTypeZig,
@@ -678,6 +717,7 @@ router.put('/:id', requireAuth, requireRole('SCHOOL_ADMIN'), staffDocumentUpload
           secondaryRoles: parsedSecondaryRoles,
           avatar,
           departmentId,
+          religion: religion !== undefined ? religion : undefined,
           metadata: newMetadata as any
         },
         select: {

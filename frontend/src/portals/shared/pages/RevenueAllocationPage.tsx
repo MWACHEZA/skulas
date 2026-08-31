@@ -9,9 +9,18 @@ interface FeeGroup {
   name: string;
 }
 
+interface CoaAccount {
+  id: string;
+  code: string;
+  name: string;
+  type: string;
+}
+
 interface AllocationItem {
-  label: string;
+  accountId: string;
   percentage: number;
+  label?: string;
+  account?: CoaAccount;
 }
 
 interface RevenueAllocation {
@@ -29,7 +38,7 @@ export default function RevenueAllocationPage() {
   const isSemester = isUniversity || isPoly || isMedical || isSeminary;
   const [allocations, setAllocations] = useState<RevenueAllocation[]>([]);
   const [feeGroups, setFeeGroups] = useState<FeeGroup[]>([]);
-  const [coaAccounts, setCoaAccounts] = useState<any[]>([]);
+  const [coaAccounts, setCoaAccounts] = useState<CoaAccount[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAdd, setShowAdd] = useState(false);
 
@@ -38,7 +47,7 @@ export default function RevenueAllocationPage() {
     name: '',
     schoolYear: new Date().getFullYear(),
     period: 'Term 1',
-    breakdown: [{ label: '', percentage: 0 }],
+    breakdown: [{ accountId: '', percentage: 0 }],
     feeGroupIds: [] as string[]
   });
 
@@ -64,7 +73,8 @@ export default function RevenueAllocationPage() {
       setAllocations(Array.isArray(allocRes.data) ? allocRes.data : []);
       setFeeGroups(Array.isArray(groupRes.data) ? groupRes.data : []);
       setCoaAccounts(Array.isArray(coaRes.data) ? coaRes.data : []);
-    } catch (error) {
+    } catch (err) {
+      console.error('fetchData error:', err);
       toast.error('Failed to synchronize financial allocation data');
     } finally {
       setLoading(false);
@@ -74,7 +84,7 @@ export default function RevenueAllocationPage() {
   const handleAddItem = () => {
     setFormData({
       ...formData,
-      breakdown: [...formData.breakdown, { label: '', percentage: 0 }]
+      breakdown: [...formData.breakdown, { accountId: '', percentage: 0 }]
     });
   };
 
@@ -82,6 +92,14 @@ export default function RevenueAllocationPage() {
     const newBreakdown = [...formData.breakdown];
     newBreakdown[index] = { ...newBreakdown[index], [field]: value };
     setFormData({ ...formData, breakdown: newBreakdown });
+  };
+
+  const handleUpdateAccount = (index: number, accountId: string) => {
+    handleUpdateItem(index, 'accountId', accountId);
+  };
+
+  const handleUpdatePercentage = (index: number, percentage: number) => {
+    handleUpdateItem(index, 'percentage', percentage);
   };
 
   const handleRemoveItem = (index: number) => {
@@ -117,12 +135,13 @@ export default function RevenueAllocationPage() {
         name: '',
         schoolYear: new Date().getFullYear(),
         period: isSemester ? 'Semester 1' : 'Term 1',
-        breakdown: [{ label: '', percentage: 0 }],
+        breakdown: [{ accountId: '', percentage: 0 }],
         feeGroupIds: []
       });
-      toast.success('Strategic revenue allocation rule archived');
-    } catch (error: any) {
-      toast.error(error.response?.data?.error || 'Failed to archive allocation strategy');
+      toast.success('Strategic revenue allocation rule created');
+    } catch (error: unknown) {
+      const errRes = error as { response?: { data?: { error?: string } } };
+      toast.error(errRes.response?.data?.error || 'Failed to create allocation strategy');
     }
   };
 
@@ -131,7 +150,8 @@ export default function RevenueAllocationPage() {
       await api.patch(`/api/finance/revenue-allocations/${id}/toggle`, { isActive: !currentStatus });
       setAllocations(allocations.map(a => a.id === id ? { ...a, isActive: !currentStatus } : a));
       toast.success(`Strategy ${!currentStatus ? 'activated' : 'deactivated'} for current fiscal cycle`);
-    } catch (error) {
+    } catch (err) {
+      console.error('handleToggleActive error:', err);
       toast.error('Failed to update strategy status');
     }
   };
@@ -142,7 +162,8 @@ export default function RevenueAllocationPage() {
       await api.delete(`/api/finance/revenue-allocations/${id}`);
       setAllocations(allocations.filter(a => a.id !== id));
       toast.success('Allocation strategy removed');
-    } catch (error) {
+    } catch (err) {
+      console.error('handleDelete error:', err);
       toast.error('Failed to delete allocation strategy');
     }
   };
@@ -155,14 +176,16 @@ export default function RevenueAllocationPage() {
           <h1>Revenue Allocation Strategy</h1>
           <p>Configure strategic disbursement rules to automatically distribute institutional income across departments and specific fee groups.</p>
         </div>
-        <div style={{ display: 'flex', gap: '12px' }}>
-          <div className="status-badge" style={{ padding: '8px 20px', background: '#ecfdf5', color: '#059669', border: '1px solid #d1fae5', fontWeight: 900 }}>
+        <div className="portal-flex-align-gap-12">
+          <div className="status-badge portal-badge-green-bold">
              <i className="fas fa-chart-pie mr-2"></i>FISCAL STRATEGY
           </div>
           <button 
-            className="portal-btn-primary"
+            type="button"
+            className="portal-btn-primary portal-btn-padded-bold"
+            title="New Allocation Rule"
+            aria-label="New Allocation Rule"
             onClick={() => setShowAdd(true)}
-            style={{ padding: '12px 28px', fontWeight: 900 }}
           >
             <i className="fas fa-plus mr-2"></i> New Allocation Rule
           </button>
@@ -170,52 +193,69 @@ export default function RevenueAllocationPage() {
       </div>
 
       {showAdd && (
-        <div className="portal-modal-overlay" style={{ alignItems: 'flex-start', paddingTop: '40px', paddingBottom: '40px', overflowY: 'auto' }}>
-          <div className="portal-modal-card animate-in zoom-in duration-200" style={{ maxWidth: '860px', width: '100%', padding: 0, maxHeight: '90vh', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-            <div className="portal-modal-header" style={{ padding: '28px 40px', borderBottom: '1px solid #f1f5f9', flexShrink: 0 }}>
+        <div className="portal-modal-overlay portal-modal-overlay-top">
+          <div className="portal-modal-card portal-modal-card-lg animate-in zoom-in duration-200">
+            <div className="portal-modal-header portal-modal-header-bordered">
               <div>
-                <h3 style={{ margin: 0, fontSize: '1.4rem', fontWeight: 900, color: '#1e293b', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <i className="fas fa-sliders-h" style={{ color: '#2563eb' }}></i>
+                <h3 className="portal-modal-title-blue">
+                  <i className="fas fa-sliders-h portal-icon-blue"></i>
                   Strategic Rule Configuration
                 </h3>
-                <p style={{ margin: '4px 0 0 0', color: '#64748b', fontWeight: 700, fontSize: '0.9rem' }}>Define a new revenue disbursement allocation strategy for a fiscal budget period.</p>
+                <p className="portal-modal-subtitle-muted">Define a new revenue disbursement allocation strategy for a fiscal budget period.</p>
               </div>
-              <button onClick={() => setShowAdd(false)} className="portal-btn-ghost" style={{ padding: '12px', flexShrink: 0 }}><i className="fas fa-times"></i></button>
+              <button 
+                type="button"
+                onClick={() => setShowAdd(false)} 
+                className="portal-btn-ghost portal-btn-delete-item" 
+                title="Close Configuration Modal"
+                aria-label="Close Configuration Modal"
+              >
+                <i className="fas fa-times"></i>
+              </button>
             </div>
-            <div style={{ overflowY: 'auto', flex: 1 }}>
+            <div className="portal-modal-body-scroll">
               <form onSubmit={handleSubmit}>
-                <div className="portal-modal-body" style={{ padding: '40px' }}>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '24px', marginBottom: '40px' }}>
+                <div className="portal-modal-body portal-modal-body-padded">
+                  <div className="portal-form-grid-3col">
                     <div className="form-group">
-                      <label className="portal-label">Canonical Strategy Identity</label>
+                      <label className="portal-label" htmlFor="allocName">Canonical Strategy Identity</label>
                       <input
                         type="text"
-                        className="portal-input"
+                        id="allocName"
+                        name="allocName"
+                        title="Canonical Strategy Identity"
+                        aria-label="Canonical Strategy Identity"
+                        className="portal-input portal-td-bold"
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                         placeholder="e.g. Master Disbursement Strategy 2025"
-                        style={{ fontWeight: 700 }}
                         required
                       />
                     </div>
                     <div className="form-group">
-                      <label className="portal-label">Target School Year</label>
+                      <label className="portal-label" htmlFor="allocSchoolYear">Target School Year</label>
                       <input
                         type="number"
-                        className="portal-input"
+                        id="allocSchoolYear"
+                        name="allocSchoolYear"
+                        title="Target School Year"
+                        aria-label="Target School Year"
+                        className="portal-input portal-btn-padded-bold"
                         value={formData.schoolYear}
                         onChange={(e) => setFormData({ ...formData, schoolYear: parseInt(e.target.value) })}
-                        style={{ fontWeight: 800 }}
                         required
                       />
                     </div>
                     <div className="form-group">
-                      <label className="portal-label">Fiscal Budget Period ({t('term')})</label>
+                      <label className="portal-label" htmlFor="allocPeriod">Fiscal Budget Period ({t('term')})</label>
                       <select
-                        className="portal-input"
+                        id="allocPeriod"
+                        name="allocPeriod"
+                        title="Fiscal Budget Period"
+                        aria-label="Fiscal Budget Period"
+                        className="portal-input portal-btn-padded-bold"
                         value={formData.period}
                         onChange={(e) => setFormData({ ...formData, period: e.target.value })}
-                        style={{ fontWeight: 800 }}
                       >
                         {isSemester ? (
                           <>
@@ -234,47 +274,66 @@ export default function RevenueAllocationPage() {
                     </div>
                   </div>
 
-                  <div style={{ marginBottom: '40px' }}>
-                    <h4 style={{ fontSize: '1rem', fontWeight: 900, color: '#1e293b', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                      <i className="fas fa-percent" style={{ color: '#059669' }}></i> Revenue Disbursement Breakdown
-                    </h4>
-                    <div style={{ display: 'grid', gap: '16px', marginBottom: '24px', background: '#f8fafc', padding: '24px', borderRadius: '16px', border: '1px solid #f1f5f9' }}>
+                  <div className="portal-section-mb40">
+                    <div className="portal-flex-space-between-mb">
+                      <h4 className="portal-header-h4">
+                        <i className="fas fa-percent portal-icon-green"></i> Revenue Disbursement Breakdown
+                      </h4>
+                      {(() => {
+                        const totalPct = formData.breakdown.reduce((sum, item) => sum + (Number(item.percentage) || 0), 0);
+                        const isValid = Math.abs(totalPct - 100) < 0.01;
+                        return (
+                          <span className={`portal-breakdown-total-badge ${isValid ? 'portal-breakdown-total-valid' : 'portal-breakdown-total-invalid'}`}>
+                            Total: {totalPct.toFixed(2)}% {isValid ? '✓' : '(Must be 100%)'}
+                          </span>
+                        );
+                      })()}
+                    </div>
+                    <div className="portal-breakdown-box">
                       {formData.breakdown.map((item, index) => (
-                        <div key={index} style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-                          <div style={{ flex: 1 }}>
-                            <input
-                              type="text"
-                              list="coa-item-list"
-                              className="portal-input"
-                              placeholder="Select Chart of Account / Item (e.g. 7100 Salaries & Wages)"
-                              value={item.label}
-                              onChange={(e) => handleUpdateItem(index, 'label', e.target.value)}
+                        <div key={index} className="portal-breakdown-row">
+                          <div className="portal-flex-1">
+                            <label className="sr-only" htmlFor={`accountTarget_${index}`}>Chart of Account Target</label>
+                            <select
+                              id={`accountTarget_${index}`}
+                              name={`accountTarget_${index}`}
+                              title="Select Chart of Account Target"
+                              aria-label="Select Chart of Account Target"
+                              className="portal-input portal-td-bold"
+                              value={item.accountId || ''}
+                              onChange={(e) => handleUpdateAccount(index, e.target.value)}
                               required
-                              style={{ fontWeight: 700 }}
-                            />
-                            <datalist id="coa-item-list">
+                            >
+                              <option value="">-- Select Chart of Account Target --</option>
                               {coaAccounts.map(acc => (
-                                <option key={acc.id} value={`${acc.code} - ${acc.name} (${acc.type})`} />
+                                <option key={acc.id} value={acc.id}>
+                                  {acc.code} – {acc.name} ({acc.type})
+                                </option>
                               ))}
-                            </datalist>
+                            </select>
                           </div>
-                          <div style={{ position: 'relative', width: '160px' }}>
+                          <div className="portal-pct-container">
+                            <label className="sr-only" htmlFor={`percentageTarget_${index}`}>Disbursement Percentage</label>
                             <input
                               type="number"
                               step="0.01"
-                              className="portal-input"
+                              id={`percentageTarget_${index}`}
+                              name={`percentageTarget_${index}`}
+                              title="Disbursement Percentage"
+                              aria-label="Disbursement Percentage"
+                              className="portal-input portal-input-pct"
                               placeholder="0.00"
-                              value={item.percentage}
-                              onChange={(e) => handleUpdateItem(index, 'percentage', parseFloat(e.target.value))}
+                              value={item.percentage || ''}
+                              onChange={(e) => handleUpdatePercentage(index, parseFloat(e.target.value) || 0)}
                               required
-                              style={{ paddingRight: '40px', textAlign: 'right', fontWeight: 900, color: '#2563eb' }}
                             />
-                            <span style={{ position: 'absolute', right: '16px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8', fontSize: '1rem', fontWeight: 900 }}>%</span>
+                            <span className="portal-pct-symbol">%</span>
                           </div>
                           <button 
                             type="button" 
-                            className="portal-btn-ghost"
-                            style={{ color: '#dc2626', padding: '12px', borderRadius: '10px' }}
+                            className="portal-btn-ghost portal-btn-delete-item"
+                            title="Remove Allocation Item"
+                            aria-label="Remove Allocation Item"
                             onClick={() => handleRemoveItem(index)}
                             disabled={formData.breakdown.length === 1}
                           >
@@ -283,47 +342,49 @@ export default function RevenueAllocationPage() {
                         </div>
                       ))}
                     </div>
-                    <button type="button" className="portal-btn-ghost" onClick={handleAddItem} style={{ fontSize: '0.9rem', padding: '10px 24px', fontWeight: 900, borderRadius: '12px' }}>
+                    <button 
+                      type="button" 
+                      className="portal-btn-ghost portal-btn-append" 
+                      title="Append Allocation Item"
+                      aria-label="Append Allocation Item"
+                      onClick={handleAddItem} 
+                    >
                       <i className="fas fa-plus-circle mr-2"></i> Append Allocation Item
                     </button>
                   </div>
 
                   <div>
-                    <h4 style={{ fontSize: '1rem', fontWeight: 900, color: '#1e293b', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                      <i className="fas fa-link" style={{ color: '#4338ca' }}></i> Associate with Fee Categories
+                    <h4 className="portal-header-h4-mb">
+                      <i className="fas fa-link portal-icon-indigo"></i> Associate with Fee Categories
                     </h4>
                     {(Array.isArray(feeGroups) ? feeGroups : []).length === 0 ? (
-                      <div style={{ padding: '40px', background: '#f8fafc', borderRadius: '16px', border: '2px dashed #e2e8f0', textAlign: 'center', color: '#94a3b8' }}>
-                        <i className="fas fa-exclamation-triangle mb-3" style={{ fontSize: '2rem', opacity: 0.2 }}></i>
-                        <p style={{ margin: 0, fontSize: '0.95rem', fontWeight: 700 }}>No fee groups defined. Please catalog fee groups prior to strategy configuration.</p>
+                      <div className="portal-group-empty">
+                        <i className="fas fa-exclamation-triangle mb-3 portal-icon-muted-lg"></i>
+                        <p className="portal-empty-text">No fee groups defined. Please catalog fee groups prior to strategy configuration.</p>
                       </div>
                     ) : (
-                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '16px' }}>
-                        {(Array.isArray(feeGroups) ? feeGroups : []).map(group => (
-                          <label key={group.id} style={{ 
-                            display: 'flex', alignItems: 'center', gap: '14px', padding: '14px 18px',
-                            background: formData.feeGroupIds.includes(group.id) ? '#eff6ff' : '#f8fafc',
-                            borderRadius: '14px', cursor: 'pointer',
-                            border: `2px solid ${formData.feeGroupIds.includes(group.id) ? '#2563eb' : '#f1f5f9'}`,
-                            transition: 'all 0.2s',
-                            boxShadow: formData.feeGroupIds.includes(group.id) ? '0 4px 12px rgba(37, 99, 235, 0.1)' : 'none'
-                          }}>
-                            <input
-                              type="checkbox"
-                              checked={formData.feeGroupIds.includes(group.id)}
-                              onChange={() => handleToggleGroup(group.id)}
-                              style={{ width: '18px', height: '18px', cursor: 'pointer', accentColor: '#2563eb' }}
-                            />
-                            <span style={{ fontSize: '0.875rem', fontWeight: 800, color: formData.feeGroupIds.includes(group.id) ? '#1e40af' : '#475569' }}>{group.name}</span>
-                          </label>
-                        ))}
+                      <div className="portal-group-grid">
+                        {(Array.isArray(feeGroups) ? feeGroups : []).map(group => {
+                          const isSelected = formData.feeGroupIds.includes(group.id);
+                          return (
+                            <label key={group.id} className={`portal-fee-group-card ${isSelected ? 'active' : ''}`}>
+                              <input
+                                type="checkbox"
+                                checked={isSelected}
+                                onChange={() => handleToggleGroup(group.id)}
+                                className="portal-fee-group-checkbox"
+                              />
+                              <span className={`portal-fee-group-name ${isSelected ? 'active' : ''}`}>{group.name}</span>
+                            </label>
+                          );
+                        })}
                       </div>
                     )}
                   </div>
                 </div>
-                <div className="portal-modal-footer" style={{ padding: '28px 40px', background: '#f8fafc', borderTop: '1px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexShrink: 0 }}>
-                  <button type="button" onClick={() => setShowAdd(false)} className="portal-btn-ghost" style={{ padding: '14px 32px', fontWeight: 800 }}>Cancel Configuration</button>
-                  <button type="submit" className="portal-btn-primary" style={{ minWidth: '220px', padding: '14px 40px', fontSize: '1rem', fontWeight: 900, background: '#059669' }}>
+                <div className="portal-modal-footer portal-modal-footer-flex">
+                  <button type="button" onClick={() => setShowAdd(false)} className="portal-btn-ghost portal-btn-cancel" title="Cancel Configuration" aria-label="Cancel Configuration">Cancel Configuration</button>
+                  <button type="submit" className="portal-btn-primary portal-btn-authorize" title="Authorize Strategy Rule" aria-label="Authorize Strategy Rule">
                     <i className="fas fa-check mr-2"></i> Authorize Strategy Rule
                   </button>
                 </div>
@@ -334,9 +395,9 @@ export default function RevenueAllocationPage() {
       )}
 
       <div className="management-table-card animate-in fade-in slide-in-from-bottom-4 duration-500">
-        <div className="portal-card-header" style={{ marginBottom: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800, color: '#1e293b' }}>Authorized Disbursement Profiles</h3>
-          <span className="status-badge" style={{ fontWeight: 900, background: '#f8fafc', color: '#64748b', border: '1px solid #f1f5f9' }}>
+        <div className="portal-card-header portal-flex-space-between-mb24">
+          <h3 className="portal-table-title">Authorized Disbursement Profiles</h3>
+          <span className="status-badge portal-table-badge">
             {(Array.isArray(allocations) ? allocations : []).length} ACTIVE SCHEMES
           </span>
         </div>
@@ -344,84 +405,95 @@ export default function RevenueAllocationPage() {
           <table className="management-table">
             <thead>
               <tr>
-                <th style={{ width: '22%' }}>Scheme Identity</th>
-                <th style={{ width: '12%' }}>Budget Cycle</th>
-                <th style={{ width: '25%' }}>Target Fee Categories</th>
-                <th style={{ width: '20%' }}>Disbursement Matrix</th>
-                <th style={{ textAlign: 'center', width: '10%' }}>Status</th>
-                <th style={{ textAlign: 'right', width: '11%' }}>Actions</th>
+                <th className="portal-col-w22">Scheme Identity</th>
+                <th className="portal-col-w12">Budget Cycle</th>
+                <th className="portal-col-w25">Target Fee Categories</th>
+                <th className="portal-col-w20">Disbursement Matrix</th>
+                <th className="portal-text-center portal-col-w10">Status</th>
+                <th className="portal-text-right portal-col-w11">Actions</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={6} style={{ textAlign: 'center', padding: '100px' }}>
-                    <div className="portal-spinner" style={{ margin: '0 auto 16px' }}></div>
-                    <p style={{ fontWeight: 800, color: '#64748b' }}>Synchronizing strategic schemes...</p>
+                  <td colSpan={6} className="portal-table-spinner">
+                    <div className="portal-spinner portal-spinner-center"></div>
+                    <p className="portal-text-bold-slate">Synchronizing strategic schemes...</p>
                   </td>
                 </tr>
               ) : (Array.isArray(allocations) ? allocations : []).length === 0 ? (
                 <tr>
-                  <td colSpan={6} style={{ textAlign: 'center', padding: '120px 24px', color: '#94a3b8' }}>
-                    <i className="fas fa-layer-group" style={{ fontSize: '4rem', display: 'block', marginBottom: '24px', opacity: 0.1 }}></i>
-                    <h3 style={{ fontWeight: 800, color: '#64748b', fontSize: '1.25rem' }}>No Strategies Cataloged</h3>
-                    <p style={{ margin: 0, fontWeight: 600 }}>Archived revenue allocation rules will be rendered here.</p>
+                  <td colSpan={6} className="portal-table-empty">
+                    <i className="fas fa-layer-group portal-icon-empty-layer"></i>
+                    <h3 className="portal-text-empty-title">No Strategies Cataloged</h3>
+                    <p className="portal-text-empty-subtitle">Archived revenue allocation rules will be rendered here.</p>
                   </td>
                 </tr>
               ) : (Array.isArray(allocations) ? allocations : []).map(alloc => (
                 <tr key={alloc.id}>
                   <td>
-                    <div style={{ fontWeight: 900, color: '#1e293b' }}>{alloc.name}</div>
-                    <div style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 800, textTransform: 'uppercase', marginTop: '2px' }}>Academic Cycle: {alloc.schoolYear}</div>
+                    <div className="portal-td-bold">{alloc.name}</div>
+                    <div className="portal-text-subtext">Academic Cycle: {alloc.schoolYear}</div>
                   </td>
                   <td>
-                    <span className="status-badge" style={{ background: '#f0f9ff', color: '#0369a1', fontWeight: 900, border: '1px solid #e0f2fe' }}>
+                    <span className="status-badge portal-badge-sky">
                       {alloc.period?.toUpperCase()}
                     </span>
                   </td>
                   <td>
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                    <div className="portal-flex-wrap-gap-6">
                       {(Array.isArray(alloc.feeGroups) ? alloc.feeGroups : []).map(g => (
-                        <span key={g.id} className="status-badge" style={{ background: '#f8fafc', color: '#475569', fontSize: '0.65rem', fontWeight: 900, border: '1px solid #f1f5f9' }}>
+                        <span key={g.id} className="status-badge portal-badge-group">
                           {g.name}
                         </span>
                       ))}
-                      {(Array.isArray(alloc.feeGroups) ? alloc.feeGroups : []).length === 0 && <span style={{ fontSize: '0.75rem', color: '#94a3b8', fontStyle: 'italic', fontWeight: 700 }}>Unassociated</span>}
+                      {(Array.isArray(alloc.feeGroups) ? alloc.feeGroups : []).length === 0 && <span className="portal-text-unassociated">Unassociated</span>}
                     </div>
                   </td>
                   <td>
-                    <div style={{ display: 'grid', gap: '8px' }}>
-                      {(Array.isArray(alloc.breakdown) ? alloc.breakdown : []).map((item, i) => (
-                        <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', fontWeight: 800 }}>
-                            <span style={{ color: '#64748b' }}>{item.label}</span>
-                            <span style={{ color: '#2563eb' }}>{item.percentage}%</span>
+                    <div className="portal-grid-gap-8">
+                      {(Array.isArray(alloc.breakdown) ? alloc.breakdown : []).map((item: AllocationItem, i: number) => {
+                        const acc = coaAccounts.find(a => a.id === item.accountId) || item.account;
+                        const labelText = acc ? `${acc.code} – ${acc.name}` : (item.label || item.accountId || 'Target Account');
+                        return (
+                          <div key={i} className="portal-flex-col-gap-2">
+                            <div className="portal-flex-space-between-sm">
+                              <span className="portal-text-slate">{labelText}</span>
+                              <span className="portal-text-blue-pct">{item.percentage}%</span>
+                            </div>
+                            <progress 
+                              value={item.percentage} 
+                              max={100} 
+                              className="portal-progress-bar"
+                              title={`Allocation breakdown ${item.percentage}%`}
+                              aria-label={`Allocation breakdown ${item.percentage}%`}
+                            />
                           </div>
-                          <div style={{ height: '4px', background: '#f1f5f9', borderRadius: '2px', overflow: 'hidden' }}>
-                             <div style={{ height: '100%', width: `${item.percentage}%`, background: '#2563eb', borderRadius: '2px' }}></div>
-                          </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   </td>
-                  <td style={{ textAlign: 'center' }}>
-                    <span className={`status-badge ${alloc.isActive ? 'status-active' : 'status-inactive'}`} style={{ fontWeight: 900, fontSize: '0.7rem' }}>
+                  <td className="portal-text-center">
+                    <span className={`status-badge ${alloc.isActive ? 'status-active' : 'status-inactive'} portal-badge-status-sm`}>
                       {alloc.isActive ? 'ACTIVE' : 'DORMANT'}
                     </span>
                   </td>
-                  <td style={{ textAlign: 'right' }}>
-                    <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+                  <td className="portal-text-right">
+                    <div className="portal-table-actions-flex">
                       <button 
-                        className={`portal-btn-${alloc.isActive ? 'ghost' : 'primary'}`}
-                        style={{ padding: '8px 16px', fontSize: '0.75rem', fontWeight: 900, borderRadius: '10px' }}
+                        type="button"
+                        className={`portal-btn-${alloc.isActive ? 'ghost' : 'primary'} portal-btn-toggle-action`}
+                        title={alloc.isActive ? 'Deactivate Strategy' : 'Authorize Strategy'}
+                        aria-label={alloc.isActive ? 'Deactivate Strategy' : 'Authorize Strategy'}
                         onClick={() => handleToggleActive(alloc.id, alloc.isActive)}
                       >
                         {alloc.isActive ? 'Deactivate' : 'Authorize'}
                       </button>
                       <button 
-                        className="portal-btn-ghost"
-                        style={{ padding: '8px', fontSize: '0.75rem', color: '#dc2626', borderRadius: '10px' }}
-                        title="Delete Allocation"
+                        type="button"
+                        className="portal-btn-ghost portal-btn-delete-action"
+                        title="Delete Allocation Strategy"
+                        aria-label="Delete Allocation Strategy"
                         onClick={() => handleDelete(alloc.id)}
                       >
                         <i className="fas fa-trash"></i>

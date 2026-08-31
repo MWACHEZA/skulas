@@ -193,7 +193,7 @@ router.patch('/:id', requireAuth, async (req: AuthRequest, res: Response) => {
       return res.status(404).json({ error: 'Application not found' });
     }
 
-    const result = await prisma.$transaction(async (tx: any) => {
+    const result = await prisma.$transaction(async (tx) => {
       // 1. Update Application status
       const updatedApp = await tx.application.update({
         where: { id: application.id },
@@ -302,7 +302,7 @@ router.patch('/:id', requireAuth, async (req: AuthRequest, res: Response) => {
               reasonForTransfer: application.reasonForTransfer,
               lastGradeAchieved: application.lastGradeAchieved,
               admissionsNotes: application.notes,
-              academicHistory: application.academicHistory,
+              academicHistory: application.academicHistory as any,
               programLevel: application.programLevel,
               studyMode: application.studyMode,
               researchTitle: application.researchTitle,

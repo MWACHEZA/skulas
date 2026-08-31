@@ -1,16 +1,40 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../../../contexts/AuthContext';
 import { useToast } from '../../../../context/ToastContext';
 import api from '../../../../lib/api';
+
+export interface Question {
+  id: string;
+  type: string;
+  mark: number;
+  question: string;
+  options?: string[];
+  answer: string[] | boolean[] | string | boolean;
+  section?: string;
+  page?: number;
+}
+
+export interface Exam {
+  id: string;
+  title: string;
+  class?: { name: string };
+  section?: { name: string };
+  subject?: { name: string };
+  date: string;
+  time: string;
+  passingPercent: number;
+  totalMarks: number;
+  questions?: Question[];
+}
 
 export default function ManageQuestions() {
   const { id: examId } = useParams();
   const { showToast } = useToast();
   const navigate = useNavigate();
 
-  const [exam, setExam] = useState<any>(null);
+  const [exam, setExam] = useState<Exam | null>(null);
   const [loading, setLoading] = useState(true);
+  const [editingQuestionId, setEditingQuestionId] = useState<string | null>(null);
 
   const [questionType, setQuestionType] = useState('Single choice');
   const [mark, setMark] = useState(1);
@@ -30,23 +54,22 @@ export default function ManageQuestions() {
   // For Fill in the blank
   const [blankAnswer, setBlankAnswer] = useState('');
 
-  const fetchExam = async () => {
+  const fetchExam = React.useCallback(async () => {
     try {
       setLoading(true);
       const res = await api.get(`/api/cbt/${examId}`);
       setExam(res.data);
-    } catch (err: any) {
+    } catch {
       showToast('Failed to fetch exam details', 'error');
       navigate(-1);
-    
     } finally {
       setLoading(false);
     }
-  };
+  }, [examId, navigate, showToast]);
 
   useEffect(() => {
     if (examId) fetchExam();
-  }, [examId]);
+  }, [examId, fetchExam]);
 
   const handleNumOptionsChange = (num: number) => {
     setNumOptions(num);
@@ -79,7 +102,7 @@ export default function ManageQuestions() {
       return;
     }
 
-    let answerData: any;
+    let answerData: string[] | boolean[];
     if (questionType === 'Single choice') {
       answerData = [options[correctSingle]];
     } else if (questionType === 'Multiple choice') {
@@ -91,27 +114,86 @@ export default function ManageQuestions() {
     }
 
     try {
-      await api.post(`/api/cbt/${examId}/questions`, {
-        type: questionType,
-        mark,
-        question: questionText,
-        options: (questionType.includes('choice') || questionType === 'True or false') 
-          ? (questionType === 'True or false' ? ['True', 'False'] : options) 
-          : [],
-        answer: answerData,
-        section,
-        page
-      });
-      showToast('Question added successfully', 'success');
+      if (editingQuestionId) {
+        await api.put(`/api/cbt/${examId}/questions/${editingQuestionId}`, {
+          type: questionType,
+          mark,
+          question: questionText,
+          options: (questionType.includes('choice') || questionType === 'True or false') 
+            ? (questionType === 'True or false' ? ['True', 'False'] : options) 
+            : [],
+          answer: answerData,
+          section,
+          page
+        });
+        showToast('Question updated successfully', 'success');
+      } else {
+        await api.post(`/api/cbt/${examId}/questions`, {
+          type: questionType,
+          mark,
+          question: questionText,
+          options: (questionType.includes('choice') || questionType === 'True or false') 
+            ? (questionType === 'True or false' ? ['True', 'False'] : options) 
+            : [],
+          answer: answerData,
+          section,
+          page
+        });
+        showToast('Question added successfully', 'success');
+      }
       
       // Reset form
+      setEditingQuestionId(null);
       setQuestionText('');
       setOptions(Array(numOptions).fill(''));
       fetchExam();
-    } catch (err: any) {
-      showToast(err.response?.data?.error || 'Failed to add question', 'error');
-    
+    } catch (err) {
+      const error = err as { response?: { data?: { error?: string } } };
+      showToast(error.response?.data?.error || 'Failed to save question', 'error');
     }
+  };
+
+  const handleEditClick = (q: Question) => {
+    setEditingQuestionId(q.id);
+    setQuestionType(q.type);
+    setMark(q.mark);
+    setQuestionText(q.question);
+    setSection(q.section || '');
+    setPage(q.page || 1);
+    
+    if (q.type === 'Single choice') {
+      const opts = q.options || ['', '', '', ''];
+      setNumOptions(opts.length);
+      setOptions(opts);
+      const ansIdx = opts.indexOf((Array.isArray(q.answer) ? q.answer[0] : q.answer) as string);
+      setCorrectSingle(ansIdx !== -1 ? ansIdx : 0);
+    } else if (q.type === 'Multiple choice') {
+      const opts = q.options || ['', '', '', ''];
+      setNumOptions(opts.length);
+      setOptions(opts);
+      const ansArr = (Array.isArray(q.answer) ? q.answer : []) as string[];
+      setCorrectMultiple(opts.map((opt: string) => ansArr.includes(opt)));
+    } else if (q.type === 'True or false') {
+      setCorrectTF(String(Array.isArray(q.answer) ? q.answer[0] : q.answer).toLowerCase() === 'true' ? 'true' : 'false');
+    } else {
+      setBlankAnswer((Array.isArray(q.answer) ? q.answer[0] : q.answer) as string || '');
+    }
+    
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+  
+  const handleCancelEdit = () => {
+    setEditingQuestionId(null);
+    setQuestionText('');
+    setQuestionType('Single choice');
+    setMark(1);
+    setSection('');
+    setPage(1);
+    setOptions(['', '', '', '']);
+    setNumOptions(4);
+    setCorrectSingle(0);
+    setCorrectMultiple([false, false, false, false]);
+    setBlankAnswer('');
   };
 
   const handleDeleteQuestion = async (qId: string) => {
@@ -120,9 +202,8 @@ export default function ManageQuestions() {
       await api.delete(`/api/cbt/${examId}/questions/${qId}`);
       showToast('Question deleted', 'success');
       fetchExam();
-    } catch (err) {
+    } catch {
       showToast('Failed to delete question', 'error');
-    
     }
   };
 
@@ -175,7 +256,7 @@ export default function ManageQuestions() {
         {/* Right Column: Add Question Form */}
         <div className="portal-card">
           <div className="portal-card-header" style={{ background: '#2c5282', color: 'white' }}>
-            <h2 style={{ color: 'white' }}><i className="fas fa-plus" style={{ marginRight: 8 }}></i>Add Question</h2>
+            <h2 style={{ color: 'white' }}><i className={`fas fa-${editingQuestionId ? 'edit' : 'plus'}`} style={{ marginRight: 8 }}></i>{editingQuestionId ? 'Edit Question' : 'Add Question'}</h2>
           </div>
           <div className="portal-card-body">
             <form onSubmit={handleAddQuestion}>
@@ -335,9 +416,16 @@ export default function ManageQuestions() {
                 </div>
               )}
 
-              <button type="submit" className="portal-btn-primary" style={{ marginTop: 20 }}>
-                <i className="fas fa-plus"></i> Save Question
-              </button>
+              <div style={{ display: 'flex', gap: 10, marginTop: 20 }}>
+                <button type="submit" className="portal-btn-primary">
+                  <i className={`fas fa-${editingQuestionId ? 'save' : 'plus'}`}></i> {editingQuestionId ? 'Update Question' : 'Save Question'}
+                </button>
+                {editingQuestionId && (
+                  <button type="button" className="portal-btn-secondary" onClick={handleCancelEdit}>
+                    Cancel Edit
+                  </button>
+                )}
+              </div>
             </form>
           </div>
         </div>
@@ -369,7 +457,7 @@ export default function ManageQuestions() {
                   </tr>
                 </thead>
                 <tbody>
-                  {exam.questions.map((q: any, index: number) => (
+                  {exam.questions?.map((q: Question, index: number) => (
                     <tr key={q.id}>
                       <td>{index + 1}</td>
                       <td>Page {q.page || 1}</td>
@@ -382,11 +470,14 @@ export default function ManageQuestions() {
                       <td>
                         <div style={{ fontWeight: 500 }}>{q.question}</div>
                         <div style={{ fontSize: '0.85rem', color: '#4a5568', marginTop: 4 }}>
-                          Answer: {Array.isArray(q.answer) ? q.answer.map((a: any) => String(a)).join(', ') : ''}
+                          Answer: {Array.isArray(q.answer) ? q.answer.map((a: unknown) => String(a)).join(', ') : ''}
                         </div>
                       </td>
                       <td>{q.mark}</td>
                       <td>
+                        <button className="portal-btn-ghost" style={{ padding: '6px 10px', marginRight: '5px' }} onClick={() => handleEditClick(q)}>
+                          <i className="fas fa-edit" style={{ color: '#eab308' }}></i>
+                        </button>
                         <button className="portal-btn-secondary" style={{ padding: '6px 10px' }} onClick={() => handleDeleteQuestion(q.id)}>
                           <i className="fas fa-trash" style={{ color: 'var(--portal-danger)' }}></i>
                         </button>

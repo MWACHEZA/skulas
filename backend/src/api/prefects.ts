@@ -184,7 +184,7 @@ router.post('/reports', async (req: AuthRequest, res: Response) => {
     return res.status(403).json({ error: 'Unauthorized to file conduct reports' });
   }
 
-  const { studentName, category, narrative } = req.body;
+  const { studentName, category, narrative, hasPunishment, punishment, punishmentLocation } = req.body;
   if (!studentName || !category || !narrative) {
     return res.status(400).json({ error: 'Missing required report fields' });
   }
@@ -197,6 +197,10 @@ router.post('/reports', async (req: AuthRequest, res: Response) => {
         studentName,
         category,
         narrative,
+        hasPunishment: Boolean(hasPunishment),
+        punishment: punishment || null,
+        punishmentLocation: punishmentLocation || null,
+        punishmentStatus: hasPunishment ? 'PENDING' : null,
         reportedById: userId,
         schoolId
       }
@@ -207,6 +211,36 @@ router.post('/reports', async (req: AuthRequest, res: Response) => {
   } catch (error) {
     console.error('Create report error:', error);
     res.status(500).json({ error: 'Failed to file conduct report' });
+  }
+});
+
+/**
+ * @route   PATCH /api/prefects/reports/:id/status
+ * @desc    Update a conduct report's punishment status (e.g. mark as CLEARED)
+ */
+router.patch('/reports/:id/status', async (req: AuthRequest, res: Response) => {
+  if (!canManageCouncil(req.user) && !canFileConductReport(req.user)) {
+    return res.status(403).json({ error: 'Unauthorized to update report status' });
+  }
+
+  const { id } = req.params;
+  const { punishmentStatus } = req.body;
+
+  if (!punishmentStatus || !['PENDING', 'CLEARED'].includes(punishmentStatus)) {
+    return res.status(400).json({ error: 'Invalid punishment status' });
+  }
+
+  try {
+    const report = await prisma.prefectReport.update({
+      where: { id: id as string },
+      data: { punishmentStatus }
+    });
+
+    await logAction(req, 'UPDATE_CONDUCT_REPORT_STATUS', 'PrefectReport', report.id, { punishmentStatus });
+    res.json(report);
+  } catch (error) {
+    console.error('Update report status error:', error);
+    res.status(500).json({ error: 'Failed to update report status' });
   }
 });
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import api, { BASE_URL } from '../../lib/api';
@@ -31,6 +31,18 @@ interface DashboardLayoutProps {
   };
 }
 
+interface TodayAttendance {
+  timeIn: string;
+  timeOut?: string | null;
+}
+
+interface SpiritualReflection {
+  id: string;
+  content: string;
+  publishedAt?: string | null;
+  createdAt: string;
+}
+
 export default function DashboardLayout({ 
   portalName, 
   portalIcon, 
@@ -49,13 +61,13 @@ export default function DashboardLayout({
   // Initialize tenant-scoped SSE stream for accounting & stock real-time sync
   useLedgerSSE();
 
-  const [todayAttendance, setTodayAttendance] = useState<any>(null);
+  const [todayAttendance, setTodayAttendance] = useState<TodayAttendance | null>(null);
   const [showClockModal, setShowClockModal] = useState(false);
   const [clockActionType, setClockActionType] = useState<'IN' | 'OUT'>('IN');
 
   const isStaffUser = user && !['STUDENT', 'PARENT', 'SUPPLIER', 'ALUMNI'].includes(user.role);
 
-  const fetchTodayAttendance = async () => {
+  const fetchTodayAttendance = useCallback(async () => {
     if (!isStaffUser) return;
     try {
       const { data } = await api.get('/api/staff-attendance/today');
@@ -63,11 +75,29 @@ export default function DashboardLayout({
     } catch (error) {
       console.error('Failed to fetch today attendance:', error);
     }
-  };
+  }, [isStaffUser]);
+
+  const [reflection, setReflection] = useState<SpiritualReflection | null>(null);
+  const [dismissedReflectionId, setDismissedReflectionId] = useState<string | null>(() => 
+    sessionStorage.getItem('dismissed_reflection_id')
+  );
+
+  const fetchLatestReflection = useCallback(async () => {
+    if (!user) return;
+    try {
+      const { data } = await api.get('/api/chaplaincy/latest-reflection');
+      setReflection(data || null);
+    } catch (error) {
+      console.error('Failed to fetch latest reflection:', error);
+    }
+  }, [user]);
 
   useEffect(() => {
-    fetchTodayAttendance();
-  }, [user]);
+    Promise.resolve().then(() => {
+      fetchTodayAttendance();
+      fetchLatestReflection();
+    });
+  }, [fetchTodayAttendance, fetchLatestReflection]);
 
   const initials = user?.name?.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || '??';
 
@@ -102,9 +132,12 @@ export default function DashboardLayout({
                 alt="School Logo" 
                 style={{ width: '100%', height: '100%', objectFit: 'contain' }} 
                 onError={(e) => {
-                  (e.target as any).onerror = null;
-                  (e.target as any).style.display = 'none';
-                  (e.target as any).parentElement.innerHTML = `<i class="${portalIcon}"></i>`;
+                  const target = e.currentTarget;
+                  target.onerror = null;
+                  target.style.display = 'none';
+                  if (target.parentElement) {
+                    target.parentElement.innerHTML = `<i class="${portalIcon}"></i>`;
+                  }
                 }}
               />
             )}
@@ -312,6 +345,59 @@ export default function DashboardLayout({
                   </button>
                 </div>
               ) : null}
+            </div>
+          )}
+
+          {reflection && reflection.id !== dismissedReflectionId && (
+            <div className="no-print" style={{ padding: '0 24px', marginTop: '16px' }}>
+              <div style={{
+                background: 'linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)',
+                border: '1px solid #bbf7d0',
+                borderRadius: '12px',
+                padding: '16px 24px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03)'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1, paddingRight: '16px' }}>
+                  <div style={{ background: '#16a34a', color: 'white', width: '36px', height: '36px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem', flexShrink: 0 }}>
+                    <i className="fas fa-dove"></i>
+                  </div>
+                  <div>
+                    <h4 style={{ margin: 0, color: '#166534', fontWeight: 800, fontSize: '0.95rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      Daily Reflection
+                      <span style={{ fontSize: '0.75rem', fontWeight: 500, color: '#15803d' }}>
+                        ({new Date(reflection.publishedAt || reflection.createdAt).toLocaleDateString()})
+                      </span>
+                    </h4>
+                    <p style={{ margin: '2px 0 0', color: '#15803d', fontSize: '0.85rem', fontWeight: 600 }}>{reflection.content}</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => {
+                    sessionStorage.setItem('dismissed_reflection_id', reflection.id);
+                    setDismissedReflectionId(reflection.id);
+                  }}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: '#166534',
+                    cursor: 'pointer',
+                    fontSize: '1rem',
+                    padding: '4px 8px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    opacity: 0.7
+                  }}
+                  onMouseOver={(e) => (e.currentTarget.style.opacity = '1')}
+                  onMouseOut={(e) => (e.currentTarget.style.opacity = '0.7')}
+                  title="Dismiss reflection"
+                >
+                  <i className="fas fa-times"></i>
+                </button>
+              </div>
             </div>
           )}
 

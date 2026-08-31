@@ -74,6 +74,7 @@ import schedulesRoutes from './api/schedules';
 import tuckshopRoutes from './api/tuckshop';
 import walletRoutes from './api/wallets';
 import icd10Routes from './api/icd10';
+import setupRoutes from './api/setup';
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -178,6 +179,7 @@ app.use('/api/schedules', schedulesRoutes);
 app.use('/api/tuckshop', tuckshopRoutes);
 app.use('/api/wallets', walletRoutes);
 app.use('/api/icd10', icd10Routes);
+app.use('/api/setup', setupRoutes);
 app.use('/public', publicRoutes);
 app.use('/api/public', publicRoutes);
 

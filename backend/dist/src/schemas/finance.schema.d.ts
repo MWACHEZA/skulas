@@ -24,6 +24,8 @@ export declare const FeeGroupSchema: z.ZodObject<{
     billingType: z.ZodString;
     isRecurring: z.ZodOptional<z.ZodBoolean>;
     remindersEnabled: z.ZodOptional<z.ZodBoolean>;
+    incomeAccountId: z.ZodPipe<z.ZodNullable<z.ZodOptional<z.ZodString>>, z.ZodTransform<string | null | undefined, string | null | undefined>>;
+    arAccountId: z.ZodPipe<z.ZodNullable<z.ZodOptional<z.ZodString>>, z.ZodTransform<string | null | undefined, string | null | undefined>>;
 }, z.core.$strip>;
 export declare const RevenueAllocationSchema: z.ZodObject<{
     name: z.ZodString;

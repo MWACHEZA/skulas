@@ -40,9 +40,11 @@ router.get(/\/file\/(.*)/, requireAuth, (req: AuthRequest, res: Response) => {
     const requestedSchoolCode = pathParts[0];
 
     // Check if user is trying to access another school's vault
-    if (requestedSchoolCode !== req.user?.schoolCode) {
-        // Special case: Allow public folder within school vault if needed?
-        // For now, strict isolation
+    const userSchool = req.user?.schoolCode;
+    const isSuperAdmin = req.user?.role === 'SUPER_ADMIN' || userSchool === 'global';
+    const isGlobalAsset = requestedSchoolCode === 'global';
+
+    if (!isSuperAdmin && !isGlobalAsset && requestedSchoolCode !== userSchool) {
         return res.status(403).json({ error: 'Access denied: Institutional boundary violation' });
     }
 

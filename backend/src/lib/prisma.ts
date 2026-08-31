@@ -20,7 +20,7 @@ const prisma = basePrisma.$extends({
         const tenantScopedModels = [
           'Student', 'Teacher', 'User', 'SchoolClass', 'Subject', 
           'Grade', 'Attendance', 'Fee', 'Assignment', 'AssignmentSubmission',
-          'AcademicReport', 'ApplicantDocument', 'ApplicantTimeline', 'Application',
+          'AcademicReport', 'Application',
           'Asset', 'AssetIncident', 'AssetMaintenance', 'Book', 'BookLoan',
           'Club', 'Sport', 'Gallery', 'News', 'Announcement', 'Department',
           'Faculty', 'Requisition', 'PurchaseOrder', 'Invoice', 'Tender', 'TenderBid',
@@ -41,6 +41,7 @@ const prisma = basePrisma.$extends({
           'LiveClass', 'Award', 'Course', 'StudyMaterial', 'WebsiteSettings', 'WebsiteInquiry',
           'Noticeboard', 'Vacancy', 'JobApplication', 'SchoolVehicle', 'SchoolTransport', 'MeetingMinutes',
           'ProjectFunding', 'ClinicPatient', 'ClinicAppointment', 'ClinicComplaint', 'ClinicEmergency', 'ClinicImmunization', 'ClinicReferral', 'ClinicHospitalization',
+          'ClinicVisit', 'ClinicInventoryItem', 'ClinicDispensingLog',
           'FarmLivestockBatch', 'FarmCropCycle', 'FarmInventoryItem', 'DiningHallReport', 'PrefectDuty', 'PrefectMeeting',
           'PrefectReport', 'NotificationQueue'
         ];

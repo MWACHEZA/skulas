@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
 import api from '../../../lib/api';
@@ -25,11 +25,21 @@ interface ConductReport {
   studentName: string;
   category: string;
   narrative: string;
+  hasPunishment?: boolean;
+  punishment?: string | null;
+  punishmentLocation?: string | null;
+  punishmentStatus?: string | null;
   createdAt: string;
   reportedBy?: {
     name: string;
     role: string;
   };
+}
+
+interface SearchResultUser {
+  id: string;
+  name: string;
+  role: string;
 }
 
 export default function PrefectCouncil() {
@@ -72,8 +82,45 @@ export default function PrefectCouncil() {
   const [reportForm, setReportForm] = useState({
     studentName: '',
     category: 'Uniform Violation',
-    narrative: ''
+    narrative: '',
+    hasPunishment: false,
+    punishment: '',
+    punishmentLocation: ''
   });
+
+  // Autocomplete / Search states
+  const [memberSearchResults, setMemberSearchResults] = useState<SearchResultUser[]>([]);
+  const [isMemberDropdownOpen, setIsMemberDropdownOpen] = useState(false);
+
+  const [studentSearchResults, setStudentSearchResults] = useState<SearchResultUser[]>([]);
+  const [isStudentDropdownOpen, setIsStudentDropdownOpen] = useState(false);
+
+  // Search helper functions
+  const handleMemberSearch = async (query: string) => {
+    if (!query) {
+      setMemberSearchResults([]);
+      return;
+    }
+    try {
+      const res = await api.get(`/api/users/search?query=${encodeURIComponent(query)}`);
+      setMemberSearchResults(res.data || []);
+    } catch (err) {
+      console.error('Member search error', err);
+    }
+  };
+
+  const handleStudentSearch = async (query: string) => {
+    if (!query) {
+      setStudentSearchResults([]);
+      return;
+    }
+    try {
+      const res = await api.get(`/api/users/search?role=STUDENT&query=${encodeURIComponent(query)}`);
+      setStudentSearchResults(res.data || []);
+    } catch (err) {
+      console.error('Student search error', err);
+    }
+  };
 
   // School Type Awareness
   const type = (user?.schoolType || 'Secondary').toLowerCase();
@@ -119,11 +166,7 @@ export default function PrefectCouncil() {
   const primaryColor = 'var(--portal-primary, #1e3a8a)'; // System Standard
   const accentColor = 'var(--portal-accent, #f59e0b)'; // System Standard
 
-  useEffect(() => {
-    fetchData();
-  }, [activeTab]);
-
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true);
     try {
       if (activeTab === 'roster') {
@@ -132,16 +175,20 @@ export default function PrefectCouncil() {
       } else if (activeTab === 'meetings') {
         const res = await api.get('/api/prefects/meetings');
         setMeetings(res.data);
-      } else if (activeTab === 'reports' && canViewReportsLog) {
+      } else if (activeTab === 'reports' && (canViewReportsLog || user?.role === 'STUDENT')) {
         const res = await api.get('/api/prefects/reports');
         setReports(res.data);
       }
-    } catch (error) {
+    } catch {
       showToast(`Failed to load ${activeTab} data`, 'error');
     } finally {
       setLoading(false);
     }
-  };
+  }, [activeTab, canViewReportsLog, user?.role, showToast]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   const handleDutySubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -151,9 +198,8 @@ export default function PrefectCouncil() {
       setShowDutyModal(false);
       setDutyForm({ prefectName: '', zone: '', timeSlot: '', day: 'Monday' });
       fetchData();
-    } catch (error) {
+    } catch {
       showToast('Failed to schedule duty', 'error');
-    
     }
   };
 
@@ -165,9 +211,8 @@ export default function PrefectCouncil() {
       setShowMeetingModal(false);
       setMeetingForm({ title: '', date: '', chair: '', recordsText: '' });
       fetchData();
-    } catch (error) {
+    } catch {
       showToast('Failed to publish minutes', 'error');
-    
     }
   };
 
@@ -177,11 +222,10 @@ export default function PrefectCouncil() {
       await api.post('/api/prefects/reports', reportForm);
       showToast('Conduct report filed successfully', 'success');
       setShowReportModal(false);
-      setReportForm({ studentName: '', category: 'Uniform Violation', narrative: '' });
-      if (canViewReportsLog) fetchData();
-    } catch (error) {
+      setReportForm({ studentName: '', category: 'Uniform Violation', narrative: '', hasPunishment: false, punishment: '', punishmentLocation: '' });
+      if (canViewReportsLog || user?.role === 'STUDENT') fetchData();
+    } catch {
       showToast('Failed to file conduct report', 'error');
-    
     }
   };
 
@@ -205,14 +249,14 @@ export default function PrefectCouncil() {
 
       {/* Tabs */}
       <div style={{ display: 'flex', gap: 12, marginBottom: 30, background: 'rgba(255,255,255,0.5)', padding: 8, borderRadius: 16, width: 'max-content', flexWrap: 'wrap' }}>
-        {[
+        {([
           { id: 'roster', icon: 'fa-clipboard-list', label: rosterLabel },
           { id: 'meetings', icon: 'fa-handshake', label: 'Meeting Minutes' },
           { id: 'reports', icon: 'fa-file-invoice', label: reportsLabel }
-        ].map(tab => (
+        ] as const).map(tab => (
           <button 
             key={tab.id}
-            onClick={() => setActiveTab(tab.id as any)}
+            onClick={() => setActiveTab(tab.id)}
             style={{ 
               padding: '12px 24px', 
               borderRadius: '12px', 
@@ -372,7 +416,9 @@ export default function PrefectCouncil() {
             {activeTab === 'reports' && (
               <div style={{ padding: 40 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 30, flexWrap: 'wrap', gap: 15 }}>
-                  <h2 style={{ color: '#1e293b', margin: 0, fontWeight: 800 }}>{isTertiary ? 'Student Concern & Disciplinary Registry' : 'Conduct Violation Logs'}</h2>
+                  <h2 style={{ color: '#1e293b', margin: 0, fontWeight: 800 }}>
+                    {user?.role === 'STUDENT' ? 'My Conduct Records' : (isTertiary ? 'Student Concern & Disciplinary Registry' : 'Conduct Violation Logs')}
+                  </h2>
                   {canFileReports && (
                     <button 
                       onClick={() => setShowReportModal(true)}
@@ -384,7 +430,7 @@ export default function PrefectCouncil() {
                   )}
                 </div>
 
-                {canViewReportsLog ? (
+                {(canViewReportsLog || user?.role === 'STUDENT') ? (
                   <div style={{ display: 'grid', gap: '16px' }}>
                     {reports.length === 0 ? (
                       <div style={{ textAlign: 'center', padding: '30px', color: '#64748b' }}>
@@ -415,8 +461,61 @@ export default function PrefectCouncil() {
                             "{report.narrative}"
                           </p>
                           <div style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 700 }}>
-                            <i className="fas fa-user-tie mr-1"></i> Reported by: {report.reportedBy?.name} ({report.reportedBy?.role})
+                            <i className="fas fa-user-tie mr-1"></i> Reported by: {report.reportedBy?.name || 'System'} ({report.reportedBy?.role || 'Staff'})
                           </div>
+
+                          {/* Punishment Info */}
+                          {report.hasPunishment && (
+                            <div style={{ 
+                              marginTop: 16, 
+                              padding: 16, 
+                              background: report.punishmentStatus === 'CLEARED' ? '#f0fdf4' : '#fff1f2', 
+                              border: `1px solid ${report.punishmentStatus === 'CLEARED' ? '#bbf7d0' : '#fecdd3'}`, 
+                              borderRadius: '12px' 
+                            }}>
+                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10 }}>
+                                <div>
+                                  <strong style={{ color: report.punishmentStatus === 'CLEARED' ? '#166534' : '#991b1b', fontSize: '0.9rem' }}>
+                                    <i className="fas fa-gavel mr-1"></i> Punishment: {report.punishment}
+                                  </strong>
+                                  {report.punishmentLocation && (
+                                    <div style={{ fontSize: '0.8rem', color: '#4b5563', marginTop: 4 }}>
+                                      <i className="fas fa-map-marker-alt mr-1"></i> Location: {report.punishmentLocation}
+                                    </div>
+                                  )}
+                                </div>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                                  <span className={`status-badge`} style={{
+                                    background: report.punishmentStatus === 'CLEARED' ? '#dcfce7' : '#ffe4e6',
+                                    color: report.punishmentStatus === 'CLEARED' ? '#15803d' : '#b91c1c',
+                                    fontWeight: 700
+                                  }}>
+                                    {report.punishmentStatus === 'CLEARED' ? 'Cleared / Done' : 'Pending Clearance'}
+                                  </span>
+                                  
+                                  {/* Allow marking as CLEARED or PENDING by prefect leader/admin/teachers */}
+                                  {(isPrefectLeader || canFileReports) && user?.role !== 'STUDENT' && (
+                                    <button
+                                      onClick={async () => {
+                                        try {
+                                          const nextStatus = report.punishmentStatus === 'CLEARED' ? 'PENDING' : 'CLEARED';
+                                          await api.patch(`/api/prefects/reports/${report.id}/status`, { punishmentStatus: nextStatus });
+                                          showToast(`Punishment status updated to ${nextStatus}`, 'success');
+                                          fetchData();
+                                        } catch {
+                                          showToast('Failed to update status', 'error');
+                                        }
+                                      }}
+                                      className="portal-btn-ghost"
+                                      style={{ padding: '6px 12px', fontSize: '0.75rem', border: '1px solid #cbd5e1', borderRadius: '6px', background: 'white', cursor: 'pointer' }}
+                                    >
+                                      Mark as {report.punishmentStatus === 'CLEARED' ? 'Pending' : 'Done'}
+                                    </button>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          )}
                         </div>
                       ))
                     )}
@@ -438,17 +537,68 @@ export default function PrefectCouncil() {
       {/* Add Duty Assignment Modal */}
       {showDutyModal && (
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
-          <div className="portal-card" style={{ width: '95%', maxWidth: '500px', padding: '35px', borderRadius: '24px', background: 'white' }}>
+          <div className="portal-card" style={{ width: '95%', maxWidth: '500px', padding: '35px', borderRadius: '24px', background: 'white', position: 'relative' }}>
             <h3 style={{ margin: '0 0 24px 0', fontSize: '1.4rem', fontWeight: 800 }}>Schedule Council Assignment</h3>
             <form onSubmit={handleDutySubmit}>
               <div className="space-y-4">
-                <div className="form-group">
+                <div className="form-group" style={{ position: 'relative' }}>
                   <label style={{ display: 'block', fontWeight: 700, marginBottom: '8px' }}>Member / Prefect Name</label>
                   <input 
                     type="text" className="portal-input w-full" required
-                    value={dutyForm.prefectName} onChange={e => setDutyForm({ ...dutyForm, prefectName: e.target.value })}
-                    placeholder="e.g. Sarah Dube"
+                    value={dutyForm.prefectName} 
+                    onChange={e => {
+                      setDutyForm({ ...dutyForm, prefectName: e.target.value });
+                      handleMemberSearch(e.target.value);
+                      setIsMemberDropdownOpen(true);
+                    }}
+                    onFocus={() => {
+                      setIsMemberDropdownOpen(true);
+                      handleMemberSearch(dutyForm.prefectName);
+                    }}
+                    placeholder="Search registered user..."
+                    autoComplete="off"
                   />
+                  {isMemberDropdownOpen && memberSearchResults.length > 0 && (
+                    <div style={{
+                      position: 'absolute',
+                      top: '100%',
+                      left: 0,
+                      right: 0,
+                      background: 'white',
+                      border: '1px solid #cbd5e1',
+                      borderRadius: '12px',
+                      boxShadow: '0 10px 25px rgba(0,0,0,0.1)',
+                      zIndex: 1010,
+                      maxHeight: '200px',
+                      overflowY: 'auto',
+                      marginTop: '4px'
+                    }}>
+                      {memberSearchResults.map(user => (
+                        <div
+                          key={user.id}
+                          onClick={() => {
+                            setDutyForm({ ...dutyForm, prefectName: user.name });
+                            setIsMemberDropdownOpen(false);
+                          }}
+                          style={{
+                            padding: '10px 16px',
+                            cursor: 'pointer',
+                            borderBottom: '1px solid #f1f5f9',
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center'
+                          }}
+                          onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#f8fafc')}
+                          onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
+                        >
+                          <span style={{ fontWeight: 600, color: '#1e293b' }}>{user.name}</span>
+                          <span style={{ fontSize: '0.7rem', background: '#f1f5f9', padding: '2px 8px', borderRadius: '4px', textTransform: 'capitalize', color: '#64748b' }}>
+                            {user.role.toLowerCase()}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
                 <div className="form-group">
                   <label style={{ display: 'block', fontWeight: 700, marginBottom: '8px' }}>Duty Zone / Area</label>
@@ -544,7 +694,7 @@ export default function PrefectCouncil() {
       {/* File Conduct Report Modal */}
       {showReportModal && (
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
-          <div className="portal-card" style={{ width: '95%', maxWidth: '500px', padding: '35px', borderRadius: '24px', background: 'white' }}>
+          <div className="portal-card" style={{ width: '95%', maxWidth: '500px', padding: '35px', borderRadius: '24px', background: 'white', position: 'relative' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
               <h3 style={{ margin: 0, fontSize: '1.4rem', fontWeight: 800, color: '#1e293b' }}>{isTertiary ? 'Log Incident' : 'File Conduct Incident'}</h3>
               <button onClick={() => setShowReportModal(false)} style={{ background: 'none', border: 'none', fontSize: '1.2rem', cursor: 'pointer', color: '#94a3b8' }}>
@@ -554,13 +704,64 @@ export default function PrefectCouncil() {
             
             <form onSubmit={handleReportSubmit}>
               <div className="space-y-4">
-                <div className="form-group">
+                <div className="form-group" style={{ position: 'relative' }}>
                   <label style={{ display: 'block', fontWeight: 700, color: '#4a5568', marginBottom: '8px' }}>Target Student</label>
                   <input 
                     type="text" className="portal-input w-full" required
-                    value={reportForm.studentName} onChange={e => setReportForm({ ...reportForm, studentName: e.target.value })}
-                    placeholder="Search by name or ID..."
+                    value={reportForm.studentName} 
+                    onChange={e => {
+                      setReportForm({ ...reportForm, studentName: e.target.value });
+                      handleStudentSearch(e.target.value);
+                      setIsStudentDropdownOpen(true);
+                    }}
+                    onFocus={() => {
+                      setIsStudentDropdownOpen(true);
+                      handleStudentSearch(reportForm.studentName);
+                    }}
+                    placeholder="Search by student name..."
+                    autoComplete="off"
                   />
+                  {isStudentDropdownOpen && studentSearchResults.length > 0 && (
+                    <div style={{
+                      position: 'absolute',
+                      top: '100%',
+                      left: 0,
+                      right: 0,
+                      background: 'white',
+                      border: '1px solid #cbd5e1',
+                      borderRadius: '12px',
+                      boxShadow: '0 10px 25px rgba(0,0,0,0.1)',
+                      zIndex: 1010,
+                      maxHeight: '200px',
+                      overflowY: 'auto',
+                      marginTop: '4px'
+                    }}>
+                      {studentSearchResults.map(student => (
+                        <div
+                          key={student.id}
+                          onClick={() => {
+                            setReportForm({ ...reportForm, studentName: student.name });
+                            setIsStudentDropdownOpen(false);
+                          }}
+                          style={{
+                            padding: '10px 16px',
+                            cursor: 'pointer',
+                            borderBottom: '1px solid #f1f5f9',
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center'
+                          }}
+                          onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#f8fafc')}
+                          onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
+                        >
+                          <span style={{ fontWeight: 600, color: '#1e293b' }}>{student.name}</span>
+                          <span style={{ fontSize: '0.7rem', background: '#f1f5f9', padding: '2px 8px', borderRadius: '4px', color: '#64748b' }}>
+                            Student
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
                 <div className="form-group">
                   <label style={{ display: 'block', fontWeight: 700, color: '#4a5568', marginBottom: '8px' }}>Incident Category</label>
@@ -583,6 +784,40 @@ export default function PrefectCouncil() {
                     placeholder="Provide a clinical, objective description of the event..."
                   ></textarea>
                 </div>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 8 }}>
+                  <input 
+                    type="checkbox" 
+                    id="hasPunishment"
+                    checked={reportForm.hasPunishment}
+                    onChange={e => setReportForm({ ...reportForm, hasPunishment: e.target.checked })}
+                    style={{ cursor: 'pointer', width: 16, height: 16 }}
+                  />
+                  <label htmlFor="hasPunishment" style={{ fontWeight: 700, color: '#4a5568', cursor: 'pointer', userSelect: 'none' }}>
+                    Assign Disciplinary Action / Punishment
+                  </label>
+                </div>
+
+                {reportForm.hasPunishment && (
+                  <>
+                    <div className="form-group" style={{ marginTop: 12 }}>
+                      <label style={{ display: 'block', fontWeight: 700, color: '#4a5568', marginBottom: '8px' }}>Punishment Detail</label>
+                      <input 
+                        type="text" className="portal-input w-full" required={reportForm.hasPunishment}
+                        value={reportForm.punishment || ''} onChange={e => setReportForm({ ...reportForm, punishment: e.target.value })}
+                        placeholder="e.g. Ground cutting, detention..."
+                      />
+                    </div>
+                    <div className="form-group" style={{ marginTop: 12 }}>
+                      <label style={{ display: 'block', fontWeight: 700, color: '#4a5568', marginBottom: '8px' }}>Punishment Location</label>
+                      <input 
+                        type="text" className="portal-input w-full" required={reportForm.hasPunishment}
+                        value={reportForm.punishmentLocation || ''} onChange={e => setReportForm({ ...reportForm, punishmentLocation: e.target.value })}
+                        placeholder="e.g. School Garden, Detention Room..."
+                      />
+                    </div>
+                  </>
+                )}
               </div>
 
               <div style={{ background: '#f0f4f8', padding: '15px', borderRadius: '12px', display: 'flex', gap: '12px', margin: '20px 0' }}>

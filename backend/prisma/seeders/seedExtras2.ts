@@ -7,7 +7,21 @@ export async function seedExtras2(prisma: PrismaClient, school: School, admin: U
     try { await prisma.gradingScale.create({ data: { grade: `A${i}`, minScore: 80, maxScore: 100, status: 'ACTIVE', schoolId: school.id } }); } catch(e){}
     
     let uniformItem = await prisma.uniformItem.findFirst({ where: { schoolId: school.id } });
-    if (!uniformItem) { try { uniformItem = await prisma.uniformItem.create({ data: { name: `Shirt ${i}`, sellingPrice: 15, stockLevel: 10, schoolId: school.id } }); } catch(e){} }
+    if (!uniformItem) {
+      try {
+        uniformItem = await prisma.uniformItem.create({ data: { name: `Shirt ${i}`, sellingPrice: 15, schoolId: school.id } });
+        await prisma.uniformStockMovement.create({
+          data: {
+            itemId: uniformItem.id,
+            quantity: 10,
+            movementType: 'PURCHASE_IN',
+            unitCost: 10,
+            totalCost: 100,
+            schoolId: school.id
+          }
+        });
+      } catch(e){}
+    }
     if (uniformItem) {
       let order; try { order = await prisma.uniformStockOrder.create({ data: { schoolId: school.id } }); } catch(e){}
       if (order) { try { await prisma.uniformStockOrderItem.create({ data: { orderId: order.id, itemId: uniformItem.id, quantity: 10, unitPrice: 10 } }); } catch(e){} }
@@ -84,8 +98,8 @@ export async function seedExtras2(prisma: PrismaClient, school: School, admin: U
     try { await prisma.prefectReport.create({ data: { studentName: `John ${i}`, category: 'Late', narrative: 'Late to class', reportedById: admin.id, schoolId: school.id } }); } catch(e){}
     
     let wallet = await prisma.studentWallet.findFirst({ where: { studentId: student.userId! } });
-    if (!wallet) { try { wallet = await prisma.studentWallet.create({ data: { studentId: student.userId!, balance: 10 } }); } catch(e){} }
-    if (wallet) { try { await prisma.walletTransaction.create({ data: { walletId: wallet.id, amount: 10, type: 'Deposit' } }); } catch(e){} }
+    if (!wallet) { try { wallet = await prisma.studentWallet.create({ data: { studentId: student.userId! } }); } catch(e){} }
+    if (wallet) { try { await prisma.walletTransaction.create({ data: { walletId: wallet.id, amount: 10, type: 'DEPOSIT' } }); } catch(e){} }
     
     try { await prisma.schoolSequence.create({ data: { schoolId: school.id, entity: `Invoice ${i}` } }); } catch(e){}
   }

@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import { ToastProvider } from './context/ToastContext';
+import { SetupProvider } from './context/SetupContext';
 import Layout from './components/layout/Layout';
 
 // Public pages
@@ -20,6 +21,7 @@ import ComingSoon from './pages/ComingSoon';
 import About from './pages/About';
 import Careers from './pages/Careers'; // public careers/vacancies portal
 import Noticeboard from './pages/Noticeboard'; // public school noticeboard
+import PublicSchoolLibrary from './pages/PublicSchoolLibrary';
 
 
 // Portal layouts
@@ -48,7 +50,6 @@ import TakeExam from './portals/shared/pages/cbt/TakeExam';
 
 // Portal login
 import PortalLoginPage from './components/portals/PortalLoginPage';
-import StudentLogin from './portals/student/pages/Login';
 
 //  Student pages 
 import StudentDashboard from './portals/student/pages/Dashboard';
@@ -58,6 +59,7 @@ import StudentAttendance from './portals/student/pages/Attendance';
 import StudentFees from './portals/student/pages/Fees';
 import StudentAssignments from './portals/student/pages/Assignments';
 import StudentMyBooks from './portals/student/pages/MyBooks';
+import StudentLibraryAssistantPage from './portals/student/pages/StudentLibraryAssistantPage';
 import Library from './portals/shared/pages/Library';
 import StudentEvents from './portals/student/pages/Events';
 import ResearchDashboard from './portals/student/pages/ResearchDashboard';
@@ -78,6 +80,9 @@ import PatientHistory from './portals/shared/pages/clinic/PatientHistory';
 import Emergencies from './portals/shared/pages/clinic/Emergencies';
 import Referrals from './portals/shared/pages/clinic/Referrals';
 import Immunization from './portals/shared/pages/clinic/Immunization';
+import PharmacyDashboard from './portals/shared/pages/clinic/PharmacyDashboard';
+import ClinicBillingPage from './portals/shared/pages/clinic/ClinicBillingPage';
+import ClinicReportsPage from './portals/shared/pages/clinic/ClinicReportsPage';
 
 //  Teacher pages 
 import TeacherDashboard from './portals/teacher/pages/Dashboard';
@@ -231,6 +236,8 @@ import AcademicPortfolio from './portals/shared/pages/AcademicPortfolio';
 import ProgressReports from './portals/shared/pages/ProgressReports';
 import AttendanceHistory from './portals/shared/pages/AttendanceHistory';
 
+import SetupWizardPage from './portals/admin/pages/SetupWizardPage';
+
 //  Applicant pages 
 import ApplicantLayout from './portals/applicant/ApplicantLayout';
 import ApplicantDashboard from './portals/applicant/pages/Dashboard';
@@ -238,6 +245,7 @@ import ApplicantDocuments from './portals/applicant/pages/Documents';
 import ApplicantTimeline from './portals/applicant/pages/Timeline';
 import ApplicantInterview from './portals/applicant/pages/Interview';
 import ApplicantFees from './portals/applicant/pages/Fees';
+import ApplicantFAQPage from './portals/applicant/pages/ApplicantFAQPage';
 
 //  Supplier pages 
 import SupplierDashboard from './portals/supplier/pages/Dashboard';
@@ -301,10 +309,6 @@ import SchoolRegister from './pages/register/SchoolRegister';
 // Clinic Staff Registration
 const ClinicRegister = () => <StaffRegister role="CLINIC" label="Clinic Staff" icon="fa-user-md" />;
 
-const Placeholder = ({ title }: { title: string }) => (
-  <div className="container" style={{ padding: '80px 0' }}><h2>{title} coming soon.</h2></div>
-);
-
 /**
  * SchoolCodeRedirect: Catches /:schoolCode URLs and redirects to /school/:schoolCode
  * Only fires for paths that don't match known portal/system prefixes.
@@ -364,7 +368,7 @@ function SiteConfigHandler() {
         }
       } else {
         // 2. Public Website Visitor
-        const match = window.location.pathname.match(/\/school\/([^\/]+)/i);
+        const match = window.location.pathname.match(/\/school\/([^/]+)/i);
         if (match && match[1]) {
           const sCode = match[1].toUpperCase();
           setSchoolCode(sCode);
@@ -383,11 +387,11 @@ function SiteConfigHandler() {
       }
     };
     fetchFaviconAndCode();
-  }, [user, window.location.pathname]);
+  }, [user]);
 
   useEffect(() => {
     if (favicon && schoolCode) {
-      const link: any = document.querySelector("link[rel*='icon']") || document.createElement('link');
+      const link = (document.querySelector("link[rel*='icon']") as HTMLLinkElement) || document.createElement('link');
       link.type = 'image/x-icon';
       link.rel = 'shortcut icon';
       // Strip schoolCode prefix from favicon path if present (media route handles it dynamically)
@@ -404,8 +408,9 @@ export default function App() {
   return (
     <AuthProvider>
       <ToastProvider>
-        <SiteConfigHandler />
-        <BrowserRouter>
+        <SetupProvider>
+          <SiteConfigHandler />
+          <BrowserRouter>
           <Routes>
             {/*  Acadex Platform Landing (Solo)  */}
             <Route path="/" element={<AcadexLanding />} />
@@ -421,7 +426,7 @@ export default function App() {
             <Route path="/school/:schoolCode" element={<Layout />}>
               <Route index element={<Home />} />
               <Route path="departments" element={<Departments />} />
-              <Route path="library" element={<div>Library</div>} />
+              <Route path="library" element={<PublicSchoolLibrary />} />
               <Route path="gallery" element={<Gallery />} />
               <Route path="news" element={<News />} />
               <Route path="sports" element={<Sports />} />
@@ -481,7 +486,7 @@ export default function App() {
               <Route path="house" element={<HouseDashboard />} />
               <Route path="dining-hall" element={<DHRepresentative />} />
               <Route path="farm" element={<FarmManagement />} />
-              <Route path="library-staff" element={<Placeholder title="Student Library Assistant" />} />
+              <Route path="library-staff" element={<StudentLibraryAssistantPage />} />
               <Route path="clinic/complaints" element={<HealthComplaints />} />
               <Route path="clinic/appointments" element={<Appointments />} />
               <Route path="clinic/emergencies" element={<Emergencies />} />
@@ -516,6 +521,7 @@ export default function App() {
               <Route path="assignments" element={<TeacherAssignments />} />
 
               <Route path="attendance/student" element={<DailyStudentAttendance />} />
+              <Route path="attendance/staff" element={<DailyStaffAttendance />} />
               <Route path="attendance/qr" element={<QRAttendance />} />
               <Route path="attendance/report" element={<DailyStudentAttendanceReport />} />
               <Route path="attendance-logs" element={<ClockInLogsPage />} />
@@ -526,6 +532,7 @@ export default function App() {
               <Route path="payslips" element={<MyPaymentSlip />} />
               <Route path="*" element={<Navigate to="dashboard" replace />} />
               <Route path="attendance" element={<TeacherClassAttendance />} />
+              <Route path="attendance/mark" element={<TeacherAttendance />} />
 
               <Route path="live-class/zoom" element={<ZoomLiveClass />} />
               <Route path="live-class/jitsi" element={<JitsiLiveClass />} />
@@ -535,6 +542,7 @@ export default function App() {
 
               <Route path="planner" element={<TeacherLessonPlan />} />
               <Route path="syllabus" element={<CreateSyllabus />} />
+              <Route path="syllabus-manager" element={<TeacherSyllabusManager />} />
 
 
               <Route path="courses" element={<CoursesDashboard />} />
@@ -563,6 +571,8 @@ export default function App() {
               <Route path="question-papers/edit/:id" element={<QuestionPaperBuilder />} />
               <Route path="library" element={<Library />} />
               <Route path="textbooks" element={<TeacherTextbooks />} />
+              <Route path="resources" element={<TeacherResources />} />
+              <Route path="digital-resources" element={<TeacherResources />} />
               <Route path="clinic/complaints" element={<HealthComplaints />} />
               <Route path="clinic/appointments" element={<Appointments />} />
               <Route path="clinic/emergencies" element={<Emergencies />} />
@@ -599,6 +609,7 @@ export default function App() {
               <Route path="teachers" element={<AdminTeachers />} />
               <Route path="users" element={<AdminUsers />} />
               <Route path="classes" element={<AdminClasses />} />
+              <Route path="setup" element={<SetupWizardPage />} />
               <Route path="departments" element={<AdminDepartments />} />
               <Route path="cbt/manage" element={<ManageCBT />} />
               <Route path="website-settings" element={<SettingsPage />} />
@@ -609,9 +620,11 @@ export default function App() {
               <Route path="applications" element={<AdminApplications />} />
               <Route path="fees" element={<AdminFees />} />
               <Route path="reports">
-                <Route index element={<ReportsDashboardPage />} />
+                <Route index element={<AdminReports />} />
+                <Route path="dashboard" element={<ReportsDashboardPage />} />
                 <Route path="view/:type" element={<ReportViewerPage />} />
               </Route>
+              <Route path="admin-reports" element={<AdminReports />} />
               <Route path="announcements" element={<AdminAnnouncementsManagement />} />
               <Route path="branding" element={<AdminDocumentTemplates />} />
               <Route path="procurement" element={<AdminProcurement />} />
@@ -630,6 +643,22 @@ export default function App() {
               <Route path="suppliers" element={<AdminSuppliers />} />
               <Route path="assets" element={<AdminAssetManagement />} />
               <Route path="staff-admins" element={<AdminManagement />} />
+              {/* CLINIC MODULE ACCESS FOR ADMIN */}
+              <Route path="clinic">
+                <Route index element={<ClinicDashboard />} />
+                <Route path="dashboard" element={<ClinicDashboard />} />
+                <Route path="patients" element={<PatientManagement />} />
+                <Route path="hospitalization" element={<HospitalizationManager />} />
+                <Route path="triage" element={<TriageDashboard />} />
+                <Route path="pharmacy" element={<PharmacyDashboard />} />
+                <Route path="billing" element={<ClinicBillingPage />} />
+                <Route path="reports" element={<ClinicReportsPage />} />
+                <Route path="complaints" element={<HealthComplaints />} />
+                <Route path="appointments" element={<Appointments />} />
+                <Route path="emergencies" element={<Emergencies />} />
+                <Route path="referrals" element={<Referrals />} />
+                <Route path="immunizations" element={<Immunization />} />
+              </Route>
               {/* cms integrated into website-settings */}
               <Route path="document-templates" element={<AdminDocumentTemplates />} />
               <Route path="subscription" element={<AdminSubscription />} />
@@ -673,7 +702,7 @@ export default function App() {
                 <Route path="reminder-logs" element={<FeeReminderLogsPage />} />
               </Route>
               <Route path="payroll">
-                <Route path="settings" element={<SettingsPage defaultTab="financial" />} />
+                <Route path="settings" element={<PayrollSettingsPage />} />
                 <Route path="employees" element={<EmployeeManagementPage />} />
               </Route>
               <Route path="profile" element={<ProfilePage />} />
@@ -729,7 +758,7 @@ export default function App() {
               <Route path="payroll">
                 <Route index element={<PayrollList />} />
                 <Route path="run" element={<BursarPayrollRun />} />
-                <Route path="settings" element={<SettingsPage defaultTab="financial" />} />
+                <Route path="settings" element={<PayrollSettingsPage />} />
                 <Route path="employees" element={<EmployeeManagementPage />} />
               </Route>
               <Route path="tuckshop">
@@ -866,7 +895,7 @@ export default function App() {
               <Route path="settings" element={<SettingsPage />} />
               <Route path="assets" element={<AncillaryAssets />} />
               <Route path="procurement" element={<AncillaryProcurement />} />
-              <Route path="directory" element={<EmployeeManagementPage />} />
+              <Route path="directory" element={<AncillaryDirectory />} />
               <Route path="schedules" element={<AncillarySchedules />} />
               <Route path="boarding" element={<BoardingManagement />} />
               <Route path="boarding/hostel-category" element={<HostelCategory />} />
@@ -889,6 +918,8 @@ export default function App() {
               <Route path="dining-hall" element={<DHRepresentative />} />
               <Route path="sports" element={<SportsManagement />} />
               <Route path="leave" element={<LeaveManagement />} />
+              <Route path="hr-services" element={<AncillaryHRServices />} />
+              <Route path="hr" element={<AncillaryHRServices />} />
               <Route path="awards" element={<MyAwards />} />
               <Route path="give-award" element={<GiveStudentAward />} />
               <Route path="messages" element={<MessagesPage />} />
@@ -915,6 +946,8 @@ export default function App() {
               <Route index element={<ParentDashboard />} />
               <Route path="dashboard" element={<ParentDashboard />} />
               <Route path="reports" element={<ProgressReports />} />
+              <Route path="academics" element={<ParentAcademics />} />
+              <Route path="academic-details" element={<ParentAcademics />} />
               <Route path="portfolio" element={<AcademicPortfolio />} />
               <Route path="attendance" element={<AttendanceHistory />} />
               <Route path="timetable" element={<StudentTimetable />} />
@@ -984,9 +1017,12 @@ export default function App() {
               <Route path="triage" element={<TriageDashboard />} />
               <Route path="icd10" element={<Icd10Manager />} />
               <Route path="patient-history" element={<PatientHistory />} />
+              <Route path="pharmacy" element={<PharmacyDashboard />} />
+              <Route path="billing" element={<ClinicBillingPage />} />
               <Route path="emergencies" element={<Emergencies />} />
               <Route path="referrals" element={<Referrals />} />
               <Route path="immunization" element={<Immunization />} />
+              <Route path="reports" element={<ClinicReportsPage />} />
               <Route path="complaints" element={<HealthComplaints />} />
               <Route path="messages" element={<MessagesPage />} />
               <Route path="profile" element={<ProfilePage />} />
@@ -1009,7 +1045,7 @@ export default function App() {
               <Route path="interview" element={<ApplicantInterview />} />
               <Route path="fees" element={<ApplicantFees />} />
               <Route path="messages" element={<MessagesPage />} />
-              <Route path="faq" element={<Placeholder title="Applicant FAQ" />} />
+              <Route path="faq" element={<ApplicantFAQPage />} />
               <Route path="settings" element={<SettingsPage />} />
               <Route path="clinic/complaints" element={<HealthComplaints />} />
               <Route path="clinic/appointments" element={<Appointments />} />
@@ -1028,6 +1064,7 @@ export default function App() {
               <Route index element={<AcadexDashboard />} />
               <Route path="dashboard" element={<AcadexDashboard />} />
               <Route path="schools" element={<AcadexSchools />} />
+              <Route path="schools/:schoolId" element={<AcadexSchoolDetails />} />
               <Route path="provision" element={<AcadexProvisioning />} />
               <Route path="plans" element={<AcadexPlans />} />
               <Route path="revenue" element={<ComingSoon />} />
@@ -1043,6 +1080,7 @@ export default function App() {
             </Route>
           </Routes>
         </BrowserRouter>
+        </SetupProvider>
       </ToastProvider>
     </AuthProvider>
   );

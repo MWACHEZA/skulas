@@ -8,6 +8,8 @@ const path_1 = __importDefault(require("path"));
 const prisma_1 = __importDefault(require("../lib/prisma"));
 const auth_1 = require("../middleware/auth");
 const upload_1 = require("../middleware/upload");
+const ledger_service_1 = require("../services/ledger.service");
+const coa_seeder_1 = require("../../prisma/seeders/coa.seeder");
 const router = (0, express_1.Router)();
 /**
  * @route   GET /api/library/books
@@ -224,6 +226,8 @@ router.post('/books', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN'
                 teacherId = teacher.id;
             }
         }
+        const bookPrice = price ? parseFloat(price) : null;
+        const numCopies = parseInt(totalCopies) || 1;
         const book = await prisma_1.default.book.create({
             data: {
                 title,
@@ -232,20 +236,56 @@ router.post('/books', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN'
                 categoryId,
                 edition,
                 publisher,
-                price: price ? parseFloat(price) : null,
+                price: bookPrice,
                 publishedDate: publishedDate ? new Date(publishedDate) : null,
                 description,
                 status: status || 'Available',
                 subjectId,
                 classId,
-                copies: parseInt(totalCopies) || 1,
-                available: parseInt(totalCopies) || 1,
+                copies: numCopies,
+                available: numCopies,
                 coverUrl: files?.cover?.[0] ? path_1.default.join(req.uploadCategoryPath || '', files.cover[0].filename).replace(/\\/g, '/') : null,
                 pdfUrl: files?.pdf?.[0] ? path_1.default.join(req.uploadCategoryPath || '', files.pdf[0].filename).replace(/\\/g, '/') : null,
                 schoolId,
                 teacherId
             }
         });
+        // Post asset purchase JE when a price is provided:
+        //   DR  2100 Property & Equipment  [totalCost]  (library books capitalised as assets)
+        //   CR  1100 Cash on Hand          [totalCost]  (cash paid out)
+        if (bookPrice && bookPrice > 0) {
+            const totalCost = bookPrice * numCopies;
+            try {
+                const [assetId, cashId] = await Promise.all([
+                    (0, coa_seeder_1.getAccountId)(schoolId, '2100', prisma_1.default), // Property & Equipment
+                    (0, coa_seeder_1.getAccountId)(schoolId, '1100', prisma_1.default) // Cash on Hand
+                ]);
+                await ledger_service_1.LedgerService.postEntry({
+                    schoolId,
+                    date: new Date(),
+                    description: `Library acquisition: ${title} (${numCopies} cop${numCopies > 1 ? 'ies' : 'y'})`,
+                    sourceType: 'library_purchase',
+                    sourceId: book.id,
+                    createdByUserId: req.user.id,
+                    lines: [
+                        {
+                            accountId: assetId,
+                            debit: totalCost,
+                            description: `Book asset: ${title} × ${numCopies}`
+                        },
+                        {
+                            accountId: cashId,
+                            credit: totalCost,
+                            description: `Cash paid for books: ${title}`
+                        }
+                    ]
+                });
+            }
+            catch (ledgerErr) {
+                console.error('[Ledger] Library book purchase JE failed:', ledgerErr);
+                // Book is saved. Admin can post a correcting JE manually via Accounts module.
+            }
+        }
         res.status(201).json(book);
     }
     catch (error) {

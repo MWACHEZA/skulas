@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import api, { BASE_URL } from '../../lib/api';
 import { useAuth } from '../../contexts/AuthContext';
 import { useToast } from '../../context/ToastContext';
@@ -27,10 +27,52 @@ const NATIONALITIES = [
   "Yemenite"
 ];
 
+interface EditUser {
+  id: string;
+  role: string;
+  name?: string;
+  avatar?: string | null;
+  secondaryRoles?: string[];
+  staffId?: string;
+  studentId?: string;
+  metadata?: Record<string, string | number | boolean | null> | null;
+  employeeProfile?: Record<string, string | number | boolean | null> | null;
+  [key: string]: unknown;
+}
+
+interface UserEditFormData {
+  id?: string;
+  role?: string;
+  name?: string;
+  dob?: string;
+  age?: string;
+  avatar?: string;
+  [key: string]: string | number | readonly string[] | undefined;
+}
+
+interface DocFiles {
+  idDoc?: File | null;
+  residenceDoc?: File | null;
+  qualificationsDoc?: File | null;
+  transferCertificate?: File | null;
+  birthCertificate?: File | null;
+}
+
+interface SchoolClass {
+  id: string;
+  name: string;
+  level: string;
+}
+
+interface SchoolDepartment {
+  id: string;
+  name: string;
+}
+
 interface UserEditModalProps {
   isOpen: boolean;
   onClose: () => void;
-  user: any;
+  user: EditUser;
   onSuccess: () => void;
   currentUserRole: string;
 }
@@ -43,14 +85,14 @@ const UserEditModal: React.FC<UserEditModalProps> = ({
   currentUserRole
 }) => {
   const [activeTab, setActiveTab] = useState('basic');
-  const [formData, setFormData] = useState<any>({});
+  const [formData, setFormData] = useState<UserEditFormData>({});
   const [secondaryRoles, setSecondaryRoles] = useState<string[]>([]);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
-  const [docFiles, setDocFiles] = useState<any>({});
+  const [docFiles, setDocFiles] = useState<DocFiles>({});
   const [loading, setLoading] = useState(false);
-  const [classes, setClasses] = useState<any[]>([]);
-  const [departments, setDepartments] = useState<any[]>([]);
+  const [classes, setClasses] = useState<SchoolClass[]>([]);
+  const [departments, setDepartments] = useState<SchoolDepartment[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { user: currentUserSession } = useAuth();
   const { showToast } = useToast();
@@ -70,13 +112,31 @@ const UserEditModal: React.FC<UserEditModalProps> = ({
     schoolType.toLowerCase().includes('seminary')
   );
 
+  const fetchDepartments = useCallback(async () => {
+    try {
+      const { data } = await api.get('/api/departments');
+      setDepartments(data);
+    } catch {
+      console.error('Failed to fetch departments');
+    }
+  }, []);
+
+  const fetchClasses = useCallback(async () => {
+    try {
+      const { data } = await api.get('/api/reports/classes');
+      setClasses(data);
+    } catch {
+      console.error('Failed to fetch classes');
+    }
+  }, []);
+
   useEffect(() => {
     if (user) {
       setFormData({
         ...user,
         ...(user.metadata || {}),
         ...(user.employeeProfile || {}) // Include profile fields like bloodGroup
-      });
+      } as UserEditFormData);
       setSecondaryRoles(user.secondaryRoles || []);
       setAvatarPreview(user.avatar ? `${BASE_URL}/api/storage/media/${currentUserSession?.schoolCode}/images/${user.avatar}` : null);
       setDocFiles({});
@@ -86,11 +146,11 @@ const UserEditModal: React.FC<UserEditModalProps> = ({
       }
       fetchDepartments();
     }
-  }, [user]);
+  }, [user, currentUserSession?.schoolCode, fetchClasses, fetchDepartments]);
 
   useEffect(() => {
     if (formData.dob) {
-      const birthDate = new Date(formData.dob);
+      const birthDate = new Date(String(formData.dob));
       const today = new Date();
       let calculatedAge = today.getFullYear() - birthDate.getFullYear();
       const m = today.getMonth() - birthDate.getMonth();
@@ -98,34 +158,16 @@ const UserEditModal: React.FC<UserEditModalProps> = ({
         calculatedAge--;
       }
       if (calculatedAge >= 0) {
-        setFormData((prev: any) => ({ ...prev, age: calculatedAge.toString() }));
+        setFormData(prev => ({ ...prev, age: calculatedAge.toString() }));
       }
     }
   }, [formData.dob]);
-
-  const fetchDepartments = async () => {
-    try {
-      const { data } = await api.get('/api/departments');
-      setDepartments(data);
-    } catch (err) {
-      console.error('Failed to fetch departments');
-    }
-  };
-
-  const fetchClasses = async () => {
-    try {
-      const { data } = await api.get('/api/reports/classes');
-      setClasses(data);
-    } catch (err) {
-      console.error('Failed to fetch classes');
-    }
-  };
 
   if (!isOpen) return null;
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setFormData((prev: any) => ({ ...prev, [name]: value }));
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -151,7 +193,7 @@ const UserEditModal: React.FC<UserEditModalProps> = ({
         showToast('Document size exceeds 10MB limit', 'error');
         return;
       }
-      setDocFiles((prev: any) => ({ ...prev, [key]: file }));
+      setDocFiles(prev => ({ ...prev, [key]: file }));
     }
   };
 
@@ -162,8 +204,9 @@ const UserEditModal: React.FC<UserEditModalProps> = ({
     try {
       const data = new FormData();
       Object.keys(formData).forEach(key => {
-        if (typeof formData[key] !== 'object' && formData[key] !== undefined && formData[key] !== null) {
-          data.append(key, formData[key]);
+        const val = formData[key];
+        if (typeof val !== 'object' && val !== undefined && val !== null) {
+          data.append(key, String(val));
         }
       });
       
@@ -183,8 +226,9 @@ const UserEditModal: React.FC<UserEditModalProps> = ({
       showToast('User updated successfully', 'success');
       onSuccess();
       onClose();
-    } catch (error: any) {
-      showToast(error.response?.data?.error || 'Failed to update user', 'error');
+    } catch (error) {
+      const err = error as { response?: { data?: { error?: string } } };
+      showToast(err.response?.data?.error || 'Failed to update user', 'error');
     } finally {
       setLoading(false);
     }
@@ -274,21 +318,21 @@ const UserEditModal: React.FC<UserEditModalProps> = ({
               <label>Physical Address</label>
               <textarea name="address" value={formData.address || ''} onChange={handleInputChange} className="form-control" rows={2} />
             </div>
-            <div className="form-section-header col-span-2">{isK12 ? 'Family & Guardian Details' : 'Family & Next of Kin'}</div>
+            <div className="form-section-header col-span-2">{(isK12 && user.role === 'STUDENT') ? 'Family & Guardian Details' : 'Family & Next of Kin'}</div>
             <div className="form-group">
               <label>Spouse Name</label>
               <input name="spouseName" value={formData.spouseName || ''} onChange={handleInputChange} className="form-control" />
             </div>
             <div className="form-group">
-              <label>{isK12 ? 'Guardian Name' : 'Next of Kin Name'}</label>
+              <label>{(isK12 && user.role === 'STUDENT') ? 'Guardian Name' : 'Next of Kin Name'}</label>
               <input name="nokName" value={formData.nokName || ''} onChange={handleInputChange} className="form-control" />
             </div>
             <div className="form-group">
-              <label>{isK12 ? 'Guardian Relationship' : 'Next of Kin Relationship'}</label>
+              <label>{(isK12 && user.role === 'STUDENT') ? 'Guardian Relationship' : 'Next of Kin Relationship'}</label>
               <input name="nokRelationship" value={formData.nokRelationship || ''} onChange={handleInputChange} className="form-control" />
             </div>
             <div className="form-group">
-              <label>{isK12 ? 'Guardian Phone' : 'Next of Kin Phone'}</label>
+              <label>{(isK12 && user.role === 'STUDENT') ? 'Guardian Phone' : 'Next of Kin Phone'}</label>
               <input name="nokPhone" value={formData.nokPhone || ''} onChange={handleInputChange} className="form-control" />
             </div>
           </div>
@@ -340,11 +384,11 @@ const UserEditModal: React.FC<UserEditModalProps> = ({
             </div>
             <div className="form-group">
               <label>Date Assumed Post</label>
-              <input type="date" name="dateAssumedPost" value={formData.dateAssumedPost ? new Date(formData.dateAssumedPost).toISOString().split('T')[0] : ''} onChange={handleInputChange} className="form-control" />
+              <input type="date" name="dateAssumedPost" value={formData.dateAssumedPost ? new Date(String(formData.dateAssumedPost)).toISOString().split('T')[0] : ''} onChange={handleInputChange} className="form-control" />
             </div>
             <div className="form-group">
               <label>Date of Leaving</label>
-              <input type="date" name="dateOfLeaving" value={formData.dateOfLeaving ? new Date(formData.dateOfLeaving).toISOString().split('T')[0] : ''} onChange={handleInputChange} className="form-control" />
+              <input type="date" name="dateOfLeaving" value={formData.dateOfLeaving ? new Date(String(formData.dateOfLeaving)).toISOString().split('T')[0] : ''} onChange={handleInputChange} className="form-control" />
             </div>
             {/* ─── USD Account ─── */}
             <div className="form-section-header col-span-2" style={{ background: '#eff6ff', color: '#1d4ed8', borderLeft: '4px solid #3b82f6', padding: '8px 12px', borderRadius: '6px', fontWeight: 800 }}>
@@ -425,7 +469,7 @@ const UserEditModal: React.FC<UserEditModalProps> = ({
               </div>
               <div className="form-group">
                 <label>Date Admitted</label>
-                <input type="date" name="dateAdmitted" value={formData.dateAdmitted ? new Date(formData.dateAdmitted).toISOString().split('T')[0] : (formData.enrollmentDate ? new Date(formData.enrollmentDate).toISOString().split('T')[0] : '')} onChange={handleInputChange} className="form-control" />
+                <input type="date" name="dateAdmitted" value={formData.dateAdmitted ? new Date(String(formData.dateAdmitted)).toISOString().split('T')[0] : (formData.enrollmentDate ? new Date(String(formData.enrollmentDate)).toISOString().split('T')[0] : '')} onChange={handleInputChange} className="form-control" />
               </div>
               <div className="form-group">
                 <label>Student Category</label>
@@ -540,7 +584,7 @@ const UserEditModal: React.FC<UserEditModalProps> = ({
             </div>
             <div className="form-group">
               <label>Joined Date</label>
-              <input type="date" name="joinedDate" value={formData.joinedDate ? new Date(formData.joinedDate).toISOString().split('T')[0] : ''} onChange={handleInputChange} className="form-control" />
+              <input type="date" name="joinedDate" value={formData.joinedDate ? new Date(String(formData.joinedDate)).toISOString().split('T')[0] : ''} onChange={handleInputChange} className="form-control" />
             </div>
             <div className="form-group">
               <label>Secondary Role Extra</label>
@@ -645,7 +689,7 @@ const UserEditModal: React.FC<UserEditModalProps> = ({
                 </div>
                 <div className="form-group">
                    <label>PRAZ Expiry Date *</label>
-                   <input type="date" name="prazExpiry" value={formData.prazExpiry ? new Date(formData.prazExpiry).toISOString().split('T')[0] : ''} onChange={handleInputChange} className="form-control" required />
+                   <input type="date" name="prazExpiry" value={formData.prazExpiry ? new Date(String(formData.prazExpiry)).toISOString().split('T')[0] : ''} onChange={handleInputChange} className="form-control" required />
                 </div>
                 <div className="form-group">
                   <label>Tax Clearance (BP) Number *</label>
@@ -653,11 +697,11 @@ const UserEditModal: React.FC<UserEditModalProps> = ({
                 </div>
                 <div className="form-group">
                    <label>Tax Clearance Expiry *</label>
-                   <input type="date" name="taxExpiry" value={formData.taxExpiry ? new Date(formData.taxExpiry).toISOString().split('T')[0] : ''} onChange={handleInputChange} className="form-control" required />
+                   <input type="date" name="taxExpiry" value={formData.taxExpiry ? new Date(String(formData.taxExpiry)).toISOString().split('T')[0] : ''} onChange={handleInputChange} className="form-control" required />
                 </div>
                 <div className="form-group">
                    <label>NSSA Expiry Date</label>
-                   <input type="date" name="nssaExpiry" value={formData.nssaExpiry ? new Date(formData.nssaExpiry).toISOString().split('T')[0] : ''} onChange={handleInputChange} className="form-control" />
+                   <input type="date" name="nssaExpiry" value={formData.nssaExpiry ? new Date(String(formData.nssaExpiry)).toISOString().split('T')[0] : ''} onChange={handleInputChange} className="form-control" />
                 </div>
               </>
             )}
