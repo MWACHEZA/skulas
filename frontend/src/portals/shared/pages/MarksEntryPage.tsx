@@ -79,6 +79,11 @@ export default function MarksEntryPage() {
     subjectLabel
   } = useAcademicConfig();
 
+  const [frameworkMode, setFrameworkMode] = useState<'K12' | 'TERTIARY'>(() => {
+    return isTertiary ? 'TERTIARY' : 'K12';
+  });
+  const isK12Effective = frameworkMode === 'K12';
+
   const [selectedClassId, setSelectedClassId] = useState('');
   const [selectedSubjectId, setSelectedSubjectId] = useState('');
   const [term, setTerm] = useState(registeredTerms[0] || (isTertiary ? 'Semester 1' : 'Term 1'));
@@ -364,7 +369,7 @@ export default function MarksEntryPage() {
       const data = marks[student.id] || { caScore: '', examScore: '', comment: '', assessmentScores: {} };
       let compositeScore = 0;
 
-      if (isK12 && selectedCols.length > 0 && totalSelectedMax > 0) {
+      if (isK12Effective && selectedCols.length > 0 && totalSelectedMax > 0) {
         // K12 calculation from selected tests/exercises/exams
         const obtainedTotal = selectedCols.reduce((sum, col) => {
           const val = parseFloat(data.assessmentScores[col.id]) || 0;
@@ -395,7 +400,7 @@ export default function MarksEntryPage() {
     });
 
     return calculated;
-  }, [students, marks, assessmentColumns, isK12, isTertiary, caWeight, examWeight, effectiveScale]);
+  }, [students, marks, assessmentColumns, isK12Effective, isTertiary, caWeight, examWeight, effectiveScale]);
 
   // Overall Class Average
   const classAverage = useMemo(() => {
@@ -571,7 +576,7 @@ export default function MarksEntryPage() {
 
       {/* ASSESSMENT CONFIGURATION FILTER CARD */}
       <div className="portal-card animate-in fade-in slide-in-from-top-4 duration-500" style={{ marginBottom: '32px' }}>
-        <div className="portal-card-header">
+        <div className="portal-card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
             <div style={{ width: '48px', height: '48px', borderRadius: '14px', background: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6366f1', border: '1px solid #e2e8f0' }}>
               <i className="fas fa-sliders-h" style={{ fontSize: '1.2rem' }}></i>
@@ -582,6 +587,50 @@ export default function MarksEntryPage() {
                 Define the academic parameters and target registry for student performance auditing.
               </p>
             </div>
+          </div>
+
+          {/* Explicit Framework Mode Selector */}
+          <div style={{ display: 'flex', gap: '8px', background: '#f8fafc', padding: '6px', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+            <button
+              type="button"
+              onClick={() => setFrameworkMode('K12')}
+              className={isK12Effective ? 'portal-btn-primary' : 'portal-btn-ghost'}
+              style={{
+                padding: '8px 16px',
+                fontSize: '0.85rem',
+                fontWeight: 900,
+                borderRadius: '8px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                background: isK12Effective ? '#4338ca' : 'transparent',
+                color: isK12Effective ? '#ffffff' : '#64748b',
+                border: isK12Effective ? 'none' : '1px solid transparent'
+              }}
+            >
+              <i className="fas fa-school"></i>
+              K-12 Terminal Assessment (CATs & Exams)
+            </button>
+            <button
+              type="button"
+              onClick={() => setFrameworkMode('TERTIARY')}
+              className={!isK12Effective ? 'portal-btn-primary' : 'portal-btn-ghost'}
+              style={{
+                padding: '8px 16px',
+                fontSize: '0.85rem',
+                fontWeight: 900,
+                borderRadius: '8px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                background: !isK12Effective ? '#4338ca' : 'transparent',
+                color: !isK12Effective ? '#ffffff' : '#64748b',
+                border: !isK12Effective ? 'none' : '1px solid transparent'
+              }}
+            >
+              <i className="fas fa-university"></i>
+              Weighted CA + Exam
+            </button>
           </div>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '24px', alignItems: 'end', padding: '8px' }}>
@@ -726,12 +775,28 @@ export default function MarksEntryPage() {
                 </h3>
               </div>
               <p style={{ margin: '6px 0 0 0', fontSize: '0.9rem', color: '#64748b', fontWeight: 700 }}>
-                Recording assessments for {term}, Cycle {year} • {isK12 ? 'K-12 Terminal Evaluation' : 'Tertiary Evaluation'}
+                Recording assessments for {term}, Cycle {year} • {isK12Effective ? 'K-12 Terminal Evaluation' : 'Tertiary Evaluation'}
               </p>
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              {isK12 && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+              <button
+                onClick={() => setIsScaleModalOpen(true)}
+                className="portal-btn-ghost"
+                style={{
+                  padding: '10px 18px',
+                  fontWeight: 800,
+                  borderRadius: '10px',
+                  border: '1px solid #fde68a',
+                  color: '#b45309',
+                  background: '#fef3c7'
+                }}
+                title="Moderate grade boundaries and thresholds"
+              >
+                <i className="fas fa-balance-scale mr-2"></i>Moderate Grading Scale
+              </button>
+
+              {isK12Effective && (
                 <button
                   onClick={() => setIsAddColumnModalOpen(true)}
                   className="portal-btn-ghost"
@@ -766,7 +831,7 @@ export default function MarksEntryPage() {
                 <tr>
                   <th style={{ width: '22%', minWidth: '180px' }}>Student Identity</th>
 
-                  {isK12 ? (
+                  {isK12Effective ? (
                     // K12 Dynamic Assessment Columns
                     assessmentColumns.map(col => (
                       <th key={col.id} style={{ textAlign: 'center', minWidth: '130px', padding: '10px 8px' }}>
@@ -848,7 +913,7 @@ export default function MarksEntryPage() {
                       </td>
 
                       {/* Marks inputs */}
-                      {isK12 ? (
+                      {isK12Effective ? (
                         // K12 Assessment Inputs
                         assessmentColumns.map(col => (
                           <td key={col.id} style={{ textAlign: 'center' }}>

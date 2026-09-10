@@ -62,20 +62,29 @@ export default function DashboardLayout({
   useLedgerSSE();
 
   const [todayAttendance, setTodayAttendance] = useState<TodayAttendance | null>(null);
+  const [checkingAttendance, setCheckingAttendance] = useState(true);
   const [showClockModal, setShowClockModal] = useState(false);
   const [clockActionType, setClockActionType] = useState<'IN' | 'OUT'>('IN');
 
   const isStaffUser = user && !['STUDENT', 'PARENT', 'SUPPLIER', 'ALUMNI'].includes(user.role);
 
   const fetchTodayAttendance = useCallback(async () => {
-    if (!isStaffUser) return;
+    if (!isStaffUser) {
+      setCheckingAttendance(false);
+      return;
+    }
     try {
+      setCheckingAttendance(true);
       const { data } = await api.get('/api/staff-attendance/today');
       setTodayAttendance(data || null);
     } catch (error) {
       console.error('Failed to fetch today attendance:', error);
+    } finally {
+      setCheckingAttendance(false);
     }
   }, [isStaffUser]);
+
+  const requiresMandatoryClockIn = Boolean(isStaffUser && !checkingAttendance && (!todayAttendance || !todayAttendance.timeIn));
 
   const [reflection, setReflection] = useState<SpiritualReflection | null>(null);
   const [dismissedReflectionId, setDismissedReflectionId] = useState<string | null>(() => 
@@ -413,7 +422,17 @@ export default function DashboardLayout({
         onClose={() => setIsMaintModalOpen(false)}
       />
 
-      {showClockModal && (
+      {/* Mandatory Staff Clock-In Barrier */}
+      {requiresMandatoryClockIn && (
+        <ClockInModal 
+          action="IN"
+          isMandatory={true}
+          onSuccess={fetchTodayAttendance}
+        />
+      )}
+
+      {/* Non-mandatory Clock modal (e.g. for clock-out) */}
+      {!requiresMandatoryClockIn && showClockModal && (
         <ClockInModal 
           action={clockActionType}
           onClose={() => setShowClockModal(false)}

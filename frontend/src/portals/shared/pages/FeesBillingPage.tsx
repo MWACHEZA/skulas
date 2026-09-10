@@ -271,12 +271,13 @@ export default function FeesBillingPage() {
         <div className="portal-modal-overlay no-print" onClick={() => setIsModalOpen(false)}>
           <div 
             className="portal-modal-card animate-in zoom-in duration-200"
-            style={{ maxWidth: '640px', width: '90%', padding: '24px', background: 'white', color: '#1e293b', position: 'relative', maxHeight: '90vh', overflowY: 'auto', borderRadius: '16px', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)' }}
+            style={{ maxWidth: '680px', width: '92%', background: 'white', color: '#1e293b', position: 'relative', maxHeight: '90vh', display: 'flex', flexDirection: 'column', borderRadius: '20px', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)', overflow: 'hidden' }}
             onClick={e => e.stopPropagation()}
           >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', borderBottom: '1px solid #e2e8f0', paddingBottom: '12px' }}>
+            {/* Fixed Header */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #e2e8f0', padding: '18px 24px', flexShrink: 0, background: '#ffffff' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: '#eff6ff', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#2563eb' }}>
+                <div style={{ width: '38px', height: '38px', borderRadius: '10px', background: '#eff6ff', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#2563eb' }}>
                   <i className="fas fa-sliders-h"></i>
                 </div>
                 <div>
@@ -290,47 +291,48 @@ export default function FeesBillingPage() {
               </button>
             </div>
 
-            <div className="portal-card" style={{ padding: '0px', border: 'none', boxShadow: 'none' }}>
+            {/* Scrollable Modal Body */}
+            <div style={{ padding: '24px', overflowY: 'auto', flex: 1, maxHeight: 'calc(90vh - 150px)' }} className="custom-scrollbar">
               {activeTab === 'standard' ? (
                 <>
-                  <div className="form-group" style={{ marginBottom: '32px' }}>
+                  <div className="form-group" style={{ marginBottom: '24px' }}>
                     <label className="portal-label">Strategic Fee Group Registry</label>
-                    <div style={{ display: 'flex', gap: '10px', marginBottom: '24px', overflowX: 'auto', paddingBottom: '4px' }}>
+                    <div style={{ display: 'flex', gap: '10px', marginBottom: '16px', overflowX: 'auto', paddingBottom: '4px' }}>
                       {Array.from(new Set((Array.isArray(feeGroups) ? feeGroups : []).map(g => g.year))).sort((a, b) => b - a).map(year => (
                         <button
                           key={year}
                           type="button"
                           onClick={() => setActiveFeeYear(year)}
                           className={`portal-btn-${activeFeeYear === year ? 'primary' : 'ghost'}`}
-                          style={{ padding: '10px 24px', fontSize: '0.9rem', fontWeight: 900, borderRadius: '10px', minWidth: '100px' }}
+                          style={{ padding: '8px 20px', fontSize: '0.85rem', fontWeight: 900, borderRadius: '10px', minWidth: '90px' }}
                         >
                           {year}
                         </button>
                       ))}
                     </div>
-                    <div style={{ maxHeight: '300px', overflowY: 'auto', border: '1px solid #f1f5f9', borderRadius: '20px', background: '#f8fafc', padding: '12px' }} className="custom-scrollbar">
+                    <div style={{ maxHeight: '240px', overflowY: 'auto', border: '1px solid #f1f5f9', borderRadius: '16px', background: '#f8fafc', padding: '12px' }} className="custom-scrollbar">
                       {(Array.isArray(feeGroups) ? feeGroups : []).filter(g => g.year === activeFeeYear).length === 0 ? (
-                          <div style={{ padding: '40px', textAlign: 'center', color: '#94a3b8', fontWeight: 800 }}>
+                          <div style={{ padding: '30px', textAlign: 'center', color: '#94a3b8', fontWeight: 800 }}>
                               <i className="fas fa-folder-open fa-2x mb-3 opacity-20"></i>
                               <p>No fee structures identified for {activeFeeYear}</p>
                           </div>
                       ) : (Array.isArray(feeGroups) ? feeGroups : []).filter(g => g.year === activeFeeYear).map(group => (
-                        <label key={group.id} style={{ display: 'flex', alignItems: 'center', gap: '20px', padding: '16px', cursor: 'pointer', borderRadius: '14px', marginBottom: '8px', border: '1px solid transparent', transition: 'all 0.2s' }} className="hover-card">
+                        <label key={group.id} style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '12px 14px', cursor: 'pointer', borderRadius: '12px', marginBottom: '8px', border: '1px solid #e2e8f0', background: selectedFeeGroupIds.includes(group.id) ? '#eff6ff' : '#ffffff', transition: 'all 0.2s' }} className="hover-card">
                           <input
                             type="checkbox"
                             checked={selectedFeeGroupIds.includes(group.id)}
                             onChange={() => setSelectedFeeGroupIds(prev => 
                               prev.includes(group.id) ? prev.filter(id => id !== group.id) : [...prev, group.id]
                             )}
-                            style={{ width: '24px', height: '24px', accentColor: '#2563eb' }}
+                            style={{ width: '20px', height: '20px', accentColor: '#2563eb' }}
                           />
                           <div style={{ flex: 1 }}>
-                            <div style={{ fontSize: '1.05rem', fontWeight: 900, color: '#1e293b' }}>{group.name}</div>
-                            <div style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: 800, marginTop: '2px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                              <span className="status-badge" style={{ background: '#fff', padding: '2px 10px', fontSize: '0.7rem' }}>{group.billingType?.toUpperCase()}</span>
-                              <span style={{ color: '#059669', fontWeight: 900, fontSize: '1rem' }}>{formatCurrency(group.amount)}</span>
+                            <div style={{ fontSize: '1rem', fontWeight: 900, color: '#1e293b' }}>{group.name}</div>
+                            <div style={{ fontSize: '0.82rem', color: '#64748b', fontWeight: 800, marginTop: '2px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                              <span className="status-badge" style={{ background: '#f1f5f9', padding: '2px 8px', fontSize: '0.68rem' }}>{group.billingType?.toUpperCase()}</span>
+                              <span style={{ color: '#059669', fontWeight: 900, fontSize: '0.95rem' }}>{formatCurrency(group.amount)}</span>
                             </div>
-                            <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '6px', fontWeight: 700 }}>
+                            <div style={{ fontSize: '0.72rem', color: '#94a3b8', marginTop: '4px', fontWeight: 700 }}>
                               Ledger Map: 
                               <span style={{ color: '#475569', marginLeft: '6px' }}>AR: {accounts.find(a => a.id === group.arAccountId)?.code || '1210 (Default)'}</span> 
                               <span style={{ margin: '0 6px' }}>|</span>
@@ -342,16 +344,16 @@ export default function FeesBillingPage() {
                     </div>
                   </div>
 
-                  <div className="form-group" style={{ marginBottom: '32px' }}>
+                  <div className="form-group" style={{ marginBottom: '24px' }}>
                     <label className="portal-label">Institutional {t('class')} Entities</label>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))', gap: '10px' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(95px, 1fr))', gap: '8px', maxHeight: '180px', overflowY: 'auto', padding: '4px' }} className="custom-scrollbar">
                       {(Array.isArray(classes) ? classes : []).map(cls => (
                         <button
                           key={cls.id}
                           type="button"
                           onClick={() => setSelectedClassIds(prev => prev.includes(cls.id) ? prev.filter(id => id !== cls.id) : [...prev, cls.id])}
                           className={`portal-btn-${selectedClassIds.includes(cls.id) ? 'primary' : 'ghost'}`}
-                          style={{ padding: '10px', fontSize: '0.85rem', fontWeight: 900, borderRadius: '10px' }}
+                          style={{ padding: '8px', fontSize: '0.8rem', fontWeight: 900, borderRadius: '8px' }}
                         >
                           {cls.name}
                         </button>
@@ -359,16 +361,16 @@ export default function FeesBillingPage() {
                     </div>
                   </div>
 
-                  <div className="form-group" style={{ marginBottom: '32px' }}>
+                  <div className="form-group" style={{ marginBottom: '24px' }}>
                     <label className="portal-label">Enrollment Classification Audit</label>
-                    <div style={{ display: 'flex', gap: '12px' }}>
+                    <div style={{ display: 'flex', gap: '10px' }}>
                       {['', 'Day', 'Boarder'].map(cat => (
                         <button
                           key={cat}
                           type="button"
                           onClick={() => setSelectedCategory(cat)}
                           className={`portal-btn-${selectedCategory === cat ? 'primary' : 'ghost'}`}
-                          style={{ flex: 1, padding: '12px', fontSize: '0.9rem', fontWeight: 900, borderRadius: '12px' }}
+                          style={{ flex: 1, padding: '10px', fontSize: '0.85rem', fontWeight: 900, borderRadius: '10px' }}
                         >
                           {cat || 'Aggregated Registry'}
                         </button>
@@ -378,13 +380,13 @@ export default function FeesBillingPage() {
                 </>
               ) : (
                 <>
-                  <div className="form-group" style={{ marginBottom: '32px' }}>
+                  <div className="form-group" style={{ marginBottom: '24px' }}>
                     <label className="portal-label">Ad-Hoc Fee Categorization</label>
                     <select
                       className="portal-input"
                       value={customFeeGroupId}
                       onChange={e => setCustomFeeGroupId(e.target.value)}
-                      style={{ fontWeight: 800, height: '52px' }}
+                      style={{ fontWeight: 800, height: '50px' }}
                     >
                       <option value="">-- Select Authorized Fee Entity --</option>
                       {(Array.isArray(feeGroups) ? feeGroups : []).map(group => (
@@ -393,10 +395,10 @@ export default function FeesBillingPage() {
                     </select>
                   </div>
 
-                  <div className="form-group" style={{ marginBottom: '32px' }}>
+                  <div className="form-group" style={{ marginBottom: '24px' }}>
                     <label className="portal-label">Defined Ad-Hoc Settlement Amount ($)</label>
                     <div style={{ position: 'relative' }}>
-                      <span style={{ position: 'absolute', left: '20px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8', fontWeight: 900, fontSize: '1.25rem' }}>$</span>
+                      <span style={{ position: 'absolute', left: '18px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8', fontWeight: 900, fontSize: '1.25rem' }}>$</span>
                       <input
                         type="number"
                         step="0.01"
@@ -404,25 +406,25 @@ export default function FeesBillingPage() {
                         placeholder="0.00"
                         value={customAmount}
                         onChange={e => setCustomAmount(e.target.value)}
-                        style={{ paddingLeft: '48px', fontWeight: 900, color: '#e11d48', height: '60px', fontSize: '1.5rem', borderRadius: '16px' }}
+                        style={{ paddingLeft: '44px', fontWeight: 900, color: '#e11d48', height: '54px', fontSize: '1.4rem', borderRadius: '14px' }}
                       />
                     </div>
                   </div>
                 </>
               )}
 
-              <div className="form-group" style={{ marginBottom: '32px' }}>
+              <div className="form-group" style={{ marginBottom: '24px' }}>
                 <label className="portal-label">Authorization Due Date</label>
                 <input
                   type="date"
                   className="portal-input"
                   value={dueDate}
                   onChange={e => setDueDate(e.target.value)}
-                  style={{ fontWeight: 800, height: '52px', borderRadius: '12px' }}
+                  style={{ fontWeight: 800, height: '48px', borderRadius: '10px' }}
                 />
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '24px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginBottom: '16px' }}>
                 <div className="form-group">
                   <label className="portal-label">Payment Discount ($)</label>
                   <input
@@ -432,12 +434,12 @@ export default function FeesBillingPage() {
                     placeholder="0.00"
                     value={discount}
                     onChange={e => setDiscount(e.target.value)}
-                    style={{ height: '48px' }}
+                    style={{ height: '46px' }}
                   />
                 </div>
                 <div className="form-group">
                   <label className="portal-label">Payment Status</label>
-                  <select className="portal-input" value={paymentStatus} onChange={e => setPaymentStatus(e.target.value)} style={{ height: '48px' }}>
+                  <select className="portal-input" value={paymentStatus} onChange={e => setPaymentStatus(e.target.value)} style={{ height: '46px' }}>
                     <option value="unpaid">Unpaid</option>
                     <option value="paid">Paid</option>
                   </select>
@@ -445,7 +447,7 @@ export default function FeesBillingPage() {
                 {paymentStatus === 'paid' && (
                   <div className="form-group" style={{ gridColumn: '1 / -1' }}>
                     <label className="portal-label">Payment Method</label>
-                    <select className="portal-input" value={paymentMethod} onChange={e => setPaymentMethod(e.target.value)} style={{ height: '48px' }}>
+                    <select className="portal-input" value={paymentMethod} onChange={e => setPaymentMethod(e.target.value)} style={{ height: '46px' }}>
                       <option value="">-- Select Method --</option>
                       {paymentMethods.length > 0
                         ? paymentMethods.map(m => (
@@ -470,31 +472,32 @@ export default function FeesBillingPage() {
                     placeholder="Custom invoice description..."
                     value={description}
                     onChange={e => setDescription(e.target.value)}
-                    style={{ height: '48px' }}
+                    style={{ height: '46px' }}
                   />
                 </div>
               </div>
+            </div>
 
-              <div style={{ display: 'flex', gap: '12px', marginTop: '32px' }}>
-                <button
-                  type="button"
-                  onClick={() => setIsModalOpen(false)}
-                  className="portal-btn-ghost"
-                  style={{ flex: 1, height: '56px', borderRadius: '14px', fontWeight: 800 }}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  onClick={activeTab === 'standard' ? handleProcessStandard : handleProcessCustom}
-                  disabled={processing}
-                  className="portal-btn-primary"
-                  style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px', background: '#059669', border: 'none', boxShadow: '0 8px 20px rgba(5, 150, 105, 0.2)' }}
-                >
-                  {processing ? <i className="fas fa-spinner fa-spin"></i> : <i className="fas fa-check-double"></i>}
-                  {processing ? 'AUTHORIZING BATCH...' : 'AUTHORIZE INVOICES'}
-                </button>
-              </div>
+            {/* Sticky Fixed Footer */}
+            <div style={{ display: 'flex', gap: '12px', padding: '16px 24px', borderTop: '1px solid #e2e8f0', background: '#f8fafc', flexShrink: 0, justifyContent: 'flex-end', alignItems: 'center' }}>
+              <button
+                type="button"
+                onClick={() => setIsModalOpen(false)}
+                className="portal-btn-ghost"
+                style={{ height: '48px', padding: '0 24px', borderRadius: '12px', fontWeight: 800 }}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={activeTab === 'standard' ? handleProcessStandard : handleProcessCustom}
+                disabled={processing}
+                className="portal-btn-primary"
+                style={{ padding: '0 28px', fontWeight: 900, height: '48px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '10px', background: '#059669', border: 'none', boxShadow: '0 4px 12px rgba(5, 150, 105, 0.25)' }}
+              >
+                {processing ? <i className="fas fa-spinner fa-spin"></i> : <i className="fas fa-check-double"></i>}
+                {processing ? 'AUTHORIZING BATCH...' : 'AUTHORIZE INVOICES'}
+              </button>
             </div>
           </div>
         </div>
