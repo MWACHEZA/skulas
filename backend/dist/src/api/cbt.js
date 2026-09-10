@@ -187,6 +187,49 @@ router.post('/:id/questions', auth_1.requireAuth, (0, auth_1.requireRole)('TEACH
         res.status(500).json({ error: 'Failed to add question' });
     }
 });
+// Update a question
+router.put('/:examId/questions/:questionId', auth_1.requireAuth, (0, auth_1.requireRole)('TEACHER', 'SCHOOL_ADMIN', 'SUPER_ADMIN'), async (req, res) => {
+    try {
+        const examId = req.params.examId;
+        const questionId = req.params.questionId;
+        const { type, mark, question, options, answer, section, page } = req.body;
+        const exam = await prisma_1.default.cBTExam.findFirst({ where: { id: examId } });
+        if (!exam || exam.schoolId !== req.user.schoolId) {
+            return res.status(404).json({ error: 'Exam not found' });
+        }
+        const existingQ = await prisma_1.default.cBTQuestion.findUnique({ where: { id: questionId } });
+        if (!existingQ || existingQ.examId !== examId) {
+            return res.status(404).json({ error: 'Question not found' });
+        }
+        const updatedQ = await prisma_1.default.cBTQuestion.update({
+            where: { id: questionId },
+            data: {
+                type,
+                mark: Number(mark),
+                question,
+                options: options || [],
+                answer,
+                section: section || null,
+                page: page ? Number(page) : 1
+            }
+        });
+        // Update total marks of the exam if mark changed
+        const markDifference = Number(mark) - existingQ.mark;
+        if (markDifference !== 0) {
+            await prisma_1.default.cBTExam.update({
+                where: { id: examId },
+                data: {
+                    totalMarks: { increment: markDifference }
+                }
+            });
+        }
+        res.json({ success: true, question: updatedQ });
+    }
+    catch (error) {
+        console.error('Error updating question:', error);
+        res.status(500).json({ error: 'Failed to update question' });
+    }
+});
 // Delete a question
 router.delete('/:examId/questions/:questionId', auth_1.requireAuth, (0, auth_1.requireRole)('TEACHER', 'SCHOOL_ADMIN', 'SUPER_ADMIN'), async (req, res) => {
     try {

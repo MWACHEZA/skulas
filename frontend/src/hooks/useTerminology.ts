@@ -33,6 +33,16 @@ type DomainLabels = {
   houses: string;
   club: string;
   clubs: string;
+  // Extended keys
+  department: string;       // "Department" vs "Faculty"
+  departments: string;
+  prefects: string;         // "Prefects" vs "Student Representative Council"
+  prefectsShort: string;   // "Prefects" vs "SRC"
+  grade: string;            // "Grade" vs "Level" vs "Form"
+  grades_label: string;     // "Grades" vs "Levels"
+  migration: string;        // "Migrate Class" vs "Migrate Cohort"
+  syllabus: string;         // "Syllabus" vs "Course Outline"
+  headTitle: string;        // "Principal" vs "Dean / Head of Department"
 };
 
 const K12_LABELS: DomainLabels = {
@@ -68,6 +78,15 @@ const K12_LABELS: DomainLabels = {
   houses: 'Houses',
   club: 'Club',
   clubs: 'Clubs',
+  department: 'Department',
+  departments: 'Departments',
+  prefects: 'Prefects',
+  prefectsShort: 'Prefects',
+  grade: 'Grade',
+  grades_label: 'Grades',
+  migration: 'Migrate Class',
+  syllabus: 'Syllabus',
+  headTitle: 'Principal',
 };
 
 const NURSING_LABELS: DomainLabels = {
@@ -103,6 +122,15 @@ const NURSING_LABELS: DomainLabels = {
   houses: 'Dormitories / Ward Groups',
   club: 'Nursing Society',
   clubs: 'Nursing Societies',
+  department: 'Faculty / Division',
+  departments: 'Faculties / Divisions',
+  prefects: 'Student Representative Council (SRC)',
+  prefectsShort: 'SRC',
+  grade: 'Level',
+  grades_label: 'Levels',
+  migration: 'Migrate Cohort',
+  syllabus: 'Course Outline',
+  headTitle: 'Principal / Director',
 };
 
 const POLYTECHNIC_LABELS: DomainLabels = {
@@ -138,6 +166,15 @@ const POLYTECHNIC_LABELS: DomainLabels = {
   houses: 'Hostels / Houses',
   club: 'Student Club / Union',
   clubs: 'Student Clubs / Unions',
+  department: 'Faculty',
+  departments: 'Faculties',
+  prefects: 'Student Representative Council (SRC)',
+  prefectsShort: 'SRC',
+  grade: 'Level',
+  grades_label: 'Levels',
+  migration: 'Migrate Cohort',
+  syllabus: 'Course Outline',
+  headTitle: 'Principal / Rector',
 };
 
 const SEMINARY_LABELS: DomainLabels = {
@@ -173,6 +210,15 @@ const SEMINARY_LABELS: DomainLabels = {
   houses: 'Formation Houses',
   club: 'Confraternity / Sodality',
   clubs: 'Confraternities / Sodalities',
+  department: 'Faculty / Division',
+  departments: 'Faculties / Divisions',
+  prefects: 'Student Representative Council (SRC)',
+  prefectsShort: 'SRC',
+  grade: 'Year / Level',
+  grades_label: 'Years / Levels',
+  migration: 'Migrate Cohort',
+  syllabus: 'Course Outline',
+  headTitle: 'Rector',
 };
 
 const UNIVERSITY_LABELS: DomainLabels = {
@@ -208,6 +254,15 @@ const UNIVERSITY_LABELS: DomainLabels = {
   houses: 'Halls of Residence',
   club: 'Student Society',
   clubs: 'Student Societies',
+  department: 'Faculty',
+  departments: 'Faculties',
+  prefects: 'Student Representative Council (SRC)',
+  prefectsShort: 'SRC',
+  grade: 'Level / Year',
+  grades_label: 'Levels',
+  migration: 'Migrate Cohort',
+  syllabus: 'Course Outline',
+  headTitle: 'Dean / Vice Chancellor',
 };
 
 export function useTerminology() {
@@ -220,17 +275,17 @@ export function useTerminology() {
   const isPoly = type.includes('poly') || type.includes('technical') || type.includes('vocational');
   const isUniversity = type.includes('university') || type.includes('varsity') || type.includes('tertiary');
   const isSeminary = type.includes('seminary') || type.includes('theological');
+  const isK12 = !isMedical && !isPoly && !isUniversity && !isSeminary;
+  const isTertiary = !isK12;
   
   const labels = isUniversity ? UNIVERSITY_LABELS : (isPoly ? POLYTECHNIC_LABELS : (isMedical ? NURSING_LABELS : (isSeminary ? SEMINARY_LABELS : K12_LABELS)));
 
   /**
-   * Translates a internal key to a domain-specific label
-   * @param key - The terminology key
-   * @param plural - Whether to return plural form
+   * Translates an internal key to a domain-specific label
    */
   const t = (key: keyof DomainLabels) => {
     return labels[key] || key;
   };
 
-  return { t, labels, isMedical, isPoly, isUniversity, isSeminary };
+  return { t, labels, isMedical, isPoly, isUniversity, isSeminary, isK12, isTertiary };
 }

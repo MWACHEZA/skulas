@@ -1,15 +1,57 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { generateShortCode } from '../../../lib/utils';
-import { useTerminology } from '../../../hooks/useTerminology';
+import { useAcademicConfig } from '../../../hooks/useAcademicConfig';
+
+export interface DepartmentItem {
+  id: string;
+  name: string;
+  code?: string;
+  deptCode?: string;
+}
+
+export interface ActiveTeacherItem {
+  id: string;
+  name: string;
+  email?: string;
+  classes?: string[];
+}
+
+export interface CreatorItem {
+  id: string;
+  name: string;
+  role?: string;
+}
+
+export interface SubjectItem {
+  id: string;
+  name: string;
+  code?: string;
+  department?: string;
+  departmentId?: string;
+  credits?: number | string;
+  isIndustrial?: boolean;
+  isProject?: boolean;
+  isSubsidiary?: boolean;
+  caWeight?: number | string;
+  examWeight?: number | string;
+  dept?: DepartmentItem | null;
+  creator?: CreatorItem | null;
+  activeTeachers?: ActiveTeacherItem[];
+  canEdit?: boolean;
+  isAssignedToCaller?: boolean;
+  _count?: {
+    teachers?: number;
+  };
+}
 
 export default function AdminSubjects() {
-  const [subjects, setSubjects] = useState<any[]>([]);
-  const [departments, setDepartments] = useState<any[]>([]);
+  const [subjects, setSubjects] = useState<SubjectItem[]>([]);
+  const [departments, setDepartments] = useState<DepartmentItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingSubject, setEditingSubject] = useState<any>(null);
+  const [editingSubject, setEditingSubject] = useState<SubjectItem | null>(null);
   const [formData, setFormData] = useState({ 
     name: '', 
     code: '', 
@@ -24,13 +66,9 @@ export default function AdminSubjects() {
   });
   
   const { showToast } = useToast();
-  const { t, isUniversity } = useTerminology();
+  const { t, isUniversity, subjectLabel } = useAcademicConfig();
 
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       const [subsRes, deptsRes] = await Promise.all([
         api.get('/api/subjects'),
@@ -39,14 +77,18 @@ export default function AdminSubjects() {
       setSubjects(subsRes.data);
       setDepartments(deptsRes.data);
     } catch (err) {
+      console.error('Failed to load subjects data:', err);
       showToast('Failed to load data', 'error');
-    
     } finally {
       setLoading(false);
     }
-  };
+  }, [showToast]);
 
-  const handleOpenModal = (sub: any = null) => {
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  const handleOpenModal = (sub: SubjectItem | null = null) => {
     if (sub) {
       setEditingSubject(sub);
       setFormData({ 
@@ -92,8 +134,8 @@ export default function AdminSubjects() {
       setIsModalOpen(false);
       fetchData();
     } catch (err) {
+      console.error('Failed to save subject:', err);
       showToast('Action failed', 'error');
-    
     }
   };
 
@@ -104,8 +146,8 @@ export default function AdminSubjects() {
       showToast('Subject removed', 'success');
       fetchData();
     } catch (err) {
+      console.error('Failed to delete subject:', err);
       showToast('Failed to delete subject', 'error');
-    
     }
   };
 
@@ -132,7 +174,17 @@ export default function AdminSubjects() {
              <div style={{ padding: 40, textAlign: 'center' }}><i className="fas fa-spinner fa-spin"></i> Loading...</div>
           ) : (
             <table className="portal-table">
-              <thead><tr><th>{t('subject')} Name</th><th>Code</th>{isUniversity && <th>Credits</th>}<th>Department</th><th>Active Teachers</th><th>Actions</th></tr></thead>
+              <thead>
+                <tr>
+                  <th>{subjectLabel || t('subject')} Name</th>
+                  <th>Code</th>
+                  {isUniversity && <th>Credits</th>}
+                  <th>Department</th>
+                  <th>Active Teachers</th>
+                  <th>Created By</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
               <tbody>
                 {subjects.length > 0 ? subjects.map(s => (
                   <tr key={s.id}>
@@ -140,14 +192,55 @@ export default function AdminSubjects() {
                     <td style={{ fontFamily: 'monospace' }}>{s.code || 'N/A'}</td>
                     {isUniversity && <td style={{ fontWeight: 700, color: 'var(--portal-primary)' }}>{s.credits || 0}</td>}
                     <td><span className="portal-badge neutral">{s.dept?.name || s.department || 'General'}</span></td>
-                    <td>{s._count?.teachers || 0}</td>
+                    <td>
+                      {s.activeTeachers && s.activeTeachers.length > 0 ? (
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+                          {s.activeTeachers.map(at => (
+                            <span 
+                              key={at.id} 
+                              className="portal-badge success" 
+                              style={{ fontSize: '0.75rem', fontWeight: 600 }}
+                              title={at.classes && at.classes.length > 0 ? `Classes: ${at.classes.join(', ')}` : 'Assigned Teacher'}
+                            >
+                              <i className="fas fa-chalkboard-teacher" style={{ marginRight: 4 }}></i>
+                              {at.name}
+                            </span>
+                          ))}
+                        </div>
+                      ) : (
+                        <span className="portal-badge neutral" style={{ opacity: 0.6, fontSize: '0.75rem' }}>
+                          Unassigned
+                        </span>
+                      )}
+                    </td>
+                    <td>
+                      {s.creator ? (
+                        <div style={{ fontSize: '0.85rem', color: '#334155' }}>
+                          <span style={{ fontWeight: 600 }}>{s.creator.name}</span>
+                          {s.creator.role && <div style={{ fontSize: '0.72rem', color: '#64748b' }}>{s.creator.role}</div>}
+                        </div>
+                      ) : (
+                        <span style={{ fontSize: '0.8rem', color: '#94a3b8' }}>System Admin</span>
+                      )}
+                    </td>
                     <td>
                       <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-start' }}>
                         <button 
-                          onClick={() => handleOpenModal(s)} 
+                          onClick={() => s.canEdit !== false && handleOpenModal(s)} 
                           className="portal-btn-ghost" 
-                          title="Edit"
-                          style={{ width: 36, height: 36, padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#eab308' }}
+                          title={s.canEdit === false ? "A teacher can only edit this subject if formally assigned to teach it." : "Edit"}
+                          disabled={s.canEdit === false}
+                          style={{ 
+                            width: 36, 
+                            height: 36, 
+                            padding: 0, 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            justifyContent: 'center', 
+                            color: s.canEdit === false ? '#94a3b8' : '#eab308',
+                            cursor: s.canEdit === false ? 'not-allowed' : 'pointer',
+                            opacity: s.canEdit === false ? 0.4 : 1
+                          }}
                         >
                           <i className="fas fa-edit"></i>
                         </button>
@@ -163,7 +256,7 @@ export default function AdminSubjects() {
                     </td>
                   </tr>
                 )) : (
-                  <tr><td colSpan={5} style={{ textAlign: 'center', padding: 30, color: '#718096' }}>No subjects defined in your catalog.</td></tr>
+                  <tr><td colSpan={7} style={{ textAlign: 'center', padding: 30, color: '#718096' }}>No {subjectLabel.toLowerCase()}s defined in your catalog.</td></tr>
                 )}
               </tbody>
             </table>
@@ -219,7 +312,7 @@ export default function AdminSubjects() {
                 </div>
               )}
               <div className="form-group" style={{ marginBottom: 20 }}>
-                <label>Department</label>
+                <label>{t('department')}</label>
                 <select 
                   className="form-control" 
                   value={formData.departmentId}

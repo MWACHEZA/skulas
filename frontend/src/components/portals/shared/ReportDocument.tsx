@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 
 interface ReportGrade {
   subject: string;
@@ -7,6 +7,9 @@ interface ReportGrade {
   credits?: number;
   comment?: string;
   teacher?: any;
+  classAverage?: number;
+  classPosition?: number;
+  assessmentEntries?: any;
 }
 
 interface AttendanceSummary {
@@ -164,7 +167,10 @@ const ReportDocument: React.FC<Props> = ({ data, template }) => {
     : 0;
   const band        = validGrades.length > 0 ? getPerformanceBand(avgScore) : null;
 
-  const isUniversity = /university|varsity/i.test(data.schoolType || school?.type || '');
+  const schoolType = data.schoolType || school?.type || '';
+  const isTertiary = /university|varsity|polytechnic|college|seminary|medical|nursing|tertiary/i.test(schoolType);
+  const isK12 = !isTertiary;
+  const isUniversity = /university|varsity/i.test(schoolType);
   const gpaData = validGrades.reduce((acc, g) => {
     const credits = g.credits || 0;
     acc.totalPoints += calculateGradePoint(g.score) * credits;
@@ -456,7 +462,14 @@ const ReportDocument: React.FC<Props> = ({ data, template }) => {
           {validGrades.length > 0 && (
             <div style={{
               display: 'grid',
-              gridTemplateColumns: attendanceSummary ? 'repeat(5, 1fr)' : 'repeat(3, 1fr)',
+              gridTemplateColumns: `repeat(${[
+                true,
+                true,
+                true,
+                Boolean(data.classPosition || validGrades.some((g: any) => g.classPosition)),
+                Boolean(data.classAverage || validGrades.some((g: any) => g.classAverage)),
+                Boolean(attendanceSummary)
+              ].filter(Boolean).length}, 1fr)`,
               gap: '10px',
               marginTop: '14px',
               padding: '12px 14px',
@@ -476,11 +489,20 @@ const ReportDocument: React.FC<Props> = ({ data, template }) => {
                 <div style={infoLabel}>PERFORMANCE</div>
                 <div style={{ fontSize: '0.85rem', fontWeight: 800, color: band?.color || '#1e293b' }}>{band?.label || '—'}</div>
               </div>
-              {data.classPosition && (
+              {(data.classPosition || validGrades.some((g: any) => g.classPosition)) && (
                 <div style={{ textAlign: 'center' }}>
                   <div style={infoLabel}>CLASS POSITION</div>
                   <div style={{ fontSize: '1rem', fontWeight: 800, color: primaryColor }}>
-                    {data.classPosition}{data.totalStudentsInClass ? ` / ${data.totalStudentsInClass}` : ''}
+                    {data.classPosition || validGrades.find((g: any) => g.classPosition)?.classPosition}
+                    {data.totalStudentsInClass ? ` / ${data.totalStudentsInClass}` : ''}
+                  </div>
+                </div>
+              )}
+              {(data.classAverage || validGrades.some((g: any) => g.classAverage)) && (
+                <div style={{ textAlign: 'center' }}>
+                  <div style={infoLabel}>CLASS AVERAGE</div>
+                  <div style={{ fontSize: '1rem', fontWeight: 800, color: '#64748b' }}>
+                    {(data.classAverage || validGrades.find((g: any) => g.classAverage)?.classAverage)?.toFixed(1)}%
                   </div>
                 </div>
               )}
@@ -508,8 +530,8 @@ const ReportDocument: React.FC<Props> = ({ data, template }) => {
             </div>
           )}
 
-          {/* COMMENTS */}
-          {(data.classTeacherComment || data.principalComment) && (
+          {/* COMMENTS - Only for K12 schools, omitted for Tertiary */}
+          {isK12 && (data.classTeacherComment || data.principalComment) && (
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginTop: '14px' }}>
               {data.classTeacherComment && (
                 <div>

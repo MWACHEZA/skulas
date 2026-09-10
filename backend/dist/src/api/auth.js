@@ -131,7 +131,7 @@ router.post('/register', async (req, res) => {
 router.post('/register-user', rate_limit_1.authLimiter, (0, validation_1.validate)(auth_schema_1.RegisterUserSchema), async (req, res) => {
     const { email, password, name, role, phone, schoolCode, avatar, 
     // Role specific
-    staffId, studentId, dob, gender, address, departmentId, metadata // For role-specific custom fields
+    staffId, studentId, dob, gender, address, departmentId, religion, metadata // For role-specific custom fields
      } = req.body;
     const normalizedEmail = email?.trim().toLowerCase();
     try {
@@ -195,6 +195,7 @@ router.post('/register-user', rate_limit_1.authLimiter, (0, validation_1.validat
                     role: finalRole,
                     phone,
                     avatar: avatarFilename,
+                    religion,
                     staffId: (finalRole !== 'STUDENT' && finalRole !== 'PARENT' && finalRole !== 'SUPPLIER') ? (staffId || generatedId) : (finalRole === 'SUPPLIER' ? (staffId || generatedId) : null),
                     schoolId: resolvedSchoolId,
                     metadata: {

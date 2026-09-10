@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import '../../../styles/portal.css';
-import { useTerminology } from '../../../hooks/useTerminology';
+import { useAcademicConfig } from '../../../hooks/useAcademicConfig';
 
 interface Grade {
   id: string;
@@ -28,11 +28,17 @@ interface Class {
 }
 
 export default function PrincipalCommentsPage() {
-  const { isMedical, isPoly, isUniversity, isSeminary } = useTerminology();
-  const isSemester = isUniversity || isPoly || isMedical || isSeminary;
+  const {
+    isK12,
+    isTertiary,
+    registeredTerms,
+    academicPeriodLabel,
+    classLabel,
+    headRoleLabel
+  } = useAcademicConfig();
 
   const [selectedClassId, setSelectedClassId] = useState('');
-  const [term, setTerm] = useState(isSemester ? 'Semester 1' : 'Term 1');
+  const [term, setTerm] = useState(registeredTerms[0] || (isTertiary ? 'Semester 1' : 'Term 1'));
   const [year, setYear] = useState(new Date().getFullYear());
   
   const [classes, setClasses] = useState<Class[]>([]);
@@ -44,8 +50,10 @@ export default function PrincipalCommentsPage() {
   const { showToast } = useToast();
 
   useEffect(() => {
-    setTerm(isSemester ? 'Semester 1' : 'Term 1');
-  }, [isSemester]);
+    if (registeredTerms.length > 0 && !registeredTerms.includes(term)) {
+      setTerm(registeredTerms[0]);
+    }
+  }, [registeredTerms]);
 
   useEffect(() => {
     loadClasses();
@@ -115,8 +123,8 @@ export default function PrincipalCommentsPage() {
     <div className="portal-container">
       <div className="portal-page-header">
         <div className="header-content">
-          <h1>Principal's Executive Feedback</h1>
-          <p>Review comprehensive academic performance and provide authorized institutional commentary for {isSemester ? 'semester' : 'termly'} reports.</p>
+          <h1>{isTertiary ? `${headRoleLabel}'s Executive Feedback` : "Principal's Executive Feedback"}</h1>
+          <p>Review comprehensive academic performance and provide authorized institutional commentary for {academicPeriodLabel.toLowerCase()} reports.</p>
         </div>
         {(Array.isArray(students) ? students : []).length > 0 && (
           <button
@@ -139,7 +147,7 @@ export default function PrincipalCommentsPage() {
               </div>
               <div>
                 <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 900, color: '#1e293b' }}>Audit Configuration</h3>
-                <p style={{ margin: '4px 0 0 0', color: '#64748b', fontWeight: 600, fontSize: '0.9rem' }}>Synchronize class registries and define the audit scope for executive feedback.</p>
+                <p style={{ margin: '4px 0 0 0', color: '#64748b', fontWeight: 600, fontSize: '0.9rem' }}>Synchronize {classLabel.toLowerCase()} registries and define the audit scope for executive feedback.</p>
               </div>
            </div>
         </div>
@@ -156,36 +164,27 @@ export default function PrincipalCommentsPage() {
               />
             </div>
             <div className="form-group">
-              <label className="portal-label">Active {isSemester ? 'Semester' : 'Term'}</label>
+              <label className="portal-label">Active {academicPeriodLabel}</label>
               <select
                 value={term}
                 onChange={e => setTerm(e.target.value)}
                 className="portal-input"
                 style={{ fontWeight: 800 }}
               >
-                {isSemester ? (
-                  <>
-                    <option value="Semester 1">Semester 1</option>
-                    <option value="Semester 2">Semester 2</option>
-                  </>
-                ) : (
-                  <>
-                    <option value="Term 1">Term 1 (Lent)</option>
-                    <option value="Term 2">Term 2 (Trinity)</option>
-                    <option value="Term 3">Term 3 (Michaelmas)</option>
-                  </>
-                )}
+                {registeredTerms.map(t => (
+                  <option key={t} value={t}>{t}</option>
+                ))}
               </select>
             </div>
             <div className="form-group">
-              <label className="portal-label">Authorized Class Registry</label>
+              <label className="portal-label">Authorized {classLabel} Registry</label>
               <select
                 value={selectedClassId}
                 onChange={e => setSelectedClassId(e.target.value)}
                 className="portal-input"
                 style={{ fontWeight: 800 }}
               >
-                <option value="">Select Class Entity</option>
+                <option value="">Select {classLabel} Entity</option>
                 {(Array.isArray(classes) ? classes : []).map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
               </select>
             </div>
@@ -272,7 +271,7 @@ export default function PrincipalCommentsPage() {
                         ))}
                         {(Array.isArray(student.grades) ? student.grades : []).length === 0 && (
                           <tr><td colSpan={3} style={{ textAlign: 'center', padding: '60px 24px', color: '#94a3b8', fontWeight: 700, fontStyle: 'italic' }}>
-                            <i className="fas fa-exclamation-circle mr-2"></i>No primary records identified for this {isSemester ? 'semester' : 'term'}.
+                            <i className="fas fa-exclamation-circle mr-2"></i>No primary records identified for this {academicPeriodLabel.toLowerCase()}.
                           </td></tr>
                         )}
                       </tbody>
@@ -300,7 +299,7 @@ export default function PrincipalCommentsPage() {
                   <textarea
                     value={comments[student.id] || ''}
                     onChange={e => setComments({ ...comments, [student.id]: e.target.value })}
-                    placeholder={`Enter authoritative ${isSemester ? 'semester' : 'termly'} institutional feedback for the student report...`}
+                    placeholder={`Enter authoritative ${academicPeriodLabel.toLowerCase()} institutional feedback for the student report...`}
                     className="portal-input"
                     style={{ minHeight: '180px', resize: 'none', background: '#ffffff', padding: '24px', lineHeight: '1.8', fontWeight: 600, fontSize: '0.95rem', borderRadius: '20px' }}
                   />
@@ -324,7 +323,7 @@ export default function PrincipalCommentsPage() {
                 <i className="fas fa-graduation-cap fa-3x" style={{ color: '#cbd5e1', opacity: 0.5 }}></i>
             </div>
             <h3 style={{ fontWeight: 900, color: '#1e293b', fontSize: '1.5rem', letterSpacing: '-0.5px' }}>Registry Synchronization Required</h3>
-            <p style={{ color: '#64748b', fontWeight: 700, maxWidth: '400px', margin: '16px auto 0', lineHeight: 1.6 }}>Please select an authorized class registry and academic {isSemester ? 'semester' : 'term'} to audit student performance and authorize institutional commentary.</p>
+            <p style={{ color: '#64748b', fontWeight: 700, maxWidth: '400px', margin: '16px auto 0', lineHeight: 1.6 }}>Please select an authorized {classLabel.toLowerCase()} registry and academic {academicPeriodLabel.toLowerCase()} to audit student performance and authorize institutional commentary.</p>
         </div>
       )}
     </div>

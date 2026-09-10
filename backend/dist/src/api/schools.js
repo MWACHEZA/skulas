@@ -19,23 +19,28 @@ const router = (0, express_1.Router)();
 router.get('/settings', auth_1.requireAuth, async (req, res) => {
     try {
         const schoolId = req.user.schoolId;
-        let settings = await prisma_1.default.schoolSetting.findFirst({
-            where: { schoolId }
-        });
+        const [settingsRecord, school] = await Promise.all([
+            prisma_1.default.schoolSetting.findFirst({ where: { schoolId } }),
+            prisma_1.default.school.findUnique({ where: { id: schoolId }, select: { id: true, name: true, type: true, code: true } })
+        ]);
+        let settings = settingsRecord;
         // Fallback if not created yet
         if (!settings) {
             settings = await prisma_1.default.schoolSetting.create({
                 data: { schoolId }
             });
         }
+        const responsePayload = {
+            ...settings,
+            school: school || undefined,
+            schoolType: school?.type
+        };
         // Sanitize credentials for non-admins to prevent credential leakage
         if (req.user.role !== 'SCHOOL_ADMIN') {
-            const sanitized = { ...settings };
-            delete sanitized.smtpPassword;
-            delete sanitized.whatsAppApiKey;
-            return res.json(sanitized);
+            delete responsePayload.smtpPassword;
+            delete responsePayload.whatsAppApiKey;
         }
-        res.json(settings);
+        res.json(responsePayload);
     }
     catch (error) {
         res.status(500).json({ error: 'Failed to fetch settings' });

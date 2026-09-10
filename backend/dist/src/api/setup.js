@@ -13,35 +13,84 @@ const DEFAULT_MODULES = {
     academic: true,
     accounting: true,
     fees: true,
+    branding: true,
+    website: true,
+    id_cards: true,
+    document_branding: true,
+    grading: true,
+    transportation: true,
+    boarding: true,
+    assets: true,
+    clubs: true,
     uniforms: true,
     clinic: true
 };
 const STAGES_ORDER = [
+    'system_preferences',
     'org_profile',
+    'branding',
+    'website_setup',
+    'id_cards_setup',
     'roles_staff',
     'chart_of_accounts',
+    'departments',
+    'subjects',
     'academic_structure',
+    'grading_setup',
     'fee_structure',
     'students_staff',
+    'transport_setup',
+    'boarding_setup',
+    'asset_setup',
+    'sports_houses',
+    'clubs_setup',
     'uniform_setup',
     'clinic_setup',
+    'document_branding',
     'review_golive'
 ];
 /**
  * Helper to compute active stages based on enabled modules
  */
 function getActiveStages(modules) {
-    const active = ['org_profile', 'roles_staff', 'chart_of_accounts'];
-    if (modules.academic)
+    const active = ['system_preferences', 'org_profile'];
+    if (modules.branding !== false)
+        active.push('branding');
+    if (modules.website !== false)
+        active.push('website_setup');
+    if (modules.id_cards !== false)
+        active.push('id_cards_setup');
+    active.push('roles_staff');
+    if (modules.accounting !== false)
+        active.push('chart_of_accounts');
+    if (modules.academic !== false)
+        active.push('departments');
+    if (modules.academic !== false)
+        active.push('subjects');
+    if (modules.academic !== false)
         active.push('academic_structure');
-    if (modules.academic && modules.fees)
+    if (modules.academic !== false || modules.grading !== false)
+        active.push('grading_setup');
+    if (modules.academic !== false && modules.fees !== false)
         active.push('fee_structure');
-    if (modules.academic)
+    if (modules.academic !== false)
         active.push('students_staff');
+    if (modules.transportation)
+        active.push('transport_setup');
+    if (modules.boarding)
+        active.push('boarding_setup');
+    if (modules.assets)
+        active.push('asset_setup');
+    if (modules.academic !== false)
+        active.push('sports_houses');
+    if (modules.clubs)
+        active.push('clubs_setup');
     if (modules.uniforms)
         active.push('uniform_setup');
     if (modules.clinic)
         active.push('clinic_setup');
+    if (modules.document_branding !== false)
+        active.push('document_branding');
     active.push('review_golive');
     return active;
 }
@@ -73,24 +122,49 @@ router.get('/status', auth_1.requireAuth, async (req, res) => {
         const currentStatus = schoolSetting.setupStatus || {};
         const enabledModules = { ...DEFAULT_MODULES, ...(currentStatus.enabledModules || {}) };
         // Real-time DB counts to auto-verify completion
-        const [coaCount, classesCount, studentsCount, feesCount, uniformsCount, clinicCount, staffCount] = await Promise.all([
+        const [coaCount, classesCount, studentsCount, feesCount, uniformsCount, clinicCount, staffCount, deptCount, subjectCount, sportsCount, housesCount, routesCount, vehiclesCount, hostelsCount, assetsCount, gradingCount, clubsCount, websiteSettingsCount, reportTemplateCount] = await Promise.all([
             prisma_1.default.chartOfAccount.count({ where: { schoolId } }),
             prisma_1.default.schoolClass.count({ where: { schoolId } }),
             prisma_1.default.student.count({ where: { schoolId } }),
             prisma_1.default.feeGroup.count({ where: { schoolId } }),
             prisma_1.default.uniformItem.count({ where: { schoolId } }),
             prisma_1.default.clinicInventoryItem.count({ where: { schoolId } }),
-            prisma_1.default.user.count({ where: { schoolId, role: { in: ['TEACHER', 'BURSAR', 'LIBRARIAN', 'ANCILLARY', 'SCHOOL_ADMIN'] } } })
+            prisma_1.default.user.count({ where: { schoolId, role: { in: ['TEACHER', 'BURSAR', 'LIBRARIAN', 'ANCILLARY', 'SCHOOL_ADMIN'] } } }),
+            prisma_1.default.department.count({ where: { schoolId } }),
+            prisma_1.default.subject.count({ where: { schoolId } }),
+            prisma_1.default.sport.count({ where: { schoolId } }),
+            prisma_1.default.studentHouse.count({ where: { schoolId } }),
+            prisma_1.default.transportRoute.count({ where: { schoolId } }),
+            prisma_1.default.schoolVehicle.count({ where: { schoolId } }),
+            prisma_1.default.hostelCategory.count({ where: { schoolId } }),
+            prisma_1.default.asset.count({ where: { schoolId } }),
+            prisma_1.default.gradingScale.count({ where: { schoolId } }),
+            prisma_1.default.club.count({ where: { schoolId } }),
+            prisma_1.default.websiteSettings.count({ where: { schoolId } }),
+            prisma_1.default.reportTemplate.count({ where: { schoolId } })
         ]);
         const dbCompletedStages = {
+            system_preferences: !!(currentStatus.completedStages?.system_preferences),
             org_profile: !!school.name,
+            branding: !!(schoolSetting?.motto || schoolSetting?.systemEmail || schoolSetting?.reportHeader),
+            website_setup: websiteSettingsCount > 0 || !!(schoolSetting?.facebook || schoolSetting?.twitter || schoolSetting?.systemUrl),
+            id_cards_setup: !!(schoolSetting?.idCardTemplateFront || schoolSetting?.idCardTemplateBack || schoolSetting?.gateRequiredType !== 'none'),
             roles_staff: staffCount > 0,
             chart_of_accounts: coaCount > 0,
+            departments: deptCount > 0,
+            subjects: subjectCount > 0,
             academic_structure: classesCount > 0,
+            grading_setup: gradingCount > 0,
             fee_structure: feesCount > 0,
             students_staff: studentsCount > 0,
+            transport_setup: routesCount > 0 || vehiclesCount > 0,
+            boarding_setup: hostelsCount > 0,
+            asset_setup: assetsCount > 0,
+            sports_houses: sportsCount > 0 || housesCount > 0,
+            clubs_setup: clubsCount > 0,
             uniform_setup: uniformsCount > 0,
             clinic_setup: clinicCount > 0,
+            document_branding: reportTemplateCount > 0 || !!schoolSetting?.mandatoryReceipts,
             review_golive: currentStatus.completedStages?.review_golive || false
         };
         // Merge explicitly completed stages in status with real-time DB truths
@@ -119,7 +193,17 @@ router.get('/status', auth_1.requireAuth, async (req, res) => {
                 fees: feesCount,
                 uniforms: uniformsCount,
                 clinic: clinicCount,
-                staff: staffCount
+                staff: staffCount,
+                departments: deptCount,
+                subjects: subjectCount,
+                sports: sportsCount,
+                houses: housesCount,
+                routes: routesCount,
+                vehicles: vehiclesCount,
+                hostels: hostelsCount,
+                assets: assetsCount,
+                grading: gradingCount,
+                clubs: clubsCount
             }
         };
         res.json(fullStatus);

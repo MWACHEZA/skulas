@@ -77,6 +77,52 @@ router.post('/', requireAuth, requireRole('TEACHER', 'SCHOOL_ADMIN', 'SUPER_ADMI
   }
 });
 
+// Update a lesson plan breakdown
+router.put('/:id', requireAuth, requireRole('TEACHER', 'SCHOOL_ADMIN', 'SUPER_ADMIN'), async (req: AuthRequest, res) => {
+  try {
+    const { id } = req.params;
+    const { classId, subjectId, syllabusId, week, session, content } = req.body;
+    const schoolId = req.user!.schoolId!;
+
+    const existing = await prisma.lessonPlan.findFirst({
+      where: { id: id as string, schoolId }
+    });
+
+    if (!existing) {
+      return res.status(404).json({ error: 'Lesson plan not found' });
+    }
+
+    if (req.user!.role === 'TEACHER') {
+      const teacher = await prisma.teacher.findFirst({ where: { userId: req.user!.id } });
+      if (!teacher || existing.teacherId !== teacher.id) {
+        return res.status(403).json({ error: 'You can only edit your own lesson plans' });
+      }
+    }
+
+    const updated = await prisma.lessonPlan.update({
+      where: { id: id as string },
+      data: {
+        ...(classId ? { classId } : {}),
+        ...(subjectId ? { subjectId } : {}),
+        ...(syllabusId ? { syllabusId } : {}),
+        ...(week ? { week } : {}),
+        ...(session ? { session } : {}),
+        ...(content ? { content } : {})
+      },
+      include: {
+        class: true,
+        subject: true,
+        syllabus: true
+      }
+    });
+
+    res.json({ success: true, lessonPlan: updated });
+  } catch (error) {
+    console.error('Error updating lesson plan:', error);
+    res.status(500).json({ error: 'Failed to update lesson plan breakdown' });
+  }
+});
+
 // Delete a lesson plan breakdown
 router.delete('/:id', requireAuth, requireRole('TEACHER', 'SCHOOL_ADMIN', 'SUPER_ADMIN'), async (req: AuthRequest, res) => {
   try {
@@ -86,8 +132,11 @@ router.delete('/:id', requireAuth, requireRole('TEACHER', 'SCHOOL_ADMIN', 'SUPER
     }
     
     // Only admins or the teacher who created it can delete it
-    if (req.user!.role === 'TEACHER' && existing.teacherId !== req.user!.staffId) {
-       return res.status(403).json({ error: 'You can only delete your own lesson plans' });
+    if (req.user!.role === 'TEACHER') {
+      const teacher = await prisma.teacher.findFirst({ where: { userId: req.user!.id } });
+      if (!teacher || existing.teacherId !== teacher.id) {
+        return res.status(403).json({ error: 'You can only delete your own lesson plans' });
+      }
     }
 
     await prisma.lessonPlan.delete({ where: { id: req.params.id as string } });

@@ -19,7 +19,7 @@ const prisma = basePrisma.$extends({
                 const tenantScopedModels = [
                     'Student', 'Teacher', 'User', 'SchoolClass', 'Subject',
                     'Grade', 'Attendance', 'Fee', 'Assignment', 'AssignmentSubmission',
-                    'AcademicReport', 'ApplicantDocument', 'ApplicantTimeline', 'Application',
+                    'AcademicReport', 'Application',
                     'Asset', 'AssetIncident', 'AssetMaintenance', 'Book', 'BookLoan',
                     'Club', 'Sport', 'Gallery', 'News', 'Announcement', 'Department',
                     'Faculty', 'Requisition', 'PurchaseOrder', 'Invoice', 'Tender', 'TenderBid',

@@ -1,18 +1,54 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { useTerminology } from '../../../hooks/useTerminology';
 import { useAuth } from '../../../contexts/AuthContext';
 import '../../../styles/portal.css';
 
+export interface StudentHouseItem {
+  id: string;
+  name: string;
+  description?: string;
+  houseMasterId?: string;
+  houseCaptainId?: string;
+  color?: string;
+  motto?: string;
+  logo?: string;
+  houseMaster?: {
+    title?: string;
+    user?: {
+      name: string;
+    };
+  } | null;
+  houseCaptain?: {
+    name: string;
+    studentId?: string;
+  } | null;
+  students?: Array<unknown>;
+}
+
+export interface HouseTeacher {
+  id: string;
+  title?: string;
+  user?: {
+    name: string;
+  };
+}
+
+export interface HouseStudent {
+  id: string;
+  studentId: string;
+  name: string;
+}
+
 export default function StudentHouse() {
   const { showToast } = useToast();
   const { t } = useTerminology();
   const { user } = useAuth();
   
-  const [houses, setHouses] = useState<any[]>([]);
-  const [teachers, setTeachers] = useState<any[]>([]);
-  const [students, setStudents] = useState<any[]>([]);
+  const [houses, setHouses] = useState<StudentHouseItem[]>([]);
+  const [teachers, setTeachers] = useState<HouseTeacher[]>([]);
+  const [students, setStudents] = useState<HouseStudent[]>([]);
   
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -34,24 +70,19 @@ export default function StudentHouse() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
-  useEffect(() => {
-    fetchHouses();
-    fetchRosters();
-  }, []);
-
-  const fetchHouses = async () => {
+  const fetchHouses = useCallback(async () => {
     try {
       const res = await api.get('/api/schools/houses');
       setHouses(res.data);
     } catch (err) {
-      showToast(`Failed to load ${t('houses').toLowerCase()
-    }`, 'error');
+      console.error(`Failed to load ${t('houses').toLowerCase()}:`, err);
+      showToast(`Failed to load ${t('houses').toLowerCase()}`, 'error');
     } finally {
       setLoading(false);
     }
-  };
+  }, [showToast, t]);
 
-  const fetchRosters = async () => {
+  const fetchRosters = useCallback(async () => {
     try {
       const [tRes, sRes] = await Promise.all([
         api.get('/api/teachers'),
@@ -61,9 +92,13 @@ export default function StudentHouse() {
       setStudents(sRes.data.students || []);
     } catch (err) {
       console.error('Failed to load roster listings:', err);
-    
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchHouses();
+    fetchRosters();
+  }, [fetchHouses, fetchRosters]);
 
   const handleOpenAddModal = () => {
     setFormData({ name: '', description: '', houseMasterId: '', houseCaptainId: '', color: 'var(--portal-primary)', motto: '' });
@@ -73,7 +108,7 @@ export default function StudentHouse() {
     setShowModal(true);
   };
 
-  const handleOpenEditModal = (house: any) => {
+  const handleOpenEditModal = (house: StudentHouseItem) => {
     setFormData({ 
       name: house.name, 
       description: house.description || '', 
@@ -131,8 +166,8 @@ export default function StudentHouse() {
       setShowModal(false);
       fetchHouses();
     } catch (err) {
-      showToast(`Failed to save ${t('house').toLowerCase()
-    }`, 'error');
+      console.error(`Failed to save ${t('house').toLowerCase()}:`, err);
+      showToast(`Failed to save ${t('house').toLowerCase()}`, 'error');
     } finally {
       setSaving(false);
     }
@@ -145,8 +180,8 @@ export default function StudentHouse() {
       showToast(`${t('house')} deleted`, 'success');
       fetchHouses();
     } catch (err) {
-      showToast(`Failed to delete ${t('house').toLowerCase()
-    }`, 'error');
+      console.error(`Failed to delete ${t('house').toLowerCase()}:`, err);
+      showToast(`Failed to delete ${t('house').toLowerCase()}`, 'error');
     }
   };
 
@@ -275,11 +310,11 @@ export default function StudentHouse() {
                 <p style={{ margin: '4px 0 0 0', fontSize: '0.85rem', color: '#64748b' }}>Configure residential profile, caretakers, and student leaders.</p>
               </div>
               <button 
+                type="button"
                 onClick={() => setShowModal(false)}
-                className="portal-btn-ghost"
-                style={{ padding: '6px', minWidth: 'auto' }}
+                className="portal-modal-close"
               >
-                <i className="fas fa-times" style={{ fontSize: '1.2rem' }}></i>
+                &times;
               </button>
             </div>
             <div className="portal-modal-body">
@@ -353,9 +388,9 @@ export default function StudentHouse() {
                       style={{ fontWeight: 700 }}
                     >
                       <option value="">-- Select Instructor --</option>
-                      {teachers.map(t => (
-                        <option key={t.id} value={t.id}>
-                          {t.title || 'Mr/Mrs.'} {t.user?.name}
+                      {teachers.map(teacher => (
+                        <option key={teacher.id} value={teacher.id}>
+                          {teacher.title || ''} {teacher.user?.name}
                         </option>
                       ))}
                     </select>
@@ -390,7 +425,7 @@ export default function StudentHouse() {
                 </div>
                 
                 <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, marginTop: '10px' }}>
-                  <button type="button" className="portal-btn-neutral" onClick={() => setShowModal(false)}>Cancel</button>
+                  <button type="button" className="portal-btn-secondary" onClick={() => setShowModal(false)}>Cancel</button>
                   <button type="submit" className="portal-btn-primary" disabled={saving}>
                     {saving ? <i className="fas fa-spinner fa-spin mr-2"></i> : <i className="fas fa-save mr-2"></i>}
                     {editingHouseId ? 'Update' : 'Save'} {t('house')}

@@ -616,7 +616,17 @@
   animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.portal-modal-card {
+.portal-modal,
+.portal-modal-card,
+.portal-modal-content,
+.user-edit-modal,
+.modal-card,
+.modal-content,
+.modal-dialog,
+.modal-container,
+.side-panel,
+.slide-over {
+  position: relative !important;
   background: white;
   border-radius: 24px;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(0, 0, 0, 0.05);
@@ -628,7 +638,10 @@
   animation: modalScaleUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.portal-modal-header {
+.portal-modal-header,
+.modal-header,
+.panel-header {
+  position: relative !important;
   padding: 24px 32px !important;
   border-bottom: 1px solid #f1f5f9;
   display: flex;
@@ -910,6 +923,7 @@
 }
 
 .portal-modal-content {
+  position: relative;
   background: white;
   border-radius: 24px;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(0, 0, 0, 0.05);
@@ -944,6 +958,102 @@
   padding: 40px;
   text-align: center;
   color: #64748b;
+}
+
+/* ══════════ MODAL CLOSE BUTTON ══════════ */
+/* Covers .close-modal, .close-panel, .modal-close, .portal-modal-close */
+.close-modal,
+.close-panel,
+.modal-close,
+.close-btn,
+.portal-modal-close {
+  position: absolute;
+  top: 18px;
+  right: 20px;
+  background: #f1f5f9;
+  border: none;
+  font-size: 1.25rem;
+  line-height: 1;
+  color: #64748b;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  z-index: 10;
+}
+
+.close-modal:hover,
+.close-panel:hover,
+.modal-close:hover,
+.close-btn:hover,
+.portal-modal-close:hover {
+  color: #0f172a;
+  background: #e2e8f0;
+}
+
+/* Card-style close button (non-absolute, flex sibling) */
+.portal-modal-close-flex {
+  background: #f1f5f9;
+  border: none;
+  border-radius: 10px;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.portal-modal-close-flex:hover {
+  background: #e2e8f0;
+  color: #1e293b;
+}
+
+/* ══════════ SECONDARY & LINK BUTTONS ══════════ */
+.portal-btn-secondary,
+.btn.btn-secondary {
+  background: #f1f5f9;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.portal-btn-secondary:hover,
+.btn.btn-secondary:hover {
+  background: #e2e8f0;
+  color: #1e293b;
+  border-color: #cbd5e0;
+}
+
+.portal-btn-link {
+  background: none;
+  border: none;
+  color: var(--portal-primary);
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: all 0.2s;
+  text-decoration: none;
+}
+
+.portal-btn-link:hover {
+  background: rgba(0, 86, 179, 0.06);
+  text-decoration: underline;
 }
 
 .portal-flex-between {

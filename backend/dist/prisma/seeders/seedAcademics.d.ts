@@ -16,7 +16,9 @@ export declare function seedAcademics(prisma: PrismaClient, school: School, teac
         code: string | null;
         schoolId: string;
         departmentId: string | null;
+        createdById: string | null;
         gradingType: string;
+        moderatedScale: import("../../src/generated/client/runtime/library").JsonValue | null;
         credits: number | null;
         isIndustrial: boolean;
         isProject: boolean;

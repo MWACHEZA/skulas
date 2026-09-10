@@ -8,10 +8,17 @@ export declare const BulkGradeSchema: z.ZodObject<{
         subjectId: z.ZodString;
         term: z.ZodString;
         year: z.ZodUnion<readonly [z.ZodString, z.ZodNumber]>;
+        classAverage: z.ZodOptional<z.ZodNumber>;
         results: z.ZodArray<z.ZodObject<{
             studentId: z.ZodString;
-            caScore: z.ZodDefault<z.ZodOptional<z.ZodNumber>>;
-            examScore: z.ZodDefault<z.ZodOptional<z.ZodNumber>>;
+            caScore: z.ZodDefault<z.ZodOptional<z.ZodUnion<readonly [z.ZodNumber, z.ZodString]>>>;
+            examScore: z.ZodDefault<z.ZodOptional<z.ZodUnion<readonly [z.ZodNumber, z.ZodString]>>>;
+            score: z.ZodOptional<z.ZodNumber>;
+            grade: z.ZodOptional<z.ZodString>;
+            comment: z.ZodNullable<z.ZodOptional<z.ZodString>>;
+            assessmentEntries: z.ZodOptional<z.ZodAny>;
+            classAverage: z.ZodOptional<z.ZodNumber>;
+            classPosition: z.ZodOptional<z.ZodNumber>;
             industrialScores: z.ZodOptional<z.ZodRecord<z.ZodString, z.ZodAny>>;
         }, z.core.$strip>>;
     }, z.core.$strip>;

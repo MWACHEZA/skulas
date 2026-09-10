@@ -20,13 +20,13 @@ export default function AdminLayout() {
     { label: 'Class Migration', icon: 'fas fa-exchange-alt', to: '/admin/class-migration' },
     { label: 'Departments', icon: 'fas fa-building', to: '/admin/departments' },
     { label: t('subjects'), icon: `fas ${isMedical ? 'fa-book-medical' : 'fa-book-open'}`, to: '/admin/subjects' },
-    { label: 'Syllabus Manager', icon: 'fas fa-book-open', to: '/admin/syllabus' },
+    { label: isTertiary ? 'Course Outline Manager' : 'Syllabus Manager', icon: 'fas fa-book-open', to: '/admin/syllabus' },
     { label: 'Lesson Planner', icon: 'fas fa-calendar-check', to: '/admin/lesson-plan' },
     { label: t('timetable'), icon: 'fas fa-calendar-alt', to: '/admin/timetable' },
     { label: 'Provide student study materials', icon: 'fas fa-book-reader', to: '/admin/study-materials' },
     
     { section: 'Assessments', label: 'Marks Entry', icon: 'fas fa-pen-nib', to: '/admin/assessments/marks-entry' },
-    { label: 'Principal Comments', icon: 'fas fa-comment-medical', to: '/admin/assessments/principal-comments' },
+    { label: isTertiary ? 'Academic Head Comments' : 'Principal Comments', icon: 'fas fa-comment-medical', to: '/admin/assessments/principal-comments' },
     
     { section: 'CBT', label: 'Manage CBT', icon: 'fas fa-list', to: '/admin/cbt/manage' },
     

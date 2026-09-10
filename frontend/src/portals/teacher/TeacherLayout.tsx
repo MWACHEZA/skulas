@@ -43,7 +43,7 @@ export default function TeacherLayout() {
       { label: 'Lesson Planner', icon: 'fas fa-calendar-check', to: '/teacher/planner' }
     ] : []),
     
-    { label: 'Syllabus Manager', icon: 'fas fa-book-open', to: '/teacher/syllabus' },
+    { label: isTertiary ? 'Course Outline Manager' : 'Syllabus Manager', icon: 'fas fa-book-open', to: '/teacher/syllabus' },
     { section: 'CBT', label: 'Manage CBT', icon: 'fas fa-list', to: '/teacher/cbt/manage' },
     { label: t('timetable'), icon: 'fas fa-calendar-alt', to: '/teacher/timetable' },
     

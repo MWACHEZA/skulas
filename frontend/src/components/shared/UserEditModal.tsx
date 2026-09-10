@@ -714,8 +714,8 @@ const UserEditModal: React.FC<UserEditModalProps> = ({
 
   return (
     <div className="portal-modal-overlay">
-      <div className="portal-modal user-edit-modal" style={{ width: '95%', maxWidth: '800px', maxHeight: '90vh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-        <div className="modal-header">
+      <div className="portal-modal user-edit-modal" style={{ position: 'relative', width: '95%', maxWidth: '800px', maxHeight: '90vh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+        <div className="modal-header" style={{ position: 'relative' }}>
           <div className="header-titles">
             <h2>Edit User Profile</h2>
             <span>{user.staffId || user.studentId || user.id}</span>

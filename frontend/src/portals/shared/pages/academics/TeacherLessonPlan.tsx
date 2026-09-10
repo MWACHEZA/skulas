@@ -2,19 +2,40 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../../../contexts/AuthContext';
 import { useToast } from '../../../../context/ToastContext';
 import api from '../../../../lib/api';
-import { useTerminology } from '../../../../hooks/useTerminology';
+import { useAcademicConfig } from '../../../../hooks/useAcademicConfig';
 
 export default function TeacherLessonPlan() {
   const { user } = useAuth();
   const { showToast } = useToast();
-  const { t } = useTerminology();
+  const { 
+    t, 
+    isTertiary, 
+    classLabel, 
+    subjectLabel, 
+    syllabusLabel 
+  } = useAcademicConfig();
 
   const [classes, setClasses] = useState<any[]>([]);
   const [subjects, setSubjects] = useState<any[]>([]);
   const [syllabuses, setSyllabuses] = useState<any[]>([]); // Schemes for the selected class/subject
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState<any>(null);
   
+  // Create Form Data
   const [formData, setFormData] = useState({
+    classId: '',
+    subjectId: '',
+    syllabusId: '',
+    topicContent: '',
+    week: 'Week 1',
+    session: '2026-2027'
+  });
+
+  // Edit Form Data
+  const [editFormData, setEditFormData] = useState({
+    id: '',
     classId: '',
     subjectId: '',
     syllabusId: '',
@@ -45,24 +66,32 @@ export default function TeacherLessonPlan() {
       setSubjects(subjRes.data);
     } catch (error) {
       showToast('Failed to load initial data', 'error');
-    
     }
   };
 
-  // Fetch schemes (Syllabus) when class and subject are selected in the form
+  // Fetch schemes (Syllabus) when class and subject are selected in create form
   useEffect(() => {
     if (formData.classId && formData.subjectId) {
       api.get(`/api/syllabus?classId=${formData.classId}&subjectId=${formData.subjectId}`)
         .then(res => setSyllabuses(res.data))
-        .catch(() => showToast('Failed to load schemes', 'error'));
+        .catch(() => showToast(`Failed to load ${syllabusLabel.toLowerCase()} schemes`, 'error'));
     } else {
       setSyllabuses([]);
     }
-  }, [formData.classId, formData.subjectId]);
+  }, [formData.classId, formData.subjectId, syllabusLabel]);
+
+  // Fetch schemes when editing
+  useEffect(() => {
+    if (editFormData.classId && editFormData.subjectId && isEditModalOpen) {
+      api.get(`/api/syllabus?classId=${editFormData.classId}&subjectId=${editFormData.subjectId}`)
+        .then(res => setSyllabuses(res.data))
+        .catch(() => showToast(`Failed to load ${syllabusLabel.toLowerCase()} schemes`, 'error'));
+    }
+  }, [editFormData.classId, editFormData.subjectId, isEditModalOpen, syllabusLabel]);
 
   const loadLessonPlans = async () => {
     if (!filterClass || !filterSubject) {
-      showToast(`Select a ${t('class').toLowerCase()} and ${t('subject').toLowerCase()} to view breakdown`, 'error');
+      showToast(`Select a ${classLabel.toLowerCase()} and ${subjectLabel.toLowerCase()} to view breakdown`, 'error');
       return;
     }
     setLoading(true);
@@ -71,7 +100,6 @@ export default function TeacherLessonPlan() {
       setLessonPlans(res.data);
     } catch (error) {
       showToast('Failed to load lesson plans', 'error');
-    
     } finally {
       setLoading(false);
     }
@@ -95,26 +123,66 @@ export default function TeacherLessonPlan() {
       setFormData({ ...formData, topicContent: '' });
       setIsModalOpen(false);
       
-      // Auto reload if viewing the same week
+      // Auto reload if viewing the same filters
       if (filterClass === formData.classId && filterSubject === formData.subjectId && filterWeek === formData.week) {
         loadLessonPlans();
       }
     } catch (error: any) {
       showToast(error.response?.data?.error || 'Failed to save lesson plan', 'error');
-    
+    }
+  };
+
+  const handleOpenEdit = (lp: any) => {
+    setEditFormData({
+      id: lp.id,
+      classId: lp.classId,
+      subjectId: lp.subjectId,
+      syllabusId: lp.syllabusId,
+      topicContent: lp.content,
+      week: lp.week,
+      session: lp.session || '2026-2027'
+    });
+    setIsEditModalOpen(true);
+  };
+
+  const handleUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editFormData.topicContent) {
+      showToast('Breakdown content cannot be empty', 'error');
+      return;
+    }
+
+    try {
+      await api.put(`/api/lesson-plan/${editFormData.id}`, {
+        classId: editFormData.classId,
+        subjectId: editFormData.subjectId,
+        syllabusId: editFormData.syllabusId,
+        week: editFormData.week,
+        session: editFormData.session,
+        content: editFormData.topicContent
+      });
+      showToast('Lesson breakdown updated successfully!', 'success');
+      setIsEditModalOpen(false);
+      loadLessonPlans();
+    } catch (error: any) {
+      showToast(error.response?.data?.error || 'Failed to update lesson plan', 'error');
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!(await toastConfirm('Delete this lesson breakdown?'))) return;
+    if (!window.confirm('Delete this lesson breakdown entry?')) return;
     try {
       await api.delete(`/api/lesson-plan/${id}`);
       showToast('Lesson breakdown deleted', 'success');
       loadLessonPlans();
     } catch (err: any) {
-      showToast(err.response?.data?.error || 'Failed to delete', 'error');
-    
+      showToast(err.response?.data?.error || 'Failed to delete lesson plan', 'error');
     }
+  };
+
+  const handleView = (lp: any) => {
+    setSelectedPlan(lp);
+    setIsViewModalOpen(true);
   };
 
   const handlePrint = () => {
@@ -125,8 +193,8 @@ export default function TeacherLessonPlan() {
     
     const rows = lessonPlans.map(lp => `
       <tr>
-        <td style="border: 1px solid #e2e8f0; padding: 12px; font-weight: bold; width: 80px; text-align: center; vertical-align: top;">
-          ${lp.week.replace('Week ', '')}
+        <td style="border: 1px solid #e2e8f0; padding: 12px; font-weight: bold; width: 100px; text-align: center; vertical-align: top;">
+          ${lp.week}
         </td>
         <td style="border: 1px solid #e2e8f0; padding: 12px; vertical-align: top;">
           <div style="font-weight: bold; margin-bottom: 6px; color: #0f172a;">${lp.syllabus?.topic || 'N/A'}</div>
@@ -151,8 +219,8 @@ export default function TeacherLessonPlan() {
         <body>
           <h1>Teacher Lesson Breakdown</h1>
           <p>
-            <strong>${t('class')}:</strong> ${selectedClass ? selectedClass.name : 'N/A'} &nbsp;&nbsp;&nbsp;&nbsp;
-            <strong>${t('subject')}:</strong> ${selectedSubject ? selectedSubject.name : 'N/A'} &nbsp;&nbsp;&nbsp;&nbsp;
+            <strong>${classLabel}:</strong> ${selectedClass ? selectedClass.name : 'N/A'} &nbsp;&nbsp;&nbsp;&nbsp;
+            <strong>${subjectLabel}:</strong> ${selectedSubject ? selectedSubject.name : 'N/A'} &nbsp;&nbsp;&nbsp;&nbsp;
             <strong>Week:</strong> ${filterWeek} &nbsp;&nbsp;&nbsp;&nbsp;
             <strong>Session:</strong> ${filterSession}
           </p>
@@ -180,7 +248,7 @@ export default function TeacherLessonPlan() {
   };
 
   const handleExportExcel = () => {
-    const headers = ['Week', 'Syllabus Topic', 'Breakdown Content'];
+    const headers = ['Week', `${syllabusLabel} Topic`, 'Breakdown Content'];
     const rows = lessonPlans.map(lp => [
       lp.week,
       lp.syllabus?.topic || '',
@@ -207,7 +275,7 @@ export default function TeacherLessonPlan() {
     const rows = lessonPlans.map(lp => `
       <tr>
         <td style="border: 1px solid #cccccc; padding: 10px; font-weight: bold; text-align: center; vertical-align: top;">
-          ${lp.week.replace('Week ', '')}
+          ${lp.week}
         </td>
         <td style="border: 1px solid #cccccc; padding: 10px; vertical-align: top;">
           <div style="font-weight: bold; margin-bottom: 5px;">${lp.syllabus?.topic || 'N/A'}</div>
@@ -230,15 +298,15 @@ export default function TeacherLessonPlan() {
         <body>
           <h2>Teacher Lesson Breakdown</h2>
           <p>
-            <b>${t('class')}:</b> ${selectedClass ? selectedClass.name : 'N/A'} &nbsp;&nbsp;&nbsp;&nbsp;
-            <b>${t('subject')}:</b> ${selectedSubject ? selectedSubject.name : 'N/A'} &nbsp;&nbsp;&nbsp;&nbsp;
+            <b>${classLabel}:</b> ${selectedClass ? selectedClass.name : 'N/A'} &nbsp;&nbsp;&nbsp;&nbsp;
+            <b>${subjectLabel}:</b> ${selectedSubject ? selectedSubject.name : 'N/A'} &nbsp;&nbsp;&nbsp;&nbsp;
             <b>Week:</b> ${filterWeek} &nbsp;&nbsp;&nbsp;&nbsp;
             <b>Session:</b> ${filterSession}
           </p>
           <table>
             <thead>
               <tr>
-                <th style="width: 10%;">Week</th>
+                <th style="width: 15%;">Week</th>
                 <th>Topic & Content Breakdown</th>
               </tr>
             </thead>
@@ -262,28 +330,26 @@ export default function TeacherLessonPlan() {
 
   return (
     <>
-      <div className="portal-page-header" style={{ display: 'flex', justifyItems: 'center', justifyContent: 'space-between', alignItems: 'center' }}>
+      <div className="portal-page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
-          <h1>Teacher Lesson Breakdown</h1>
-          <p>Break down the syllabus schemes into specific topics for each timetable period.</p>
+          <h1>Lesson Planner</h1>
+          <p>Break down the {syllabusLabel.toLowerCase()} into specific timetable periods and weekly teaching deliverables.</p>
         </div>
         <button 
           className="portal-btn-primary" 
-          style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }} 
+          style={{ padding: '0 28px', fontWeight: 800, height: '48px', borderRadius: '14px', display: 'flex', alignItems: 'center', gap: '10px' }} 
           onClick={() => setIsModalOpen(true)}
         >
-          <i className="fas fa-plus-circle"></i> ADD LESSON BREAKDOWN
+          <i className="fas fa-plus-circle"></i> ADD LESSON PLAN
         </button>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 24 }}>
         
-        {/* VIEW LESSON BREAKDOWN */}
+        {/* LESSON BREAKDOWN VIEWER */}
         <div className="portal-card" style={{ padding: '24px' }}>
           <div className="portal-card-header" style={{ background: 'var(--school-primary, #3182ce)', color: 'white', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', padding: '16px 24px', borderRadius: '12px 12px 0 0' }}>
-            <h2 style={{ color: 'white', margin: 0, fontSize: '1.2rem', fontWeight: 800 }}>
-               <i className="fas fa-list" style={{ marginRight: 8 }}></i> TEACHER LESSON BREAKDOWN
-            </h2>
+            <h2 style={{ color: 'white', margin: 0, fontSize: '1.2rem', fontWeight: 800 }}>LESSON PLAN BREAKDOWN</h2>
             {lessonPlans.length > 0 && (
               <div style={{ display: 'flex', gap: '8px' }}>
                 <button onClick={handlePrint} className="portal-btn-neutral" style={{ padding: '6px 12px', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '6px', background: 'rgba(255,255,255,0.2)', color: 'white', border: 'none', cursor: 'pointer' }}>
@@ -298,26 +364,26 @@ export default function TeacherLessonPlan() {
               </div>
             )}
           </div>
-          <div className="portal-card-body" style={{ background: '#f7fafc', padding: 20 }}>
+          <div className="portal-card-body" style={{ background: '#f8fafc', padding: 20 }}>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr auto', gap: 12, alignItems: 'end', marginBottom: 20 }}>
                <div className="portal-form-group" style={{ marginBottom: 0 }}>
-                  <label className="portal-label">{t('class')} <span style={{ color: 'red' }}>*</span></label>
+                  <label className="portal-label">{classLabel} <span style={{ color: 'red' }}>*</span></label>
                   <select className="portal-input" value={filterClass} onChange={e => setFilterClass(e.target.value)} style={{ padding: '8px 12px', height: '42px' }}>
-                    <option value="">Select {t('class').toLowerCase()}</option>
+                    <option value="">Select {classLabel.toLowerCase()}</option>
                     {classes.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                   </select>
                </div>
                <div className="portal-form-group" style={{ marginBottom: 0 }}>
-                  <label className="portal-label">{t('subject')} <span style={{ color: 'red' }}>*</span></label>
+                  <label className="portal-label">{subjectLabel} <span style={{ color: 'red' }}>*</span></label>
                   <select className="portal-input" value={filterSubject} onChange={e => setFilterSubject(e.target.value)} style={{ padding: '8px 12px', height: '42px' }}>
-                    <option value="">Select {t('subject').toLowerCase()}</option>
+                    <option value="">Select {subjectLabel.toLowerCase()}</option>
                     {subjects.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
                   </select>
                </div>
                <div className="portal-form-group" style={{ marginBottom: 0 }}>
-                  <label className="portal-label">Week <span style={{ color: 'red' }}>*</span></label>
+                  <label className="portal-label">Lesson Week <span style={{ color: 'red' }}>*</span></label>
                   <select className="portal-input" value={filterWeek} onChange={e => setFilterWeek(e.target.value)} style={{ padding: '8px 12px', height: '42px' }}>
-                    {[...Array(15)].map((_, i) => (
+                    {[...Array(24)].map((_, i) => (
                       <option key={i} value={`Week ${i + 1}`}>Week {i + 1}</option>
                     ))}
                   </select>
@@ -328,39 +394,76 @@ export default function TeacherLessonPlan() {
                     <option value="2026-2027">2026-2027</option>
                   </select>
                </div>
-               <button className="portal-btn-primary" onClick={loadLessonPlans} style={{ padding: '8px 24px', height: '42px', background: 'var(--portal-success)', borderColor: 'var(--portal-success)' }}>
+               <button className="portal-btn-primary" onClick={loadLessonPlans} style={{ padding: '8px 24px', height: '42px', background: 'var(--portal-success, #059669)', borderColor: 'var(--portal-success, #059669)' }}>
                  Load
                </button>
             </div>
 
             {loading ? (
-              <div style={{ textAlign: 'center', padding: 40 }}>Loading...</div>
+              <div style={{ textAlign: 'center', padding: 40 }}><i className="fas fa-spinner fa-spin mr-2"></i> Loading lesson plans...</div>
             ) : lessonPlans.length === 0 ? (
               <div style={{ textAlign: 'center', padding: 40, color: '#718096', background: 'white', borderRadius: 8, border: '1px solid #e2e8f0' }}>
                  <i className="fas fa-file-invoice fa-3x" style={{ color: '#cbd5e0', marginBottom: 15 }}></i>
-                 <p style={{ fontWeight: 600, color: '#4a5568' }}>No Breakdown of Topics Found</p>
-                 <p style={{ fontSize: '0.85rem' }}>Select a {t('class').toLowerCase()}, {t('subject').toLowerCase()}, and week to view lesson breakdown.</p>
+                 <p style={{ fontWeight: 600, color: '#4a5568' }}>No Lesson Breakdown Found</p>
+                 <p style={{ fontSize: '0.85rem' }}>Select a {classLabel.toLowerCase()}, {subjectLabel.toLowerCase()}, and week to view lesson plans, or click "ADD LESSON PLAN".</p>
               </div>
             ) : (
               <table className="portal-table" style={{ background: 'white', width: '100%', borderCollapse: 'collapse' }}>
                  <thead style={{ background: '#edf2f7' }}>
                    <tr>
-                     <th style={{ color: '#4a5568', fontWeight: 600, width: 80, padding: '12px', textAlign: 'left' }}>WEEK</th>
-                     <th style={{ color: '#4a5568', fontWeight: 600, padding: '12px', textAlign: 'left' }}>TOPIC/CONTENT</th>
+                     <th style={{ color: '#4a5568', fontWeight: 700, width: 120, padding: '12px', textAlign: 'left' }}>LESSON WEEK</th>
+                     <th style={{ color: '#4a5568', fontWeight: 700, padding: '12px', textAlign: 'left' }}>TOPIC & DELIVERABLE BREAKDOWN</th>
+                     <th style={{ color: '#4a5568', fontWeight: 700, width: 140, padding: '12px', textAlign: 'right' }}>ACTIONS</th>
                    </tr>
                  </thead>
                  <tbody>
                    {lessonPlans.map((lp) => (
                      <tr key={lp.id} style={{ borderBottom: '1px solid #edf2f7' }}>
-                       <td style={{ fontWeight: 'bold', padding: '12px', verticalAlign: 'top' }}>{lp.week.replace('Week ', '')}</td>
+                       <td style={{ fontWeight: 'bold', padding: '12px', verticalAlign: 'top' }}>
+                         <span className="portal-badge primary">{lp.week}</span>
+                       </td>
                        <td style={{ padding: '12px' }}>
-                         <div style={{ fontWeight: 'bold', marginBottom: 5 }}>{lp.syllabus?.topic}</div>
-                         <div style={{ fontSize: '0.9rem', color: '#4a5568', whiteSpace: 'pre-wrap', marginBottom: 10 }}>
+                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: 6 }}>
+                           <span style={{ fontWeight: 700, color: '#0f172a', fontSize: '1rem' }}>
+                             {lp.syllabus?.topic || 'Curriculum Deliverable'}
+                           </span>
+                           {lp.syllabus?.week && (
+                             <span className="portal-badge neutral" style={{ fontSize: '0.72rem' }}>
+                               {syllabusLabel} Ref: {lp.syllabus.week}
+                             </span>
+                           )}
+                         </div>
+                         <div style={{ fontSize: '0.9rem', color: '#4a5568', whiteSpace: 'pre-wrap', lineHeight: 1.5 }}>
                            {lp.content}
                          </div>
-                         <button className="portal-btn-ghost" style={{ padding: '8px', width: '36px', height: '36px', color: '#dc2626', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => handleDelete(lp.id)} title="Delete">
-                            <i className="fas fa-trash"></i>
-                         </button>
+                       </td>
+                       <td style={{ padding: '12px', textAlign: 'right', verticalAlign: 'top' }}>
+                         <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>
+                           <button 
+                             className="portal-btn-ghost" 
+                             style={{ padding: '6px', width: '32px', height: '32px', color: '#2563eb', display: 'flex', alignItems: 'center', justifyContent: 'center' }} 
+                             onClick={() => handleView(lp)} 
+                             title="View Details"
+                           >
+                             <i className="fas fa-eye"></i>
+                           </button>
+                           <button 
+                             className="portal-btn-ghost" 
+                             style={{ padding: '6px', width: '32px', height: '32px', color: '#eab308', display: 'flex', alignItems: 'center', justifyContent: 'center' }} 
+                             onClick={() => handleOpenEdit(lp)} 
+                             title="Edit"
+                           >
+                             <i className="fas fa-edit"></i>
+                           </button>
+                           <button 
+                             className="portal-btn-ghost" 
+                             style={{ padding: '6px', width: '32px', height: '32px', color: '#dc2626', display: 'flex', alignItems: 'center', justifyContent: 'center' }} 
+                             onClick={() => handleDelete(lp.id)} 
+                             title="Delete"
+                           >
+                             <i className="fas fa-trash"></i>
+                           </button>
+                         </div>
                        </td>
                      </tr>
                    ))}
@@ -379,7 +482,7 @@ export default function TeacherLessonPlan() {
             <div className="portal-modal-header">
               <div className="header-titles">
                 <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', margin: 0 }}>Add Lesson Breakdown</h2>
-                <p style={{ margin: 0, fontSize: '0.85rem', color: '#718096' }}>Map out your daily/weekly lesson content deliverables</p>
+                <p style={{ margin: 0, fontSize: '0.85rem', color: '#718096' }}>Plan your lesson content independently for any designated week</p>
               </div>
               <button className="close-panel" onClick={() => setIsModalOpen(false)} style={{ background: 'none', border: 'none', fontSize: '1.5rem', cursor: 'pointer', color: '#a0aec0' }}>&times;</button>
             </div>
@@ -387,84 +490,229 @@ export default function TeacherLessonPlan() {
               <form onSubmit={handleSave}>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 15, marginBottom: 15 }}>
                   <div className="portal-form-group">
-                    <label className="portal-label">{t('class')} <span style={{ color: 'red' }}>*</span></label>
+                    <label className="portal-label">{classLabel} <span style={{ color: 'red' }}>*</span></label>
                     <select 
                       className="portal-input" 
                       value={formData.classId}
                       onChange={e => setFormData({ ...formData, classId: e.target.value })}
                       required
                     >
-                      <option value="">Select {t('class').toLowerCase()}</option>
+                      <option value="">Select {classLabel.toLowerCase()}</option>
                       {classes.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                     </select>
                   </div>
 
                   <div className="portal-form-group">
-                    <label className="portal-label">{t('subject')} <span style={{ color: 'red' }}>*</span></label>
+                    <label className="portal-label">{subjectLabel} <span style={{ color: 'red' }}>*</span></label>
                     <select 
                       className="portal-input" 
                       value={formData.subjectId}
                       onChange={e => setFormData({ ...formData, subjectId: e.target.value })}
                       required
                     >
-                      <option value="">Select {t('subject').toLowerCase()}</option>
+                      <option value="">Select {subjectLabel.toLowerCase()}</option>
                       {subjects.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
                     </select>
                   </div>
                 </div>
 
                 <div className="portal-form-group" style={{ marginBottom: 15 }}>
-                  <label className="portal-label">Scheme (Syllabus Topic) <span style={{ color: 'red' }}>*</span></label>
+                  <label className="portal-label">Reference {syllabusLabel} Topic <span style={{ color: 'red' }}>*</span></label>
                   <select 
                     className="portal-input" 
                     value={formData.syllabusId}
                     onChange={e => setFormData({ ...formData, syllabusId: e.target.value })}
                     required
                   >
-                    <option value="">Select Scheme</option>
-                    {syllabuses.map(s => <option key={s.id} value={s.id}>{s.topic} ({s.week})</option>)}
+                    <option value="">Select Curriculum Topic</option>
+                    {syllabuses.map(s => (
+                      <option key={s.id} value={s.id}>
+                        {s.topic} ({syllabusLabel}: {s.week})
+                      </option>
+                    ))}
                   </select>
+                  <small style={{ color: '#64748b', fontSize: '0.78rem', marginTop: 4, display: 'block' }}>
+                    Reference only — your lesson plan week is selected independently below.
+                  </small>
+                </div>
+
+                {/* INDEPENDENT WEEK SELECTOR */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 15, marginBottom: 15 }}>
+                  <div className="portal-form-group">
+                    <label className="portal-label">Lesson Planning Week <span style={{ color: 'red' }}>*</span></label>
+                    <select 
+                      className="portal-input" 
+                      value={formData.week}
+                      onChange={e => setFormData({ ...formData, week: e.target.value })}
+                      required
+                      style={{ fontWeight: 700 }}
+                    >
+                      {[...Array(24)].map((_, i) => (
+                        <option key={i} value={`Week ${i + 1}`}>Week {i + 1}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="portal-form-group">
+                    <label className="portal-label">Timetable Session / Period</label>
+                    <input 
+                      type="text"
+                      className="portal-input"
+                      placeholder="e.g. Period 2 & 3 (Monday)"
+                      value={formData.session}
+                      onChange={e => setFormData({ ...formData, session: e.target.value })}
+                    />
+                  </div>
                 </div>
 
                 <div className="portal-form-group" style={{ marginBottom: 15 }}>
-                  <label className="portal-label">Topic / Content <span style={{ color: 'red' }}>*</span></label>
+                  <label className="portal-label">Lesson Objectives & Content Breakdown <span style={{ color: 'red' }}>*</span></label>
                   <textarea 
                     className="portal-input" 
-                    placeholder="Topic e.g. Definition of Physics, examples, practical exercises" 
-                    rows={3}
+                    placeholder="Specific lesson goals, teaching methodology, classroom tasks, practical experiments, homework..." 
+                    rows={4}
                     value={formData.topicContent}
                     onChange={e => setFormData({ ...formData, topicContent: e.target.value })}
                     required 
                   />
                 </div>
 
-                <div className="portal-form-group" style={{ marginBottom: 20 }}>
-                  <label className="portal-label">Week <span style={{ color: 'red' }}>*</span></label>
-                  <select 
-                    className="portal-input" 
-                    value={formData.week}
-                    onChange={e => setFormData({ ...formData, week: e.target.value })}
-                    required
-                  >
-                    {[...Array(15)].map((_, i) => (
-                      <option key={i} value={`Week ${i + 1}`}>Week {i + 1}</option>
-                    ))}
-                  </select>
-                </div>
-
-                <div style={{ background: '#f0fff4', padding: 15, borderRadius: 8, color: '#2f855a', marginBottom: 20, fontSize: '0.85rem' }}>
-                   Divide the topics in the syllabus based on your Timetable Period
-                </div>
-
                 <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
                   <button type="button" className="portal-btn-neutral" onClick={() => setIsModalOpen(false)}>
                     Cancel
                   </button>
-                  <button type="submit" className="portal-btn-primary" style={{ background: 'var(--portal-success)', borderColor: 'var(--portal-success)' }}>
-                    <i className="fas fa-save" style={{ marginRight: 5 }}></i> Save
+                  <button type="submit" className="portal-btn-primary" style={{ background: 'var(--portal-success, #059669)', borderColor: 'var(--portal-success, #059669)' }}>
+                    <i className="fas fa-save" style={{ marginRight: 5 }}></i> Save Lesson Plan
                   </button>
                 </div>
               </form>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* EDIT LESSON BREAKDOWN MODAL */}
+      {isEditModalOpen && (
+        <div className="portal-modal-overlay">
+          <div className="portal-modal-card" style={{ maxWidth: '650px' }}>
+            <div className="portal-modal-header">
+              <div className="header-titles">
+                <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', margin: 0 }}>Edit Lesson Breakdown</h2>
+                <p style={{ margin: 0, fontSize: '0.85rem', color: '#718096' }}>Modify week schedule or deliverable contents</p>
+              </div>
+              <button className="close-panel" onClick={() => setIsEditModalOpen(false)} style={{ background: 'none', border: 'none', fontSize: '1.5rem', cursor: 'pointer', color: '#a0aec0' }}>&times;</button>
+            </div>
+            <div className="portal-modal-body">
+              <form onSubmit={handleUpdate}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 15, marginBottom: 15 }}>
+                  <div className="portal-form-group">
+                    <label className="portal-label">Lesson Week <span style={{ color: 'red' }}>*</span></label>
+                    <select 
+                      className="portal-input" 
+                      value={editFormData.week}
+                      onChange={e => setEditFormData({ ...editFormData, week: e.target.value })}
+                      required
+                    >
+                      {[...Array(24)].map((_, i) => (
+                        <option key={i} value={`Week ${i + 1}`}>Week {i + 1}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="portal-form-group">
+                    <label className="portal-label">Session / Period</label>
+                    <input 
+                      type="text"
+                      className="portal-input"
+                      value={editFormData.session}
+                      onChange={e => setEditFormData({ ...editFormData, session: e.target.value })}
+                    />
+                  </div>
+                </div>
+
+                <div className="portal-form-group" style={{ marginBottom: 15 }}>
+                  <label className="portal-label">Curriculum Topic Reference</label>
+                  <select 
+                    className="portal-input" 
+                    value={editFormData.syllabusId}
+                    onChange={e => setEditFormData({ ...editFormData, syllabusId: e.target.value })}
+                    required
+                  >
+                    <option value="">Select Curriculum Topic</option>
+                    {syllabuses.map(s => (
+                      <option key={s.id} value={s.id}>
+                        {s.topic} ({syllabusLabel}: {s.week})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="portal-form-group" style={{ marginBottom: 15 }}>
+                  <label className="portal-label">Lesson Objectives & Content Breakdown <span style={{ color: 'red' }}>*</span></label>
+                  <textarea 
+                    className="portal-input" 
+                    rows={4}
+                    value={editFormData.topicContent}
+                    onChange={e => setEditFormData({ ...editFormData, topicContent: e.target.value })}
+                    required 
+                  />
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
+                  <button type="button" className="portal-btn-neutral" onClick={() => setIsEditModalOpen(false)}>
+                    Cancel
+                  </button>
+                  <button type="submit" className="portal-btn-primary" style={{ background: 'var(--portal-success, #059669)', borderColor: 'var(--portal-success, #059669)' }}>
+                    <i className="fas fa-check" style={{ marginRight: 5 }}></i> Update Lesson Plan
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* VIEW LESSON PLAN DETAILS MODAL */}
+      {isViewModalOpen && selectedPlan && (
+        <div className="portal-modal-overlay">
+          <div className="portal-modal-card" style={{ maxWidth: '600px' }}>
+            <div className="portal-modal-header">
+              <div className="header-titles">
+                <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', margin: 0 }}>Lesson Plan Details</h2>
+                <span className="portal-badge primary">{selectedPlan.week}</span>
+              </div>
+              <button className="close-panel" onClick={() => setIsViewModalOpen(false)} style={{ background: 'none', border: 'none', fontSize: '1.5rem', cursor: 'pointer', color: '#a0aec0' }}>&times;</button>
+            </div>
+            <div className="portal-modal-body" style={{ padding: '20px' }}>
+              <div style={{ marginBottom: 16 }}>
+                <label style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase' }}>Curriculum Topic</label>
+                <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0f172a' }}>
+                  {selectedPlan.syllabus?.topic || 'N/A'}
+                </div>
+                {selectedPlan.syllabus?.week && (
+                  <div style={{ fontSize: '0.85rem', color: '#64748b' }}>
+                    {syllabusLabel} Reference: {selectedPlan.syllabus.week}
+                  </div>
+                )}
+              </div>
+
+              <div style={{ marginBottom: 16 }}>
+                <label style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase' }}>Period / Session</label>
+                <div style={{ fontSize: '0.95rem', fontWeight: 600, color: '#334155' }}>
+                  {selectedPlan.session || 'Unspecified'}
+                </div>
+              </div>
+
+              <div style={{ marginBottom: 20 }}>
+                <label style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase' }}>Objectives & Lesson Deliverables</label>
+                <div style={{ padding: '16px', background: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0', color: '#1e293b', whiteSpace: 'pre-wrap', lineHeight: 1.6, fontSize: '0.95rem' }}>
+                  {selectedPlan.content}
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                <button className="portal-btn-primary" onClick={() => setIsViewModalOpen(false)}>
+                  Close
+                </button>
+              </div>
             </div>
           </div>
         </div>

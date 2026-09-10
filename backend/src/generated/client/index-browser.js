@@ -429,7 +429,9 @@ exports.Prisma.SubjectScalarFieldEnum = {
   department: 'department',
   departmentId: 'departmentId',
   schoolId: 'schoolId',
+  createdById: 'createdById',
   gradingType: 'gradingType',
+  moderatedScale: 'moderatedScale',
   credits: 'credits',
   isIndustrial: 'isIndustrial',
   isProject: 'isProject',
@@ -467,6 +469,9 @@ exports.Prisma.GradeScalarFieldEnum = {
   isIndustrialGrade: 'isIndustrialGrade',
   gradePoint: 'gradePoint',
   comment: 'comment',
+  assessmentEntries: 'assessmentEntries',
+  classAverage: 'classAverage',
+  classPosition: 'classPosition',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   schoolId: 'schoolId'
@@ -801,6 +806,7 @@ exports.Prisma.SchoolSettingScalarFieldEnum = {
   idCardTemplateFront: 'idCardTemplateFront',
   idCardTemplateBack: 'idCardTemplateBack',
   setupStatus: 'setupStatus',
+  housesModuleEnabled: 'housesModuleEnabled',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };

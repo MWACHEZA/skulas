@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { useAuth } from '../../../contexts/AuthContext';
+import { useTerminology } from '../../../hooks/useTerminology';
 import '../../../styles/portal.css';
 
 interface SchoolClass {
@@ -29,6 +30,7 @@ export default function ClassMigration() {
   const { showToast } = useToast();
   const { user } = useAuth();
   const schoolType = user?.schoolType || 'Secondary';
+  const { t } = useTerminology();
 
   const [classes, setClasses] = useState<SchoolClass[]>([]);
   const [sourceClassId, setSourceClassId] = useState('');
@@ -45,13 +47,9 @@ export default function ClassMigration() {
     if (type.includes('university') || type.includes('varsity') || type.includes('tertiary') || type.includes('college') || type.includes('poly') || type.includes('nursing') || type.includes('medical')) {
       return 'Academic Year (Part)';
     }
-    if (type.includes('primary')) {
-      return 'Grade';
-    }
-    if (type.includes('secondary') || type.includes('high')) {
-      return 'Form';
-    }
-    return 'Class Year';
+    if (type.includes('primary')) return t('grade');
+    if (type.includes('secondary') || type.includes('high')) return 'Form';
+    return t('grade');
   };
 
   const getYearValueLabel = (typeStr: string, partValue: number | string | null | undefined) => {
@@ -60,13 +58,9 @@ export default function ClassMigration() {
     if (type.includes('university') || type.includes('varsity') || type.includes('tertiary') || type.includes('college') || type.includes('poly') || type.includes('nursing') || type.includes('medical')) {
       return `Part ${part}`;
     }
-    if (type.includes('primary')) {
-      return `Grade ${part}`;
-    }
-    if (type.includes('secondary') || type.includes('high')) {
-      return `Form ${part}`;
-    }
-    return `Year ${part}`;
+    if (type.includes('primary')) return `${t('grade')} ${part}`;
+    if (type.includes('secondary') || type.includes('high')) return `Form ${part}`;
+    return `${t('grade')} ${part}`;
   };
 
   const fetchClasses = useCallback(async () => {
@@ -310,8 +304,8 @@ export default function ClassMigration() {
     <div className="portal-container">
       <div className="portal-page-header">
         <div className="header-content">
-          <h1>Class Migration</h1>
-          <p>Migrate your students to the next year or class.</p>
+          <h1>{t('migration')}</h1>
+          <p>Migrate your {t('students').toLowerCase()} to the next {t('grade').toLowerCase()} or {t('class').toLowerCase()}.</p>
         </div>
         <div className="portal-tab-container">
           <button 

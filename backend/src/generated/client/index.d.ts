@@ -15319,6 +15319,7 @@ export namespace Prisma {
     clinicReferrals: number
     clinicVisits: number
     clinicHospitalizations: number
+    createdSubjects: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -15358,6 +15359,7 @@ export namespace Prisma {
     clinicReferrals?: boolean | UserCountOutputTypeCountClinicReferralsArgs
     clinicVisits?: boolean | UserCountOutputTypeCountClinicVisitsArgs
     clinicHospitalizations?: boolean | UserCountOutputTypeCountClinicHospitalizationsArgs
+    createdSubjects?: boolean | UserCountOutputTypeCountCreatedSubjectsArgs
   }
 
   // Custom InputTypes
@@ -15621,6 +15623,13 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountClinicHospitalizationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ClinicHospitalizationWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountCreatedSubjectsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SubjectWhereInput
   }
 
 
@@ -35855,6 +35864,7 @@ export namespace Prisma {
     clinicVisits?: boolean | User$clinicVisitsArgs<ExtArgs>
     clinicHospitalizations?: boolean | User$clinicHospitalizationsArgs<ExtArgs>
     clinicPatient?: boolean | User$clinicPatientArgs<ExtArgs>
+    createdSubjects?: boolean | User$createdSubjectsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -35949,6 +35959,7 @@ export namespace Prisma {
     clinicVisits?: boolean | User$clinicVisitsArgs<ExtArgs>
     clinicHospitalizations?: boolean | User$clinicHospitalizationsArgs<ExtArgs>
     clinicPatient?: boolean | User$clinicPatientArgs<ExtArgs>
+    createdSubjects?: boolean | User$createdSubjectsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -36003,6 +36014,7 @@ export namespace Prisma {
       clinicVisits: Prisma.$ClinicVisitPayload<ExtArgs>[]
       clinicHospitalizations: Prisma.$ClinicHospitalizationPayload<ExtArgs>[]
       clinicPatient: Prisma.$ClinicPatientPayload<ExtArgs> | null
+      createdSubjects: Prisma.$SubjectPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -36432,6 +36444,7 @@ export namespace Prisma {
     clinicVisits<T extends User$clinicVisitsArgs<ExtArgs> = {}>(args?: Subset<T, User$clinicVisitsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ClinicVisitPayload<ExtArgs>, T, "findMany"> | Null>
     clinicHospitalizations<T extends User$clinicHospitalizationsArgs<ExtArgs> = {}>(args?: Subset<T, User$clinicHospitalizationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ClinicHospitalizationPayload<ExtArgs>, T, "findMany"> | Null>
     clinicPatient<T extends User$clinicPatientArgs<ExtArgs> = {}>(args?: Subset<T, User$clinicPatientArgs<ExtArgs>>): Prisma__ClinicPatientClient<$Result.GetResult<Prisma.$ClinicPatientPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    createdSubjects<T extends User$createdSubjectsArgs<ExtArgs> = {}>(args?: Subset<T, User$createdSubjectsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SubjectPayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -37635,6 +37648,26 @@ export namespace Prisma {
      */
     include?: ClinicPatientInclude<ExtArgs> | null
     where?: ClinicPatientWhereInput
+  }
+
+  /**
+   * User.createdSubjects
+   */
+  export type User$createdSubjectsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Subject
+     */
+    select?: SubjectSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SubjectInclude<ExtArgs> | null
+    where?: SubjectWhereInput
+    orderBy?: SubjectOrderByWithRelationInput | SubjectOrderByWithRelationInput[]
+    cursor?: SubjectWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: SubjectScalarFieldEnum | SubjectScalarFieldEnum[]
   }
 
   /**
@@ -44454,6 +44487,7 @@ export namespace Prisma {
     department: string | null
     departmentId: string | null
     schoolId: string | null
+    createdById: string | null
     gradingType: string | null
     credits: number | null
     isIndustrial: boolean | null
@@ -44470,6 +44504,7 @@ export namespace Prisma {
     department: string | null
     departmentId: string | null
     schoolId: string | null
+    createdById: string | null
     gradingType: string | null
     credits: number | null
     isIndustrial: boolean | null
@@ -44486,7 +44521,9 @@ export namespace Prisma {
     department: number
     departmentId: number
     schoolId: number
+    createdById: number
     gradingType: number
+    moderatedScale: number
     credits: number
     isIndustrial: number
     isProject: number
@@ -44516,6 +44553,7 @@ export namespace Prisma {
     department?: true
     departmentId?: true
     schoolId?: true
+    createdById?: true
     gradingType?: true
     credits?: true
     isIndustrial?: true
@@ -44532,6 +44570,7 @@ export namespace Prisma {
     department?: true
     departmentId?: true
     schoolId?: true
+    createdById?: true
     gradingType?: true
     credits?: true
     isIndustrial?: true
@@ -44548,7 +44587,9 @@ export namespace Prisma {
     department?: true
     departmentId?: true
     schoolId?: true
+    createdById?: true
     gradingType?: true
+    moderatedScale?: true
     credits?: true
     isIndustrial?: true
     isProject?: true
@@ -44651,7 +44692,9 @@ export namespace Prisma {
     department: string | null
     departmentId: string | null
     schoolId: string
+    createdById: string | null
     gradingType: string
+    moderatedScale: JsonValue | null
     credits: number | null
     isIndustrial: boolean
     isProject: boolean
@@ -44686,7 +44729,9 @@ export namespace Prisma {
     department?: boolean
     departmentId?: boolean
     schoolId?: boolean
+    createdById?: boolean
     gradingType?: boolean
+    moderatedScale?: boolean
     credits?: boolean
     isIndustrial?: boolean
     isProject?: boolean
@@ -44695,6 +44740,7 @@ export namespace Prisma {
     examWeight?: boolean
     dept?: boolean | Subject$deptArgs<ExtArgs>
     school?: boolean | SchoolDefaultArgs<ExtArgs>
+    createdBy?: boolean | Subject$createdByArgs<ExtArgs>
     teachers?: boolean | Subject$teachersArgs<ExtArgs>
     classTeachers?: boolean | Subject$classTeachersArgs<ExtArgs>
     grades?: boolean | Subject$gradesArgs<ExtArgs>
@@ -44717,7 +44763,9 @@ export namespace Prisma {
     department?: boolean
     departmentId?: boolean
     schoolId?: boolean
+    createdById?: boolean
     gradingType?: boolean
+    moderatedScale?: boolean
     credits?: boolean
     isIndustrial?: boolean
     isProject?: boolean
@@ -44726,6 +44774,7 @@ export namespace Prisma {
     examWeight?: boolean
     dept?: boolean | Subject$deptArgs<ExtArgs>
     school?: boolean | SchoolDefaultArgs<ExtArgs>
+    createdBy?: boolean | Subject$createdByArgs<ExtArgs>
   }, ExtArgs["result"]["subject"]>
 
   export type SubjectSelectScalar = {
@@ -44735,7 +44784,9 @@ export namespace Prisma {
     department?: boolean
     departmentId?: boolean
     schoolId?: boolean
+    createdById?: boolean
     gradingType?: boolean
+    moderatedScale?: boolean
     credits?: boolean
     isIndustrial?: boolean
     isProject?: boolean
@@ -44747,6 +44798,7 @@ export namespace Prisma {
   export type SubjectInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     dept?: boolean | Subject$deptArgs<ExtArgs>
     school?: boolean | SchoolDefaultArgs<ExtArgs>
+    createdBy?: boolean | Subject$createdByArgs<ExtArgs>
     teachers?: boolean | Subject$teachersArgs<ExtArgs>
     classTeachers?: boolean | Subject$classTeachersArgs<ExtArgs>
     grades?: boolean | Subject$gradesArgs<ExtArgs>
@@ -44764,6 +44816,7 @@ export namespace Prisma {
   export type SubjectIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     dept?: boolean | Subject$deptArgs<ExtArgs>
     school?: boolean | SchoolDefaultArgs<ExtArgs>
+    createdBy?: boolean | Subject$createdByArgs<ExtArgs>
   }
 
   export type $SubjectPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -44771,6 +44824,7 @@ export namespace Prisma {
     objects: {
       dept: Prisma.$DepartmentPayload<ExtArgs> | null
       school: Prisma.$SchoolPayload<ExtArgs>
+      createdBy: Prisma.$UserPayload<ExtArgs> | null
       teachers: Prisma.$TeacherSubjectPayload<ExtArgs>[]
       classTeachers: Prisma.$ClassSubjectTeacherPayload<ExtArgs>[]
       grades: Prisma.$GradePayload<ExtArgs>[]
@@ -44791,7 +44845,9 @@ export namespace Prisma {
       department: string | null
       departmentId: string | null
       schoolId: string
+      createdById: string | null
       gradingType: string
+      moderatedScale: Prisma.JsonValue | null
       credits: number | null
       isIndustrial: boolean
       isProject: boolean
@@ -45164,6 +45220,7 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     dept<T extends Subject$deptArgs<ExtArgs> = {}>(args?: Subset<T, Subject$deptArgs<ExtArgs>>): Prisma__DepartmentClient<$Result.GetResult<Prisma.$DepartmentPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     school<T extends SchoolDefaultArgs<ExtArgs> = {}>(args?: Subset<T, SchoolDefaultArgs<ExtArgs>>): Prisma__SchoolClient<$Result.GetResult<Prisma.$SchoolPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    createdBy<T extends Subject$createdByArgs<ExtArgs> = {}>(args?: Subset<T, Subject$createdByArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     teachers<T extends Subject$teachersArgs<ExtArgs> = {}>(args?: Subset<T, Subject$teachersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TeacherSubjectPayload<ExtArgs>, T, "findMany"> | Null>
     classTeachers<T extends Subject$classTeachersArgs<ExtArgs> = {}>(args?: Subset<T, Subject$classTeachersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ClassSubjectTeacherPayload<ExtArgs>, T, "findMany"> | Null>
     grades<T extends Subject$gradesArgs<ExtArgs> = {}>(args?: Subset<T, Subject$gradesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GradePayload<ExtArgs>, T, "findMany"> | Null>
@@ -45211,7 +45268,9 @@ export namespace Prisma {
     readonly department: FieldRef<"Subject", 'String'>
     readonly departmentId: FieldRef<"Subject", 'String'>
     readonly schoolId: FieldRef<"Subject", 'String'>
+    readonly createdById: FieldRef<"Subject", 'String'>
     readonly gradingType: FieldRef<"Subject", 'String'>
+    readonly moderatedScale: FieldRef<"Subject", 'Json'>
     readonly credits: FieldRef<"Subject", 'Float'>
     readonly isIndustrial: FieldRef<"Subject", 'Boolean'>
     readonly isProject: FieldRef<"Subject", 'Boolean'>
@@ -45548,6 +45607,21 @@ export namespace Prisma {
      */
     include?: DepartmentInclude<ExtArgs> | null
     where?: DepartmentWhereInput
+  }
+
+  /**
+   * Subject.createdBy
+   */
+  export type Subject$createdByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
   }
 
   /**
@@ -47672,6 +47746,8 @@ export namespace Prisma {
     caScore: number | null
     examScore: number | null
     gradePoint: number | null
+    classAverage: number | null
+    classPosition: number | null
   }
 
   export type GradeSumAggregateOutputType = {
@@ -47681,6 +47757,8 @@ export namespace Prisma {
     caScore: number | null
     examScore: number | null
     gradePoint: number | null
+    classAverage: number | null
+    classPosition: number | null
   }
 
   export type GradeMinAggregateOutputType = {
@@ -47698,6 +47776,8 @@ export namespace Prisma {
     isIndustrialGrade: boolean | null
     gradePoint: number | null
     comment: string | null
+    classAverage: number | null
+    classPosition: number | null
     createdAt: Date | null
     updatedAt: Date | null
     schoolId: string | null
@@ -47718,6 +47798,8 @@ export namespace Prisma {
     isIndustrialGrade: boolean | null
     gradePoint: number | null
     comment: string | null
+    classAverage: number | null
+    classPosition: number | null
     createdAt: Date | null
     updatedAt: Date | null
     schoolId: string | null
@@ -47739,6 +47821,9 @@ export namespace Prisma {
     isIndustrialGrade: number
     gradePoint: number
     comment: number
+    assessmentEntries: number
+    classAverage: number
+    classPosition: number
     createdAt: number
     updatedAt: number
     schoolId: number
@@ -47753,6 +47838,8 @@ export namespace Prisma {
     caScore?: true
     examScore?: true
     gradePoint?: true
+    classAverage?: true
+    classPosition?: true
   }
 
   export type GradeSumAggregateInputType = {
@@ -47762,6 +47849,8 @@ export namespace Prisma {
     caScore?: true
     examScore?: true
     gradePoint?: true
+    classAverage?: true
+    classPosition?: true
   }
 
   export type GradeMinAggregateInputType = {
@@ -47779,6 +47868,8 @@ export namespace Prisma {
     isIndustrialGrade?: true
     gradePoint?: true
     comment?: true
+    classAverage?: true
+    classPosition?: true
     createdAt?: true
     updatedAt?: true
     schoolId?: true
@@ -47799,6 +47890,8 @@ export namespace Prisma {
     isIndustrialGrade?: true
     gradePoint?: true
     comment?: true
+    classAverage?: true
+    classPosition?: true
     createdAt?: true
     updatedAt?: true
     schoolId?: true
@@ -47820,6 +47913,9 @@ export namespace Prisma {
     isIndustrialGrade?: true
     gradePoint?: true
     comment?: true
+    assessmentEntries?: true
+    classAverage?: true
+    classPosition?: true
     createdAt?: true
     updatedAt?: true
     schoolId?: true
@@ -47928,6 +48024,9 @@ export namespace Prisma {
     isIndustrialGrade: boolean
     gradePoint: number | null
     comment: string | null
+    assessmentEntries: JsonValue | null
+    classAverage: number | null
+    classPosition: number | null
     createdAt: Date
     updatedAt: Date
     schoolId: string
@@ -47968,6 +48067,9 @@ export namespace Prisma {
     isIndustrialGrade?: boolean
     gradePoint?: boolean
     comment?: boolean
+    assessmentEntries?: boolean
+    classAverage?: boolean
+    classPosition?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     schoolId?: boolean
@@ -47993,6 +48095,9 @@ export namespace Prisma {
     isIndustrialGrade?: boolean
     gradePoint?: boolean
     comment?: boolean
+    assessmentEntries?: boolean
+    classAverage?: boolean
+    classPosition?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     schoolId?: boolean
@@ -48018,6 +48123,9 @@ export namespace Prisma {
     isIndustrialGrade?: boolean
     gradePoint?: boolean
     comment?: boolean
+    assessmentEntries?: boolean
+    classAverage?: boolean
+    classPosition?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     schoolId?: boolean
@@ -48060,6 +48168,9 @@ export namespace Prisma {
       isIndustrialGrade: boolean
       gradePoint: number | null
       comment: string | null
+      assessmentEntries: Prisma.JsonValue | null
+      classAverage: number | null
+      classPosition: number | null
       createdAt: Date
       updatedAt: Date
       schoolId: string
@@ -48475,6 +48586,9 @@ export namespace Prisma {
     readonly isIndustrialGrade: FieldRef<"Grade", 'Boolean'>
     readonly gradePoint: FieldRef<"Grade", 'Float'>
     readonly comment: FieldRef<"Grade", 'String'>
+    readonly assessmentEntries: FieldRef<"Grade", 'Json'>
+    readonly classAverage: FieldRef<"Grade", 'Float'>
+    readonly classPosition: FieldRef<"Grade", 'Int'>
     readonly createdAt: FieldRef<"Grade", 'DateTime'>
     readonly updatedAt: FieldRef<"Grade", 'DateTime'>
     readonly schoolId: FieldRef<"Grade", 'String'>
@@ -68968,6 +69082,7 @@ export namespace Prisma {
     gateRequiredType: string | null
     idCardTemplateFront: string | null
     idCardTemplateBack: string | null
+    housesModuleEnabled: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -69035,6 +69150,7 @@ export namespace Prisma {
     gateRequiredType: string | null
     idCardTemplateFront: string | null
     idCardTemplateBack: string | null
+    housesModuleEnabled: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -69104,6 +69220,7 @@ export namespace Prisma {
     idCardTemplateFront: number
     idCardTemplateBack: number
     setupStatus: number
+    housesModuleEnabled: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -69189,6 +69306,7 @@ export namespace Prisma {
     gateRequiredType?: true
     idCardTemplateFront?: true
     idCardTemplateBack?: true
+    housesModuleEnabled?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -69256,6 +69374,7 @@ export namespace Prisma {
     gateRequiredType?: true
     idCardTemplateFront?: true
     idCardTemplateBack?: true
+    housesModuleEnabled?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -69325,6 +69444,7 @@ export namespace Prisma {
     idCardTemplateFront?: true
     idCardTemplateBack?: true
     setupStatus?: true
+    housesModuleEnabled?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -69481,6 +69601,7 @@ export namespace Prisma {
     idCardTemplateFront: string | null
     idCardTemplateBack: string | null
     setupStatus: JsonValue | null
+    housesModuleEnabled: boolean
     createdAt: Date
     updatedAt: Date
     _count: SchoolSettingCountAggregateOutputType | null
@@ -69569,6 +69690,7 @@ export namespace Prisma {
     idCardTemplateFront?: boolean
     idCardTemplateBack?: boolean
     setupStatus?: boolean
+    housesModuleEnabled?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     school?: boolean | SchoolDefaultArgs<ExtArgs>
@@ -69639,6 +69761,7 @@ export namespace Prisma {
     idCardTemplateFront?: boolean
     idCardTemplateBack?: boolean
     setupStatus?: boolean
+    housesModuleEnabled?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     school?: boolean | SchoolDefaultArgs<ExtArgs>
@@ -69709,6 +69832,7 @@ export namespace Prisma {
     idCardTemplateFront?: boolean
     idCardTemplateBack?: boolean
     setupStatus?: boolean
+    housesModuleEnabled?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
@@ -69790,6 +69914,7 @@ export namespace Prisma {
       idCardTemplateFront: string | null
       idCardTemplateBack: string | null
       setupStatus: Prisma.JsonValue | null
+      housesModuleEnabled: boolean
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["schoolSetting"]>
@@ -70250,6 +70375,7 @@ export namespace Prisma {
     readonly idCardTemplateFront: FieldRef<"SchoolSetting", 'String'>
     readonly idCardTemplateBack: FieldRef<"SchoolSetting", 'String'>
     readonly setupStatus: FieldRef<"SchoolSetting", 'Json'>
+    readonly housesModuleEnabled: FieldRef<"SchoolSetting", 'Boolean'>
     readonly createdAt: FieldRef<"SchoolSetting", 'DateTime'>
     readonly updatedAt: FieldRef<"SchoolSetting", 'DateTime'>
   }
@@ -184710,7 +184836,9 @@ export namespace Prisma {
     department: 'department',
     departmentId: 'departmentId',
     schoolId: 'schoolId',
+    createdById: 'createdById',
     gradingType: 'gradingType',
+    moderatedScale: 'moderatedScale',
     credits: 'credits',
     isIndustrial: 'isIndustrial',
     isProject: 'isProject',
@@ -184757,6 +184885,9 @@ export namespace Prisma {
     isIndustrialGrade: 'isIndustrialGrade',
     gradePoint: 'gradePoint',
     comment: 'comment',
+    assessmentEntries: 'assessmentEntries',
+    classAverage: 'classAverage',
+    classPosition: 'classPosition',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
     schoolId: 'schoolId'
@@ -185151,6 +185282,7 @@ export namespace Prisma {
     idCardTemplateFront: 'idCardTemplateFront',
     idCardTemplateBack: 'idCardTemplateBack',
     setupStatus: 'setupStatus',
+    housesModuleEnabled: 'housesModuleEnabled',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -188701,6 +188833,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitListRelationFilter
     clinicHospitalizations?: ClinicHospitalizationListRelationFilter
     clinicPatient?: XOR<ClinicPatientNullableRelationFilter, ClinicPatientWhereInput> | null
+    createdSubjects?: SubjectListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -188767,6 +188900,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitOrderByRelationAggregateInput
     clinicHospitalizations?: ClinicHospitalizationOrderByRelationAggregateInput
     clinicPatient?: ClinicPatientOrderByWithRelationInput
+    createdSubjects?: SubjectOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -188836,6 +188970,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitListRelationFilter
     clinicHospitalizations?: ClinicHospitalizationListRelationFilter
     clinicPatient?: XOR<ClinicPatientNullableRelationFilter, ClinicPatientWhereInput> | null
+    createdSubjects?: SubjectListRelationFilter
   }, "id" | "email">
 
   export type UserOrderByWithAggregationInput = {
@@ -189647,7 +189782,9 @@ export namespace Prisma {
     department?: StringNullableFilter<"Subject"> | string | null
     departmentId?: StringNullableFilter<"Subject"> | string | null
     schoolId?: StringFilter<"Subject"> | string
+    createdById?: StringNullableFilter<"Subject"> | string | null
     gradingType?: StringFilter<"Subject"> | string
+    moderatedScale?: JsonNullableFilter<"Subject">
     credits?: FloatNullableFilter<"Subject"> | number | null
     isIndustrial?: BoolFilter<"Subject"> | boolean
     isProject?: BoolFilter<"Subject"> | boolean
@@ -189656,6 +189793,7 @@ export namespace Prisma {
     examWeight?: FloatFilter<"Subject"> | number
     dept?: XOR<DepartmentNullableRelationFilter, DepartmentWhereInput> | null
     school?: XOR<SchoolRelationFilter, SchoolWhereInput>
+    createdBy?: XOR<UserNullableRelationFilter, UserWhereInput> | null
     teachers?: TeacherSubjectListRelationFilter
     classTeachers?: ClassSubjectTeacherListRelationFilter
     grades?: GradeListRelationFilter
@@ -189677,7 +189815,9 @@ export namespace Prisma {
     department?: SortOrderInput | SortOrder
     departmentId?: SortOrderInput | SortOrder
     schoolId?: SortOrder
+    createdById?: SortOrderInput | SortOrder
     gradingType?: SortOrder
+    moderatedScale?: SortOrderInput | SortOrder
     credits?: SortOrderInput | SortOrder
     isIndustrial?: SortOrder
     isProject?: SortOrder
@@ -189686,6 +189826,7 @@ export namespace Prisma {
     examWeight?: SortOrder
     dept?: DepartmentOrderByWithRelationInput
     school?: SchoolOrderByWithRelationInput
+    createdBy?: UserOrderByWithRelationInput
     teachers?: TeacherSubjectOrderByRelationAggregateInput
     classTeachers?: ClassSubjectTeacherOrderByRelationAggregateInput
     grades?: GradeOrderByRelationAggregateInput
@@ -189710,7 +189851,9 @@ export namespace Prisma {
     department?: StringNullableFilter<"Subject"> | string | null
     departmentId?: StringNullableFilter<"Subject"> | string | null
     schoolId?: StringFilter<"Subject"> | string
+    createdById?: StringNullableFilter<"Subject"> | string | null
     gradingType?: StringFilter<"Subject"> | string
+    moderatedScale?: JsonNullableFilter<"Subject">
     credits?: FloatNullableFilter<"Subject"> | number | null
     isIndustrial?: BoolFilter<"Subject"> | boolean
     isProject?: BoolFilter<"Subject"> | boolean
@@ -189719,6 +189862,7 @@ export namespace Prisma {
     examWeight?: FloatFilter<"Subject"> | number
     dept?: XOR<DepartmentNullableRelationFilter, DepartmentWhereInput> | null
     school?: XOR<SchoolRelationFilter, SchoolWhereInput>
+    createdBy?: XOR<UserNullableRelationFilter, UserWhereInput> | null
     teachers?: TeacherSubjectListRelationFilter
     classTeachers?: ClassSubjectTeacherListRelationFilter
     grades?: GradeListRelationFilter
@@ -189740,7 +189884,9 @@ export namespace Prisma {
     department?: SortOrderInput | SortOrder
     departmentId?: SortOrderInput | SortOrder
     schoolId?: SortOrder
+    createdById?: SortOrderInput | SortOrder
     gradingType?: SortOrder
+    moderatedScale?: SortOrderInput | SortOrder
     credits?: SortOrderInput | SortOrder
     isIndustrial?: SortOrder
     isProject?: SortOrder
@@ -189764,7 +189910,9 @@ export namespace Prisma {
     department?: StringNullableWithAggregatesFilter<"Subject"> | string | null
     departmentId?: StringNullableWithAggregatesFilter<"Subject"> | string | null
     schoolId?: StringWithAggregatesFilter<"Subject"> | string
+    createdById?: StringNullableWithAggregatesFilter<"Subject"> | string | null
     gradingType?: StringWithAggregatesFilter<"Subject"> | string
+    moderatedScale?: JsonNullableWithAggregatesFilter<"Subject">
     credits?: FloatNullableWithAggregatesFilter<"Subject"> | number | null
     isIndustrial?: BoolWithAggregatesFilter<"Subject"> | boolean
     isProject?: BoolWithAggregatesFilter<"Subject"> | boolean
@@ -189898,6 +190046,9 @@ export namespace Prisma {
     isIndustrialGrade?: BoolFilter<"Grade"> | boolean
     gradePoint?: FloatNullableFilter<"Grade"> | number | null
     comment?: StringNullableFilter<"Grade"> | string | null
+    assessmentEntries?: JsonNullableFilter<"Grade">
+    classAverage?: FloatNullableFilter<"Grade"> | number | null
+    classPosition?: IntNullableFilter<"Grade"> | number | null
     createdAt?: DateTimeFilter<"Grade"> | Date | string
     updatedAt?: DateTimeFilter<"Grade"> | Date | string
     schoolId?: StringFilter<"Grade"> | string
@@ -189923,6 +190074,9 @@ export namespace Prisma {
     isIndustrialGrade?: SortOrder
     gradePoint?: SortOrderInput | SortOrder
     comment?: SortOrderInput | SortOrder
+    assessmentEntries?: SortOrderInput | SortOrder
+    classAverage?: SortOrderInput | SortOrder
+    classPosition?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     schoolId?: SortOrder
@@ -189952,6 +190106,9 @@ export namespace Prisma {
     isIndustrialGrade?: BoolFilter<"Grade"> | boolean
     gradePoint?: FloatNullableFilter<"Grade"> | number | null
     comment?: StringNullableFilter<"Grade"> | string | null
+    assessmentEntries?: JsonNullableFilter<"Grade">
+    classAverage?: FloatNullableFilter<"Grade"> | number | null
+    classPosition?: IntNullableFilter<"Grade"> | number | null
     createdAt?: DateTimeFilter<"Grade"> | Date | string
     updatedAt?: DateTimeFilter<"Grade"> | Date | string
     schoolId?: StringFilter<"Grade"> | string
@@ -189977,6 +190134,9 @@ export namespace Prisma {
     isIndustrialGrade?: SortOrder
     gradePoint?: SortOrderInput | SortOrder
     comment?: SortOrderInput | SortOrder
+    assessmentEntries?: SortOrderInput | SortOrder
+    classAverage?: SortOrderInput | SortOrder
+    classPosition?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     schoolId?: SortOrder
@@ -190006,6 +190166,9 @@ export namespace Prisma {
     isIndustrialGrade?: BoolWithAggregatesFilter<"Grade"> | boolean
     gradePoint?: FloatNullableWithAggregatesFilter<"Grade"> | number | null
     comment?: StringNullableWithAggregatesFilter<"Grade"> | string | null
+    assessmentEntries?: JsonNullableWithAggregatesFilter<"Grade">
+    classAverage?: FloatNullableWithAggregatesFilter<"Grade"> | number | null
+    classPosition?: IntNullableWithAggregatesFilter<"Grade"> | number | null
     createdAt?: DateTimeWithAggregatesFilter<"Grade"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Grade"> | Date | string
     schoolId?: StringWithAggregatesFilter<"Grade"> | string
@@ -191826,6 +191989,7 @@ export namespace Prisma {
     idCardTemplateFront?: StringNullableFilter<"SchoolSetting"> | string | null
     idCardTemplateBack?: StringNullableFilter<"SchoolSetting"> | string | null
     setupStatus?: JsonNullableFilter<"SchoolSetting">
+    housesModuleEnabled?: BoolFilter<"SchoolSetting"> | boolean
     createdAt?: DateTimeFilter<"SchoolSetting"> | Date | string
     updatedAt?: DateTimeFilter<"SchoolSetting"> | Date | string
     school?: XOR<SchoolRelationFilter, SchoolWhereInput>
@@ -191896,6 +192060,7 @@ export namespace Prisma {
     idCardTemplateFront?: SortOrderInput | SortOrder
     idCardTemplateBack?: SortOrderInput | SortOrder
     setupStatus?: SortOrderInput | SortOrder
+    housesModuleEnabled?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     school?: SchoolOrderByWithRelationInput
@@ -191969,6 +192134,7 @@ export namespace Prisma {
     idCardTemplateFront?: StringNullableFilter<"SchoolSetting"> | string | null
     idCardTemplateBack?: StringNullableFilter<"SchoolSetting"> | string | null
     setupStatus?: JsonNullableFilter<"SchoolSetting">
+    housesModuleEnabled?: BoolFilter<"SchoolSetting"> | boolean
     createdAt?: DateTimeFilter<"SchoolSetting"> | Date | string
     updatedAt?: DateTimeFilter<"SchoolSetting"> | Date | string
     school?: XOR<SchoolRelationFilter, SchoolWhereInput>
@@ -192039,6 +192205,7 @@ export namespace Prisma {
     idCardTemplateFront?: SortOrderInput | SortOrder
     idCardTemplateBack?: SortOrderInput | SortOrder
     setupStatus?: SortOrderInput | SortOrder
+    housesModuleEnabled?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: SchoolSettingCountOrderByAggregateInput
@@ -192116,6 +192283,7 @@ export namespace Prisma {
     idCardTemplateFront?: StringNullableWithAggregatesFilter<"SchoolSetting"> | string | null
     idCardTemplateBack?: StringNullableWithAggregatesFilter<"SchoolSetting"> | string | null
     setupStatus?: JsonNullableWithAggregatesFilter<"SchoolSetting">
+    housesModuleEnabled?: BoolWithAggregatesFilter<"SchoolSetting"> | boolean
     createdAt?: DateTimeWithAggregatesFilter<"SchoolSetting"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"SchoolSetting"> | Date | string
   }
@@ -203487,6 +203655,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -203551,6 +203720,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUncheckedCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientUncheckedCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserUpdateInput = {
@@ -203615,6 +203785,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -203679,6 +203850,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUncheckedUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUncheckedUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -204617,6 +204789,7 @@ export namespace Prisma {
     code?: string | null
     department?: string | null
     gradingType?: string
+    moderatedScale?: NullableJsonNullValueInput | InputJsonValue
     credits?: number | null
     isIndustrial?: boolean
     isProject?: boolean
@@ -204625,6 +204798,7 @@ export namespace Prisma {
     examWeight?: number
     dept?: DepartmentCreateNestedOneWithoutSubjectsInput
     school: SchoolCreateNestedOneWithoutSubjectsInput
+    createdBy?: UserCreateNestedOneWithoutCreatedSubjectsInput
     teachers?: TeacherSubjectCreateNestedManyWithoutSubjectInput
     classTeachers?: ClassSubjectTeacherCreateNestedManyWithoutSubjectInput
     grades?: GradeCreateNestedManyWithoutSubjectInput
@@ -204646,7 +204820,9 @@ export namespace Prisma {
     department?: string | null
     departmentId?: string | null
     schoolId: string
+    createdById?: string | null
     gradingType?: string
+    moderatedScale?: NullableJsonNullValueInput | InputJsonValue
     credits?: number | null
     isIndustrial?: boolean
     isProject?: boolean
@@ -204673,6 +204849,7 @@ export namespace Prisma {
     code?: NullableStringFieldUpdateOperationsInput | string | null
     department?: NullableStringFieldUpdateOperationsInput | string | null
     gradingType?: StringFieldUpdateOperationsInput | string
+    moderatedScale?: NullableJsonNullValueInput | InputJsonValue
     credits?: NullableFloatFieldUpdateOperationsInput | number | null
     isIndustrial?: BoolFieldUpdateOperationsInput | boolean
     isProject?: BoolFieldUpdateOperationsInput | boolean
@@ -204681,6 +204858,7 @@ export namespace Prisma {
     examWeight?: FloatFieldUpdateOperationsInput | number
     dept?: DepartmentUpdateOneWithoutSubjectsNestedInput
     school?: SchoolUpdateOneRequiredWithoutSubjectsNestedInput
+    createdBy?: UserUpdateOneWithoutCreatedSubjectsNestedInput
     teachers?: TeacherSubjectUpdateManyWithoutSubjectNestedInput
     classTeachers?: ClassSubjectTeacherUpdateManyWithoutSubjectNestedInput
     grades?: GradeUpdateManyWithoutSubjectNestedInput
@@ -204702,7 +204880,9 @@ export namespace Prisma {
     department?: NullableStringFieldUpdateOperationsInput | string | null
     departmentId?: NullableStringFieldUpdateOperationsInput | string | null
     schoolId?: StringFieldUpdateOperationsInput | string
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
     gradingType?: StringFieldUpdateOperationsInput | string
+    moderatedScale?: NullableJsonNullValueInput | InputJsonValue
     credits?: NullableFloatFieldUpdateOperationsInput | number | null
     isIndustrial?: BoolFieldUpdateOperationsInput | boolean
     isProject?: BoolFieldUpdateOperationsInput | boolean
@@ -204730,7 +204910,9 @@ export namespace Prisma {
     department?: string | null
     departmentId?: string | null
     schoolId: string
+    createdById?: string | null
     gradingType?: string
+    moderatedScale?: NullableJsonNullValueInput | InputJsonValue
     credits?: number | null
     isIndustrial?: boolean
     isProject?: boolean
@@ -204745,6 +204927,7 @@ export namespace Prisma {
     code?: NullableStringFieldUpdateOperationsInput | string | null
     department?: NullableStringFieldUpdateOperationsInput | string | null
     gradingType?: StringFieldUpdateOperationsInput | string
+    moderatedScale?: NullableJsonNullValueInput | InputJsonValue
     credits?: NullableFloatFieldUpdateOperationsInput | number | null
     isIndustrial?: BoolFieldUpdateOperationsInput | boolean
     isProject?: BoolFieldUpdateOperationsInput | boolean
@@ -204760,7 +204943,9 @@ export namespace Prisma {
     department?: NullableStringFieldUpdateOperationsInput | string | null
     departmentId?: NullableStringFieldUpdateOperationsInput | string | null
     schoolId?: StringFieldUpdateOperationsInput | string
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
     gradingType?: StringFieldUpdateOperationsInput | string
+    moderatedScale?: NullableJsonNullValueInput | InputJsonValue
     credits?: NullableFloatFieldUpdateOperationsInput | number | null
     isIndustrial?: BoolFieldUpdateOperationsInput | boolean
     isProject?: BoolFieldUpdateOperationsInput | boolean
@@ -204868,6 +205053,9 @@ export namespace Prisma {
     isIndustrialGrade?: boolean
     gradePoint?: number | null
     comment?: string | null
+    assessmentEntries?: NullableJsonNullValueInput | InputJsonValue
+    classAverage?: number | null
+    classPosition?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     student: StudentCreateNestedOneWithoutGradesInput
@@ -204892,6 +205080,9 @@ export namespace Prisma {
     isIndustrialGrade?: boolean
     gradePoint?: number | null
     comment?: string | null
+    assessmentEntries?: NullableJsonNullValueInput | InputJsonValue
+    classAverage?: number | null
+    classPosition?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     schoolId: string
@@ -204910,6 +205101,9 @@ export namespace Prisma {
     isIndustrialGrade?: BoolFieldUpdateOperationsInput | boolean
     gradePoint?: NullableFloatFieldUpdateOperationsInput | number | null
     comment?: NullableStringFieldUpdateOperationsInput | string | null
+    assessmentEntries?: NullableJsonNullValueInput | InputJsonValue
+    classAverage?: NullableFloatFieldUpdateOperationsInput | number | null
+    classPosition?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     student?: StudentUpdateOneRequiredWithoutGradesNestedInput
@@ -204934,6 +205128,9 @@ export namespace Prisma {
     isIndustrialGrade?: BoolFieldUpdateOperationsInput | boolean
     gradePoint?: NullableFloatFieldUpdateOperationsInput | number | null
     comment?: NullableStringFieldUpdateOperationsInput | string | null
+    assessmentEntries?: NullableJsonNullValueInput | InputJsonValue
+    classAverage?: NullableFloatFieldUpdateOperationsInput | number | null
+    classPosition?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     schoolId?: StringFieldUpdateOperationsInput | string
@@ -204955,6 +205152,9 @@ export namespace Prisma {
     isIndustrialGrade?: boolean
     gradePoint?: number | null
     comment?: string | null
+    assessmentEntries?: NullableJsonNullValueInput | InputJsonValue
+    classAverage?: number | null
+    classPosition?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     schoolId: string
@@ -204973,6 +205173,9 @@ export namespace Prisma {
     isIndustrialGrade?: BoolFieldUpdateOperationsInput | boolean
     gradePoint?: NullableFloatFieldUpdateOperationsInput | number | null
     comment?: NullableStringFieldUpdateOperationsInput | string | null
+    assessmentEntries?: NullableJsonNullValueInput | InputJsonValue
+    classAverage?: NullableFloatFieldUpdateOperationsInput | number | null
+    classPosition?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -204993,6 +205196,9 @@ export namespace Prisma {
     isIndustrialGrade?: BoolFieldUpdateOperationsInput | boolean
     gradePoint?: NullableFloatFieldUpdateOperationsInput | number | null
     comment?: NullableStringFieldUpdateOperationsInput | string | null
+    assessmentEntries?: NullableJsonNullValueInput | InputJsonValue
+    classAverage?: NullableFloatFieldUpdateOperationsInput | number | null
+    classPosition?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     schoolId?: StringFieldUpdateOperationsInput | string
@@ -206912,6 +207118,7 @@ export namespace Prisma {
     idCardTemplateFront?: string | null
     idCardTemplateBack?: string | null
     setupStatus?: NullableJsonNullValueInput | InputJsonValue
+    housesModuleEnabled?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     school: SchoolCreateNestedOneWithoutSchoolSettingInput
@@ -206982,6 +207189,7 @@ export namespace Prisma {
     idCardTemplateFront?: string | null
     idCardTemplateBack?: string | null
     setupStatus?: NullableJsonNullValueInput | InputJsonValue
+    housesModuleEnabled?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -207050,6 +207258,7 @@ export namespace Prisma {
     idCardTemplateFront?: NullableStringFieldUpdateOperationsInput | string | null
     idCardTemplateBack?: NullableStringFieldUpdateOperationsInput | string | null
     setupStatus?: NullableJsonNullValueInput | InputJsonValue
+    housesModuleEnabled?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     school?: SchoolUpdateOneRequiredWithoutSchoolSettingNestedInput
@@ -207120,6 +207329,7 @@ export namespace Prisma {
     idCardTemplateFront?: NullableStringFieldUpdateOperationsInput | string | null
     idCardTemplateBack?: NullableStringFieldUpdateOperationsInput | string | null
     setupStatus?: NullableJsonNullValueInput | InputJsonValue
+    housesModuleEnabled?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -207189,6 +207399,7 @@ export namespace Prisma {
     idCardTemplateFront?: string | null
     idCardTemplateBack?: string | null
     setupStatus?: NullableJsonNullValueInput | InputJsonValue
+    housesModuleEnabled?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -207257,6 +207468,7 @@ export namespace Prisma {
     idCardTemplateFront?: NullableStringFieldUpdateOperationsInput | string | null
     idCardTemplateBack?: NullableStringFieldUpdateOperationsInput | string | null
     setupStatus?: NullableJsonNullValueInput | InputJsonValue
+    housesModuleEnabled?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -207326,6 +207538,7 @@ export namespace Prisma {
     idCardTemplateFront?: NullableStringFieldUpdateOperationsInput | string | null
     idCardTemplateBack?: NullableStringFieldUpdateOperationsInput | string | null
     setupStatus?: NullableJsonNullValueInput | InputJsonValue
+    housesModuleEnabled?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -220521,7 +220734,9 @@ export namespace Prisma {
     department?: SortOrder
     departmentId?: SortOrder
     schoolId?: SortOrder
+    createdById?: SortOrder
     gradingType?: SortOrder
+    moderatedScale?: SortOrder
     credits?: SortOrder
     isIndustrial?: SortOrder
     isProject?: SortOrder
@@ -220543,6 +220758,7 @@ export namespace Prisma {
     department?: SortOrder
     departmentId?: SortOrder
     schoolId?: SortOrder
+    createdById?: SortOrder
     gradingType?: SortOrder
     credits?: SortOrder
     isIndustrial?: SortOrder
@@ -220559,6 +220775,7 @@ export namespace Prisma {
     department?: SortOrder
     departmentId?: SortOrder
     schoolId?: SortOrder
+    createdById?: SortOrder
     gradingType?: SortOrder
     credits?: SortOrder
     isIndustrial?: SortOrder
@@ -220684,6 +220901,9 @@ export namespace Prisma {
     isIndustrialGrade?: SortOrder
     gradePoint?: SortOrder
     comment?: SortOrder
+    assessmentEntries?: SortOrder
+    classAverage?: SortOrder
+    classPosition?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     schoolId?: SortOrder
@@ -220696,6 +220916,8 @@ export namespace Prisma {
     caScore?: SortOrder
     examScore?: SortOrder
     gradePoint?: SortOrder
+    classAverage?: SortOrder
+    classPosition?: SortOrder
   }
 
   export type GradeMaxOrderByAggregateInput = {
@@ -220713,6 +220935,8 @@ export namespace Prisma {
     isIndustrialGrade?: SortOrder
     gradePoint?: SortOrder
     comment?: SortOrder
+    classAverage?: SortOrder
+    classPosition?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     schoolId?: SortOrder
@@ -220733,6 +220957,8 @@ export namespace Prisma {
     isIndustrialGrade?: SortOrder
     gradePoint?: SortOrder
     comment?: SortOrder
+    classAverage?: SortOrder
+    classPosition?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     schoolId?: SortOrder
@@ -220745,6 +220971,8 @@ export namespace Prisma {
     caScore?: SortOrder
     examScore?: SortOrder
     gradePoint?: SortOrder
+    classAverage?: SortOrder
+    classPosition?: SortOrder
   }
 
   export type FacultySchoolIdNameCompoundUniqueInput = {
@@ -221814,6 +222042,7 @@ export namespace Prisma {
     idCardTemplateFront?: SortOrder
     idCardTemplateBack?: SortOrder
     setupStatus?: SortOrder
+    housesModuleEnabled?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -221889,6 +222118,7 @@ export namespace Prisma {
     gateRequiredType?: SortOrder
     idCardTemplateFront?: SortOrder
     idCardTemplateBack?: SortOrder
+    housesModuleEnabled?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -221956,6 +222186,7 @@ export namespace Prisma {
     gateRequiredType?: SortOrder
     idCardTemplateFront?: SortOrder
     idCardTemplateBack?: SortOrder
+    housesModuleEnabled?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -232763,6 +232994,13 @@ export namespace Prisma {
     connect?: ClinicPatientWhereUniqueInput
   }
 
+  export type SubjectCreateNestedManyWithoutCreatedByInput = {
+    create?: XOR<SubjectCreateWithoutCreatedByInput, SubjectUncheckedCreateWithoutCreatedByInput> | SubjectCreateWithoutCreatedByInput[] | SubjectUncheckedCreateWithoutCreatedByInput[]
+    connectOrCreate?: SubjectCreateOrConnectWithoutCreatedByInput | SubjectCreateOrConnectWithoutCreatedByInput[]
+    createMany?: SubjectCreateManyCreatedByInputEnvelope
+    connect?: SubjectWhereUniqueInput | SubjectWhereUniqueInput[]
+  }
+
   export type VacancyUncheckedCreateNestedManyWithoutRecruiterInput = {
     create?: XOR<VacancyCreateWithoutRecruiterInput, VacancyUncheckedCreateWithoutRecruiterInput> | VacancyCreateWithoutRecruiterInput[] | VacancyUncheckedCreateWithoutRecruiterInput[]
     connectOrCreate?: VacancyCreateOrConnectWithoutRecruiterInput | VacancyCreateOrConnectWithoutRecruiterInput[]
@@ -233049,6 +233287,13 @@ export namespace Prisma {
     create?: XOR<ClinicPatientCreateWithoutUserInput, ClinicPatientUncheckedCreateWithoutUserInput>
     connectOrCreate?: ClinicPatientCreateOrConnectWithoutUserInput
     connect?: ClinicPatientWhereUniqueInput
+  }
+
+  export type SubjectUncheckedCreateNestedManyWithoutCreatedByInput = {
+    create?: XOR<SubjectCreateWithoutCreatedByInput, SubjectUncheckedCreateWithoutCreatedByInput> | SubjectCreateWithoutCreatedByInput[] | SubjectUncheckedCreateWithoutCreatedByInput[]
+    connectOrCreate?: SubjectCreateOrConnectWithoutCreatedByInput | SubjectCreateOrConnectWithoutCreatedByInput[]
+    createMany?: SubjectCreateManyCreatedByInputEnvelope
+    connect?: SubjectWhereUniqueInput | SubjectWhereUniqueInput[]
   }
 
   export type UserUpdatesecondaryRolesInput = {
@@ -233640,6 +233885,20 @@ export namespace Prisma {
     update?: XOR<XOR<ClinicPatientUpdateToOneWithWhereWithoutUserInput, ClinicPatientUpdateWithoutUserInput>, ClinicPatientUncheckedUpdateWithoutUserInput>
   }
 
+  export type SubjectUpdateManyWithoutCreatedByNestedInput = {
+    create?: XOR<SubjectCreateWithoutCreatedByInput, SubjectUncheckedCreateWithoutCreatedByInput> | SubjectCreateWithoutCreatedByInput[] | SubjectUncheckedCreateWithoutCreatedByInput[]
+    connectOrCreate?: SubjectCreateOrConnectWithoutCreatedByInput | SubjectCreateOrConnectWithoutCreatedByInput[]
+    upsert?: SubjectUpsertWithWhereUniqueWithoutCreatedByInput | SubjectUpsertWithWhereUniqueWithoutCreatedByInput[]
+    createMany?: SubjectCreateManyCreatedByInputEnvelope
+    set?: SubjectWhereUniqueInput | SubjectWhereUniqueInput[]
+    disconnect?: SubjectWhereUniqueInput | SubjectWhereUniqueInput[]
+    delete?: SubjectWhereUniqueInput | SubjectWhereUniqueInput[]
+    connect?: SubjectWhereUniqueInput | SubjectWhereUniqueInput[]
+    update?: SubjectUpdateWithWhereUniqueWithoutCreatedByInput | SubjectUpdateWithWhereUniqueWithoutCreatedByInput[]
+    updateMany?: SubjectUpdateManyWithWhereWithoutCreatedByInput | SubjectUpdateManyWithWhereWithoutCreatedByInput[]
+    deleteMany?: SubjectScalarWhereInput | SubjectScalarWhereInput[]
+  }
+
   export type VacancyUncheckedUpdateManyWithoutRecruiterNestedInput = {
     create?: XOR<VacancyCreateWithoutRecruiterInput, VacancyUncheckedCreateWithoutRecruiterInput> | VacancyCreateWithoutRecruiterInput[] | VacancyUncheckedCreateWithoutRecruiterInput[]
     connectOrCreate?: VacancyCreateOrConnectWithoutRecruiterInput | VacancyCreateOrConnectWithoutRecruiterInput[]
@@ -234202,6 +234461,20 @@ export namespace Prisma {
     delete?: ClinicPatientWhereInput | boolean
     connect?: ClinicPatientWhereUniqueInput
     update?: XOR<XOR<ClinicPatientUpdateToOneWithWhereWithoutUserInput, ClinicPatientUpdateWithoutUserInput>, ClinicPatientUncheckedUpdateWithoutUserInput>
+  }
+
+  export type SubjectUncheckedUpdateManyWithoutCreatedByNestedInput = {
+    create?: XOR<SubjectCreateWithoutCreatedByInput, SubjectUncheckedCreateWithoutCreatedByInput> | SubjectCreateWithoutCreatedByInput[] | SubjectUncheckedCreateWithoutCreatedByInput[]
+    connectOrCreate?: SubjectCreateOrConnectWithoutCreatedByInput | SubjectCreateOrConnectWithoutCreatedByInput[]
+    upsert?: SubjectUpsertWithWhereUniqueWithoutCreatedByInput | SubjectUpsertWithWhereUniqueWithoutCreatedByInput[]
+    createMany?: SubjectCreateManyCreatedByInputEnvelope
+    set?: SubjectWhereUniqueInput | SubjectWhereUniqueInput[]
+    disconnect?: SubjectWhereUniqueInput | SubjectWhereUniqueInput[]
+    delete?: SubjectWhereUniqueInput | SubjectWhereUniqueInput[]
+    connect?: SubjectWhereUniqueInput | SubjectWhereUniqueInput[]
+    update?: SubjectUpdateWithWhereUniqueWithoutCreatedByInput | SubjectUpdateWithWhereUniqueWithoutCreatedByInput[]
+    updateMany?: SubjectUpdateManyWithWhereWithoutCreatedByInput | SubjectUpdateManyWithWhereWithoutCreatedByInput[]
+    deleteMany?: SubjectScalarWhereInput | SubjectScalarWhereInput[]
   }
 
   export type UserCreateNestedOneWithoutSessionsInput = {
@@ -236420,6 +236693,12 @@ export namespace Prisma {
     connect?: SchoolWhereUniqueInput
   }
 
+  export type UserCreateNestedOneWithoutCreatedSubjectsInput = {
+    create?: XOR<UserCreateWithoutCreatedSubjectsInput, UserUncheckedCreateWithoutCreatedSubjectsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutCreatedSubjectsInput
+    connect?: UserWhereUniqueInput
+  }
+
   export type TeacherSubjectCreateNestedManyWithoutSubjectInput = {
     create?: XOR<TeacherSubjectCreateWithoutSubjectInput, TeacherSubjectUncheckedCreateWithoutSubjectInput> | TeacherSubjectCreateWithoutSubjectInput[] | TeacherSubjectUncheckedCreateWithoutSubjectInput[]
     connectOrCreate?: TeacherSubjectCreateOrConnectWithoutSubjectInput | TeacherSubjectCreateOrConnectWithoutSubjectInput[]
@@ -236612,6 +236891,16 @@ export namespace Prisma {
     upsert?: SchoolUpsertWithoutSubjectsInput
     connect?: SchoolWhereUniqueInput
     update?: XOR<XOR<SchoolUpdateToOneWithWhereWithoutSubjectsInput, SchoolUpdateWithoutSubjectsInput>, SchoolUncheckedUpdateWithoutSubjectsInput>
+  }
+
+  export type UserUpdateOneWithoutCreatedSubjectsNestedInput = {
+    create?: XOR<UserCreateWithoutCreatedSubjectsInput, UserUncheckedCreateWithoutCreatedSubjectsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutCreatedSubjectsInput
+    upsert?: UserUpsertWithoutCreatedSubjectsInput
+    disconnect?: UserWhereInput | boolean
+    delete?: UserWhereInput | boolean
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutCreatedSubjectsInput, UserUpdateWithoutCreatedSubjectsInput>, UserUncheckedUpdateWithoutCreatedSubjectsInput>
   }
 
   export type TeacherSubjectUpdateManyWithoutSubjectNestedInput = {
@@ -243730,6 +244019,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserUncheckedCreateWithoutSchoolInput = {
@@ -243793,6 +244083,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUncheckedCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientUncheckedCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserCreateOrConnectWithoutSchoolInput = {
@@ -244921,6 +245212,7 @@ export namespace Prisma {
     code?: string | null
     department?: string | null
     gradingType?: string
+    moderatedScale?: NullableJsonNullValueInput | InputJsonValue
     credits?: number | null
     isIndustrial?: boolean
     isProject?: boolean
@@ -244928,6 +245220,7 @@ export namespace Prisma {
     caWeight?: number
     examWeight?: number
     dept?: DepartmentCreateNestedOneWithoutSubjectsInput
+    createdBy?: UserCreateNestedOneWithoutCreatedSubjectsInput
     teachers?: TeacherSubjectCreateNestedManyWithoutSubjectInput
     classTeachers?: ClassSubjectTeacherCreateNestedManyWithoutSubjectInput
     grades?: GradeCreateNestedManyWithoutSubjectInput
@@ -244948,7 +245241,9 @@ export namespace Prisma {
     code?: string | null
     department?: string | null
     departmentId?: string | null
+    createdById?: string | null
     gradingType?: string
+    moderatedScale?: NullableJsonNullValueInput | InputJsonValue
     credits?: number | null
     isIndustrial?: boolean
     isProject?: boolean
@@ -245050,6 +245345,9 @@ export namespace Prisma {
     isIndustrialGrade?: boolean
     gradePoint?: number | null
     comment?: string | null
+    assessmentEntries?: NullableJsonNullValueInput | InputJsonValue
+    classAverage?: number | null
+    classPosition?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     student: StudentCreateNestedOneWithoutGradesInput
@@ -245073,6 +245371,9 @@ export namespace Prisma {
     isIndustrialGrade?: boolean
     gradePoint?: number | null
     comment?: string | null
+    assessmentEntries?: NullableJsonNullValueInput | InputJsonValue
+    classAverage?: number | null
+    classPosition?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -246965,6 +247266,7 @@ export namespace Prisma {
     idCardTemplateFront?: string | null
     idCardTemplateBack?: string | null
     setupStatus?: NullableJsonNullValueInput | InputJsonValue
+    housesModuleEnabled?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -247033,6 +247335,7 @@ export namespace Prisma {
     idCardTemplateFront?: string | null
     idCardTemplateBack?: string | null
     setupStatus?: NullableJsonNullValueInput | InputJsonValue
+    housesModuleEnabled?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -248853,7 +249156,9 @@ export namespace Prisma {
     department?: StringNullableFilter<"Subject"> | string | null
     departmentId?: StringNullableFilter<"Subject"> | string | null
     schoolId?: StringFilter<"Subject"> | string
+    createdById?: StringNullableFilter<"Subject"> | string | null
     gradingType?: StringFilter<"Subject"> | string
+    moderatedScale?: JsonNullableFilter<"Subject">
     credits?: FloatNullableFilter<"Subject"> | number | null
     isIndustrial?: BoolFilter<"Subject"> | boolean
     isProject?: BoolFilter<"Subject"> | boolean
@@ -248940,6 +249245,9 @@ export namespace Prisma {
     isIndustrialGrade?: BoolFilter<"Grade"> | boolean
     gradePoint?: FloatNullableFilter<"Grade"> | number | null
     comment?: StringNullableFilter<"Grade"> | string | null
+    assessmentEntries?: JsonNullableFilter<"Grade">
+    classAverage?: FloatNullableFilter<"Grade"> | number | null
+    classPosition?: IntNullableFilter<"Grade"> | number | null
     createdAt?: DateTimeFilter<"Grade"> | Date | string
     updatedAt?: DateTimeFilter<"Grade"> | Date | string
     schoolId?: StringFilter<"Grade"> | string
@@ -250650,6 +250958,7 @@ export namespace Prisma {
     idCardTemplateFront?: NullableStringFieldUpdateOperationsInput | string | null
     idCardTemplateBack?: NullableStringFieldUpdateOperationsInput | string | null
     setupStatus?: NullableJsonNullValueInput | InputJsonValue
+    housesModuleEnabled?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -250718,6 +251027,7 @@ export namespace Prisma {
     idCardTemplateFront?: NullableStringFieldUpdateOperationsInput | string | null
     idCardTemplateBack?: NullableStringFieldUpdateOperationsInput | string | null
     setupStatus?: NullableJsonNullValueInput | InputJsonValue
+    housesModuleEnabled?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -260752,6 +261062,74 @@ export namespace Prisma {
     create: XOR<ClinicPatientCreateWithoutUserInput, ClinicPatientUncheckedCreateWithoutUserInput>
   }
 
+  export type SubjectCreateWithoutCreatedByInput = {
+    id?: string
+    name: string
+    code?: string | null
+    department?: string | null
+    gradingType?: string
+    moderatedScale?: NullableJsonNullValueInput | InputJsonValue
+    credits?: number | null
+    isIndustrial?: boolean
+    isProject?: boolean
+    isSubsidiary?: boolean
+    caWeight?: number
+    examWeight?: number
+    dept?: DepartmentCreateNestedOneWithoutSubjectsInput
+    school: SchoolCreateNestedOneWithoutSubjectsInput
+    teachers?: TeacherSubjectCreateNestedManyWithoutSubjectInput
+    classTeachers?: ClassSubjectTeacherCreateNestedManyWithoutSubjectInput
+    grades?: GradeCreateNestedManyWithoutSubjectInput
+    assignments?: AssignmentCreateNestedManyWithoutSubjectInput
+    questionPapers?: QuestionPaperCreateNestedManyWithoutSubjectInput
+    timetableSlots?: TimetableSlotCreateNestedManyWithoutSubjectInput
+    resources?: DigitalResourceCreateNestedManyWithoutSubjectInput
+    lessonPlans?: LessonPlanCreateNestedManyWithoutSubjectInput
+    books?: BookCreateNestedManyWithoutSubjectInput
+    CBTExam?: CBTExamCreateNestedManyWithoutSubjectInput
+    Syllabus?: SyllabusCreateNestedManyWithoutSubjectInput
+    StudyMaterial?: StudyMaterialCreateNestedManyWithoutSubjectInput
+  }
+
+  export type SubjectUncheckedCreateWithoutCreatedByInput = {
+    id?: string
+    name: string
+    code?: string | null
+    department?: string | null
+    departmentId?: string | null
+    schoolId: string
+    gradingType?: string
+    moderatedScale?: NullableJsonNullValueInput | InputJsonValue
+    credits?: number | null
+    isIndustrial?: boolean
+    isProject?: boolean
+    isSubsidiary?: boolean
+    caWeight?: number
+    examWeight?: number
+    teachers?: TeacherSubjectUncheckedCreateNestedManyWithoutSubjectInput
+    classTeachers?: ClassSubjectTeacherUncheckedCreateNestedManyWithoutSubjectInput
+    grades?: GradeUncheckedCreateNestedManyWithoutSubjectInput
+    assignments?: AssignmentUncheckedCreateNestedManyWithoutSubjectInput
+    questionPapers?: QuestionPaperUncheckedCreateNestedManyWithoutSubjectInput
+    timetableSlots?: TimetableSlotUncheckedCreateNestedManyWithoutSubjectInput
+    resources?: DigitalResourceUncheckedCreateNestedManyWithoutSubjectInput
+    lessonPlans?: LessonPlanUncheckedCreateNestedManyWithoutSubjectInput
+    books?: BookUncheckedCreateNestedManyWithoutSubjectInput
+    CBTExam?: CBTExamUncheckedCreateNestedManyWithoutSubjectInput
+    Syllabus?: SyllabusUncheckedCreateNestedManyWithoutSubjectInput
+    StudyMaterial?: StudyMaterialUncheckedCreateNestedManyWithoutSubjectInput
+  }
+
+  export type SubjectCreateOrConnectWithoutCreatedByInput = {
+    where: SubjectWhereUniqueInput
+    create: XOR<SubjectCreateWithoutCreatedByInput, SubjectUncheckedCreateWithoutCreatedByInput>
+  }
+
+  export type SubjectCreateManyCreatedByInputEnvelope = {
+    data: SubjectCreateManyCreatedByInput | SubjectCreateManyCreatedByInput[]
+    skipDuplicates?: boolean
+  }
+
   export type VacancyUpsertWithWhereUniqueWithoutRecruiterInput = {
     where: VacancyWhereUniqueInput
     update: XOR<VacancyUpdateWithoutRecruiterInput, VacancyUncheckedUpdateWithoutRecruiterInput>
@@ -262307,6 +262685,22 @@ export namespace Prisma {
     dispensings?: ClinicDispensingLogUncheckedUpdateManyWithoutPatientNestedInput
   }
 
+  export type SubjectUpsertWithWhereUniqueWithoutCreatedByInput = {
+    where: SubjectWhereUniqueInput
+    update: XOR<SubjectUpdateWithoutCreatedByInput, SubjectUncheckedUpdateWithoutCreatedByInput>
+    create: XOR<SubjectCreateWithoutCreatedByInput, SubjectUncheckedCreateWithoutCreatedByInput>
+  }
+
+  export type SubjectUpdateWithWhereUniqueWithoutCreatedByInput = {
+    where: SubjectWhereUniqueInput
+    data: XOR<SubjectUpdateWithoutCreatedByInput, SubjectUncheckedUpdateWithoutCreatedByInput>
+  }
+
+  export type SubjectUpdateManyWithWhereWithoutCreatedByInput = {
+    where: SubjectScalarWhereInput
+    data: XOR<SubjectUpdateManyMutationInput, SubjectUncheckedUpdateManyWithoutCreatedByInput>
+  }
+
   export type UserCreateWithoutSessionsInput = {
     id?: string
     email: string
@@ -262368,6 +262762,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserUncheckedCreateWithoutSessionsInput = {
@@ -262431,6 +262826,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUncheckedCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientUncheckedCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserCreateOrConnectWithoutSessionsInput = {
@@ -262510,6 +262906,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSessionsInput = {
@@ -262573,6 +262970,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUncheckedUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUncheckedUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserCreateWithoutTeacherInput = {
@@ -262636,6 +263034,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserUncheckedCreateWithoutTeacherInput = {
@@ -262699,6 +263098,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUncheckedCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientUncheckedCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserCreateOrConnectWithoutTeacherInput = {
@@ -263115,6 +263515,9 @@ export namespace Prisma {
     isIndustrialGrade?: boolean
     gradePoint?: number | null
     comment?: string | null
+    assessmentEntries?: NullableJsonNullValueInput | InputJsonValue
+    classAverage?: number | null
+    classPosition?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     student: StudentCreateNestedOneWithoutGradesInput
@@ -263137,6 +263540,9 @@ export namespace Prisma {
     isIndustrialGrade?: boolean
     gradePoint?: number | null
     comment?: string | null
+    assessmentEntries?: NullableJsonNullValueInput | InputJsonValue
+    classAverage?: number | null
+    classPosition?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     schoolId: string
@@ -263542,6 +263948,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTeacherInput = {
@@ -263605,6 +264012,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUncheckedUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUncheckedUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type SchoolUpsertWithoutTeachersInput = {
@@ -264205,6 +264613,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserUncheckedCreateWithoutStudentInput = {
@@ -264268,6 +264677,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUncheckedCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientUncheckedCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserCreateOrConnectWithoutStudentInput = {
@@ -264592,6 +265002,9 @@ export namespace Prisma {
     isIndustrialGrade?: boolean
     gradePoint?: number | null
     comment?: string | null
+    assessmentEntries?: NullableJsonNullValueInput | InputJsonValue
+    classAverage?: number | null
+    classPosition?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     subject: SubjectCreateNestedOneWithoutGradesInput
@@ -264614,6 +265027,9 @@ export namespace Prisma {
     isIndustrialGrade?: boolean
     gradePoint?: number | null
     comment?: string | null
+    assessmentEntries?: NullableJsonNullValueInput | InputJsonValue
+    classAverage?: number | null
+    classPosition?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     schoolId: string
@@ -265426,6 +265842,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutStudentInput = {
@@ -265489,6 +265906,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUncheckedUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUncheckedUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type SchoolClassUpsertWithoutStudentsInput = {
@@ -268820,6 +269238,139 @@ export namespace Prisma {
     create: XOR<SchoolCreateWithoutSubjectsInput, SchoolUncheckedCreateWithoutSubjectsInput>
   }
 
+  export type UserCreateWithoutCreatedSubjectsInput = {
+    id?: string
+    email: string
+    password: string
+    name: string
+    role: string
+    secondaryRoles?: UserCreatesecondaryRolesInput | string[]
+    avatar?: string | null
+    religion?: string | null
+    phone?: string | null
+    preferredLanguage?: string | null
+    staffId?: string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    isLocked?: boolean
+    mustChangePassword?: boolean
+    passwordLastChanged?: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    recruitedVacancies?: VacancyCreateNestedManyWithoutRecruiterInput
+    sessions?: UserSessionCreateNestedManyWithoutUserInput
+    school?: SchoolCreateNestedOneWithoutUsersInput
+    teacher?: TeacherCreateNestedOneWithoutUserInput
+    student?: StudentCreateNestedOneWithoutUserInput
+    parent?: ParentCreateNestedOneWithoutUserInput
+    supplier?: SupplierCreateNestedOneWithoutUserInput
+    salaryStubs?: SalaryStubCreateNestedManyWithoutUserInput
+    shiftAssignments?: ShiftAssignmentCreateNestedManyWithoutUserInput
+    employeeProfile?: EmployeeProfileCreateNestedOneWithoutUserInput
+    awards?: AwardCreateNestedManyWithoutUserInput
+    courses?: CourseCreateNestedManyWithoutTeacherInput
+    bookLoans?: BookLoanCreateNestedManyWithoutUserInput
+    dept?: DepartmentCreateNestedOneWithoutUsersInput
+    headedDepartments?: DepartmentCreateNestedManyWithoutHeadInput
+    authorizedBoardingLogs?: BoardingLogCreateNestedManyWithoutAuthorizedByInput
+    visitorLogs?: VisitorLogCreateNestedManyWithoutGuardInput
+    securityIncidents?: SecurityIncidentCreateNestedManyWithoutReportedByInput
+    auditLogs?: AuditLogCreateNestedManyWithoutActorInput
+    diningHallReports?: DiningHallReportCreateNestedManyWithoutReportedByInput
+    prefectReports?: PrefectReportCreateNestedManyWithoutReportedByInput
+    assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
+    assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
+    reportedIncidents?: AssetIncidentCreateNestedManyWithoutReporterInput
+    supportTickets?: SupportTicketCreateNestedManyWithoutRequesterInput
+    reports?: AcademicReportCreateNestedManyWithoutStudentInput
+    requisitions?: RequisitionCreateNestedManyWithoutRequesterInput
+    hodRequisitions?: RequisitionCreateNestedManyWithoutHodInput
+    bursarRequisitions?: RequisitionCreateNestedManyWithoutBursarInput
+    adminRequisitions?: RequisitionCreateNestedManyWithoutAdminInput
+    transfers?: TransferAuthorizationCreateNestedManyWithoutStudentUserInput
+    communicationLogs?: CommunicationLogCreateNestedManyWithoutSenderInput
+    staffAttendances?: StaffAttendanceCreateNestedManyWithoutStaffInput
+    LiveClass?: LiveClassCreateNestedManyWithoutTeacherInput
+    StudyMaterial?: StudyMaterialCreateNestedManyWithoutTeacherInput
+    paymentPlans?: PaymentPlanCreateNestedManyWithoutParentUserInput
+    payrollEntries?: PayrollEntryCreateNestedManyWithoutUserInput
+    clinicAppointments?: ClinicAppointmentCreateNestedManyWithoutUserInput
+    clinicComplaints?: ClinicComplaintCreateNestedManyWithoutUserInput
+    clinicImmunizations?: ClinicImmunizationCreateNestedManyWithoutUserInput
+    clinicReferrals?: ClinicReferralCreateNestedManyWithoutUserInput
+    clinicVisits?: ClinicVisitCreateNestedManyWithoutUserInput
+    clinicHospitalizations?: ClinicHospitalizationCreateNestedManyWithoutUserInput
+    clinicPatient?: ClinicPatientCreateNestedOneWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutCreatedSubjectsInput = {
+    id?: string
+    email: string
+    password: string
+    name: string
+    role: string
+    secondaryRoles?: UserCreatesecondaryRolesInput | string[]
+    avatar?: string | null
+    religion?: string | null
+    phone?: string | null
+    preferredLanguage?: string | null
+    staffId?: string | null
+    schoolId?: string | null
+    departmentId?: string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    isLocked?: boolean
+    mustChangePassword?: boolean
+    passwordLastChanged?: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    recruitedVacancies?: VacancyUncheckedCreateNestedManyWithoutRecruiterInput
+    sessions?: UserSessionUncheckedCreateNestedManyWithoutUserInput
+    teacher?: TeacherUncheckedCreateNestedOneWithoutUserInput
+    student?: StudentUncheckedCreateNestedOneWithoutUserInput
+    parent?: ParentUncheckedCreateNestedOneWithoutUserInput
+    supplier?: SupplierUncheckedCreateNestedOneWithoutUserInput
+    salaryStubs?: SalaryStubUncheckedCreateNestedManyWithoutUserInput
+    shiftAssignments?: ShiftAssignmentUncheckedCreateNestedManyWithoutUserInput
+    employeeProfile?: EmployeeProfileUncheckedCreateNestedOneWithoutUserInput
+    awards?: AwardUncheckedCreateNestedManyWithoutUserInput
+    courses?: CourseUncheckedCreateNestedManyWithoutTeacherInput
+    bookLoans?: BookLoanUncheckedCreateNestedManyWithoutUserInput
+    headedDepartments?: DepartmentUncheckedCreateNestedManyWithoutHeadInput
+    authorizedBoardingLogs?: BoardingLogUncheckedCreateNestedManyWithoutAuthorizedByInput
+    visitorLogs?: VisitorLogUncheckedCreateNestedManyWithoutGuardInput
+    securityIncidents?: SecurityIncidentUncheckedCreateNestedManyWithoutReportedByInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutActorInput
+    diningHallReports?: DiningHallReportUncheckedCreateNestedManyWithoutReportedByInput
+    prefectReports?: PrefectReportUncheckedCreateNestedManyWithoutReportedByInput
+    assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
+    assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
+    reportedIncidents?: AssetIncidentUncheckedCreateNestedManyWithoutReporterInput
+    supportTickets?: SupportTicketUncheckedCreateNestedManyWithoutRequesterInput
+    reports?: AcademicReportUncheckedCreateNestedManyWithoutStudentInput
+    requisitions?: RequisitionUncheckedCreateNestedManyWithoutRequesterInput
+    hodRequisitions?: RequisitionUncheckedCreateNestedManyWithoutHodInput
+    bursarRequisitions?: RequisitionUncheckedCreateNestedManyWithoutBursarInput
+    adminRequisitions?: RequisitionUncheckedCreateNestedManyWithoutAdminInput
+    transfers?: TransferAuthorizationUncheckedCreateNestedManyWithoutStudentUserInput
+    communicationLogs?: CommunicationLogUncheckedCreateNestedManyWithoutSenderInput
+    staffAttendances?: StaffAttendanceUncheckedCreateNestedManyWithoutStaffInput
+    LiveClass?: LiveClassUncheckedCreateNestedManyWithoutTeacherInput
+    StudyMaterial?: StudyMaterialUncheckedCreateNestedManyWithoutTeacherInput
+    paymentPlans?: PaymentPlanUncheckedCreateNestedManyWithoutParentUserInput
+    payrollEntries?: PayrollEntryUncheckedCreateNestedManyWithoutUserInput
+    clinicAppointments?: ClinicAppointmentUncheckedCreateNestedManyWithoutUserInput
+    clinicComplaints?: ClinicComplaintUncheckedCreateNestedManyWithoutUserInput
+    clinicImmunizations?: ClinicImmunizationUncheckedCreateNestedManyWithoutUserInput
+    clinicReferrals?: ClinicReferralUncheckedCreateNestedManyWithoutUserInput
+    clinicVisits?: ClinicVisitUncheckedCreateNestedManyWithoutUserInput
+    clinicHospitalizations?: ClinicHospitalizationUncheckedCreateNestedManyWithoutUserInput
+    clinicPatient?: ClinicPatientUncheckedCreateNestedOneWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutCreatedSubjectsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutCreatedSubjectsInput, UserUncheckedCreateWithoutCreatedSubjectsInput>
+  }
+
   export type TeacherSubjectCreateWithoutSubjectInput = {
     id?: string
     teacher: TeacherCreateNestedOneWithoutSubjectsInput
@@ -268875,6 +269426,9 @@ export namespace Prisma {
     isIndustrialGrade?: boolean
     gradePoint?: number | null
     comment?: string | null
+    assessmentEntries?: NullableJsonNullValueInput | InputJsonValue
+    classAverage?: number | null
+    classPosition?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     student: StudentCreateNestedOneWithoutGradesInput
@@ -268897,6 +269451,9 @@ export namespace Prisma {
     isIndustrialGrade?: boolean
     gradePoint?: number | null
     comment?: string | null
+    assessmentEntries?: NullableJsonNullValueInput | InputJsonValue
+    classAverage?: number | null
+    classPosition?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     schoolId: string
@@ -269592,6 +270149,145 @@ export namespace Prisma {
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
+  export type UserUpsertWithoutCreatedSubjectsInput = {
+    update: XOR<UserUpdateWithoutCreatedSubjectsInput, UserUncheckedUpdateWithoutCreatedSubjectsInput>
+    create: XOR<UserCreateWithoutCreatedSubjectsInput, UserUncheckedCreateWithoutCreatedSubjectsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutCreatedSubjectsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutCreatedSubjectsInput, UserUncheckedUpdateWithoutCreatedSubjectsInput>
+  }
+
+  export type UserUpdateWithoutCreatedSubjectsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    secondaryRoles?: UserUpdatesecondaryRolesInput | string[]
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    religion?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    preferredLanguage?: NullableStringFieldUpdateOperationsInput | string | null
+    staffId?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    isLocked?: BoolFieldUpdateOperationsInput | boolean
+    mustChangePassword?: BoolFieldUpdateOperationsInput | boolean
+    passwordLastChanged?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    recruitedVacancies?: VacancyUpdateManyWithoutRecruiterNestedInput
+    sessions?: UserSessionUpdateManyWithoutUserNestedInput
+    school?: SchoolUpdateOneWithoutUsersNestedInput
+    teacher?: TeacherUpdateOneWithoutUserNestedInput
+    student?: StudentUpdateOneWithoutUserNestedInput
+    parent?: ParentUpdateOneWithoutUserNestedInput
+    supplier?: SupplierUpdateOneWithoutUserNestedInput
+    salaryStubs?: SalaryStubUpdateManyWithoutUserNestedInput
+    shiftAssignments?: ShiftAssignmentUpdateManyWithoutUserNestedInput
+    employeeProfile?: EmployeeProfileUpdateOneWithoutUserNestedInput
+    awards?: AwardUpdateManyWithoutUserNestedInput
+    courses?: CourseUpdateManyWithoutTeacherNestedInput
+    bookLoans?: BookLoanUpdateManyWithoutUserNestedInput
+    dept?: DepartmentUpdateOneWithoutUsersNestedInput
+    headedDepartments?: DepartmentUpdateManyWithoutHeadNestedInput
+    authorizedBoardingLogs?: BoardingLogUpdateManyWithoutAuthorizedByNestedInput
+    visitorLogs?: VisitorLogUpdateManyWithoutGuardNestedInput
+    securityIncidents?: SecurityIncidentUpdateManyWithoutReportedByNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutActorNestedInput
+    diningHallReports?: DiningHallReportUpdateManyWithoutReportedByNestedInput
+    prefectReports?: PrefectReportUpdateManyWithoutReportedByNestedInput
+    assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
+    assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
+    reportedIncidents?: AssetIncidentUpdateManyWithoutReporterNestedInput
+    supportTickets?: SupportTicketUpdateManyWithoutRequesterNestedInput
+    reports?: AcademicReportUpdateManyWithoutStudentNestedInput
+    requisitions?: RequisitionUpdateManyWithoutRequesterNestedInput
+    hodRequisitions?: RequisitionUpdateManyWithoutHodNestedInput
+    bursarRequisitions?: RequisitionUpdateManyWithoutBursarNestedInput
+    adminRequisitions?: RequisitionUpdateManyWithoutAdminNestedInput
+    transfers?: TransferAuthorizationUpdateManyWithoutStudentUserNestedInput
+    communicationLogs?: CommunicationLogUpdateManyWithoutSenderNestedInput
+    staffAttendances?: StaffAttendanceUpdateManyWithoutStaffNestedInput
+    LiveClass?: LiveClassUpdateManyWithoutTeacherNestedInput
+    StudyMaterial?: StudyMaterialUpdateManyWithoutTeacherNestedInput
+    paymentPlans?: PaymentPlanUpdateManyWithoutParentUserNestedInput
+    payrollEntries?: PayrollEntryUpdateManyWithoutUserNestedInput
+    clinicAppointments?: ClinicAppointmentUpdateManyWithoutUserNestedInput
+    clinicComplaints?: ClinicComplaintUpdateManyWithoutUserNestedInput
+    clinicImmunizations?: ClinicImmunizationUpdateManyWithoutUserNestedInput
+    clinicReferrals?: ClinicReferralUpdateManyWithoutUserNestedInput
+    clinicVisits?: ClinicVisitUpdateManyWithoutUserNestedInput
+    clinicHospitalizations?: ClinicHospitalizationUpdateManyWithoutUserNestedInput
+    clinicPatient?: ClinicPatientUpdateOneWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutCreatedSubjectsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    secondaryRoles?: UserUpdatesecondaryRolesInput | string[]
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    religion?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    preferredLanguage?: NullableStringFieldUpdateOperationsInput | string | null
+    staffId?: NullableStringFieldUpdateOperationsInput | string | null
+    schoolId?: NullableStringFieldUpdateOperationsInput | string | null
+    departmentId?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    isLocked?: BoolFieldUpdateOperationsInput | boolean
+    mustChangePassword?: BoolFieldUpdateOperationsInput | boolean
+    passwordLastChanged?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    recruitedVacancies?: VacancyUncheckedUpdateManyWithoutRecruiterNestedInput
+    sessions?: UserSessionUncheckedUpdateManyWithoutUserNestedInput
+    teacher?: TeacherUncheckedUpdateOneWithoutUserNestedInput
+    student?: StudentUncheckedUpdateOneWithoutUserNestedInput
+    parent?: ParentUncheckedUpdateOneWithoutUserNestedInput
+    supplier?: SupplierUncheckedUpdateOneWithoutUserNestedInput
+    salaryStubs?: SalaryStubUncheckedUpdateManyWithoutUserNestedInput
+    shiftAssignments?: ShiftAssignmentUncheckedUpdateManyWithoutUserNestedInput
+    employeeProfile?: EmployeeProfileUncheckedUpdateOneWithoutUserNestedInput
+    awards?: AwardUncheckedUpdateManyWithoutUserNestedInput
+    courses?: CourseUncheckedUpdateManyWithoutTeacherNestedInput
+    bookLoans?: BookLoanUncheckedUpdateManyWithoutUserNestedInput
+    headedDepartments?: DepartmentUncheckedUpdateManyWithoutHeadNestedInput
+    authorizedBoardingLogs?: BoardingLogUncheckedUpdateManyWithoutAuthorizedByNestedInput
+    visitorLogs?: VisitorLogUncheckedUpdateManyWithoutGuardNestedInput
+    securityIncidents?: SecurityIncidentUncheckedUpdateManyWithoutReportedByNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutActorNestedInput
+    diningHallReports?: DiningHallReportUncheckedUpdateManyWithoutReportedByNestedInput
+    prefectReports?: PrefectReportUncheckedUpdateManyWithoutReportedByNestedInput
+    assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
+    assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
+    reportedIncidents?: AssetIncidentUncheckedUpdateManyWithoutReporterNestedInput
+    supportTickets?: SupportTicketUncheckedUpdateManyWithoutRequesterNestedInput
+    reports?: AcademicReportUncheckedUpdateManyWithoutStudentNestedInput
+    requisitions?: RequisitionUncheckedUpdateManyWithoutRequesterNestedInput
+    hodRequisitions?: RequisitionUncheckedUpdateManyWithoutHodNestedInput
+    bursarRequisitions?: RequisitionUncheckedUpdateManyWithoutBursarNestedInput
+    adminRequisitions?: RequisitionUncheckedUpdateManyWithoutAdminNestedInput
+    transfers?: TransferAuthorizationUncheckedUpdateManyWithoutStudentUserNestedInput
+    communicationLogs?: CommunicationLogUncheckedUpdateManyWithoutSenderNestedInput
+    staffAttendances?: StaffAttendanceUncheckedUpdateManyWithoutStaffNestedInput
+    LiveClass?: LiveClassUncheckedUpdateManyWithoutTeacherNestedInput
+    StudyMaterial?: StudyMaterialUncheckedUpdateManyWithoutTeacherNestedInput
+    paymentPlans?: PaymentPlanUncheckedUpdateManyWithoutParentUserNestedInput
+    payrollEntries?: PayrollEntryUncheckedUpdateManyWithoutUserNestedInput
+    clinicAppointments?: ClinicAppointmentUncheckedUpdateManyWithoutUserNestedInput
+    clinicComplaints?: ClinicComplaintUncheckedUpdateManyWithoutUserNestedInput
+    clinicImmunizations?: ClinicImmunizationUncheckedUpdateManyWithoutUserNestedInput
+    clinicReferrals?: ClinicReferralUncheckedUpdateManyWithoutUserNestedInput
+    clinicVisits?: ClinicVisitUncheckedUpdateManyWithoutUserNestedInput
+    clinicHospitalizations?: ClinicHospitalizationUncheckedUpdateManyWithoutUserNestedInput
+    clinicPatient?: ClinicPatientUncheckedUpdateOneWithoutUserNestedInput
+  }
+
   export type TeacherSubjectUpsertWithWhereUniqueWithoutSubjectInput = {
     where: TeacherSubjectWhereUniqueInput
     update: XOR<TeacherSubjectUpdateWithoutSubjectInput, TeacherSubjectUncheckedUpdateWithoutSubjectInput>
@@ -269843,6 +270539,7 @@ export namespace Prisma {
     code?: string | null
     department?: string | null
     gradingType?: string
+    moderatedScale?: NullableJsonNullValueInput | InputJsonValue
     credits?: number | null
     isIndustrial?: boolean
     isProject?: boolean
@@ -269851,6 +270548,7 @@ export namespace Prisma {
     examWeight?: number
     dept?: DepartmentCreateNestedOneWithoutSubjectsInput
     school: SchoolCreateNestedOneWithoutSubjectsInput
+    createdBy?: UserCreateNestedOneWithoutCreatedSubjectsInput
     classTeachers?: ClassSubjectTeacherCreateNestedManyWithoutSubjectInput
     grades?: GradeCreateNestedManyWithoutSubjectInput
     assignments?: AssignmentCreateNestedManyWithoutSubjectInput
@@ -269871,7 +270569,9 @@ export namespace Prisma {
     department?: string | null
     departmentId?: string | null
     schoolId: string
+    createdById?: string | null
     gradingType?: string
+    moderatedScale?: NullableJsonNullValueInput | InputJsonValue
     credits?: number | null
     isIndustrial?: boolean
     isProject?: boolean
@@ -269972,6 +270672,7 @@ export namespace Prisma {
     code?: NullableStringFieldUpdateOperationsInput | string | null
     department?: NullableStringFieldUpdateOperationsInput | string | null
     gradingType?: StringFieldUpdateOperationsInput | string
+    moderatedScale?: NullableJsonNullValueInput | InputJsonValue
     credits?: NullableFloatFieldUpdateOperationsInput | number | null
     isIndustrial?: BoolFieldUpdateOperationsInput | boolean
     isProject?: BoolFieldUpdateOperationsInput | boolean
@@ -269980,6 +270681,7 @@ export namespace Prisma {
     examWeight?: FloatFieldUpdateOperationsInput | number
     dept?: DepartmentUpdateOneWithoutSubjectsNestedInput
     school?: SchoolUpdateOneRequiredWithoutSubjectsNestedInput
+    createdBy?: UserUpdateOneWithoutCreatedSubjectsNestedInput
     classTeachers?: ClassSubjectTeacherUpdateManyWithoutSubjectNestedInput
     grades?: GradeUpdateManyWithoutSubjectNestedInput
     assignments?: AssignmentUpdateManyWithoutSubjectNestedInput
@@ -270000,7 +270702,9 @@ export namespace Prisma {
     department?: NullableStringFieldUpdateOperationsInput | string | null
     departmentId?: NullableStringFieldUpdateOperationsInput | string | null
     schoolId?: StringFieldUpdateOperationsInput | string
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
     gradingType?: StringFieldUpdateOperationsInput | string
+    moderatedScale?: NullableJsonNullValueInput | InputJsonValue
     credits?: NullableFloatFieldUpdateOperationsInput | number | null
     isIndustrial?: BoolFieldUpdateOperationsInput | boolean
     isProject?: BoolFieldUpdateOperationsInput | boolean
@@ -270077,6 +270781,7 @@ export namespace Prisma {
     code?: string | null
     department?: string | null
     gradingType?: string
+    moderatedScale?: NullableJsonNullValueInput | InputJsonValue
     credits?: number | null
     isIndustrial?: boolean
     isProject?: boolean
@@ -270085,6 +270790,7 @@ export namespace Prisma {
     examWeight?: number
     dept?: DepartmentCreateNestedOneWithoutSubjectsInput
     school: SchoolCreateNestedOneWithoutSubjectsInput
+    createdBy?: UserCreateNestedOneWithoutCreatedSubjectsInput
     teachers?: TeacherSubjectCreateNestedManyWithoutSubjectInput
     grades?: GradeCreateNestedManyWithoutSubjectInput
     assignments?: AssignmentCreateNestedManyWithoutSubjectInput
@@ -270105,7 +270811,9 @@ export namespace Prisma {
     department?: string | null
     departmentId?: string | null
     schoolId: string
+    createdById?: string | null
     gradingType?: string
+    moderatedScale?: NullableJsonNullValueInput | InputJsonValue
     credits?: number | null
     isIndustrial?: boolean
     isProject?: boolean
@@ -270257,6 +270965,7 @@ export namespace Prisma {
     code?: NullableStringFieldUpdateOperationsInput | string | null
     department?: NullableStringFieldUpdateOperationsInput | string | null
     gradingType?: StringFieldUpdateOperationsInput | string
+    moderatedScale?: NullableJsonNullValueInput | InputJsonValue
     credits?: NullableFloatFieldUpdateOperationsInput | number | null
     isIndustrial?: BoolFieldUpdateOperationsInput | boolean
     isProject?: BoolFieldUpdateOperationsInput | boolean
@@ -270265,6 +270974,7 @@ export namespace Prisma {
     examWeight?: FloatFieldUpdateOperationsInput | number
     dept?: DepartmentUpdateOneWithoutSubjectsNestedInput
     school?: SchoolUpdateOneRequiredWithoutSubjectsNestedInput
+    createdBy?: UserUpdateOneWithoutCreatedSubjectsNestedInput
     teachers?: TeacherSubjectUpdateManyWithoutSubjectNestedInput
     grades?: GradeUpdateManyWithoutSubjectNestedInput
     assignments?: AssignmentUpdateManyWithoutSubjectNestedInput
@@ -270285,7 +270995,9 @@ export namespace Prisma {
     department?: NullableStringFieldUpdateOperationsInput | string | null
     departmentId?: NullableStringFieldUpdateOperationsInput | string | null
     schoolId?: StringFieldUpdateOperationsInput | string
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
     gradingType?: StringFieldUpdateOperationsInput | string
+    moderatedScale?: NullableJsonNullValueInput | InputJsonValue
     credits?: NullableFloatFieldUpdateOperationsInput | number | null
     isIndustrial?: BoolFieldUpdateOperationsInput | boolean
     isProject?: BoolFieldUpdateOperationsInput | boolean
@@ -270521,6 +271233,7 @@ export namespace Prisma {
     code?: string | null
     department?: string | null
     gradingType?: string
+    moderatedScale?: NullableJsonNullValueInput | InputJsonValue
     credits?: number | null
     isIndustrial?: boolean
     isProject?: boolean
@@ -270529,6 +271242,7 @@ export namespace Prisma {
     examWeight?: number
     dept?: DepartmentCreateNestedOneWithoutSubjectsInput
     school: SchoolCreateNestedOneWithoutSubjectsInput
+    createdBy?: UserCreateNestedOneWithoutCreatedSubjectsInput
     teachers?: TeacherSubjectCreateNestedManyWithoutSubjectInput
     classTeachers?: ClassSubjectTeacherCreateNestedManyWithoutSubjectInput
     assignments?: AssignmentCreateNestedManyWithoutSubjectInput
@@ -270549,7 +271263,9 @@ export namespace Prisma {
     department?: string | null
     departmentId?: string | null
     schoolId: string
+    createdById?: string | null
     gradingType?: string
+    moderatedScale?: NullableJsonNullValueInput | InputJsonValue
     credits?: number | null
     isIndustrial?: boolean
     isProject?: boolean
@@ -271054,6 +271770,7 @@ export namespace Prisma {
     code?: NullableStringFieldUpdateOperationsInput | string | null
     department?: NullableStringFieldUpdateOperationsInput | string | null
     gradingType?: StringFieldUpdateOperationsInput | string
+    moderatedScale?: NullableJsonNullValueInput | InputJsonValue
     credits?: NullableFloatFieldUpdateOperationsInput | number | null
     isIndustrial?: BoolFieldUpdateOperationsInput | boolean
     isProject?: BoolFieldUpdateOperationsInput | boolean
@@ -271062,6 +271779,7 @@ export namespace Prisma {
     examWeight?: FloatFieldUpdateOperationsInput | number
     dept?: DepartmentUpdateOneWithoutSubjectsNestedInput
     school?: SchoolUpdateOneRequiredWithoutSubjectsNestedInput
+    createdBy?: UserUpdateOneWithoutCreatedSubjectsNestedInput
     teachers?: TeacherSubjectUpdateManyWithoutSubjectNestedInput
     classTeachers?: ClassSubjectTeacherUpdateManyWithoutSubjectNestedInput
     assignments?: AssignmentUpdateManyWithoutSubjectNestedInput
@@ -271082,7 +271800,9 @@ export namespace Prisma {
     department?: NullableStringFieldUpdateOperationsInput | string | null
     departmentId?: NullableStringFieldUpdateOperationsInput | string | null
     schoolId?: StringFieldUpdateOperationsInput | string
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
     gradingType?: StringFieldUpdateOperationsInput | string
+    moderatedScale?: NullableJsonNullValueInput | InputJsonValue
     credits?: NullableFloatFieldUpdateOperationsInput | number | null
     isIndustrial?: BoolFieldUpdateOperationsInput | boolean
     isProject?: BoolFieldUpdateOperationsInput | boolean
@@ -272400,6 +273120,7 @@ export namespace Prisma {
     code?: string | null
     department?: string | null
     gradingType?: string
+    moderatedScale?: NullableJsonNullValueInput | InputJsonValue
     credits?: number | null
     isIndustrial?: boolean
     isProject?: boolean
@@ -272407,6 +273128,7 @@ export namespace Prisma {
     caWeight?: number
     examWeight?: number
     school: SchoolCreateNestedOneWithoutSubjectsInput
+    createdBy?: UserCreateNestedOneWithoutCreatedSubjectsInput
     teachers?: TeacherSubjectCreateNestedManyWithoutSubjectInput
     classTeachers?: ClassSubjectTeacherCreateNestedManyWithoutSubjectInput
     grades?: GradeCreateNestedManyWithoutSubjectInput
@@ -272427,7 +273149,9 @@ export namespace Prisma {
     code?: string | null
     department?: string | null
     schoolId: string
+    createdById?: string | null
     gradingType?: string
+    moderatedScale?: NullableJsonNullValueInput | InputJsonValue
     credits?: number | null
     isIndustrial?: boolean
     isProject?: boolean
@@ -272519,6 +273243,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserUncheckedCreateWithoutDeptInput = {
@@ -272582,6 +273307,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUncheckedCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientUncheckedCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserCreateOrConnectWithoutDeptInput = {
@@ -272655,6 +273381,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserUncheckedCreateWithoutHeadedDepartmentsInput = {
@@ -272718,6 +273445,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUncheckedCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientUncheckedCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserCreateOrConnectWithoutHeadedDepartmentsInput = {
@@ -273191,6 +273919,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutHeadedDepartmentsInput = {
@@ -273254,6 +273983,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUncheckedUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUncheckedUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type RequisitionUpsertWithWhereUniqueWithoutDepartmentInput = {
@@ -274373,6 +275103,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserUncheckedCreateWithoutStaffAttendancesInput = {
@@ -274436,6 +275167,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUncheckedCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientUncheckedCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserCreateOrConnectWithoutStaffAttendancesInput = {
@@ -274768,6 +275500,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutStaffAttendancesInput = {
@@ -274831,6 +275564,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUncheckedUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUncheckedUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type SchoolUpsertWithoutStaffAttendancesInput = {
@@ -276211,6 +276945,7 @@ export namespace Prisma {
     code?: string | null
     department?: string | null
     gradingType?: string
+    moderatedScale?: NullableJsonNullValueInput | InputJsonValue
     credits?: number | null
     isIndustrial?: boolean
     isProject?: boolean
@@ -276219,6 +276954,7 @@ export namespace Prisma {
     examWeight?: number
     dept?: DepartmentCreateNestedOneWithoutSubjectsInput
     school: SchoolCreateNestedOneWithoutSubjectsInput
+    createdBy?: UserCreateNestedOneWithoutCreatedSubjectsInput
     teachers?: TeacherSubjectCreateNestedManyWithoutSubjectInput
     classTeachers?: ClassSubjectTeacherCreateNestedManyWithoutSubjectInput
     grades?: GradeCreateNestedManyWithoutSubjectInput
@@ -276239,7 +276975,9 @@ export namespace Prisma {
     department?: string | null
     departmentId?: string | null
     schoolId: string
+    createdById?: string | null
     gradingType?: string
+    moderatedScale?: NullableJsonNullValueInput | InputJsonValue
     credits?: number | null
     isIndustrial?: boolean
     isProject?: boolean
@@ -276676,6 +277414,7 @@ export namespace Prisma {
     code?: NullableStringFieldUpdateOperationsInput | string | null
     department?: NullableStringFieldUpdateOperationsInput | string | null
     gradingType?: StringFieldUpdateOperationsInput | string
+    moderatedScale?: NullableJsonNullValueInput | InputJsonValue
     credits?: NullableFloatFieldUpdateOperationsInput | number | null
     isIndustrial?: BoolFieldUpdateOperationsInput | boolean
     isProject?: BoolFieldUpdateOperationsInput | boolean
@@ -276684,6 +277423,7 @@ export namespace Prisma {
     examWeight?: FloatFieldUpdateOperationsInput | number
     dept?: DepartmentUpdateOneWithoutSubjectsNestedInput
     school?: SchoolUpdateOneRequiredWithoutSubjectsNestedInput
+    createdBy?: UserUpdateOneWithoutCreatedSubjectsNestedInput
     teachers?: TeacherSubjectUpdateManyWithoutSubjectNestedInput
     classTeachers?: ClassSubjectTeacherUpdateManyWithoutSubjectNestedInput
     grades?: GradeUpdateManyWithoutSubjectNestedInput
@@ -276704,7 +277444,9 @@ export namespace Prisma {
     department?: NullableStringFieldUpdateOperationsInput | string | null
     departmentId?: NullableStringFieldUpdateOperationsInput | string | null
     schoolId?: StringFieldUpdateOperationsInput | string
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
     gradingType?: StringFieldUpdateOperationsInput | string
+    moderatedScale?: NullableJsonNullValueInput | InputJsonValue
     credits?: NullableFloatFieldUpdateOperationsInput | number | null
     isIndustrial?: BoolFieldUpdateOperationsInput | boolean
     isProject?: BoolFieldUpdateOperationsInput | boolean
@@ -277121,6 +277863,7 @@ export namespace Prisma {
     code?: string | null
     department?: string | null
     gradingType?: string
+    moderatedScale?: NullableJsonNullValueInput | InputJsonValue
     credits?: number | null
     isIndustrial?: boolean
     isProject?: boolean
@@ -277129,6 +277872,7 @@ export namespace Prisma {
     examWeight?: number
     dept?: DepartmentCreateNestedOneWithoutSubjectsInput
     school: SchoolCreateNestedOneWithoutSubjectsInput
+    createdBy?: UserCreateNestedOneWithoutCreatedSubjectsInput
     teachers?: TeacherSubjectCreateNestedManyWithoutSubjectInput
     classTeachers?: ClassSubjectTeacherCreateNestedManyWithoutSubjectInput
     grades?: GradeCreateNestedManyWithoutSubjectInput
@@ -277149,7 +277893,9 @@ export namespace Prisma {
     department?: string | null
     departmentId?: string | null
     schoolId: string
+    createdById?: string | null
     gradingType?: string
+    moderatedScale?: NullableJsonNullValueInput | InputJsonValue
     credits?: number | null
     isIndustrial?: boolean
     isProject?: boolean
@@ -277497,6 +278243,7 @@ export namespace Prisma {
     code?: NullableStringFieldUpdateOperationsInput | string | null
     department?: NullableStringFieldUpdateOperationsInput | string | null
     gradingType?: StringFieldUpdateOperationsInput | string
+    moderatedScale?: NullableJsonNullValueInput | InputJsonValue
     credits?: NullableFloatFieldUpdateOperationsInput | number | null
     isIndustrial?: BoolFieldUpdateOperationsInput | boolean
     isProject?: BoolFieldUpdateOperationsInput | boolean
@@ -277505,6 +278252,7 @@ export namespace Prisma {
     examWeight?: FloatFieldUpdateOperationsInput | number
     dept?: DepartmentUpdateOneWithoutSubjectsNestedInput
     school?: SchoolUpdateOneRequiredWithoutSubjectsNestedInput
+    createdBy?: UserUpdateOneWithoutCreatedSubjectsNestedInput
     teachers?: TeacherSubjectUpdateManyWithoutSubjectNestedInput
     classTeachers?: ClassSubjectTeacherUpdateManyWithoutSubjectNestedInput
     grades?: GradeUpdateManyWithoutSubjectNestedInput
@@ -277525,7 +278273,9 @@ export namespace Prisma {
     department?: NullableStringFieldUpdateOperationsInput | string | null
     departmentId?: NullableStringFieldUpdateOperationsInput | string | null
     schoolId?: StringFieldUpdateOperationsInput | string
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
     gradingType?: StringFieldUpdateOperationsInput | string
+    moderatedScale?: NullableJsonNullValueInput | InputJsonValue
     credits?: NullableFloatFieldUpdateOperationsInput | number | null
     isIndustrial?: BoolFieldUpdateOperationsInput | boolean
     isProject?: BoolFieldUpdateOperationsInput | boolean
@@ -277920,6 +278670,7 @@ export namespace Prisma {
     code?: string | null
     department?: string | null
     gradingType?: string
+    moderatedScale?: NullableJsonNullValueInput | InputJsonValue
     credits?: number | null
     isIndustrial?: boolean
     isProject?: boolean
@@ -277928,6 +278679,7 @@ export namespace Prisma {
     examWeight?: number
     dept?: DepartmentCreateNestedOneWithoutSubjectsInput
     school: SchoolCreateNestedOneWithoutSubjectsInput
+    createdBy?: UserCreateNestedOneWithoutCreatedSubjectsInput
     teachers?: TeacherSubjectCreateNestedManyWithoutSubjectInput
     classTeachers?: ClassSubjectTeacherCreateNestedManyWithoutSubjectInput
     grades?: GradeCreateNestedManyWithoutSubjectInput
@@ -277948,7 +278700,9 @@ export namespace Prisma {
     department?: string | null
     departmentId?: string | null
     schoolId: string
+    createdById?: string | null
     gradingType?: string
+    moderatedScale?: NullableJsonNullValueInput | InputJsonValue
     credits?: number | null
     isIndustrial?: boolean
     isProject?: boolean
@@ -278300,6 +279054,7 @@ export namespace Prisma {
     code?: NullableStringFieldUpdateOperationsInput | string | null
     department?: NullableStringFieldUpdateOperationsInput | string | null
     gradingType?: StringFieldUpdateOperationsInput | string
+    moderatedScale?: NullableJsonNullValueInput | InputJsonValue
     credits?: NullableFloatFieldUpdateOperationsInput | number | null
     isIndustrial?: BoolFieldUpdateOperationsInput | boolean
     isProject?: BoolFieldUpdateOperationsInput | boolean
@@ -278308,6 +279063,7 @@ export namespace Prisma {
     examWeight?: FloatFieldUpdateOperationsInput | number
     dept?: DepartmentUpdateOneWithoutSubjectsNestedInput
     school?: SchoolUpdateOneRequiredWithoutSubjectsNestedInput
+    createdBy?: UserUpdateOneWithoutCreatedSubjectsNestedInput
     teachers?: TeacherSubjectUpdateManyWithoutSubjectNestedInput
     classTeachers?: ClassSubjectTeacherUpdateManyWithoutSubjectNestedInput
     grades?: GradeUpdateManyWithoutSubjectNestedInput
@@ -278328,7 +279084,9 @@ export namespace Prisma {
     department?: NullableStringFieldUpdateOperationsInput | string | null
     departmentId?: NullableStringFieldUpdateOperationsInput | string | null
     schoolId?: StringFieldUpdateOperationsInput | string
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
     gradingType?: StringFieldUpdateOperationsInput | string
+    moderatedScale?: NullableJsonNullValueInput | InputJsonValue
     credits?: NullableFloatFieldUpdateOperationsInput | number | null
     isIndustrial?: BoolFieldUpdateOperationsInput | boolean
     isProject?: BoolFieldUpdateOperationsInput | boolean
@@ -279180,6 +279938,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserUncheckedCreateWithoutAuditLogsInput = {
@@ -279243,6 +280002,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUncheckedCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientUncheckedCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserCreateOrConnectWithoutAuditLogsInput = {
@@ -279575,6 +280335,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAuditLogsInput = {
@@ -279638,6 +280399,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUncheckedUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUncheckedUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type SchoolUpsertWithoutAuditLogsInput = {
@@ -279926,6 +280688,7 @@ export namespace Prisma {
     code?: string | null
     department?: string | null
     gradingType?: string
+    moderatedScale?: NullableJsonNullValueInput | InputJsonValue
     credits?: number | null
     isIndustrial?: boolean
     isProject?: boolean
@@ -279934,6 +280697,7 @@ export namespace Prisma {
     examWeight?: number
     dept?: DepartmentCreateNestedOneWithoutSubjectsInput
     school: SchoolCreateNestedOneWithoutSubjectsInput
+    createdBy?: UserCreateNestedOneWithoutCreatedSubjectsInput
     teachers?: TeacherSubjectCreateNestedManyWithoutSubjectInput
     classTeachers?: ClassSubjectTeacherCreateNestedManyWithoutSubjectInput
     grades?: GradeCreateNestedManyWithoutSubjectInput
@@ -279954,7 +280718,9 @@ export namespace Prisma {
     department?: string | null
     departmentId?: string | null
     schoolId: string
+    createdById?: string | null
     gradingType?: string
+    moderatedScale?: NullableJsonNullValueInput | InputJsonValue
     credits?: number | null
     isIndustrial?: boolean
     isProject?: boolean
@@ -280416,6 +281182,7 @@ export namespace Prisma {
     code?: NullableStringFieldUpdateOperationsInput | string | null
     department?: NullableStringFieldUpdateOperationsInput | string | null
     gradingType?: StringFieldUpdateOperationsInput | string
+    moderatedScale?: NullableJsonNullValueInput | InputJsonValue
     credits?: NullableFloatFieldUpdateOperationsInput | number | null
     isIndustrial?: BoolFieldUpdateOperationsInput | boolean
     isProject?: BoolFieldUpdateOperationsInput | boolean
@@ -280424,6 +281191,7 @@ export namespace Prisma {
     examWeight?: FloatFieldUpdateOperationsInput | number
     dept?: DepartmentUpdateOneWithoutSubjectsNestedInput
     school?: SchoolUpdateOneRequiredWithoutSubjectsNestedInput
+    createdBy?: UserUpdateOneWithoutCreatedSubjectsNestedInput
     teachers?: TeacherSubjectUpdateManyWithoutSubjectNestedInput
     classTeachers?: ClassSubjectTeacherUpdateManyWithoutSubjectNestedInput
     grades?: GradeUpdateManyWithoutSubjectNestedInput
@@ -280444,7 +281212,9 @@ export namespace Prisma {
     department?: NullableStringFieldUpdateOperationsInput | string | null
     departmentId?: NullableStringFieldUpdateOperationsInput | string | null
     schoolId?: StringFieldUpdateOperationsInput | string
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
     gradingType?: StringFieldUpdateOperationsInput | string
+    moderatedScale?: NullableJsonNullValueInput | InputJsonValue
     credits?: NullableFloatFieldUpdateOperationsInput | number | null
     isIndustrial?: BoolFieldUpdateOperationsInput | boolean
     isProject?: BoolFieldUpdateOperationsInput | boolean
@@ -283834,6 +284604,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserUncheckedCreateWithoutBookLoansInput = {
@@ -283897,6 +284668,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUncheckedCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientUncheckedCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserCreateOrConnectWithoutBookLoansInput = {
@@ -284445,6 +285217,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutBookLoansInput = {
@@ -284508,6 +285281,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUncheckedUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUncheckedUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type SchoolUpsertWithoutBookLoansInput = {
@@ -287174,6 +287948,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserUncheckedCreateWithoutPaymentPlansInput = {
@@ -287237,6 +288012,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUncheckedCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientUncheckedCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserCreateOrConnectWithoutPaymentPlansInput = {
@@ -287732,6 +288508,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPaymentPlansInput = {
@@ -287795,6 +288572,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUncheckedUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUncheckedUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type SchoolCreateWithoutGalleryInput = {
@@ -289651,6 +290429,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserUncheckedCreateWithoutAssignedSportingEquipmentsInput = {
@@ -289714,6 +290493,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUncheckedCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientUncheckedCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserCreateOrConnectWithoutAssignedSportingEquipmentsInput = {
@@ -290089,6 +290869,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAssignedSportingEquipmentsInput = {
@@ -290152,6 +290933,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUncheckedUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUncheckedUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type SchoolUpsertWithoutSportingEquipmentInput = {
@@ -291091,6 +291873,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserUncheckedCreateWithoutSupplierInput = {
@@ -291154,6 +291937,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUncheckedCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientUncheckedCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserCreateOrConnectWithoutSupplierInput = {
@@ -291427,6 +292211,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSupplierInput = {
@@ -291490,6 +292275,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUncheckedUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUncheckedUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type SchoolSupplierUpsertWithWhereUniqueWithoutSupplierInput = {
@@ -292305,6 +293091,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserUncheckedCreateWithoutParentInput = {
@@ -292368,6 +293155,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUncheckedCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientUncheckedCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserCreateOrConnectWithoutParentInput = {
@@ -292513,6 +293301,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutParentInput = {
@@ -292576,6 +293365,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUncheckedUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUncheckedUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type ParentStudentUpsertWithWhereUniqueWithoutParentInput = {
@@ -293551,6 +294341,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserUncheckedCreateWithoutSupportTicketsInput = {
@@ -293614,6 +294405,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUncheckedCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientUncheckedCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserCreateOrConnectWithoutSupportTicketsInput = {
@@ -293693,6 +294485,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSupportTicketsInput = {
@@ -293756,6 +294549,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUncheckedUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUncheckedUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserCreateWithoutAssignedAssetsInput = {
@@ -293819,6 +294613,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserUncheckedCreateWithoutAssignedAssetsInput = {
@@ -293882,6 +294677,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUncheckedCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientUncheckedCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserCreateOrConnectWithoutAssignedAssetsInput = {
@@ -294288,6 +295084,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAssignedAssetsInput = {
@@ -294351,6 +295148,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUncheckedUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUncheckedUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type SchoolUpsertWithoutAssetsInput = {
@@ -294765,6 +295563,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserUncheckedCreateWithoutReportedIncidentsInput = {
@@ -294828,6 +295627,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUncheckedCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientUncheckedCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserCreateOrConnectWithoutReportedIncidentsInput = {
@@ -294956,6 +295756,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutReportedIncidentsInput = {
@@ -295019,6 +295820,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUncheckedUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUncheckedUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type AssetCreateWithoutMaintenanceInput = {
@@ -295847,6 +296649,7 @@ export namespace Prisma {
     code?: string | null
     department?: string | null
     gradingType?: string
+    moderatedScale?: NullableJsonNullValueInput | InputJsonValue
     credits?: number | null
     isIndustrial?: boolean
     isProject?: boolean
@@ -295855,6 +296658,7 @@ export namespace Prisma {
     examWeight?: number
     dept?: DepartmentCreateNestedOneWithoutSubjectsInput
     school: SchoolCreateNestedOneWithoutSubjectsInput
+    createdBy?: UserCreateNestedOneWithoutCreatedSubjectsInput
     teachers?: TeacherSubjectCreateNestedManyWithoutSubjectInput
     classTeachers?: ClassSubjectTeacherCreateNestedManyWithoutSubjectInput
     grades?: GradeCreateNestedManyWithoutSubjectInput
@@ -295875,7 +296679,9 @@ export namespace Prisma {
     department?: string | null
     departmentId?: string | null
     schoolId: string
+    createdById?: string | null
     gradingType?: string
+    moderatedScale?: NullableJsonNullValueInput | InputJsonValue
     credits?: number | null
     isIndustrial?: boolean
     isProject?: boolean
@@ -295976,6 +296782,7 @@ export namespace Prisma {
     code?: NullableStringFieldUpdateOperationsInput | string | null
     department?: NullableStringFieldUpdateOperationsInput | string | null
     gradingType?: StringFieldUpdateOperationsInput | string
+    moderatedScale?: NullableJsonNullValueInput | InputJsonValue
     credits?: NullableFloatFieldUpdateOperationsInput | number | null
     isIndustrial?: BoolFieldUpdateOperationsInput | boolean
     isProject?: BoolFieldUpdateOperationsInput | boolean
@@ -295984,6 +296791,7 @@ export namespace Prisma {
     examWeight?: FloatFieldUpdateOperationsInput | number
     dept?: DepartmentUpdateOneWithoutSubjectsNestedInput
     school?: SchoolUpdateOneRequiredWithoutSubjectsNestedInput
+    createdBy?: UserUpdateOneWithoutCreatedSubjectsNestedInput
     teachers?: TeacherSubjectUpdateManyWithoutSubjectNestedInput
     classTeachers?: ClassSubjectTeacherUpdateManyWithoutSubjectNestedInput
     grades?: GradeUpdateManyWithoutSubjectNestedInput
@@ -296004,7 +296812,9 @@ export namespace Prisma {
     department?: NullableStringFieldUpdateOperationsInput | string | null
     departmentId?: NullableStringFieldUpdateOperationsInput | string | null
     schoolId?: StringFieldUpdateOperationsInput | string
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
     gradingType?: StringFieldUpdateOperationsInput | string
+    moderatedScale?: NullableJsonNullValueInput | InputJsonValue
     credits?: NullableFloatFieldUpdateOperationsInput | number | null
     isIndustrial?: BoolFieldUpdateOperationsInput | boolean
     isProject?: BoolFieldUpdateOperationsInput | boolean
@@ -296081,6 +296891,7 @@ export namespace Prisma {
     code?: string | null
     department?: string | null
     gradingType?: string
+    moderatedScale?: NullableJsonNullValueInput | InputJsonValue
     credits?: number | null
     isIndustrial?: boolean
     isProject?: boolean
@@ -296089,6 +296900,7 @@ export namespace Prisma {
     examWeight?: number
     dept?: DepartmentCreateNestedOneWithoutSubjectsInput
     school: SchoolCreateNestedOneWithoutSubjectsInput
+    createdBy?: UserCreateNestedOneWithoutCreatedSubjectsInput
     teachers?: TeacherSubjectCreateNestedManyWithoutSubjectInput
     classTeachers?: ClassSubjectTeacherCreateNestedManyWithoutSubjectInput
     grades?: GradeCreateNestedManyWithoutSubjectInput
@@ -296109,7 +296921,9 @@ export namespace Prisma {
     department?: string | null
     departmentId?: string | null
     schoolId: string
+    createdById?: string | null
     gradingType?: string
+    moderatedScale?: NullableJsonNullValueInput | InputJsonValue
     credits?: number | null
     isIndustrial?: boolean
     isProject?: boolean
@@ -296497,6 +297311,7 @@ export namespace Prisma {
     code?: NullableStringFieldUpdateOperationsInput | string | null
     department?: NullableStringFieldUpdateOperationsInput | string | null
     gradingType?: StringFieldUpdateOperationsInput | string
+    moderatedScale?: NullableJsonNullValueInput | InputJsonValue
     credits?: NullableFloatFieldUpdateOperationsInput | number | null
     isIndustrial?: BoolFieldUpdateOperationsInput | boolean
     isProject?: BoolFieldUpdateOperationsInput | boolean
@@ -296505,6 +297320,7 @@ export namespace Prisma {
     examWeight?: FloatFieldUpdateOperationsInput | number
     dept?: DepartmentUpdateOneWithoutSubjectsNestedInput
     school?: SchoolUpdateOneRequiredWithoutSubjectsNestedInput
+    createdBy?: UserUpdateOneWithoutCreatedSubjectsNestedInput
     teachers?: TeacherSubjectUpdateManyWithoutSubjectNestedInput
     classTeachers?: ClassSubjectTeacherUpdateManyWithoutSubjectNestedInput
     grades?: GradeUpdateManyWithoutSubjectNestedInput
@@ -296525,7 +297341,9 @@ export namespace Prisma {
     department?: NullableStringFieldUpdateOperationsInput | string | null
     departmentId?: NullableStringFieldUpdateOperationsInput | string | null
     schoolId?: StringFieldUpdateOperationsInput | string
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
     gradingType?: StringFieldUpdateOperationsInput | string
+    moderatedScale?: NullableJsonNullValueInput | InputJsonValue
     credits?: NullableFloatFieldUpdateOperationsInput | number | null
     isIndustrial?: BoolFieldUpdateOperationsInput | boolean
     isProject?: BoolFieldUpdateOperationsInput | boolean
@@ -296877,6 +297695,7 @@ export namespace Prisma {
     code?: string | null
     department?: string | null
     gradingType?: string
+    moderatedScale?: NullableJsonNullValueInput | InputJsonValue
     credits?: number | null
     isIndustrial?: boolean
     isProject?: boolean
@@ -296885,6 +297704,7 @@ export namespace Prisma {
     examWeight?: number
     dept?: DepartmentCreateNestedOneWithoutSubjectsInput
     school: SchoolCreateNestedOneWithoutSubjectsInput
+    createdBy?: UserCreateNestedOneWithoutCreatedSubjectsInput
     teachers?: TeacherSubjectCreateNestedManyWithoutSubjectInput
     classTeachers?: ClassSubjectTeacherCreateNestedManyWithoutSubjectInput
     grades?: GradeCreateNestedManyWithoutSubjectInput
@@ -296905,7 +297725,9 @@ export namespace Prisma {
     department?: string | null
     departmentId?: string | null
     schoolId: string
+    createdById?: string | null
     gradingType?: string
+    moderatedScale?: NullableJsonNullValueInput | InputJsonValue
     credits?: number | null
     isIndustrial?: boolean
     isProject?: boolean
@@ -297337,6 +298159,7 @@ export namespace Prisma {
     code?: NullableStringFieldUpdateOperationsInput | string | null
     department?: NullableStringFieldUpdateOperationsInput | string | null
     gradingType?: StringFieldUpdateOperationsInput | string
+    moderatedScale?: NullableJsonNullValueInput | InputJsonValue
     credits?: NullableFloatFieldUpdateOperationsInput | number | null
     isIndustrial?: BoolFieldUpdateOperationsInput | boolean
     isProject?: BoolFieldUpdateOperationsInput | boolean
@@ -297345,6 +298168,7 @@ export namespace Prisma {
     examWeight?: FloatFieldUpdateOperationsInput | number
     dept?: DepartmentUpdateOneWithoutSubjectsNestedInput
     school?: SchoolUpdateOneRequiredWithoutSubjectsNestedInput
+    createdBy?: UserUpdateOneWithoutCreatedSubjectsNestedInput
     teachers?: TeacherSubjectUpdateManyWithoutSubjectNestedInput
     classTeachers?: ClassSubjectTeacherUpdateManyWithoutSubjectNestedInput
     grades?: GradeUpdateManyWithoutSubjectNestedInput
@@ -297365,7 +298189,9 @@ export namespace Prisma {
     department?: NullableStringFieldUpdateOperationsInput | string | null
     departmentId?: NullableStringFieldUpdateOperationsInput | string | null
     schoolId?: StringFieldUpdateOperationsInput | string
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
     gradingType?: StringFieldUpdateOperationsInput | string
+    moderatedScale?: NullableJsonNullValueInput | InputJsonValue
     credits?: NullableFloatFieldUpdateOperationsInput | number | null
     isIndustrial?: BoolFieldUpdateOperationsInput | boolean
     isProject?: BoolFieldUpdateOperationsInput | boolean
@@ -297797,6 +298623,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserUncheckedCreateWithoutSalaryStubsInput = {
@@ -297860,6 +298687,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUncheckedCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientUncheckedCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserCreateOrConnectWithoutSalaryStubsInput = {
@@ -297939,6 +298767,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSalaryStubsInput = {
@@ -298002,6 +298831,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUncheckedUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUncheckedUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserCreateWithoutShiftAssignmentsInput = {
@@ -298065,6 +298895,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserUncheckedCreateWithoutShiftAssignmentsInput = {
@@ -298128,6 +298959,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUncheckedCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientUncheckedCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserCreateOrConnectWithoutShiftAssignmentsInput = {
@@ -298207,6 +299039,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutShiftAssignmentsInput = {
@@ -298270,6 +299103,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUncheckedUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUncheckedUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type ApplicationCreateWithoutDocumentsInput = {
@@ -298613,6 +299447,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserUncheckedCreateWithoutReportsInput = {
@@ -298676,6 +299511,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUncheckedCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientUncheckedCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserCreateOrConnectWithoutReportsInput = {
@@ -298755,6 +299591,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutReportsInput = {
@@ -298818,6 +299655,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUncheckedUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUncheckedUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type SchoolCreateWithoutReportTemplateInput = {
@@ -299438,6 +300276,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserUncheckedCreateWithoutRequisitionsInput = {
@@ -299501,6 +300340,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUncheckedCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientUncheckedCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserCreateOrConnectWithoutRequisitionsInput = {
@@ -299569,6 +300409,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserUncheckedCreateWithoutHodRequisitionsInput = {
@@ -299632,6 +300473,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUncheckedCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientUncheckedCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserCreateOrConnectWithoutHodRequisitionsInput = {
@@ -299700,6 +300542,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserUncheckedCreateWithoutBursarRequisitionsInput = {
@@ -299763,6 +300606,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUncheckedCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientUncheckedCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserCreateOrConnectWithoutBursarRequisitionsInput = {
@@ -299831,6 +300675,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserUncheckedCreateWithoutAdminRequisitionsInput = {
@@ -299894,6 +300739,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUncheckedCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientUncheckedCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserCreateOrConnectWithoutAdminRequisitionsInput = {
@@ -300308,6 +301154,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutRequisitionsInput = {
@@ -300371,6 +301218,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUncheckedUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUncheckedUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUpsertWithoutHodRequisitionsInput = {
@@ -300445,6 +301293,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutHodRequisitionsInput = {
@@ -300508,6 +301357,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUncheckedUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUncheckedUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUpsertWithoutBursarRequisitionsInput = {
@@ -300582,6 +301432,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutBursarRequisitionsInput = {
@@ -300645,6 +301496,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUncheckedUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUncheckedUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUpsertWithoutAdminRequisitionsInput = {
@@ -300719,6 +301571,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAdminRequisitionsInput = {
@@ -300782,6 +301635,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUncheckedUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUncheckedUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type SchoolUpsertWithoutRequisitionsInput = {
@@ -302381,6 +303235,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserUncheckedCreateWithoutAuthorizedBoardingLogsInput = {
@@ -302444,6 +303299,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUncheckedCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientUncheckedCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserCreateOrConnectWithoutAuthorizedBoardingLogsInput = {
@@ -302680,6 +303536,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAuthorizedBoardingLogsInput = {
@@ -302743,6 +303600,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUncheckedUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUncheckedUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserCreateWithoutVisitorLogsInput = {
@@ -302806,6 +303664,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserUncheckedCreateWithoutVisitorLogsInput = {
@@ -302869,6 +303728,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUncheckedCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientUncheckedCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserCreateOrConnectWithoutVisitorLogsInput = {
@@ -302948,6 +303808,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutVisitorLogsInput = {
@@ -303011,6 +303872,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUncheckedUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUncheckedUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type SchoolClassCreateWithoutAdmissionInquiryInput = {
@@ -303182,6 +304044,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserUncheckedCreateWithoutSecurityIncidentsInput = {
@@ -303245,6 +304108,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUncheckedCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientUncheckedCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserCreateOrConnectWithoutSecurityIncidentsInput = {
@@ -303324,6 +304188,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSecurityIncidentsInput = {
@@ -303387,6 +304252,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUncheckedUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUncheckedUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type SchoolCreateWithoutWeeklyMenusInput = {
@@ -303962,6 +304828,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserUncheckedCreateWithoutTransfersInput = {
@@ -304025,6 +304892,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUncheckedCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientUncheckedCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserCreateOrConnectWithoutTransfersInput = {
@@ -304610,6 +305478,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTransfersInput = {
@@ -304673,6 +305542,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUncheckedUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUncheckedUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type SchoolUpsertWithoutOriginTransfersInput = {
@@ -312173,6 +313043,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserUncheckedCreateWithoutCommunicationLogsInput = {
@@ -312236,6 +313107,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUncheckedCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientUncheckedCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserCreateOrConnectWithoutCommunicationLogsInput = {
@@ -312719,6 +313591,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCommunicationLogsInput = {
@@ -312782,6 +313655,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUncheckedUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUncheckedUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type StudentUpsertWithoutCommunicationLogsInput = {
@@ -315491,6 +316365,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserUncheckedCreateWithoutEmployeeProfileInput = {
@@ -315554,6 +316429,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUncheckedCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientUncheckedCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserCreateOrConnectWithoutEmployeeProfileInput = {
@@ -315886,6 +316762,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutEmployeeProfileInput = {
@@ -315949,6 +316826,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUncheckedUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUncheckedUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type SchoolUpsertWithoutEmployeeProfilesInput = {
@@ -317700,6 +318578,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserUncheckedCreateWithoutPayrollEntriesInput = {
@@ -317763,6 +318642,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUncheckedCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientUncheckedCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserCreateOrConnectWithoutPayrollEntriesInput = {
@@ -318138,6 +319018,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPayrollEntriesInput = {
@@ -318201,6 +319082,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUncheckedUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUncheckedUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type SchoolUpsertWithoutPayrollEntriesInput = {
@@ -318542,6 +319424,7 @@ export namespace Prisma {
     code?: string | null
     department?: string | null
     gradingType?: string
+    moderatedScale?: NullableJsonNullValueInput | InputJsonValue
     credits?: number | null
     isIndustrial?: boolean
     isProject?: boolean
@@ -318550,6 +319433,7 @@ export namespace Prisma {
     examWeight?: number
     dept?: DepartmentCreateNestedOneWithoutSubjectsInput
     school: SchoolCreateNestedOneWithoutSubjectsInput
+    createdBy?: UserCreateNestedOneWithoutCreatedSubjectsInput
     teachers?: TeacherSubjectCreateNestedManyWithoutSubjectInput
     classTeachers?: ClassSubjectTeacherCreateNestedManyWithoutSubjectInput
     grades?: GradeCreateNestedManyWithoutSubjectInput
@@ -318570,7 +319454,9 @@ export namespace Prisma {
     department?: string | null
     departmentId?: string | null
     schoolId: string
+    createdById?: string | null
     gradingType?: string
+    moderatedScale?: NullableJsonNullValueInput | InputJsonValue
     credits?: number | null
     isIndustrial?: boolean
     isProject?: boolean
@@ -319019,6 +319905,7 @@ export namespace Prisma {
     code?: NullableStringFieldUpdateOperationsInput | string | null
     department?: NullableStringFieldUpdateOperationsInput | string | null
     gradingType?: StringFieldUpdateOperationsInput | string
+    moderatedScale?: NullableJsonNullValueInput | InputJsonValue
     credits?: NullableFloatFieldUpdateOperationsInput | number | null
     isIndustrial?: BoolFieldUpdateOperationsInput | boolean
     isProject?: BoolFieldUpdateOperationsInput | boolean
@@ -319027,6 +319914,7 @@ export namespace Prisma {
     examWeight?: FloatFieldUpdateOperationsInput | number
     dept?: DepartmentUpdateOneWithoutSubjectsNestedInput
     school?: SchoolUpdateOneRequiredWithoutSubjectsNestedInput
+    createdBy?: UserUpdateOneWithoutCreatedSubjectsNestedInput
     teachers?: TeacherSubjectUpdateManyWithoutSubjectNestedInput
     classTeachers?: ClassSubjectTeacherUpdateManyWithoutSubjectNestedInput
     grades?: GradeUpdateManyWithoutSubjectNestedInput
@@ -319047,7 +319935,9 @@ export namespace Prisma {
     department?: NullableStringFieldUpdateOperationsInput | string | null
     departmentId?: NullableStringFieldUpdateOperationsInput | string | null
     schoolId?: StringFieldUpdateOperationsInput | string
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
     gradingType?: StringFieldUpdateOperationsInput | string
+    moderatedScale?: NullableJsonNullValueInput | InputJsonValue
     credits?: NullableFloatFieldUpdateOperationsInput | number | null
     isIndustrial?: BoolFieldUpdateOperationsInput | boolean
     isProject?: BoolFieldUpdateOperationsInput | boolean
@@ -319896,6 +320786,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserUncheckedCreateWithoutLiveClassInput = {
@@ -319959,6 +320850,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUncheckedCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientUncheckedCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserCreateOrConnectWithoutLiveClassInput = {
@@ -320348,6 +321240,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutLiveClassInput = {
@@ -320411,6 +321304,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUncheckedUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUncheckedUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type SchoolClassUpsertWithoutLiveClassInput = {
@@ -320784,6 +321678,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserUncheckedCreateWithoutAwardsInput = {
@@ -320847,6 +321742,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUncheckedCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientUncheckedCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserCreateOrConnectWithoutAwardsInput = {
@@ -321185,6 +322081,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAwardsInput = {
@@ -321248,6 +322145,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUncheckedUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUncheckedUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type SchoolCreateWithoutCourseInput = {
@@ -321564,6 +322462,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserUncheckedCreateWithoutCoursesInput = {
@@ -321627,6 +322526,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUncheckedCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientUncheckedCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserCreateOrConnectWithoutCoursesInput = {
@@ -322038,6 +322938,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCoursesInput = {
@@ -322101,6 +323002,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUncheckedUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUncheckedUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type SchoolClassUpsertWithoutCourseInput = {
@@ -322886,6 +323788,7 @@ export namespace Prisma {
     code?: string | null
     department?: string | null
     gradingType?: string
+    moderatedScale?: NullableJsonNullValueInput | InputJsonValue
     credits?: number | null
     isIndustrial?: boolean
     isProject?: boolean
@@ -322894,6 +323797,7 @@ export namespace Prisma {
     examWeight?: number
     dept?: DepartmentCreateNestedOneWithoutSubjectsInput
     school: SchoolCreateNestedOneWithoutSubjectsInput
+    createdBy?: UserCreateNestedOneWithoutCreatedSubjectsInput
     teachers?: TeacherSubjectCreateNestedManyWithoutSubjectInput
     classTeachers?: ClassSubjectTeacherCreateNestedManyWithoutSubjectInput
     grades?: GradeCreateNestedManyWithoutSubjectInput
@@ -322914,7 +323818,9 @@ export namespace Prisma {
     department?: string | null
     departmentId?: string | null
     schoolId: string
+    createdById?: string | null
     gradingType?: string
+    moderatedScale?: NullableJsonNullValueInput | InputJsonValue
     credits?: number | null
     isIndustrial?: boolean
     isProject?: boolean
@@ -323000,6 +323906,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserUncheckedCreateWithoutStudyMaterialInput = {
@@ -323063,6 +323970,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUncheckedCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientUncheckedCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserCreateOrConnectWithoutStudyMaterialInput = {
@@ -323403,6 +324311,7 @@ export namespace Prisma {
     code?: NullableStringFieldUpdateOperationsInput | string | null
     department?: NullableStringFieldUpdateOperationsInput | string | null
     gradingType?: StringFieldUpdateOperationsInput | string
+    moderatedScale?: NullableJsonNullValueInput | InputJsonValue
     credits?: NullableFloatFieldUpdateOperationsInput | number | null
     isIndustrial?: BoolFieldUpdateOperationsInput | boolean
     isProject?: BoolFieldUpdateOperationsInput | boolean
@@ -323411,6 +324320,7 @@ export namespace Prisma {
     examWeight?: FloatFieldUpdateOperationsInput | number
     dept?: DepartmentUpdateOneWithoutSubjectsNestedInput
     school?: SchoolUpdateOneRequiredWithoutSubjectsNestedInput
+    createdBy?: UserUpdateOneWithoutCreatedSubjectsNestedInput
     teachers?: TeacherSubjectUpdateManyWithoutSubjectNestedInput
     classTeachers?: ClassSubjectTeacherUpdateManyWithoutSubjectNestedInput
     grades?: GradeUpdateManyWithoutSubjectNestedInput
@@ -323431,7 +324341,9 @@ export namespace Prisma {
     department?: NullableStringFieldUpdateOperationsInput | string | null
     departmentId?: NullableStringFieldUpdateOperationsInput | string | null
     schoolId?: StringFieldUpdateOperationsInput | string
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
     gradingType?: StringFieldUpdateOperationsInput | string
+    moderatedScale?: NullableJsonNullValueInput | InputJsonValue
     credits?: NullableFloatFieldUpdateOperationsInput | number | null
     isIndustrial?: BoolFieldUpdateOperationsInput | boolean
     isProject?: BoolFieldUpdateOperationsInput | boolean
@@ -323523,6 +324435,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutStudyMaterialInput = {
@@ -323586,6 +324499,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUncheckedUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUncheckedUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type SchoolCreateWithoutWebsiteSettingsInput = {
@@ -325483,6 +326397,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserUncheckedCreateWithoutRecruitedVacanciesInput = {
@@ -325546,6 +326461,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUncheckedCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientUncheckedCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserCreateOrConnectWithoutRecruitedVacanciesInput = {
@@ -325983,6 +326899,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutRecruitedVacanciesInput = {
@@ -326046,6 +326963,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUncheckedUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUncheckedUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type JobApplicationUpsertWithWhereUniqueWithoutVacancyInput = {
@@ -329252,6 +330170,7 @@ export namespace Prisma {
     clinicReferrals?: ClinicReferralCreateNestedManyWithoutUserInput
     clinicVisits?: ClinicVisitCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationCreateNestedManyWithoutUserInput
+    createdSubjects?: SubjectCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserUncheckedCreateWithoutClinicPatientInput = {
@@ -329315,6 +330234,7 @@ export namespace Prisma {
     clinicReferrals?: ClinicReferralUncheckedCreateNestedManyWithoutUserInput
     clinicVisits?: ClinicVisitUncheckedCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedCreateNestedManyWithoutUserInput
+    createdSubjects?: SubjectUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserCreateOrConnectWithoutClinicPatientInput = {
@@ -329969,6 +330889,7 @@ export namespace Prisma {
     clinicReferrals?: ClinicReferralUpdateManyWithoutUserNestedInput
     clinicVisits?: ClinicVisitUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUpdateManyWithoutUserNestedInput
+    createdSubjects?: SubjectUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutClinicPatientInput = {
@@ -330032,6 +330953,7 @@ export namespace Prisma {
     clinicReferrals?: ClinicReferralUncheckedUpdateManyWithoutUserNestedInput
     clinicVisits?: ClinicVisitUncheckedUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedUpdateManyWithoutUserNestedInput
+    createdSubjects?: SubjectUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type ClinicVisitUpsertWithWhereUniqueWithoutPatientInput = {
@@ -330255,6 +331177,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserUncheckedCreateWithoutClinicAppointmentsInput = {
@@ -330318,6 +331241,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUncheckedCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientUncheckedCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserCreateOrConnectWithoutClinicAppointmentsInput = {
@@ -330458,6 +331382,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutClinicAppointmentsInput = {
@@ -330521,6 +331446,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUncheckedUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUncheckedUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type ClinicPatientUpsertWithoutAppointmentsInput = {
@@ -330651,6 +331577,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserUncheckedCreateWithoutClinicComplaintsInput = {
@@ -330714,6 +331641,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUncheckedCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientUncheckedCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserCreateOrConnectWithoutClinicComplaintsInput = {
@@ -330854,6 +331782,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutClinicComplaintsInput = {
@@ -330917,6 +331846,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUncheckedUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUncheckedUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type ClinicPatientUpsertWithoutComplaintsInput = {
@@ -331175,6 +332105,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserUncheckedCreateWithoutClinicImmunizationsInput = {
@@ -331238,6 +332169,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUncheckedCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientUncheckedCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserCreateOrConnectWithoutClinicImmunizationsInput = {
@@ -331378,6 +332310,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutClinicImmunizationsInput = {
@@ -331441,6 +332374,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUncheckedUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUncheckedUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type ClinicPatientUpsertWithoutImmunizationsInput = {
@@ -331571,6 +332505,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserUncheckedCreateWithoutClinicReferralsInput = {
@@ -331634,6 +332569,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUncheckedCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientUncheckedCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserCreateOrConnectWithoutClinicReferralsInput = {
@@ -331774,6 +332710,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutClinicReferralsInput = {
@@ -331837,6 +332774,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUncheckedUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUncheckedUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type ClinicPatientUpsertWithoutReferralsInput = {
@@ -331967,6 +332905,7 @@ export namespace Prisma {
     clinicReferrals?: ClinicReferralCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserUncheckedCreateWithoutClinicVisitsInput = {
@@ -332030,6 +332969,7 @@ export namespace Prisma {
     clinicReferrals?: ClinicReferralUncheckedCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientUncheckedCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserCreateOrConnectWithoutClinicVisitsInput = {
@@ -332459,6 +333399,7 @@ export namespace Prisma {
     clinicReferrals?: ClinicReferralUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutClinicVisitsInput = {
@@ -332522,6 +333463,7 @@ export namespace Prisma {
     clinicReferrals?: ClinicReferralUncheckedUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUncheckedUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type ClinicPatientUpsertWithoutVisitsInput = {
@@ -333823,6 +334765,7 @@ export namespace Prisma {
     clinicReferrals?: ClinicReferralCreateNestedManyWithoutUserInput
     clinicVisits?: ClinicVisitCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserUncheckedCreateWithoutClinicHospitalizationsInput = {
@@ -333886,6 +334829,7 @@ export namespace Prisma {
     clinicReferrals?: ClinicReferralUncheckedCreateNestedManyWithoutUserInput
     clinicVisits?: ClinicVisitUncheckedCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientUncheckedCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserCreateOrConnectWithoutClinicHospitalizationsInput = {
@@ -334279,6 +335223,7 @@ export namespace Prisma {
     clinicReferrals?: ClinicReferralUpdateManyWithoutUserNestedInput
     clinicVisits?: ClinicVisitUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutClinicHospitalizationsInput = {
@@ -334342,6 +335287,7 @@ export namespace Prisma {
     clinicReferrals?: ClinicReferralUncheckedUpdateManyWithoutUserNestedInput
     clinicVisits?: ClinicVisitUncheckedUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUncheckedUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type ClinicPatientUpsertWithoutHospitalizationsInput = {
@@ -336267,6 +337213,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserUncheckedCreateWithoutDiningHallReportsInput = {
@@ -336330,6 +337277,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUncheckedCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientUncheckedCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserCreateOrConnectWithoutDiningHallReportsInput = {
@@ -336662,6 +337610,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutDiningHallReportsInput = {
@@ -336725,6 +337674,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUncheckedUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUncheckedUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type SchoolUpsertWithoutDiningHallReportsInput = {
@@ -338071,6 +339021,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserUncheckedCreateWithoutPrefectReportsInput = {
@@ -338134,6 +339085,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUncheckedCreateNestedManyWithoutUserInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedCreateNestedManyWithoutUserInput
     clinicPatient?: ClinicPatientUncheckedCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserCreateOrConnectWithoutPrefectReportsInput = {
@@ -338466,6 +339418,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPrefectReportsInput = {
@@ -338529,6 +339482,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUncheckedUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUncheckedUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type SchoolUpsertWithoutPrefectReportsInput = {
@@ -343390,7 +344344,9 @@ export namespace Prisma {
     code?: string | null
     department?: string | null
     departmentId?: string | null
+    createdById?: string | null
     gradingType?: string
+    moderatedScale?: NullableJsonNullValueInput | InputJsonValue
     credits?: number | null
     isIndustrial?: boolean
     isProject?: boolean
@@ -343438,6 +344394,9 @@ export namespace Prisma {
     isIndustrialGrade?: boolean
     gradePoint?: number | null
     comment?: string | null
+    assessmentEntries?: NullableJsonNullValueInput | InputJsonValue
+    classAverage?: number | null
+    classPosition?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -344380,6 +345339,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSchoolInput = {
@@ -344443,6 +345403,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUncheckedUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUncheckedUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateManyWithoutSchoolInput = {
@@ -345711,6 +346672,7 @@ export namespace Prisma {
     code?: NullableStringFieldUpdateOperationsInput | string | null
     department?: NullableStringFieldUpdateOperationsInput | string | null
     gradingType?: StringFieldUpdateOperationsInput | string
+    moderatedScale?: NullableJsonNullValueInput | InputJsonValue
     credits?: NullableFloatFieldUpdateOperationsInput | number | null
     isIndustrial?: BoolFieldUpdateOperationsInput | boolean
     isProject?: BoolFieldUpdateOperationsInput | boolean
@@ -345718,6 +346680,7 @@ export namespace Prisma {
     caWeight?: FloatFieldUpdateOperationsInput | number
     examWeight?: FloatFieldUpdateOperationsInput | number
     dept?: DepartmentUpdateOneWithoutSubjectsNestedInput
+    createdBy?: UserUpdateOneWithoutCreatedSubjectsNestedInput
     teachers?: TeacherSubjectUpdateManyWithoutSubjectNestedInput
     classTeachers?: ClassSubjectTeacherUpdateManyWithoutSubjectNestedInput
     grades?: GradeUpdateManyWithoutSubjectNestedInput
@@ -345738,7 +346701,9 @@ export namespace Prisma {
     code?: NullableStringFieldUpdateOperationsInput | string | null
     department?: NullableStringFieldUpdateOperationsInput | string | null
     departmentId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
     gradingType?: StringFieldUpdateOperationsInput | string
+    moderatedScale?: NullableJsonNullValueInput | InputJsonValue
     credits?: NullableFloatFieldUpdateOperationsInput | number | null
     isIndustrial?: BoolFieldUpdateOperationsInput | boolean
     isProject?: BoolFieldUpdateOperationsInput | boolean
@@ -345765,7 +346730,9 @@ export namespace Prisma {
     code?: NullableStringFieldUpdateOperationsInput | string | null
     department?: NullableStringFieldUpdateOperationsInput | string | null
     departmentId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
     gradingType?: StringFieldUpdateOperationsInput | string
+    moderatedScale?: NullableJsonNullValueInput | InputJsonValue
     credits?: NullableFloatFieldUpdateOperationsInput | number | null
     isIndustrial?: BoolFieldUpdateOperationsInput | boolean
     isProject?: BoolFieldUpdateOperationsInput | boolean
@@ -345858,6 +346825,9 @@ export namespace Prisma {
     isIndustrialGrade?: BoolFieldUpdateOperationsInput | boolean
     gradePoint?: NullableFloatFieldUpdateOperationsInput | number | null
     comment?: NullableStringFieldUpdateOperationsInput | string | null
+    assessmentEntries?: NullableJsonNullValueInput | InputJsonValue
+    classAverage?: NullableFloatFieldUpdateOperationsInput | number | null
+    classPosition?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     student?: StudentUpdateOneRequiredWithoutGradesNestedInput
@@ -345881,6 +346851,9 @@ export namespace Prisma {
     isIndustrialGrade?: BoolFieldUpdateOperationsInput | boolean
     gradePoint?: NullableFloatFieldUpdateOperationsInput | number | null
     comment?: NullableStringFieldUpdateOperationsInput | string | null
+    assessmentEntries?: NullableJsonNullValueInput | InputJsonValue
+    classAverage?: NullableFloatFieldUpdateOperationsInput | number | null
+    classPosition?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -345901,6 +346874,9 @@ export namespace Prisma {
     isIndustrialGrade?: BoolFieldUpdateOperationsInput | boolean
     gradePoint?: NullableFloatFieldUpdateOperationsInput | number | null
     comment?: NullableStringFieldUpdateOperationsInput | string | null
+    assessmentEntries?: NullableJsonNullValueInput | InputJsonValue
+    classAverage?: NullableFloatFieldUpdateOperationsInput | number | null
+    classPosition?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -349612,6 +350588,23 @@ export namespace Prisma {
     updatedAt?: Date | string
   }
 
+  export type SubjectCreateManyCreatedByInput = {
+    id?: string
+    name: string
+    code?: string | null
+    department?: string | null
+    departmentId?: string | null
+    schoolId: string
+    gradingType?: string
+    moderatedScale?: NullableJsonNullValueInput | InputJsonValue
+    credits?: number | null
+    isIndustrial?: boolean
+    isProject?: boolean
+    isSubsidiary?: boolean
+    caWeight?: number
+    examWeight?: number
+  }
+
   export type VacancyUpdateWithoutRecruiterInput = {
     id?: StringFieldUpdateOperationsInput | string
     jobTitle?: StringFieldUpdateOperationsInput | string
@@ -351180,6 +352173,81 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type SubjectUpdateWithoutCreatedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: NullableStringFieldUpdateOperationsInput | string | null
+    gradingType?: StringFieldUpdateOperationsInput | string
+    moderatedScale?: NullableJsonNullValueInput | InputJsonValue
+    credits?: NullableFloatFieldUpdateOperationsInput | number | null
+    isIndustrial?: BoolFieldUpdateOperationsInput | boolean
+    isProject?: BoolFieldUpdateOperationsInput | boolean
+    isSubsidiary?: BoolFieldUpdateOperationsInput | boolean
+    caWeight?: FloatFieldUpdateOperationsInput | number
+    examWeight?: FloatFieldUpdateOperationsInput | number
+    dept?: DepartmentUpdateOneWithoutSubjectsNestedInput
+    school?: SchoolUpdateOneRequiredWithoutSubjectsNestedInput
+    teachers?: TeacherSubjectUpdateManyWithoutSubjectNestedInput
+    classTeachers?: ClassSubjectTeacherUpdateManyWithoutSubjectNestedInput
+    grades?: GradeUpdateManyWithoutSubjectNestedInput
+    assignments?: AssignmentUpdateManyWithoutSubjectNestedInput
+    questionPapers?: QuestionPaperUpdateManyWithoutSubjectNestedInput
+    timetableSlots?: TimetableSlotUpdateManyWithoutSubjectNestedInput
+    resources?: DigitalResourceUpdateManyWithoutSubjectNestedInput
+    lessonPlans?: LessonPlanUpdateManyWithoutSubjectNestedInput
+    books?: BookUpdateManyWithoutSubjectNestedInput
+    CBTExam?: CBTExamUpdateManyWithoutSubjectNestedInput
+    Syllabus?: SyllabusUpdateManyWithoutSubjectNestedInput
+    StudyMaterial?: StudyMaterialUpdateManyWithoutSubjectNestedInput
+  }
+
+  export type SubjectUncheckedUpdateWithoutCreatedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: NullableStringFieldUpdateOperationsInput | string | null
+    departmentId?: NullableStringFieldUpdateOperationsInput | string | null
+    schoolId?: StringFieldUpdateOperationsInput | string
+    gradingType?: StringFieldUpdateOperationsInput | string
+    moderatedScale?: NullableJsonNullValueInput | InputJsonValue
+    credits?: NullableFloatFieldUpdateOperationsInput | number | null
+    isIndustrial?: BoolFieldUpdateOperationsInput | boolean
+    isProject?: BoolFieldUpdateOperationsInput | boolean
+    isSubsidiary?: BoolFieldUpdateOperationsInput | boolean
+    caWeight?: FloatFieldUpdateOperationsInput | number
+    examWeight?: FloatFieldUpdateOperationsInput | number
+    teachers?: TeacherSubjectUncheckedUpdateManyWithoutSubjectNestedInput
+    classTeachers?: ClassSubjectTeacherUncheckedUpdateManyWithoutSubjectNestedInput
+    grades?: GradeUncheckedUpdateManyWithoutSubjectNestedInput
+    assignments?: AssignmentUncheckedUpdateManyWithoutSubjectNestedInput
+    questionPapers?: QuestionPaperUncheckedUpdateManyWithoutSubjectNestedInput
+    timetableSlots?: TimetableSlotUncheckedUpdateManyWithoutSubjectNestedInput
+    resources?: DigitalResourceUncheckedUpdateManyWithoutSubjectNestedInput
+    lessonPlans?: LessonPlanUncheckedUpdateManyWithoutSubjectNestedInput
+    books?: BookUncheckedUpdateManyWithoutSubjectNestedInput
+    CBTExam?: CBTExamUncheckedUpdateManyWithoutSubjectNestedInput
+    Syllabus?: SyllabusUncheckedUpdateManyWithoutSubjectNestedInput
+    StudyMaterial?: StudyMaterialUncheckedUpdateManyWithoutSubjectNestedInput
+  }
+
+  export type SubjectUncheckedUpdateManyWithoutCreatedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: NullableStringFieldUpdateOperationsInput | string | null
+    departmentId?: NullableStringFieldUpdateOperationsInput | string | null
+    schoolId?: StringFieldUpdateOperationsInput | string
+    gradingType?: StringFieldUpdateOperationsInput | string
+    moderatedScale?: NullableJsonNullValueInput | InputJsonValue
+    credits?: NullableFloatFieldUpdateOperationsInput | number | null
+    isIndustrial?: BoolFieldUpdateOperationsInput | boolean
+    isProject?: BoolFieldUpdateOperationsInput | boolean
+    isSubsidiary?: BoolFieldUpdateOperationsInput | boolean
+    caWeight?: FloatFieldUpdateOperationsInput | number
+    examWeight?: FloatFieldUpdateOperationsInput | number
+  }
+
   export type SchoolClassCreateManyTeacherInput = {
     id?: string
     name: string
@@ -351215,6 +352283,9 @@ export namespace Prisma {
     isIndustrialGrade?: boolean
     gradePoint?: number | null
     comment?: string | null
+    assessmentEntries?: NullableJsonNullValueInput | InputJsonValue
+    classAverage?: number | null
+    classPosition?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     schoolId: string
@@ -351436,6 +352507,9 @@ export namespace Prisma {
     isIndustrialGrade?: BoolFieldUpdateOperationsInput | boolean
     gradePoint?: NullableFloatFieldUpdateOperationsInput | number | null
     comment?: NullableStringFieldUpdateOperationsInput | string | null
+    assessmentEntries?: NullableJsonNullValueInput | InputJsonValue
+    classAverage?: NullableFloatFieldUpdateOperationsInput | number | null
+    classPosition?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     student?: StudentUpdateOneRequiredWithoutGradesNestedInput
@@ -351458,6 +352532,9 @@ export namespace Prisma {
     isIndustrialGrade?: BoolFieldUpdateOperationsInput | boolean
     gradePoint?: NullableFloatFieldUpdateOperationsInput | number | null
     comment?: NullableStringFieldUpdateOperationsInput | string | null
+    assessmentEntries?: NullableJsonNullValueInput | InputJsonValue
+    classAverage?: NullableFloatFieldUpdateOperationsInput | number | null
+    classPosition?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     schoolId?: StringFieldUpdateOperationsInput | string
@@ -351478,6 +352555,9 @@ export namespace Prisma {
     isIndustrialGrade?: BoolFieldUpdateOperationsInput | boolean
     gradePoint?: NullableFloatFieldUpdateOperationsInput | number | null
     comment?: NullableStringFieldUpdateOperationsInput | string | null
+    assessmentEntries?: NullableJsonNullValueInput | InputJsonValue
+    classAverage?: NullableFloatFieldUpdateOperationsInput | number | null
+    classPosition?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     schoolId?: StringFieldUpdateOperationsInput | string
@@ -351851,6 +352931,9 @@ export namespace Prisma {
     isIndustrialGrade?: boolean
     gradePoint?: number | null
     comment?: string | null
+    assessmentEntries?: NullableJsonNullValueInput | InputJsonValue
+    classAverage?: number | null
+    classPosition?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     schoolId: string
@@ -352073,6 +353156,9 @@ export namespace Prisma {
     isIndustrialGrade?: BoolFieldUpdateOperationsInput | boolean
     gradePoint?: NullableFloatFieldUpdateOperationsInput | number | null
     comment?: NullableStringFieldUpdateOperationsInput | string | null
+    assessmentEntries?: NullableJsonNullValueInput | InputJsonValue
+    classAverage?: NullableFloatFieldUpdateOperationsInput | number | null
+    classPosition?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     subject?: SubjectUpdateOneRequiredWithoutGradesNestedInput
@@ -352095,6 +353181,9 @@ export namespace Prisma {
     isIndustrialGrade?: BoolFieldUpdateOperationsInput | boolean
     gradePoint?: NullableFloatFieldUpdateOperationsInput | number | null
     comment?: NullableStringFieldUpdateOperationsInput | string | null
+    assessmentEntries?: NullableJsonNullValueInput | InputJsonValue
+    classAverage?: NullableFloatFieldUpdateOperationsInput | number | null
+    classPosition?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     schoolId?: StringFieldUpdateOperationsInput | string
@@ -352115,6 +353204,9 @@ export namespace Prisma {
     isIndustrialGrade?: BoolFieldUpdateOperationsInput | boolean
     gradePoint?: NullableFloatFieldUpdateOperationsInput | number | null
     comment?: NullableStringFieldUpdateOperationsInput | string | null
+    assessmentEntries?: NullableJsonNullValueInput | InputJsonValue
+    classAverage?: NullableFloatFieldUpdateOperationsInput | number | null
+    classPosition?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     schoolId?: StringFieldUpdateOperationsInput | string
@@ -353898,6 +354990,9 @@ export namespace Prisma {
     isIndustrialGrade?: boolean
     gradePoint?: number | null
     comment?: string | null
+    assessmentEntries?: NullableJsonNullValueInput | InputJsonValue
+    classAverage?: number | null
+    classPosition?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     schoolId: string
@@ -354084,6 +355179,9 @@ export namespace Prisma {
     isIndustrialGrade?: BoolFieldUpdateOperationsInput | boolean
     gradePoint?: NullableFloatFieldUpdateOperationsInput | number | null
     comment?: NullableStringFieldUpdateOperationsInput | string | null
+    assessmentEntries?: NullableJsonNullValueInput | InputJsonValue
+    classAverage?: NullableFloatFieldUpdateOperationsInput | number | null
+    classPosition?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     student?: StudentUpdateOneRequiredWithoutGradesNestedInput
@@ -354106,6 +355204,9 @@ export namespace Prisma {
     isIndustrialGrade?: BoolFieldUpdateOperationsInput | boolean
     gradePoint?: NullableFloatFieldUpdateOperationsInput | number | null
     comment?: NullableStringFieldUpdateOperationsInput | string | null
+    assessmentEntries?: NullableJsonNullValueInput | InputJsonValue
+    classAverage?: NullableFloatFieldUpdateOperationsInput | number | null
+    classPosition?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     schoolId?: StringFieldUpdateOperationsInput | string
@@ -354126,6 +355227,9 @@ export namespace Prisma {
     isIndustrialGrade?: BoolFieldUpdateOperationsInput | boolean
     gradePoint?: NullableFloatFieldUpdateOperationsInput | number | null
     comment?: NullableStringFieldUpdateOperationsInput | string | null
+    assessmentEntries?: NullableJsonNullValueInput | InputJsonValue
+    classAverage?: NullableFloatFieldUpdateOperationsInput | number | null
+    classPosition?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     schoolId?: StringFieldUpdateOperationsInput | string
@@ -354660,7 +355764,9 @@ export namespace Prisma {
     code?: string | null
     department?: string | null
     schoolId: string
+    createdById?: string | null
     gradingType?: string
+    moderatedScale?: NullableJsonNullValueInput | InputJsonValue
     credits?: number | null
     isIndustrial?: boolean
     isProject?: boolean
@@ -354853,6 +355959,7 @@ export namespace Prisma {
     code?: NullableStringFieldUpdateOperationsInput | string | null
     department?: NullableStringFieldUpdateOperationsInput | string | null
     gradingType?: StringFieldUpdateOperationsInput | string
+    moderatedScale?: NullableJsonNullValueInput | InputJsonValue
     credits?: NullableFloatFieldUpdateOperationsInput | number | null
     isIndustrial?: BoolFieldUpdateOperationsInput | boolean
     isProject?: BoolFieldUpdateOperationsInput | boolean
@@ -354860,6 +355967,7 @@ export namespace Prisma {
     caWeight?: FloatFieldUpdateOperationsInput | number
     examWeight?: FloatFieldUpdateOperationsInput | number
     school?: SchoolUpdateOneRequiredWithoutSubjectsNestedInput
+    createdBy?: UserUpdateOneWithoutCreatedSubjectsNestedInput
     teachers?: TeacherSubjectUpdateManyWithoutSubjectNestedInput
     classTeachers?: ClassSubjectTeacherUpdateManyWithoutSubjectNestedInput
     grades?: GradeUpdateManyWithoutSubjectNestedInput
@@ -354880,7 +355988,9 @@ export namespace Prisma {
     code?: NullableStringFieldUpdateOperationsInput | string | null
     department?: NullableStringFieldUpdateOperationsInput | string | null
     schoolId?: StringFieldUpdateOperationsInput | string
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
     gradingType?: StringFieldUpdateOperationsInput | string
+    moderatedScale?: NullableJsonNullValueInput | InputJsonValue
     credits?: NullableFloatFieldUpdateOperationsInput | number | null
     isIndustrial?: BoolFieldUpdateOperationsInput | boolean
     isProject?: BoolFieldUpdateOperationsInput | boolean
@@ -354907,7 +356017,9 @@ export namespace Prisma {
     code?: NullableStringFieldUpdateOperationsInput | string | null
     department?: NullableStringFieldUpdateOperationsInput | string | null
     schoolId?: StringFieldUpdateOperationsInput | string
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
     gradingType?: StringFieldUpdateOperationsInput | string
+    moderatedScale?: NullableJsonNullValueInput | InputJsonValue
     credits?: NullableFloatFieldUpdateOperationsInput | number | null
     isIndustrial?: BoolFieldUpdateOperationsInput | boolean
     isProject?: BoolFieldUpdateOperationsInput | boolean
@@ -354977,6 +356089,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutDeptInput = {
@@ -355040,6 +356153,7 @@ export namespace Prisma {
     clinicVisits?: ClinicVisitUncheckedUpdateManyWithoutUserNestedInput
     clinicHospitalizations?: ClinicHospitalizationUncheckedUpdateManyWithoutUserNestedInput
     clinicPatient?: ClinicPatientUncheckedUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateManyWithoutDeptInput = {

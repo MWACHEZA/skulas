@@ -299,6 +299,11 @@ export default function AdminUserCreateModal({
         if (formData.nokRelationship) {
           data.append('nokRelation', formData.nokRelationship);
         }
+
+        // Resolve "Other" religion to its custom text before submitting
+        if (formData.religion === 'Other' && formData.religionCustom) {
+          data.set('religion', formData.religionCustom);
+        }
       }
 
       if (role === 'STUDENT') {
@@ -403,8 +408,8 @@ export default function AdminUserCreateModal({
           font-size: 0.75rem;
         }
       `}</style>
-      <div className="portal-modal user-edit-modal" style={{ width: '95%', maxWidth: '1100px', maxHeight: '90vh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-        <div className="modal-header">
+      <div className="portal-modal user-edit-modal" style={{ position: 'relative', width: '95%', maxWidth: '1100px', maxHeight: '90vh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+        <div className="modal-header" style={{ position: 'relative' }}>
           <div className="header-titles">
             <h2>Add New {role.charAt(0) + role.slice(1).toLowerCase()}</h2>
             <span>System User Creation & HR Onboarding</span>
@@ -413,7 +418,16 @@ export default function AdminUserCreateModal({
         </div>
         
         <div style={{ flex: 1, overflowY: 'auto', padding: '0 20px 20px' }}>
-          <form onSubmit={handleSubmit} id="createUserForm">
+          <form
+            onSubmit={handleSubmit}
+            id="createUserForm"
+            onKeyDown={(e) => {
+              // Prevent Enter from accidentally submitting while mid-wizard
+              if (e.key === 'Enter' && isStaff && staffStep < 4) {
+                e.preventDefault();
+              }
+            }}
+          >
             
             {/* Global Fields */}
             <div className="form-section-header mt-4">Account Profile</div>
@@ -552,6 +566,40 @@ export default function AdminUserCreateModal({
                         <option value="None">None</option>
                         <option value="Other">Other</option>
                       </select>
+                      {formData.religion === 'Other' && (
+                        <input
+                          name="religionCustom"
+                          value={formData.religionCustom || ''}
+                          onChange={handleInputChange}
+                          className="form-control"
+                          placeholder="Specify religion..."
+                          style={{ marginTop: 6 }}
+                        />
+                      )}
+                    </div>
+
+                    <div className="form-group" style={{ gridColumn: 'span 3' }}>
+                      <label>Allergies (if any)</label>
+                      <textarea
+                        name="allergies"
+                        value={formData.allergies || ''}
+                        onChange={handleInputChange}
+                        className="form-control"
+                        rows={2}
+                        placeholder="e.g. Penicillin, Peanuts, Latex (leave blank if none)"
+                      />
+                    </div>
+
+                    <div className="form-group" style={{ gridColumn: 'span 3' }}>
+                      <label>Chronic Conditions / Regular Medications</label>
+                      <textarea
+                        name="medications"
+                        value={formData.medications || ''}
+                        onChange={handleInputChange}
+                        className="form-control"
+                        rows={2}
+                        placeholder="e.g. Asthma (Salbutamol), Diabetes (Metformin) — leave blank if none"
+                      />
                     </div>
 
                     <div className="form-group" style={{ gridColumn: 'span 3' }}>
@@ -815,6 +863,24 @@ export default function AdminUserCreateModal({
                           <option value="None">None</option>
                           <option value="Other">Other</option>
                         </select>
+                        {formData.religion === 'Other' && (
+                          <input
+                            name="religionCustom"
+                            value={formData.religionCustom || ''}
+                            onChange={handleInputChange}
+                            className="form-control"
+                            placeholder="Specify religion..."
+                            style={{ marginTop: 6 }}
+                          />
+                        )}
+                      </div>
+                      <div className="form-group">
+                        <label>Blood Group</label>
+                        <select name="bloodGroup" value={formData.bloodGroup || ''} onChange={handleInputChange} className="form-control">
+                          <option value="">Select...</option>
+                          <option>A+</option><option>A-</option><option>B+</option><option>B-</option>
+                          <option>AB+</option><option>AB-</option><option>O+</option><option>O-</option>
+                        </select>
                       </div>
                       <div className="form-group">
                         <label>Physical Handicap</label>
@@ -826,6 +892,28 @@ export default function AdminUserCreateModal({
                       {formData.isPhysicallyHandicapped === 'true' && (
                         <div className="form-group col-span-3"><label>Handicap Details</label><input name="handicapDetails" value={formData.handicapDetails || ''} onChange={handleInputChange} className="form-control" placeholder="Specify nature of handicap..." /></div>
                       )}
+                      <div className="form-group" style={{ gridColumn: 'span 3' }}>
+                        <label>Allergies (if any)</label>
+                        <textarea
+                          name="allergies"
+                          value={formData.allergies || ''}
+                          onChange={handleInputChange}
+                          className="form-control"
+                          rows={2}
+                          placeholder="e.g. Penicillin, Peanuts, Latex (leave blank if none)"
+                        />
+                      </div>
+                      <div className="form-group" style={{ gridColumn: 'span 3' }}>
+                        <label>Chronic Conditions / Regular Medications</label>
+                        <textarea
+                          name="medications"
+                          value={formData.medications || ''}
+                          onChange={handleInputChange}
+                          className="form-control"
+                          rows={2}
+                          placeholder="e.g. Asthma (Salbutamol), Diabetes (Metformin) — leave blank if none"
+                        />
+                      </div>
                     </div>
 
                     <div className="form-section-header mt-6">Institutional Assignment</div>

@@ -441,6 +441,7 @@ model User {
   clinicVisits        ClinicVisit[]
   clinicHospitalizations ClinicHospitalization[]
   clinicPatient       ClinicPatient?
+  createdSubjects     Subject[]                 @relation("SubjectCreatedByUser")
 
   @@index([schoolId])
 }
@@ -643,6 +644,8 @@ model Subject {
   dept           Department?           @relation(fields: [departmentId], references: [id])
   schoolId       String
   school         School                @relation(fields: [schoolId], references: [id])
+  createdById    String?
+  createdBy      User?                 @relation("SubjectCreatedByUser", fields: [createdById], references: [id])
   teachers       TeacherSubject[]
   classTeachers  ClassSubjectTeacher[]
   grades         Grade[]
@@ -654,6 +657,7 @@ model Subject {
   books          Book[]
 
   gradingType   String          @default("standard") // standard or competency
+  moderatedScale Json?
   credits       Float?          @default(0)
   isIndustrial  Boolean         @default(false)
   isProject     Boolean         @default(false)
@@ -711,6 +715,9 @@ model Grade {
   isIndustrialGrade Boolean  @default(false)
   gradePoint        Float? // Calculated points (e.g. 4.0, 3.0) for GPA
   comment           String?
+  assessmentEntries Json?  // Tests, exercises, exams breakdown with selection for report
+  classAverage      Float? // Class average percentage for this subject
+  classPosition     Int?   // Position/Rank of student in class for this subject
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 
@@ -1195,6 +1202,9 @@ model SchoolSetting {
   idCardTemplateFront String? // Path to front face of ID card template image
   idCardTemplateBack  String? // Path to back face of ID card template image
   setupStatus         Json?   // Guided onboarding wizard state & stage completion progress
+
+  // Module toggles
+  housesModuleEnabled Boolean @default(true) // Show/hide Houses module (default on for K12, can be disabled for tertiary)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

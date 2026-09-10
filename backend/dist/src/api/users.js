@@ -21,6 +21,42 @@ const SCHOOL_ADMIN_ASSIGNABLE_ROLES = [
     'TEACHER', 'STUDENT', 'BURSAR', 'LIBRARIAN', 'ANCILLARY', 'PARENT', 'SUPPLIER', 'ALUMNI', 'APPLICANT', 'CLINIC'
 ];
 /**
+ * @route   GET /api/users/search
+ * @desc    Search registered users (students and staff) in the school by name or ID
+ */
+router.get('/search', auth_1.requireAuth, async (req, res) => {
+    const { query, role } = req.query;
+    const searchTerm = query ? String(query).trim() : '';
+    try {
+        const users = await prisma_1.default.user.findMany({
+            where: {
+                schoolId: req.user.schoolId,
+                ...(role ? { role: String(role).toUpperCase() } : {}),
+                OR: [
+                    { name: { contains: searchTerm, mode: 'insensitive' } },
+                    { email: { contains: searchTerm, mode: 'insensitive' } },
+                    { staffId: { contains: searchTerm, mode: 'insensitive' } }
+                ]
+            },
+            select: {
+                id: true,
+                name: true,
+                role: true,
+                secondaryRoles: true,
+                email: true,
+                staffId: true,
+            },
+            take: 20,
+            orderBy: { name: 'asc' }
+        });
+        res.json(users);
+    }
+    catch (error) {
+        console.error('User search error:', error);
+        res.status(500).json({ error: 'Failed to search users' });
+    }
+});
+/**
  * @route   GET /api/users/me
  * @desc    Get current user profile
  */
@@ -214,7 +250,7 @@ router.post('/', auth_1.requireAuth, upload_1.staffDocumentUpload.fields([
     // New Student Specific
     motherTongue, nationality, city, state, prevSchoolClass, prevSchoolAddress, hasTransferCertificate, isPhysicallyHandicapped, handicapDetails, category, section, dormitory, age, clubId, prevSchoolName, purposeForLeaving, dateAdmitted, studentHouseId, 
     // Onboarding additional fields
-    programLevel, studyMode, researchTitle, standing, part, boardingStatus, guardianName, title } = req.body;
+    programLevel, studyMode, researchTitle, standing, part, boardingStatus, guardianName, title, religion } = req.body;
     const normalizedEmail = (email || '').trim().toLowerCase();
     // Process secondaryRoles
     let secondaryRoles = req.body.secondaryRoles;
@@ -278,6 +314,7 @@ router.post('/', auth_1.requireAuth, upload_1.staffDocumentUpload.fields([
                     secondaryRoles,
                     avatar,
                     phone,
+                    religion,
                     staffId: staffId || studentId || vendorNo || generatedId,
                     schoolId,
                     departmentId: (role === 'TEACHER' && !departmentId) ? req.body.departmentId : departmentId, // Fallback for teacher specific logic if needed
@@ -527,7 +564,7 @@ router.put('/:id', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN'), 
     { name: 'birthCertificate', maxCount: 1 }
 ]), async (req, res) => {
     const id = req.params.id;
-    const { name, email, phone, role, status, departmentId, secondaryRoles, bloodGroup, dateAssumedPost, dateOfLeaving, designation, accountNumber, accountHolderName, bankName, bankBranch, branchCode, accountType, accountNumberZig, accountHolderNameZig, bankNameZig, bankBranchZig, branchCodeZig, accountTypeZig, facebookLink, linkedinLink, twitterLink } = req.body;
+    const { name, email, phone, role, status, departmentId, secondaryRoles, religion, bloodGroup, dateAssumedPost, dateOfLeaving, designation, accountNumber, accountHolderName, bankName, bankBranch, branchCode, accountType, accountNumberZig, accountHolderNameZig, bankNameZig, bankBranchZig, branchCodeZig, accountTypeZig, facebookLink, linkedinLink, twitterLink } = req.body;
     let parsedSecondaryRoles = [];
     if (secondaryRoles) {
         if (typeof secondaryRoles === 'string') {
@@ -635,6 +672,7 @@ router.put('/:id', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN'), 
                     secondaryRoles: parsedSecondaryRoles,
                     avatar,
                     departmentId,
+                    religion: religion !== undefined ? religion : undefined,
                     metadata: newMetadata
                 },
                 select: {

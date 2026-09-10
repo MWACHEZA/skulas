@@ -1,7 +1,61 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { useAuth } from '../../../contexts/AuthContext';
+import { useTerminology } from '../../../hooks/useTerminology';
+
+export interface ClassSection {
+  id: string;
+  name: string;
+}
+
+export interface ClassStudent {
+  id: string;
+  studentId: string;
+  name: string;
+  gender?: string;
+}
+
+export interface ClassSubjectTeacher {
+  id: string;
+  subject?: {
+    id: string;
+    name: string;
+  };
+  teacher?: {
+    id: string;
+    user?: {
+      name: string;
+    };
+  };
+}
+
+export interface SchoolClass {
+  id: string;
+  name: string;
+  level: string;
+  capacity?: number | string;
+  teacherId?: string;
+  sectionId?: string;
+  section?: ClassSection | null;
+  students?: ClassStudent[];
+  subjectTeachers?: ClassSubjectTeacher[];
+  _count?: {
+    students?: number;
+  };
+}
+
+export interface TeacherUser {
+  id: string;
+  user?: {
+    name: string;
+  };
+}
+
+export interface SubjectItem {
+  id: string;
+  name: string;
+}
 
 export default function AdminClasses() {
   const { user } = useAuth();
@@ -28,20 +82,20 @@ export default function AdminClasses() {
 
   const defaultLevel = getLevelsForSchool()[0] || 'Form 1';
 
-  const [classes, setClasses] = useState<any[]>([]);
-  const [teachers, setTeachers] = useState<any[]>([]);
-  const [subjects, setSubjects] = useState<any[]>([]);
-  const [sections, setSections] = useState<any[]>([]);
+  const [classes, setClasses] = useState<SchoolClass[]>([]);
+  const [teachers, setTeachers] = useState<TeacherUser[]>([]);
+  const [subjects, setSubjects] = useState<SubjectItem[]>([]);
+  const [sections, setSections] = useState<ClassSection[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingClass, setEditingClass] = useState<any>(null);
+  const [editingClass, setEditingClass] = useState<SchoolClass | null>(null);
   const [formData, setFormData] = useState({ name: '', level: defaultLevel, teacherId: '', capacity: '', sectionId: '' });
   
   const [assignData, setAssignData] = useState({ subjectId: '', teacherId: '' });
   const [assigning, setAssigning] = useState(false);
 
   const [isMigrateModalOpen, setIsMigrateModalOpen] = useState(false);
-  const [migratingClass, setMigratingClass] = useState<any>(null);
+  const [migratingClass, setMigratingClass] = useState<SchoolClass | null>(null);
   const [migrateData, setMigrateData] = useState({ targetClassId: '', targetPart: '1' });
   const [isMigrating, setIsMigrating] = useState(false);
 
@@ -52,10 +106,33 @@ export default function AdminClasses() {
   const [isAddingSection, setIsAddingSection] = useState(false);
 
   const { showToast } = useToast();
+  const { t } = useTerminology();
 
-  useEffect(() => {
-    fetchData();
-    fetchSections();
+  const fetchData = useCallback(async () => {
+    try {
+      const [clsRes, teaRes, subRes] = await Promise.all([
+        api.get('/api/classes'),
+        api.get('/api/teachers'),
+        api.get('/api/subjects')
+      ]);
+      setClasses(Array.isArray(clsRes.data) ? clsRes.data : []);
+      setTeachers(Array.isArray(teaRes.data.teachers) ? teaRes.data.teachers : []);
+      setSubjects(Array.isArray(subRes.data) ? subRes.data : []);
+    } catch (err) {
+      console.error('Failed to load classes data:', err);
+      showToast('Failed to load data', 'error');
+    } finally {
+      setLoading(false);
+    }
+  }, [showToast]);
+
+  const fetchSections = useCallback(async () => {
+    try {
+      const res = await api.get('/api/classes/sections');
+      setSections(res.data);
+    } catch (err) {
+      console.error('Failed to load sections:', err);
+    }
   }, []);
 
   const handleAddSection = async (e: React.FormEvent) => {
@@ -68,42 +145,19 @@ export default function AdminClasses() {
       setNewSectionName('');
       fetchSections();
     } catch (err) {
+      console.error('Failed to create section:', err);
       showToast('Failed to create section', 'error');
-    
     } finally {
       setIsAddingSection(false);
     }
   };
 
-  const fetchData = async () => {
-    try {
-      const [clsRes, teaRes, subRes] = await Promise.all([
-        api.get('/api/classes'),
-        api.get('/api/teachers'),
-        api.get('/api/subjects')
-      ]);
-      setClasses(Array.isArray(clsRes.data) ? clsRes.data : []);
-      setTeachers(Array.isArray(teaRes.data.teachers) ? teaRes.data.teachers : []);
-      setSubjects(Array.isArray(subRes.data) ? subRes.data : []);
-    } catch (err) {
-      showToast('Failed to load data', 'error');
-    
-    } finally {
-      setLoading(false);
-    }
-  };
+  useEffect(() => {
+    fetchData();
+    fetchSections();
+  }, [fetchData, fetchSections]);
 
-  const fetchSections = async () => {
-    try {
-      const res = await api.get('/api/classes/sections');
-      setSections(res.data);
-    } catch (err) {
-      console.error('Failed to load sections');
-    
-    }
-  };
-
-  const calculateGenderStats = (students: any[]) => {
+  const calculateGenderStats = (students: ClassStudent[]) => {
     const total = students.length;
     if (total === 0) return { boys: 0, girls: 0, na: 0 };
     
@@ -125,14 +179,14 @@ export default function AdminClasses() {
     };
   };
 
-  const handleOpenModal = (cls: any = null) => {
+  const handleOpenModal = (cls: SchoolClass | null = null) => {
     if (cls) {
       setEditingClass(cls);
       setFormData({ 
         name: cls.name, 
         level: cls.level, 
         teacherId: cls.teacherId || '', 
-        capacity: cls.capacity || '',
+        capacity: cls.capacity ? String(cls.capacity) : '',
         sectionId: cls.sectionId || ''
       });
     } else {
@@ -156,14 +210,14 @@ export default function AdminClasses() {
       showToast('Classes uploaded successfully', 'success');
       fetchData();
     } catch (err) {
+      console.error('Bulk upload failed:', err);
       showToast('Bulk upload failed', 'error');
-    
     } finally {
       setUploading(false);
     }
   };
 
-  const handleOpenMigrateModal = (cls: any) => {
+  const handleOpenMigrateModal = (cls: SchoolClass) => {
     setMigratingClass(cls);
     setMigrateData({ targetClassId: '', targetPart: '1' });
     setIsMigrateModalOpen(true);
@@ -171,12 +225,13 @@ export default function AdminClasses() {
 
   const handleMigrate = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!migratingClass) return showToast('No class selected for migration', 'warning');
     if (!migrateData.targetClassId) return showToast('Please select a target class', 'warning');
     
     setIsMigrating(true);
     try {
       const { data: students } = await api.get(`/api/students/by-class/${migratingClass.id}`);
-      const studentIds = students.map((s: any) => s.id);
+      const studentIds = students.map((s: ClassStudent) => s.id);
       
       if (studentIds.length === 0) {
         setIsMigrating(false);
@@ -192,9 +247,10 @@ export default function AdminClasses() {
       showToast(`Successfully migrated ${studentIds.length} students to the new class!`, 'success');
       setIsMigrateModalOpen(false);
       fetchData();
-    } catch (err: any) {
-      showToast(err.response?.data?.error || 'Migration failed', 'error');
-    
+    } catch (err: unknown) {
+      console.error('Migration failed:', err);
+      const apiError = (err as { response?: { data?: { error?: string } } })?.response?.data?.error;
+      showToast(apiError || 'Migration failed', 'error');
     } finally {
       setIsMigrating(false);
     }
@@ -214,8 +270,8 @@ export default function AdminClasses() {
       fetchData();
       setFormData({ name: '', level: defaultLevel, teacherId: '', capacity: '', sectionId: '' });
     } catch (err) {
+      console.error('Action failed:', err);
       showToast('Action failed', 'error');
-    
     }
   };
 
@@ -262,7 +318,7 @@ export default function AdminClasses() {
                       <div className="portal-badge" style={{ background: 'var(--portal-bg)', color: 'var(--portal-primary)', padding: '4px 12px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 700, display: 'inline-block' }}>Level: {c.level}</div>
                     </div>
                     <div className="action-buttons" style={{ display: 'flex', gap: '8px' }}>
-                      <button className="portal-btn-ghost" style={{ padding: '8px', width: '36px', height: '36px', color: '#10b981', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => handleOpenMigrateModal(c)} title="Migrate Cohort"><i className="fas fa-random"></i></button>
+                      <button className="portal-btn-ghost" style={{ padding: '8px', width: '36px', height: '36px', color: '#10b981', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => handleOpenMigrateModal(c)} title={t('migration')}><i className="fas fa-random"></i></button>
                       <button className="portal-btn-ghost" style={{ padding: '8px', width: '36px', height: '36px', color: '#eab308', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => handleOpenModal(c)} title="Edit Class"><i className="fas fa-edit"></i></button>
                       <button className="portal-btn-ghost" style={{ padding: '8px', width: '36px', height: '36px', color: '#dc2626', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Delete Class" onClick={async () => {
                           if (await toastConfirm(`Delete class ${c.name}?`)) {
@@ -271,6 +327,7 @@ export default function AdminClasses() {
                               showToast('Class deleted successfully', 'success');
                               fetchData();
                             } catch (err) {
+                              console.error('Failed to delete class:', err);
                               showToast('Failed to delete class', 'error');
                             }
                           }
@@ -354,7 +411,7 @@ export default function AdminClasses() {
                 <h2>{editingClass ? `Edit Class: ${editingClass.name}` : 'Initialize New Class'}</h2>
                 <span>{editingClass ? 'Manage students and faculty assignments' : 'Set up a new academic cohort'}</span>
               </div>
-              <button className="close-panel" onClick={() => setIsModalOpen(false)} style={{ top: '24px', right: '32px' }}>&times;</button>
+              <button className="portal-modal-close" onClick={() => setIsModalOpen(false)}>&times;</button>
             </div>
             
             <div className="portal-modal-body" style={{ 
@@ -446,7 +503,7 @@ export default function AdminClasses() {
                           </tr>
                         </thead>
                         <tbody>
-                          {(editingClass.students || []).map((s: any) => (
+                          {(editingClass.students || []).map((s: ClassStudent) => (
                             <tr key={s.id}>
                               <td style={{ fontFamily: 'monospace' }}>{s.studentId}</td>
                               <td style={{ fontWeight: 600 }}>{s.name}</td>
@@ -512,9 +569,9 @@ export default function AdminClasses() {
                           setAssignData({ subjectId: '', teacherId: '' });
                           fetchData();
                         } catch (err) {
+                          console.error('Assignment failed:', err);
                           showToast('Assignment failed', 'error');
-                        
-    } finally {
+                        } finally {
                           setAssigning(false);
                         }
                       }}
@@ -524,8 +581,8 @@ export default function AdminClasses() {
                   </div>
 
                   <div className="assignment-list" style={{ maxHeight: '280px', overflowY: 'auto', paddingRight: '8px' }}>
-                    {(Array.isArray(editingClass.subjectTeachers) ? editingClass.subjectTeachers : []).length > 0 ? (
-                      editingClass.subjectTeachers.map((st: any) => (
+                    {(editingClass.subjectTeachers || []).length > 0 ? (
+                      (editingClass.subjectTeachers || []).map((st: ClassSubjectTeacher) => (
                         <div key={st.id} style={{ 
                           display: 'flex', 
                           justifyContent: 'space-between', 
@@ -578,10 +635,10 @@ export default function AdminClasses() {
           <div className="portal-modal-card" style={{ maxWidth: '500px' }}>
             <div className="portal-modal-header">
               <div className="header-titles">
-                <h2>Migrate Cohort</h2>
+                <h2>{t('migration')}</h2>
                 <span>Move all students from {migratingClass?.name} to a new class</span>
               </div>
-              <button className="close-panel" onClick={() => setIsMigrateModalOpen(false)} style={{ top: '24px', right: '32px' }}>&times;</button>
+              <button className="portal-modal-close" onClick={() => setIsMigrateModalOpen(false)}>&times;</button>
             </div>
             <div className="portal-modal-body" style={{ padding: '32px' }}>
               <form onSubmit={handleMigrate}>
@@ -612,7 +669,7 @@ export default function AdminClasses() {
                 <div style={{ display: 'flex', gap: '10px' }}>
                   <button type="button" className="portal-btn-ghost" style={{ flex: 1 }} onClick={() => setIsMigrateModalOpen(false)}>Cancel</button>
                   <button type="submit" className="portal-btn-primary" style={{ flex: 1, background: '#10b981' }} disabled={isMigrating}>
-                    {isMigrating ? <><i className="fas fa-spinner fa-spin" style={{ marginRight: '8px' }}></i> Migrating...</> : <><i className="fas fa-random" style={{ marginRight: '8px' }}></i> Migrate Cohort</>}
+                    {isMigrating ? <><i className="fas fa-spinner fa-spin" style={{ marginRight: '8px' }}></i> Migrating...</> : <><i className="fas fa-random" style={{ marginRight: '8px' }}></i> {t('migration')}</>}
                   </button>
                 </div>
               </form>
@@ -629,7 +686,7 @@ export default function AdminClasses() {
                 <h2>Manage School Sections</h2>
                 <span>Create sessions like Morning, Afternoon, or A/B</span>
               </div>
-              <button className="close-panel" onClick={() => setIsSectionModalOpen(false)}>&times;</button>
+              <button className="portal-modal-close" onClick={() => setIsSectionModalOpen(false)}>&times;</button>
             </div>
             <div className="portal-modal-body" style={{ padding: '24px' }}>
               <form onSubmit={handleAddSection} style={{ marginBottom: '24px', display: 'flex', gap: '10px' }}>
@@ -651,13 +708,12 @@ export default function AdminClasses() {
                       onClick={async () => {
                         if (await toastConfirm(`Delete section ${s.name}?`)) {
                           try {
-                            // Assuming a delete endpoint exists or adding it
                             await api.delete(`/api/classes/sections/${s.id}`);
                             fetchSections();
                           } catch (err) {
+                            console.error('Failed to delete section:', err);
                             showToast('Failed to delete section', 'error');
-                          
-    }
+                          }
                         }
                       }}
                     >
@@ -668,6 +724,10 @@ export default function AdminClasses() {
                 {sections.length === 0 && <p style={{ color: '#64748b', fontSize: '0.85rem' }}>No sections created yet.</p>}
               </div>
             </div>
+            <div className="portal-modal-footer" style={{ borderTop: '1px solid #f1f5f9', padding: '16px 24px', display: 'flex', justifyContent: 'flex-end', background: '#f8fafc', borderBottomLeftRadius: '24px', borderBottomRightRadius: '24px' }}>
+              <button type="button" className="portal-btn-secondary" onClick={() => setIsSectionModalOpen(false)}>Close</button>
+            </div>
+
           </div>
         </div>
       )}
