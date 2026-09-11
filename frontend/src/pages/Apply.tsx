@@ -61,6 +61,7 @@ export default function Apply() {
   });
 
   const { isUniversity } = useTerminology();
+  const [schoolType, setSchoolType] = useState<string>('primary');
   const [availableClasses, setAvailableClasses] = useState<any[]>([]);
   const [isValidated, setIsValidated] = useState(false);
   const [validating, setValidating] = useState(false);
@@ -77,6 +78,8 @@ export default function Apply() {
           ]);
           setAvailableClasses(dataRes.data.classes || []);
           setSchoolSettings(schoolRes.data.websiteSettings);
+          const detectedType = dataRes.data.schoolType || schoolRes.data.type || 'primary';
+          setSchoolType(detectedType.toLowerCase());
           setIsValidated(true);
         } catch (err) {
           console.error('Auto-validation failed', err);
@@ -103,6 +106,8 @@ export default function Apply() {
       ]);
       setAvailableClasses(dataRes.data.classes || []);
       setSchoolSettings(schoolRes.data.websiteSettings);
+      const detectedType = dataRes.data.schoolType || schoolRes.data.type || 'primary';
+      setSchoolType(detectedType.toLowerCase());
       setIsValidated(true);
       showToast(`Connected to ${dataRes.data.schoolName}`, 'success');
     } catch (err) {
@@ -209,32 +214,69 @@ export default function Apply() {
                   </div>
                 )}
                 <div className="section-divider">{isUniversity ? 'University Entry Category' : 'Admission Type'}</div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10, marginTop: 15 }}>
-                  {(isUniversity ? ['Normal', 'Special', 'Mature'] : ['Form 1', 'A-Level', 'Transfer']).map(type => (
-                    <button key={type} type="button" 
-                      className={`btn-prev ${(isUniversity ? formData.entryCategory : formData.appType) === type ? 'active' : ''}`} 
-                      style={{ 
-                        padding: '12px 5px',
-                        fontSize: '0.85rem',
-                        background: (isUniversity ? formData.entryCategory : formData.appType) === type ? '#eff6ff' : 'white', 
-                        borderColor: (isUniversity ? formData.entryCategory : formData.appType) === type ? 'var(--school-primary)' : '#c0d0ea' 
-                      }}
-                      onClick={() => {
-                        if (isUniversity) {
-                          setFormData(p => ({ ...p, entryCategory: type, appType: 'University' }));
-                        } else {
-                          setFormData(p => ({ ...p, appType: type }));
-                        }
-                      }}>
-                      <i className={`fas ${
-                        type === 'Form 1' || type === 'Normal' ? 'fa-user-graduate' : 
-                        type === 'A-Level' || type === 'Special' ? 'fa-certificate' : 
-                        'fa-user-clock'
-                      }`}></i> 
-                      <span style={{ display: 'block', marginTop: 5 }}>{type}</span>
-                    </button>
-                  ))}
-                </div>
+                {(() => {
+                  let admissionTypes: string[] = [];
+                  if (isUniversity) {
+                    admissionTypes = ['Normal', 'Special', 'Mature'];
+                  } else if (schoolType === 'secondary') {
+                    admissionTypes = ['Form 1', 'A-Level', 'Transfer'];
+                  } else {
+                    // Primary school: ECD A, ECD B, Grades 1-7, and Transfer
+                    admissionTypes = [
+                      'ECD A', 'ECD B', 
+                      'Grade 1', 'Grade 2', 'Grade 3', 'Grade 4', 
+                      'Grade 5', 'Grade 6', 'Grade 7', 
+                      'Transfer'
+                    ];
+                  }
+
+                  const isGridDense = admissionTypes.length > 4;
+
+                  return (
+                    <div style={{ 
+                      display: 'grid', 
+                      gridTemplateColumns: isGridDense ? 'repeat(auto-fill, minmax(105px, 1fr))' : 'repeat(3, 1fr)', 
+                      gap: 10, 
+                      marginTop: 15 
+                    }}>
+                      {admissionTypes.map(type => {
+                        const isSelected = (isUniversity ? formData.entryCategory : formData.appType) === type;
+                        return (
+                          <button key={type} type="button" 
+                            className={`btn-prev ${isSelected ? 'active' : ''}`} 
+                            style={{ 
+                              padding: '12px 6px',
+                              fontSize: '0.85rem',
+                              background: isSelected ? '#eff6ff' : 'white', 
+                              borderColor: isSelected ? 'var(--school-primary, #0056b3)' : '#c0d0ea',
+                              display: 'flex',
+                              flexDirection: 'column',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              borderRadius: '10px'
+                            }}
+                            onClick={() => {
+                              if (isUniversity) {
+                                setFormData(p => ({ ...p, entryCategory: type, appType: 'University' }));
+                              } else {
+                                setFormData(p => ({ ...p, appType: type }));
+                              }
+                            }}>
+                            <i className={`fas ${
+                              type.startsWith('ECD') ? 'fa-shapes' : 
+                              type.startsWith('Grade') ? 'fa-book-reader' : 
+                              type === 'Form 1' || type === 'Normal' ? 'fa-user-graduate' : 
+                              type === 'A-Level' || type === 'Special' ? 'fa-certificate' : 
+                              type === 'Transfer' ? 'fa-exchange-alt' : 
+                              'fa-user-clock'
+                            }`} style={{ fontSize: '1.2rem', marginBottom: 4 }}></i> 
+                            <span style={{ display: 'block', fontWeight: 600 }}>{type}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  );
+                })()}
 
                 {availableClasses.length > 0 && (
                   <div className="form-group" style={{ marginTop: 25 }}>
@@ -388,6 +430,34 @@ export default function Apply() {
                           ></textarea>
                         </div>
                      )}
+                  </div>
+                )}
+
+                {!isUniversity && (formData.appType.startsWith('ECD') || formData.appType.startsWith('Grade')) && (
+                  <div style={{ background: '#f8fafc', padding: 20, borderRadius: 12, border: '1px solid #e2e8f0', marginBottom: 20 }}>
+                    <p style={{ fontSize: '0.85rem', color: '#64748b', marginBottom: 15, fontWeight: 600 }}>Primary / Early Childhood Background</p>
+                    <div className="form-group">
+                      <label>Previous Creche / Nursery / School Attended (if any)</label>
+                      <input 
+                        type="text" 
+                        name="prevSchool" 
+                        value={(formData as any).prevSchool || ''} 
+                        onChange={handleInputChange} 
+                        placeholder="e.g. Sunrise Infant Care, Little Angels Preschool" 
+                      />
+                    </div>
+                    {formData.appType.startsWith('Grade') && formData.appType !== 'Grade 1' && (
+                      <div className="form-group" style={{ marginTop: 12 }}>
+                        <label>Last Completed Grade / Academic Performance</label>
+                        <input 
+                          type="text" 
+                          name="lastGradeAchieved" 
+                          value={(formData as any).lastGradeAchieved || ''} 
+                          onChange={handleInputChange} 
+                          placeholder="e.g. Completed Grade 2 with First Class Distinction" 
+                        />
+                      </div>
+                    )}
                   </div>
                 )}
 

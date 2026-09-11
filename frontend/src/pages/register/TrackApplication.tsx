@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useParams } from 'react-router-dom';
 import api from '../../lib/api';
 import { useToast } from '../../context/ToastContext';
 import '../../styles/registration.css';
 
 export default function TrackApplication() {
+  const { schoolCode: routeSchoolCode } = useParams<{ schoolCode: string }>();
   const [appId, setAppId] = useState('');
   const [schoolCode, setSchoolCode] = useState('');
   const [application, setApplication] = useState<any>(null);
@@ -14,13 +15,17 @@ export default function TrackApplication() {
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const urlSchoolCode = params.get('school') || params.get('code') || localStorage.getItem('last_school_code');
+    const urlSchoolCode = routeSchoolCode || params.get('school') || params.get('code') || localStorage.getItem('last_school_code');
     if (urlSchoolCode) {
       const codeUpper = urlSchoolCode.trim().toUpperCase();
       setSchoolCode(codeUpper);
       localStorage.setItem('last_school_code', codeUpper);
     }
-  }, []);
+    const queryAppId = params.get('id') || params.get('appId');
+    if (queryAppId) {
+      setAppId(queryAppId.trim());
+    }
+  }, [routeSchoolCode]);
 
   const handleSchoolCodeChange = (val: string) => {
     setSchoolCode(val);

@@ -163,9 +163,9 @@ const UniformsPage: React.FC = () => {
 
   const tabs = [
     { id: "items", label: "Uniform Inventory", icon: "fa-tshirt", show: canManage || isParentOrStudent },
-    { id: "stock", label: "Supply History", icon: "fa-truck-loading", show: !canManage && isSupplier },
+    { id: "stock", label: canManage ? "Procurement & Restock" : "Supply History", icon: "fa-truck-loading", show: canManage || isSupplier },
     { id: "sales", label: canManage ? "Sales Ledger" : "Purchase History", icon: "fa-shopping-cart", show: canManage || isParentOrStudent },
-    { id: "suppliers", label: "Supplier Directory", icon: "fa-address-book", show: false },
+    { id: "suppliers", label: "Supplier Directory", icon: "fa-address-book", show: canManage },
     { id: "payments", label: canManage ? "Settlements" : "Payouts", icon: "fa-money-check-alt", show: canManage || isSupplier }
   ].filter(t => t.show);
 
@@ -653,8 +653,28 @@ interface SalesTabProps {
 
 const SalesTab: React.FC<SalesTabProps> = ({ items, sales, onUpdate, canManage, showModal, setShowModal }) => {
   const [studentId, setStudentId] = useState('');
+  const [students, setStudents] = useState<any[]>([]);
+  const [loadingStudents, setLoadingStudents] = useState(false);
   const [selectedItems, setSelectedItems] = useState<{ itemId: string, quantity: number, unitPrice: number }[]>([]);
   const { showToast } = useToast();
+
+  useEffect(() => {
+    if (showModal) {
+      fetchStudents();
+    }
+  }, [showModal]);
+
+  const fetchStudents = async () => {
+    try {
+      setLoadingStudents(true);
+      const res = await api.get('/api/students?limit=100');
+      setStudents(res.data?.students || []);
+    } catch (err) {
+      console.error('Failed to load students for sale:', err);
+    } finally {
+      setLoadingStudents(false);
+    }
+  };
 
   const handleSaveSale = async () => {
     if (!canManage || selectedItems.length === 0) return;
@@ -733,14 +753,24 @@ const SalesTab: React.FC<SalesTabProps> = ({ items, sales, onUpdate, canManage, 
             <div className="portal-modal-body portal-modal-body-padded-40">
                <div className="portal-grid-2-gap24-mb32">
                   <div className="form-group">
-                    <label className="portal-label">Entity Beneficiary (Optional)</label>
-                    <input 
-                        type="text" 
-                        placeholder="Search student identifier..." 
+                    <label htmlFor="select-student-beneficiary" className="portal-label">Beneficiary Student User</label>
+                    <select 
+                        id="select-student-beneficiary"
                         value={studentId}
                         onChange={e => setStudentId(e.target.value)}
                         className="portal-input portal-input-height-56" 
-                    />
+                    >
+                      <option value="">-- General / Walk-in Student --</option>
+                      {loadingStudents ? (
+                        <option disabled>Loading student users...</option>
+                      ) : (
+                        students.map((s: any) => (
+                          <option key={s.id} value={s.id}>
+                            {s.name || `${s.user?.firstName || ''} ${s.user?.lastName || ''}`} ({s.studentId || s.id.slice(0, 8)}) {s.class?.name ? `— ${s.class.name}` : ''}
+                          </option>
+                        ))
+                      )}
+                    </select>
                   </div>
                   <div className="form-group">
                     <label htmlFor="add-distribution-item" className="portal-label">Add Distribution Item</label>

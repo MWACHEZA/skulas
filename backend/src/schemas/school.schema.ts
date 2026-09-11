@@ -13,16 +13,25 @@ export const SystemSettingsSchema = z.object({
     showBalanceOnReceipts: z.boolean().optional(),
     showUniformsModule: z.boolean().optional(),
 
-    smtpEmail: z.string().email('Invalid SMTP sender email').optional(),
-    smtpHost: z.string().min(1, 'SMTP Host is required').optional(),
-    smtpPort: z.number().int().min(1).max(65535).optional(),
-    smtpPassword: z.string().optional(),
+    // Institutional Accounting Sync fields
+    defaultIncomeAccountId: z.string().optional().nullable(),
+    defaultReceivableAccountId: z.string().optional().nullable(),
+    defaultBankAccountId: z.string().optional().nullable(),
+    defaultCashAccountId: z.string().optional().nullable(),
+    defaultExpenseAccountId: z.string().optional().nullable(),
+    exchangeRate: z.union([z.number(), z.string()]).optional().nullable(),
+    autoPostToLedger: z.boolean().optional(),
+
+    smtpEmail: z.string().email('Invalid SMTP sender email').optional().nullable().or(z.literal('')),
+    smtpHost: z.string().optional().nullable().or(z.literal('')),
+    smtpPort: z.number().int().min(1).max(65535).optional().nullable(),
+    smtpPassword: z.string().optional().nullable(),
     smtpSsl: z.boolean().optional(),
-    systemUrl: z.string().url('Invalid System URL').optional(),
-    whatsappApiUrl: z.string().url('Invalid WhatsApp API URL').optional(),
-    whatsappAccessToken: z.string().optional(),
-    countryPhoneCode: z.string().min(1).max(5).optional(),
-  }),
+    systemUrl: z.string().optional().nullable().or(z.literal('')),
+    whatsappApiUrl: z.string().optional().nullable().or(z.literal('')),
+    whatsappAccessToken: z.string().optional().nullable(),
+    countryPhoneCode: z.string().min(1).max(5).optional().nullable(),
+  }).passthrough(),
 });
 
 export const UpdatePlanSchema = z.object({

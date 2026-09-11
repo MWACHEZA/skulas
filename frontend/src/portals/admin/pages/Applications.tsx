@@ -24,7 +24,7 @@ export default function AdminApplications() {
 
   const { user } = useAuth();
   const { t, isUniversity } = useTerminology();
-  const { showToast } = useToast();
+  const { showToast, toastConfirm } = useToast();
 
   const isAuthorizedToApprove = user?.role === 'SCHOOL_ADMIN' || 
     user?.secondaryRoles?.includes('Senior Teacher') || 

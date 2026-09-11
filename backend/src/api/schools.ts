@@ -18,7 +18,7 @@ router.get('/settings', requireAuth, async (req: AuthRequest, res: Response) => 
     const schoolId = req.user!.schoolId!;
     const [settingsRecord, school] = await Promise.all([
       prisma.schoolSetting.findFirst({ where: { schoolId } }),
-      prisma.school.findUnique({ where: { id: schoolId }, select: { id: true, name: true, type: true, code: true } })
+      prisma.school.findUnique({ where: { id: schoolId }, select: { id: true, name: true, type: true, code: true, settings: true } })
     ]);
     
     let settings = settingsRecord;
@@ -29,7 +29,10 @@ router.get('/settings', requireAuth, async (req: AuthRequest, res: Response) => 
       });
     }
     
+    const schoolSettingsJson = (school?.settings as Record<string, any>) || {};
+
     const responsePayload = {
+      ...schoolSettingsJson,
       ...settings,
       school: school || undefined,
       schoolType: school?.type
@@ -129,6 +132,43 @@ router.patch('/settings', requireAuth, requireRole('SCHOOL_ADMIN'), validate(Sys
       create: { ...filteredData, schoolId }
     });
 
+    // Also persist accounting and extended settings to school.settings JSON
+    const accountingKeys = [
+      'defaultIncomeAccountId',
+      'defaultReceivableAccountId',
+      'defaultBankAccountId',
+      'defaultCashAccountId',
+      'defaultExpenseAccountId',
+      'exchangeRate',
+      'autoPostToLedger'
+    ];
+
+    const accountingData: Record<string, any> = {};
+    for (const key of accountingKeys) {
+      if (settingsData[key] !== undefined) {
+        accountingData[key] = settingsData[key];
+      }
+    }
+
+    let updatedSettingsJson: Record<string, any> = {};
+    if (Object.keys(accountingData).length > 0) {
+      const existingSchool = await prisma.school.findUnique({
+        where: { id: schoolId },
+        select: { settings: true }
+      });
+      const currentSettingsJson = (existingSchool?.settings as Record<string, any>) || {};
+      updatedSettingsJson = {
+        ...currentSettingsJson,
+        ...accountingData
+      };
+      await prisma.school.update({
+        where: { id: schoolId },
+        data: {
+          settings: updatedSettingsJson
+        }
+      });
+    }
+
     // Log the change for audit
     await prisma.auditLog.create({
       data: {
@@ -138,13 +178,19 @@ router.patch('/settings', requireAuth, requireRole('SCHOOL_ADMIN'), validate(Sys
         entityType: 'SchoolSetting',
         entityId: settings.id,
         details: {
-          changedFields: Object.keys(filteredData),
+          changedFields: [...Object.keys(filteredData), ...Object.keys(accountingData)],
           timestamp: new Date().toISOString()
         } as any
       }
     });
 
-    res.json({ success: true, settings });
+    res.json({
+      success: true,
+      settings: {
+        ...updatedSettingsJson,
+        ...settings
+      }
+    });
   } catch (error) {
     console.error('Settings update error:', error);
     res.status(500).json({ error: 'Failed to update system settings' });

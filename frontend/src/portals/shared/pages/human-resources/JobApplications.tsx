@@ -197,6 +197,7 @@ export default function JobApplications() {
     try {
       await api.put(`/api/hr/applications/${id}/status`, { status: newStatus });
       fetchApplications(activeTab);
+      alert(`Applicant status updated to "${newStatus}"!`);
     } catch (error) {
       console.error('Failed to update status', error);
       alert('Failed to update status');
@@ -389,10 +390,58 @@ export default function JobApplications() {
                               <i className="fas fa-eye"></i>
                             </button>
                             {app.status === 'Applied' && (
-                              <button onClick={() => updateStatus(app.id, 'Interviewed')} className="portal-btn-secondary" style={{ padding: '6px 12px', fontSize: '0.85rem' }}>Invite to Interview</button>
+                              <>
+                                <button onClick={() => updateStatus(app.id, 'On review')} className="portal-btn-secondary" style={{ padding: '5px 10px', fontSize: '0.8rem' }} title="Move to Review">
+                                  <i className="fas fa-search"></i> Review
+                                </button>
+                                <button onClick={() => updateStatus(app.id, 'Interviewed')} className="portal-btn-secondary" style={{ padding: '5px 10px', fontSize: '0.8rem' }} title="Invite to Interview">
+                                  <i className="fas fa-calendar-check"></i> Interview
+                                </button>
+                                <button onClick={() => updateStatus(app.id, 'Hired')} className="portal-btn-secondary" style={{ padding: '5px 10px', fontSize: '0.8rem', color: '#059669', borderColor: '#059669', fontWeight: 700 }} title="Approve & Hire">
+                                  <i className="fas fa-check-circle"></i> Approve & Hire
+                                </button>
+                              </>
+                            )}
+                            {app.status === 'On review' && (
+                              <>
+                                <button onClick={() => updateStatus(app.id, 'Interviewed')} className="portal-btn-secondary" style={{ padding: '5px 10px', fontSize: '0.8rem' }} title="Invite to Interview">
+                                  <i className="fas fa-calendar-check"></i> Interview
+                                </button>
+                                <button onClick={() => updateStatus(app.id, 'Offered')} className="portal-btn-secondary" style={{ padding: '5px 10px', fontSize: '0.8rem', color: '#2563eb', borderColor: '#2563eb' }} title="Extend Job Offer">
+                                  <i className="fas fa-file-signature"></i> Offer
+                                </button>
+                                <button onClick={() => updateStatus(app.id, 'Hired')} className="portal-btn-secondary" style={{ padding: '5px 10px', fontSize: '0.8rem', color: '#059669', borderColor: '#059669', fontWeight: 700 }} title="Approve & Hire">
+                                  <i className="fas fa-check-circle"></i> Approve & Hire
+                                </button>
+                              </>
                             )}
                             {app.status === 'Interviewed' && (
-                              <button onClick={() => updateStatus(app.id, 'Hired')} className="portal-btn-secondary" style={{ padding: '6px 12px', fontSize: '0.85rem', color: '#10b981', borderColor: '#10b981' }}>Hire</button>
+                              <>
+                                <button onClick={() => updateStatus(app.id, 'Offered')} className="portal-btn-secondary" style={{ padding: '5px 10px', fontSize: '0.8rem', color: '#2563eb', borderColor: '#2563eb' }} title="Extend Job Offer">
+                                  <i className="fas fa-file-signature"></i> Offer
+                                </button>
+                                <button onClick={() => updateStatus(app.id, 'Hired')} className="portal-btn-secondary" style={{ padding: '5px 10px', fontSize: '0.8rem', color: '#059669', borderColor: '#059669', fontWeight: 700 }} title="Approve & Hire">
+                                  <i className="fas fa-check-circle"></i> Approve & Hire
+                                </button>
+                                <button onClick={() => updateStatus(app.id, 'Declined')} className="portal-btn-secondary" style={{ padding: '5px 10px', fontSize: '0.8rem', color: '#dc2626', borderColor: '#dc2626' }} title="Decline Candidate">
+                                  <i className="fas fa-times"></i> Decline
+                                </button>
+                              </>
+                            )}
+                            {app.status === 'Offered' && (
+                              <>
+                                <button onClick={() => updateStatus(app.id, 'Hired')} className="portal-btn-secondary" style={{ padding: '5px 10px', fontSize: '0.8rem', color: '#059669', borderColor: '#059669', fontWeight: 700 }} title="Approve & Hire">
+                                  <i className="fas fa-check-circle"></i> Approve & Hire
+                                </button>
+                                <button onClick={() => updateStatus(app.id, 'Declined')} className="portal-btn-secondary" style={{ padding: '5px 10px', fontSize: '0.8rem', color: '#dc2626', borderColor: '#dc2626' }} title="Decline Candidate">
+                                  <i className="fas fa-times"></i> Decline
+                                </button>
+                              </>
+                            )}
+                            {app.status === 'Hired' && (
+                              <span style={{ fontSize: '0.8rem', color: '#059669', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                <i className="fas fa-check-double"></i> Approved & Onboarded
+                              </span>
                             )}
                             <button 
                               onClick={() => {
@@ -786,7 +835,45 @@ export default function JobApplications() {
               </div>
 
             </div>
-            <div className="portal-modal-footer" style={{ borderTop: '1px solid #e2e8f0', background: '#f8fafc', padding: '15px 20px', display: 'flex', justifyContent: 'flex-end' }}>
+            <div className="portal-modal-footer" style={{ borderTop: '1px solid #e2e8f0', background: '#f8fafc', padding: '15px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                {selectedAppForView.status !== 'Hired' && (
+                  <button 
+                    onClick={async () => {
+                      await updateStatus(selectedAppForView.id, 'Hired');
+                      setSelectedAppForView(prev => prev ? { ...prev, status: 'Hired' } : null);
+                    }} 
+                    className="portal-btn-primary" 
+                    style={{ background: '#059669', borderColor: '#059669', fontSize: '0.85rem' }}
+                  >
+                    <i className="fas fa-check-circle"></i> Approve & Hire
+                  </button>
+                )}
+                {selectedAppForView.status !== 'Interviewed' && selectedAppForView.status !== 'Hired' && (
+                  <button 
+                    onClick={async () => {
+                      await updateStatus(selectedAppForView.id, 'Interviewed');
+                      setSelectedAppForView(prev => prev ? { ...prev, status: 'Interviewed' } : null);
+                    }} 
+                    className="portal-btn-secondary" 
+                    style={{ fontSize: '0.85rem' }}
+                  >
+                    <i className="fas fa-calendar-alt"></i> Invite to Interview
+                  </button>
+                )}
+                {selectedAppForView.status !== 'Declined' && selectedAppForView.status !== 'Hired' && (
+                  <button 
+                    onClick={async () => {
+                      await updateStatus(selectedAppForView.id, 'Declined');
+                      setSelectedAppForView(prev => prev ? { ...prev, status: 'Declined' } : null);
+                    }} 
+                    className="portal-btn-secondary" 
+                    style={{ color: '#dc2626', borderColor: '#fca5a5', fontSize: '0.85rem' }}
+                  >
+                    <i className="fas fa-times"></i> Decline
+                  </button>
+                )}
+              </div>
               <button onClick={closeDetailModal} className="portal-btn-neutral">Close Profile</button>
             </div>
           </div>

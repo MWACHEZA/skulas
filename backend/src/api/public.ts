@@ -68,6 +68,9 @@ router.get('/schools/:code/data', async (req, res) => {
       select: {
         id: true,
         name: true,
+        type: true,
+        isCombined: true,
+        levels: true,
         customContent: true,
         classes: {
           select: { id: true, name: true, level: true },
@@ -89,7 +92,7 @@ router.get('/schools/:code/data', async (req, res) => {
           select: { id: true, name: true },
           orderBy: { name: 'asc' }
         },
-        hostels: {
+        hostels: { 
           select: { 
             id: true, 
             name: true,
@@ -113,6 +116,9 @@ router.get('/schools/:code/data', async (req, res) => {
 
     res.json({
       schoolName: school.name,
+      schoolType: school.type || 'primary',
+      isCombined: school.isCombined,
+      levels: school.levels,
       classes: school.classes,
       subjects: school.subjects,
       departments: school.departments,

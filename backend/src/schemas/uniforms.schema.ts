@@ -15,9 +15,9 @@ export const UniformStockOrderItemSchema = z.object({
 
 export const UniformStockOrderSchema = z.object({
   orderDate: z.string().optional().transform(v => v ? new Date(v) : new Date()),
-  supplierId: z.string().optional(),
-  paymentMode: z.string().optional(),
-  reference: z.string().optional(),
+  supplierId: z.string().nullable().optional(),
+  paymentMode: z.string().nullable().optional(),
+  reference: z.string().nullable().optional(),
   initialPayment: z.number().min(0).default(0),
   items: z.array(UniformStockOrderItemSchema).min(1, 'At least one item is required'),
 });
@@ -30,10 +30,10 @@ export const UniformSaleItemSchema = z.object({
 
 export const UniformSaleSchema = z.object({
   saleDate: z.string().optional().transform(v => v ? new Date(v) : new Date()),
-  studentId: z.string().optional(),
-  parentId: z.string().optional(),
-  paymentMode: z.string().optional(),
-  reference: z.string().optional(),
+  studentId: z.string().nullable().optional(),
+  parentId: z.string().nullable().optional(),
+  paymentMode: z.string().nullable().optional(),
+  reference: z.string().nullable().optional(),
   items: z.array(UniformSaleItemSchema).min(1, 'At least one item is required'),
 });
 
@@ -41,6 +41,6 @@ export const UniformSupplierPaymentSchema = z.object({
   supplierId: z.string(),
   amount: z.number().positive(),
   date: z.string().optional().transform(v => v ? new Date(v) : new Date()),
-  paymentMode: z.string().optional(),
-  reference: z.string().optional(),
+  paymentMode: z.string().nullable().optional(),
+  reference: z.string().nullable().optional(),
 });

@@ -32,6 +32,23 @@ export default function ApplicantRegister() {
     documents: [] as { name: string, data: string }[]
   });
 
+  const [schoolType, setSchoolType] = useState<string>('primary');
+
+  useEffect(() => {
+    const checkSchool = async () => {
+      if (!formData.schoolCode || formData.schoolCode.trim().length < 3) return;
+      try {
+        const { data } = await api.get(`/api/schools/${formData.schoolCode.trim().toUpperCase()}`);
+        if (data && data.type) {
+          setSchoolType(data.type.toLowerCase());
+        }
+      } catch (e) {
+        // quiet fallback
+      }
+    };
+    checkSchool();
+  }, [formData.schoolCode]);
+
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const urlSchoolCode = params.get('school') || params.get('code') || localStorage.getItem('last_school_code');
@@ -152,23 +169,50 @@ export default function ApplicantRegister() {
                   <input type="text" name="schoolCode" placeholder="Enter school's portal code" value={formData.schoolCode} onChange={handleInputChange} required />
                 </div>
                 <div className="section-divider">Select Admission Type</div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 15, marginTop: 15 }}>
-                  <button type="button" className={`btn-prev ${formData.appType === 'Form 1' ? 'active' : ''}`} 
-                    style={{ background: formData.appType === 'Form 1' ? '#eff6ff' : 'white', borderColor: formData.appType === 'Form 1' ? 'var(--school-primary)' : '#c0d0ea' }}
-                    onClick={() => setFormData(p => ({ ...p, appType: 'Form 1' }))}>
-                    <i className="fas fa-child"></i> Form 1 Entry
-                  </button>
-                  <button type="button" className={`btn-prev ${formData.appType === 'A-Level' ? 'active' : ''}`}
-                    style={{ background: formData.appType === 'A-Level' ? '#eff6ff' : 'white', borderColor: formData.appType === 'A-Level' ? 'var(--school-primary)' : '#c0d0ea' }}
-                    onClick={() => setFormData(p => ({ ...p, appType: 'A-Level' }))}>
-                    <i className="fas fa-user-graduate"></i> A-Level Entry
-                  </button>
-                  <button type="button" className={`btn-prev ${formData.appType === 'Transfer' ? 'active' : ''}`}
-                    style={{ background: formData.appType === 'Transfer' ? '#eff6ff' : 'white', borderColor: formData.appType === 'Transfer' ? 'var(--school-primary)' : '#c0d0ea', gridColumn: 'span 2' }}
-                    onClick={() => setFormData(p => ({ ...p, appType: 'Transfer' }))}>
-                    <i className="fas fa-exchange-alt"></i> Transfer Admission
-                  </button>
-                </div>
+                {(() => {
+                  const admissionTypes = schoolType === 'secondary'
+                    ? ['Form 1', 'A-Level', 'Transfer']
+                    : ['ECD A', 'ECD B', 'Grade 1', 'Grade 2', 'Grade 3', 'Grade 4', 'Grade 5', 'Grade 6', 'Grade 7', 'Transfer'];
+
+                  const isGridDense = admissionTypes.length > 3;
+
+                  return (
+                    <div style={{ 
+                      display: 'grid', 
+                      gridTemplateColumns: isGridDense ? 'repeat(auto-fill, minmax(110px, 1fr))' : '1fr 1fr 1fr', 
+                      gap: 10, 
+                      marginTop: 15 
+                    }}>
+                      {admissionTypes.map(type => (
+                        <button 
+                          key={type} 
+                          type="button" 
+                          className={`btn-prev ${formData.appType === type ? 'active' : ''}`} 
+                          style={{ 
+                            padding: '12px 6px',
+                            background: formData.appType === type ? '#eff6ff' : 'white', 
+                            borderColor: formData.appType === type ? 'var(--school-primary)' : '#c0d0ea',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            borderRadius: '10px'
+                          }}
+                          onClick={() => setFormData(p => ({ ...p, appType: type }))}
+                        >
+                          <i className={`fas ${
+                            type.startsWith('ECD') ? 'fa-shapes' : 
+                            type.startsWith('Grade') ? 'fa-book-reader' : 
+                            type === 'Form 1' ? 'fa-child' : 
+                            type === 'A-Level' ? 'fa-user-graduate' : 
+                            'fa-exchange-alt'
+                          }`} style={{ fontSize: '1.2rem', marginBottom: 4 }}></i>
+                          <span style={{ fontWeight: 600, fontSize: '0.85rem' }}>{type}</span>
+                        </button>
+                      ))}
+                    </div>
+                  );
+                })()}
                 <div className="btn-row"><button type="button" className="btn-next" onClick={nextStep}>Continue</button></div>
               </div>
             )}

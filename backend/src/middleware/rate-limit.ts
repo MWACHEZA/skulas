@@ -16,7 +16,7 @@ export const globalLimiter = rateLimit({
  */
 export const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 10,
+  max: process.env.NODE_ENV === 'production' ? 100 : 2000,
   standardHeaders: true,
   message: 'Too many authentication attempts, please try again in 15 minutes'
 });
@@ -26,7 +26,7 @@ export const authLimiter = rateLimit({
  */
 export const strictLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 5,
+  max: process.env.NODE_ENV === 'production' ? 20 : 500,
   standardHeaders: true,
   message: 'Security policy: Too many sensitive requests. Please wait 15 minutes.'
 });

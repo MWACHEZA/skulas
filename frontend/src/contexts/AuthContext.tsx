@@ -54,6 +54,8 @@ interface AuthUser {
       name: string;
     } | null;
   };
+  isImpersonated?: boolean;
+  impersonatorId?: string;
 }
 
 interface AuthContextType {

@@ -66,7 +66,7 @@ export default function DashboardLayout({
   const [showClockModal, setShowClockModal] = useState(false);
   const [clockActionType, setClockActionType] = useState<'IN' | 'OUT'>('IN');
 
-  const isStaffUser = user && !['STUDENT', 'PARENT', 'SUPPLIER', 'ALUMNI'].includes(user.role);
+  const isStaffUser = user && !['STUDENT', 'PARENT', 'SUPPLIER', 'ALUMNI', 'SUPER_ADMIN'].includes(user.role);
 
   const fetchTodayAttendance = useCallback(async () => {
     if (!isStaffUser) {
@@ -246,6 +246,44 @@ export default function DashboardLayout({
 
       {/* ── Main ── */}
       <main className={`portal-main ${collapsed ? 'sidebar-collapsed' : ''}`}>
+        {user?.isImpersonated && (
+          <div style={{
+            background: 'linear-gradient(90deg, #4338ca 0%, #312e81 100%)',
+            color: '#ffffff',
+            padding: '8px 24px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            fontSize: '0.85rem',
+            fontWeight: 700,
+            borderBottom: '1px solid #4f46e5',
+            zIndex: 100
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <i className="fas fa-user-secret" style={{ fontSize: '1.1rem', color: '#a5b4fc' }}></i>
+              <span>SUPER ADMIN IMPERSONATION SESSION: Currently acting as <strong>{user?.name}</strong> ({user?.role}) at {user?.schoolName || user?.schoolCode}</span>
+            </div>
+            <button
+              onClick={() => {
+                localStorage.removeItem('acadex_token');
+                localStorage.removeItem('acadex_user');
+                window.location.href = '/login';
+              }}
+              style={{
+                background: 'rgba(255,255,255,0.15)',
+                border: '1px solid rgba(255,255,255,0.3)',
+                color: '#ffffff',
+                borderRadius: '6px',
+                padding: '4px 12px',
+                fontWeight: 800,
+                cursor: 'pointer',
+                fontSize: '0.75rem'
+              }}
+            >
+              <i className="fas fa-sign-out-alt mr-1"></i> Exit Session
+            </button>
+          </div>
+        )}
         {/* Topbar */}
         <div className="portal-topbar">
           <div className="portal-topbar-left">
