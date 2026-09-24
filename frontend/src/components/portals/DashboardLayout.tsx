@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import api, { BASE_URL } from '../../lib/api';
 import MaintenanceRequestModal from '../shared/MaintenanceRequestModal';
 import AdminPortalFooter from './shared/AdminPortalFooter';
 import ClockInModal from '../attendance/ClockInModal';
 import { useLedgerSSE } from '../../hooks/useLedgerSSE';
+import type { NavGroup } from '../../config/navGenerator';
 import './portal.css';
 
 export interface NavItem {
@@ -21,7 +22,8 @@ interface DashboardLayoutProps {
   portalName: string;
   portalIcon: string;
   roleBadge: string;
-  navItems: NavItem[];
+  navItems?: NavItem[];
+  navGroups?: NavGroup[];
   accentColor?: string;
   className?: string;
   sidebarHeaderExtra?: React.ReactNode;
@@ -48,15 +50,104 @@ export default function DashboardLayout({
   portalIcon, 
   roleBadge, 
   navItems, 
+  navGroups,
   className = '', 
   sidebarHeaderExtra,
   branding
 }: DashboardLayoutProps) {
   const { user, activeEntity, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isMaintModalOpen, setIsMaintModalOpen] = useState(false);
+
+  // Grouped Navigation & Search state
+  const [navSearch, setNavSearch] = useState('');
+  const searchInputRef = React.useRef<HTMLInputElement | null>(null);
+
+  const storageKey = `portal_nav_groups_${portalName.toLowerCase().replace(/[^a-z0-9]/g, '_')}`;
+
+  const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>(() => {
+    try {
+      const saved = localStorage.getItem(storageKey);
+      if (saved) return JSON.parse(saved);
+    } catch (e) {
+      // ignore
+    }
+    const initial: Record<string, boolean> = {};
+    if (navGroups && navGroups.length > 0) {
+      navGroups.forEach((g, idx) => {
+        const hasActiveChild = g.items.some(item => 
+          location.pathname === item.to || (item.to !== '/' && item.to !== '/admin' && location.pathname.startsWith(item.to + '/'))
+        );
+        initial[g.id] = hasActiveChild || (g.defaultExpanded ?? (idx === 0));
+      });
+    }
+    return initial;
+  });
+
+  const toggleGroup = (groupId: string) => {
+    setExpandedGroups(prev => {
+      const next = { ...prev, [groupId]: !prev[groupId] };
+      try {
+        localStorage.setItem(storageKey, JSON.stringify(next));
+      } catch (e) {}
+      return next;
+    });
+  };
+
+  // Auto-expand group if active child route changes
+  useEffect(() => {
+    if (!navGroups) return;
+    navGroups.forEach(g => {
+      const hasActiveChild = g.items.some(item => 
+        location.pathname === item.to || (item.to !== '/' && item.to !== '/admin' && location.pathname.startsWith(item.to + '/'))
+      );
+      if (hasActiveChild && !expandedGroups[g.id]) {
+        setExpandedGroups(prev => {
+          const next = { ...prev, [g.id]: true };
+          try {
+            localStorage.setItem(storageKey, JSON.stringify(next));
+          } catch (e) {}
+          return next;
+        });
+      }
+    });
+  }, [location.pathname, navGroups]);
+
+  // Keyboard shortcut Ctrl+K / Cmd+K to focus nav search
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+  const filteredGroups = React.useMemo(() => {
+    if (!navGroups) return null;
+    const q = navSearch.trim().toLowerCase();
+    if (!q) return navGroups;
+
+    return navGroups
+      .map(group => {
+        const matchingItems = group.items.filter(item => {
+          const labelMatch = item.label.toLowerCase().includes(q);
+          const keywordMatch = item.searchKeywords?.some(kw => kw.toLowerCase().includes(q));
+          const groupMatch = group.label.toLowerCase().includes(q);
+          return labelMatch || keywordMatch || groupMatch;
+        });
+        return {
+          ...group,
+          items: matchingItems
+        };
+      })
+      .filter(group => group.items.length > 0);
+  }, [navGroups, navSearch]);
 
   // Initialize tenant-scoped SSE stream for accounting & stock real-time sync
   useLedgerSSE();
@@ -165,19 +256,108 @@ export default function DashboardLayout({
         )}
 
         <nav className="portal-sidebar-nav">
-          <ul>
-            {navItems.map((item, idx) => {
-              // 1. Check if item should be visible based on roles
-              if (item.requiredSecondaryRoles && item.requiredSecondaryRoles.length > 0) {
-                const userRoles = user?.secondaryRoles || [];
-                const hasAccess = item.requiredSecondaryRoles.some(role => userRoles.includes(role));
-                if (!hasAccess) return null;
-              }
+          {filteredGroups ? (
+            <>
+              {!collapsed && (
+                <div className="portal-nav-search">
+                  <div className="portal-nav-search-input-wrapper">
+                    <i className="fas fa-search portal-nav-search-icon"></i>
+                    <input
+                      ref={searchInputRef}
+                      type="text"
+                      className="portal-nav-search-input"
+                      placeholder="Search menu (Ctrl+K)..."
+                      value={navSearch}
+                      onChange={(e) => setNavSearch(e.target.value)}
+                    />
+                    {navSearch && (
+                      <button 
+                        type="button"
+                        className="portal-nav-search-clear" 
+                        onClick={() => setNavSearch('')} 
+                        title="Clear search"
+                      >
+                        <i className="fas fa-times"></i>
+                      </button>
+                    )}
+                  </div>
+                </div>
+              )}
 
-              // 2. Section logic: Only show section header if subsequent items in that section are visible
-              // (Simplification: just show it if it exists on the item, 
-              // but ideally we'd look ahead or pre-filter navItems)
-                            return (
+              {filteredGroups.length === 0 ? (
+                <div className="portal-nav-no-results">
+                  <i className="fas fa-search" style={{ marginBottom: 6, display: 'block', opacity: 0.5 }}></i>
+                  No matching pages found
+                </div>
+              ) : (
+                <div className="portal-nav-groups">
+                  {filteredGroups.map(group => {
+                    const isExpanded = Boolean(navSearch.trim() || expandedGroups[group.id]);
+                    const hasActiveChild = group.items.some(item => 
+                      location.pathname === item.to || (item.to !== '/' && item.to !== '/admin' && location.pathname.startsWith(item.to + '/'))
+                    );
+
+                    return (
+                      <div key={group.id} className="portal-nav-group">
+                        <button
+                          type="button"
+                          className={`portal-nav-group-header ${isExpanded ? 'expanded' : ''} ${hasActiveChild ? 'active-group' : ''}`}
+                          onClick={() => toggleGroup(group.id)}
+                          aria-expanded={isExpanded}
+                          title={group.label}
+                        >
+                          <span className="portal-nav-group-title">
+                            <i className={group.icon}></i>
+                            <span>{group.label}</span>
+                          </span>
+                          <span className="portal-nav-group-meta">
+                            <span className="portal-nav-group-count">{group.items.length}</span>
+                            <i className="fas fa-chevron-right portal-nav-group-chevron"></i>
+                          </span>
+                        </button>
+
+                        {isExpanded && (
+                          <ul className="portal-nav-group-items">
+                            {group.items.map(item => (
+                              <li key={item.id} className="portal-nav-item">
+                                <NavLink
+                                  to={item.to}
+                                  className={({ isActive }) => (isActive ? 'active' : '')}
+                                  onClick={() => setMobileOpen(false)}
+                                  end={item.to.split('/').length <= 2}
+                                >
+                                  <i className={item.icon}></i>
+                                  <span className="portal-nav-label">{item.label}</span>
+                                  {item.badge && (
+                                    <span className="portal-badge info" style={{ marginLeft: 'auto', fontSize: '0.65rem' }}>
+                                      {item.badge}
+                                    </span>
+                                  )}
+                                </NavLink>
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </>
+          ) : navItems ? (
+            <ul>
+              {navItems.map((item, idx) => {
+                // 1. Check if item should be visible based on roles
+                if (item.requiredSecondaryRoles && item.requiredSecondaryRoles.length > 0) {
+                  const userRoles = user?.secondaryRoles || [];
+                  const hasAccess = item.requiredSecondaryRoles.some(role => userRoles.includes(role));
+                  if (!hasAccess) return null;
+                }
+
+                // 2. Section logic: Only show section header if subsequent items in that section are visible
+                // (Simplification: just show it if it exists on the item, 
+                // but ideally we'd look ahead or pre-filter navItems)
+                return (
                   <React.Fragment key={idx}>
                     {item.section && <li className="portal-nav-section-title">{item.section}</li>}
                     {item.subItems ? (
@@ -222,8 +402,9 @@ export default function DashboardLayout({
                     )}
                   </React.Fragment>
                 );
-            })}
-          </ul>
+              })}
+            </ul>
+          ) : null}
         </nav>
 
         <div className="portal-sidebar-footer">

@@ -115,15 +115,48 @@ export default function SettingsPage({ defaultTab: _defaultTab }: SettingsPagePr
     blockThresholdFine: 10.00
   });
 
-  const isAdmin = user?.role === 'SCHOOL_ADMIN' || user?.role === 'SUPER_ADMIN';
-  const isBursar = user?.role === 'BURSAR';
-  const isHR = user?.role === 'HR';
-  const isAncillary = user?.role === 'ANCILLARY';
-  const isLibrarian = user?.role === 'LIBRARIAN' || user?.secondaryRoles?.some((r: string) => r.toUpperCase() === 'LIBRARIAN');
+  const role = user?.role || '';
+  const isSuperAdmin = role === 'SUPER_ADMIN';
+  const isSchoolAdmin = role === 'SCHOOL_ADMIN' || isSuperAdmin;
+  const isBursar = role === 'BURSAR';
+  const isTeacher = role === 'TEACHER';
+  const isLibrarian = role === 'LIBRARIAN' || user?.secondaryRoles?.some((r: string) => r.toUpperCase() === 'LIBRARIAN');
+  const isClinic = role === 'CLINIC';
+  const isPersonalOnly = ['STUDENT', 'PARENT', 'ANCILLARY', 'ALUMNI'].includes(role) && !isLibrarian;
+
+  // Teacher Operational Preferences state
+  const [teacherSettings, setTeacherSettings] = useState(() => {
+    try {
+      const saved = localStorage.getItem('teacher_operational_settings');
+      if (saved) return JSON.parse(saved);
+    } catch (e) {}
+    return {
+      defaultGradingScale: 'Standard (A-F)',
+      scoreReminderDaysBefore: 3,
+      timetableDefaultView: 'week',
+      showClassRoomOnTimetable: true,
+      reportSignatureRole: 'CLASS TEACHER'
+    };
+  });
+
+  // Clinic Operational Settings state
+  const [clinicSettings, setClinicSettings] = useState(() => {
+    try {
+      const saved = localStorage.getItem('clinic_operational_settings');
+      if (saved) return JSON.parse(saved);
+    } catch (e) {}
+    return {
+      appointmentSlotIntervalMinutes: 20,
+      emergencyAlertSMS: true,
+      defaultTriageScale: 'Standard 4-Tier (Emergency, Urgent, Priority, Routine)',
+      enableAllergyWarningPopup: true,
+      requireParentConsentUnder16: true
+    };
+  });
 
   useEffect(() => {
     fetchSettings();
-    if (isAdmin || isBursar) {
+    if (isSchoolAdmin || isBursar) {
       fetchCoa();
     }
   }, []);
@@ -157,7 +190,7 @@ export default function SettingsPage({ defaultTab: _defaultTab }: SettingsPagePr
         setSettings((prev: any) => ({ ...prev, ...formattedData, ...prefs }));
       }
 
-      if (isAdmin || isBursar || isLibrarian) {
+      if (isSchoolAdmin || isBursar || isLibrarian) {
         try {
           const libRes = await api.get('/api/library/settings');
           if (libRes.data) {
@@ -189,9 +222,19 @@ export default function SettingsPage({ defaultTab: _defaultTab }: SettingsPagePr
       };
       localStorage.setItem('personal_prefs', JSON.stringify(personalPrefs));
 
-      // 2. Save settings to DB if admin/bursar/HR
-      if (isAdmin || isBursar || isHR) {
-        const payload = { ...settings };
+      // 2. Save teacher operational settings
+      if (isTeacher || isSchoolAdmin) {
+        localStorage.setItem('teacher_operational_settings', JSON.stringify(teacherSettings));
+      }
+
+      // 3. Save clinic operational settings
+      if (isClinic || isSchoolAdmin) {
+        localStorage.setItem('clinic_operational_settings', JSON.stringify(clinicSettings));
+      }
+
+      // 4. Save settings to DB if admin/bursar
+      if (isSchoolAdmin || isBursar) {
+        const payload: any = { ...settings };
         if (payload.nextTermBegin && payload.nextTermBegin.trim() !== '') {
           payload.nextTermBegin = new Date(payload.nextTermBegin).toISOString();
         } else {
@@ -210,8 +253,8 @@ export default function SettingsPage({ defaultTab: _defaultTab }: SettingsPagePr
         await api.patch('/api/schools/settings', payload);
       }
 
-      // 3. Save library circulation settings if admin, bursar, or librarian
-      if (isAdmin || isBursar || isLibrarian) {
+      // 5. Save library circulation settings if admin, bursar, or librarian
+      if (isSchoolAdmin || isBursar || isLibrarian) {
         try {
           await api.patch('/api/library/settings', librarySettings);
         } catch (libErr) {
@@ -220,7 +263,7 @@ export default function SettingsPage({ defaultTab: _defaultTab }: SettingsPagePr
       }
 
       await refreshUser();
-      showToast('Institutional & accounting settings saved successfully', 'success');
+      showToast('Settings saved successfully', 'success');
     } catch (err) {
       console.error(err);
       showToast('Failed to save settings configurations', 'error');
@@ -259,16 +302,97 @@ export default function SettingsPage({ defaultTab: _defaultTab }: SettingsPagePr
 
   return (
     <div className="portal-container" style={{ maxWidth: '1200px', margin: '0 auto' }}>
+      {/* Super Admin Global Controls Banner */}
+      {isSuperAdmin && (
+        <div style={{
+          background: 'linear-gradient(135deg, #1e1b4b 0%, #312e81 100%)',
+          color: '#ffffff',
+          padding: '24px',
+          borderRadius: '16px',
+          marginBottom: '28px',
+          boxShadow: '0 4px 16px rgba(49, 46, 129, 0.2)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          flexWrap: 'wrap',
+          gap: '16px'
+        }}>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
+              <i className="fas fa-network-wired" style={{ fontSize: '1.4rem', color: '#a5b4fc' }}></i>
+              <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 900, color: '#ffffff' }}>Platform Multi-Tenant Master Controls</h3>
+            </div>
+            <p style={{ margin: 0, color: '#c7d2fe', fontSize: '0.88rem' }}>
+              You have global system authority. Manage tenant instances, inspect institutions, and review cross-tenant health metrics.
+            </p>
+          </div>
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <a
+              href="/admin/setup"
+              style={{
+                background: '#4f46e5',
+                color: '#ffffff',
+                padding: '10px 18px',
+                borderRadius: '10px',
+                textDecoration: 'none',
+                fontWeight: 800,
+                fontSize: '0.85rem',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                border: '1px solid rgba(255,255,255,0.2)'
+              }}
+            >
+              <i className="fas fa-school"></i> Setup Wizard & Schools
+            </a>
+            <a
+              href="/admin/audit"
+              style={{
+                background: 'rgba(255,255,255,0.1)',
+                color: '#ffffff',
+                padding: '10px 18px',
+                borderRadius: '10px',
+                textDecoration: 'none',
+                fontWeight: 800,
+                fontSize: '0.85rem',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                border: '1px solid rgba(255,255,255,0.2)'
+              }}
+            >
+              <i className="fas fa-shield-alt"></i> Security Audit Logs
+            </a>
+          </div>
+        </div>
+      )}
+
       {/* Header Bar */}
       <div className="portal-page-header" style={{ marginBottom: '24px' }}>
         <div className="header-content">
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <h1>Institutional Preferences & Control Panel</h1>
+            <h1>
+              {isSuperAdmin && 'Platform & Multi-Tenant Global Controls'}
+              {!isSuperAdmin && isSchoolAdmin && 'Institutional Preferences & Control Panel'}
+              {isBursar && 'Financial & Accounting Settings'}
+              {isTeacher && 'Teacher Operational Preferences'}
+              {isLibrarian && 'Library Circulation & Policy Settings'}
+              {isClinic && 'Clinical & Medical Operational Settings'}
+              {isPersonalOnly && 'Personal Account & Notification Settings'}
+            </h1>
             <span className="status-badge portal-status-badge-supplier" style={{ fontSize: '0.75rem', fontWeight: 800 }}>
-              <i className="fas fa-check-double mr-1"></i> Ledger Synchronized
+              <i className="fas fa-shield-alt mr-1"></i> {role} Scoped
             </span>
           </div>
-          <p>Unified administration of financial controls, chart of accounts, academics, public website, and system communication.</p>
+          <p>
+            {isSuperAdmin && 'Global multi-tenant governance, system health oversight, and institutional configurations.'}
+            {!isSuperAdmin && isSchoolAdmin && 'Unified administration of financial controls, chart of accounts, academics, public website, and system communication.'}
+            {isBursar && 'Configure institutional billing currencies, ledger account mappings, and receipt formatting.'}
+            {isTeacher && 'Configure your grading defaults, timetable preferences, and academic alert thresholds.'}
+            {isLibrarian && 'Manage catalog circulation terms, borrowing limits, and overdue fine schedules.'}
+            {isClinic && 'Configure clinic appointment schedules, triage priority rules, and emergency alert protocols.'}
+            {isPersonalOnly && 'Manage your account security, notification alerts, and localized preferences.'}
+          </p>
         </div>
         <div style={{ display: 'flex', gap: '12px' }}>
           <button 
@@ -281,7 +405,7 @@ export default function SettingsPage({ defaultTab: _defaultTab }: SettingsPagePr
             {saving ? (
               <><i className="fas fa-spinner fa-spin mr-2"></i> Saving Settings...</>
             ) : (
-              <><i className="fas fa-save mr-2"></i> Save All Settings</>
+              <><i className="fas fa-save mr-2"></i> Save Settings</>
             )}
           </button>
         </div>
@@ -306,28 +430,42 @@ export default function SettingsPage({ defaultTab: _defaultTab }: SettingsPagePr
         <span style={{ fontSize: '0.75rem', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', marginRight: '8px' }}>
           Quick Jump:
         </span>
-        <button type="button" onClick={() => scrollToSection('sec-financial')} className="portal-btn-ghost" style={{ fontSize: '0.85rem', fontWeight: 800, padding: '8px 14px' }}>
-          <i className="fas fa-balance-scale mr-2" style={{ color: '#2563eb' }}></i>Financial & Accounting
-        </button>
-        <button type="button" onClick={() => scrollToSection('sec-academics')} className="portal-btn-ghost" style={{ fontSize: '0.85rem', fontWeight: 800, padding: '8px 14px' }}>
-          <i className="fas fa-graduation-cap mr-2" style={{ color: '#7c3aed' }}></i>Academics & Terms
-        </button>
-        {(isAdmin || isBursar || isLibrarian) && (
+        {(isSchoolAdmin || isBursar) && (
+          <button type="button" onClick={() => scrollToSection('sec-financial')} className="portal-btn-ghost" style={{ fontSize: '0.85rem', fontWeight: 800, padding: '8px 14px' }}>
+            <i className="fas fa-balance-scale mr-2" style={{ color: '#2563eb' }}></i>Financial & Accounting
+          </button>
+        )}
+        {isSchoolAdmin && (
+          <button type="button" onClick={() => scrollToSection('sec-academics')} className="portal-btn-ghost" style={{ fontSize: '0.85rem', fontWeight: 800, padding: '8px 14px' }}>
+            <i className="fas fa-graduation-cap mr-2" style={{ color: '#7c3aed' }}></i>Academics & Terms
+          </button>
+        )}
+        {(isSchoolAdmin || isTeacher) && (
+          <button type="button" onClick={() => scrollToSection('sec-teacher-ops')} className="portal-btn-ghost" style={{ fontSize: '0.85rem', fontWeight: 800, padding: '8px 14px' }}>
+            <i className="fas fa-chalkboard-teacher mr-2" style={{ color: '#10b981' }}></i>Teacher Preferences
+          </button>
+        )}
+        {(isSchoolAdmin || isLibrarian) && (
           <button type="button" onClick={() => scrollToSection('sec-library')} className="portal-btn-ghost" style={{ fontSize: '0.85rem', fontWeight: 800, padding: '8px 14px' }}>
             <i className="fas fa-book-reader mr-2" style={{ color: '#059669' }}></i>Library & Fines Policy
           </button>
         )}
-        {isAdmin && (
+        {(isSchoolAdmin || isClinic) && (
+          <button type="button" onClick={() => scrollToSection('sec-clinic-ops')} className="portal-btn-ghost" style={{ fontSize: '0.85rem', fontWeight: 800, padding: '8px 14px' }}>
+            <i className="fas fa-stethoscope mr-2" style={{ color: '#14b8a6' }}></i>Clinical Operations
+          </button>
+        )}
+        {isSchoolAdmin && (
           <button type="button" onClick={() => scrollToSection('sec-map')} className="portal-btn-ghost" style={{ fontSize: '0.85rem', fontWeight: 800, padding: '8px 14px' }}>
             <i className="fas fa-map-marked-alt mr-2" style={{ color: '#d97706' }}></i>Campus Map Location
           </button>
         )}
-        {(isAdmin || isAncillary) && (
+        {isSchoolAdmin && (
           <button type="button" onClick={() => scrollToSection('sec-cms')} className="portal-btn-ghost" style={{ fontSize: '0.85rem', fontWeight: 800, padding: '8px 14px' }}>
             <i className="fas fa-globe mr-2" style={{ color: '#059669' }}></i>Website Public CMS
           </button>
         )}
-        {isAdmin && (
+        {isSchoolAdmin && (
           <button type="button" onClick={() => scrollToSection('sec-communication')} className="portal-btn-ghost" style={{ fontSize: '0.85rem', fontWeight: 800, padding: '8px 14px' }}>
             <i className="fas fa-paper-plane mr-2" style={{ color: '#ea580c' }}></i>Communication & Gateways
           </button>
@@ -340,7 +478,8 @@ export default function SettingsPage({ defaultTab: _defaultTab }: SettingsPagePr
       <div style={{ display: 'flex', flexDirection: 'column', gap: '36px' }}>
 
         {/* SECTION 1: FINANCIAL & GENERAL LEDGER ACCOUNTING SETTINGS */}
-        <div id="sec-financial" className="portal-card" style={{ padding: '32px', borderLeft: '4px solid #2563eb' }}>
+        {(isSchoolAdmin || isBursar) && (
+          <div id="sec-financial" className="portal-card" style={{ padding: '32px', borderLeft: '4px solid #2563eb' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px', borderBottom: '1px solid #f1f5f9', paddingBottom: '16px' }}>
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -595,9 +734,10 @@ export default function SettingsPage({ defaultTab: _defaultTab }: SettingsPagePr
             <PayrollSettingsPage isEmbedded={true} />
           </div>
         </div>
+        )}
 
         {/* SECTION 2: ACADEMICS & TERM OPERATIONS */}
-        {isAdmin && (
+        {isSchoolAdmin && (
           <div id="sec-academics" className="portal-card" style={{ padding: '32px', borderLeft: '4px solid #7c3aed' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '24px', borderBottom: '1px solid #f1f5f9', paddingBottom: '16px' }}>
               <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: '#f5f3ff', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#7c3aed', fontSize: '1.2rem' }}>
@@ -667,8 +807,103 @@ export default function SettingsPage({ defaultTab: _defaultTab }: SettingsPagePr
           </div>
         )}
 
+        {/* SECTION: TEACHER OPERATIONAL PREFERENCES */}
+        {(isSchoolAdmin || isTeacher) && (
+          <div id="sec-teacher-ops" className="portal-card" style={{ padding: '32px', borderLeft: '4px solid #10b981' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '24px', borderBottom: '1px solid #f1f5f9', paddingBottom: '16px' }}>
+              <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: '#ecfdf5', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#10b981', fontSize: '1.2rem' }}>
+                <i className="fas fa-chalkboard-teacher"></i>
+              </div>
+              <div>
+                <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 900, color: '#1e293b' }}>Teacher Operational Preferences & Grade Entry</h3>
+                <p style={{ margin: 0, color: '#64748b', fontSize: '0.9rem' }}>Configure timetable views, default grading scales, and report card signature conventions.</p>
+              </div>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '24px' }}>
+              <div className="form-group">
+                <label className="portal-label">Default Grading Scale</label>
+                <select 
+                  className="portal-input" 
+                  value={teacherSettings.defaultGradingScale} 
+                  onChange={e => setTeacherSettings({ ...teacherSettings, defaultGradingScale: e.target.value })}
+                >
+                  <option value="Standard (A-F)">Standard (A-F letter grading)</option>
+                  <option value="Cambridge (A*, A, B, C, D, E, U)">Cambridge (A*, A, B, C, D, E, U)</option>
+                  <option value="100-Point Percentage">100-Point Percentage (0-100%)</option>
+                  <option value="Competency-Based (1-4)">Competency-Based (1-4 Scale)</option>
+                </select>
+                <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>Default scheme pre-selected when creating new gradebooks.</span>
+              </div>
+
+              <div className="form-group">
+                <label className="portal-label">Score Deadline Reminder Alert</label>
+                <select 
+                  className="portal-input" 
+                  value={teacherSettings.scoreReminderDaysBefore} 
+                  onChange={e => setTeacherSettings({ ...teacherSettings, scoreReminderDaysBefore: parseInt(e.target.value, 10) })}
+                >
+                  <option value={1}>1 Day before cutoff</option>
+                  <option value={3}>3 Days before cutoff</option>
+                  <option value={5}>5 Days before cutoff</option>
+                  <option value={7}>7 Days before cutoff</option>
+                </select>
+                <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>Automatic notification alert before mark submission closes.</span>
+              </div>
+
+              <div className="form-group">
+                <label className="portal-label">Timetable Default Display</label>
+                <select 
+                  className="portal-input" 
+                  value={teacherSettings.timetableDefaultView} 
+                  onChange={e => setTeacherSettings({ ...teacherSettings, timetableDefaultView: e.target.value })}
+                >
+                  <option value="week">Weekly Timetable Grid</option>
+                  <option value="day">Today's Daily Schedule</option>
+                </select>
+                <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>Default presentation mode when loading the timetable.</span>
+              </div>
+
+              <div className="form-group">
+                <label className="portal-label">Report Card Signature Title</label>
+                <select 
+                  className="portal-input" 
+                  value={teacherSettings.reportSignatureRole} 
+                  onChange={e => setTeacherSettings({ ...teacherSettings, reportSignatureRole: e.target.value })}
+                >
+                  <option value="CLASS TEACHER">Class Teacher</option>
+                  <option value="SUBJECT TEACHER">Subject Teacher</option>
+                  <option value="HEAD OF DEPARTMENT">Head of Department (HOD)</option>
+                  <option value="FORM TUTOR">Form Tutor</option>
+                </select>
+                <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>Designation printed below your comments on terminal reports.</span>
+              </div>
+
+              <div className="form-group" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                <label className="portal-label">Display Classroom Room on Timetable</label>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '16px', background: '#f8fafc', padding: '12px 16px', borderRadius: '12px', border: '1px solid #cbd5e1' }}>
+                  <label className="portal-switch">
+                    <input 
+                      type="checkbox" 
+                      checked={teacherSettings.showClassRoomOnTimetable} 
+                      onChange={e => setTeacherSettings({ ...teacherSettings, showClassRoomOnTimetable: e.target.checked })} 
+                    />
+                    <span className="portal-slider round"></span>
+                  </label>
+                  <div>
+                    <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#1e293b' }}>
+                      {teacherSettings.showClassRoomOnTimetable ? 'Visible' : 'Hidden'}
+                    </div>
+                    <div style={{ fontSize: '0.75rem', color: '#64748b' }}>Show assigned physical room number in timetable blocks.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* SECTION: LIBRARY & CIRCULATION RULES */}
-        {(isAdmin || isBursar || isLibrarian) && (
+        {(isSchoolAdmin || isLibrarian) && (
           <div id="sec-library" className="portal-card" style={{ padding: '32px', borderLeft: '4px solid #059669' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '24px', borderBottom: '1px solid #f1f5f9', paddingBottom: '16px' }}>
               <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: '#ecfdf5', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#059669', fontSize: '1.2rem' }}>
@@ -810,8 +1045,95 @@ export default function SettingsPage({ defaultTab: _defaultTab }: SettingsPagePr
           </div>
         )}
 
+        {/* SECTION: CLINIC MEDICAL OPERATIONAL SETTINGS */}
+        {(isSchoolAdmin || isClinic) && (
+          <div id="sec-clinic-ops" className="portal-card" style={{ padding: '32px', borderLeft: '4px solid #14b8a6' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '24px', borderBottom: '1px solid #f1f5f9', paddingBottom: '16px' }}>
+              <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: '#f0fdfa', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#14b8a6', fontSize: '1.2rem' }}>
+                <i className="fas fa-stethoscope"></i>
+              </div>
+              <div>
+                <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 900, color: '#1e293b' }}>Clinic & Medical Operational Settings</h3>
+                <p style={{ margin: 0, color: '#64748b', fontSize: '0.9rem' }}>Configure appointment slot intervals, triage severity scales, and allergy dispensing warnings.</p>
+              </div>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '24px' }}>
+              <div className="form-group">
+                <label className="portal-label">Appointment Slot Duration</label>
+                <select 
+                  className="portal-input" 
+                  value={clinicSettings.appointmentSlotIntervalMinutes} 
+                  onChange={e => setClinicSettings({ ...clinicSettings, appointmentSlotIntervalMinutes: parseInt(e.target.value, 10) })}
+                >
+                  <option value={15}>15 Minutes</option>
+                  <option value={20}>20 Minutes (Standard)</option>
+                  <option value={30}>30 Minutes</option>
+                  <option value={45}>45 Minutes</option>
+                  <option value={60}>60 Minutes</option>
+                </select>
+                <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>Interval used when booking medical visits and checkups.</span>
+              </div>
+
+              <div className="form-group">
+                <label className="portal-label">Default Triage Severity Scale</label>
+                <select 
+                  className="portal-input" 
+                  value={clinicSettings.defaultTriageScale} 
+                  onChange={e => setClinicSettings({ ...clinicSettings, defaultTriageScale: e.target.value })}
+                >
+                  <option value="Standard 4-Tier (Emergency, Urgent, Priority, Routine)">Standard 4-Tier (Red/Yellow/Green/Blue)</option>
+                  <option value="Manchester Triage System (5-Scale)">Manchester Triage System (5-Level)</option>
+                  <option value="Simple Binary (Urgent / Routine)">Simple Binary (Urgent / Routine)</option>
+                </select>
+                <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>Priority categorization framework used in the triage queue.</span>
+              </div>
+
+              <div className="form-group" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                <label className="portal-label">Emergency SMS & Push Alert Protocol</label>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '16px', background: '#f8fafc', padding: '12px 16px', borderRadius: '12px', border: '1px solid #cbd5e1' }}>
+                  <label className="portal-switch">
+                    <input 
+                      type="checkbox" 
+                      checked={clinicSettings.emergencyAlertSMS} 
+                      onChange={e => setClinicSettings({ ...clinicSettings, emergencyAlertSMS: e.target.checked })} 
+                    />
+                    <span className="portal-slider round"></span>
+                  </label>
+                  <div>
+                    <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#1e293b' }}>
+                      {clinicSettings.emergencyAlertSMS ? 'Enabled (Instant Dispatch)' : 'Disabled'}
+                    </div>
+                    <div style={{ fontSize: '0.75rem', color: '#64748b' }}>Dispatch alerts to headmaster and parent on Emergency triage.</div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="form-group" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                <label className="portal-label">Pharmacy Allergy Warning Popups</label>
+                <div style={{ display: 'center', alignItems: 'center', gap: '16px', background: '#f8fafc', padding: '12px 16px', borderRadius: '12px', border: '1px solid #cbd5e1' }}>
+                  <label className="portal-switch">
+                    <input 
+                      type="checkbox" 
+                      checked={clinicSettings.enableAllergyWarningPopup} 
+                      onChange={e => setClinicSettings({ ...clinicSettings, enableAllergyWarningPopup: e.target.checked })} 
+                    />
+                    <span className="portal-slider round"></span>
+                  </label>
+                  <div>
+                    <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#1e293b' }}>
+                      {clinicSettings.enableAllergyWarningPopup ? 'Active (Strict Safety)' : 'Inactive'}
+                    </div>
+                    <div style={{ fontSize: '0.75rem', color: '#64748b' }}>Warn nurse if dispensing medication with documented patient contraindications.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* SECTION 3: PUBLIC WEBSITE & CMS PREFERENCES */}
-        {(isAdmin || isAncillary) && (
+        {isSchoolAdmin && (
           <div id="sec-cms" className="portal-card" style={{ padding: '32px', borderLeft: '4px solid #059669' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px', borderBottom: '1px solid #f1f5f9', paddingBottom: '16px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -868,7 +1190,7 @@ export default function SettingsPage({ defaultTab: _defaultTab }: SettingsPagePr
         )}
 
         {/* SECTION: CAMPUS LOCATION & MAP COORDINATES */}
-        {isAdmin && (
+        {isSchoolAdmin && (
           <div id="sec-map" className="portal-card" style={{ padding: '32px', borderLeft: '4px solid #d97706' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '24px', borderBottom: '1px solid #f1f5f9', paddingBottom: '16px' }}>
               <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: '#fffbeb', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#d97706', fontSize: '1.2rem' }}>
@@ -923,7 +1245,7 @@ export default function SettingsPage({ defaultTab: _defaultTab }: SettingsPagePr
         )}
 
         {/* SECTION 4: COMMUNICATION & INTEGRATION GATEWAYS */}
-        {isAdmin && (
+        {isSchoolAdmin && (
           <div id="sec-communication" className="portal-card" style={{ padding: '32px', borderLeft: '4px solid #ea580c' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '24px', borderBottom: '1px solid #f1f5f9', paddingBottom: '16px' }}>
               <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: '#fff7ed', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ea580c', fontSize: '1.2rem' }}>
