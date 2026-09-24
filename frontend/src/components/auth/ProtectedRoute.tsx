@@ -4,11 +4,12 @@ import type { ReactNode } from 'react';
 
 interface ProtectedRouteProps {
   children: ReactNode;
-  allowedRole: string;
+  allowedRole?: string;
+  allowedRoles?: string[];
   loginPath: string;
 }
 
-export default function ProtectedRoute({ children, allowedRole, loginPath }: ProtectedRouteProps) {
+export default function ProtectedRoute({ children, allowedRole, allowedRoles, loginPath }: ProtectedRouteProps) {
   const { isAuthenticated, user } = useAuth();
   const location = useLocation();
 
@@ -17,7 +18,8 @@ export default function ProtectedRoute({ children, allowedRole, loginPath }: Pro
     return <Navigate to={loginPath} state={{ from: location }} replace />;
   }
 
-  if (user?.role !== allowedRole) {
+  const roles = allowedRoles || (allowedRole ? [allowedRole] : []);
+  if (roles.length > 0 && (!user?.role || !roles.includes(user.role))) {
     // If logged in as wrong role, redirect to their home or show unauthorized
     // For simplicity, we'll redirect back to home or their own dashboard
     return <Navigate to="/" replace />;

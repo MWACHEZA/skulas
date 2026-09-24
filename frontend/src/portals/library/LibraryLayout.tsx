@@ -29,7 +29,7 @@ export default function LibraryLayout() {
   ];
 
   return (
-    <ProtectedRoute allowedRoles={['LIBRARIAN']} redirectTo="/librarian/login">
+    <ProtectedRoute allowedRoles={['LIBRARIAN', 'SCHOOL_ADMIN', 'SUPER_ADMIN', 'ANCILLARY']} redirectTo="/librarian/login">
       <DashboardLayout
         portalName={isMedical ? t('library') : "Library Portal"}
         portalIcon={isMedical ? "fas fa-briefcase-medical" : "fas fa-book"}

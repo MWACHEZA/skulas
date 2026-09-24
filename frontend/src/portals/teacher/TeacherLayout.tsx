@@ -61,6 +61,10 @@ export default function TeacherLayout() {
     { label: 'Reports', icon: 'fas fa-chart-bar', to: '/teacher/reports', section: 'Reports' },
     
     { label: 'Library & Loans', icon: 'fas fa-book', to: '/teacher/library', section: 'Resources' },
+    { label: 'Book Catalog', icon: 'fas fa-book-open', to: '/teacher/library/books', section: 'Resources' },
+    { label: 'Active Loans', icon: 'fas fa-handshake', to: '/teacher/library/loans', section: 'Resources' },
+    { label: 'Digital Repository', icon: 'fas fa-cloud-download-alt', to: '/teacher/library/digital', section: 'Resources' },
+    { label: 'Library Reports', icon: 'fas fa-chart-pie', to: '/teacher/library/reports', section: 'Resources' },
     { label: 'My Textbooks', icon: 'fas fa-book-bookmark', to: '/teacher/textbooks', section: 'Resources' },
     { label: 'Requisitions & Procurement', icon: 'fas fa-shopping-cart', to: '/teacher/procurement', section: 'Resources' },
     { label: 'Asset Management', icon: 'fas fa-boxes', to: '/teacher/assets', section: 'Resources' },

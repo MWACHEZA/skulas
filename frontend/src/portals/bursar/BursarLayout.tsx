@@ -36,7 +36,8 @@ export default function BursarLayout() {
     { section: 'Academic Operations', label: 'Class Migration', icon: 'fas fa-exchange-alt', to: '/bursar/class-migration' },
     { section: 'People', label: t('students'), icon: `fas ${isMedical ? 'fa-user-nurse' : 'fa-user-graduate'}`, to: '/bursar/students' },
     
-    { section: 'Insights', label: 'Reports', icon: 'fas fa-chart-bar', to: '/bursar/reports' },
+    { section: 'Insights', label: 'Financial Reports', icon: 'fas fa-chart-bar', to: '/bursar/reports' },
+    { label: 'Library Financial Reports', icon: 'fas fa-book', to: '/bursar/library/reports' },
     { label: `${t('staff')} Directory`, icon: 'fas fa-address-book', to: '/bursar/payroll/employees' },
     
     { section: 'Operations', label: 'Assets & Inventory', icon: 'fas fa-boxes', to: '/bursar/assets' },

@@ -68,7 +68,14 @@ export default function AdminLayout() {
     { label: 'My Leave Application', icon: 'fas fa-calendar-minus', to: '/admin/leave' },
     { label: 'My Awards', icon: 'fas fa-award', to: '/admin/awards' },
 
-    { section: 'Resources', label: 'Library & Loans', icon: 'fas fa-book', to: '/admin/library' },
+    { section: 'Library Management', label: 'Library Dashboard', icon: 'fas fa-tachometer-alt', to: '/admin/library/dashboard' },
+    { label: 'Book Catalog', icon: 'fas fa-book', to: '/admin/library/books' },
+    { label: 'Resource Categories', icon: 'fas fa-tags', to: '/admin/library/categories' },
+    { label: 'Active Loans', icon: 'fas fa-handshake', to: '/admin/library/loans' },
+    { label: 'Overdue Books', icon: 'fas fa-exclamation-circle', to: '/admin/library/overdue' },
+    { label: 'Reservations & Holds', icon: 'fas fa-bookmark', to: '/admin/library/reservations' },
+    { label: 'Digital Repository', icon: 'fas fa-cloud-download-alt', to: '/admin/library/digital' },
+    { label: 'Library Reports', icon: `fas ${isMedical ? 'fa-file-medical-alt' : 'fa-chart-pie'}`, to: '/admin/library/reports' },
 
     { section: 'Communication', label: 'Announcements', icon: 'fas fa-bullhorn', to: '/admin/announcements' },
     { label: 'Messages', icon: 'fas fa-envelope', to: '/admin/messages' },

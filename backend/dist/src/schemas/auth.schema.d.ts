@@ -18,12 +18,12 @@ export declare const RegisterUserSchema: z.ZodObject<{
         password: z.ZodString;
         name: z.ZodString;
         role: z.ZodEnum<{
+            LIBRARIAN: "LIBRARIAN";
             SCHOOL_ADMIN: "SCHOOL_ADMIN";
             SUPER_ADMIN: "SUPER_ADMIN";
             STUDENT: "STUDENT";
             TEACHER: "TEACHER";
             BURSAR: "BURSAR";
-            LIBRARIAN: "LIBRARIAN";
             ANCILLARY: "ANCILLARY";
             ALUMNI: "ALUMNI";
             SUPPLIER: "SUPPLIER";

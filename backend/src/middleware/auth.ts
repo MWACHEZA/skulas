@@ -118,7 +118,10 @@ export const requireRole = (...roles: string[]) => {
       res.status(401).json({ error: 'Unauthenticated' });
       return;
     }
-    if (!roles.includes(req.user.role)) {
+    const hasRole = roles.includes(req.user.role);
+    const hasSecondaryRole = Array.isArray(req.user.secondaryRoles) && 
+      req.user.secondaryRoles.some(r => roles.includes(r) || (r.toLowerCase() === 'student librarian' && roles.includes('LIBRARIAN')));
+    if (!hasRole && !hasSecondaryRole) {
       res.status(403).json({ error: `Access denied. Required role: ${roles.join(' or ')}` });
       return;
     }

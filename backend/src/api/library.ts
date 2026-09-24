@@ -76,7 +76,7 @@ router.get('/settings', requireAuth, async (req: AuthRequest, res: Response) => 
  * @route   PATCH /api/library/settings
  * @desc    Update library rules (Admin, Librarian, Bursar)
  */
-router.patch('/settings', requireAuth, requireRole('SCHOOL_ADMIN', 'LIBRARIAN', 'BURSAR'), async (req: AuthRequest, res: Response) => {
+router.patch('/settings', requireAuth, requireRole('SCHOOL_ADMIN', 'LIBRARIAN', 'BURSAR', 'ANCILLARY'), async (req: AuthRequest, res: Response) => {
   try {
     const schoolId = req.user!.schoolId!;
     const {
@@ -545,7 +545,7 @@ router.get('/categories', requireAuth, async (req: AuthRequest, res: Response) =
   }
 });
 
-router.post('/categories', requireAuth, requireRole('SCHOOL_ADMIN', 'LIBRARIAN'), async (req: AuthRequest, res: Response) => {
+router.post('/categories', requireAuth, requireRole('SCHOOL_ADMIN', 'LIBRARIAN', 'ANCILLARY', 'TEACHER'), async (req: AuthRequest, res: Response) => {
   const { name } = req.body;
   const schoolId = req.user!.schoolId!;
   try {
@@ -558,7 +558,7 @@ router.post('/categories', requireAuth, requireRole('SCHOOL_ADMIN', 'LIBRARIAN')
   }
 });
 
-router.patch('/categories/:id', requireAuth, requireRole('SCHOOL_ADMIN', 'LIBRARIAN'), async (req: AuthRequest, res: Response) => {
+router.patch('/categories/:id', requireAuth, requireRole('SCHOOL_ADMIN', 'LIBRARIAN', 'ANCILLARY', 'TEACHER'), async (req: AuthRequest, res: Response) => {
   const id = req.params.id as string;
   const { name } = req.body;
   try {
@@ -1072,6 +1072,67 @@ router.post('/loans/:id/return', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCIL
   }
 });
 
+/**
+ * @route   POST /api/library/loans/return-by-barcode
+ * @desc    Quick check-in of a book by barcode, ISBN, or accession number
+ */
+router.post('/loans/return-by-barcode', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCILLARY', 'TEACHER', 'LIBRARIAN'), async (req: AuthRequest, res: Response) => {
+  const { barcode } = req.body;
+  const schoolId = req.user!.schoolId!;
+  if (!barcode) return res.status(400).json({ error: 'Barcode or identifier required' });
+
+  try {
+    const cleanCode = barcode.trim();
+    const loan = await prisma.bookLoan.findFirst({
+      where: {
+        schoolId,
+        status: 'borrowed',
+        OR: [
+          { id: cleanCode },
+          { book: { barcode: cleanCode } },
+          { book: { accessionNumber: cleanCode } },
+          { book: { isbn: cleanCode } }
+        ]
+      },
+      include: { book: true, student: true, user: true }
+    });
+
+    if (!loan) {
+      return res.status(404).json({ error: 'No active borrowed loan found matching this barcode or identifier' });
+    }
+
+    const updated = await prisma.$transaction(async (tx) => {
+      const l = await tx.bookLoan.update({
+        where: { id: loan.id },
+        data: { status: 'returned', returnedAt: new Date() }
+      });
+
+      await tx.book.update({
+        where: { id: loan.bookId },
+        data: { available: { increment: 1 } }
+      });
+
+      const pendingRes = await tx.bookReservation.findFirst({
+        where: { bookId: loan.bookId, status: 'Approved' },
+        orderBy: { requestDate: 'asc' }
+      });
+      if (pendingRes) {
+        await tx.bookReservation.update({
+          where: { id: pendingRes.id },
+          data: { status: 'Ready for Pickup', readyAt: new Date() }
+        });
+      }
+
+      return l;
+    });
+
+    res.json({ message: 'Book returned successfully', loan: updated, bookTitle: loan.book.title });
+  } catch (error) {
+    console.error('Barcode return error:', error);
+    res.status(500).json({ error: 'Failed to process book return' });
+  }
+});
+
 // ----------------------------------------------------
 // 5. OVERDUE MANAGEMENT (Section 2)
 // ----------------------------------------------------
@@ -1194,7 +1255,7 @@ router.post('/loans/:id/waive-fine', requireAuth, requireRole('SCHOOL_ADMIN', 'L
  * @route   POST /api/library/loans/:id/send-reminder
  * @desc    Send manual reminder to borrower
  */
-router.post('/loans/:id/send-reminder', requireAuth, requireRole('SCHOOL_ADMIN', 'LIBRARIAN'), async (req: AuthRequest, res: Response) => {
+router.post('/loans/:id/send-reminder', requireAuth, requireRole('SCHOOL_ADMIN', 'LIBRARIAN', 'ANCILLARY', 'TEACHER', 'BURSAR'), async (req: AuthRequest, res: Response) => {
   const id = req.params.id as string;
   try {
     const loan: any = await prisma.bookLoan.findFirst({
@@ -1250,8 +1311,24 @@ router.post('/loans/:id/send-reminder', requireAuth, requireRole('SCHOOL_ADMIN',
 router.get('/reservations', requireAuth, async (req: AuthRequest, res: Response) => {
   try {
     const schoolId = req.user!.schoolId!;
+    const userRole = (req.user!.role || '').toUpperCase();
+    const isStaff = ['SCHOOL_ADMIN', 'SUPER_ADMIN', 'LIBRARIAN', 'TEACHER', 'ANCILLARY', 'BURSAR'].includes(userRole);
+    const where: any = { schoolId };
+
+    if (req.query.mine === 'true' || !isStaff) {
+      if (userRole === 'STUDENT') {
+        const student = await prisma.student.findFirst({ where: { userId: req.user!.id } });
+        where.OR = [
+          { studentId: student?.id || 'none' },
+          { userId: req.user!.id }
+        ];
+      } else {
+        where.userId = req.user!.id;
+      }
+    }
+
     const reservations = await prisma.bookReservation.findMany({
-      where: { schoolId },
+      where,
       include: {
         book: { select: { id: true, title: true, author: true, isbn: true, available: true } },
         student: { select: { id: true, name: true, studentId: true, user: { select: { phone: true, email: true } } } },
@@ -1323,7 +1400,7 @@ router.post('/reservations', requireAuth, async (req: AuthRequest, res: Response
  * @route   PATCH /api/library/reservations/:id/status
  * @desc    Update status: Pending -> Approved -> Ready for Pickup -> Issued -> Cancelled (or Rejected)
  */
-router.patch('/reservations/:id/status', requireAuth, requireRole('SCHOOL_ADMIN', 'LIBRARIAN'), async (req: AuthRequest, res: Response) => {
+router.patch('/reservations/:id/status', requireAuth, requireRole('SCHOOL_ADMIN', 'LIBRARIAN', 'ANCILLARY', 'TEACHER'), async (req: AuthRequest, res: Response) => {
   const id = req.params.id as string;
   const { action, status } = req.body; // action: 'APPROVE', 'READY', 'ISSUE', 'CANCEL', 'REJECT'
   const schoolId = req.user!.schoolId!;
@@ -1542,7 +1619,7 @@ router.post('/digital-resources', requireAuth, requireRole('SCHOOL_ADMIN', 'LIBR
  * @route   PATCH /api/library/digital-resources/:id
  * @desc    Update digital resource metadata or status
  */
-router.patch('/digital-resources/:id', requireAuth, requireRole('SCHOOL_ADMIN', 'LIBRARIAN'), async (req: AuthRequest, res: Response) => {
+router.patch('/digital-resources/:id', requireAuth, requireRole('SCHOOL_ADMIN', 'LIBRARIAN', 'ANCILLARY', 'TEACHER'), async (req: AuthRequest, res: Response) => {
   const id = req.params.id as string;
   try {
     const updated = await prisma.libraryDigitalResource.update({
@@ -2161,7 +2238,7 @@ router.get('/reports', requireAuth, async (req: AuthRequest, res: Response) => {
  * @route   POST /api/library/reminders/trigger
  * @desc    Manually trigger the 8am reminder sweep on demand
  */
-router.post('/reminders/trigger', requireAuth, requireRole('SCHOOL_ADMIN', 'LIBRARIAN'), async (req: AuthRequest, res: Response) => {
+router.post('/reminders/trigger', requireAuth, requireRole('SCHOOL_ADMIN', 'LIBRARIAN', 'ANCILLARY'), async (req: AuthRequest, res: Response) => {
   try {
     const result = await runLibraryReminders();
     res.json(result);

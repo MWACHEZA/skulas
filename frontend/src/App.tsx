@@ -577,9 +577,19 @@ export default function App() {
               <Route path="reports" element={<TeacherReports />} />
               <Route path="question-papers" element={<QuestionPapersPage />} />
               <Route path="question-papers/new" element={<QuestionPaperBuilder />} />
-              <Route path="question-papers/edit/:id" element={<QuestionPaperBuilder />} />
-              <Route path="library" element={<Library />} />
-              <Route path="textbooks" element={<TeacherTextbooks />} />
+              {/* LIBRARY MODULE ACCESS FOR TEACHER */}
+              <Route path="library">
+                <Route index element={<Library />} />
+                <Route path="dashboard" element={<LibraryDashboard />} />
+                <Route path="books" element={<LibraryBooks />} />
+                <Route path="categories" element={<LibraryResourceCategories />} />
+                <Route path="digital" element={<LibraryDigitalRepository />} />
+                <Route path="loans" element={<LibraryLoans />} />
+                <Route path="overdue" element={<LibraryOverdue />} />
+                <Route path="reports" element={<LibraryReports />} />
+                <Route path="reservations" element={<LibraryRequests />} />
+                <Route path="requests" element={<LibraryRequests />} />
+              </Route>
               <Route path="resources" element={<TeacherResources />} />
               <Route path="digital-resources" element={<TeacherResources />} />
               <Route path="clinic/complaints" element={<HealthComplaints />} />
@@ -611,9 +621,20 @@ export default function App() {
               <Route path="lesson-plan" element={<TeacherLessonPlan />} />
               <Route path="study-materials" element={<StudyMaterial />} />
               <Route path="leave" element={<MyLeave />} />
-              <Route path="awards" element={<MyAwards />} />
-              <Route path="library" element={<Library />} />
-              <Route path="students" element={<AdminStudents />} />
+              {/* LIBRARY MODULE ACCESS FOR ADMIN */}
+              <Route path="library">
+                <Route index element={<LibraryDashboard />} />
+                <Route path="dashboard" element={<LibraryDashboard />} />
+                <Route path="books" element={<LibraryBooks />} />
+                <Route path="categories" element={<LibraryResourceCategories />} />
+                <Route path="digital" element={<LibraryDigitalRepository />} />
+                <Route path="loans" element={<LibraryLoans />} />
+                <Route path="overdue" element={<LibraryOverdue />} />
+                <Route path="reports" element={<LibraryReports />} />
+                <Route path="reservations" element={<LibraryRequests />} />
+                <Route path="requests" element={<LibraryRequests />} />
+                <Route path="assets" element={<AdminAssetManagement />} />
+              </Route>
               <Route path="parents" element={<AdminParents />} />
               <Route path="teachers" element={<AdminTeachers />} />
               <Route path="users" element={<AdminUsers />} />
@@ -823,6 +844,13 @@ export default function App() {
               <Route path="students" element={<AdminStudents />} />
               <Route path="leave" element={<MyLeave />} />
               <Route path="awards" element={<MyAwards />} />
+              {/* LIBRARY FINANCIAL MODULE ACCESS FOR BURSAR */}
+              <Route path="library">
+                <Route index element={<LibraryReports />} />
+                <Route path="reports" element={<LibraryReports />} />
+                <Route path="overdue" element={<LibraryOverdue />} />
+                <Route path="books" element={<LibraryBooks />} />
+              </Route>
             </Route>
 
             {/* LIBRARIAN PORTAL  */}
@@ -832,7 +860,7 @@ export default function App() {
                 registrationPath="/register/librarian" />
             } />
             <Route path="/librarian" element={
-              <ProtectedRoute allowedRole="LIBRARIAN" loginPath="/librarian/login">
+              <ProtectedRoute allowedRoles={['LIBRARIAN', 'SCHOOL_ADMIN', 'SUPER_ADMIN', 'ANCILLARY']} loginPath="/librarian/login">
                 <LibraryLayout />
               </ProtectedRoute>
             }>
@@ -846,7 +874,7 @@ export default function App() {
               <Route path="reports" element={<LibraryReports />} />
               <Route path="reservations" element={<LibraryRequests />} />
               <Route path="requests" element={<LibraryRequests />} />
-              <Route path="assets" element={<AncillaryAssets />} />
+              <Route path="assets" element={<AdminAssetManagement />} />
               <Route path="procurement" element={<AncillaryProcurement />} />
               <Route path="messages" element={<MessagesPage />} />
               <Route path="settings" element={<SettingsPage />} />
@@ -941,6 +969,20 @@ export default function App() {
               <Route path="clinic/emergencies" element={<Emergencies />} />
               <Route path="clinic/referrals" element={<Referrals />} />
               <Route path="clinic/immunization" element={<Immunization />} />
+              {/* LIBRARY MODULE ACCESS FOR ANCILLARY */}
+              <Route path="library">
+                <Route index element={<LibraryDashboard />} />
+                <Route path="dashboard" element={<LibraryDashboard />} />
+                <Route path="books" element={<LibraryBooks />} />
+                <Route path="categories" element={<LibraryResourceCategories />} />
+                <Route path="digital" element={<LibraryDigitalRepository />} />
+                <Route path="loans" element={<LibraryLoans />} />
+                <Route path="overdue" element={<LibraryOverdue />} />
+                <Route path="reports" element={<LibraryReports />} />
+                <Route path="reservations" element={<LibraryRequests />} />
+                <Route path="requests" element={<LibraryRequests />} />
+                <Route path="assets" element={<AdminAssetManagement />} />
+              </Route>
             </Route>
 
             {/*  PARENT PORTAL */}

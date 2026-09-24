@@ -24,6 +24,7 @@ export default function StudentLayout() {
     { label: 'Uniforms', icon: 'fas fa-tshirt', to: '/student/uniforms' },
     { label: 'Study material', icon: 'fas fa-book-reader', to: '/student/study-materials' },
     { label: 'My Books & Loans', icon: 'fas fa-book-open', to: '/student/my-books', section: 'Resources' },
+    { label: 'Library & Catalog', icon: 'fas fa-book', to: '/student/library', section: 'Resources' },
     { label: 'Events', icon: 'fas fa-calendar-day', to: '/student/events' },
     { section: 'Leadership', label: isTertiary ? 'Student Representative Council (SRC)' : 'Prefects Board', icon: 'fas fa-user-tie', to: '/student/prefects' },
     { label: `${t('class')} Monitor Tool`, icon: 'fas fa-clipboard-check', to: '/student/class-monitor', requiredSecondaryRoles: ['Class Monitor'] },
