@@ -796,7 +796,8 @@ router.get('/me/books', auth_1.requireAuth, (0, auth_1.requireRole)('STUDENT'), 
                         title: true,
                         author: true,
                         isbn: true,
-                        category: true
+                        category: true,
+                        coverUrl: true
                     }
                 }
             },

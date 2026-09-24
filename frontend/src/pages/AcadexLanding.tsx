@@ -1,4 +1,6 @@
 import { Link } from 'react-router-dom';
+import MarketingNav from '../components/layout/MarketingNav';
+import MarketingFooter from '../components/layout/MarketingFooter';
 import '../styles/landing.css';
 import { DEFAULT_PLANS, type Tier } from '../portals/acadex/pages/Subscriptions';
 
@@ -6,21 +8,7 @@ export default function AcadexLanding() {
   return (
     <div className="acadex-landing">
       {/* Navigation */}
-      <nav className="landing-nav" style={{ padding: '0 2rem' }}>
-        <div className="logo">
-          ACAD<span>EX</span>
-        </div>
-        <div className="nav-links">
-          <a href="#features">Features</a>
-          <a href="#portals">Portals</a>
-          <a href="#pricing">Pricing</a>
-          <a href="#contact">Contact</a>
-        </div>
-        <div className="cta">
-          <Link to="/admin/login" className="btn-premium btn-ghost-premium">Login</Link>
-          <Link to="/register/school" className="btn-premium btn-primary-premium">Get Started</Link>
-        </div>
-      </nav>
+      <MarketingNav />
 
       {/* Hero Section */}
       <section className="hero-section container" style={{ paddingTop: '100px', textAlign: 'center' }}>
@@ -83,9 +71,17 @@ export default function AcadexLanding() {
       {/* Pricing Section */}
       <section className="pricing-section" id="pricing" style={{ background: '#0a0a0a' }}>
         <div className="container">
-          <div className="section-header">
-            <h2 style={{ fontSize: '3rem' }}>Institutional Tiers</h2>
-            <p style={{ fontSize: '1.1rem' }}>Plans built to scale with your institution's complexity and mission.</p>
+          <div className="section-header" style={{ textAlign: 'center', marginBottom: '40px' }}>
+            <div style={{ display: 'inline-flex', padding: '6px 16px', background: 'rgba(52, 211, 153, 0.1)', color: '#34d399', borderRadius: '100px', fontSize: '0.85rem', fontWeight: 800, marginBottom: '16px' }}>
+              FLAT TRANSPARENT RATE
+            </div>
+            <h2 style={{ fontSize: '3rem' }}>$2 Per Student / Month</h2>
+            <p style={{ fontSize: '1.15rem', maxWidth: '650px', margin: '0 auto 20px' }}>
+              Every portal, every feature, and automated compliance included. Billed solely on enrolled active students.
+            </p>
+            <Link to="/pricing" className="btn-premium btn-primary-premium" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+              <span>Interactive Pricing Calculator</span> <i className="fas fa-arrow-right"></i>
+            </Link>
           </div>
           <div className="pricing-grid">
             {DEFAULT_PLANS.map(plan => (
@@ -96,53 +92,7 @@ export default function AcadexLanding() {
       </section>
 
       {/* Footer */}
-      <footer className="landing-footer">
-        <div className="container">
-          <div className="footer-content">
-            <div className="footer-col">
-              <div className="logo" style={{ marginBottom: '1.5rem' }}>
-                ACAD<span>EX</span>
-              </div>
-              <p style={{ maxWidth: '300px' }}>Empowering the future of education across the continent with modern, hardened infrastructure. Built for institutions that lead.</p>
-              <div className="social-links">
-                <a href="#" className="social-icon"><i className="fab fa-twitter"></i></a>
-                <a href="#" className="social-icon"><i className="fab fa-linkedin-in"></i></a>
-                <a href="#" className="social-icon"><i className="fab fa-facebook-f"></i></a>
-              </div>
-            </div>
-            <div className="footer-col">
-              <h4>Portals</h4>
-              <Link to="/admin/login">Admin Portal</Link>
-              <Link to="/teacher/login">Teacher Portal</Link>
-              <Link to="/student/login">Student Portal</Link>
-              <Link to="/parent/login">Parent Portal</Link>
-              <Link to="/bursar/login">Bursar Portal</Link>
-              <Link to="/librarian/login">Library Portal</Link>
-            </div>
-            <div className="footer-col">
-              <h4>More Portals</h4>
-              <Link to="/supplier/login">Supplier Portal</Link>
-              <Link to="/alumni/login">Alumni Portal</Link>
-              <Link to="/ancillary/login">Ancillary Portal</Link>
-              <Link to="/clinic/login">Clinic Portal</Link>
-            </div>
-            <div className="footer-col">
-              <h4>Platform</h4>
-              <Link to="/register/school">Register Your School</Link>
-              <a href="#features">Features</a>
-              <a href="#pricing">Pricing Plans</a>
-              <Link to="/register/school?plan=enterprise">Enterprise</Link>
-              <a href="mailto:contact@acadex.com">Contact Us</a>
-            </div>
-          </div>
-          <div className="footer-bottom">
-            <p>&copy; {new Date().getFullYear()} ACADEX Platform. Engineering Educational Excellence 🌍</p>
-            <p style={{ color: 'var(--gray-400)', fontSize: '0.85rem' }}>
-              Designed by <span style={{ color: 'var(--blue)', fontWeight: 600 }}>Santana IT Solutions</span>
-            </p>
-          </div>
-        </div>
-      </footer>
+      <MarketingFooter />
     </div>
   );
 }

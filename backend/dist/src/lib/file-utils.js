@@ -3,10 +3,39 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.getMimeExtension = getMimeExtension;
 exports.saveBase64Image = saveBase64Image;
 exports.renameEntityDir = renameEntityDir;
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
+function getMimeExtension(mimeType) {
+    if (!mimeType)
+        return 'bin';
+    const cleanMime = mimeType.toLowerCase().split(';')[0].trim();
+    const mimeMap = {
+        'application/pdf': 'pdf',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'docx',
+        'application/msword': 'doc',
+        'application/vnd.ms-excel': 'xls',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': 'xlsx',
+        'image/jpeg': 'jpg',
+        'image/jpg': 'jpg',
+        'image/png': 'png',
+        'image/webp': 'webp',
+        'image/gif': 'gif',
+        'image/svg+xml': 'svg',
+        'text/plain': 'txt',
+        'video/mp4': 'mp4',
+        'audio/mpeg': 'mp3',
+        'audio/mp3': 'mp3'
+    };
+    if (mimeMap[cleanMime])
+        return mimeMap[cleanMime];
+    const sub = cleanMime.split('/')[1];
+    if (sub && sub.length <= 5 && !sub.includes('.'))
+        return sub;
+    return 'bin';
+}
 /**
  * Saves a base64 encoded image to a structured directory
  * @param base64 String (data:image/png;base64,...)
@@ -23,7 +52,7 @@ function saveBase64Image(base64, prefix, subDir = 'images', schoolCode = 'global
     try {
         const parts = base64.split(';base64,');
         const mimeType = parts[0].split(':')[1];
-        const extension = mimeType.split('/')[1] || 'png';
+        const extension = getMimeExtension(mimeType);
         const data = parts[1];
         const buffer = Buffer.from(data, 'base64');
         const uniqueId = Date.now() + '-' + Math.round(Math.random() * 1e9);

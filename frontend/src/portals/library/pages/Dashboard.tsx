@@ -1,34 +1,81 @@
 import { useEffect, useState } from 'react';
 import api from '../../../lib/api';
 import { useAuth } from '../../../contexts/AuthContext';
-import { 
-  AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  BarChart, Bar, Cell
-} from 'recharts';
 import ClockInModal from '../../../components/attendance/ClockInModal';
 import '../../../styles/portal.css';
 
-interface DashboardData {
-  totalBooks: number;
-  activeLoans: number;
-  overdueLoans: number;
-  recentLoans: { id: string; student: { name: string }; book: { title: string; author: string }; borrowedAt: string; returnedAt?: string | null; dueDate?: string }[];
-  lendingTrends: { name: string; loans: number }[];
-  categoryData: { name: string; count: number; color: string }[];
-  trendingBooks: { id: string; title: string; author: string; borrows: number; cover: string | null }[];
+interface LoanItem {
+  id: string;
+  bookId?: string;
+  bookTitle: string;
+  bookAuthor?: string;
+  accessionNumber?: string;
+  borrowerName: string;
+  borrowerIdentifier?: string;
+  borrowerClass?: string;
+  borrowerPhone?: string;
+  borrowerEmail?: string;
+  borrowedAt: string;
+  dueDate: string;
+  daysOverdue?: number;
+  fineAmount?: number;
+  status: string;
+  isToday?: boolean;
+}
+
+interface LibraryDashboardData {
+  today: {
+    issued: number;
+    returned: number;
+  };
+  rightNow: {
+    currentlyBorrowed: number;
+    overdueRightNow: number;
+  };
+  alerts: {
+    dueToday: number;
+    reservationsWaitingPickup: number;
+  };
+  recentIssues: LoanItem[];
+  hasIssuesToday: boolean;
+  overdueToday: LoanItem[];
+  totalBooks?: number;
 }
 
 export default function LibraryDashboard() {
   const { user } = useAuth();
-  const [data, setData] = useState<DashboardData | null>(null);
+  const [data, setData] = useState<LibraryDashboardData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [showScanModal, setShowScanModal] = useState(false);
-  const [showAddCategoryModal, setShowAddCategoryModal] = useState(false);
-  const [scanInput, setScanInput] = useState('');
-  const [newCategoryName, setNewCategoryName] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [clockModalAction, setClockModalAction] = useState<'IN'|'OUT'|null>(null);
+  const [activeTab, setActiveTab] = useState<'issues' | 'overdue'>('issues');
+  const [toastMessage, setToastMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
+
+  // Quick Action Modals
+  const [showIssueModal, setShowIssueModal] = useState(false);
+  const [showReturnModal, setShowReturnModal] = useState(false);
+  const [clockModalAction, setClockModalAction] = useState<'IN' | 'OUT' | null>(null);
   const [attendanceStatus, setAttendanceStatus] = useState<any>(null);
+
+  // Issue Modal Form State
+  const [issueBookSearch, setIssueBookSearch] = useState('');
+  const [issueBorrowerQuery, setIssueBorrowerQuery] = useState('');
+  const [issueBorrowerType, setIssueBorrowerType] = useState<'student' | 'staff'>('student');
+  const [selectedBook, setSelectedBook] = useState<any>(null);
+  const [selectedBorrower, setSelectedBorrower] = useState<any>(null);
+  const [booksList, setBooksList] = useState<any[]>([]);
+  const [isSearchingBooks, setIsSearchingBooks] = useState(false);
+  const [isSearchingBorrower, setIsSearchingBorrower] = useState(false);
+  const [issueSubmitting, setIssueSubmitting] = useState(false);
+
+  // Return Modal Form State
+  const [returnSearch, setReturnSearch] = useState('');
+  const [activeLoansToReturn, setActiveLoansToReturn] = useState<any[]>([]);
+  const [isSearchingReturn, setIsSearchingReturn] = useState(false);
+  const [returnSubmittingId, setReturnSubmittingId] = useState<string | null>(null);
+
+  const showToast = (text: string, type: 'success' | 'error' = 'success') => {
+    setToastMessage({ text, type });
+    setTimeout(() => setToastMessage(null), 4000);
+  };
 
   useEffect(() => {
     fetchDashboardData();
@@ -38,427 +85,1106 @@ export default function LibraryDashboard() {
     setLoading(true);
     Promise.all([
       api.get('/api/dashboard/library'),
-      api.get('/api/staff-attendance/today')
+      api.get('/api/staff-attendance/today').catch(() => ({ data: null }))
     ])
       .then(([dashRes, attRes]) => {
-        setData(dashRes.data);
+        const d = dashRes.data;
+        setData({
+          today: d.today || { issued: 0, returned: 0 },
+          rightNow: d.rightNow || {
+            currentlyBorrowed: d.activeLoans || 0,
+            overdueRightNow: d.overdueLoans || 0
+          },
+          alerts: d.alerts || { dueToday: 0, reservationsWaitingPickup: 0 },
+          recentIssues: d.recentIssues || d.recentLoans || [],
+          hasIssuesToday: d.hasIssuesToday ?? true,
+          overdueToday: d.overdueToday || [],
+          totalBooks: d.totalBooks || 0
+        });
         setAttendanceStatus(attRes.data);
       })
-      .catch(() => {
-          // Fallback static data for demonstration if API fails
-          setData({
-              totalBooks: 4500,
-              activeLoans: 124,
-              overdueLoans: 8,
-              recentLoans: [],
-              lendingTrends: [],
-              categoryData: [],
-              trendingBooks: []
-          });
+      .catch((err) => {
+        console.error('Failed to load library dashboard data', err);
+        showToast('Failed to load live dashboard data. Using offline view.', 'error');
+        setData({
+          today: { issued: 0, returned: 0 },
+          rightNow: { currentlyBorrowed: 0, overdueRightNow: 0 },
+          alerts: { dueToday: 0, reservationsWaitingPickup: 0 },
+          recentIssues: [],
+          hasIssuesToday: false,
+          overdueToday: []
+        });
       })
       .finally(() => setLoading(false));
   };
 
-  if (loading) return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '80vh', flexDirection: 'column', gap: 20 }}>
-      <div className="portal-loader-ring" style={{ borderColor: 'var(--school-primary, #3182ce)', borderTopColor: 'transparent' }}></div>
-      <p style={{ color: 'var(--school-primary, #3182ce)', fontWeight: 600 }}>Curating library insights...</p>
-    </div>
-  );
+  // Live Book Search for Quick Issue Modal
+  useEffect(() => {
+    if (!showIssueModal || issueBookSearch.trim().length < 2) {
+      setBooksList([]);
+      return;
+    }
+    const timer = setTimeout(async () => {
+      setIsSearchingBooks(true);
+      try {
+        const res = await api.get(`/api/library/books?search=${encodeURIComponent(issueBookSearch)}`);
+        setBooksList(Array.isArray(res.data) ? res.data.slice(0, 8) : []);
+      } catch (e) {
+        console.error('Failed to search books', e);
+      } finally {
+        setIsSearchingBooks(false);
+      }
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [issueBookSearch, showIssueModal]);
+
+  // Live Borrower Search for Quick Issue Modal
+  useEffect(() => {
+    if (!showIssueModal || issueBorrowerQuery.trim().length < 2) {
+      setSelectedBorrower(null);
+      return;
+    }
+    const timer = setTimeout(async () => {
+      setIsSearchingBorrower(true);
+      try {
+        const res = await api.get(`/api/library/borrowers/validate?type=${issueBorrowerType}&identifier=${encodeURIComponent(issueBorrowerQuery)}`);
+        if (res.data && res.data.borrower) {
+          setSelectedBorrower(res.data.borrower);
+        } else {
+          setSelectedBorrower(null);
+        }
+      } catch (e) {
+        setSelectedBorrower(null);
+      } finally {
+        setIsSearchingBorrower(false);
+      }
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [issueBorrowerQuery, issueBorrowerType, showIssueModal]);
+
+  // Search active loans for Quick Return Modal
+  useEffect(() => {
+    if (!showReturnModal) return;
+    const fetchActiveLoans = async () => {
+      setIsSearchingReturn(true);
+      try {
+        const res = await api.get(`/api/library/loans?status=borrowed&search=${encodeURIComponent(returnSearch)}`);
+        setActiveLoansToReturn(Array.isArray(res.data) ? res.data.slice(0, 15) : []);
+      } catch (e) {
+        console.error('Failed to fetch loans to return', e);
+      } finally {
+        setIsSearchingReturn(false);
+      }
+    };
+    const timer = setTimeout(fetchActiveLoans, 300);
+    return () => clearTimeout(timer);
+  }, [returnSearch, showReturnModal]);
+
+  const handleQuickIssueSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedBook) {
+      showToast('Please select a book to issue', 'error');
+      return;
+    }
+    if (!issueBorrowerQuery) {
+      showToast('Please specify a borrower student ID or staff email', 'error');
+      return;
+    }
+
+    setIssueSubmitting(true);
+    try {
+      await api.post('/api/library/loans/issue', {
+        bookId: selectedBook.id,
+        borrowerType: issueBorrowerType,
+        identifier: issueBorrowerQuery
+      });
+      showToast(`Book "${selectedBook.title}" successfully issued!`, 'success');
+      setShowIssueModal(false);
+      setSelectedBook(null);
+      setSelectedBorrower(null);
+      setIssueBookSearch('');
+      setIssueBorrowerQuery('');
+      fetchDashboardData();
+    } catch (err: any) {
+      const msg = err.response?.data?.error || 'Failed to issue book';
+      showToast(msg, 'error');
+    } finally {
+      setIssueSubmitting(false);
+    }
+  };
+
+  const handleExecuteReturn = async (loanId: string, bookTitle: string) => {
+    setReturnSubmittingId(loanId);
+    try {
+      await api.post(`/api/library/loans/${loanId}/return`);
+      showToast(`Book "${bookTitle}" returned successfully!`, 'success');
+      setActiveLoansToReturn(prev => prev.filter(l => l.id !== loanId));
+      fetchDashboardData();
+    } catch (err: any) {
+      const msg = err.response?.data?.error || 'Failed to return book';
+      showToast(msg, 'error');
+    } finally {
+      setReturnSubmittingId(null);
+    }
+  };
+
+  const getOverdueBadge = (days: number) => {
+    if (days >= 15) {
+      return (
+        <span style={{
+          background: '#fee2e2',
+          color: '#991b1b',
+          border: '1px solid #f87171',
+          padding: '4px 10px',
+          borderRadius: '9999px',
+          fontWeight: 800,
+          fontSize: '0.75rem',
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: '4px'
+        }}>
+          <i className="fas fa-exclamation-circle"></i> {days}d Overdue (15+ days)
+        </span>
+      );
+    }
+    if (days >= 8) {
+      return (
+        <span style={{
+          background: '#ffedd5',
+          color: '#c2410c',
+          border: '1px solid #fb923c',
+          padding: '4px 10px',
+          borderRadius: '9999px',
+          fontWeight: 800,
+          fontSize: '0.75rem',
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: '4px'
+        }}>
+          <i className="fas fa-clock"></i> {days}d Overdue (8–14 days)
+        </span>
+      );
+    }
+    return (
+      <span style={{
+        background: '#fef9c3',
+        color: '#854d0e',
+        border: '1px solid #facc15',
+        padding: '4px 10px',
+        borderRadius: '9999px',
+        fontWeight: 800,
+        fontSize: '0.75rem',
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: '4px'
+      }}>
+        <i className="fas fa-hourglass-half"></i> {days}d Overdue (1–7 days)
+      </span>
+    );
+  };
+
+  if (loading) {
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '70vh', flexDirection: 'column', gap: 16 }}>
+        <div className="portal-spinner" style={{ width: 44, height: 44 }}></div>
+        <p style={{ color: 'var(--school-primary, #3182ce)', fontWeight: 700, fontSize: '1rem' }}>Loading live library operations...</p>
+      </div>
+    );
+  }
+
+  const todayCount = data?.today || { issued: 0, returned: 0 };
+  const rightNowCount = data?.rightNow || { currentlyBorrowed: 0, overdueRightNow: 0 };
+  const alertsCount = data?.alerts || { dueToday: 0, reservationsWaitingPickup: 0 };
+  const recentIssues = data?.recentIssues || [];
+  const overdueToday = data?.overdueToday || [];
 
   return (
-    <div className="library-portal-wrapper" style={{ 
-      minHeight: '100vh', 
-      background: '#f8fafc', 
-      padding: '40px',
-      color: '#334155',
-      fontFamily: "'Inter', sans-serif"
-    }}>
-      <style>{`
-        .glass-card {
-          background: #ffffff;
-          border: 1px solid rgba(226, 232, 240, 0.8);
-          border-radius: 24px;
-          transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-          backdrop-filter: blur(10px);
-        }
-        .glass-card:hover {
-          transform: translateY(-5px);
-          box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-          border-color: rgba(226, 232, 240, 1);
-        }
-        .stat-icon-wrapper {
-          position: relative;
-          width: 56px; height: 56px; 
-          border-radius: 16px;
-          display: flex; align-items: center; justify-content: center;
-          font-size: 1.5rem;
-          overflow: hidden;
-          transition: transform 0.3s ease;
-        }
-        .glass-card:hover .stat-icon-wrapper {
-          transform: scale(1.1) rotate(5deg);
-        }
-        .stat-icon-wrapper::before {
-          content: ''; position: absolute; inset: 0; opacity: 0.15;
-          background: currentColor;
-        }
-        .hover-btn {
-          transition: all 0.2s ease;
-        }
-        .hover-btn:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        }
-        .table-row-glass {
-          transition: all 0.2s ease;
-        }
-        .table-row-glass:hover {
-          background: #f8fafc;
-          transform: scale(1.01);
-          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-          border-radius: 12px;
-        }
-        .gradient-text {
-          background: linear-gradient(135deg, var(--school-primary, #3182ce) 0%, #8b5cf6 100%);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-        }
-        .trending-card {
-          background: #fff;
-          border-radius: 16px;
-          padding: 16px;
-          border: 1px solid #f1f5f9;
-          transition: all 0.3s;
-          display: flex;
-          align-items: center;
-          gap: 16px;
-        }
-        .trending-card:hover {
-          box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-          border-color: #e2e8f0;
-          transform: translateX(4px);
-        }
-        .cover-placeholder {
-          width: 48px;
-          height: 64px;
-          border-radius: 8px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: rgba(0,0,0,0.5);
-          font-size: 1.5rem;
-          box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
-        }
-      `}</style>
+    <div className="portal-container animate-in fade-in duration-300" style={{ maxWidth: 1400, margin: '0 auto', padding: '24px 20px' }}>
+      {/* Toast Notification */}
+      {toastMessage && (
+        <div style={{
+          position: 'fixed',
+          top: 24,
+          right: 24,
+          zIndex: 9999,
+          background: toastMessage.type === 'success' ? '#065f46' : '#991b1b',
+          color: '#ffffff',
+          padding: '12px 20px',
+          borderRadius: 8,
+          boxShadow: '0 10px 25px rgba(0,0,0,0.2)',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 12,
+          fontWeight: 700,
+          fontSize: '0.9rem'
+        }}>
+          <i className={toastMessage.type === 'success' ? 'fas fa-check-circle' : 'fas fa-exclamation-triangle'}></i>
+          <span>{toastMessage.text}</span>
+        </div>
+      )}
 
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 40 }}>
+      {/* Operational Header */}
+      <div style={{
+        display: 'flex',
+        flexWrap: 'wrap',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        gap: 16,
+        marginBottom: 24,
+        paddingBottom: 20,
+        borderBottom: '1px solid #e2e8f0'
+      }}>
         <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
-            <div style={{ width: 40, height: 40, borderRadius: 12, background: 'var(--school-primary, #3182ce)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', boxShadow: '0 4px 10px rgba(0,0,0,0.2)' }}>
-              <i className="fas fa-books"></i>
-            </div>
-            <h1 className="gradient-text" style={{ fontSize: '2.5rem', fontWeight: 900, letterSpacing: '-1px', margin: 0 }}>
-              Command Centre
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <h1 style={{ margin: 0, fontSize: '1.75rem', fontWeight: 900, color: '#0f172a' }}>
+              Library Daily Operations
             </h1>
+            <span style={{
+              background: '#ecfdf5',
+              color: '#065f46',
+              border: '1px solid #a7f3d0',
+              padding: '2px 10px',
+              borderRadius: 20,
+              fontSize: '0.75rem',
+              fontWeight: 800
+            }}>
+              ● LIVE TODAY
+            </span>
           </div>
-          <p style={{ color: '#64748b', fontSize: '1.1rem', margin: 0, fontWeight: 500 }}>
-            Welcome back, <strong style={{ color: '#334155' }}>{user?.name}</strong>. Here's what's happening in your library today.
+          <p style={{ margin: '4px 0 0 0', color: '#64748b', fontSize: '0.9rem' }}>
+            Fast operational circulation desk — focused strictly on today's transactions and urgent actions.
           </p>
         </div>
-        <div style={{ display: 'flex', gap: 12 }}>
-          <div style={{ padding: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column', background: '#fff', borderRadius: '12px', border: '1px solid #e2e8f0', minWidth: '150px' }}>
-            <div 
-              onClick={() => {
-                if (attendanceStatus && !attendanceStatus.timeOut) setClockModalAction('OUT');
-                else if (!attendanceStatus) setClockModalAction('IN');
-              }}
-              className="hover-btn"
-              style={{ 
-                background: (!attendanceStatus || attendanceStatus.timeOut) ? 'var(--portal-danger)' : 'var(--portal-success)', 
-                color: 'white', 
-                padding: '10px 20px', 
-                display: 'flex', 
-                justifyContent: 'center', 
-                alignItems: 'center', 
-                cursor: (!attendanceStatus || !attendanceStatus.timeOut) ? 'pointer' : 'default',
-                fontWeight: 600,
-                fontSize: '0.9rem',
-                gap: 8,
-                height: '100%',
-                boxShadow: `0 4px 10px ${(!attendanceStatus || attendanceStatus.timeOut) ? 'rgba(229, 62, 62, 0.3)' : 'rgba(56, 161, 105, 0.3)'}`
+
+        {/* Quick Action Shortcuts */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+          <button
+            onClick={() => setShowIssueModal(true)}
+            className="portal-btn-primary"
+            style={{
+              padding: '10px 20px',
+              fontSize: '0.9rem',
+              fontWeight: 800,
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 8,
+              boxShadow: '0 4px 12px rgba(37,99,235,0.25)'
+            }}
+          >
+            <i className="fas fa-plus-circle"></i> Issue Book
+          </button>
+
+          <button
+            onClick={() => setShowReturnModal(true)}
+            style={{
+              background: '#059669',
+              color: '#ffffff',
+              border: 'none',
+              padding: '10px 20px',
+              borderRadius: 8,
+              fontSize: '0.9rem',
+              fontWeight: 800,
+              cursor: 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 8,
+              boxShadow: '0 4px 12px rgba(5,150,105,0.25)'
+            }}
+          >
+            <i className="fas fa-undo-alt"></i> Return Book
+          </button>
+
+          <button
+            onClick={fetchDashboardData}
+            className="portal-btn-secondary"
+            title="Refresh Live Data"
+            style={{ padding: '10px 14px', fontSize: '0.9rem' }}
+          >
+            <i className="fas fa-sync-alt"></i>
+          </button>
+
+          {attendanceStatus?.record ? (
+            <button
+              onClick={() => setClockModalAction('OUT')}
+              className="portal-btn-secondary"
+              style={{ padding: '10px 14px', fontSize: '0.85rem', color: '#dc2626' }}
+            >
+              <i className="fas fa-sign-out-alt mr-1"></i> Clock Out
+            </button>
+          ) : (
+            <button
+              onClick={() => setClockModalAction('IN')}
+              className="portal-btn-secondary"
+              style={{ padding: '10px 14px', fontSize: '0.85rem', color: '#059669' }}
+            >
+              <i className="fas fa-sign-in-alt mr-1"></i> Clock In
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Operational Metric Cards (Today, Right Now, Alerts) */}
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))',
+        gap: 16,
+        marginBottom: 28
+      }}>
+        {/* GROUP 1: TODAY */}
+        <div style={{
+          background: '#ffffff',
+          borderRadius: 14,
+          border: '1px solid #e2e8f0',
+          padding: 18,
+          boxShadow: '0 2px 4px rgba(0,0,0,0.03)'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+            <span style={{ fontSize: '0.8rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              <i className="fas fa-calendar-day mr-1 text-primary"></i> Today's Circulation
+            </span>
+            <span style={{ fontSize: '0.75rem', color: '#059669', fontWeight: 700, background: '#ecfdf5', padding: '2px 8px', borderRadius: 12 }}>
+              Today Only
+            </span>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+            <div style={{ background: '#f0fdf4', padding: '14px', borderRadius: 10, border: '1px solid #bbf7d0' }}>
+              <div style={{ color: '#166534', fontSize: '0.8rem', fontWeight: 700, marginBottom: 4 }}>
+                <i className="fas fa-arrow-up mr-1"></i> Issued Today
+              </div>
+              <div style={{ fontSize: '2rem', fontWeight: 900, color: '#14532d', lineHeight: 1.1 }}>
+                {todayCount.issued}
+              </div>
+              <div style={{ fontSize: '0.75rem', color: '#15803d', marginTop: 4, fontWeight: 600 }}>
+                Books checked out
+              </div>
+            </div>
+
+            <div style={{ background: '#eff6ff', padding: '14px', borderRadius: 10, border: '1px solid #bfdbfe' }}>
+              <div style={{ color: '#1e40af', fontSize: '0.8rem', fontWeight: 700, marginBottom: 4 }}>
+                <i className="fas fa-arrow-down mr-1"></i> Returned Today
+              </div>
+              <div style={{ fontSize: '2rem', fontWeight: 900, color: '#1e3a8a', lineHeight: 1.1 }}>
+                {todayCount.returned}
+              </div>
+              <div style={{ fontSize: '0.75rem', color: '#2563eb', marginTop: 4, fontWeight: 600 }}>
+                Books checked back in
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* GROUP 2: RIGHT NOW */}
+        <div style={{
+          background: '#ffffff',
+          borderRadius: 14,
+          border: '1px solid #e2e8f0',
+          padding: 18,
+          boxShadow: '0 2px 4px rgba(0,0,0,0.03)'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+            <span style={{ fontSize: '0.8rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              <i className="fas fa-clock mr-1 text-indigo-500"></i> Active Status (Right Now)
+            </span>
+            <span style={{ fontSize: '0.75rem', color: '#4338ca', fontWeight: 700, background: '#e0e7ff', padding: '2px 8px', borderRadius: 12 }}>
+              Current State
+            </span>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+            <div style={{ background: '#f5f3ff', padding: '14px', borderRadius: 10, border: '1px solid #ddd6fe' }}>
+              <div style={{ color: '#5b21b6', fontSize: '0.8rem', fontWeight: 700, marginBottom: 4 }}>
+                <i className="fas fa-book-reader mr-1"></i> Currently Borrowed
+              </div>
+              <div style={{ fontSize: '2rem', fontWeight: 900, color: '#4c1d95', lineHeight: 1.1 }}>
+                {rightNowCount.currentlyBorrowed}
+              </div>
+              <div style={{ fontSize: '0.75rem', color: '#6d28d9', marginTop: 4, fontWeight: 600 }}>
+                In active circulation
+              </div>
+            </div>
+
+            <div style={{ background: '#fff1f2', padding: '14px', borderRadius: 10, border: '1px solid #fecdd3' }}>
+              <div style={{ color: '#9f1239', fontSize: '0.8rem', fontWeight: 700, marginBottom: 4 }}>
+                <i className="fas fa-exclamation-triangle mr-1"></i> Overdue Right Now
+              </div>
+              <div style={{ fontSize: '2rem', fontWeight: 900, color: '#881337', lineHeight: 1.1 }}>
+                {rightNowCount.overdueRightNow}
+              </div>
+              <div style={{ fontSize: '0.75rem', color: '#be123c', marginTop: 4, fontWeight: 600 }}>
+                Requires urgent follow-up
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* GROUP 3: ALERTS */}
+        <div style={{
+          background: '#ffffff',
+          borderRadius: 14,
+          border: '1px solid #e2e8f0',
+          padding: 18,
+          boxShadow: '0 2px 4px rgba(0,0,0,0.03)'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+            <span style={{ fontSize: '0.8rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              <i className="fas fa-bell mr-1 text-amber-500"></i> Operational Alerts
+            </span>
+            <span style={{ fontSize: '0.75rem', color: '#b45309', fontWeight: 700, background: '#fef3c7', padding: '2px 8px', borderRadius: 12 }}>
+              Needs Attention
+            </span>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+            <div style={{ background: '#fffbeb', padding: '14px', borderRadius: 10, border: '1px solid #fde68a' }}>
+              <div style={{ color: '#92400e', fontSize: '0.8rem', fontWeight: 700, marginBottom: 4 }}>
+                <i className="fas fa-calendar-check mr-1"></i> Books Due Today
+              </div>
+              <div style={{ fontSize: '2rem', fontWeight: 900, color: '#78350f', lineHeight: 1.1 }}>
+                {alertsCount.dueToday}
+              </div>
+              <div style={{ fontSize: '0.75rem', color: '#b45309', marginTop: 4, fontWeight: 600 }}>
+                Due for return by closing
+              </div>
+            </div>
+
+            <div style={{ background: '#faf5ff', padding: '14px', borderRadius: 10, border: '1px solid #e9d5ff' }}>
+              <div style={{ color: '#6b21a8', fontSize: '0.8rem', fontWeight: 700, marginBottom: 4 }}>
+                <i className="fas fa-bookmark mr-1"></i> Waiting for Pickup
+              </div>
+              <div style={{ fontSize: '2rem', fontWeight: 900, color: '#581c87', lineHeight: 1.1 }}>
+                {alertsCount.reservationsWaitingPickup}
+              </div>
+              <div style={{ fontSize: '0.75rem', color: '#7e22ce', marginTop: 4, fontWeight: 600 }}>
+                Reservations ready on shelf
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* TODAY-RELEVANT TABLES SECTION */}
+      <div className="portal-card" style={{ padding: 0, overflow: 'hidden' }}>
+        {/* Table Selector Tabs */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          borderBottom: '1px solid #e2e8f0',
+          padding: '12px 20px',
+          background: '#f8fafc',
+          flexWrap: 'wrap',
+          gap: 12
+        }}>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <button
+              onClick={() => setActiveTab('issues')}
+              style={{
+                padding: '8px 18px',
+                borderRadius: 8,
+                border: 'none',
+                fontWeight: 800,
+                fontSize: '0.85rem',
+                cursor: 'pointer',
+                background: activeTab === 'issues' ? 'var(--school-primary, #3182ce)' : '#ffffff',
+                color: activeTab === 'issues' ? '#ffffff' : '#475569',
+                boxShadow: activeTab === 'issues' ? '0 2px 4px rgba(0,0,0,0.1)' : 'inset 0 0 0 1px #cbd5e1',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8
               }}
             >
-              <i className="fas fa-clock"></i>
-              {(!attendanceStatus || attendanceStatus.timeOut) ? 'Clock IN' : 'Clock OUT'}
-            </div>
-          </div>
-          <button onClick={() => setShowScanModal(true)} className="hover-btn" style={{ background: '#fff', color: '#334155', border: '1px solid #e2e8f0', padding: '10px 20px', borderRadius: '12px', fontWeight: 600, fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
-            <i className="fas fa-barcode-read"></i> Scan Book
-          </button>
-          <a href="/librarian/loans" className="hover-btn" style={{ background: 'var(--school-primary, #3182ce)', color: '#fff', border: 'none', padding: '10px 20px', borderRadius: '12px', textDecoration: 'none', fontWeight: 600, fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: 8, boxShadow: '0 4px 10px rgba(49, 130, 206, 0.3)' }}>
-            <i className="fas fa-plus"></i> Issue Loan
-          </a>
-        </div>
-      </div>
+              <i className="fas fa-list-ol"></i>
+              Recent Issues {data?.hasIssuesToday ? '(Today)' : '(Latest)'} ({recentIssues.length})
+            </button>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '24px', marginBottom: '32px' }}>
-        {[
-          { label: 'Total Catalog', value: data?.totalBooks, icon: 'fa-book-journal-whills', color: '#3b82f6' },
-          { label: 'Active Loans', value: data?.activeLoans, icon: 'fa-hand-holding-hand', color: '#f59e0b' },
-          { label: 'Overdue Books', value: data?.overdueLoans, icon: 'fa-triangle-exclamation', color: 'var(--portal-danger)' },
-          { label: 'Available', value: data?.totalBooks && data?.activeLoans ? data.totalBooks - data.activeLoans : 0, icon: 'fa-book-open-reader', color: '#10b981' }
-        ].map((stat, i) => (
-          <div key={i} className="glass-card" style={{ padding: '24px', display: 'flex', alignItems: 'center', gap: '20px' }}>
-            <div className="stat-icon-wrapper" style={{ color: stat.color }}>
-              <i className={`fas ${stat.icon}`}></i>
-            </div>
-            <div>
-              <div style={{ color: '#64748b', fontWeight: 700, fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 4 }}>{stat.label}</div>
-              <div style={{ color: '#1e293b', fontSize: '2rem', fontWeight: 900, lineHeight: 1 }}>{stat.value?.toLocaleString()}</div>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '32px', marginBottom: '32px' }}>
-        <div className="glass-card" style={{ flex: '2 1 500px', padding: '24px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-            <div>
-              <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800, color: '#1e293b' }}>Lending Activity</h2>
-              <p style={{ margin: '4px 0 0', fontSize: '0.85rem', color: '#64748b' }}>Loans processed over the last 7 days</p>
-            </div>
-            <select style={{ padding: '8px 12px', borderRadius: '8px', border: '1px solid #e2e8f0', background: '#f8fafc', color: '#475569', fontWeight: 600, outline: 'none' }}>
-              <option>This Week</option>
-              <option>This Month</option>
-              <option>This Year</option>
-            </select>
-          </div>
-          <div style={{ height: 300, width: '100%' }}>
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={data?.lendingTrends || []} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                <defs>
-                  <linearGradient id="colorLoans" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="var(--school-primary, #3182ce)" stopOpacity={0.3}/>
-                    <stop offset="95%" stopColor="var(--school-primary, #3182ce)" stopOpacity={0}/>
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} dy={10} />
-                <YAxis axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} />
-                <Tooltip 
-                  contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)' }}
-                  itemStyle={{ color: '#1e293b', fontWeight: 700 }}
-                />
-                <Area type="monotone" dataKey="loans" stroke="var(--school-primary, #3182ce)" strokeWidth={3} fillOpacity={1} fill="url(#colorLoans)" />
-              </AreaChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-
-        <div className="glass-card" style={{ flex: '1 1 300px', padding: '24px', display: 'flex', flexDirection: 'column' }}>
-          <div style={{ marginBottom: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <div>
-              <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800, color: '#1e293b' }}>Top Categories</h2>
-              <p style={{ margin: '4px 0 0', fontSize: '0.85rem', color: '#64748b' }}>Inventory distribution</p>
-            </div>
-            <button onClick={() => setShowAddCategoryModal(true)} style={{ background: '#f1f5f9', color: '#3b82f6', border: 'none', padding: '6px 12px', borderRadius: '8px', fontWeight: 600, fontSize: '0.8rem', cursor: 'pointer', transition: 'all 0.2s' }} title="Add Category">
-              <i className="fas fa-plus"></i> New
+            <button
+              onClick={() => setActiveTab('overdue')}
+              style={{
+                padding: '8px 18px',
+                borderRadius: 8,
+                border: 'none',
+                fontWeight: 800,
+                fontSize: '0.85rem',
+                cursor: 'pointer',
+                background: activeTab === 'overdue' ? '#dc2626' : '#ffffff',
+                color: activeTab === 'overdue' ? '#ffffff' : '#475569',
+                boxShadow: activeTab === 'overdue' ? '0 2px 4px rgba(220,38,38,0.2)' : 'inset 0 0 0 1px #cbd5e1',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8
+              }}
+            >
+              <i className="fas fa-exclamation-triangle"></i>
+              Overdue Today / Right Now ({overdueToday.length})
             </button>
           </div>
-          <div style={{ flex: 1, minHeight: 200 }}>
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={data?.categoryData || []} layout="vertical" margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
-                <XAxis type="number" hide />
-                <YAxis dataKey="name" type="category" axisLine={false} tickLine={false} tick={{ fill: '#475569', fontSize: 13, fontWeight: 600 }} width={70} />
-                <Tooltip cursor={{ fill: 'transparent' }} contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)' }} />
-                <Bar dataKey="count" radius={[0, 4, 4, 0]} barSize={20}>
-                  {(data?.categoryData || []).map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color || '#3b82f6'} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
+
+          <div style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 600 }}>
+            {activeTab === 'issues'
+              ? (data?.hasIssuesToday ? 'Showing books issued today' : 'Showing recent issues (none recorded yet today)')
+              : 'Showing all books currently overdue and due today'}
           </div>
         </div>
-      </div>
 
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '32px' }}>
-        <div className="glass-card" style={{ flex: '2 1 500px' }}>
-          <div style={{ padding: '24px', borderBottom: '1px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800, color: '#1e293b' }}>Recent Loans</h2>
-            <a href="/librarian/loans" className="hover-btn" style={{ color: 'var(--school-primary, #3182ce)', fontSize: '0.9rem', fontWeight: 700, textDecoration: 'none' }}>
-              View All <i className="fas fa-arrow-right ml-1"></i>
-            </a>
-          </div>
-          <div style={{ padding: '16px' }}>
-            {!data?.recentLoans?.length ? (
-              <div style={{ padding: '60px 0', textAlign: 'center' }}>
-                <div style={{ width: 64, height: 64, background: '#f1f5f9', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', color: '#94a3b8', fontSize: '1.5rem' }}>
-                  <i className="fas fa-books"></i>
-                </div>
-                <h3 style={{ margin: '0 0 8px', color: '#334155', fontWeight: 700 }}>No Recent Loans</h3>
-                <p style={{ color: '#64748b', fontSize: '0.95rem', margin: 0 }}>There hasn't been any borrowing activity recently.</p>
-              </div>
-            ) : (
-              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                <thead>
-                  <tr style={{ color: '#94a3b8', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '1px' }}>
-                    <th style={{ padding: '12px 16px', textAlign: 'left', fontWeight: 700 }}>Borrower</th>
-                    <th style={{ padding: '12px 16px', textAlign: 'left', fontWeight: 700 }}>Book Title</th>
-                    <th style={{ padding: '12px 16px', textAlign: 'left', fontWeight: 700 }}>Date Borrowed</th>
-                    <th style={{ padding: '12px 16px', textAlign: 'left', fontWeight: 700 }}>Status</th>
+        {/* Tab 1: Recent Issues (Today) Table */}
+        {activeTab === 'issues' && (
+          <div className="table-responsive" style={{ margin: 0 }}>
+            <table className="management-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
+              <thead>
+                <tr style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0' }}>
+                  <th style={{ padding: '14px 18px', textAlign: 'left', fontWeight: 800, color: '#475569', fontSize: '0.8rem' }}>Book Details</th>
+                  <th style={{ padding: '14px 18px', textAlign: 'left', fontWeight: 800, color: '#475569', fontSize: '0.8rem' }}>Borrower</th>
+                  <th style={{ padding: '14px 18px', textAlign: 'left', fontWeight: 800, color: '#475569', fontSize: '0.8rem' }}>Class / Role</th>
+                  <th style={{ padding: '14px 18px', textAlign: 'left', fontWeight: 800, color: '#475569', fontSize: '0.8rem' }}>Issued At</th>
+                  <th style={{ padding: '14px 18px', textAlign: 'left', fontWeight: 800, color: '#475569', fontSize: '0.8rem' }}>Due Date</th>
+                  <th style={{ padding: '14px 18px', textAlign: 'center', fontWeight: 800, color: '#475569', fontSize: '0.8rem' }}>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {recentIssues.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} style={{ textAlign: 'center', padding: '50px 20px', color: '#64748b' }}>
+                      <div style={{ fontSize: '2.5rem', color: '#cbd5e1', marginBottom: 8 }}><i className="fas fa-inbox"></i></div>
+                      <div style={{ fontWeight: 800, fontSize: '1rem', color: '#334155' }}>No book issues recorded today</div>
+                      <div style={{ fontSize: '0.85rem', color: '#94a3b8', marginTop: 4 }}>Click "Issue Book" above to record a new loan.</div>
+                    </td>
                   </tr>
-                </thead>
-                <tbody>
-                  {data.recentLoans.map(loan => {
-                    const isReturned = !!loan.returnedAt;
-                    const isOverdue = !isReturned && loan.dueDate && new Date(loan.dueDate) < new Date();
-                    return (
-                      <tr key={loan.id} className="table-row-glass" style={{ borderBottom: '1px solid #f8fafc' }}>
-                        <td style={{ padding: '12px 16px' }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                            <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%)', color: '#475569', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.9rem', fontWeight: 800, boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
-                              {loan.student?.name?.charAt(0) || 'U'}
-                            </div>
-                            <span style={{ fontWeight: 700, color: '#1e293b' }}>{loan.student?.name || 'Unknown'}</span>
-                          </div>
-                        </td>
-                        <td style={{ padding: '12px 16px' }}>
-                          <div style={{ fontWeight: 700, color: '#334155', marginBottom: 2 }}>{loan.book?.title}</div>
-                          <div style={{ fontSize: '0.75rem', color: '#64748b' }}>{loan.book?.author}</div>
-                        </td>
-                        <td style={{ padding: '12px 16px', color: '#64748b', fontSize: '0.9rem', fontWeight: 500 }}>
-                          {new Date(loan.borrowedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                        </td>
-                        <td style={{ padding: '12px 16px' }}>
-                          <span style={{ 
-                            background: isReturned ? '#dcfce7' : isOverdue ? '#fee2e2' : '#dbeafe',
-                            color: isReturned ? '#166534' : isOverdue ? '#991b1b' : '#1e40af',
-                            padding: '4px 10px', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 800
-                          }}>
-                            {isReturned ? 'Returned' : isOverdue ? 'Overdue' : 'Active'}
-                          </span>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            )}
+                ) : (
+                  recentIssues.map((loan) => (
+                    <tr key={loan.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                      <td style={{ padding: '14px 18px' }}>
+                        <div style={{ fontWeight: 800, color: '#1e293b' }}>{loan.bookTitle}</div>
+                        <div style={{ fontSize: '0.75rem', color: '#64748b', display: 'flex', gap: 8, marginTop: 2 }}>
+                          <span>By {loan.bookAuthor || 'Unknown'}</span>
+                          <span>•</span>
+                          <span>Acc: <code style={{ background: '#f1f5f9', padding: '1px 4px', borderRadius: 3 }}>{loan.accessionNumber}</code></span>
+                        </div>
+                      </td>
+                      <td style={{ padding: '14px 18px' }}>
+                        <div style={{ fontWeight: 800, color: '#334155' }}>{loan.borrowerName}</div>
+                        <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>ID: {loan.borrowerIdentifier || '—'}</div>
+                      </td>
+                      <td style={{ padding: '14px 18px' }}>
+                        <span style={{
+                          background: '#f1f5f9',
+                          color: '#475569',
+                          padding: '3px 8px',
+                          borderRadius: 6,
+                          fontSize: '0.75rem',
+                          fontWeight: 700
+                        }}>
+                          {loan.borrowerClass}
+                        </span>
+                      </td>
+                      <td style={{ padding: '14px 18px', color: '#475569', fontSize: '0.85rem' }}>
+                        {new Date(loan.borrowedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}{' '}
+                        <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>({new Date(loan.borrowedAt).toLocaleDateString()})</span>
+                      </td>
+                      <td style={{ padding: '14px 18px', fontWeight: 700, color: '#0f172a', fontSize: '0.85rem' }}>
+                        {new Date(loan.dueDate).toLocaleDateString()}
+                      </td>
+                      <td style={{ padding: '14px 18px', textAlign: 'center' }}>
+                        {loan.status === 'borrowed' ? (
+                          <button
+                            onClick={() => handleExecuteReturn(loan.id, loan.bookTitle)}
+                            disabled={returnSubmittingId === loan.id}
+                            style={{
+                              background: '#ecfdf5',
+                              color: '#065f46',
+                              border: '1px solid #a7f3d0',
+                              padding: '5px 12px',
+                              borderRadius: 6,
+                              fontWeight: 800,
+                              fontSize: '0.75rem',
+                              cursor: 'pointer'
+                            }}
+                          >
+                            {returnSubmittingId === loan.id ? 'Returning...' : 'Quick Return'}
+                          </button>
+                        ) : (
+                          <span style={{ color: '#059669', fontSize: '0.75rem', fontWeight: 800 }}>Returned</span>
+                        )}
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
           </div>
-        </div>
+        )}
 
-        <div>
-          <div className="glass-card" style={{ padding: '24px', marginBottom: '24px' }}>
-            <h2 style={{ margin: '0 0 20px', fontSize: '1.25rem', fontWeight: 800, color: '#1e293b' }}>Trending Books</h2>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              {(data?.trendingBooks || []).map((book: any, i: number) => (
-                <div key={i} className="trending-card">
-                  <div className="cover-placeholder" style={{ background: '#f1f5f9' }}>
-                    {book.cover ? (
-                      <img src={`${api.defaults.baseURL}/${book.cover}`} alt="cover" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }} />
-                    ) : (
-                      <i className="fas fa-book" style={{ color: '#94a3b8' }}></i>
-                    )}
-                  </div>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontWeight: 800, color: '#1e293b', fontSize: '0.95rem', marginBottom: 4 }}>{book.title}</div>
-                    <div style={{ fontSize: '0.8rem', color: '#64748b', marginBottom: 6 }}>{book.author}</div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.75rem', color: '#f59e0b', fontWeight: 700 }}>
-                      <i className="fas fa-fire"></i> {book.borrows} borrows this month
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
+        {/* Tab 2: Overdue Today Table */}
+        {activeTab === 'overdue' && (
+          <div className="table-responsive" style={{ margin: 0 }}>
+            <table className="management-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
+              <thead>
+                <tr style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0' }}>
+                  <th style={{ padding: '14px 18px', textAlign: 'left', fontWeight: 800, color: '#475569', fontSize: '0.8rem' }}>Book Details</th>
+                  <th style={{ padding: '14px 18px', textAlign: 'left', fontWeight: 800, color: '#475569', fontSize: '0.8rem' }}>Borrower & Contact</th>
+                  <th style={{ padding: '14px 18px', textAlign: 'left', fontWeight: 800, color: '#475569', fontSize: '0.8rem' }}>Due Date</th>
+                  <th style={{ padding: '14px 18px', textAlign: 'left', fontWeight: 800, color: '#475569', fontSize: '0.8rem' }}>Overdue Status</th>
+                  <th style={{ padding: '14px 18px', textAlign: 'right', fontWeight: 800, color: '#475569', fontSize: '0.8rem' }}>Accrued Fine</th>
+                  <th style={{ padding: '14px 18px', textAlign: 'center', fontWeight: 800, color: '#475569', fontSize: '0.8rem' }}>Quick Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {overdueToday.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} style={{ textAlign: 'center', padding: '50px 20px', color: '#64748b' }}>
+                      <div style={{ fontSize: '2.5rem', color: '#86efac', marginBottom: 8 }}><i className="fas fa-check-circle"></i></div>
+                      <div style={{ fontWeight: 800, fontSize: '1rem', color: '#065f46' }}>No overdue books today!</div>
+                      <div style={{ fontSize: '0.85rem', color: '#64748b', marginTop: 4 }}>All circulating loans are currently in good standing.</div>
+                    </td>
+                  </tr>
+                ) : (
+                  overdueToday.map((item) => (
+                    <tr key={item.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                      <td style={{ padding: '14px 18px' }}>
+                        <div style={{ fontWeight: 800, color: '#1e293b' }}>{item.bookTitle}</div>
+                        <div style={{ fontSize: '0.75rem', color: '#64748b' }}>By {item.bookAuthor || 'Unknown'}</div>
+                      </td>
+                      <td style={{ padding: '14px 18px' }}>
+                        <div style={{ fontWeight: 800, color: '#334155' }}>{item.borrowerName}</div>
+                        <div style={{ fontSize: '0.75rem', color: '#64748b', display: 'flex', gap: 8 }}>
+                          <span>{item.borrowerClass}</span>
+                          <span>•</span>
+                          <span>{item.borrowerPhone || 'No Phone'}</span>
+                        </div>
+                      </td>
+                      <td style={{ padding: '14px 18px', color: '#dc2626', fontWeight: 800, fontSize: '0.85rem' }}>
+                        {new Date(item.dueDate).toLocaleDateString()}
+                      </td>
+                      <td style={{ padding: '14px 18px' }}>
+                        {getOverdueBadge(item.daysOverdue || 1)}
+                      </td>
+                      <td style={{ padding: '14px 18px', textAlign: 'right', fontWeight: 900, color: '#b91c1c', fontSize: '0.95rem' }}>
+                        ${(item.fineAmount || 0).toFixed(2)}
+                      </td>
+                      <td style={{ padding: '14px 18px', textAlign: 'center' }}>
+                        <button
+                          onClick={() => handleExecuteReturn(item.id, item.bookTitle)}
+                          disabled={returnSubmittingId === item.id}
+                          style={{
+                            background: '#059669',
+                            color: '#ffffff',
+                            border: 'none',
+                            padding: '6px 14px',
+                            borderRadius: 6,
+                            fontWeight: 800,
+                            fontSize: '0.75rem',
+                            cursor: 'pointer',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: 4
+                          }}
+                        >
+                          <i className="fas fa-check"></i> {returnSubmittingId === item.id ? 'Processing...' : 'Return Book'}
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
           </div>
-          
-          <div className="glass-card" style={{ padding: '24px', background: 'linear-gradient(135deg, #fef2f2 0%, #fff1f2 100%)', borderColor: '#ffe4e6' }}>
-            <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
-               <div style={{ color: '#e11d48', fontSize: '1.5rem', marginTop: '2px' }}>
-                 <i className="fas fa-bell-on"></i>
-               </div>
-               <div>
-                 <h4 style={{ margin: '0 0 6px 0', color: '#9f1239', fontSize: '0.95rem', fontWeight: 800 }}>Action Required</h4>
-                 <p style={{ margin: 0, fontSize: '0.85rem', color: '#be123c', lineHeight: 1.5, fontWeight: 500 }}>
-                   You have <strong style={{ fontWeight: 800 }}>{data?.overdueLoans || 8}</strong> books currently marked as overdue. Please issue reminders to the respective borrowers.
-                 </p>
-                 <a href="/librarian/loans" className="hover-btn" style={{ marginTop: 12, background: '#e11d48', color: '#fff', border: 'none', padding: '6px 16px', borderRadius: '8px', fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer', display: 'inline-block', textDecoration: 'none' }}>
-                   View Overdue List
-                 </a>
-               </div>
-            </div>
-          </div>
-        </div>
+        )}
       </div>
 
-      {/* Modals */}
-      {showScanModal && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.6)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: 20 }}>
-          <div style={{ background: '#fff', borderRadius: '24px', padding: '32px', width: '100%', maxWidth: '400px', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)' }}>
-            <h3 style={{ margin: '0 0 16px', fontSize: '1.25rem', fontWeight: 800 }}>Scan Book</h3>
-            <p style={{ color: '#64748b', fontSize: '0.9rem', marginBottom: '24px' }}>Enter the book's ISBN or system ID to quickly pull up its records.</p>
-            <input 
-              autoFocus
-              type="text" 
-              placeholder="e.g. 978-0132350884" 
-              value={scanInput}
-              onChange={e => setScanInput(e.target.value)}
-              style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', border: '2px solid #e2e8f0', outline: 'none', fontSize: '1rem', marginBottom: '24px' }}
-            />
-            <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
-              <button onClick={() => setShowScanModal(false)} style={{ padding: '10px 20px', borderRadius: '12px', border: 'none', background: '#f1f5f9', color: '#64748b', fontWeight: 600, cursor: 'pointer' }}>Cancel</button>
-              <button onClick={() => {
-                window.location.href = `/librarian/books?search=${encodeURIComponent(scanInput)}`;
-              }} style={{ padding: '10px 20px', borderRadius: '12px', border: 'none', background: 'var(--school-primary, #3182ce)', color: '#fff', fontWeight: 600, cursor: 'pointer' }}>Search</button>
+      {/* QUICK ISSUE MODAL */}
+      {showIssueModal && (
+        <div style={{
+          position: 'fixed',
+          inset: 0,
+          background: 'rgba(15, 23, 42, 0.65)',
+          backdropFilter: 'blur(4px)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 9999,
+          padding: 20
+        }}>
+          <div style={{
+            background: '#ffffff',
+            borderRadius: 16,
+            width: '100%',
+            maxWidth: 580,
+            boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)',
+            overflow: 'hidden'
+          }}>
+            <div style={{
+              padding: '18px 24px',
+              borderBottom: '1px solid #e2e8f0',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              background: '#f8fafc'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <div style={{ width: 36, height: 36, borderRadius: 10, background: '#eff6ff', color: '#2563eb', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <i className="fas fa-book-medical"></i>
+                </div>
+                <div>
+                  <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 900, color: '#0f172a' }}>Quick Issue Book</h3>
+                  <p style={{ margin: 0, fontSize: '0.75rem', color: '#64748b' }}>One-click loan checkout for students or staff</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowIssueModal(false)}
+                style={{ background: 'none', border: 'none', fontSize: '1.25rem', color: '#94a3b8', cursor: 'pointer' }}
+              >
+                &times;
+              </button>
+            </div>
+
+            <form onSubmit={handleQuickIssueSubmit} style={{ padding: 24 }}>
+              {/* Step 1: Select Book */}
+              <div style={{ marginBottom: 18 }}>
+                <label style={{ display: 'block', fontWeight: 800, fontSize: '0.85rem', color: '#334155', marginBottom: 6 }}>
+                  1. Search Book (Title, ISBN, Barcode) <span style={{ color: '#dc2626' }}>*</span>
+                </label>
+                <div style={{ position: 'relative' }}>
+                  <input
+                    type="text"
+                    placeholder="Type book title or scan barcode..."
+                    value={issueBookSearch}
+                    onChange={(e) => setIssueBookSearch(e.target.value)}
+                    style={{
+                      width: '100%',
+                      padding: '10px 14px',
+                      borderRadius: 8,
+                      border: '1px solid #cbd5e1',
+                      fontSize: '0.9rem'
+                    }}
+                  />
+                  {isSearchingBooks && (
+                    <span style={{ position: 'absolute', right: 12, top: 12, fontSize: '0.8rem', color: '#94a3b8' }}>
+                      <i className="fas fa-spinner fa-spin"></i>
+                    </span>
+                  )}
+                </div>
+
+                {/* Dropdown suggestions */}
+                {booksList.length > 0 && !selectedBook && (
+                  <div style={{
+                    marginTop: 6,
+                    maxHeight: 180,
+                    overflowY: 'auto',
+                    border: '1px solid #cbd5e1',
+                    borderRadius: 8,
+                    background: '#ffffff',
+                    boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)'
+                  }}>
+                    {booksList.map((b) => (
+                      <div
+                        key={b.id}
+                        onClick={() => {
+                          setSelectedBook(b);
+                          setIssueBookSearch(b.title);
+                          setBooksList([]);
+                        }}
+                        style={{
+                          padding: '10px 14px',
+                          borderBottom: '1px solid #f1f5f9',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center'
+                        }}
+                        onMouseEnter={(e) => (e.currentTarget.style.background = '#f8fafc')}
+                        onMouseLeave={(e) => (e.currentTarget.style.background = '#ffffff')}
+                      >
+                        <div>
+                          <div style={{ fontWeight: 800, fontSize: '0.85rem', color: '#1e293b' }}>{b.title}</div>
+                          <div style={{ fontSize: '0.75rem', color: '#64748b' }}>By {b.author}</div>
+                        </div>
+                        <span style={{
+                          fontSize: '0.75rem',
+                          fontWeight: 800,
+                          color: b.available > 0 ? '#059669' : '#dc2626',
+                          background: b.available > 0 ? '#ecfdf5' : '#fee2e2',
+                          padding: '2px 8px',
+                          borderRadius: 6
+                        }}>
+                          {b.available > 0 ? `${b.available} Avail` : 'No Copies'}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {selectedBook && (
+                  <div style={{
+                    marginTop: 8,
+                    padding: '8px 12px',
+                    background: '#eff6ff',
+                    border: '1px solid #bfdbfe',
+                    borderRadius: 6,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between'
+                  }}>
+                    <span style={{ fontSize: '0.85rem', fontWeight: 800, color: '#1e40af' }}>
+                      <i className="fas fa-check-circle mr-1"></i> {selectedBook.title}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => { setSelectedBook(null); setIssueBookSearch(''); }}
+                      style={{ background: 'none', border: 'none', color: '#dc2626', fontSize: '0.75rem', fontWeight: 800, cursor: 'pointer' }}
+                    >
+                      Change
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Step 2: Select Borrower */}
+              <div style={{ marginBottom: 20 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                  <label style={{ fontWeight: 800, fontSize: '0.85rem', color: '#334155' }}>
+                    2. Borrower Information <span style={{ color: '#dc2626' }}>*</span>
+                  </label>
+                  <div style={{ display: 'flex', gap: 6 }}>
+                    <button
+                      type="button"
+                      onClick={() => { setIssueBorrowerType('student'); setSelectedBorrower(null); }}
+                      style={{
+                        padding: '3px 8px',
+                        fontSize: '0.75rem',
+                        fontWeight: 800,
+                        borderRadius: 4,
+                        border: 'none',
+                        background: issueBorrowerType === 'student' ? 'var(--school-primary, #3182ce)' : '#f1f5f9',
+                        color: issueBorrowerType === 'student' ? '#ffffff' : '#64748b',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      Student
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => { setIssueBorrowerType('staff'); setSelectedBorrower(null); }}
+                      style={{
+                        padding: '3px 8px',
+                        fontSize: '0.75rem',
+                        fontWeight: 800,
+                        borderRadius: 4,
+                        border: 'none',
+                        background: issueBorrowerType === 'staff' ? 'var(--school-primary, #3182ce)' : '#f1f5f9',
+                        color: issueBorrowerType === 'staff' ? '#ffffff' : '#64748b',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      Staff
+                    </button>
+                  </div>
+                </div>
+
+                <div style={{ position: 'relative' }}>
+                  <input
+                    type="text"
+                    placeholder={issueBorrowerType === 'student' ? 'Enter Student ID (e.g. STU-001) or Name' : 'Enter Staff Email or Name'}
+                    value={issueBorrowerQuery}
+                    onChange={(e) => setIssueBorrowerQuery(e.target.value)}
+                    style={{
+                      width: '100%',
+                      padding: '10px 14px',
+                      borderRadius: 8,
+                      border: '1px solid #cbd5e1',
+                      fontSize: '0.9rem'
+                    }}
+                  />
+                  {isSearchingBorrower && (
+                    <span style={{ position: 'absolute', right: 12, top: 12, fontSize: '0.8rem', color: '#94a3b8' }}>
+                      <i className="fas fa-spinner fa-spin"></i>
+                    </span>
+                  )}
+                </div>
+
+                {selectedBorrower && (
+                  <div style={{
+                    marginTop: 8,
+                    padding: '8px 12px',
+                    background: '#f0fdf4',
+                    border: '1px solid #bbf7d0',
+                    borderRadius: 6,
+                    fontSize: '0.85rem',
+                    color: '#166534',
+                    fontWeight: 700
+                  }}>
+                    <i className="fas fa-user-check mr-1"></i> Borrower: {selectedBorrower.name} ({selectedBorrower.studentId || selectedBorrower.email || 'Verified'})
+                  </div>
+                )}
+              </div>
+
+              {/* Action Buttons */}
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
+                <button
+                  type="button"
+                  onClick={() => setShowIssueModal(false)}
+                  className="portal-btn-secondary"
+                  style={{ padding: '10px 18px', fontSize: '0.85rem' }}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={issueSubmitting || !selectedBook}
+                  className="portal-btn-primary"
+                  style={{ padding: '10px 22px', fontSize: '0.85rem', fontWeight: 800 }}
+                >
+                  {issueSubmitting ? 'Issuing...' : 'Confirm Loan Issue'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* QUICK RETURN MODAL */}
+      {showReturnModal && (
+        <div style={{
+          position: 'fixed',
+          inset: 0,
+          background: 'rgba(15, 23, 42, 0.65)',
+          backdropFilter: 'blur(4px)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 9999,
+          padding: 20
+        }}>
+          <div style={{
+            background: '#ffffff',
+            borderRadius: 16,
+            width: '100%',
+            maxWidth: 620,
+            boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)',
+            overflow: 'hidden'
+          }}>
+            <div style={{
+              padding: '18px 24px',
+              borderBottom: '1px solid #e2e8f0',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              background: '#f8fafc'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <div style={{ width: 36, height: 36, borderRadius: 10, background: '#ecfdf5', color: '#059669', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <i className="fas fa-undo-alt"></i>
+                </div>
+                <div>
+                  <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 900, color: '#0f172a' }}>Quick Return Book</h3>
+                  <p style={{ margin: 0, fontSize: '0.75rem', color: '#64748b' }}>Search active loan or scan barcode to mark returned</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowReturnModal(false)}
+                style={{ background: 'none', border: 'none', fontSize: '1.25rem', color: '#94a3b8', cursor: 'pointer' }}
+              >
+                &times;
+              </button>
+            </div>
+
+            <div style={{ padding: 24 }}>
+              <div style={{ marginBottom: 16 }}>
+                <input
+                  type="text"
+                  placeholder="Filter by book title, borrower name, or accession number..."
+                  value={returnSearch}
+                  onChange={(e) => setReturnSearch(e.target.value)}
+                  style={{
+                    width: '100%',
+                    padding: '10px 14px',
+                    borderRadius: 8,
+                    border: '1px solid #cbd5e1',
+                    fontSize: '0.9rem'
+                  }}
+                  autoFocus
+                />
+              </div>
+
+              <div style={{ maxHeight: 320, overflowY: 'auto', border: '1px solid #e2e8f0', borderRadius: 8 }}>
+                {isSearchingReturn ? (
+                  <div style={{ padding: 30, textAlign: 'center', color: '#64748b' }}>
+                    <i className="fas fa-spinner fa-spin mr-2"></i> Loading borrowed books...
+                  </div>
+                ) : activeLoansToReturn.length === 0 ? (
+                  <div style={{ padding: 40, textAlign: 'center', color: '#94a3b8' }}>
+                    No active loans matching your search.
+                  </div>
+                ) : (
+                  activeLoansToReturn.map((loan) => {
+                    const isOverdue = new Date() > new Date(loan.dueDate);
+                    const borrower = loan.student?.name || loan.user?.name || 'Borrower';
+                    return (
+                      <div
+                        key={loan.id}
+                        style={{
+                          padding: '12px 16px',
+                          borderBottom: '1px solid #f1f5f9',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          gap: 12
+                        }}
+                      >
+                        <div style={{ flex: 1 }}>
+                          <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#1e293b' }}>
+                            {loan.book?.title}
+                          </div>
+                          <div style={{ fontSize: '0.75rem', color: '#64748b', display: 'flex', gap: 8, marginTop: 2 }}>
+                            <span>Borrower: <strong style={{ color: '#334155' }}>{borrower}</strong></span>
+                            <span>•</span>
+                            <span>Due: {new Date(loan.dueDate).toLocaleDateString()}</span>
+                            {isOverdue && <span style={{ color: '#dc2626', fontWeight: 800 }}>● OVERDUE</span>}
+                          </div>
+                        </div>
+
+                        <button
+                          onClick={() => handleExecuteReturn(loan.id, loan.book?.title)}
+                          disabled={returnSubmittingId === loan.id}
+                          style={{
+                            background: '#059669',
+                            color: '#ffffff',
+                            border: 'none',
+                            padding: '8px 16px',
+                            borderRadius: 6,
+                            fontSize: '0.8rem',
+                            fontWeight: 800,
+                            cursor: 'pointer'
+                          }}
+                        >
+                          {returnSubmittingId === loan.id ? 'Returning...' : 'Return'}
+                        </button>
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+
+              <div style={{ marginTop: 18, display: 'flex', justifyContent: 'flex-end' }}>
+                <button
+                  type="button"
+                  onClick={() => setShowReturnModal(false)}
+                  className="portal-btn-secondary"
+                  style={{ padding: '8px 18px', fontSize: '0.85rem' }}
+                >
+                  Close
+                </button>
+              </div>
             </div>
           </div>
         </div>
       )}
 
-      {showAddCategoryModal && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.6)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: 20 }}>
-          <div style={{ background: '#fff', borderRadius: '24px', padding: '32px', width: '100%', maxWidth: '400px', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)' }}>
-            <h3 style={{ margin: '0 0 16px', fontSize: '1.25rem', fontWeight: 800 }}>New Category</h3>
-            <p style={{ color: '#64748b', fontSize: '0.9rem', marginBottom: '24px' }}>Create a new genre or subject category for the library catalog.</p>
-            <input 
-              autoFocus
-              type="text" 
-              placeholder="e.g. Science Fiction" 
-              value={newCategoryName}
-              onChange={e => setNewCategoryName(e.target.value)}
-              style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', border: '2px solid #e2e8f0', outline: 'none', fontSize: '1rem', marginBottom: '24px' }}
-            />
-            <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
-              <button onClick={() => setShowAddCategoryModal(false)} style={{ padding: '10px 20px', borderRadius: '12px', border: 'none', background: '#f1f5f9', color: '#64748b', fontWeight: 600, cursor: 'pointer' }}>Cancel</button>
-              <button 
-                onClick={() => {
-                  if(!newCategoryName.trim()) return;
-                  setIsSubmitting(true);
-                  api.post('/api/library/categories', { name: newCategoryName })
-                    .then(() => {
-                      setShowAddCategoryModal(false);
-                      setNewCategoryName('');
-                      api.get('/api/dashboard/library').then(r => setData(r.data)); // Refresh data
-                    })
-                    .catch(console.error)
-                    .finally(() => setIsSubmitting(false));
-                }} 
-                disabled={isSubmitting}
-                style={{ padding: '10px 20px', borderRadius: '12px', border: 'none', background: 'var(--school-primary, #3182ce)', color: '#fff', fontWeight: 600, cursor: 'pointer', opacity: isSubmitting ? 0.7 : 1 }}
-              >{isSubmitting ? 'Saving...' : 'Save'}</button>
-            </div>
-          </div>
-        </div>
-      )}
-
+      {/* Clock In/Out Modal */}
       {clockModalAction && (
-        <ClockInModal 
-          action={clockModalAction} 
-          onClose={() => setClockModalAction(null)} 
-          onSuccess={fetchDashboardData} 
+        <ClockInModal
+          action={clockModalAction}
+          onClose={() => setClockModalAction(null)}
+          onSuccess={() => {
+            setClockModalAction(null);
+            fetchDashboardData();
+          }}
         />
       )}
     </div>

@@ -57,9 +57,10 @@ interface ReportData {
   globalComment?: string;
   principalComment?: string;
   classTeacherComment?: string;
-  schoolType?: string;
+  classAverage?: number;
   classPosition?: number;
   totalStudentsInClass?: number;
+  schoolType?: string;
 }
 
 interface ReportTemplateConfig {

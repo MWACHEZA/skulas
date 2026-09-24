@@ -6,6 +6,7 @@ import UserEditModal from '../../../components/shared/UserEditModal';
 import AdminUserCreateModal from '../../../components/shared/AdminUserCreateModal';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
+import { getAvatarUrl } from '../../../utils/formatters';
 import '../../../styles/portal.css';
 
 export default function AdminStudents() {
@@ -172,7 +173,7 @@ export default function AdminStudents() {
                           <div className="user-info-cell">
                             <div className={`user-avatar student`}>
                               {s.user?.avatar ? (
-                                <img src={`${BASE_URL}/api/storage/media/${currentUser?.schoolCode}/images/${s.user.avatar}`} alt="" style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} />
+                                <img src={getAvatarUrl(s.user.avatar, currentUser?.schoolCode) || ''} alt="" style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} />
                               ) : (
                                 name.charAt(0)
                               )}

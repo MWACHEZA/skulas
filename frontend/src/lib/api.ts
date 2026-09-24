@@ -21,9 +21,12 @@ api.interceptors.request.use((config) => {
     delete config.headers['Content-Type'];
   }
 
-  const token = localStorage.getItem('acadex_token');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+  // Attach token from localStorage only if an Authorization header is not already explicitly provided
+  if (!config.headers.Authorization && !config.headers.authorization) {
+    const token = localStorage.getItem('acadex_token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
   }
 
   // Inject school code for strict multi-tenancy isolation

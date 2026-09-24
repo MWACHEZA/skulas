@@ -1,3 +1,4 @@
+export declare function getMimeExtension(mimeType: string): string;
 /**
  * Saves a base64 encoded image to a structured directory
  * @param base64 String (data:image/png;base64,...)

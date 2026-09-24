@@ -14,16 +14,24 @@ exports.SystemSettingsSchema = zod_1.z.object({
         mandatoryReceipts: zod_1.z.boolean().optional(),
         showBalanceOnReceipts: zod_1.z.boolean().optional(),
         showUniformsModule: zod_1.z.boolean().optional(),
-        smtpEmail: zod_1.z.string().email('Invalid SMTP sender email').optional(),
-        smtpHost: zod_1.z.string().min(1, 'SMTP Host is required').optional(),
-        smtpPort: zod_1.z.number().int().min(1).max(65535).optional(),
-        smtpPassword: zod_1.z.string().optional(),
+        // Institutional Accounting Sync fields
+        defaultIncomeAccountId: zod_1.z.string().optional().nullable(),
+        defaultReceivableAccountId: zod_1.z.string().optional().nullable(),
+        defaultBankAccountId: zod_1.z.string().optional().nullable(),
+        defaultCashAccountId: zod_1.z.string().optional().nullable(),
+        defaultExpenseAccountId: zod_1.z.string().optional().nullable(),
+        exchangeRate: zod_1.z.union([zod_1.z.number(), zod_1.z.string()]).optional().nullable(),
+        autoPostToLedger: zod_1.z.boolean().optional(),
+        smtpEmail: zod_1.z.string().email('Invalid SMTP sender email').optional().nullable().or(zod_1.z.literal('')),
+        smtpHost: zod_1.z.string().optional().nullable().or(zod_1.z.literal('')),
+        smtpPort: zod_1.z.number().int().min(1).max(65535).optional().nullable(),
+        smtpPassword: zod_1.z.string().optional().nullable(),
         smtpSsl: zod_1.z.boolean().optional(),
-        systemUrl: zod_1.z.string().url('Invalid System URL').optional(),
-        whatsappApiUrl: zod_1.z.string().url('Invalid WhatsApp API URL').optional(),
-        whatsappAccessToken: zod_1.z.string().optional(),
-        countryPhoneCode: zod_1.z.string().min(1).max(5).optional(),
-    }),
+        systemUrl: zod_1.z.string().optional().nullable().or(zod_1.z.literal('')),
+        whatsappApiUrl: zod_1.z.string().optional().nullable().or(zod_1.z.literal('')),
+        whatsappAccessToken: zod_1.z.string().optional().nullable(),
+        countryPhoneCode: zod_1.z.string().min(1).max(5).optional().nullable(),
+    }).passthrough(),
 });
 exports.UpdatePlanSchema = zod_1.z.object({
     body: zod_1.z.object({
@@ -116,7 +124,7 @@ exports.SupplierCategoriesSchema = zod_1.z.object({
 });
 exports.SuperAdminSchoolSchema = zod_1.z.object({
     body: zod_1.z.object({
-        name: zod_1.z.string().min(1, 'School name is required'),
+        name: zod_1.z.string().min(1).optional().nullable(),
         email: zod_1.z.string().email().optional().nullable().or(zod_1.z.literal('')),
         phone: zod_1.z.string().optional().nullable(),
         address: zod_1.z.string().optional().nullable(),

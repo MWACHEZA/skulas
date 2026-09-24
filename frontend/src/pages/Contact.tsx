@@ -235,18 +235,54 @@ export default function Contact() {
         </div>
       </section>
 
-      {/* Map Section */}
-      {address && (
-        <div style={{ height: '380px', width: '100%' }}>
-          <iframe
-            src={`https://maps.google.com/maps?q=${encodeURIComponent(address)}&t=&z=13&ie=UTF8&iwloc=&output=embed`}
-            allowFullScreen
-            loading="lazy"
-            title="School Map"
-            style={{ width: '100%', height: '100%', border: 'none', display: 'block' }}
-          ></iframe>
-        </div>
-      )}
+      {/* Tenant-Configurable Map Section with Marker */}
+      {(() => {
+        const mapLocation = (school?.schoolSetting as any)?.mapLocation || address;
+        const lat = (school?.schoolSetting as any)?.mapLatitude;
+        const lng = (school?.schoolSetting as any)?.mapLongitude;
+
+        const mapQuery = (lat && lng) 
+          ? `${lat},${lng}` 
+          : mapLocation 
+          ? encodeURIComponent(mapLocation) 
+          : address 
+          ? encodeURIComponent(address) 
+          : '';
+
+        if (!mapQuery) return null;
+
+        return (
+          <div style={{ width: '100%', background: '#ffffff', borderTop: '1px solid #e2e8f0' }}>
+            <div className="container" style={{ padding: '24px 0 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#fee2e2', color: '#dc2626', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <i className="fas fa-map-marker-alt"></i>
+                </div>
+                <div>
+                  <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800, color: '#0f172a' }}>Find Our Campus</h3>
+                  <p style={{ margin: 0, fontSize: '0.85rem', color: '#64748b' }}>
+                    {mapLocation || address || schoolName}
+                  </p>
+                </div>
+              </div>
+              {lat && lng && (
+                <span className="portal-badge" style={{ fontSize: '0.75rem', background: '#f1f5f9', color: '#475569' }}>
+                  Coordinates: {lat}, {lng}
+                </span>
+              )}
+            </div>
+            <div style={{ height: '420px', width: '100%', position: 'relative' }}>
+              <iframe
+                src={`https://maps.google.com/maps?q=${mapQuery}&t=&z=15&ie=UTF8&iwloc=&output=embed`}
+                allowFullScreen
+                loading="lazy"
+                title="School Campus Map Location"
+                style={{ width: '100%', height: '100%', border: 'none', display: 'block' }}
+              ></iframe>
+            </div>
+          </div>
+        );
+      })()}
     </>
   );
 }

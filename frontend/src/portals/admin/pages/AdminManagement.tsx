@@ -5,6 +5,7 @@ import UserEditModal from '../../../components/shared/UserEditModal';
 import AdminUserCreateModal from '../../../components/shared/AdminUserCreateModal';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
+import { getAvatarUrl } from '../../../utils/formatters';
 import '../../../styles/portal.css';
 
 export default function AdminManagement() {
@@ -148,7 +149,7 @@ export default function AdminManagement() {
                             overflow: 'hidden'
                         }}>
                           {s.avatar ? (
-                            <img src={`${BASE_URL}/api/storage/media/${currentUser?.schoolCode}/images/${s.avatar}`} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                            <img src={getAvatarUrl(s.avatar, currentUser?.schoolCode) || ''} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                           ) : (
                             s.name.charAt(0)
                           )}

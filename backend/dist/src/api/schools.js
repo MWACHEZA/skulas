@@ -21,7 +21,7 @@ router.get('/settings', auth_1.requireAuth, async (req, res) => {
         const schoolId = req.user.schoolId;
         const [settingsRecord, school] = await Promise.all([
             prisma_1.default.schoolSetting.findFirst({ where: { schoolId } }),
-            prisma_1.default.school.findUnique({ where: { id: schoolId }, select: { id: true, name: true, type: true, code: true } })
+            prisma_1.default.school.findUnique({ where: { id: schoolId }, select: { id: true, name: true, type: true, code: true, settings: true } })
         ]);
         let settings = settingsRecord;
         // Fallback if not created yet
@@ -30,7 +30,9 @@ router.get('/settings', auth_1.requireAuth, async (req, res) => {
                 data: { schoolId }
             });
         }
+        const schoolSettingsJson = school?.settings || {};
         const responsePayload = {
+            ...schoolSettingsJson,
             ...settings,
             school: school || undefined,
             schoolType: school?.type
@@ -68,7 +70,8 @@ router.patch('/settings', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_AD
             'reportCardTemplate', 'allowTeacherEnterScores', 'scoreClosingDate',
             'allowStudentCheckResult', 'allowParentPrintReport', 'reportCommentSignature',
             'showSubjectPosition', 'gateMinPaidAmount', 'gateMinPaidPercent', 'gateRequiredType',
-            'idCardTemplateFront', 'idCardTemplateBack'
+            'idCardTemplateFront', 'idCardTemplateBack',
+            'mapLocation', 'mapLatitude', 'mapLongitude'
         ];
         const filteredData = {};
         for (const key of allowedKeys) {
@@ -77,6 +80,12 @@ router.patch('/settings', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_AD
             }
         }
         // Safely parse numbers
+        if (filteredData.mapLatitude !== undefined) {
+            filteredData.mapLatitude = filteredData.mapLatitude ? parseFloat(filteredData.mapLatitude) : null;
+        }
+        if (filteredData.mapLongitude !== undefined) {
+            filteredData.mapLongitude = filteredData.mapLongitude ? parseFloat(filteredData.mapLongitude) : null;
+        }
         if (filteredData.idleTime !== undefined) {
             filteredData.idleTime = parseInt(filteredData.idleTime) || 0;
         }
@@ -122,6 +131,40 @@ router.patch('/settings', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_AD
             update: filteredData,
             create: { ...filteredData, schoolId }
         });
+        // Also persist accounting and extended settings to school.settings JSON
+        const accountingKeys = [
+            'defaultIncomeAccountId',
+            'defaultReceivableAccountId',
+            'defaultBankAccountId',
+            'defaultCashAccountId',
+            'defaultExpenseAccountId',
+            'exchangeRate',
+            'autoPostToLedger'
+        ];
+        const accountingData = {};
+        for (const key of accountingKeys) {
+            if (settingsData[key] !== undefined) {
+                accountingData[key] = settingsData[key];
+            }
+        }
+        let updatedSettingsJson = {};
+        if (Object.keys(accountingData).length > 0) {
+            const existingSchool = await prisma_1.default.school.findUnique({
+                where: { id: schoolId },
+                select: { settings: true }
+            });
+            const currentSettingsJson = existingSchool?.settings || {};
+            updatedSettingsJson = {
+                ...currentSettingsJson,
+                ...accountingData
+            };
+            await prisma_1.default.school.update({
+                where: { id: schoolId },
+                data: {
+                    settings: updatedSettingsJson
+                }
+            });
+        }
         // Log the change for audit
         await prisma_1.default.auditLog.create({
             data: {
@@ -131,12 +174,18 @@ router.patch('/settings', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_AD
                 entityType: 'SchoolSetting',
                 entityId: settings.id,
                 details: {
-                    changedFields: Object.keys(filteredData),
+                    changedFields: [...Object.keys(filteredData), ...Object.keys(accountingData)],
                     timestamp: new Date().toISOString()
                 }
             }
         });
-        res.json({ success: true, settings });
+        res.json({
+            success: true,
+            settings: {
+                ...updatedSettingsJson,
+                ...settings
+            }
+        });
     }
     catch (error) {
         console.error('Settings update error:', error);
@@ -151,11 +200,31 @@ router.get('/me', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN'), a
     try {
         const school = await prisma_1.default.school.findUnique({
             where: { id: req.user.schoolId },
-            include: { plan: true }
+            include: {
+                plan: true,
+                _count: { select: { students: true, teachers: true, classes: true } }
+            }
         });
         if (!school)
             return res.status(404).json({ error: 'School not found' });
-        res.json(school);
+        const activeStudents = await prisma_1.default.student.count({
+            where: {
+                schoolId: school.id,
+                status: { in: ['Enrolled', 'Active', 'enrolled', 'active'] }
+            }
+        });
+        const PLATFORM_STUDENT_RATE = 2.00;
+        const monthlyPlatformBill = activeStudents * PLATFORM_STUDENT_RATE;
+        res.json({
+            ...school,
+            billing: {
+                ratePerStudent: PLATFORM_STUDENT_RATE,
+                activeStudents,
+                totalStudents: school._count.students,
+                monthlyPlatformBill,
+                currency: 'USD'
+            }
+        });
     }
     catch (error) {
         res.status(500).json({ error: 'Failed to fetch school data' });
@@ -1248,18 +1317,29 @@ router.patch('/:code', auth_1.requireAuth, (0, auth_1.requireRole)('SUPER_ADMIN'
     const code = req.params.code;
     const { name, email, phone, address, status, planName, type } = req.body;
     try {
+        const existingSchool = await prisma_1.default.school.findFirst({
+            where: {
+                OR: [
+                    { code: code.toUpperCase() },
+                    { id: code }
+                ]
+            }
+        });
+        if (!existingSchool) {
+            return res.status(404).json({ error: 'School not found' });
+        }
         const updateData = {};
-        if (name)
+        if (name !== undefined)
             updateData.name = name;
-        if (email)
+        if (email !== undefined)
             updateData.email = email;
-        if (phone)
+        if (phone !== undefined)
             updateData.phone = phone;
-        if (address)
+        if (address !== undefined)
             updateData.address = address;
-        if (status)
+        if (status !== undefined)
             updateData.status = status;
-        if (type)
+        if (type !== undefined)
             updateData.type = type;
         if (planName) {
             const plan = await prisma_1.default.plan.findUnique({ where: { name: planName } });
@@ -1268,12 +1348,15 @@ router.patch('/:code', auth_1.requireAuth, (0, auth_1.requireRole)('SUPER_ADMIN'
             updateData.planId = plan.id;
         }
         const school = await prisma_1.default.school.update({
-            where: { code: code.toUpperCase() },
-            data: updateData
+            where: { id: existingSchool.id },
+            data: updateData,
+            include: { plan: true }
         });
+        await (0, audit_1.logAction)(req, 'UPDATE_SCHOOL_SETTINGS', 'School', school.id, { code: school.code, changes: updateData });
         res.json({ message: 'School updated successfully', school });
     }
     catch (error) {
+        console.error('Superadmin school update error:', error);
         res.status(500).json({ error: 'Failed to update school' });
     }
 });
@@ -1284,15 +1367,26 @@ router.patch('/:code', auth_1.requireAuth, (0, auth_1.requireRole)('SUPER_ADMIN'
 router.delete('/:code', auth_1.requireAuth, (0, auth_1.requireRole)('SUPER_ADMIN'), async (req, res) => {
     const code = req.params.code;
     try {
-        const school = await prisma_1.default.school.update({
-            where: { code: code.toUpperCase() },
+        const existingSchool = await prisma_1.default.school.findFirst({
+            where: {
+                OR: [
+                    { code: code.toUpperCase() },
+                    { id: code }
+                ]
+            }
+        });
+        if (!existingSchool) {
+            return res.status(404).json({ error: 'School not found' });
+        }
+        await prisma_1.default.school.update({
+            where: { id: existingSchool.id },
             data: { status: 'deleted' }
         });
-        // Invalidate all tokens for users of this school by locking them or requiring password change
-        // For now, the requireAuth middleware will block them because school.status === 'deleted'
+        await (0, audit_1.logAction)(req, 'DELETE_SCHOOL', 'School', existingSchool.id, { code: existingSchool.code, name: existingSchool.name });
         res.json({ message: 'School deleted successfully' });
     }
     catch (error) {
+        console.error('Superadmin school delete error:', error);
         res.status(500).json({ error: 'Failed to delete school' });
     }
 });

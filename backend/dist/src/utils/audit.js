@@ -5,10 +5,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.logAction = void 0;
 const prisma_1 = __importDefault(require("../lib/prisma"));
-const logAction = async (req, action, entityType, entityId, details) => {
+const logAction = async (req, action, entityType, entityId, details, status = 'SUCCESS', targetSchoolId) => {
     try {
-        if (!req.user || !req.user.schoolId)
+        if (!req.user)
             return;
+        const schoolId = targetSchoolId || req.user.schoolId || null;
         await prisma_1.default.auditLog.create({
             data: {
                 action,
@@ -16,8 +17,9 @@ const logAction = async (req, action, entityType, entityId, details) => {
                 entityId,
                 details: details || {},
                 actorId: req.user.id,
-                schoolId: req.user.schoolId,
-                ipAddress: req.ip || req.socket.remoteAddress
+                schoolId,
+                status,
+                ipAddress: req.ip || req.socket?.remoteAddress || 'Internal'
             }
         });
     }

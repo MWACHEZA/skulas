@@ -15,9 +15,9 @@ exports.UniformStockOrderItemSchema = zod_1.z.object({
 });
 exports.UniformStockOrderSchema = zod_1.z.object({
     orderDate: zod_1.z.string().optional().transform(v => v ? new Date(v) : new Date()),
-    supplierId: zod_1.z.string().optional(),
-    paymentMode: zod_1.z.string().optional(),
-    reference: zod_1.z.string().optional(),
+    supplierId: zod_1.z.string().nullable().optional(),
+    paymentMode: zod_1.z.string().nullable().optional(),
+    reference: zod_1.z.string().nullable().optional(),
     initialPayment: zod_1.z.number().min(0).default(0),
     items: zod_1.z.array(exports.UniformStockOrderItemSchema).min(1, 'At least one item is required'),
 });
@@ -28,17 +28,17 @@ exports.UniformSaleItemSchema = zod_1.z.object({
 });
 exports.UniformSaleSchema = zod_1.z.object({
     saleDate: zod_1.z.string().optional().transform(v => v ? new Date(v) : new Date()),
-    studentId: zod_1.z.string().optional(),
-    parentId: zod_1.z.string().optional(),
-    paymentMode: zod_1.z.string().optional(),
-    reference: zod_1.z.string().optional(),
+    studentId: zod_1.z.string().nullable().optional(),
+    parentId: zod_1.z.string().nullable().optional(),
+    paymentMode: zod_1.z.string().nullable().optional(),
+    reference: zod_1.z.string().nullable().optional(),
     items: zod_1.z.array(exports.UniformSaleItemSchema).min(1, 'At least one item is required'),
 });
 exports.UniformSupplierPaymentSchema = zod_1.z.object({
     supplierId: zod_1.z.string(),
     amount: zod_1.z.number().positive(),
     date: zod_1.z.string().optional().transform(v => v ? new Date(v) : new Date()),
-    paymentMode: zod_1.z.string().optional(),
-    reference: zod_1.z.string().optional(),
+    paymentMode: zod_1.z.string().nullable().optional(),
+    reference: zod_1.z.string().nullable().optional(),
 });
 //# sourceMappingURL=uniforms.schema.js.map

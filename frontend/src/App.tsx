@@ -17,6 +17,9 @@ import Sports from './pages/Sports';
 import Clubs from './pages/Clubs';
 import Contact from './pages/Contact';
 import AcadexLanding from './pages/AcadexLanding';
+import AcadexFeatures from './pages/AcadexFeatures';
+import AcadexPricing from './pages/AcadexPricing';
+import AcadexContact from './pages/AcadexContact';
 import ComingSoon from './pages/ComingSoon';
 import About from './pages/About';
 import Careers from './pages/Careers'; // public careers/vacancies portal
@@ -264,6 +267,8 @@ import AcadexProvisioning from './portals/acadex/pages/Onboarding';
 import AcadexPlans from './portals/acadex/pages/Subscriptions';
 import AcadexSchoolDetails from './portals/acadex/pages/SchoolDetails';
 import PlatformLogs from './portals/acadex/pages/PlatformLogs';
+import GlobalRevenue from './portals/acadex/pages/GlobalRevenue';
+import PlatformSettings from './portals/acadex/pages/PlatformSettings';
 
 
 //  Shared pages 
@@ -317,7 +322,8 @@ const ClinicRegister = () => <StaffRegister role="CLINIC" label="Clinic Staff" i
 const RESERVED_PATHS = new Set([
   'student', 'teacher', 'admin', 'bursar', 'library', 'librarian',
   'alumni', 'ancillary', 'parent', 'supplier', 'clinic', 'acadex',
-  'register', 'login', 'school', 'api', 'apply', 'check-status'
+  'register', 'login', 'school', 'api', 'apply', 'check-status',
+  'features', 'pricing', 'contact'
 ]);
 
 function SchoolCodeRedirect() {
@@ -412,8 +418,11 @@ export default function App() {
           <SiteConfigHandler />
           <BrowserRouter>
           <Routes>
-            {/*  Acadex Platform Landing (Solo)  */}
+            {/*  Acadex Platform Marketing Pages (Solo)  */}
             <Route path="/" element={<AcadexLanding />} />
+            <Route path="/features" element={<AcadexFeatures />} />
+            <Route path="/pricing" element={<AcadexPricing />} />
+            <Route path="/contact" element={<AcadexContact />} />
 
             {/*
               Short school URL: localhost/AX-SEMINARY  → /school/AX-SEMINARY
@@ -742,6 +751,7 @@ export default function App() {
             }>
               <Route index element={<BursarDashboard />} />
               <Route path="dashboard" element={<BursarDashboard />} />
+              <Route path="assets" element={<AdminAssetManagement />} />
               <Route path="fees" element={<FeesBillingPage />} />
               <Route path="payments" element={<PaymentHistoryPage />} />
               <Route path="expenses" element={<ExpensesPage />} />
@@ -834,6 +844,7 @@ export default function App() {
               <Route path="loans" element={<LibraryLoans />} />
               <Route path="overdue" element={<LibraryOverdue />} />
               <Route path="reports" element={<LibraryReports />} />
+              <Route path="reservations" element={<LibraryRequests />} />
               <Route path="requests" element={<LibraryRequests />} />
               <Route path="assets" element={<AncillaryAssets />} />
               <Route path="procurement" element={<AncillaryProcurement />} />
@@ -1027,6 +1038,7 @@ export default function App() {
               <Route path="messages" element={<MessagesPage />} />
               <Route path="profile" element={<ProfilePage />} />
               <Route path="support" element={<ITSupportPage />} />
+              <Route path="assets" element={<AdminAssetManagement />} />
               <Route path="settings" element={<SettingsPage />} />
             </Route>
 
@@ -1067,9 +1079,9 @@ export default function App() {
               <Route path="schools/:schoolId" element={<AcadexSchoolDetails />} />
               <Route path="provision" element={<AcadexProvisioning />} />
               <Route path="plans" element={<AcadexPlans />} />
-              <Route path="revenue" element={<ComingSoon />} />
+              <Route path="revenue" element={<GlobalRevenue />} />
               <Route path="logs" element={<PlatformLogs />} />
-              <Route path="settings" element={<SettingsPage />} />
+              <Route path="settings" element={<PlatformSettings />} />
               <Route path="profile" element={<ProfilePage />} />
               <Route path="clinic/complaints" element={<HealthComplaints />} />
               <Route path="clinic/appointments" element={<Appointments />} />

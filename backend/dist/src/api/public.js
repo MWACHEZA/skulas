@@ -68,6 +68,9 @@ router.get('/schools/:code/data', async (req, res) => {
             select: {
                 id: true,
                 name: true,
+                type: true,
+                isCombined: true,
+                levels: true,
                 customContent: true,
                 classes: {
                     select: { id: true, name: true, level: true },
@@ -111,6 +114,9 @@ router.get('/schools/:code/data', async (req, res) => {
         const supplierCategories = customContentObj.supplierCategories || [];
         res.json({
             schoolName: school.name,
+            schoolType: school.type || 'primary',
+            isCombined: school.isCombined,
+            levels: school.levels,
             classes: school.classes,
             subjects: school.subjects,
             departments: school.departments,
@@ -354,8 +360,14 @@ router.post('/applications', async (req, res) => {
         if (resumeUrl && resumeUrl.includes(';base64,')) {
             updatedResumeUrl = (0, file_utils_1.saveBase64Image)(resumeUrl, 'resume', 'docs', school.code, 'recruitment/applications', app.id);
         }
+        else if (resumeUrl) {
+            updatedResumeUrl = resumeUrl;
+        }
         if (photoUrl && photoUrl.includes(';base64,')) {
             updatedPhotoUrl = (0, file_utils_1.saveBase64Image)(photoUrl, 'photo', 'images', school.code, 'recruitment/applications', app.id);
+        }
+        else if (photoUrl) {
+            updatedPhotoUrl = photoUrl;
         }
         if (updatedResumeUrl || updatedPhotoUrl) {
             await prisma_1.default.jobApplication.update({

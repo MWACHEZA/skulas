@@ -5,6 +5,7 @@ import UserEditModal from '../../../components/shared/UserEditModal';
 import AdminUserCreateModal from '../../../components/shared/AdminUserCreateModal';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
+import { getAvatarUrl } from '../../../utils/formatters';
 import '../../../styles/portal.css';
 
 export default function AncillaryManagement() {
@@ -132,7 +133,7 @@ export default function AncillaryManagement() {
                       <div className="user-info-cell">
                         <div className={`user-avatar ancillary`}>
                           {s.avatar ? (
-                            <img src={`${BASE_URL}/api/storage/media/${currentUser?.schoolCode}/images/${s.avatar}`} alt="" />
+                            <img src={getAvatarUrl(s.avatar, currentUser?.schoolCode) || ''} alt="" />
                           ) : (
                             s.name.charAt(0)
                           )}

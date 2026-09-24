@@ -11,16 +11,23 @@ export declare const SystemSettingsSchema: z.ZodObject<{
         mandatoryReceipts: z.ZodOptional<z.ZodBoolean>;
         showBalanceOnReceipts: z.ZodOptional<z.ZodBoolean>;
         showUniformsModule: z.ZodOptional<z.ZodBoolean>;
-        smtpEmail: z.ZodOptional<z.ZodString>;
-        smtpHost: z.ZodOptional<z.ZodString>;
-        smtpPort: z.ZodOptional<z.ZodNumber>;
-        smtpPassword: z.ZodOptional<z.ZodString>;
+        defaultIncomeAccountId: z.ZodNullable<z.ZodOptional<z.ZodString>>;
+        defaultReceivableAccountId: z.ZodNullable<z.ZodOptional<z.ZodString>>;
+        defaultBankAccountId: z.ZodNullable<z.ZodOptional<z.ZodString>>;
+        defaultCashAccountId: z.ZodNullable<z.ZodOptional<z.ZodString>>;
+        defaultExpenseAccountId: z.ZodNullable<z.ZodOptional<z.ZodString>>;
+        exchangeRate: z.ZodNullable<z.ZodOptional<z.ZodUnion<readonly [z.ZodNumber, z.ZodString]>>>;
+        autoPostToLedger: z.ZodOptional<z.ZodBoolean>;
+        smtpEmail: z.ZodUnion<[z.ZodNullable<z.ZodOptional<z.ZodString>>, z.ZodLiteral<"">]>;
+        smtpHost: z.ZodUnion<[z.ZodNullable<z.ZodOptional<z.ZodString>>, z.ZodLiteral<"">]>;
+        smtpPort: z.ZodNullable<z.ZodOptional<z.ZodNumber>>;
+        smtpPassword: z.ZodNullable<z.ZodOptional<z.ZodString>>;
         smtpSsl: z.ZodOptional<z.ZodBoolean>;
-        systemUrl: z.ZodOptional<z.ZodString>;
-        whatsappApiUrl: z.ZodOptional<z.ZodString>;
-        whatsappAccessToken: z.ZodOptional<z.ZodString>;
-        countryPhoneCode: z.ZodOptional<z.ZodString>;
-    }, z.core.$strip>;
+        systemUrl: z.ZodUnion<[z.ZodNullable<z.ZodOptional<z.ZodString>>, z.ZodLiteral<"">]>;
+        whatsappApiUrl: z.ZodUnion<[z.ZodNullable<z.ZodOptional<z.ZodString>>, z.ZodLiteral<"">]>;
+        whatsappAccessToken: z.ZodNullable<z.ZodOptional<z.ZodString>>;
+        countryPhoneCode: z.ZodNullable<z.ZodOptional<z.ZodString>>;
+    }, z.core.$loose>;
 }, z.core.$strip>;
 export declare const UpdatePlanSchema: z.ZodObject<{
     body: z.ZodObject<{
@@ -112,7 +119,7 @@ export declare const SupplierCategoriesSchema: z.ZodObject<{
 }, z.core.$strip>;
 export declare const SuperAdminSchoolSchema: z.ZodObject<{
     body: z.ZodObject<{
-        name: z.ZodString;
+        name: z.ZodNullable<z.ZodOptional<z.ZodString>>;
         email: z.ZodUnion<[z.ZodNullable<z.ZodOptional<z.ZodString>>, z.ZodLiteral<"">]>;
         phone: z.ZodNullable<z.ZodOptional<z.ZodString>>;
         address: z.ZodNullable<z.ZodOptional<z.ZodString>>;

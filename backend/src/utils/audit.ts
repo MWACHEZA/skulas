@@ -6,10 +6,14 @@ export const logAction = async (
   action: string,
   entityType: string,
   entityId?: string,
-  details?: any
+  details?: any,
+  status: 'SUCCESS' | 'WARNING' | 'ERROR' = 'SUCCESS',
+  targetSchoolId?: string
 ) => {
   try {
-    if (!req.user || !req.user.schoolId) return;
+    if (!req.user) return;
+
+    const schoolId = targetSchoolId || req.user.schoolId || null;
 
     await prisma.auditLog.create({
       data: {
@@ -18,8 +22,9 @@ export const logAction = async (
         entityId,
         details: details || {},
         actorId: req.user.id,
-        schoolId: req.user.schoolId,
-        ipAddress: req.ip || req.socket.remoteAddress
+        schoolId,
+        status,
+        ipAddress: req.ip || req.socket?.remoteAddress || 'Internal'
       }
     });
   } catch (err) {

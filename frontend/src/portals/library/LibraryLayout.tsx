@@ -13,7 +13,7 @@ export default function LibraryLayout() {
     { label: 'Digital Repository', icon: 'fas fa-cloud-download-alt', to: '/librarian/digital' },
     { label: 'Active Loans', icon: 'fas fa-handshake', to: '/librarian/loans' },
     { label: 'Overdue Books', icon: 'fas fa-exclamation-circle', to: '/librarian/overdue' },
-    { label: 'Requests', icon: 'fas fa-hand-holding', to: '/librarian/requests' },
+    { label: 'Reservations', icon: 'fas fa-bookmark', to: '/librarian/reservations' },
     { section: 'Resources', label: 'Asset Management', icon: 'fas fa-boxes', to: '/librarian/assets' },
     { label: 'Requisitions & Procurement', icon: 'fas fa-shopping-cart', to: '/librarian/procurement' },
     { section: 'Insights', label: t('reports'), icon: `fas ${isMedical ? 'fa-file-medical-alt' : 'fa-chart-bar'}`, to: '/librarian/reports' },

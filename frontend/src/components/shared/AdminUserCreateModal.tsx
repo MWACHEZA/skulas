@@ -279,6 +279,10 @@ export default function AdminUserCreateModal({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isStaff && staffStep < 4) {
+      console.warn('Blocked premature submission on step', staffStep);
+      return;
+    }
     setLoading(true);
     
     try {
@@ -422,9 +426,12 @@ export default function AdminUserCreateModal({
             onSubmit={handleSubmit}
             id="createUserForm"
             onKeyDown={(e) => {
-              // Prevent Enter from accidentally submitting while mid-wizard
-              if (e.key === 'Enter' && isStaff && staffStep < 4) {
-                e.preventDefault();
+              // Prevent Enter from accidentally submitting form on text inputs
+              if (e.key === 'Enter') {
+                const target = e.target as HTMLElement;
+                if (target.tagName.toLowerCase() !== 'textarea') {
+                  e.preventDefault();
+                }
               }
             }}
           >
@@ -1265,22 +1272,22 @@ export default function AdminUserCreateModal({
           <div className="flex gap-3" style={{ display: 'flex', gap: 10 }}>
             {isStaff ? (
               <>
-                <button type="button" className="btn btn-secondary py-2 px-4 rounded border font-medium" onClick={onClose} style={{ background: 'white' }}>Cancel</button>
+                <button key="btn-staff-cancel" type="button" className="btn btn-secondary py-2 px-4 rounded border font-medium" onClick={onClose} style={{ background: 'white' }}>Cancel</button>
                 {staffStep > 1 && (
-                  <button type="button" className="btn btn-secondary py-2 px-4 rounded border font-medium" onClick={() => setStaffStep(s => s - 1)} style={{ background: 'white' }}>Back</button>
+                  <button key="btn-staff-back" type="button" className="btn btn-secondary py-2 px-4 rounded border font-medium" onClick={() => setStaffStep(s => s - 1)} style={{ background: 'white' }}>Back</button>
                 )}
                 {staffStep < 4 ? (
-                  <button type="button" className="btn btn-primary py-2 px-4 rounded text-white font-medium shadow-sm" onClick={() => validateStaffStep(staffStep) && setStaffStep(s => s + 1)} style={{ background: '#3182ce' }}>Next</button>
+                  <button key="btn-staff-next" type="button" className="btn btn-primary py-2 px-4 rounded text-white font-medium shadow-sm" onClick={() => validateStaffStep(staffStep) && setStaffStep(s => s + 1)} style={{ background: '#3182ce' }}>Next</button>
                 ) : (
-                  <button type="submit" form="createUserForm" className="btn btn-primary py-2 px-4 rounded text-white font-medium shadow-sm transition-transform active:scale-95" disabled={loading} style={{ background: '#4ade80' }}>
+                  <button key="btn-staff-submit" type="submit" form="createUserForm" className="btn btn-primary py-2 px-4 rounded text-white font-medium shadow-sm transition-transform active:scale-95" disabled={loading} style={{ background: '#4ade80' }}>
                     {loading ? <i className="fas fa-spinner fa-spin"></i> : `Create ${role.charAt(0) + role.slice(1).toLowerCase()} Profile`}
                   </button>
                 )}
               </>
             ) : (
               <>
-                <button type="button" className="btn btn-secondary py-2 px-4 rounded border font-medium" onClick={onClose} style={{ background: 'white' }}>Cancel</button>
-                <button type="submit" form="createUserForm" className="btn btn-primary py-2 px-4 rounded text-white font-medium shadow-sm transition-transform active:scale-95" disabled={loading} style={{ background: '#3182ce' }}>
+                <button key="btn-cancel" type="button" className="btn btn-secondary py-2 px-4 rounded border font-medium" onClick={onClose} style={{ background: 'white' }}>Cancel</button>
+                <button key="btn-submit" type="submit" form="createUserForm" className="btn btn-primary py-2 px-4 rounded text-white font-medium shadow-sm transition-transform active:scale-95" disabled={loading} style={{ background: '#3182ce' }}>
                   {loading ? <i className="fas fa-spinner fa-spin"></i> : `Create ${role.charAt(0) + role.slice(1).toLowerCase()} Profile`}
                 </button>
               </>

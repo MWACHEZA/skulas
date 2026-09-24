@@ -106,16 +106,23 @@ router.get('/announcements', async (req: AuthRequest, res: Response) => {
  * @desc    Create announcement with multi-portal visibility
  */
 router.post('/announcements', async (req: AuthRequest, res: Response) => {
-  const { title, content, visiblePortals, isPublic, expiresAt } = req.body;
+  const { title, content, visiblePortals, isPublic, expiresAt, publishedAt } = req.body;
   const schoolId = req.user!.schoolId!;
 
   try {
+    let parsedPublishedAt = new Date();
+    if (publishedAt) {
+      const d = new Date(publishedAt);
+      if (!isNaN(d.getTime())) parsedPublishedAt = d;
+    }
+
     const announcement = await prisma.announcement.create({
       data: {
         title,
         content,
         visiblePortals: visiblePortals || ['ALL'],
         isPublic: !!isPublic,
+        publishedAt: parsedPublishedAt,
         expiresAt: expiresAt ? new Date(expiresAt) : null,
         schoolId,
       },
@@ -135,17 +142,23 @@ router.post('/announcements', async (req: AuthRequest, res: Response) => {
  */
 router.put('/announcements/:id', async (req: AuthRequest, res: Response) => {
   const id = req.params.id as string;
-  const { title, content, visiblePortals, isPublic, expiresAt } = req.body;
+  const { title, content, visiblePortals, isPublic, expiresAt, publishedAt } = req.body;
   try {
-    const announcement = await prisma.announcement.updateMany({
+    const updateData: any = {
+      title,
+      content,
+      visiblePortals,
+      isPublic,
+      expiresAt: expiresAt ? new Date(expiresAt) : null,
+    };
+    if (publishedAt) {
+      const d = new Date(publishedAt);
+      if (!isNaN(d.getTime())) updateData.publishedAt = d;
+    }
+
+    await prisma.announcement.updateMany({
       where: { id, schoolId: req.user!.schoolId! },
-      data: {
-        title,
-        content,
-        visiblePortals,
-        isPublic,
-        expiresAt: expiresAt ? new Date(expiresAt) : null,
-      }
+      data: updateData
     });
     res.json({ success: true });
   } catch (error) {

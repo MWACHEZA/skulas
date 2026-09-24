@@ -136,7 +136,7 @@ export const SupplierCategoriesSchema = z.object({
 
 export const SuperAdminSchoolSchema = z.object({
   body: z.object({
-    name: z.string().min(1, 'School name is required'),
+    name: z.string().min(1).optional().nullable(),
     email: z.string().email().optional().nullable().or(z.literal('')),
     phone: z.string().optional().nullable(),
     address: z.string().optional().nullable(),

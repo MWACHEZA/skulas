@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import api, { BASE_URL } from '../../../lib/api';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
+import { getAvatarUrl } from '../../../utils/formatters';
 
 export default function TeacherClassDetails() {
    const { classId } = useParams();
@@ -92,9 +93,9 @@ export default function TeacherClassDetails() {
                              width: 32, height: 32, borderRadius: '50%', background: '#edf2f7', 
                              display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' 
                            }}>
-                             {s.user?.avatar ? (
-                               <img src={`${BASE_URL}/api/storage/media/${currentUser?.schoolCode}/images/${s.user.avatar}`} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                             ) : (
+                              {s.user?.avatar ? (
+                                <img src={getAvatarUrl(s.user.avatar, currentUser?.schoolCode) || ''} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                              ) : (
                                <i className="fas fa-user" style={{ color: '#a0aec0', fontSize: '0.8rem' }}></i>
                              )}
                            </div>

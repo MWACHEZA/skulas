@@ -389,9 +389,13 @@ router.post('/applications', async (req, res) => {
 
     if (resumeUrl && resumeUrl.includes(';base64,')) {
       updatedResumeUrl = saveBase64Image(resumeUrl, 'resume', 'docs', school.code, 'recruitment/applications', app.id);
+    } else if (resumeUrl) {
+      updatedResumeUrl = resumeUrl;
     }
     if (photoUrl && photoUrl.includes(';base64,')) {
       updatedPhotoUrl = saveBase64Image(photoUrl, 'photo', 'images', school.code, 'recruitment/applications', app.id);
+    } else if (photoUrl) {
+      updatedPhotoUrl = photoUrl;
     }
 
     if (updatedResumeUrl || updatedPhotoUrl) {

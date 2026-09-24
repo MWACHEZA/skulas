@@ -627,6 +627,7 @@ exports.Prisma.AuditLogScalarFieldEnum = {
   details: 'details',
   ipAddress: 'ipAddress',
   schoolId: 'schoolId',
+  status: 'status',
   createdAt: 'createdAt'
 };
 
@@ -634,13 +635,23 @@ exports.Prisma.BookScalarFieldEnum = {
   id: 'id',
   title: 'title',
   author: 'author',
+  authors: 'authors',
   isbn: 'isbn',
+  isbn10: 'isbn10',
+  isbn13: 'isbn13',
   edition: 'edition',
   publisher: 'publisher',
   price: 'price',
   publishedDate: 'publishedDate',
   description: 'description',
   status: 'status',
+  shelfLocation: 'shelfLocation',
+  barcode: 'barcode',
+  accessionNumber: 'accessionNumber',
+  language: 'language',
+  keywords: 'keywords',
+  source: 'source',
+  condition: 'condition',
   categoryId: 'categoryId',
   subjectId: 'subjectId',
   classId: 'classId',
@@ -711,7 +722,75 @@ exports.Prisma.BookLoanScalarFieldEnum = {
   status: 'status',
   loanType: 'loanType',
   notes: 'notes',
+  accessionNumber: 'accessionNumber',
+  waivedFine: 'waivedFine',
+  paidFine: 'paidFine',
+  fineCalculated: 'fineCalculated',
+  lastReminderDate: 'lastReminderDate',
+  lastReminderType: 'lastReminderType',
   schoolId: 'schoolId'
+};
+
+exports.Prisma.LibrarySettingScalarFieldEnum = {
+  id: 'id',
+  schoolId: 'schoolId',
+  defaultLoanPeriodDays: 'defaultLoanPeriodDays',
+  studentDailyFine: 'studentDailyFine',
+  studentMaxFine: 'studentMaxFine',
+  staffDailyFine: 'staffDailyFine',
+  staffMaxFine: 'staffMaxFine',
+  accrueOnWeekends: 'accrueOnWeekends',
+  studentMaxLoans: 'studentMaxLoans',
+  staffMaxLoans: 'staffMaxLoans',
+  maxCopiesSameTitle: 'maxCopiesSameTitle',
+  blockThresholdFine: 'blockThresholdFine',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.BookReservationScalarFieldEnum = {
+  id: 'id',
+  bookId: 'bookId',
+  studentId: 'studentId',
+  userId: 'userId',
+  status: 'status',
+  requestDate: 'requestDate',
+  notifiedAt: 'notifiedAt',
+  readyAt: 'readyAt',
+  issuedAt: 'issuedAt',
+  notes: 'notes',
+  schoolId: 'schoolId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.LibraryDigitalResourceScalarFieldEnum = {
+  id: 'id',
+  schoolId: 'schoolId',
+  title: 'title',
+  author: 'author',
+  resourceType: 'resourceType',
+  fileUrl: 'fileUrl',
+  externalLink: 'externalLink',
+  fileFormat: 'fileFormat',
+  categoryId: 'categoryId',
+  subjectId: 'subjectId',
+  accessLevel: 'accessLevel',
+  yearPublished: 'yearPublished',
+  description: 'description',
+  keywords: 'keywords',
+  language: 'language',
+  thumbnailUrl: 'thumbnailUrl',
+  fileSize: 'fileSize',
+  licenseStatus: 'licenseStatus',
+  permissionGranted: 'permissionGranted',
+  addedById: 'addedById',
+  downloadCount: 'downloadCount',
+  viewCount: 'viewCount',
+  expiryDate: 'expiryDate',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 };
 
 exports.Prisma.AssignmentSubmissionScalarFieldEnum = {
@@ -769,6 +848,9 @@ exports.Prisma.SchoolSettingScalarFieldEnum = {
   systemEmail: 'systemEmail',
   phone: 'phone',
   address: 'address',
+  mapLocation: 'mapLocation',
+  mapLatitude: 'mapLatitude',
+  mapLongitude: 'mapLongitude',
   paypalEmail: 'paypalEmail',
   systemCurrency: 'systemCurrency',
   runningSession: 'runningSession',
@@ -1046,14 +1128,33 @@ exports.Prisma.StaffLeaveScalarFieldEnum = {
 
 exports.Prisma.AssetScalarFieldEnum = {
   id: 'id',
+  assetNumber: 'assetNumber',
   name: 'name',
   category: 'category',
   serialNumber: 'serialNumber',
   location: 'location',
   condition: 'condition',
+  status: 'status',
+  department: 'department',
+  departmentId: 'departmentId',
+  quantity: 'quantity',
   purchaseDate: 'purchaseDate',
   purchasePrice: 'purchasePrice',
+  supplierName: 'supplierName',
+  invoiceNumber: 'invoiceNumber',
+  depreciationRate: 'depreciationRate',
+  warrantyExpiry: 'warrantyExpiry',
+  photoUrl: 'photoUrl',
   custodianId: 'custodianId',
+  registeredById: 'registeredById',
+  approvalStatus: 'approvalStatus',
+  hodApprovedAt: 'hodApprovedAt',
+  hodApprovedById: 'hodApprovedById',
+  bursarApprovedAt: 'bursarApprovedAt',
+  bursarApprovedById: 'bursarApprovedById',
+  adminApprovedAt: 'adminApprovedAt',
+  adminApprovedById: 'adminApprovedById',
+  rejectionReason: 'rejectionReason',
   schoolId: 'schoolId',
   nextMaintenance: 'nextMaintenance',
   maintenanceInterval: 'maintenanceInterval',
@@ -1245,6 +1346,11 @@ exports.Prisma.RequisitionScalarFieldEnum = {
   description: 'description',
   estimatedAmount: 'estimatedAmount',
   status: 'status',
+  requisitionType: 'requisitionType',
+  priority: 'priority',
+  neededByDate: 'neededByDate',
+  attachmentUrl: 'attachmentUrl',
+  items: 'items',
   departmentId: 'departmentId',
   requesterId: 'requesterId',
   hodId: 'hodId',
@@ -2309,6 +2415,28 @@ exports.Prisma.BankStatementLineScalarFieldEnum = {
   matchedBy: 'matchedBy'
 };
 
+exports.Prisma.PlatformSettingScalarFieldEnum = {
+  id: 'id',
+  platformName: 'platformName',
+  supportEmail: 'supportEmail',
+  supportPhone: 'supportPhone',
+  billingCurrency: 'billingCurrency',
+  studentMonthlyRate: 'studentMonthlyRate',
+  trialDays: 'trialDays',
+  maintenanceMode: 'maintenanceMode',
+  allowSelfRegistration: 'allowSelfRegistration',
+  backupFrequency: 'backupFrequency',
+  maxUploadSizeMb: 'maxUploadSizeMb',
+  smtpHost: 'smtpHost',
+  smtpPort: 'smtpPort',
+  smtpEmail: 'smtpEmail',
+  smtpPassword: 'smtpPassword',
+  smtpSsl: 'smtpSsl',
+  securityAlertEmails: 'securityAlertEmails',
+  updatedAt: 'updatedAt',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -2389,6 +2517,9 @@ exports.Prisma.ModelName = {
   Holiday: 'Holiday',
   LibraryCategory: 'LibraryCategory',
   BookLoan: 'BookLoan',
+  LibrarySetting: 'LibrarySetting',
+  BookReservation: 'BookReservation',
+  LibraryDigitalResource: 'LibraryDigitalResource',
   AssignmentSubmission: 'AssignmentSubmission',
   News: 'News',
   SchoolSetting: 'SchoolSetting',
@@ -2501,7 +2632,8 @@ exports.Prisma.ModelName = {
   AccountingPeriod: 'AccountingPeriod',
   UniformStockMovement: 'UniformStockMovement',
   BankStatement: 'BankStatement',
-  BankStatementLine: 'BankStatementLine'
+  BankStatementLine: 'BankStatementLine',
+  PlatformSetting: 'PlatformSetting'
 };
 
 /**

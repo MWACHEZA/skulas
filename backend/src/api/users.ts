@@ -284,7 +284,7 @@ router.post('/', requireAuth, staffDocumentUpload.fields([
 
   // Handle files
   const files = req.files as { [fieldname: string]: Express.Multer.File[] } || {};
-  const avatar = files['avatar'] ? `${(req as any).uploadCategoryPath}/${files['avatar'][0].filename}` : null;
+  const avatar = files['avatar'] ? `${(req as any).uploadCategoryPath}/${files['avatar'][0].filename}` : (req.body.avatar || null);
   
   const staffDocs = {
     idDoc: files['idDoc'] ? `${(req as any).uploadCategoryPath}/${files['idDoc'][0].filename}` : null,

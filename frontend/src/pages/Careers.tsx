@@ -61,8 +61,9 @@ export default function Careers() {
   const handleFileChange = (e: any, key: 'photo' | 'resume') => {
     const file = e.target.files?.[0];
     if (file) {
-      if (file.size > 10 * 1024 * 1024) {
-        showToast('File size must be under 10MB.', 'warning');
+      const MAX_UPLOAD_SIZE = 20 * 1024 * 1024 * 1024; // 20GB limit
+      if (file.size > MAX_UPLOAD_SIZE) {
+        showToast('File size exceeds the 20GB limit.', 'warning');
         return;
       }
       setFiles(prev => ({ ...prev, [key]: file }));
@@ -75,6 +76,20 @@ export default function Careers() {
     reader.onload = () => resolve(reader.result as string);
     reader.onerror = error => reject(error);
   });
+
+  const uploadFile = async (file: File): Promise<string> => {
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      const res = await api.post(`/api/storage/upload?dir=applications&schoolCode=${schoolCode || 'global'}`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      return res.data.filePath;
+    } catch (uploadErr) {
+      console.warn('Streaming upload failed, falling back to base64 encoding...', uploadErr);
+      return await toBase64(file);
+    }
+  };
 
   const openApplyModal = (job: any) => {
     setSelectedJob(job);
@@ -126,22 +141,22 @@ export default function Careers() {
         return;
       }
 
-      let photoBase64 = null;
-      let resumeBase64 = null;
+      let photoUrl: string | null = null;
+      let resumeUrl: string | null = null;
 
       if (files.photo) {
-        photoBase64 = await toBase64(files.photo);
+        photoUrl = await uploadFile(files.photo);
       }
       if (files.resume) {
-        resumeBase64 = await toBase64(files.resume);
+        resumeUrl = await uploadFile(files.resume);
       }
 
       const payload = {
         schoolCode,
         vacancyId: selectedJob.id,
         ...formData,
-        photoUrl: photoBase64,
-        resumeUrl: resumeBase64
+        photoUrl,
+        resumeUrl
       };
 
       const { data } = await api.post('/api/public/applications', payload);
@@ -704,7 +719,7 @@ export default function Careers() {
                           className="form-control" 
                           required 
                         />
-                        <small style={{ color: '#64748b', fontSize: '0.75rem' }}>Image format (Max 10MB)</small>
+                        <small style={{ color: '#64748b', fontSize: '0.75rem' }}>Image format (Max 20GB)</small>
                       </div>
                     )}
 
@@ -718,7 +733,7 @@ export default function Careers() {
                           className="form-control" 
                           required 
                         />
-                        <small style={{ color: '#64748b', fontSize: '0.75rem' }}>PDF or Doc formats (Max 10MB)</small>
+                        <small style={{ color: '#64748b', fontSize: '0.75rem' }}>PDF or Doc formats (Max 20GB)</small>
                       </div>
                     )}
 

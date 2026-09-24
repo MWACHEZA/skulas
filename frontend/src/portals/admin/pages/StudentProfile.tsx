@@ -4,6 +4,7 @@ import api, { BASE_URL } from '../../../lib/api';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
 import { useTerminology } from '../../../hooks/useTerminology';
+import { getAvatarUrl } from '../../../utils/formatters';
 
 export default function StudentProfile() {
   const location = useLocation();
@@ -117,7 +118,7 @@ export default function StudentProfile() {
               fontSize: '2.5rem', color: 'var(--school-primary, #3182ce)', fontWeight: 700, overflow: 'hidden'
             }}>
               {student.user?.avatar ? (
-                <img src={`${BASE_URL}/api/storage/media/${currentUser?.schoolCode}/images/${student.user.avatar}`} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                <img src={getAvatarUrl(student.user.avatar, currentUser?.schoolCode) || ''} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               ) : (
                 (student.user?.name || student.name || 'S').charAt(0)
               )}

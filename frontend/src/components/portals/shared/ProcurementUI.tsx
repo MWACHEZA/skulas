@@ -5,6 +5,7 @@ import { useTerminology } from '../../../hooks/useTerminology';
 import { StockTab, SuppliersTab } from '../../../portals/shared/pages/UniformsPage';
 import type { Supplier, UniformItem, StockOrder } from '../../../portals/shared/pages/UniformsPage';
 import { useToast } from '../../../context/ToastContext';
+import { NewRequisitionModal } from './NewRequisitionModal';
 
 const exportToCSV = (title: string, headers: string[], dataRows: string[][]) => {
   const content = [
@@ -142,6 +143,7 @@ const ProcurementUI: React.FC<Props> = ({ mode }) => {
 
   const getStatusBadge = (status: string) => {
     switch (status) {
+      case 'DRAFT': return <span className="portal-badge neutral" style={{ background: '#f1f5f9', color: '#475569' }}><i className="fas fa-pencil-alt mr-1"></i> Draft</span>;
       case 'APPROVED': return <span className="portal-badge success">Approved (Final)</span>;
       case 'REJECTED': return <span className="portal-badge danger">Rejected</span>;
       case 'PENDING': return <span className="portal-badge warning">Waiting for HOD</span>;
@@ -152,6 +154,7 @@ const ProcurementUI: React.FC<Props> = ({ mode }) => {
   };
 
   const canApprove = (req: any) => {
+    if (req.status === 'DRAFT') return false;
     if (user?.role === 'SCHOOL_ADMIN') return true;
     if (req.status === 'PENDING' && user?.secondaryRoles?.includes('HOD')) return true;
     if (req.status === 'HOD_APPROVED' && user?.role === 'BURSAR') return true;
@@ -166,6 +169,14 @@ const ProcurementUI: React.FC<Props> = ({ mode }) => {
   ];
 
   const renderApprovalProgress = (status: string) => {
+    if (status === 'DRAFT') {
+      return (
+        <span className="portal-badge neutral" style={{ fontSize: '0.75rem', background: '#f1f5f9', color: '#64748b' }}>
+          <i className="fas fa-edit mr-1"></i> Saved as Draft
+        </span>
+      );
+    }
+
     if (status === 'REJECTED') {
       return (
         <span className="portal-badge danger" style={{ fontSize: '0.75rem' }}>
@@ -365,68 +376,85 @@ const ProcurementUI: React.FC<Props> = ({ mode }) => {
             </div>
           </div>
 
-          {showModal && (
-            <div className="portal-modal-overlay">
-              <div className="portal-modal-card" style={{ maxWidth: 500 }}>
-                <div className="portal-modal-header">
-                  <h2>Raise New Requisition</h2>
-                  <button className="close-btn" style={{ border: 'none', background: 'none', fontSize: '1.5rem' }} onClick={() => setShowModal(false)}>&times;</button>
-                </div>
-                <form onSubmit={handleSubmit}>
-                  <div className="portal-modal-body">
-                    <div className="portal-form-group">
-                      <label>Title</label>
-                      <input type="text" className="portal-input" required value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} />
-                    </div>
-                    <div className="portal-form-group">
-                      <label>Department</label>
-                      <input type="text" className="portal-input" required disabled value={formData.department} />
-                    </div>
-                    <div className="portal-form-group">
-                      <label>Estimated Total ($)</label>
-                      <input type="number" className="portal-input" required value={formData.estimatedAmount} onChange={e => setFormData({...formData, estimatedAmount: e.target.value})} />
-                    </div>
-                    <div className="portal-form-group">
-                      <label>Description / Usage</label>
-                      <textarea className="portal-input" style={{ height: 100 }} value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} />
-                    </div>
-                  </div>
-                  <div className="portal-modal-footer">
-                    <button type="button" className="portal-btn-secondary" onClick={() => setShowModal(false)}>Cancel</button>
-                    <button type="submit" className="portal-btn-primary" style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}>SUBMIT FOR APPROVAL</button>
-                  </div>
-                </form>
-              </div>
-            </div>
-          )}
+          <NewRequisitionModal 
+            isOpen={showModal} 
+            onClose={() => setShowModal(false)} 
+            onSuccess={fetchData} 
+          />
 
           {selectedReq && (
             <div className="portal-modal-overlay">
-              <div className="portal-modal-card" style={{ maxWidth: 500 }}>
+              <div className="portal-modal-card" style={{ maxWidth: 650 }}>
                 <div className="portal-modal-header">
-                  <h2>Requisition Review</h2>
-                  <button className="close-btn" style={{ border: 'none', background: 'none', fontSize: '1.5rem' }} onClick={() => setSelectedReq(null)}>&times;</button>
+                  <h2>Requisition Review: {selectedReq.refNumber}</h2>
+                  <button className="close-btn" style={{ border: 'none', background: 'none', fontSize: '1.5rem', cursor: 'pointer' }} onClick={() => setSelectedReq(null)}>&times;</button>
                 </div>
                 <div className="portal-modal-body">
-                  <div style={{ marginBottom: 20 }}>
+                  <div style={{ marginBottom: 16 }}>
                     <span className="portal-label">Request</span>
-                    <h3 style={{ margin: '4px 0 0' }}>{selectedReq.title}</h3>
-                    <p style={{ color: '#64748b', fontSize: '0.9rem' }}>{selectedReq.description}</p>
+                    <h3 style={{ margin: '4px 0 0', color: '#1e293b' }}>{selectedReq.title}</h3>
+                    {selectedReq.description && <p style={{ color: '#64748b', fontSize: '0.9rem', marginTop: 4 }}>{selectedReq.description}</p>}
                   </div>
-                  <div className="portal-grid-2" style={{ gap: 20, marginBottom: 20 }}>
+
+                  <div className="portal-grid-3" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16, marginBottom: 16 }}>
                     <div>
                       <span className="portal-label">Budget</span>
-                      <div style={{ fontSize: '1.2rem', fontWeight: 700 }}>${selectedReq.estimatedAmount.toLocaleString()}</div>
+                      <div style={{ fontSize: '1.2rem', fontWeight: 800, color: '#1e40af' }}>${selectedReq.estimatedAmount.toLocaleString()}</div>
+                    </div>
+                    <div>
+                      <span className="portal-label">Priority</span>
+                      <div style={{ fontWeight: 600, marginTop: 4 }}>
+                        <span className={`portal-badge ${selectedReq.priority === 'Urgent' ? 'danger' : selectedReq.priority === 'High' ? 'warning' : 'info'}`}>
+                          {selectedReq.priority || 'Medium'}
+                        </span>
+                      </div>
                     </div>
                     <div>
                       <span className="portal-label">Status</span>
-                      <div>{getStatusBadge(selectedReq.status)}</div>
+                      <div style={{ marginTop: 4 }}>{getStatusBadge(selectedReq.status)}</div>
                     </div>
                   </div>
+
+                  {Array.isArray(selectedReq.items) && selectedReq.items.length > 0 && (
+                    <div style={{ marginBottom: 16 }}>
+                      <span className="portal-label">Itemized Breakdown</span>
+                      <table className="portal-table" style={{ width: '100%', marginTop: 8, fontSize: '0.85rem' }}>
+                        <thead>
+                          <tr style={{ background: '#f8fafc' }}>
+                            <th>Item</th>
+                            <th style={{ width: 60 }}>Qty</th>
+                            <th style={{ width: 100 }}>Unit ($)</th>
+                            <th style={{ width: 100 }}>Total ($)</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {selectedReq.items.map((it: any, i: number) => (
+                            <tr key={i}>
+                              <td>{it.description}</td>
+                              <td>{it.qty}</td>
+                              <td>${Number(it.unitPrice || 0).toFixed(2)}</td>
+                              <td style={{ fontWeight: 700 }}>${Number(it.totalPrice || 0).toFixed(2)}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+
+                  {selectedReq.attachmentUrl && (
+                    <div style={{ marginBottom: 16, padding: '10px 14px', background: '#f1f5f9', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                      <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#334155' }}>
+                        <i className="fas fa-paperclip mr-2 text-primary"></i> Attached Quotation / Document
+                      </span>
+                      <a href={selectedReq.attachmentUrl} target="_blank" rel="noopener noreferrer" className="portal-btn-secondary" style={{ padding: '4px 12px', fontSize: '0.8rem' }}>
+                        <i className="fas fa-external-link-alt mr-1"></i> View Attachment
+                      </a>
+                    </div>
+                  )}
                   
-                  <div style={{ background: '#f8fafc', padding: 20, borderRadius: 12, border: '1px solid #e2e8f0' }}>
-                     <p style={{ margin: '0 0 15px 0', fontSize: '0.9rem', fontWeight: 600, color: '#475569' }}>Approval Timeline</p>
-                     <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                  <div style={{ background: '#f8fafc', padding: 16, borderRadius: 12, border: '1px solid #e2e8f0' }}>
+                     <p style={{ margin: '0 0 12px 0', fontSize: '0.85rem', fontWeight: 700, color: '#475569', textTransform: 'uppercase' }}>Approval Progression</p>
+                     <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                             <i className={`fas fa-check-circle ${selectedReq.hod ? 'text-success' : 'text-muted'}`} style={{ color: selectedReq.hod ? '#38a169' : '#cbd5e1' }}></i>
                             <div style={{ fontSize: '0.85rem' }}>
@@ -449,11 +477,11 @@ const ProcurementUI: React.FC<Props> = ({ mode }) => {
                   </div>
                 </div>
                 <div className="portal-modal-footer">
-                  <button className="portal-btn-danger" style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }} onClick={() => handleAction(selectedReq.id, 'REJECT')}>REJECT REQUEST</button>
+                  <button className="portal-btn-danger" style={{ padding: '0 24px', fontWeight: 800, height: '44px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '8px' }} onClick={() => handleAction(selectedReq.id, 'REJECT')}>REJECT REQUEST</button>
                   {canApprove(selectedReq) ? (
-                    <button className="portal-btn-primary" style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }} onClick={() => handleAction(selectedReq.id, 'APPROVE')}>APPROVE STAGE</button>
+                    <button className="portal-btn-primary" style={{ padding: '0 24px', fontWeight: 800, height: '44px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '8px' }} onClick={() => handleAction(selectedReq.id, 'APPROVE')}>APPROVE STAGE</button>
                   ) : (
-                    <button className="portal-btn-neutral" style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }} disabled>APPROVAL NOT POSSIBLE</button>
+                    <button className="portal-btn-neutral" style={{ padding: '0 24px', fontWeight: 800, height: '44px', borderRadius: '12px' }} disabled>APPROVAL NOT POSSIBLE</button>
                   )}
                 </div>
               </div>

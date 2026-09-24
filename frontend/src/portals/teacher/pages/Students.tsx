@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api, { BASE_URL } from '../../../lib/api';
 import { useAuth } from '../../../contexts/AuthContext';
+import { getAvatarUrl } from '../../../utils/formatters';
 
 export default function TeacherStudents() {
   const navigate = useNavigate();
@@ -83,7 +84,7 @@ export default function TeacherStudents() {
                       <td style={{ fontWeight: 600 }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                           <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#edf2f7', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
-                            {s.user.avatar ? <img src={`${BASE_URL}/api/storage/media/${currentUser?.schoolCode}/images/${s.user.avatar}`} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <i className="fas fa-user" style={{ color: '#a0aec0', fontSize: '0.8rem' }}></i>}
+                            {s.user.avatar ? <img src={getAvatarUrl(s.user.avatar, currentUser?.schoolCode) || ''} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <i className="fas fa-user" style={{ color: '#a0aec0', fontSize: '0.8rem' }}></i>}
                           </div>
                           {s.user.name}
                         </div>

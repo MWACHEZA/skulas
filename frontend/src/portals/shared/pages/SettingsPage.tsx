@@ -22,7 +22,7 @@ interface SettingsPageProps {
   defaultTab?: string;
 }
 
-export default function SettingsPage({ defaultTab }: SettingsPageProps) {
+export default function SettingsPage({ defaultTab: _defaultTab }: SettingsPageProps) {
   const { user, refreshUser } = useAuth();
   const { showToast } = useToast();
   const [loading, setLoading] = useState(true);
@@ -96,13 +96,30 @@ export default function SettingsPage({ defaultTab }: SettingsPageProps) {
     systemUrl: '',
     whatsappApiUrl: '',
     whatsappAccessToken: '',
-    countryPhoneCode: '263'
+    countryPhoneCode: '263',
+    mapLocation: '',
+    mapLatitude: '',
+    mapLongitude: ''
+  });
+
+  const [librarySettings, setLibrarySettings] = useState<any>({
+    defaultLoanPeriodDays: 14,
+    studentDailyFine: 0.50,
+    studentMaxFine: 20.00,
+    staffDailyFine: 1.00,
+    staffMaxFine: 30.00,
+    accrueOnWeekends: false,
+    studentMaxLoans: 3,
+    staffMaxLoans: 5,
+    maxCopiesSameTitle: 1,
+    blockThresholdFine: 10.00
   });
 
   const isAdmin = user?.role === 'SCHOOL_ADMIN' || user?.role === 'SUPER_ADMIN';
   const isBursar = user?.role === 'BURSAR';
   const isHR = user?.role === 'HR';
   const isAncillary = user?.role === 'ANCILLARY';
+  const isLibrarian = user?.role === 'LIBRARIAN' || user?.secondaryRoles?.some((r: string) => r.toUpperCase() === 'LIBRARIAN');
 
   useEffect(() => {
     fetchSettings();
@@ -138,6 +155,17 @@ export default function SettingsPage({ defaultTab }: SettingsPageProps) {
         const prefs = localPrefs ? JSON.parse(localPrefs) : {};
 
         setSettings((prev: any) => ({ ...prev, ...formattedData, ...prefs }));
+      }
+
+      if (isAdmin || isBursar || isLibrarian) {
+        try {
+          const libRes = await api.get('/api/library/settings');
+          if (libRes.data) {
+            setLibrarySettings((prev: any) => ({ ...prev, ...libRes.data }));
+          }
+        } catch (libErr) {
+          console.warn('Could not load library settings', libErr);
+        }
       }
     } catch (err) {
       console.error('Failed to fetch settings:', err);
@@ -180,6 +208,15 @@ export default function SettingsPage({ defaultTab }: SettingsPageProps) {
         }
         
         await api.patch('/api/schools/settings', payload);
+      }
+
+      // 3. Save library circulation settings if admin, bursar, or librarian
+      if (isAdmin || isBursar || isLibrarian) {
+        try {
+          await api.patch('/api/library/settings', librarySettings);
+        } catch (libErr) {
+          console.warn('Failed to save library settings', libErr);
+        }
       }
 
       await refreshUser();
@@ -275,6 +312,16 @@ export default function SettingsPage({ defaultTab }: SettingsPageProps) {
         <button type="button" onClick={() => scrollToSection('sec-academics')} className="portal-btn-ghost" style={{ fontSize: '0.85rem', fontWeight: 800, padding: '8px 14px' }}>
           <i className="fas fa-graduation-cap mr-2" style={{ color: '#7c3aed' }}></i>Academics & Terms
         </button>
+        {(isAdmin || isBursar || isLibrarian) && (
+          <button type="button" onClick={() => scrollToSection('sec-library')} className="portal-btn-ghost" style={{ fontSize: '0.85rem', fontWeight: 800, padding: '8px 14px' }}>
+            <i className="fas fa-book-reader mr-2" style={{ color: '#059669' }}></i>Library & Fines Policy
+          </button>
+        )}
+        {isAdmin && (
+          <button type="button" onClick={() => scrollToSection('sec-map')} className="portal-btn-ghost" style={{ fontSize: '0.85rem', fontWeight: 800, padding: '8px 14px' }}>
+            <i className="fas fa-map-marked-alt mr-2" style={{ color: '#d97706' }}></i>Campus Map Location
+          </button>
+        )}
         {(isAdmin || isAncillary) && (
           <button type="button" onClick={() => scrollToSection('sec-cms')} className="portal-btn-ghost" style={{ fontSize: '0.85rem', fontWeight: 800, padding: '8px 14px' }}>
             <i className="fas fa-globe mr-2" style={{ color: '#059669' }}></i>Website Public CMS
@@ -620,6 +667,149 @@ export default function SettingsPage({ defaultTab }: SettingsPageProps) {
           </div>
         )}
 
+        {/* SECTION: LIBRARY & CIRCULATION RULES */}
+        {(isAdmin || isBursar || isLibrarian) && (
+          <div id="sec-library" className="portal-card" style={{ padding: '32px', borderLeft: '4px solid #059669' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '24px', borderBottom: '1px solid #f1f5f9', paddingBottom: '16px' }}>
+              <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: '#ecfdf5', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#059669', fontSize: '1.2rem' }}>
+                <i className="fas fa-book-reader"></i>
+              </div>
+              <div>
+                <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 900, color: '#1e293b' }}>Library Circulation & Fine Policies</h3>
+                <p style={{ margin: 0, color: '#64748b', fontSize: '0.9rem' }}>Configure borrowing limits, daily overdue fines, caps, weekend fine accruals, and checkout block thresholds.</p>
+              </div>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '24px' }}>
+              <div className="form-group">
+                <label className="portal-label">Default Loan Period (Days)</label>
+                <input 
+                  type="number" 
+                  min="1" 
+                  className="portal-input" 
+                  value={librarySettings.defaultLoanPeriodDays ?? 14} 
+                  onChange={e => setLibrarySettings({ ...librarySettings, defaultLoanPeriodDays: parseInt(e.target.value) || 14 })} 
+                />
+                <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>Standard checkout duration for students and faculty.</span>
+              </div>
+
+              <div className="form-group">
+                <label className="portal-label">Student Daily Overdue Fine ($/day)</label>
+                <input 
+                  type="number" 
+                  step="0.05" 
+                  min="0" 
+                  className="portal-input" 
+                  value={librarySettings.studentDailyFine ?? 0.50} 
+                  onChange={e => setLibrarySettings({ ...librarySettings, studentDailyFine: parseFloat(e.target.value) || 0 })} 
+                />
+                <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>Default: $0.50 per day past the due date.</span>
+              </div>
+
+              <div className="form-group">
+                <label className="portal-label">Student Maximum Fine Cap ($)</label>
+                <input 
+                  type="number" 
+                  step="1" 
+                  min="0" 
+                  className="portal-input" 
+                  value={librarySettings.studentMaxFine ?? 20.00} 
+                  onChange={e => setLibrarySettings({ ...librarySettings, studentMaxFine: parseFloat(e.target.value) || 0 })} 
+                />
+                <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>Max fine per book (Default: $20.00 cap).</span>
+              </div>
+
+              <div className="form-group">
+                <label className="portal-label">Staff Daily Overdue Fine ($/day)</label>
+                <input 
+                  type="number" 
+                  step="0.05" 
+                  min="0" 
+                  className="portal-input" 
+                  value={librarySettings.staffDailyFine ?? 1.00} 
+                  onChange={e => setLibrarySettings({ ...librarySettings, staffDailyFine: parseFloat(e.target.value) || 0 })} 
+                />
+                <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>Default: $1.00 per day past the due date.</span>
+              </div>
+
+              <div className="form-group">
+                <label className="portal-label">Staff Maximum Fine Cap ($)</label>
+                <input 
+                  type="number" 
+                  step="1" 
+                  min="0" 
+                  className="portal-input" 
+                  value={librarySettings.staffMaxFine ?? 30.00} 
+                  onChange={e => setLibrarySettings({ ...librarySettings, staffMaxFine: parseFloat(e.target.value) || 0 })} 
+                />
+                <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>Max fine per book for staff (Default: $30.00 cap).</span>
+              </div>
+
+              <div className="form-group">
+                <label className="portal-label">Accrue Fines on Weekends?</label>
+                <select 
+                  className="portal-input" 
+                  value={librarySettings.accrueOnWeekends ? 'true' : 'false'} 
+                  onChange={e => setLibrarySettings({ ...librarySettings, accrueOnWeekends: e.target.value === 'true' })}
+                >
+                  <option value="false">No (Exclude Saturdays & Sundays)</option>
+                  <option value="true">Yes (Accrue on All Calendar Days)</option>
+                </select>
+                <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>Toggle whether overdue calculations skip non-school days.</span>
+              </div>
+
+              <div className="form-group">
+                <label className="portal-label">Student Max Simultaneous Loans</label>
+                <input 
+                  type="number" 
+                  min="1" 
+                  className="portal-input" 
+                  value={librarySettings.studentMaxLoans ?? 3} 
+                  onChange={e => setLibrarySettings({ ...librarySettings, studentMaxLoans: parseInt(e.target.value) || 3 })} 
+                />
+                <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>Maximum volumes a student can hold at one time.</span>
+              </div>
+
+              <div className="form-group">
+                <label className="portal-label">Staff Max Simultaneous Loans</label>
+                <input 
+                  type="number" 
+                  min="1" 
+                  className="portal-input" 
+                  value={librarySettings.staffMaxLoans ?? 5} 
+                  onChange={e => setLibrarySettings({ ...librarySettings, staffMaxLoans: parseInt(e.target.value) || 5 })} 
+                />
+                <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>Maximum volumes faculty can hold at one time.</span>
+              </div>
+
+              <div className="form-group">
+                <label className="portal-label">Max Copies of Same Title</label>
+                <input 
+                  type="number" 
+                  min="1" 
+                  className="portal-input" 
+                  value={librarySettings.maxCopiesSameTitle ?? 1} 
+                  onChange={e => setLibrarySettings({ ...librarySettings, maxCopiesSameTitle: parseInt(e.target.value) || 1 })} 
+                />
+                <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>Prevents single patron hoarding identical textbooks.</span>
+              </div>
+
+              <div className="form-group">
+                <label className="portal-label">Borrowing Block Threshold ($)</label>
+                <input 
+                  type="number" 
+                  step="0.5" 
+                  min="0" 
+                  className="portal-input" 
+                  value={librarySettings.blockThresholdFine ?? 10.00} 
+                  onChange={e => setLibrarySettings({ ...librarySettings, blockThresholdFine: parseFloat(e.target.value) || 10 })} 
+                />
+                <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>Automatic checkout lock if unpaid fines reach this level.</span>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* SECTION 3: PUBLIC WEBSITE & CMS PREFERENCES */}
         {(isAdmin || isAncillary) && (
           <div id="sec-cms" className="portal-card" style={{ padding: '32px', borderLeft: '4px solid #059669' }}>
@@ -673,6 +863,61 @@ export default function SettingsPage({ defaultTab }: SettingsPageProps) {
               {activeCmsSection === 'news' && <NewsSettings />}
               {activeCmsSection === 'gallery' && <GallerySettings />}
               {activeCmsSection === 'noticeboard' && <NoticeboardSettings />}
+            </div>
+          </div>
+        )}
+
+        {/* SECTION: CAMPUS LOCATION & MAP COORDINATES */}
+        {isAdmin && (
+          <div id="sec-map" className="portal-card" style={{ padding: '32px', borderLeft: '4px solid #d97706' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '24px', borderBottom: '1px solid #f1f5f9', paddingBottom: '16px' }}>
+              <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: '#fffbeb', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#d97706', fontSize: '1.2rem' }}>
+                <i className="fas fa-map-marked-alt"></i>
+              </div>
+              <div>
+                <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 900, color: '#1e293b' }}>Campus Geographical Location & Map Marker</h3>
+                <p style={{ margin: 0, color: '#64748b', fontSize: '0.9rem' }}>Configure school campus address, geographical coordinates, and interactive marker for the public Contact Us page.</p>
+              </div>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '24px' }}>
+              <div className="form-group" style={{ gridColumn: 'span 2' }}>
+                <label className="portal-label">Physical Campus / Map Address</label>
+                <input 
+                  type="text" 
+                  className="portal-input" 
+                  placeholder="e.g. 120 Leopold Takawira St, Harare, Zimbabwe"
+                  value={settings.mapLocation || ''} 
+                  onChange={e => updateSetting('mapLocation', e.target.value)} 
+                />
+                <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>Display address and Google Maps geocode query.</span>
+              </div>
+
+              <div className="form-group">
+                <label className="portal-label">Map Latitude</label>
+                <input 
+                  type="number" 
+                  step="0.000001" 
+                  className="portal-input" 
+                  placeholder="e.g. -17.829220"
+                  value={settings.mapLatitude ?? ''} 
+                  onChange={e => updateSetting('mapLatitude', e.target.value)} 
+                />
+                <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>Decimal coordinate (-90 to +90).</span>
+              </div>
+
+              <div className="form-group">
+                <label className="portal-label">Map Longitude</label>
+                <input 
+                  type="number" 
+                  step="0.000001" 
+                  className="portal-input" 
+                  placeholder="e.g. 31.052220"
+                  value={settings.mapLongitude ?? ''} 
+                  onChange={e => updateSetting('mapLongitude', e.target.value)} 
+                />
+                <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>Decimal coordinate (-180 to +180).</span>
+              </div>
             </div>
           </div>
         )}

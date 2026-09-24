@@ -83,6 +83,10 @@ export default function AdminSubscription() {
     }, 1000);
   };
 
+  const activeStudents = schoolData?.billing?.activeStudents ?? schoolData?._count?.students ?? 0;
+  const ratePerStudent = 2.0;
+  const calculatedMonthly = activeStudents * ratePerStudent;
+
   const handleDownloadInvoice = (invNo: string) => {
     alert(`Generating invoice receipt for ${invNo}...`);
     const invoiceContent = `
@@ -99,8 +103,10 @@ Code: ${user?.schoolCode || 'N/A'}
 License: ${schoolData?.id?.substring(0, 12).toUpperCase() || 'N/A'}
 ---------------------------------------------
 Subscription Details:
-Plan: ${plan.name} Tier
-Amount: ${plan.price}${plan.billingLabel}
+Pricing Model: Per-Student SaaS ($2.00 / student / month)
+Active Enrolled Students: ${activeStudents}
+Monthly Platform Rate: $2.00 / student
+Total Monthly Bill: $${calculatedMonthly.toFixed(2)} USD
 ---------------------------------------------
 Payment Method: ${cardBrand} ending in ${cardLast4}
 =============================================
@@ -142,8 +148,18 @@ Thank you for partnering with Acadex!
               <div className="portal-card-body">
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 8 }}>
                   <span style={{ fontSize: '2.5rem', fontWeight: 800, color: plan.color }}>{plan.name}</span>
-                  <span style={{ fontSize: '1.5rem', fontWeight: 700, color: '#1a202c' }}>{plan.price}</span>
-                  <span style={{ fontSize: '0.85rem', color: '#718096' }}>{plan.billingLabel}</span>
+                  <span style={{ fontSize: '1.5rem', fontWeight: 700, color: '#1a202c' }}>${calculatedMonthly.toFixed(2)}</span>
+                  <span style={{ fontSize: '0.85rem', color: '#718096' }}>/mo (${ratePerStudent.toFixed(2)} / student)</span>
+                </div>
+                <div style={{ background: '#f8fafc', padding: '12px 16px', borderRadius: '8px', marginBottom: '16px', fontSize: '0.85rem', color: '#4a5568' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                    <span>Active Students:</span>
+                    <strong>{activeStudents} enrolled</strong>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span>Platform Billing Rate:</span>
+                    <strong style={{ color: 'var(--portal-primary, #2563eb)' }}>$2.00 / student / month</strong>
+                  </div>
                 </div>
                 <p style={{ margin: '0 0 20px', fontSize: '0.85rem', color: '#718096' }}>{plan.tagline}</p>
 

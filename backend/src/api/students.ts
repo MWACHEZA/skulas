@@ -850,7 +850,8 @@ router.get('/me/books', requireAuth, requireRole('STUDENT'), async (req: AuthReq
             title: true, 
             author: true,
             isbn: true,
-            category: true
+            category: true,
+            coverUrl: true
           } 
         } 
       },

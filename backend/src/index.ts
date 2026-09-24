@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
@@ -75,6 +76,7 @@ import tuckshopRoutes from './api/tuckshop';
 import walletRoutes from './api/wallets';
 import icd10Routes from './api/icd10';
 import setupRoutes from './api/setup';
+import acadexRoutes from './api/acadex';
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -105,11 +107,14 @@ app.use(express.static(path.join(__dirname, '../storage')));
 import { globalLimiter, authLimiter } from './middleware/rate-limit';
 import { auditMiddleware } from './middleware/audit';
 import { notificationWorker } from './jobs/notification-worker';
+import { libraryReminderWorker } from './jobs/library-reminder-job';
 notificationWorker.start();
+libraryReminderWorker.start();
 app.use(globalLimiter);
 app.use(auditMiddleware);
 // Routes
 app.use('/api/auth', authLimiter, authRoutes);
+app.use('/api/acadex', acadexRoutes);
 app.use('/api/schools', schoolRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/content', contentRoutes);

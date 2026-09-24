@@ -98,15 +98,22 @@ router.get('/announcements', async (req, res) => {
  * @desc    Create announcement with multi-portal visibility
  */
 router.post('/announcements', async (req, res) => {
-    const { title, content, visiblePortals, isPublic, expiresAt } = req.body;
+    const { title, content, visiblePortals, isPublic, expiresAt, publishedAt } = req.body;
     const schoolId = req.user.schoolId;
     try {
+        let parsedPublishedAt = new Date();
+        if (publishedAt) {
+            const d = new Date(publishedAt);
+            if (!isNaN(d.getTime()))
+                parsedPublishedAt = d;
+        }
         const announcement = await prisma_1.default.announcement.create({
             data: {
                 title,
                 content,
                 visiblePortals: visiblePortals || ['ALL'],
                 isPublic: !!isPublic,
+                publishedAt: parsedPublishedAt,
                 expiresAt: expiresAt ? new Date(expiresAt) : null,
                 schoolId,
             },
@@ -124,17 +131,23 @@ router.post('/announcements', async (req, res) => {
  */
 router.put('/announcements/:id', async (req, res) => {
     const id = req.params.id;
-    const { title, content, visiblePortals, isPublic, expiresAt } = req.body;
+    const { title, content, visiblePortals, isPublic, expiresAt, publishedAt } = req.body;
     try {
-        const announcement = await prisma_1.default.announcement.updateMany({
+        const updateData = {
+            title,
+            content,
+            visiblePortals,
+            isPublic,
+            expiresAt: expiresAt ? new Date(expiresAt) : null,
+        };
+        if (publishedAt) {
+            const d = new Date(publishedAt);
+            if (!isNaN(d.getTime()))
+                updateData.publishedAt = d;
+        }
+        await prisma_1.default.announcement.updateMany({
             where: { id, schoolId: req.user.schoolId },
-            data: {
-                title,
-                content,
-                visiblePortals,
-                isPublic,
-                expiresAt: expiresAt ? new Date(expiresAt) : null,
-            }
+            data: updateData
         });
         res.json({ success: true });
     }

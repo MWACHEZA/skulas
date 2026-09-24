@@ -28,60 +28,63 @@ model Plan {
 }
 
 model School {
-  id                     String                  @id @default(cuid())
-  code                   String                  @unique // AX-XXXXXX
-  name                   String
-  type                   String // primary, secondary, combined
-  isCombined             Boolean                 @default(false)
-  levels                 String[] // ["PRE_SCHOOL", "PRIMARY", "SECONDARY", "HIGH_SCHOOL", "TERTIARY"]
-  address                String?
-  country                String?
-  email                  String                  @unique
-  phone                  String?
-  website                String?
-  status                 String                  @default("active")
-  planId                 String
-  plan                   Plan                    @relation(fields: [planId], references: [id])
-  branding               Json? // { primaryColor, accentColor, logo }
-  customContent          Json? // { motto, welcomeTitle, ... }
-  users                  User[]
-  students               Student[]
-  teachers               Teacher[]
-  news                   News[]
-  websiteInquiries       WebsiteInquiry[]
-  noticeboards           Noticeboard[]
-  clinicVisits           ClinicVisit[]
-  clinicHospitalizations ClinicHospitalization[]
-  vacancies              Vacancy[]
-  jobApplications        JobApplication[]
-  gallery                Gallery[]
-  clubs                  Club[]
-  sports                 Sport[]
-  applications           Application[]
-  announcements          Announcement[]
-  chaplaincyEvents       ChaplaincyEvent[]
-  diningHallReports      DiningHallReport[]
-  farmLivestockBatches   FarmLivestockBatch[]
-  farmCropCycles         FarmCropCycle[]
-  farmInventoryItems     FarmInventoryItem[]
-  prefectDuties          PrefectDuty[]
-  prefectMeetings        PrefectMeeting[]
-  prefectReports         PrefectReport[]
-  staffAttendances       StaffAttendance[]
-  timetableSlots         TimetableSlot[]
-  classes                SchoolClass[]
-  subjects               Subject[]
-  books                  Book[]
-  grades                 Grade[]
-  attendance             Attendance[]
-  fees                   Fee[]
-  assignments            Assignment[]
-  bookLoans              BookLoan[]
-  assignmentSubmissions  AssignmentSubmission[]
-  supervisorAssignments  SupervisorAssignment[]
-  extensionRequests      ExtensionRequest[]
-  progressReports        ProgressReport[]
-  tuckshopItems          TuckshopItem[]
+  id                      String                   @id @default(cuid())
+  code                    String                   @unique // AX-XXXXXX
+  name                    String
+  type                    String // primary, secondary, combined
+  isCombined              Boolean                  @default(false)
+  levels                  String[] // ["PRE_SCHOOL", "PRIMARY", "SECONDARY", "HIGH_SCHOOL", "TERTIARY"]
+  address                 String?
+  country                 String?
+  email                   String                   @unique
+  phone                   String?
+  website                 String?
+  status                  String                   @default("active")
+  planId                  String
+  plan                    Plan                     @relation(fields: [planId], references: [id])
+  branding                Json? // { primaryColor, accentColor, logo }
+  customContent           Json? // { motto, welcomeTitle, ... }
+  users                   User[]
+  students                Student[]
+  teachers                Teacher[]
+  news                    News[]
+  websiteInquiries        WebsiteInquiry[]
+  noticeboards            Noticeboard[]
+  clinicVisits            ClinicVisit[]
+  clinicHospitalizations  ClinicHospitalization[]
+  vacancies               Vacancy[]
+  jobApplications         JobApplication[]
+  gallery                 Gallery[]
+  clubs                   Club[]
+  sports                  Sport[]
+  applications            Application[]
+  announcements           Announcement[]
+  chaplaincyEvents        ChaplaincyEvent[]
+  diningHallReports       DiningHallReport[]
+  farmLivestockBatches    FarmLivestockBatch[]
+  farmCropCycles          FarmCropCycle[]
+  farmInventoryItems      FarmInventoryItem[]
+  prefectDuties           PrefectDuty[]
+  prefectMeetings         PrefectMeeting[]
+  prefectReports          PrefectReport[]
+  staffAttendances        StaffAttendance[]
+  timetableSlots          TimetableSlot[]
+  classes                 SchoolClass[]
+  subjects                Subject[]
+  books                   Book[]
+  grades                  Grade[]
+  attendance              Attendance[]
+  fees                    Fee[]
+  assignments             Assignment[]
+  bookLoans               BookLoan[]
+  bookReservations        BookReservation[]
+  librarySetting          LibrarySetting?
+  libraryDigitalResources LibraryDigitalResource[]
+  assignmentSubmissions   AssignmentSubmission[]
+  supervisorAssignments   SupervisorAssignment[]
+  extensionRequests       ExtensionRequest[]
+  progressReports         ProgressReport[]
+  tuckshopItems           TuckshopItem[]
 
   // Junctions
   suppliers       SchoolSupplier[]
@@ -379,21 +382,23 @@ model User {
   avatar             String? // Stores filename or reference ID
   religion           String? // User's religious affiliation
 
-  phone             String?
-  preferredLanguage String?           @default("en")
-  staffId           String? // Unique sequential ID (BUR-YY000001, etc.)
-  schoolId          String?
-  school            School?           @relation(fields: [schoolId], references: [id])
-  teacher           Teacher?
-  student           Student?
-  parent            Parent?
-  supplier          Supplier?
-  salaryStubs       SalaryStub[]
-  shiftAssignments  ShiftAssignment[]
-  employeeProfile   EmployeeProfile?
-  awards            Award[]
-  courses           Course[]
-  bookLoans         BookLoan[]
+  phone                   String?
+  preferredLanguage       String?                  @default("en")
+  staffId                 String? // Unique sequential ID (BUR-YY000001, etc.)
+  schoolId                String?
+  school                  School?                  @relation(fields: [schoolId], references: [id])
+  teacher                 Teacher?
+  student                 Student?
+  parent                  Parent?
+  supplier                Supplier?
+  salaryStubs             SalaryStub[]
+  shiftAssignments        ShiftAssignment[]
+  employeeProfile         EmployeeProfile?
+  awards                  Award[]
+  courses                 Course[]
+  bookLoans               BookLoan[]
+  bookReservations        BookReservation[]
+  libraryDigitalResources LibraryDigitalResource[] @relation("LibraryDigitalResourceAddedBy")
 
   departmentId String?
   dept         Department? @relation(fields: [departmentId], references: [id])
@@ -409,6 +414,7 @@ model User {
   prefectReports         PrefectReport[]
 
   assignedAssets             Asset[]                 @relation("AssetCustodian")
+  registeredAssets           Asset[]                 @relation("AssetRegisteredBy")
   assignedSportingEquipments SportingEquipment[]     @relation("EquipmentCustodian")
   reportedIncidents          AssetIncident[]         @relation("IncidentReporter")
   supportTickets             SupportTicket[]         @relation("SupportRequester")
@@ -513,6 +519,7 @@ model Student {
   attendance        Attendance[]
   fees              Fee[]
   bookLoans         BookLoan[]
+  bookReservations  BookReservation[]
   submissions       AssignmentSubmission[]
   courseEnrollments CourseEnrollment[]
 
@@ -636,25 +643,26 @@ model Section {
 }
 
 model Subject {
-  id             String                @id @default(cuid())
-  name           String
-  code           String?
-  department     String? // Keep for legacy/string-based fallback
-  departmentId   String?
-  dept           Department?           @relation(fields: [departmentId], references: [id])
-  schoolId       String
-  school         School                @relation(fields: [schoolId], references: [id])
-  createdById    String?
-  createdBy      User?                 @relation("SubjectCreatedByUser", fields: [createdById], references: [id])
-  teachers       TeacherSubject[]
-  classTeachers  ClassSubjectTeacher[]
-  grades         Grade[]
-  assignments    Assignment[]
-  questionPapers QuestionPaper[]
-  timetableSlots TimetableSlot[]
-  resources      DigitalResource[]
-  lessonPlans    LessonPlan[]
-  books          Book[]
+  id                      String                   @id @default(cuid())
+  name                    String
+  code                    String?
+  department              String? // Keep for legacy/string-based fallback
+  departmentId            String?
+  dept                    Department?              @relation(fields: [departmentId], references: [id])
+  schoolId                String
+  school                  School                   @relation(fields: [schoolId], references: [id])
+  createdById             String?
+  createdBy               User?                    @relation("SubjectCreatedByUser", fields: [createdById], references: [id])
+  teachers                TeacherSubject[]
+  classTeachers           ClassSubjectTeacher[]
+  grades                  Grade[]
+  assignments             Assignment[]
+  questionPapers          QuestionPaper[]
+  timetableSlots          TimetableSlot[]
+  resources               DigitalResource[]
+  libraryDigitalResources LibraryDigitalResource[]
+  lessonPlans             LessonPlan[]
+  books                   Book[]
 
   gradingType    String          @default("standard") // standard or competency
   moderatedScale Json?
@@ -959,8 +967,9 @@ model AuditLog {
   entityId   String?
   details    Json?
   ipAddress  String?
-  schoolId   String
-  school     School   @relation(fields: [schoolId], references: [id])
+  schoolId   String?
+  school     School?  @relation(fields: [schoolId], references: [id])
+  status     String   @default("SUCCESS")
   createdAt  DateTime @default(now())
 
   @@index([schoolId])
@@ -968,16 +977,26 @@ model AuditLog {
 }
 
 model Book {
-  id            String    @id @default(cuid())
-  title         String
-  author        String
-  isbn          String?
-  edition       String?
-  publisher     String?
-  price         Float?
-  publishedDate DateTime?
-  description   String?
-  status        String    @default("Available")
+  id              String    @id @default(cuid())
+  title           String
+  author          String
+  authors         String[]  @default([])
+  isbn            String?
+  isbn10          String?
+  isbn13          String?
+  edition         String?
+  publisher       String?
+  price           Float?
+  publishedDate   DateTime?
+  description     String?
+  status          String    @default("Available")
+  shelfLocation   String?
+  barcode         String?
+  accessionNumber String?
+  language        String?   @default("English")
+  keywords        String[]  @default([])
+  source          String?   @default("Purchased") // Purchased, Donated
+  condition       String?   @default("Good") // New, Good, Fair, Damaged
 
   categoryId String?
   category   LibraryCategory? @relation(fields: [categoryId], references: [id])
@@ -991,15 +1010,16 @@ model Book {
   teacherId String?
   teacher   Teacher? @relation(fields: [teacherId], references: [id])
 
-  coverUrl  String?
-  pdfUrl    String?
-  copies    Int        @default(1)
-  available Int        @default(1)
-  loans     BookLoan[]
-  schoolId  String
-  school    School     @relation(fields: [schoolId], references: [id])
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @default(now()) @updatedAt
+  coverUrl     String?
+  pdfUrl       String?
+  copies       Int               @default(1)
+  available    Int               @default(1)
+  loans        BookLoan[]
+  reservations BookReservation[]
+  schoolId     String
+  school       School            @relation(fields: [schoolId], references: [id])
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @default(now()) @updatedAt
 
   @@index([schoolId])
 }
@@ -1059,38 +1079,126 @@ model Holiday {
 }
 
 model LibraryCategory {
-  id        String   @id @default(cuid())
-  name      String
-  schoolId  String
-  school    School   @relation(fields: [schoolId], references: [id])
-  books     Book[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id               String                   @id @default(cuid())
+  name             String
+  schoolId         String
+  school           School                   @relation(fields: [schoolId], references: [id])
+  books            Book[]
+  digitalResources LibraryDigitalResource[]
+  createdAt        DateTime                 @default(now())
+  updatedAt        DateTime                 @updatedAt
 
   @@unique([schoolId, name])
   @@index([schoolId])
 }
 
 model BookLoan {
-  id         String    @id @default(cuid())
-  bookId     String
-  book       Book      @relation(fields: [bookId], references: [id])
-  studentId  String?
-  student    Student?  @relation(fields: [studentId], references: [id])
-  userId     String?
-  user       User?     @relation(fields: [userId], references: [id])
-  borrowedAt DateTime  @default(now())
-  dueDate    DateTime
-  returnedAt DateTime?
-  status     String    @default("borrowed") // borrowed, returned, overdue
-  loanType   String    @default("LIBRARY") // LIBRARY, TEXTBOOK
-  notes      String?
-  schoolId   String
-  school     School    @relation(fields: [schoolId], references: [id])
+  id               String    @id @default(cuid())
+  bookId           String
+  book             Book      @relation(fields: [bookId], references: [id])
+  studentId        String?
+  student          Student?  @relation(fields: [studentId], references: [id])
+  userId           String?
+  user             User?     @relation(fields: [userId], references: [id])
+  borrowedAt       DateTime  @default(now())
+  dueDate          DateTime
+  returnedAt       DateTime?
+  status           String    @default("borrowed") // borrowed, returned, overdue
+  loanType         String    @default("LIBRARY") // LIBRARY, TEXTBOOK
+  notes            String?
+  accessionNumber  String?
+  waivedFine       Float?    @default(0)
+  paidFine         Float?    @default(0)
+  fineCalculated   Float?    @default(0)
+  lastReminderDate DateTime?
+  lastReminderType String?
+  schoolId         String
+  school           School    @relation(fields: [schoolId], references: [id])
 
   @@index([schoolId])
   @@index([studentId])
   @@index([bookId])
+}
+
+model LibrarySetting {
+  id                    String   @id @default(cuid())
+  schoolId              String   @unique
+  school                School   @relation(fields: [schoolId], references: [id])
+  defaultLoanPeriodDays Int      @default(14)
+  studentDailyFine      Float    @default(0.50)
+  studentMaxFine        Float    @default(20.00)
+  staffDailyFine        Float    @default(1.00)
+  staffMaxFine          Float    @default(30.00)
+  accrueOnWeekends      Boolean  @default(false)
+  studentMaxLoans       Int      @default(3)
+  staffMaxLoans         Int      @default(5)
+  maxCopiesSameTitle    Int      @default(1)
+  blockThresholdFine    Float    @default(10.00)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@index([schoolId])
+}
+
+model BookReservation {
+  id          String    @id @default(cuid())
+  bookId      String
+  book        Book      @relation(fields: [bookId], references: [id])
+  studentId   String?
+  student     Student?  @relation(fields: [studentId], references: [id])
+  userId      String?
+  user        User?     @relation(fields: [userId], references: [id])
+  status      String    @default("Pending") // Pending, Approved, Ready for Pickup, Issued, Cancelled, Rejected
+  requestDate DateTime  @default(now())
+  notifiedAt  DateTime?
+  readyAt     DateTime?
+  issuedAt    DateTime?
+  notes       String?
+  schoolId    String
+  school      School    @relation(fields: [schoolId], references: [id])
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([schoolId])
+  @@index([bookId])
+  @@index([studentId])
+}
+
+model LibraryDigitalResource {
+  id                String           @id @default(cuid())
+  schoolId          String
+  school            School           @relation(fields: [schoolId], references: [id])
+  title             String
+  author            String
+  resourceType      String // eBook, eJournal, Thesis, Video, Audio, Past Exam Paper, Report
+  fileUrl           String?
+  externalLink      String?
+  fileFormat        String // PDF, MP4, MP3, Link, etc.
+  categoryId        String?
+  category          LibraryCategory? @relation(fields: [categoryId], references: [id])
+  subjectId         String?
+  subject           Subject?         @relation(fields: [subjectId], references: [id])
+  accessLevel       String           @default("Public") // Public, Students Only, Staff Only, Private
+  yearPublished     Int?
+  description       String?
+  keywords          String[]         @default([])
+  language          String?          @default("English")
+  thumbnailUrl      String?
+  fileSize          BigInt?
+  licenseStatus     String           @default("Open Access") // Restricted, Creative Commons, Open Access
+  permissionGranted Boolean          @default(true)
+  addedById         String?
+  addedBy           User?            @relation("LibraryDigitalResourceAddedBy", fields: [addedById], references: [id])
+  downloadCount     Int              @default(0)
+  viewCount         Int              @default(0)
+  expiryDate        DateTime?
+  status            String           @default("Active") // Active, Inactive, Under Review
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+
+  @@index([schoolId])
+  @@index([categoryId])
+  @@index([subjectId])
 }
 
 model AssignmentSubmission {
@@ -1163,6 +1271,9 @@ model SchoolSetting {
   systemEmail                     String?
   phone                           String?
   address                         String?
+  mapLocation                     String?
+  mapLatitude                     Float?
+  mapLongitude                    Float?
   paypalEmail                     String?
   systemCurrency                  String?   @default("USD")
   runningSession                  String? // Academic year e.g. 2024-2025
@@ -1506,7 +1617,7 @@ model Message {
   @@index([schoolId])
 }
 
-// ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚Â IT SUPPORT TICKETS ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚Â
+// ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚Â IT SUPPORT TICKETS ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ��Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚Â
 
 model SupportTicket {
   id          String   @id @default(cuid())
@@ -1548,17 +1659,39 @@ model StaffLeave {
 // ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚Â ASSET INVENTORY ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚Â
 
 model Asset {
-  id            String    @id @default(cuid())
-  name          String
-  category      String // furniture, electronics, vehicles, stationery
-  serialNumber  String?
-  location      String?
-  condition     String    @default("good") // good, fair, poor, condemned
-  purchaseDate  DateTime?
-  purchasePrice Float?
+  id               String    @id @default(cuid())
+  assetNumber      String? // System-generated unique e.g. AX-EMBAKWE-AST-0001
+  name             String
+  category         String // furniture, electronics, vehicles, stationery, books, etc.
+  serialNumber     String?
+  location         String?
+  condition        String    @default("good") // good, fair, poor, condemned, damaged
+  status           String    @default("ACTIVE") // ACTIVE, PENDING_APPROVAL, UNDER_MAINTENANCE, DISPOSED, TRANSFERRED, DAMAGED, LOST
+  department       String? // library, clinic, science, kitchen, grounds, admin, etc.
+  departmentId     String?
+  quantity         Int       @default(1)
+  purchaseDate     DateTime?
+  purchasePrice    Float?
+  supplierName     String?
+  invoiceNumber    String?
+  depreciationRate Float? // e.g. 10.0 for 10%/year
+  warrantyExpiry   DateTime?
+  photoUrl         String?
 
   custodianId String?
   custodian   User?   @relation("AssetCustodian", fields: [custodianId], references: [id])
+
+  registeredById String?
+  registeredBy   User?   @relation("AssetRegisteredBy", fields: [registeredById], references: [id])
+
+  approvalStatus     String    @default("APPROVED") // PENDING_HOD, PENDING_BURSAR_ADMIN, APPROVED, REJECTED
+  hodApprovedAt      DateTime?
+  hodApprovedById    String?
+  bursarApprovedAt   DateTime?
+  bursarApprovedById String?
+  adminApprovedAt    DateTime?
+  adminApprovedById  String?
+  rejectionReason    String?
 
   schoolId String
   school   School @relation(fields: [schoolId], references: [id])
@@ -1575,6 +1708,8 @@ model Asset {
 
   @@index([schoolId])
   @@index([custodianId])
+  @@index([department])
+  @@index([status])
 }
 
 model AssetIncident {
@@ -1845,12 +1980,17 @@ model ReportTemplate {
 // ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚Â REQUISITION FLOW ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚Â
 
 model Requisition {
-  id              String  @id @default(cuid())
-  refNumber       String  @unique // e.g., PRQ-2024-001
+  id              String    @id @default(cuid())
+  refNumber       String    @unique // e.g., PRQ-2024-001
   title           String
   description     String?
   estimatedAmount Float
-  status          String  @default("PENDING") // PENDING, HOD_APPROVED, BURSAR_APPROVED, APPROVED, REJECTED
+  status          String    @default("PENDING") // DRAFT, PENDING, HOD_APPROVED, BURSAR_APPROVED, APPROVED, REJECTED
+  requisitionType String?
+  priority        String?   @default("Medium") // Low, Medium, Urgent
+  neededByDate    DateTime?
+  attachmentUrl   String?
+  items           Json?
 
   departmentId String?
   department   Department? @relation(fields: [departmentId], references: [id])
@@ -3458,4 +3598,26 @@ model BankStatementLine {
 
   @@index([statementId])
   @@index([isReconciled])
+}
+
+model PlatformSetting {
+  id                    String   @id @default("default")
+  platformName          String   @default("Acadex Platform")
+  supportEmail          String   @default("support@acadex.com")
+  supportPhone          String?  @default("+263 77 000 0000")
+  billingCurrency       String   @default("USD")
+  studentMonthlyRate    Float    @default(2.00)
+  trialDays             Int      @default(30)
+  maintenanceMode       Boolean  @default(false)
+  allowSelfRegistration Boolean  @default(true)
+  backupFrequency       String   @default("DAILY")
+  maxUploadSizeMb       Int      @default(50)
+  smtpHost              String?
+  smtpPort              Int?     @default(587)
+  smtpEmail             String?
+  smtpPassword          String?
+  smtpSsl               Boolean  @default(true)
+  securityAlertEmails   String[] @default(["security@acadex.com"])
+  updatedAt             DateTime @updatedAt
+  createdAt             DateTime @default(now())
 }

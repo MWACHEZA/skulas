@@ -269,7 +269,7 @@ router.post('/', auth_1.requireAuth, upload_1.staffDocumentUpload.fields([
     }
     // Handle files
     const files = req.files || {};
-    const avatar = files['avatar'] ? `${req.uploadCategoryPath}/${files['avatar'][0].filename}` : null;
+    const avatar = files['avatar'] ? `${req.uploadCategoryPath}/${files['avatar'][0].filename}` : (req.body.avatar || null);
     const staffDocs = {
         idDoc: files['idDoc'] ? `${req.uploadCategoryPath}/${files['idDoc'][0].filename}` : null,
         residenceDoc: files['residenceDoc'] ? `${req.uploadCategoryPath}/${files['residenceDoc'][0].filename}` : null,

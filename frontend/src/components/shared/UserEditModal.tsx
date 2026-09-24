@@ -3,6 +3,7 @@ import api, { BASE_URL } from '../../lib/api';
 import { useAuth } from '../../contexts/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import SecondaryRoleSelect from './SecondaryRoleSelect';
+import { getAvatarUrl } from '../../utils/formatters';
 
 const NATIONALITIES = [
   "Zimbabwean", "South African", "Malawian", "Zambian", "Mozambican", "Botswanan", "Namibian", "Angolan", "Lesotho", "Swazi",
@@ -138,7 +139,7 @@ const UserEditModal: React.FC<UserEditModalProps> = ({
         ...(user.employeeProfile || {}) // Include profile fields like bloodGroup
       } as UserEditFormData);
       setSecondaryRoles(user.secondaryRoles || []);
-      setAvatarPreview(user.avatar ? `${BASE_URL}/api/storage/media/${currentUserSession?.schoolCode}/images/${user.avatar}` : null);
+      setAvatarPreview(getAvatarUrl(user.avatar, currentUserSession?.schoolCode));
       setDocFiles({});
       setActiveTab('basic');
       if (user.role === 'STUDENT') {

@@ -1,16 +1,48 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import '../../../styles/portal.css';
 
 interface LoanRecord {
   id: string;
-  student: { user: { name: string } };
-  book: { title: string; category: string };
   borrowedAt: string;
   dueDate: string;
   returnedAt: string | null;
-  status: 'borrowed' | 'returned' | 'overdue';
+  status: string;
+  accessionNumber?: string;
+  daysOverdue: number;
+  fineSoFar: number;
+  lastReminderDate?: string;
+  borrower: {
+    id: string;
+    name: string;
+    identifier: string;
+    type: 'Student' | 'Staff';
+    email: string;
+    phone: string;
+    avatar?: string;
+    departmentOrClass: string;
+    activeLoansCount: number;
+    maxLoans: number;
+    capacityDisplay: string;
+  };
+  book: {
+    id: string;
+    title: string;
+    author: string;
+    authors?: string[];
+    isbn?: string;
+    isbn10?: string;
+    isbn13?: string;
+    category: string;
+    shelfLocation: string;
+    barcode: string;
+    accessionNumber: string;
+    condition: string;
+    coverUrl?: string;
+    available: number;
+    totalCopies: number;
+  };
 }
 
 const exportToCSV = (title: string, headers: string[], dataRows: string[][]) => {
@@ -29,288 +61,584 @@ const exportToCSV = (title: string, headers: string[], dataRows: string[][]) => 
   URL.revokeObjectURL(url);
 };
 
-const exportToWord = (title: string, headers: string[], dataRows: string[][]) => {
-  let html = `
-    <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
-    <head>
-      <title>${title}</title>
-      <style>
-        table { border-collapse: collapse; width: 100%; }
-        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
-        th { background-color: #f2f2f2; }
-      </style>
-    </head>
-    <body>
-      <h2>${title}</h2>
-      <table>
-        <thead>
-          <tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr>
-        </thead>
-        <tbody>
-          ${dataRows.map(row => `<tr>${row.map(cell => `<td>${cell}</td>`).join('')}</tr>`).join('')}
-        </tbody>
-      </table>
-    </body>
-    </html>
-  `;
-  const blob = new Blob(['\ufeff' + html], { type: 'application/msword' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `${title.toLowerCase().replace(/\s+/g, '_')}_${new Date().toISOString().slice(0, 10)}.doc`;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-};
-
 export default function LibraryLoans() {
   const { showToast } = useToast();
   const [loans, setLoans] = useState<LoanRecord[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState<'borrowed' | 'returned' | 'all'>('borrowed');
   const [showIssueModal, setShowIssueModal] = useState(false);
+  const [actionInProgress, setActionInProgress] = useState<string | null>(null);
 
-  // Form states for new loan
-  const [newLoan, setNewLoan] = useState({
-    studentId: '',
-    bookId: '',
-    dueDate: ''
-  });
+  // Issuing Form States
+  const [borrowerQuery, setBorrowerQuery] = useState('');
+  const [borrowerType, setBorrowerType] = useState<'ALL' | 'STUDENT' | 'STAFF'>('ALL');
+  const [validatedBorrower, setValidatedBorrower] = useState<any>(null);
+  const [borrowerSearching, setBorrowerSearching] = useState(false);
+
+  const [bookQuery, setBookQuery] = useState('');
+  const [validatedBook, setValidatedBook] = useState<any>(null);
+  const [bookSearching, setBookSearching] = useState(false);
+
+  const [customDueDate, setCustomDueDate] = useState('');
+  const [issuing, setIssuing] = useState(false);
 
   useEffect(() => {
     fetchLoans();
-  }, []);
+  }, [statusFilter]);
 
   const fetchLoans = async () => {
+    setLoading(true);
     try {
-      const res = await api.get('/api/library/loans');
-      setLoans(res.data);
+      const res = await api.get(`/api/library/loans?status=${statusFilter}`);
+      setLoans(Array.isArray(res.data) ? res.data : []);
     } catch (err) {
       showToast('Failed to fetch loan records', 'error');
-    
     } finally {
       setLoading(false);
     }
   };
 
-  const handleReturn = async (id: string) => {
+  const handleReturn = async (id: string, title: string) => {
+    if (!window.confirm(`Mark "${title}" as returned?`)) return;
+    setActionInProgress(id);
     try {
       await api.post(`/api/library/loans/${id}/return`);
-      showToast('Book marked as returned successfully', 'success');
+      showToast('Book returned and inventory updated', 'success');
       fetchLoans();
-    } catch (err) {
-      showToast('Failed to process return', 'error');
-    
+    } catch (err: any) {
+      showToast(err.response?.data?.error || 'Failed to process return', 'error');
+    } finally {
+      setActionInProgress(null);
     }
   };
 
-  const handleIssue = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleRenew = async (id: string) => {
+    setActionInProgress(id);
     try {
-      await api.post('/api/library/loans/issue', newLoan);
-      showToast('Book issued successfully', 'success');
-      setShowIssueModal(false);
+      const res = await api.post(`/api/library/loans/${id}/renew`);
+      showToast(res.data?.message || 'Loan renewed successfully', 'success');
       fetchLoans();
-    } catch (err) {
-      showToast('Failed to issue book. Check availability.', 'error');
-    
+    } catch (err: any) {
+      showToast(err.response?.data?.error || 'Failed to renew loan', 'error');
+    } finally {
+      setActionInProgress(null);
     }
   };
 
-  if (loading) return <div className="p-8 text-center"><i className="fas fa-spinner fa-spin mr-2"></i> Loading archives...</div>;
+  const handleSendReminder = async (id: string) => {
+    setActionInProgress(id);
+    try {
+      const res = await api.post(`/api/library/loans/${id}/send-reminder`);
+      showToast(res.data?.message || 'Reminder sent to borrower', 'success');
+      fetchLoans();
+    } catch (err: any) {
+      showToast(err.response?.data?.error || 'Failed to send reminder', 'error');
+    } finally {
+      setActionInProgress(null);
+    }
+  };
+
+  // Borrower search in modal
+  const handleValidateBorrower = async () => {
+    if (!borrowerQuery.trim()) return;
+    setBorrowerSearching(true);
+    try {
+      const typeParam = borrowerType === 'ALL' ? '' : `&type=${borrowerType}`;
+      const res = await api.get(`/api/library/borrowers/validate?query=${encodeURIComponent(borrowerQuery.trim())}${typeParam}`);
+      setValidatedBorrower(res.data);
+    } catch (err: any) {
+      setValidatedBorrower(null);
+      showToast(err.response?.data?.error || 'Borrower not found or invalid', 'error');
+    } finally {
+      setBorrowerSearching(false);
+    }
+  };
+
+  // Book search in modal
+  const handleValidateBook = async () => {
+    if (!bookQuery.trim()) return;
+    setBookSearching(true);
+    try {
+      const res = await api.get(`/api/library/books/validate?query=${encodeURIComponent(bookQuery.trim())}`);
+      setValidatedBook(res.data);
+    } catch (err: any) {
+      setValidatedBook(null);
+      showToast(err.response?.data?.error || 'Book not found in catalog', 'error');
+    } finally {
+      setBookSearching(false);
+    }
+  };
+
+  const handleIssueSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!validatedBorrower) {
+      showToast('Please validate and select an eligible borrower', 'error');
+      return;
+    }
+    if (!validatedBook) {
+      showToast('Please validate and select an available book', 'error');
+      return;
+    }
+    if (!validatedBook.isAvailable) {
+      showToast('Selected book has 0 copies available', 'error');
+      return;
+    }
+
+    setIssuing(true);
+    try {
+      const payload: any = {
+        bookId: validatedBook.id,
+        accessionNumber: validatedBook.accessionNumber,
+        dueDate: customDueDate || undefined
+      };
+
+      if (validatedBorrower.type === 'Student') {
+        payload.studentId = validatedBorrower.id;
+      } else {
+        payload.userId = validatedBorrower.id;
+      }
+
+      const res = await api.post('/api/library/loans/issue', payload);
+      showToast(`Book successfully issued to ${res.data?.borrowerName || validatedBorrower.name}! Due on ${res.data?.dueDate}`, 'success');
+      setShowIssueModal(false);
+      resetIssueModal();
+      fetchLoans();
+    } catch (err: any) {
+      showToast(err.response?.data?.error || 'Failed to issue book', 'error');
+    } finally {
+      setIssuing(false);
+    }
+  };
+
+  const resetIssueModal = () => {
+    setBorrowerQuery('');
+    setValidatedBorrower(null);
+    setBookQuery('');
+    setValidatedBook(null);
+    setCustomDueDate('');
+  };
+
+  const filteredLoans = loans.filter(loan => {
+    const q = searchTerm.toLowerCase();
+    return (
+      loan.borrower?.name?.toLowerCase().includes(q) ||
+      loan.borrower?.identifier?.toLowerCase().includes(q) ||
+      loan.book?.title?.toLowerCase().includes(q) ||
+      loan.book?.accessionNumber?.toLowerCase().includes(q) ||
+      loan.book?.barcode?.toLowerCase().includes(q)
+    );
+  });
 
   return (
-    <div className="library-portal-container" style={{ padding: '30px', minHeight: '100vh', background: '#f8faff' }}>
-      <div className="portal-page-header" style={{ marginBottom: 40, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+    <div className="library-portal-container" style={{ padding: '24px', minHeight: '100vh', background: '#f8fafc' }}>
+      {/* Header */}
+      <div className="portal-page-header" style={{ marginBottom: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16 }}>
         <div>
-          <h1 style={{ color: '#1e3a8a', fontSize: '2.4rem', fontWeight: 900 }}>Circulation Desk</h1>
-          <p style={{ color: '#475569' }}>Real-time management of school library assets and student borrowings.</p>
+          <h1 style={{ color: '#0f172a', fontSize: '1.75rem', fontWeight: 800, margin: 0 }}>
+            <i className="fas fa-handshake mr-3 text-primary" style={{ color: '#2563eb' }}></i>
+            Circulation & Active Loans
+          </h1>
+          <p style={{ color: '#64748b', fontSize: '0.9rem', margin: '4px 0 0' }}>
+            Monitor checkouts, borrower borrowing capacity, and resource return statuses.
+          </p>
+        </div>
+
+        <div style={{ display: 'flex', gap: 10, alignItems: 'center' }} className="no-print">
+          <button 
+            onClick={() => {
+              const headers = ['Borrower', 'Type', 'Class/Dept', 'Book Title', 'Accession #', 'Issue Date', 'Due Date', 'Status'];
+              const rows = filteredLoans.map(l => [
+                l.borrower?.name || 'N/A',
+                l.borrower?.type || 'N/A',
+                l.borrower?.departmentOrClass || 'N/A',
+                l.book?.title || 'N/A',
+                l.accessionNumber || l.book?.accessionNumber || 'N/A',
+                new Date(l.borrowedAt).toLocaleDateString(),
+                new Date(l.dueDate).toLocaleDateString(),
+                l.returnedAt ? 'Returned' : (l.daysOverdue > 0 ? 'Overdue' : 'Active')
+              ]);
+              exportToCSV('Library_Active_Loans', headers, rows);
+            }}
+            className="portal-btn-secondary"
+            style={{ padding: '8px 16px', fontSize: '0.85rem' }}
+          >
+            <i className="fas fa-file-csv mr-1"></i> CSV
+          </button>
+          <button 
+            onClick={() => window.print()}
+            className="portal-btn-secondary"
+            style={{ padding: '8px 16px', fontSize: '0.85rem' }}
+          >
+            <i className="fas fa-print mr-1"></i> Print
+          </button>
+          <button 
+            onClick={() => { resetIssueModal(); setShowIssueModal(true); }}
+            className="portal-btn-primary" 
+            style={{ padding: '10px 20px', fontSize: '0.9rem', background: '#2563eb', borderRadius: '10px', display: 'flex', alignItems: 'center', gap: 8 }}
+          >
+            <i className="fas fa-plus"></i> Issue Book
+          </button>
         </div>
       </div>
 
-      <div className="portal-card" style={{ background: 'white', borderRadius: '32px', border: 'none', boxShadow: '0 20px 40px rgba(0,0,0,0.03)', overflow: 'hidden' }}>
-        <div className="portal-card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px', padding: '24px 30px', borderBottom: '1px solid #f1f5f9' }}>
-          <h2 style={{ color: '#1e3a8a', margin: 0, fontSize: '1.4rem', fontWeight: 900 }}>
-            <i className="fas fa-handshake mr-2"></i>Current Loan Records
-          </h2>
-          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }} className="no-print">
-            <button 
-              onClick={() => {
-                const headers = ['Student', 'Resource Title', 'Borrowed On', 'Return Deadline', 'Status'];
-                const rows = loans.map(l => [
-                  l.student?.user?.name || 'N/A',
-                  l.book?.title || 'N/A',
-                  new Date(l.borrowedAt).toLocaleDateString(),
-                  new Date(l.dueDate).toLocaleDateString(),
-                  l.returnedAt ? 'Returned' : (new Date(l.dueDate) < new Date() ? 'Overdue' : 'On Loan')
-                ]);
-                exportToCSV('Library_Loans', headers, rows);
-              }}
-              className="portal-btn-secondary"
-              style={{ padding: '8px 16px', fontSize: '0.85rem' }}
-              title="Export to CSV"
-            >
-              <i className="fas fa-file-csv mr-1"></i> CSV
-            </button>
-            <button 
-              onClick={() => {
-                const headers = ['Student', 'Resource Title', 'Borrowed On', 'Return Deadline', 'Status'];
-                const rows = loans.map(l => [
-                  l.student?.user?.name || 'N/A',
-                  l.book?.title || 'N/A',
-                  new Date(l.borrowedAt).toLocaleDateString(),
-                  new Date(l.dueDate).toLocaleDateString(),
-                  l.returnedAt ? 'Returned' : (new Date(l.dueDate) < new Date() ? 'Overdue' : 'On Loan')
-                ]);
-                exportToWord('Library_Loans', headers, rows);
-              }}
-              className="portal-btn-secondary"
-              style={{ padding: '8px 16px', fontSize: '0.85rem' }}
-              title="Export to Word"
-            >
-              <i className="fas fa-file-word mr-1"></i> Word
-            </button>
-            <button 
-              onClick={() => window.print()}
-              className="portal-btn-secondary"
-              style={{ padding: '8px 16px', fontSize: '0.85rem' }}
-              title="Print / PDF"
-            >
-              <i className="fas fa-print mr-1"></i> Print/PDF
-            </button>
-            <button 
-              onClick={() => setShowIssueModal(true)}
-              className="portal-btn-primary" 
-              style={{ padding: '8px 16px', fontSize: '0.85rem', background: '#1e3a8a' }}
-            >
-              <i className="fas fa-plus mr-1"></i> Issue New Resource
-            </button>
-          </div>
+      {/* Search & Tabs Filter */}
+      <div style={{ background: '#ffffff', padding: '16px 20px', borderRadius: '16px', border: '1px solid #e2e8f0', marginBottom: 20, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16 }}>
+        <div style={{ position: 'relative', width: 340 }}>
+          <i className="fas fa-search" style={{ position: 'absolute', left: 16, top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }}></i>
+          <input 
+            type="text" 
+            placeholder="Search borrower, book title, or accession #..."
+            className="portal-input"
+            style={{ width: '100%', paddingLeft: 42, height: 42, borderRadius: 10, fontSize: '0.85rem' }}
+            value={searchTerm}
+            onChange={e => setSearchTerm(e.target.value)}
+          />
         </div>
-        
-        <div style={{ padding: '0 20px 20px' }}>
-          <table className="portal-table">
-            <thead>
-              <tr style={{ color: '#64748b' }}>
-                <th style={{ padding: '20px' }}>Student</th>
-                <th>Resource Information</th>
-                <th>Borrowed On</th>
-                <th>Return Deadline</th>
-                <th>Status</th>
-                <th style={{ textAlign: 'center' }}>Management</th>
-              </tr>
-            </thead>
-            <tbody>
-              {loans.map(loan => {
-                const isOverdue = !loan.returnedAt && new Date(loan.dueDate) < new Date();
-                return (
-                  <tr key={loan.id} style={{ borderBottom: '1px solid #f8fafc' }}>
-                    <td style={{ padding: '25px 20px', fontWeight: 800, color: '#1e293b' }}>{loan.student?.user?.name}</td>
-                    <td>
-                      <div style={{ fontWeight: 600, color: '#334155' }}>{loan.book?.title}</div>
-                      <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>Category: {loan.book?.category}</div>
-                    </td>
-                    <td style={{ color: '#64748b', fontWeight: 600 }}>{new Date(loan.borrowedAt).toLocaleDateString()}</td>
-                    <td style={{ color: isOverdue ? '#b91c1c' : '#64748b', fontWeight: 700 }}>
-                      {new Date(loan.dueDate).toLocaleDateString()}
-                    </td>
-                    <td>
-                      <span className={`portal-badge ${loan.returnedAt ? 'success' : isOverdue ? 'danger' : 'info'}`} style={{ borderRadius: '10px' }}>
-                        {loan.returnedAt ? 'Returned' : isOverdue ? 'Overdue' : 'On Loan'}
+
+        <div style={{ display: 'flex', gap: 8 }}>
+          <button 
+            onClick={() => setStatusFilter('borrowed')}
+            className={statusFilter === 'borrowed' ? 'portal-btn-primary' : 'portal-btn-secondary'}
+            style={{ padding: '6px 14px', fontSize: '0.85rem', borderRadius: 8 }}
+          >
+            Active Loans
+          </button>
+          <button 
+            onClick={() => setStatusFilter('returned')}
+            className={statusFilter === 'returned' ? 'portal-btn-primary' : 'portal-btn-secondary'}
+            style={{ padding: '6px 14px', fontSize: '0.85rem', borderRadius: 8 }}
+          >
+            Returned History
+          </button>
+          <button 
+            onClick={() => setStatusFilter('all')}
+            className={statusFilter === 'all' ? 'portal-btn-primary' : 'portal-btn-secondary'}
+            style={{ padding: '6px 14px', fontSize: '0.85rem', borderRadius: 8 }}
+          >
+            All Records
+          </button>
+        </div>
+      </div>
+
+      {/* 2-Panel Active Loans Display */}
+      {loading ? (
+        <div style={{ padding: 60, textAlign: 'center', color: '#64748b' }}>
+          <i className="fas fa-spinner fa-spin mr-2"></i> Loading loan circulation records...
+        </div>
+      ) : filteredLoans.length === 0 ? (
+        <div className="portal-card" style={{ padding: 60, textAlign: 'center', color: '#64748b', borderRadius: 16 }}>
+          <i className="fas fa-inbox" style={{ fontSize: '2.5rem', color: '#cbd5e1', marginBottom: 12 }}></i>
+          <p style={{ fontWeight: 600, margin: 0 }}>No loan records found.</p>
+        </div>
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          {filteredLoans.map(loan => {
+            const isOverdue = !loan.returnedAt && loan.daysOverdue > 0;
+            const daysLeft = Math.ceil((new Date(loan.dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
+
+            return (
+              <div 
+                key={loan.id} 
+                className="portal-card" 
+                style={{ 
+                  borderRadius: 16, 
+                  border: isOverdue ? '1px solid #fca5a5' : '1px solid #e2e8f0', 
+                  background: '#ffffff', 
+                  overflow: 'hidden',
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.03)'
+                }}
+              >
+                <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 2fr', minHeight: 140 }}>
+                  {/* PANEL 1: Borrower Details */}
+                  <div style={{ padding: '20px', background: isOverdue ? '#fff5f5' : '#f8fafc', borderRight: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                    <div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 10 }}>
+                        <div style={{ width: 44, height: 44, borderRadius: '50%', background: '#e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#475569', fontWeight: 800, fontSize: '1rem', overflow: 'hidden' }}>
+                          {loan.borrower?.avatar ? (
+                            <img src={loan.borrower.avatar} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                          ) : (
+                            loan.borrower?.name?.charAt(0) || 'U'
+                          )}
+                        </div>
+                        <div>
+                          <div style={{ fontWeight: 800, color: '#0f172a', fontSize: '1rem' }}>
+                            {loan.borrower?.name}
+                          </div>
+                          <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
+                            <span className={`portal-badge ${loan.borrower?.type === 'Student' ? 'info' : 'warning'}`} style={{ padding: '2px 6px', fontSize: '0.7rem', marginRight: 6 }}>
+                              {loan.borrower?.type}
+                            </span>
+                            ID: {loan.borrower?.identifier}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div style={{ fontSize: '0.8rem', color: '#475569', display: 'flex', flexDirection: 'column', gap: 4 }}>
+                        <div><i className="fas fa-graduation-cap mr-2 text-muted"></i>{loan.borrower?.departmentOrClass}</div>
+                        {loan.borrower?.phone && <div><i className="fas fa-phone mr-2 text-muted"></i>{loan.borrower?.phone}</div>}
+                      </div>
+                    </div>
+
+                    {/* Borrower Capacity & Fines summary */}
+                    <div style={{ marginTop: 12, paddingTop: 10, borderTop: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#64748b' }}>
+                        ACTIVE BORROWING: <strong style={{ color: '#1e40af' }}>{loan.borrower?.capacityDisplay}</strong>
                       </span>
-                    </td>
-                    <td style={{ textAlign: 'center' }}>
-                      {!loan.returnedAt && (
-                        <button 
-                          onClick={() => handleReturn(loan.id)}
-                          style={{ background: '#dcfce7', color: '#166534', border: 'none', padding: '8px 16px', borderRadius: '10px', fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s' }}
-                          onMouseEnter={e => e.currentTarget.style.background = '#bbf7d0'}
-                          onMouseLeave={e => e.currentTarget.style.background = '#dcfce7'}
-                        >
-                          Confirm Return
-                        </button>
+                      {loan.fineSoFar > 0 && (
+                        <span className="portal-badge danger" style={{ fontSize: '0.7rem' }}>
+                          Fine: ${loan.fineSoFar.toFixed(2)}
+                        </span>
                       )}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      </div>
+                    </div>
+                  </div>
 
-      {/* Issue Modal */}
-      {showIssueModal && (
-        <div className="portal-modal-overlay" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <div className="portal-modal-card" style={{ maxWidth: '500px' }}>
-            <div className="portal-modal-header">
-              <div className="header-titles">
-                <h2>Hand Out Resource</h2>
+                  {/* PANEL 2: Book & Loan Details */}
+                  <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16 }}>
+                      <div>
+                        <span className="portal-badge info" style={{ fontSize: '0.7rem', marginBottom: 4 }}>
+                          {loan.book?.category}
+                        </span>
+                        <h3 style={{ margin: '4px 0 2px', fontSize: '1.1rem', fontWeight: 800, color: '#0f172a' }}>
+                          {loan.book?.title}
+                        </h3>
+                        <p style={{ margin: 0, fontSize: '0.8rem', color: '#64748b' }}>
+                          by {loan.book?.authors?.join('; ') || loan.book?.author || 'Unknown'}
+                        </p>
+
+                        <div style={{ display: 'flex', gap: 16, marginTop: 10, fontSize: '0.8rem', color: '#64748b' }}>
+                          <span><strong>Shelf:</strong> {loan.book?.shelfLocation || 'Main Stack'}</span>
+                          <span><strong>Accession:</strong> {loan.accessionNumber || loan.book?.accessionNumber}</span>
+                          <span><strong>Condition:</strong> {loan.book?.condition || 'Good'}</span>
+                        </div>
+                      </div>
+
+                      {/* Status / Countdown Badge */}
+                      <div style={{ textAlign: 'right' }}>
+                        {loan.returnedAt ? (
+                          <span className="portal-badge success" style={{ padding: '6px 12px', fontSize: '0.85rem' }}>
+                            <i className="fas fa-check-circle mr-1"></i> Returned
+                          </span>
+                        ) : isOverdue ? (
+                          <div style={{ textAlign: 'right' }}>
+                            <span className="portal-badge danger" style={{ padding: '6px 12px', fontSize: '0.85rem', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                              <i className="fas fa-exclamation-triangle"></i> Overdue by {loan.daysOverdue} {loan.daysOverdue === 1 ? 'day' : 'days'}
+                            </span>
+                            <div style={{ fontSize: '0.75rem', color: '#ef4444', fontWeight: 700, marginTop: 4 }}>
+                              Fine accrued: ${loan.fineSoFar.toFixed(2)}
+                            </div>
+                          </div>
+                        ) : (
+                          <span className="portal-badge success" style={{ padding: '6px 12px', fontSize: '0.85rem', display: 'inline-flex', alignItems: 'center', gap: 4, background: '#f0fdf4', color: '#15803d', border: '1px solid #86efac' }}>
+                            <i className="fas fa-clock"></i> Due in {daysLeft} {daysLeft === 1 ? 'day' : 'days'}
+                          </span>
+                        )}
+
+                        <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: 6 }}>
+                          Issued: {new Date(loan.borrowedAt).toLocaleDateString()} | Due: {new Date(loan.dueDate).toLocaleDateString()}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Actions Bar */}
+                    <div style={{ marginTop: 14, paddingTop: 12, borderTop: '1px solid #f1f5f9', display: 'flex', justifyContent: 'flex-end', gap: 10 }} className="no-print">
+                      {!loan.returnedAt && (
+                        <>
+                          <button 
+                            type="button"
+                            onClick={() => handleSendReminder(loan.id)}
+                            disabled={actionInProgress === loan.id}
+                            className="portal-btn-secondary"
+                            style={{ padding: '6px 12px', fontSize: '0.8rem', borderRadius: 8, display: 'flex', alignItems: 'center', gap: 6 }}
+                            title="Send reminder notice to borrower"
+                          >
+                            <i className="fas fa-bell text-warning"></i>
+                            Send Reminder
+                          </button>
+
+                          <button 
+                            type="button"
+                            onClick={() => handleRenew(loan.id)}
+                            disabled={actionInProgress === loan.id}
+                            className="portal-btn-secondary"
+                            style={{ padding: '6px 12px', fontSize: '0.8rem', borderRadius: 8, display: 'flex', alignItems: 'center', gap: 6 }}
+                          >
+                            <i className="fas fa-redo text-info"></i>
+                            Renew Loan
+                          </button>
+
+                          <button 
+                            type="button"
+                            onClick={() => handleReturn(loan.id, loan.book?.title)}
+                            disabled={actionInProgress === loan.id}
+                            className="portal-btn-primary"
+                            style={{ padding: '6px 16px', fontSize: '0.8rem', borderRadius: 8, background: '#059669', display: 'flex', alignItems: 'center', gap: 6 }}
+                          >
+                            <i className="fas fa-check"></i>
+                            Confirm Return
+                          </button>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                </div>
               </div>
-              <button className="close-panel" onClick={() => setShowIssueModal(false)}>&times;</button>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Quick Issuing Modal */}
+      {showIssueModal && (
+        <div className="portal-modal-overlay" style={{ zIndex: 1100 }}>
+          <div className="portal-modal-card" style={{ maxWidth: 680, maxHeight: '90vh', overflowY: 'auto' }}>
+            <div className="portal-modal-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #e2e8f0', paddingBottom: 16 }}>
+              <div>
+                <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800, color: '#1e293b' }}>
+                  <i className="fas fa-hand-holding mr-2" style={{ color: '#2563eb' }}></i>
+                  Issue Book to Borrower
+                </h2>
+                <p style={{ margin: '4px 0 0', fontSize: '0.85rem', color: '#64748b' }}>
+                  Verify borrower quota and scan book barcode or accession number.
+                </p>
+              </div>
+              <button className="close-btn" style={{ border: 'none', background: 'none', fontSize: '1.5rem', cursor: 'pointer' }} onClick={() => setShowIssueModal(false)}>&times;</button>
             </div>
-            
-            <div className="portal-modal-body" style={{ padding: '30px' }}>
-              <form onSubmit={handleIssue}>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '20px', marginBottom: '20px' }}>
-                  <div className="form-group">
-                    <label className="portal-label">Target Student ID</label>
-                    <input 
-                      type="text" 
-                      className="portal-input" 
-                      placeholder="Paste student UUID..." 
-                      required
-                      value={newLoan.studentId}
-                      onChange={e => setNewLoan({...newLoan, studentId: e.target.value})}
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label className="portal-label">Book Resource ID</label>
-                    <input 
-                      type="text" 
-                      className="portal-input" 
-                      placeholder="Paste book UUID..." 
-                      required
-                      value={newLoan.bookId}
-                      onChange={e => setNewLoan({...newLoan, bookId: e.target.value})}
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label className="portal-label">Return Deadline</label>
-                    <input 
-                      type="date" 
-                      className="portal-input" 
-                      required
-                      value={newLoan.dueDate}
-                      onChange={e => setNewLoan({...newLoan, dueDate: e.target.value})}
-                    />
-                  </div>
-                </div>
 
-                <div style={{ background: '#eff6ff', padding: '15px', borderRadius: '12px', display: 'flex', gap: '10px', color: '#1e40af', fontSize: '0.9rem', marginBottom: '25px', border: '1px solid #bfdbfe' }}>
-                  <i className="fas fa-info-circle" style={{ marginTop: '3px' }}></i>
-                  <p style={{ margin: 0, lineHeight: 1.5 }}>Issuing a resource decreases available inventory. Students will receive a notification to return the item by the chosen deadline.</p>
-                </div>
-
-                <div style={{ display: 'flex', gap: '15px' }}>
-                  <button 
-                    type="button"
-                    onClick={() => setShowIssueModal(false)}
-                    className="portal-btn-ghost"
-                    style={{ flex: 1 }}
+            <form onSubmit={handleIssueSubmit} style={{ padding: '20px 0', display: 'flex', flexDirection: 'column', gap: 20 }}>
+              {/* Step 1: Select / Validate Borrower */}
+              <div style={{ background: '#f8fafc', padding: 16, borderRadius: 12, border: '1px solid #e2e8f0' }}>
+                <label style={{ fontWeight: 700, fontSize: '0.85rem', color: '#334155', display: 'block', marginBottom: 8 }}>
+                  1. Identify Borrower (Student or Staff) *
+                </label>
+                <div style={{ display: 'flex', gap: 8, marginBottom: 10 }}>
+                  <select 
+                    className="portal-input" 
+                    value={borrowerType} 
+                    onChange={e => setBorrowerType(e.target.value as any)}
+                    style={{ width: 130 }}
                   >
-                    Cancel
-                  </button>
-                  <button 
-                    type="submit"
-                    className="portal-btn-primary"
+                    <option value="ALL">All Roles</option>
+                    <option value="STUDENT">Student Only</option>
+                    <option value="STAFF">Staff Only</option>
+                  </select>
+                  <input 
+                    type="text" 
+                    placeholder="Enter Student ID, Staff ID, or full name..."
+                    className="portal-input"
                     style={{ flex: 1 }}
+                    value={borrowerQuery}
+                    onChange={e => setBorrowerQuery(e.target.value)}
+                    onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); handleValidateBorrower(); } }}
+                  />
+                  <button 
+                    type="button" 
+                    onClick={handleValidateBorrower}
+                    disabled={borrowerSearching}
+                    className="portal-btn-secondary"
+                    style={{ padding: '0 16px' }}
                   >
-                    Finalize Loan
+                    {borrowerSearching ? <i className="fas fa-spinner fa-spin"></i> : 'Verify'}
                   </button>
                 </div>
-              </form>
-            </div>
+
+                {/* Validated Borrower Feedback Box */}
+                {validatedBorrower && (
+                  <div style={{ background: validatedBorrower.isBlocked ? '#fee2e2' : '#f0fdf4', border: `1px solid ${validatedBorrower.isBlocked ? '#fca5a5' : '#86efac'}`, padding: 12, borderRadius: 8, marginTop: 8 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <div style={{ fontWeight: 700, color: validatedBorrower.isBlocked ? '#b91c1c' : '#15803d' }}>
+                        {validatedBorrower.name} ({validatedBorrower.type}) — {validatedBorrower.departmentOrClass}
+                      </div>
+                      <span className={`portal-badge ${validatedBorrower.isBlocked ? 'danger' : 'success'}`} style={{ fontSize: '0.75rem' }}>
+                        {validatedBorrower.capacityDisplay}
+                      </span>
+                    </div>
+
+                    {validatedBorrower.isBlocked ? (
+                      <div style={{ fontSize: '0.8rem', color: '#b91c1c', marginTop: 4 }}>
+                        <i className="fas fa-ban mr-1"></i> <strong>BLOCKED:</strong> {validatedBorrower.blockReason}
+                      </div>
+                    ) : (
+                      <div style={{ fontSize: '0.8rem', color: '#15803d', marginTop: 4 }}>
+                        <i className="fas fa-check-circle mr-1"></i> Eligible to borrow. Outstanding fines: ${validatedBorrower.outstandingFines.toFixed(2)}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* Step 2: Select / Validate Book */}
+              <div style={{ background: '#f8fafc', padding: 16, borderRadius: 12, border: '1px solid #e2e8f0' }}>
+                <label style={{ fontWeight: 700, fontSize: '0.85rem', color: '#334155', display: 'block', marginBottom: 8 }}>
+                  2. Scan or Enter Book (Accession #, Barcode, ISBN, or Title) *
+                </label>
+                <div style={{ display: 'flex', gap: 8, marginBottom: 10 }}>
+                  <input 
+                    type="text" 
+                    placeholder="Scan barcode or enter accession / ISBN..."
+                    className="portal-input"
+                    style={{ flex: 1 }}
+                    value={bookQuery}
+                    onChange={e => setBookQuery(e.target.value)}
+                    onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); handleValidateBook(); } }}
+                  />
+                  <button 
+                    type="button" 
+                    onClick={handleValidateBook}
+                    disabled={bookSearching}
+                    className="portal-btn-secondary"
+                    style={{ padding: '0 16px' }}
+                  >
+                    {bookSearching ? <i className="fas fa-spinner fa-spin"></i> : 'Lookup'}
+                  </button>
+                </div>
+
+                {/* Validated Book Feedback Box */}
+                {validatedBook && (
+                  <div style={{ background: validatedBook.isAvailable ? '#f0fdf4' : '#fee2e2', border: `1px solid ${validatedBook.isAvailable ? '#86efac' : '#fca5a5'}`, padding: 12, borderRadius: 8, marginTop: 8 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <div style={{ fontWeight: 700, color: validatedBook.isAvailable ? '#15803d' : '#b91c1c' }}>
+                        {validatedBook.title}
+                      </div>
+                      <span className={`portal-badge ${validatedBook.isAvailable ? 'success' : 'danger'}`} style={{ fontSize: '0.75rem' }}>
+                        {validatedBook.available} / {validatedBook.copies} Available
+                      </span>
+                    </div>
+                    <div style={{ fontSize: '0.8rem', color: '#475569', marginTop: 4, display: 'flex', gap: 16 }}>
+                      <span>Location: <strong>{validatedBook.shelfLocation}</strong></span>
+                      <span>Accession: <strong>{validatedBook.accessionNumber}</strong></span>
+                      <span>Condition: <strong>{validatedBook.condition}</strong></span>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Step 3: Custom Due Date */}
+              <div className="portal-form-group" style={{ margin: 0 }}>
+                <label style={{ fontWeight: 600, fontSize: '0.85rem' }}>Return Due Date (Leave blank to use default policy period)</label>
+                <input 
+                  type="date" 
+                  className="portal-input" 
+                  value={customDueDate} 
+                  onChange={e => setCustomDueDate(e.target.value)} 
+                />
+              </div>
+
+              <div className="portal-modal-footer" style={{ display: 'flex', justifyContent: 'flex-end', gap: 12, marginTop: 12, borderTop: '1px solid #e2e8f0', paddingTop: 16 }}>
+                <button type="button" className="portal-btn-secondary" onClick={() => setShowIssueModal(false)} disabled={issuing}>
+                  Cancel
+                </button>
+                <button 
+                  type="submit" 
+                  className="portal-btn-primary" 
+                  disabled={issuing || !validatedBorrower || validatedBorrower?.isBlocked || !validatedBook || !validatedBook?.isAvailable}
+                  style={{ background: '#2563eb', padding: '0 24px', height: 44, borderRadius: 10 }}
+                >
+                  {issuing ? 'Issuing...' : 'Finalize & Issue Book'}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

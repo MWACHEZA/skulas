@@ -73,7 +73,8 @@ router.patch('/settings', requireAuth, requireRole('SCHOOL_ADMIN'), validate(Sys
       'reportCardTemplate', 'allowTeacherEnterScores', 'scoreClosingDate',
       'allowStudentCheckResult', 'allowParentPrintReport', 'reportCommentSignature',
       'showSubjectPosition', 'gateMinPaidAmount', 'gateMinPaidPercent', 'gateRequiredType',
-      'idCardTemplateFront', 'idCardTemplateBack'
+      'idCardTemplateFront', 'idCardTemplateBack',
+      'mapLocation', 'mapLatitude', 'mapLongitude'
     ];
 
     const filteredData: any = {};
@@ -84,6 +85,12 @@ router.patch('/settings', requireAuth, requireRole('SCHOOL_ADMIN'), validate(Sys
     }
 
     // Safely parse numbers
+    if (filteredData.mapLatitude !== undefined) {
+      filteredData.mapLatitude = filteredData.mapLatitude ? parseFloat(filteredData.mapLatitude) : null;
+    }
+    if (filteredData.mapLongitude !== undefined) {
+      filteredData.mapLongitude = filteredData.mapLongitude ? parseFloat(filteredData.mapLongitude) : null;
+    }
     if (filteredData.idleTime !== undefined) {
       filteredData.idleTime = parseInt(filteredData.idleTime) || 0;
     }
@@ -205,10 +212,33 @@ router.get('/me', requireAuth, requireRole('SCHOOL_ADMIN'), async (req: AuthRequ
   try {
     const school = await prisma.school.findUnique({
       where: { id: req.user!.schoolId! },
-      include: { plan: true }
+      include: {
+        plan: true,
+        _count: { select: { students: true, teachers: true, classes: true } }
+      }
     });
     if (!school) return res.status(404).json({ error: 'School not found' });
-    res.json(school);
+
+    const activeStudents = await prisma.student.count({
+      where: {
+        schoolId: school.id,
+        status: { in: ['Enrolled', 'Active', 'enrolled', 'active'] }
+      }
+    });
+
+    const PLATFORM_STUDENT_RATE = 2.00;
+    const monthlyPlatformBill = activeStudents * PLATFORM_STUDENT_RATE;
+
+    res.json({
+      ...school,
+      billing: {
+        ratePerStudent: PLATFORM_STUDENT_RATE,
+        activeStudents,
+        totalStudents: school._count.students,
+        monthlyPlatformBill,
+        currency: 'USD'
+      }
+    });
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch school data' });
   }
@@ -1324,13 +1354,26 @@ router.patch('/:code', requireAuth, requireRole('SUPER_ADMIN'), validate(SuperAd
   const { name, email, phone, address, status, planName, type } = req.body;
 
   try {
+    const existingSchool = await prisma.school.findFirst({
+      where: {
+        OR: [
+          { code: code.toUpperCase() },
+          { id: code }
+        ]
+      }
+    });
+
+    if (!existingSchool) {
+      return res.status(404).json({ error: 'School not found' });
+    }
+
     const updateData: any = {};
-    if (name) updateData.name = name;
-    if (email) updateData.email = email;
-    if (phone) updateData.phone = phone;
-    if (address) updateData.address = address;
-    if (status) updateData.status = status;
-    if (type) updateData.type = type;
+    if (name !== undefined) updateData.name = name;
+    if (email !== undefined) updateData.email = email;
+    if (phone !== undefined) updateData.phone = phone;
+    if (address !== undefined) updateData.address = address;
+    if (status !== undefined) updateData.status = status;
+    if (type !== undefined) updateData.type = type;
 
     if (planName) {
       const plan = await prisma.plan.findUnique({ where: { name: planName } });
@@ -1339,12 +1382,22 @@ router.patch('/:code', requireAuth, requireRole('SUPER_ADMIN'), validate(SuperAd
     }
 
     const school = await prisma.school.update({
-      where: { code: code.toUpperCase() },
-      data: updateData
+      where: { id: existingSchool.id },
+      data: updateData,
+      include: { plan: true }
     });
+
+    await logAction(
+      req,
+      'UPDATE_SCHOOL_SETTINGS',
+      'School',
+      school.id,
+      { code: school.code, changes: updateData }
+    );
 
     res.json({ message: 'School updated successfully', school });
   } catch (error: any) {
+    console.error('Superadmin school update error:', error);
     res.status(500).json({ error: 'Failed to update school' });
   }
 });
@@ -1356,16 +1409,35 @@ router.patch('/:code', requireAuth, requireRole('SUPER_ADMIN'), validate(SuperAd
 router.delete('/:code', requireAuth, requireRole('SUPER_ADMIN'), async (req: AuthRequest, res) => {
   const code = req.params.code as string;
   try {
-    const school = await prisma.school.update({ 
-      where: { code: code.toUpperCase() },
+    const existingSchool = await prisma.school.findFirst({
+      where: {
+        OR: [
+          { code: code.toUpperCase() },
+          { id: code }
+        ]
+      }
+    });
+
+    if (!existingSchool) {
+      return res.status(404).json({ error: 'School not found' });
+    }
+
+    await prisma.school.update({ 
+      where: { id: existingSchool.id },
       data: { status: 'deleted' }
     });
     
-    // Invalidate all tokens for users of this school by locking them or requiring password change
-    // For now, the requireAuth middleware will block them because school.status === 'deleted'
-    
+    await logAction(
+      req,
+      'DELETE_SCHOOL',
+      'School',
+      existingSchool.id,
+      { code: existingSchool.code, name: existingSchool.name }
+    );
+
     res.json({ message: 'School deleted successfully' });
   } catch (error: any) {
+    console.error('Superadmin school delete error:', error);
     res.status(500).json({ error: 'Failed to delete school' });
   }
 });

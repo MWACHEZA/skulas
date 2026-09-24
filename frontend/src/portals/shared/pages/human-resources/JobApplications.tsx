@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../../../lib/api';
 import { useTerminology } from '../../../../hooks/useTerminology';
+import { useToast } from '../../../../context/ToastContext';
 
 interface JobApplication {
   id: string;
@@ -25,6 +26,7 @@ const STATUS_TABS = ['Applied', 'On review', 'Interviewed', 'Offered', 'Hired', 
 
 export default function JobApplications() {
   const { t } = useTerminology();
+  const { showToast, toastConfirm } = useToast();
   const [activeTab, setActiveTab] = useState('Applied');
   const [applications, setApplications] = useState<JobApplication[]>([]);
   const [loading, setLoading] = useState(true);
@@ -85,7 +87,7 @@ export default function JobApplications() {
       setVacancies(response.data);
     } catch (error) {
       console.error('Failed to fetch vacancies', error);
-    
+      showToast('Failed to fetch active vacancies.', 'error');
     }
   };
 
@@ -97,8 +99,9 @@ export default function JobApplications() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, key: 'photo' | 'resume') => {
     const file = e.target.files?.[0];
     if (file) {
-      if (file.size > 10 * 1024 * 1024) {
-        alert('File size must be under 10MB.');
+      const MAX_UPLOAD_SIZE = 20 * 1024 * 1024 * 1024; // 20GB limit
+      if (file.size > MAX_UPLOAD_SIZE) {
+        showToast('File size must be under 20GB.', 'warning');
         return;
       }
       setAddFiles(prev => ({ ...prev, [key]: file }));
@@ -112,6 +115,20 @@ export default function JobApplications() {
     reader.onerror = error => reject(error);
   });
 
+  const uploadFile = async (file: File): Promise<string> => {
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      const res = await api.post(`/api/storage/upload?dir=applications`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      return res.data.filePath;
+    } catch (uploadErr) {
+      console.warn('Streaming upload failed, falling back to base64 encoding...', uploadErr);
+      return await toBase64(file);
+    }
+  };
+
   const handleAddSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSubmitting(true);
@@ -121,34 +138,34 @@ export default function JobApplications() {
       const reqFields = selectedVacancy?.requiredFields || '';
 
       if (reqFields.includes('Photo') && !addFiles.photo) {
-        alert('Passport Photo is required for this position.');
+        showToast('Passport Photo is required for this position.', 'warning');
         setSubmitting(false);
         return;
       }
       if (reqFields.includes('Resume') && !addFiles.resume) {
-        alert('Resume/CV is required for this position.');
+        showToast('Resume/CV is required for this position.', 'warning');
         setSubmitting(false);
         return;
       }
 
-      let photoBase64 = null;
-      let resumeBase64 = null;
+      let photoUrl: string | null = null;
+      let resumeUrl: string | null = null;
 
-      if (addFiles.photo) photoBase64 = await toBase64(addFiles.photo);
-      if (addFiles.resume) resumeBase64 = await toBase64(addFiles.resume);
+      if (addFiles.photo) photoUrl = await uploadFile(addFiles.photo);
+      if (addFiles.resume) resumeUrl = await uploadFile(addFiles.resume);
 
       const payload = {
         ...addFormData,
-        photoUrl: photoBase64,
-        resumeUrl: resumeBase64
+        photoUrl,
+        resumeUrl
       };
 
       if (editingAppId) {
         await api.put(`/api/hr/applications/${editingAppId}`, payload);
-        alert('Applicant updated successfully!');
+        showToast('Applicant updated successfully!', 'success');
       } else {
         await api.post('/api/hr/applications', payload);
-        alert('Applicant added successfully!');
+        showToast('Applicant added successfully!', 'success');
       }
       
       fetchApplications(activeTab);
@@ -172,9 +189,9 @@ export default function JobApplications() {
       });
       setAddFiles({ photo: null, resume: null });
       setEditingAppId(null);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to add applicant', error);
-      alert('Failed to add applicant.');
+      showToast(error?.response?.data?.error || 'Failed to save applicant.', 'error');
     } finally {
       setSubmitting(false);
     }
@@ -187,7 +204,7 @@ export default function JobApplications() {
       setApplications(response.data);
     } catch (error) {
       console.error('Failed to fetch applications', error);
-    
+      showToast('Failed to fetch applications.', 'error');
     } finally {
       setLoading(false);
     }
@@ -197,10 +214,10 @@ export default function JobApplications() {
     try {
       await api.put(`/api/hr/applications/${id}/status`, { status: newStatus });
       fetchApplications(activeTab);
-      alert(`Applicant status updated to "${newStatus}"!`);
+      showToast(`Applicant status updated to "${newStatus}"!`, 'success');
     } catch (error) {
       console.error('Failed to update status', error);
-      alert('Failed to update status');
+      showToast('Failed to update status.', 'error');
     }
   };
 
@@ -209,9 +226,10 @@ export default function JobApplications() {
     try {
       await api.delete(`/api/hr/applications/${id}`);
       setApplications(applications.filter(a => a.id !== id));
+      showToast('Application deleted successfully.', 'success');
     } catch (error) {
       console.error('Failed to delete application', error);
-    
+      showToast('Failed to delete application.', 'error');
     }
   };
 
@@ -222,14 +240,21 @@ export default function JobApplications() {
       setPhotoBlobUrl(null);
     }
     if (app.photoUrl) {
-      try {
-        const response = await api.get(`/api/storage/file/${app.photoUrl}`, { responseType: 'blob' });
-        const objUrl = URL.createObjectURL(response.data);
-        setPhotoBlobUrl(objUrl);
-      } catch (err) {
-        console.error('Failed to fetch photo preview', err);
-      
-    }
+      if (app.photoUrl.startsWith('data:') || app.photoUrl.startsWith('http://') || app.photoUrl.startsWith('https://')) {
+        setPhotoBlobUrl(app.photoUrl);
+      } else {
+        try {
+          const cleanPath = app.photoUrl.startsWith('/') ? app.photoUrl.slice(1) : app.photoUrl;
+          const endpoint = cleanPath.startsWith('api/storage/') 
+            ? `/${cleanPath}` 
+            : `/api/storage/file/${cleanPath}`;
+          const response = await api.get(endpoint, { responseType: 'blob' });
+          const objUrl = URL.createObjectURL(response.data);
+          setPhotoBlobUrl(objUrl);
+        } catch (err) {
+          console.error('Failed to fetch photo preview', err);
+        }
+      }
     }
   };
 
@@ -241,20 +266,40 @@ export default function JobApplications() {
     }
   };
 
-  const downloadProtectedFile = async (fileUrl: string, fileName: string) => {
+  const downloadProtectedFile = async (fileUrl: string, defaultFileName: string) => {
     try {
-      const response = await api.get(`/api/storage/file/${fileUrl}`, {
+      if (fileUrl.startsWith('data:')) {
+        const link = document.createElement('a');
+        link.href = fileUrl;
+        link.download = defaultFileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        showToast(`Downloaded ${defaultFileName}`, 'success');
+        return;
+      }
+
+      const cleanPath = fileUrl.startsWith('/') ? fileUrl.slice(1) : fileUrl;
+      const endpoint = cleanPath.startsWith('api/storage/') 
+        ? `/${cleanPath}` 
+        : `/api/storage/file/${cleanPath}`;
+
+      const response = await api.get(`${endpoint}?download=true&filename=${encodeURIComponent(defaultFileName)}`, {
         responseType: 'blob',
       });
-      const blob = new Blob([response.data], { type: response.headers['content-type'] as string });
+      const contentType = (response.headers['content-type'] as string) || 'application/octet-stream';
+      const blob = new Blob([response.data], { type: contentType });
       const link = document.createElement('a');
       link.href = window.URL.createObjectURL(blob);
-      link.download = fileName;
+      link.download = defaultFileName;
+      document.body.appendChild(link);
       link.click();
+      document.body.removeChild(link);
       window.URL.revokeObjectURL(link.href);
+      showToast(`Downloaded ${defaultFileName}`, 'success');
     } catch (error) {
       console.error('Failed to download file', error);
-      alert('Failed to download file.');
+      showToast('Failed to download file.', 'error');
     }
   };
 
@@ -391,37 +436,31 @@ export default function JobApplications() {
                             </button>
                             {app.status === 'Applied' && (
                               <>
-                                <button onClick={() => updateStatus(app.id, 'On review')} className="portal-btn-secondary" style={{ padding: '5px 10px', fontSize: '0.8rem' }} title="Move to Review">
+                                <button onClick={() => updateStatus(app.id, 'On review')} className="portal-btn-secondary" style={{ padding: '5px 10px', fontSize: '0.8rem', color: '#2563eb', borderColor: '#2563eb' }} title="Move to Review">
                                   <i className="fas fa-search"></i> Review
                                 </button>
-                                <button onClick={() => updateStatus(app.id, 'Interviewed')} className="portal-btn-secondary" style={{ padding: '5px 10px', fontSize: '0.8rem' }} title="Invite to Interview">
-                                  <i className="fas fa-calendar-check"></i> Interview
-                                </button>
-                                <button onClick={() => updateStatus(app.id, 'Hired')} className="portal-btn-secondary" style={{ padding: '5px 10px', fontSize: '0.8rem', color: '#059669', borderColor: '#059669', fontWeight: 700 }} title="Approve & Hire">
-                                  <i className="fas fa-check-circle"></i> Approve & Hire
+                                <button onClick={() => updateStatus(app.id, 'Declined')} className="portal-btn-secondary" style={{ padding: '5px 10px', fontSize: '0.8rem', color: '#dc2626', borderColor: '#dc2626' }} title="Decline Candidate">
+                                  <i className="fas fa-times"></i> Decline
                                 </button>
                               </>
                             )}
                             {app.status === 'On review' && (
                               <>
-                                <button onClick={() => updateStatus(app.id, 'Interviewed')} className="portal-btn-secondary" style={{ padding: '5px 10px', fontSize: '0.8rem' }} title="Invite to Interview">
+                                <button onClick={() => updateStatus(app.id, 'Interviewed')} className="portal-btn-secondary" style={{ padding: '5px 10px', fontSize: '0.8rem', color: '#3b82f6', borderColor: '#3b82f6' }} title="Invite to Interview">
                                   <i className="fas fa-calendar-check"></i> Interview
                                 </button>
-                                <button onClick={() => updateStatus(app.id, 'Offered')} className="portal-btn-secondary" style={{ padding: '5px 10px', fontSize: '0.8rem', color: '#2563eb', borderColor: '#2563eb' }} title="Extend Job Offer">
-                                  <i className="fas fa-file-signature"></i> Offer
-                                </button>
-                                <button onClick={() => updateStatus(app.id, 'Hired')} className="portal-btn-secondary" style={{ padding: '5px 10px', fontSize: '0.8rem', color: '#059669', borderColor: '#059669', fontWeight: 700 }} title="Approve & Hire">
-                                  <i className="fas fa-check-circle"></i> Approve & Hire
+                                <button onClick={() => updateStatus(app.id, 'Declined')} className="portal-btn-secondary" style={{ padding: '5px 10px', fontSize: '0.8rem', color: '#dc2626', borderColor: '#dc2626' }} title="Decline Candidate">
+                                  <i className="fas fa-times"></i> Decline
                                 </button>
                               </>
                             )}
                             {app.status === 'Interviewed' && (
                               <>
-                                <button onClick={() => updateStatus(app.id, 'Offered')} className="portal-btn-secondary" style={{ padding: '5px 10px', fontSize: '0.8rem', color: '#2563eb', borderColor: '#2563eb' }} title="Extend Job Offer">
-                                  <i className="fas fa-file-signature"></i> Offer
-                                </button>
                                 <button onClick={() => updateStatus(app.id, 'Hired')} className="portal-btn-secondary" style={{ padding: '5px 10px', fontSize: '0.8rem', color: '#059669', borderColor: '#059669', fontWeight: 700 }} title="Approve & Hire">
                                   <i className="fas fa-check-circle"></i> Approve & Hire
+                                </button>
+                                <button onClick={() => updateStatus(app.id, 'Offered')} className="portal-btn-secondary" style={{ padding: '5px 10px', fontSize: '0.8rem', color: '#2563eb', borderColor: '#2563eb' }} title="Extend Job Offer">
+                                  <i className="fas fa-file-signature"></i> Offer
                                 </button>
                                 <button onClick={() => updateStatus(app.id, 'Declined')} className="portal-btn-secondary" style={{ padding: '5px 10px', fontSize: '0.8rem', color: '#dc2626', borderColor: '#dc2626' }} title="Decline Candidate">
                                   <i className="fas fa-times"></i> Decline
@@ -437,6 +476,11 @@ export default function JobApplications() {
                                   <i className="fas fa-times"></i> Decline
                                 </button>
                               </>
+                            )}
+                            {app.status === 'Declined' && (
+                              <button onClick={() => updateStatus(app.id, 'On review')} className="portal-btn-secondary" style={{ padding: '5px 10px', fontSize: '0.8rem' }} title="Reopen to Review">
+                                <i className="fas fa-undo"></i> Reopen
+                              </button>
                             )}
                             {app.status === 'Hired' && (
                               <span style={{ fontSize: '0.8rem', color: '#059669', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '4px' }}>
@@ -809,69 +853,178 @@ export default function JobApplications() {
               {/* Document Downloads */}
               <div style={{ marginTop: '24px', borderTop: '1px solid #e2e8f0', paddingTop: '20px' }}>
                 <strong style={{ color: '#64748b', display: 'block', fontSize: '0.75rem', textTransform: 'uppercase', marginBottom: '12px' }}>Uploaded Documents</strong>
-                <div style={{ display: 'flex', gap: '12px' }}>
-                  {selectedAppForView.resumeUrl ? (
-                    <button 
-                      onClick={() => downloadProtectedFile(selectedAppForView.resumeUrl!, `Resume_${selectedAppForView.applicantName.replace(/\s+/g, '_')}.pdf`)} 
-                      className="portal-btn-primary"
-                      style={{ background: '#2563eb', borderColor: '#2563eb', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem' }}
-                    >
-                      <i className="fas fa-file-pdf"></i> Download CV / Resume (PDF)
-                    </button>
-                  ) : (
+                <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                  {selectedAppForView.resumeUrl ? (() => {
+                    const clean = selectedAppForView.resumeUrl!.split('?')[0];
+                    const parts = clean.split('.');
+                    const ext = parts.length > 1 ? parts.pop()?.toLowerCase() || 'pdf' : 'pdf';
+                    const safeName = selectedAppForView.applicantName.replace(/\s+/g, '_');
+                    return (
+                      <button 
+                        onClick={() => downloadProtectedFile(selectedAppForView.resumeUrl!, `Resume_${safeName}.${ext}`)} 
+                        className="portal-btn-primary"
+                        style={{ background: '#2563eb', borderColor: '#2563eb', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem' }}
+                      >
+                        <i className="fas fa-file-download"></i> Download CV / Resume ({ext.toUpperCase()})
+                      </button>
+                    );
+                  })() : (
                     <span style={{ color: '#94a3b8', fontSize: '0.85rem' }}>No Resume uploaded</span>
                   )}
                   
-                  {selectedAppForView.photoUrl && (
-                    <button 
-                      onClick={() => downloadProtectedFile(selectedAppForView.photoUrl!, `Photo_${selectedAppForView.applicantName.replace(/\s+/g, '_')}.png`)} 
-                      className="portal-btn-neutral"
-                      style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem' }}
-                    >
-                      <i className="fas fa-image"></i> Download Passport Photo
-                    </button>
-                  )}
+                  {selectedAppForView.photoUrl && (() => {
+                    const clean = selectedAppForView.photoUrl!.split('?')[0];
+                    const parts = clean.split('.');
+                    const ext = parts.length > 1 ? parts.pop()?.toLowerCase() || 'png' : 'png';
+                    const safeName = selectedAppForView.applicantName.replace(/\s+/g, '_');
+                    return (
+                      <button 
+                        onClick={() => downloadProtectedFile(selectedAppForView.photoUrl!, `Photo_${safeName}.${ext}`)} 
+                        className="portal-btn-neutral"
+                        style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem' }}
+                      >
+                        <i className="fas fa-image"></i> Download Passport Photo ({ext.toUpperCase()})
+                      </button>
+                    );
+                  })()}
                 </div>
               </div>
 
             </div>
-            <div className="portal-modal-footer" style={{ borderTop: '1px solid #e2e8f0', background: '#f8fafc', padding: '15px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <div style={{ display: 'flex', gap: '8px' }}>
-                {selectedAppForView.status !== 'Hired' && (
-                  <button 
-                    onClick={async () => {
-                      await updateStatus(selectedAppForView.id, 'Hired');
-                      setSelectedAppForView(prev => prev ? { ...prev, status: 'Hired' } : null);
-                    }} 
-                    className="portal-btn-primary" 
-                    style={{ background: '#059669', borderColor: '#059669', fontSize: '0.85rem' }}
-                  >
-                    <i className="fas fa-check-circle"></i> Approve & Hire
-                  </button>
+            <div className="portal-modal-footer" style={{ borderTop: '1px solid #e2e8f0', background: '#f8fafc', padding: '15px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
+                {selectedAppForView.status === 'Applied' && (
+                  <>
+                    <button 
+                      onClick={async () => {
+                        await updateStatus(selectedAppForView.id, 'On review');
+                        setSelectedAppForView(prev => prev ? { ...prev, status: 'On review' } : null);
+                      }} 
+                      className="portal-btn-primary" 
+                      style={{ background: '#2563eb', borderColor: '#2563eb', fontSize: '0.85rem' }}
+                    >
+                      <i className="fas fa-search"></i> Move to Review
+                    </button>
+                    <button 
+                      onClick={async () => {
+                        await updateStatus(selectedAppForView.id, 'Declined');
+                        setSelectedAppForView(prev => prev ? { ...prev, status: 'Declined' } : null);
+                      }} 
+                      className="portal-btn-secondary" 
+                      style={{ color: '#dc2626', borderColor: '#fca5a5', fontSize: '0.85rem' }}
+                    >
+                      <i className="fas fa-times"></i> Decline
+                    </button>
+                  </>
                 )}
-                {selectedAppForView.status !== 'Interviewed' && selectedAppForView.status !== 'Hired' && (
-                  <button 
-                    onClick={async () => {
-                      await updateStatus(selectedAppForView.id, 'Interviewed');
-                      setSelectedAppForView(prev => prev ? { ...prev, status: 'Interviewed' } : null);
-                    }} 
-                    className="portal-btn-secondary" 
-                    style={{ fontSize: '0.85rem' }}
-                  >
-                    <i className="fas fa-calendar-alt"></i> Invite to Interview
-                  </button>
+
+                {selectedAppForView.status === 'On review' && (
+                  <>
+                    <button 
+                      onClick={async () => {
+                        await updateStatus(selectedAppForView.id, 'Interviewed');
+                        setSelectedAppForView(prev => prev ? { ...prev, status: 'Interviewed' } : null);
+                      }} 
+                      className="portal-btn-primary" 
+                      style={{ background: '#3b82f6', borderColor: '#3b82f6', fontSize: '0.85rem' }}
+                    >
+                      <i className="fas fa-calendar-check"></i> Invite to Interview
+                    </button>
+                    <button 
+                      onClick={async () => {
+                        await updateStatus(selectedAppForView.id, 'Declined');
+                        setSelectedAppForView(prev => prev ? { ...prev, status: 'Declined' } : null);
+                      }} 
+                      className="portal-btn-secondary" 
+                      style={{ color: '#dc2626', borderColor: '#fca5a5', fontSize: '0.85rem' }}
+                    >
+                      <i className="fas fa-times"></i> Decline
+                    </button>
+                  </>
                 )}
-                {selectedAppForView.status !== 'Declined' && selectedAppForView.status !== 'Hired' && (
-                  <button 
-                    onClick={async () => {
-                      await updateStatus(selectedAppForView.id, 'Declined');
-                      setSelectedAppForView(prev => prev ? { ...prev, status: 'Declined' } : null);
-                    }} 
-                    className="portal-btn-secondary" 
-                    style={{ color: '#dc2626', borderColor: '#fca5a5', fontSize: '0.85rem' }}
-                  >
-                    <i className="fas fa-times"></i> Decline
-                  </button>
+
+                {selectedAppForView.status === 'Interviewed' && (
+                  <>
+                    <button 
+                      onClick={async () => {
+                        await updateStatus(selectedAppForView.id, 'Hired');
+                        setSelectedAppForView(prev => prev ? { ...prev, status: 'Hired' } : null);
+                      }} 
+                      className="portal-btn-primary" 
+                      style={{ background: '#059669', borderColor: '#059669', fontSize: '0.85rem' }}
+                    >
+                      <i className="fas fa-check-circle"></i> Approve & Hire
+                    </button>
+                    <button 
+                      onClick={async () => {
+                        await updateStatus(selectedAppForView.id, 'Offered');
+                        setSelectedAppForView(prev => prev ? { ...prev, status: 'Offered' } : null);
+                      }} 
+                      className="portal-btn-secondary" 
+                      style={{ color: '#2563eb', borderColor: '#2563eb', fontSize: '0.85rem' }}
+                    >
+                      <i className="fas fa-file-signature"></i> Extend Offer
+                    </button>
+                    <button 
+                      onClick={async () => {
+                        await updateStatus(selectedAppForView.id, 'Declined');
+                        setSelectedAppForView(prev => prev ? { ...prev, status: 'Declined' } : null);
+                      }} 
+                      className="portal-btn-secondary" 
+                      style={{ color: '#dc2626', borderColor: '#fca5a5', fontSize: '0.85rem' }}
+                    >
+                      <i className="fas fa-times"></i> Decline
+                    </button>
+                  </>
+                )}
+
+                {selectedAppForView.status === 'Offered' && (
+                  <>
+                    <button 
+                      onClick={async () => {
+                        await updateStatus(selectedAppForView.id, 'Hired');
+                        setSelectedAppForView(prev => prev ? { ...prev, status: 'Hired' } : null);
+                      }} 
+                      className="portal-btn-primary" 
+                      style={{ background: '#059669', borderColor: '#059669', fontSize: '0.85rem' }}
+                    >
+                      <i className="fas fa-check-circle"></i> Approve & Hire
+                    </button>
+                    <button 
+                      onClick={async () => {
+                        await updateStatus(selectedAppForView.id, 'Declined');
+                        setSelectedAppForView(prev => prev ? { ...prev, status: 'Declined' } : null);
+                      }} 
+                      className="portal-btn-secondary" 
+                      style={{ color: '#dc2626', borderColor: '#fca5a5', fontSize: '0.85rem' }}
+                    >
+                      <i className="fas fa-times"></i> Decline
+                    </button>
+                  </>
+                )}
+
+                {selectedAppForView.status === 'Hired' && (
+                  <span style={{ fontSize: '0.85rem', color: '#059669', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <i className="fas fa-check-double"></i> Candidate Hired & Onboarded
+                  </span>
+                )}
+
+                {selectedAppForView.status === 'Declined' && (
+                  <>
+                    <span style={{ fontSize: '0.85rem', color: '#dc2626', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <i className="fas fa-user-times"></i> Application Declined
+                    </span>
+                    <button 
+                      onClick={async () => {
+                        await updateStatus(selectedAppForView.id, 'On review');
+                        setSelectedAppForView(prev => prev ? { ...prev, status: 'On review' } : null);
+                      }} 
+                      className="portal-btn-secondary" 
+                      style={{ fontSize: '0.8rem' }}
+                    >
+                      <i className="fas fa-undo"></i> Reopen to Review
+                    </button>
+                  </>
                 )}
               </div>
               <button onClick={closeDetailModal} className="portal-btn-neutral">Close Profile</button>

@@ -2,6 +2,7 @@ import React from 'react';
 import { createPortal } from 'react-dom';
 import { BASE_URL } from '../../lib/api';
 import { useAuth } from '../../contexts/AuthContext';
+import { getAvatarUrl } from '../../utils/formatters';
 
 interface DetailField {
   label: string;
@@ -49,7 +50,7 @@ const ManagementDetailPanel: React.FC<ManagementDetailPanelProps> = ({
 }) => {
   const { user } = useAuth();
   const schoolCode = providedSchoolCode || user?.schoolCode;
-  const finalAvatarUrl = avatarUrl || (avatarFilename ? `${BASE_URL}/api/storage/media/${schoolCode}/images/${avatarFilename}` : null);
+  const finalAvatarUrl = avatarUrl || getAvatarUrl(avatarFilename, schoolCode);
 
   return createPortal(
     <>

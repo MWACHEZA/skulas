@@ -3,6 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+require("dotenv/config");
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const morgan_1 = __importDefault(require("morgan"));
@@ -80,6 +81,7 @@ const tuckshop_1 = __importDefault(require("./api/tuckshop"));
 const wallets_1 = __importDefault(require("./api/wallets"));
 const icd10_1 = __importDefault(require("./api/icd10"));
 const setup_1 = __importDefault(require("./api/setup"));
+const acadex_1 = __importDefault(require("./api/acadex"));
 const app = (0, express_1.default)();
 const port = process.env.PORT || 5000;
 // Middleware
@@ -109,11 +111,14 @@ app.use(express_1.default.static(path_1.default.join(__dirname, '../storage')));
 const rate_limit_1 = require("./middleware/rate-limit");
 const audit_2 = require("./middleware/audit");
 const notification_worker_1 = require("./jobs/notification-worker");
+const library_reminder_job_1 = require("./jobs/library-reminder-job");
 notification_worker_1.notificationWorker.start();
+library_reminder_job_1.libraryReminderWorker.start();
 app.use(rate_limit_1.globalLimiter);
 app.use(audit_2.auditMiddleware);
 // Routes
 app.use('/api/auth', rate_limit_1.authLimiter, auth_1.default);
+app.use('/api/acadex', acadex_1.default);
 app.use('/api/schools', schools_1.default);
 app.use('/api/dashboard', dashboard_1.default);
 app.use('/api/content', content_1.default);

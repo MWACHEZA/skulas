@@ -13,7 +13,15 @@ interface DashboardData {
   totalClasses: number;
   pendingApplications: number;
   recentApplications: { id: string; applicantName: string; appType: string; status: string; createdAt: string }[];
-  announcements: { id: string; title: string; body: string; createdAt: string; author?: { name: string } }[];
+  announcements: {
+    id: string;
+    title: string;
+    content?: string;
+    body?: string;
+    publishedAt?: string;
+    createdAt?: string;
+    author?: { name: string };
+  }[];
   stats: {
     totalStudents: number;
     totalTeachers: number;
@@ -180,15 +188,23 @@ export default function AdminDashboard() {
             <h2><i className="fas fa-bolt portal-icon-margin-right portal-icon-warning"></i>Quick Actions</h2>
           </div>
           <div className="portal-card-body">
-            <div className="portal-quick-actions-grid">
+            <div className="portal-quick-actions-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '10px' }}>
               {[
                 { icon: isMedical ? 'fa-user-nurse' : 'fa-user-plus', label: `Add New ${t('student')}`, to: '/admin/students' },
                 { icon: isMedical ? 'fa-hospital-user' : 'fa-chalkboard-teacher', label: `Manage ${t('teachers')}`, to: '/admin/teachers' },
-                { icon: 'fa-file-alt', label: 'Review Applications', to: '/admin/applications' },
+                { icon: isMedical ? 'fa-hospital' : 'fa-door-open', label: `Manage ${t('classes')}`, to: '/admin/classes' },
+                { icon: 'fa-calendar-alt', label: `Master ${t('timetable')}`, to: '/admin/timetable' },
+                { icon: 'fa-money-bill-wave', label: 'Fees & Invoicing', to: '/admin/fees' },
                 { icon: 'fa-bullhorn', label: 'Post Announcement', to: '/admin/announcements' },
+                { icon: 'fa-file-alt', label: 'Review Applications', to: '/admin/applications' },
                 { icon: isMedical ? 'fa-file-medical-alt' : 'fa-chart-bar', label: `Generate ${t('reports')}`, to: '/admin/reports' },
-                { icon: 'fa-palette', label: `Design ${isMedical ? 'Report Card' : 'Report Card'}`, to: '/admin/document-templates' },
+                { icon: 'fa-users-cog', label: 'Users & Roles', to: '/admin/users' },
+                { icon: 'fa-fingerprint', label: 'Staff Clock-in Logs', to: '/admin/hr/attendance' },
+                { icon: 'fa-money-check-alt', label: 'Manage Payroll', to: '/admin/hr/payroll/list' },
+                { icon: 'fa-shopping-cart', label: 'Procurement', to: '/admin/procurement' },
+                { icon: 'fa-palette', label: 'Design Templates', to: '/admin/document-templates' },
                 { icon: 'fa-cog', label: `${isMedical ? 'Institution' : 'School'} Settings`, to: '/admin/settings' },
+                { icon: 'fa-magic', label: 'Setup Wizard', to: '/admin/setup' },
               ].map(a => (
                 <a key={a.label} href={a.to} className="portal-quick-action-item">
                   <i className={`fas ${a.icon} portal-quick-action-icon`}></i>
@@ -212,13 +228,31 @@ export default function AdminDashboard() {
               <table className="portal-table">
                 <thead><tr><th>Title</th><th>Published By</th><th>Date</th></tr></thead>
                 <tbody>
-                  {(Array.isArray(data.announcements) ? data.announcements : []).map(a => (
-                    <tr key={a.id}>
-                      <td><strong>{a.title}</strong><br /><span className="portal-text-muted-sm">{a.body}</span></td>
-                      <td className="portal-text-muted">{a.author?.name ?? 'Admin'}</td>
-                      <td className="portal-text-muted portal-text-nowrap">{new Date(a.createdAt).toLocaleDateString()}</td>
-                    </tr>
-                  ))}
+                  {(Array.isArray(data.announcements) ? data.announcements : []).map(a => {
+                    const dateStr = a.publishedAt || a.createdAt;
+                    let displayDate = '—';
+                    if (dateStr) {
+                      const d = new Date(dateStr);
+                      if (!isNaN(d.getTime())) {
+                        displayDate = d.toLocaleDateString(undefined, {
+                          year: 'numeric',
+                          month: 'short',
+                          day: 'numeric'
+                        });
+                      }
+                    }
+                    return (
+                      <tr key={a.id}>
+                        <td>
+                          <strong>{a.title}</strong>
+                          <br />
+                          <span className="portal-text-muted-sm">{a.content || a.body || ''}</span>
+                        </td>
+                        <td className="portal-text-muted">{a.author?.name ?? 'Admin'}</td>
+                        <td className="portal-text-muted portal-text-nowrap">{displayDate}</td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             )}

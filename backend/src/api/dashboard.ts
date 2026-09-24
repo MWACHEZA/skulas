@@ -1,6 +1,7 @@
 import { Router, Response } from 'express';
 import prisma from '../lib/prisma';
 import { requireAuth, AuthRequest } from '../middleware/auth';
+import { computeLoanFine } from '../jobs/library-reminder-job';
 
 const router = Router();
 
@@ -32,11 +33,23 @@ router.get('/admin', requireAuth, async (req: AuthRequest, res: Response) => {
     }
 
     // 3. Announcements & Recent Apps
-    const announcements = await prisma.announcement.findMany({ 
+    const rawAnnouncements = await prisma.announcement.findMany({ 
         where: { schoolId }, 
         orderBy: { publishedAt: 'desc' }, 
         take: 5 
     }).catch(() => []);
+
+    const announcements = rawAnnouncements.map(a => ({
+      id: a.id,
+      title: a.title,
+      content: a.content,
+      body: a.content,
+      publishedAt: a.publishedAt ? a.publishedAt.toISOString() : new Date().toISOString(),
+      createdAt: a.publishedAt ? a.publishedAt.toISOString() : new Date().toISOString(),
+      visiblePortals: a.visiblePortals,
+      isPublic: a.isPublic,
+      author: { name: 'School Administration' }
+    }));
 
     const recentApplications = await prisma.application.findMany({
       where: { schoolId },
@@ -167,101 +180,203 @@ router.get('/bursar', requireAuth, async (req: AuthRequest, res: Response) => {
 
 /**
  * @route   GET /api/dashboard/library
- * @desc    Library stats for librarian portal
+ * @desc    Library stats for daily operational dashboard
  */
 router.get('/library', requireAuth, async (req: AuthRequest, res: Response) => {
   const schoolId = req.user!.schoolId!;
   try {
-    const [totalBooks, totalLoans, overdueLoans] = await Promise.all([
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+    const todayEnd = new Date();
+    todayEnd.setHours(23, 59, 59, 999);
+    const now = new Date();
+
+    const [
+      totalBooks,
+      issuedToday,
+      returnedToday,
+      currentlyBorrowed,
+      overdueRightNow,
+      dueToday,
+      reservationsWaitingPickup,
+      setting
+    ] = await Promise.all([
       prisma.book.count({ where: { schoolId } }),
-      prisma.bookLoan.count({ where: { book: { schoolId }, status: 'borrowed' } }),
       prisma.bookLoan.count({
-        where: { book: { schoolId }, status: 'borrowed', dueDate: { lt: new Date() } },
+        where: { schoolId, borrowedAt: { gte: todayStart, lte: todayEnd } }
       }),
+      prisma.bookLoan.count({
+        where: { schoolId, returnedAt: { gte: todayStart, lte: todayEnd } }
+      }),
+      prisma.bookLoan.count({
+        where: { schoolId, status: 'borrowed' }
+      }),
+      prisma.bookLoan.count({
+        where: { schoolId, status: 'borrowed', dueDate: { lt: now } }
+      }),
+      prisma.bookLoan.count({
+        where: { schoolId, status: 'borrowed', dueDate: { gte: todayStart, lte: todayEnd } }
+      }),
+      prisma.bookReservation.count({
+        where: { schoolId, status: { in: ['Ready for Pickup', 'Approved', 'Pending'] } }
+      }),
+      prisma.librarySetting.findUnique({ where: { schoolId } })
     ]);
 
-    const recentLoans = await prisma.bookLoan.findMany({
-      where: { book: { schoolId } },
+    // 1. Today-relevant table: Recent Issues (today)
+    const recentIssuesRaw = await prisma.bookLoan.findMany({
+      where: {
+        schoolId,
+        borrowedAt: { gte: todayStart, lte: todayEnd }
+      },
       include: {
-        student: { select: { name: true } },
-        book: { select: { title: true, author: true } }
+        book: { select: { id: true, title: true, author: true, accessionNumber: true, barcode: true, isbn: true } },
+        student: {
+          select: {
+            id: true,
+            studentId: true,
+            name: true,
+            class: { select: { name: true } },
+            user: { select: { name: true, phone: true } }
+          }
+        },
+        user: { select: { id: true, name: true, phone: true, role: true } }
       },
       orderBy: { borrowedAt: 'desc' },
-      take: 5
+      take: 25
     });
 
-    // 1. Category Data
-    const categories = await prisma.libraryCategory.findMany({
+    // Fallback: If no books issued yet today, fetch recent issues to avoid a totally blank table during off-hours
+    const fallbackIssuesRaw = recentIssuesRaw.length === 0 ? await prisma.bookLoan.findMany({
       where: { schoolId },
-      include: { _count: { select: { books: true } } }
-    });
-    const categoryData = categories.map((cat, i) => {
-      const colors = ['#8b5cf6', '#ec4899', '#3b82f6', '#10b981', '#f59e0b', '#6366f1'];
+      include: {
+        book: { select: { id: true, title: true, author: true, accessionNumber: true, barcode: true, isbn: true } },
+        student: {
+          select: {
+            id: true,
+            studentId: true,
+            name: true,
+            class: { select: { name: true } },
+            user: { select: { name: true, phone: true } }
+          }
+        },
+        user: { select: { id: true, name: true, phone: true, role: true } }
+      },
+      orderBy: { borrowedAt: 'desc' },
+      take: 8
+    }) : [];
+
+    const formatIssueItem = (loan: any, isExplicitToday: boolean) => {
+      const isStudent = !!loan.studentId;
+      const borrowerName = isStudent
+        ? (loan.student?.user?.name || loan.student?.name || 'Student')
+        : (loan.user?.name || 'Staff');
+      const borrowerIdentifier = isStudent ? (loan.student?.studentId || 'Student') : (loan.user?.role || 'Staff');
+      const borrowerClass = isStudent ? (loan.student?.class?.name || '—') : 'Faculty/Staff';
       return {
-        name: cat.name,
-        count: cat._count.books,
-        color: colors[i % colors.length]
+        id: loan.id,
+        bookId: loan.book?.id,
+        bookTitle: loan.book?.title || 'Unknown Title',
+        bookAuthor: loan.book?.author || 'Unknown Author',
+        accessionNumber: loan.accessionNumber || loan.book?.accessionNumber || loan.book?.barcode || loan.book?.isbn || '—',
+        borrowerName,
+        borrowerIdentifier,
+        borrowerClass,
+        borrowerPhone: (isStudent ? loan.student?.user?.phone : loan.user?.phone) || '—',
+        borrowedAt: loan.borrowedAt ? loan.borrowedAt.toISOString() : new Date().toISOString(),
+        dueDate: loan.dueDate ? loan.dueDate.toISOString() : new Date().toISOString(),
+        status: loan.status,
+        isToday: isExplicitToday
       };
+    };
+
+    const recentIssues = recentIssuesRaw.length > 0
+      ? recentIssuesRaw.map(l => formatIssueItem(l, true))
+      : fallbackIssuesRaw.map(l => formatIssueItem(l, false));
+
+    // 2. Today-relevant table: Overdue Today / Overdue Right Now
+    const overdueLoansRaw = await prisma.bookLoan.findMany({
+      where: {
+        schoolId,
+        status: 'borrowed',
+        dueDate: { lt: now }
+      },
+      include: {
+        book: { select: { id: true, title: true, author: true, accessionNumber: true, barcode: true, isbn: true } },
+        student: {
+          select: {
+            id: true,
+            studentId: true,
+            name: true,
+            class: { select: { name: true } },
+            user: { select: { name: true, phone: true, email: true } }
+          }
+        },
+        user: { select: { id: true, name: true, phone: true, email: true, role: true } }
+      },
+      orderBy: { dueDate: 'asc' },
+      take: 50
     });
 
-    // 2. Lending Trends (Last 7 Days)
-    const last7Days = Array.from({ length: 7 }).map((_, i) => {
-      const d = new Date();
-      d.setDate(d.getDate() - (6 - i));
-      return d;
-    });
-    
-    const lendingTrends = await Promise.all(last7Days.map(async (date) => {
-      const startOfDay = new Date(date.setHours(0,0,0,0));
-      const endOfDay = new Date(date.setHours(23,59,59,999));
-      const count = await prisma.bookLoan.count({
-        where: {
-          book: { schoolId },
-          borrowedAt: { gte: startOfDay, lte: endOfDay }
-        }
-      });
-      return {
-        name: startOfDay.toLocaleDateString('en-US', { weekday: 'short' }),
-        loans: count
-      };
-    }));
+    const overdueList = overdueLoansRaw.map(loan => {
+      const { daysOverdue, fineAmount } = computeLoanFine(loan, setting);
+      const isStudent = !!loan.studentId;
+      const borrowerName = isStudent
+        ? (loan.student?.user?.name || loan.student?.name || 'Student')
+        : (loan.user?.name || 'Staff');
+      const borrowerIdentifier = isStudent ? (loan.student?.studentId || 'Student') : (loan.user?.role || 'Staff');
+      const borrowerClass = isStudent ? (loan.student?.class?.name || '—') : 'Faculty/Staff';
+      const borrowerPhone = (isStudent ? loan.student?.user?.phone : loan.user?.phone) || '—';
+      const borrowerEmail = (isStudent ? loan.student?.user?.email : loan.user?.email) || '—';
 
-    // 3. Trending Books
-    const popularLoans = await prisma.bookLoan.groupBy({
-      by: ['bookId'],
-      where: { book: { schoolId } },
-      _count: { bookId: true },
-      orderBy: { _count: { bookId: 'desc' } },
-      take: 3
-    });
-    
-    const trendingBooks = await Promise.all(popularLoans.map(async (loan) => {
-      const book = await prisma.book.findFirst({ where: { id: loan.bookId } });
       return {
-        id: book?.id,
-        title: book?.title,
-        author: book?.author,
-        borrows: loan._count.bookId,
-        cover: book?.coverUrl || null
+        id: loan.id,
+        bookId: loan.book?.id,
+        bookTitle: loan.book?.title || 'Unknown Title',
+        bookAuthor: loan.book?.author || 'Unknown Author',
+        accessionNumber: loan.accessionNumber || loan.book?.accessionNumber || loan.book?.barcode || loan.book?.isbn || '—',
+        borrowerName,
+        borrowerIdentifier,
+        borrowerClass,
+        borrowerPhone,
+        borrowerEmail,
+        borrowedAt: loan.borrowedAt ? loan.borrowedAt.toISOString() : new Date().toISOString(),
+        dueDate: loan.dueDate ? loan.dueDate.toISOString() : new Date().toISOString(),
+        daysOverdue: Math.max(1, daysOverdue),
+        fineAmount: Number(fineAmount.toFixed(2)),
+        status: loan.status
       };
-    }));
+    });
 
     res.json({
+      // 1. Today counts
+      today: {
+        issued: issuedToday,
+        returned: returnedToday
+      },
+      // 2. Right now counts
+      rightNow: {
+        currentlyBorrowed,
+        overdueRightNow
+      },
+      // 3. Alerts
+      alerts: {
+        dueToday,
+        reservationsWaitingPickup
+      },
+      // 4. Tables
+      recentIssues,
+      hasIssuesToday: recentIssuesRaw.length > 0,
+      overdueToday: overdueList,
+
+      // Backward compatibility fields
       totalBooks,
-      activeLoans: totalLoans,
-      overdueLoans,
-      recentLoans: recentLoans.map(l => ({
-        ...l,
-        borrowedAt: l.borrowedAt.toISOString(),
-        dueDate: l.dueDate.toISOString(),
-        returnedAt: l.returnedAt?.toISOString()
-      })),
-      categoryData,
-      lendingTrends,
-      trendingBooks
+      activeLoans: currentlyBorrowed,
+      overdueLoans: overdueRightNow,
+      recentLoans: recentIssues
     });
   } catch (e) {
-    console.error(e);
+    console.error('Library dashboard error:', e);
     res.status(500).json({ error: 'Failed to fetch library dashboard' });
   }
 });
@@ -276,34 +391,51 @@ router.get('/acadex', requireAuth, async (req: AuthRequest, res: Response) => {
   }
 
   try {
-    const [schools, totalStudents, totalRevenue] = await Promise.all([
+    const [schools, totalStudents, activeStudents] = await Promise.all([
       prisma.school.findMany({
         include: {
           plan: { select: { name: true } },
-          users: { where: { role: 'SCHOOL_ADMIN' }, select: { id: true }, take: 1 },
+          users: { where: { role: 'SCHOOL_ADMIN' }, select: { id: true, email: true }, take: 1 },
           _count: { select: { users: true, students: true } }
         },
         orderBy: { createdAt: 'desc' }
       }),
       prisma.student.count(),
-      prisma.fee.aggregate({ _sum: { paid: true } })
+      prisma.student.count({
+        where: {
+          status: { in: ['Enrolled', 'Active', 'enrolled', 'active'] },
+          school: { status: 'active' }
+        }
+      })
     ]);
+
+    // Platform subscription revenue: $2 per active student per month
+    const PLATFORM_STUDENT_RATE = 2.00;
+    const monthlyRevenue = activeStudents * PLATFORM_STUDENT_RATE;
 
     res.json({
       stats: {
         totalSchools: schools.length,
+        activeSchools: schools.filter(s => s.status === 'active').length,
         totalStudents,
-        totalRevenue: totalRevenue._sum.paid ?? 0,
+        activeStudents,
+        totalRevenue: monthlyRevenue,
+        platformRatePerStudent: PLATFORM_STUDENT_RATE,
         serverHealth: '99.9%'
       },
       schools: schools.map(s => ({
         id: s.code,
+        code: s.code,
         name: s.name,
-        country: 'Zimbabwe', // Default for now
-        plan: s.plan.name,
-        status: s.status === 'active' ? 'Active' : 'Suspended',
+        country: s.country || 'Zimbabwe',
+        plan: s.plan?.name || 'Starter',
+        status: s.status === 'active' ? 'Active' : s.status === 'suspended' ? 'Suspended' : s.status,
+        studentsCount: s._count.students,
+        monthlyAmount: s._count.students * PLATFORM_STUDENT_RATE,
         renewal: 'Monthly',
-        adminId: s.users[0]?.id
+        adminId: s.users[0]?.id,
+        adminEmail: s.users[0]?.email,
+        createdAt: s.createdAt
       }))
     });
   } catch (e) {

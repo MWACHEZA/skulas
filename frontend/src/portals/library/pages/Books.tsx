@@ -1,17 +1,39 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import '../../../styles/portal.css';
+
+interface AuthorEntry {
+  surname: string;
+  firstName: string;
+}
 
 interface BookRecord {
   id: string;
   title: string;
   author: string;
+  authors?: string[];
   isbn: string;
+  isbn10?: string;
+  isbn13?: string;
   categoryId: string;
   categoryName: string;
   totalCopies: number;
   available: number;
+  shelfLocation?: string;
+  barcode?: string;
+  accessionNumber?: string;
+  language?: string;
+  keywords?: string[];
+  source?: string;
+  condition?: string;
+  publisher?: string;
+  edition?: string;
+  price?: number;
+  publishedDate?: string;
+  description?: string;
+  status?: string;
+  coverImage?: string;
 }
 
 const exportToCSV = (title: string, headers: string[], dataRows: string[][]) => {
@@ -69,64 +91,88 @@ export default function LibraryBooks() {
   const { showToast } = useToast();
   const [books, setBooks] = useState<BookRecord[]>([]);
   const [categories, setCategories] = useState<{id: string, category: string}[]>([]);
+  const [subjects, setSubjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Search & Filter state
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [availableOnly, setAvailableOnly] = useState(false);
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [didYouMean, setDidYouMean] = useState<string | null>(null);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const searchTimeoutRef = useRef<any>(null);
+
+  // Modal states
   const [showAddModal, setShowAddModal] = useState(false);
   const [editBook, setEditBook] = useState<BookRecord | null>(null);
-  const [editForm, setEditForm] = useState<any>({});
-  const [editSubmitting, setEditSubmitting] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
-  // Form state
-  const [formData, setFormData] = useState<any>({
+  // Add Form state
+  const [authorList, setAuthorList] = useState<AuthorEntry[]>([{ surname: '', firstName: '' }]);
+  const [formData, setFormData] = useState({
     title: '',
-    author: '',
-    isbn: '',
+    isbn10: '',
+    isbn13: '',
     categoryId: '',
-    totalCopies: '',
+    subjectId: '',
+    totalCopies: 1,
+    availableCopies: 1,
+    shelfLocation: '',
+    barcode: '',
+    accessionNumber: '',
     edition: '',
     publisher: '',
     price: '',
     publishedDate: new Date().toISOString().split('T')[0],
     description: '',
+    language: 'English',
+    source: 'Purchased',
+    condition: 'Good',
+    keywords: '',
     status: 'Available',
-    subjectId: '',
-    classId: '',
-    cover: null
+    cover: null as File | null
   });
 
-  const [subjects, setSubjects] = useState<any[]>([]);
-  const [classes, setClasses] = useState<any[]>([]);
+  // Edit Form state
+  const [editAuthorList, setEditAuthorList] = useState<AuthorEntry[]>([{ surname: '', firstName: '' }]);
+  const [editFormData, setEditFormData] = useState<any>({});
 
   useEffect(() => {
-    fetchBooks();
     fetchCategories();
     fetchSubjects();
-    fetchClasses();
+    fetchBooks();
   }, []);
 
-  const fetchSubjects = async () => {
-    try {
-      const res = await api.get('/api/subjects');
-      setSubjects(res.data);
-    } catch (err) { console.error(err); 
-    }
-  };
-
-  const fetchClasses = async () => {
-    try {
-      const res = await api.get('/api/classes');
-      setClasses(res.data);
-    } catch (err) { console.error(err); 
-    }
-  };
+  // Debounced search trigger
+  useEffect(() => {
+    if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
+    searchTimeoutRef.current = setTimeout(() => {
+      fetchBooks();
+    }, 300);
+    return () => {
+      if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
+    };
+  }, [searchTerm, selectedCategory, availableOnly]);
 
   const fetchBooks = async () => {
+    setLoading(true);
     try {
-      const res = await api.get('/api/library/books');
-      setBooks(res.data);
+      const params = new URLSearchParams();
+      if (searchTerm.trim()) params.append('search', searchTerm.trim());
+      if (selectedCategory && selectedCategory !== 'all') params.append('category', selectedCategory);
+      if (availableOnly) params.append('available', 'true');
+
+      const res = await api.get(`/api/library/books?${params.toString()}`);
+      if (res.data?.books) {
+        setBooks(res.data.books);
+        setSuggestions(res.data.suggestions || []);
+        setDidYouMean(res.data.didYouMean || null);
+      } else if (Array.isArray(res.data)) {
+        setBooks(res.data);
+      }
     } catch (err) {
       showToast('Failed to load library catalog', 'error');
-    
     } finally {
       setLoading(false);
     }
@@ -135,390 +181,1002 @@ export default function LibraryBooks() {
   const fetchCategories = async () => {
     try {
       const res = await api.get('/api/library/categories');
-      setCategories(res.data);
+      setCategories(Array.isArray(res.data) ? res.data : []);
     } catch (err) {
       console.error('Failed to load categories');
-    
     }
+  };
+
+  const fetchSubjects = async () => {
+    try {
+      const res = await api.get('/api/subjects');
+      setSubjects(Array.isArray(res.data) ? res.data : []);
+    } catch (err) {
+      console.error('Failed to load subjects');
+    }
+  };
+
+  // Helper to format authors
+  const formatAuthorsArray = (list: AuthorEntry[]): string[] => {
+    return list
+      .filter(a => a.surname.trim() || a.firstName.trim())
+      .map(a => {
+        if (a.surname.trim() && a.firstName.trim()) return `${a.surname.trim()}, ${a.firstName.trim()}`;
+        return a.surname.trim() || a.firstName.trim();
+      });
+  };
+
+  const handleAddAuthor = () => {
+    setAuthorList(prev => [...prev, { surname: '', firstName: '' }]);
+  };
+
+  const handleRemoveAuthor = (idx: number) => {
+    if (authorList.length <= 1) return;
+    setAuthorList(prev => prev.filter((_, i) => i !== idx));
+  };
+
+  const handleAuthorChange = (idx: number, field: 'surname' | 'firstName', val: string) => {
+    const updated = [...authorList];
+    updated[idx][field] = val;
+    setAuthorList(updated);
   };
 
   const handleAddBook = async (e: React.FormEvent) => {
     e.preventDefault();
-    const data = new FormData();
-    Object.keys(formData).forEach(key => {
-      if (formData[key] !== null) data.append(key, formData[key]);
-    });
+    if (!formData.title.trim()) {
+      showToast('Title is required', 'error');
+      return;
+    }
 
+    const formattedAuthors = formatAuthorsArray(authorList);
+    const primaryAuthor = formattedAuthors.length > 0 ? formattedAuthors[0] : 'Unknown';
+
+    // Strip hyphens from ISBNs
+    const cleanIsbn10 = formData.isbn10.replace(/[^0-9X]/gi, '');
+    const cleanIsbn13 = formData.isbn13.replace(/[^0-9]/g, '');
+
+    const data = new FormData();
+    data.append('title', formData.title.trim());
+    data.append('author', primaryAuthor);
+    data.append('authors', JSON.stringify(formattedAuthors));
+    data.append('isbn', cleanIsbn13 || cleanIsbn10 || '');
+    data.append('isbn10', cleanIsbn10);
+    data.append('isbn13', cleanIsbn13);
+    data.append('categoryId', formData.categoryId);
+    data.append('subjectId', formData.subjectId || '');
+    data.append('totalCopies', String(formData.totalCopies));
+    data.append('availableCopies', String(formData.availableCopies));
+    data.append('shelfLocation', formData.shelfLocation.trim());
+    data.append('barcode', formData.barcode.trim());
+    data.append('accessionNumber', formData.accessionNumber.trim());
+    data.append('edition', formData.edition.trim());
+    data.append('publisher', formData.publisher.trim());
+    data.append('price', formData.price ? String(formData.price) : '');
+    data.append('publishedDate', formData.publishedDate);
+    data.append('description', formData.description.trim());
+    data.append('language', formData.language);
+    data.append('source', formData.source);
+    data.append('condition', formData.condition);
+    data.append('status', formData.status);
+    data.append('keywords', formData.keywords);
+
+    if (formData.cover) {
+      data.append('cover', formData.cover);
+    }
+
+    setSubmitting(true);
     try {
-      await api.post('/api/library/books', data);
-      showToast('New book registered in catalog', 'success');
-      setShowAddModal(false);
-      fetchBooks();
-      setFormData({
-        title: '', author: '', isbn: '', categoryId: '', totalCopies: '',
-        edition: '', publisher: '', price: '', publishedDate: new Date().toISOString().split('T')[0],
-        description: '', status: 'Available', subjectId: '', classId: '', cover: null
+      await api.post('/api/library/books', data, {
+        headers: { 'Content-Type': 'multipart/form-data' }
       });
-    } catch (err) {
-      showToast('Failed to register book', 'error');
-    
+      showToast('Book successfully cataloged', 'success');
+      setShowAddModal(false);
+      resetAddForm();
+      fetchBooks();
+    } catch (err: any) {
+      showToast(err.response?.data?.error || 'Failed to catalog book', 'error');
+    } finally {
+      setSubmitting(false);
     }
   };
 
-  // Open edit modal pre-filled
+  const resetAddForm = () => {
+    setAuthorList([{ surname: '', firstName: '' }]);
+    setFormData({
+      title: '',
+      isbn10: '',
+      isbn13: '',
+      categoryId: '',
+      subjectId: '',
+      totalCopies: 1,
+      availableCopies: 1,
+      shelfLocation: '',
+      barcode: '',
+      accessionNumber: '',
+      edition: '',
+      publisher: '',
+      price: '',
+      publishedDate: new Date().toISOString().split('T')[0],
+      description: '',
+      language: 'English',
+      source: 'Purchased',
+      condition: 'Good',
+      keywords: '',
+      status: 'Available',
+      cover: null
+    });
+  };
+
+  // Open edit modal
   const openEditModal = (book: BookRecord) => {
     setEditBook(book);
-    setEditForm({
-      title: book.title,
-      author: book.author,
-      isbn: book.isbn,
-      categoryId: book.categoryId,
-      totalCopies: book.totalCopies?.toString() || '',
-      status: 'Available',
+    let authors: AuthorEntry[] = [];
+    if (book.authors && book.authors.length > 0) {
+      authors = book.authors.map(a => {
+        const parts = a.split(',');
+        if (parts.length > 1) {
+          return { surname: parts[0].trim(), firstName: parts.slice(1).join(',').trim() };
+        }
+        return { surname: a.trim(), firstName: '' };
+      });
+    } else if (book.author) {
+      const parts = book.author.split(',');
+      if (parts.length > 1) {
+        authors = [{ surname: parts[0].trim(), firstName: parts.slice(1).join(',').trim() }];
+      } else {
+        authors = [{ surname: book.author.trim(), firstName: '' }];
+      }
+    } else {
+      authors = [{ surname: '', firstName: '' }];
+    }
+    setEditAuthorList(authors);
+
+    setEditFormData({
+      title: book.title || '',
+      isbn10: book.isbn10 || '',
+      isbn13: book.isbn13 || (book.isbn?.length === 13 ? book.isbn : ''),
+      categoryId: book.categoryId || '',
+      totalCopies: book.totalCopies ?? 1,
+      available: book.available ?? 1,
+      shelfLocation: book.shelfLocation || '',
+      barcode: book.barcode || '',
+      accessionNumber: book.accessionNumber || '',
+      edition: book.edition || '',
+      publisher: book.publisher || '',
+      language: book.language || 'English',
+      source: book.source || 'Purchased',
+      condition: book.condition || 'Good',
+      status: book.status || 'Available',
+      description: book.description || ''
     });
   };
 
   const handleEditBook = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editBook) return;
-    setEditSubmitting(true);
+
+    const formattedAuthors = formatAuthorsArray(editAuthorList);
+    const primaryAuthor = formattedAuthors.length > 0 ? formattedAuthors[0] : 'Unknown';
+
+    setSubmitting(true);
     try {
-      await api.patch(`/api/library/books/${editBook.id}`, editForm);
-      showToast('Book updated successfully', 'success');
+      await api.patch(`/api/library/books/${editBook.id}`, {
+        ...editFormData,
+        author: primaryAuthor,
+        authors: formattedAuthors,
+        isbn10: editFormData.isbn10 ? editFormData.isbn10.replace(/[^0-9X]/gi, '') : '',
+        isbn13: editFormData.isbn13 ? editFormData.isbn13.replace(/[^0-9]/g, '') : '',
+        totalCopies: parseInt(editFormData.totalCopies) || 1,
+        available: parseInt(editFormData.available) || 0
+      });
+      showToast('Book details updated', 'success');
       setEditBook(null);
       fetchBooks();
-    } catch {
-      showToast('Failed to update book', 'error');
+    } catch (err: any) {
+      showToast(err.response?.data?.error || 'Failed to update book', 'error');
     } finally {
-      setEditSubmitting(false);
+      setSubmitting(false);
     }
   };
 
-  const filteredBooks = books.filter(b => 
-    b.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    b.author.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    b.isbn.includes(searchTerm)
-  );
-
-  if (loading) return <div className="p-8 text-center text-blue-600 font-bold">Accessing main stacks...</div>;
+  const handleDeleteBook = async (id: string, title: string) => {
+    if (!window.confirm(`Are you sure you want to remove "${title}" from the catalog?`)) return;
+    try {
+      await api.delete(`/api/library/books/${id}`);
+      showToast('Book removed from catalog', 'success');
+      fetchBooks();
+    } catch (err: any) {
+      showToast(err.response?.data?.error || 'Failed to remove book', 'error');
+    }
+  };
 
   return (
-    <div className="library-portal-container" style={{ padding: '30px', minHeight: '100vh', background: 'white' }}>
-      <div className="portal-page-header" style={{ marginBottom: 40, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+    <div className="library-portal-container" style={{ padding: '24px', minHeight: '100vh', background: '#f8fafc' }}>
+      {/* Clean ERP Header */}
+      <div className="portal-page-header" style={{ marginBottom: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16 }}>
         <div>
-          <h1 style={{ color: '#1e3a8a', fontSize: '2.8rem', fontWeight: 900, marginBottom: 5 }}>Principal Catalog</h1>
-          <p style={{ color: '#475569', fontSize: '1.1rem' }}>Manage the academic treasury. Track thousands of resources with precision.</p>
+          <h1 style={{ color: '#0f172a', fontSize: '1.75rem', fontWeight: 800, margin: 0 }}>
+            <i className="fas fa-book-reader mr-3 text-primary" style={{ color: '#2563eb' }}></i>
+            Book Catalog
+          </h1>
+          <p style={{ color: '#64748b', fontSize: '0.9rem', margin: '4px 0 0' }}>
+            Catalog, track physical volumes, shelf coordinates, and copy availability.
+          </p>
+        </div>
+
+        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }} className="no-print">
+          <button 
+            onClick={() => {
+              const headers = ['Title', 'Authors', 'ISBN-10', 'ISBN-13', 'Shelf Location', 'Barcode', 'Category', 'Total Copies', 'Available'];
+              const rows = books.map(b => [
+                b.title,
+                (b.authors && b.authors.length > 0) ? b.authors.join('; ') : b.author,
+                b.isbn10 || '',
+                b.isbn13 || b.isbn || '',
+                b.shelfLocation || '',
+                b.barcode || '',
+                b.categoryName,
+                (b.totalCopies ?? 0).toString(),
+                (b.available ?? 0).toString()
+              ]);
+              exportToCSV('Book_Catalog', headers, rows);
+            }}
+            className="portal-btn-secondary"
+            style={{ padding: '8px 16px', fontSize: '0.85rem' }}
+            title="Export to CSV"
+          >
+            <i className="fas fa-file-csv mr-1"></i> CSV
+          </button>
+          <button 
+            onClick={() => {
+              const headers = ['Title', 'Authors', 'ISBN-10', 'ISBN-13', 'Shelf Location', 'Barcode', 'Category', 'Total Copies', 'Available'];
+              const rows = books.map(b => [
+                b.title,
+                (b.authors && b.authors.length > 0) ? b.authors.join('; ') : b.author,
+                b.isbn10 || '',
+                b.isbn13 || b.isbn || '',
+                b.shelfLocation || '',
+                b.barcode || '',
+                b.categoryName,
+                (b.totalCopies ?? 0).toString(),
+                (b.available ?? 0).toString()
+              ]);
+              exportToWord('Book_Catalog', headers, rows);
+            }}
+            className="portal-btn-secondary"
+            style={{ padding: '8px 16px', fontSize: '0.85rem' }}
+            title="Export to Word"
+          >
+            <i className="fas fa-file-word mr-1"></i> Word
+          </button>
+          <button 
+            onClick={() => window.print()}
+            className="portal-btn-secondary"
+            style={{ padding: '8px 16px', fontSize: '0.85rem' }}
+            title="Print / PDF"
+          >
+            <i className="fas fa-print mr-1"></i> Print/PDF
+          </button>
+          <button 
+            onClick={() => setShowAddModal(true)}
+            className="portal-btn-primary" 
+            style={{ padding: '10px 20px', fontSize: '0.9rem', background: '#2563eb', borderRadius: '10px', display: 'flex', alignItems: 'center', gap: '8px' }}
+          >
+            <i className="fas fa-plus"></i> Add New Book
+          </button>
         </div>
       </div>
 
-      {/* Search & Stats Bar */}
-      <div className="flex gap-6 mb-10 items-center">
-        <div style={{ position: 'relative', flex: 1 }}>
-          <i className="fas fa-search" style={{ position: 'absolute', left: 24, top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }}></i>
-          <input 
-            type="text" 
-            placeholder="Search by title, author, or ISBN..." 
-            className="portal-input w-full"
-            style={{ paddingLeft: 60, height: 65, borderRadius: 24, border: '2px solid #f1f5f9', background: '#f8fafc', fontSize: '1.1rem' }}
-            value={searchTerm}
-            onChange={e => setSearchTerm(e.target.value)}
-          />
-        </div>
-        <div style={{ padding: '15px 30px', background: '#f8fafc', borderRadius: 24, border: '2px solid #f1f5f9', whiteSpace: 'nowrap' }}>
-           <span style={{ color: '#64748b', fontWeight: 700, fontSize: '0.9rem' }}>CATALOG SIZE:</span>
-           <span style={{ color: '#1e3a8a', fontWeight: 900, fontSize: '1.2rem', marginLeft: 10 }}>{books.length} VOLUMES</span>
-        </div>
-      </div>
+      {/* Forgiving Fuzzy Search & Filters Bar */}
+      <div style={{ background: '#ffffff', padding: '16px 20px', borderRadius: '16px', border: '1px solid #e2e8f0', marginBottom: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+        <div style={{ display: 'flex', gap: '16px', alignItems: 'center', flexWrap: 'wrap' }}>
+          {/* Autocomplete Fuzzy Input */}
+          <div style={{ position: 'relative', flex: 1, minWidth: '280px' }}>
+            <i className="fas fa-search" style={{ position: 'absolute', left: 16, top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }}></i>
+            <input 
+              type="text" 
+              placeholder="Search by title, author, ISBN-10/13, barcode, or shelf..." 
+              className="portal-input"
+              style={{ width: '100%', paddingLeft: 44, paddingRight: 32, height: 46, borderRadius: 10, fontSize: '0.95rem' }}
+              value={searchTerm}
+              onChange={e => {
+                setSearchTerm(e.target.value);
+                setShowSuggestions(true);
+              }}
+              onFocus={() => setShowSuggestions(true)}
+              onBlur={() => setTimeout(() => setShowSuggestions(false), 250)}
+            />
+            {searchTerm && (
+              <button 
+                onClick={() => { setSearchTerm(''); setDidYouMean(null); }} 
+                style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer' }}
+              >
+                &times;
+              </button>
+            )}
 
-      <div className="portal-card" style={{ borderRadius: '40px', border: '2px solid #f1f5f9', overflow: 'hidden', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.04)' }}>
-        <div className="portal-card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px', padding: '24px 30px', borderBottom: '1px solid #f1f5f9' }}>
-          <h2 style={{ color: '#1e3a8a', margin: 0, fontSize: '1.4rem', fontWeight: 900 }}>
-            <i className="fas fa-book mr-2"></i>Resource Catalog Inventory
-          </h2>
-          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }} className="no-print">
-            <button 
-              onClick={() => {
-                const headers = ['Title', 'Author', 'ISBN', 'Category', 'Total Copies', 'Available'];
-                const rows = filteredBooks.map(b => [
-                  b.title,
-                  b.author,
-                  b.isbn,
-                  b.categoryName,
-                  b.totalCopies.toString(),
-                  b.available.toString()
-                ]);
-                exportToCSV('Book_Catalog', headers, rows);
-              }}
-              className="portal-btn-secondary"
-              style={{ padding: '8px 16px', fontSize: '0.85rem' }}
-              title="Export to CSV"
+            {/* Autocomplete Suggestions Box */}
+            {showSuggestions && suggestions.length > 0 && (
+              <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, marginTop: 4, background: '#ffffff', borderRadius: 8, border: '1px solid #cbd5e1', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)', zIndex: 100, maxHeight: 200, overflowY: 'auto' }}>
+                {suggestions.map((sug, idx) => (
+                  <div 
+                    key={idx} 
+                    onMouseDown={() => { setSearchTerm(sug); setShowSuggestions(false); }}
+                    style={{ padding: '8px 16px', cursor: 'pointer', fontSize: '0.85rem', borderBottom: idx < suggestions.length - 1 ? '1px solid #f1f5f9' : 'none' }}
+                    className="hover:bg-blue-50"
+                  >
+                    <i className="fas fa-search mr-2 text-muted" style={{ fontSize: '0.75rem', color: '#94a3b8' }}></i>
+                    {sug}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Category Filter */}
+          <div style={{ width: '220px' }}>
+            <select 
+              className="portal-input" 
+              style={{ height: 46, borderRadius: 10, width: '100%' }}
+              value={selectedCategory} 
+              onChange={e => setSelectedCategory(e.target.value)}
             >
-              <i className="fas fa-file-csv mr-1"></i> CSV
-            </button>
-            <button 
-              onClick={() => {
-                const headers = ['Title', 'Author', 'ISBN', 'Category', 'Total Copies', 'Available'];
-                const rows = filteredBooks.map(b => [
-                  b.title,
-                  b.author,
-                  b.isbn,
-                  b.categoryName,
-                  b.totalCopies.toString(),
-                  b.available.toString()
-                ]);
-                exportToWord('Book_Catalog', headers, rows);
-              }}
-              className="portal-btn-secondary"
-              style={{ padding: '8px 16px', fontSize: '0.85rem' }}
-              title="Export to Word"
-            >
-              <i className="fas fa-file-word mr-1"></i> Word
-            </button>
-            <button 
-              onClick={() => window.print()}
-              className="portal-btn-secondary"
-              style={{ padding: '8px 16px', fontSize: '0.85rem' }}
-              title="Print / PDF"
-            >
-              <i className="fas fa-print mr-1"></i> Print/PDF
-            </button>
-            <button 
-              onClick={() => setShowAddModal(true)}
-              className="portal-btn-primary" 
-              style={{ padding: '8px 16px', fontSize: '0.85rem', background: '#1e3a8a' }}
-            >
-              <i className="fas fa-plus mr-1"></i> Catalog New Resource
-            </button>
+              <option value="all">All Categories</option>
+              {categories.map(c => (
+                <option key={c.id} value={c.id}>{c.category}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* Availability Toggle */}
+          <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 600, color: '#334155', userSelect: 'none' }}>
+            <input 
+              type="checkbox" 
+              checked={availableOnly} 
+              onChange={e => setAvailableOnly(e.target.checked)} 
+              style={{ width: 16, height: 16, cursor: 'pointer' }}
+            />
+            Available in Stock Only
+          </label>
+
+          {/* Total Counter Badge */}
+          <div style={{ marginLeft: 'auto', background: '#f1f5f9', padding: '6px 14px', borderRadius: 8, fontSize: '0.85rem', fontWeight: 700, color: '#475569' }}>
+            {books.length} {books.length === 1 ? 'Book' : 'Books'}
           </div>
         </div>
-        <table className="portal-table">
-          <thead>
-            <tr style={{ background: '#f8fafc', color: '#1e3a8a' }}>
-              <th style={{ padding: '25px 30px' }}>Title & Author</th>
-              <th>Catalog Identity</th>
-              <th>Classification</th>
-              <th>Availability Logic</th>
-              <th style={{ textAlign: 'center' }}>Ops</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredBooks.map(book => (
-              <tr key={book.id} style={{ borderBottom: '1px solid #f8fafc' }}>
-                <td style={{ padding: '30px' }}>
-                  <div style={{ fontWeight: 900, color: '#1e293b', fontSize: '1.1rem' }}>{book.title}</div>
-                  <div style={{ color: '#64748b', fontWeight: 600 }}>by {book.author}</div>
-                </td>
-                <td style={{ color: '#94a3b8', fontFamily: 'monospace', fontWeight: 700 }}>{book.isbn}</td>
-                <td>
-                  <span className="portal-badge" style={{ background: '#eff6ff', color: '#1e40af', padding: '6px 14px', borderRadius: '10px', fontSize: '0.8rem', fontWeight: 700 }}>
-                    {book.categoryName}
-                  </span>
-                </td>
-                <td>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 15 }}>
-                     <div style={{ flex: 1, height: 8, background: '#f1f5f9', borderRadius: 10, overflow: 'hidden', maxWidth: 100 }}>
-                        <div style={{ width: `${(book.available/book.totalCopies)*100}%`, height: '100%', background: book.available > 0 ? '#10b981' : '#f43f5e' }}></div>
-                     </div>
-                     <span style={{ fontWeight: 800, color: book.available > 0 ? '#10b981' : '#f43f5e', fontSize: '0.9rem' }}>
-                        {book.available} / {book.totalCopies} IN STOCK
-                     </span>
-                  </div>
-                </td>
-                <td style={{ textAlign: 'center' }}>
-                  <button className="text-blue-600 hover:text-blue-800 font-bold p-2" onClick={() => openEditModal(book)} title="Edit book">
-                    <i className="fas fa-edit"></i>
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+
+        {/* Typo Tolerance Suggestion Banner ("Did you mean...?") */}
+        {didYouMean && (
+          <div style={{ marginTop: 12, padding: '8px 14px', background: '#eff6ff', borderRadius: 8, border: '1px solid #bfdbfe', fontSize: '0.85rem', color: '#1e40af', display: 'flex', alignItems: 'center', gap: 8 }}>
+            <i className="fas fa-info-circle"></i>
+            <span>
+              Did you mean{' '}
+              <button 
+                onClick={() => { setSearchTerm(didYouMean); setDidYouMean(null); }}
+                style={{ background: 'none', border: 'none', color: '#1d4ed8', fontWeight: 700, textDecoration: 'underline', cursor: 'pointer', padding: 0 }}
+              >
+                {didYouMean}
+              </button>
+              ?
+            </span>
+          </div>
+        )}
       </div>
 
-      {/* Add Modal */}
+      {/* Book Catalog Table */}
+      <div className="portal-card" style={{ borderRadius: '16px', border: '1px solid #e2e8f0', overflow: 'hidden', background: '#ffffff', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+        {loading ? (
+          <div style={{ padding: '60px', textAlign: 'center', color: '#64748b' }}>
+            <i className="fas fa-spinner fa-spin mr-2"></i> Loading catalog records...
+          </div>
+        ) : books.length === 0 ? (
+          <div style={{ padding: '60px', textAlign: 'center', color: '#64748b' }}>
+            <i className="fas fa-book-open" style={{ fontSize: '2.5rem', color: '#cbd5e1', marginBottom: 12 }}></i>
+            <p style={{ fontWeight: 600, margin: 0 }}>No books matching your query found.</p>
+            <p style={{ fontSize: '0.85rem', color: '#94a3b8', marginTop: 4 }}>Try clearing filters or checking for typo variations.</p>
+          </div>
+        ) : (
+          <table className="portal-table" style={{ width: '100%' }}>
+            <thead>
+              <tr style={{ background: '#f8fafc', color: '#334155' }}>
+                <th>Title & Authors</th>
+                <th>ISBN & Identifiers</th>
+                <th>Classification</th>
+                <th>Shelf Location</th>
+                <th>Stock / Availability</th>
+                <th>Condition</th>
+                <th style={{ textAlign: 'center', width: 90 }} className="no-print">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {books.map(book => {
+                const authorDisplay = (book.authors && book.authors.length > 0)
+                  ? book.authors.join('; ')
+                  : (book.author || 'Unknown');
+
+                return (
+                  <tr key={book.id}>
+                    <td>
+                      <div style={{ fontWeight: 700, color: '#0f172a', fontSize: '0.95rem' }}>{book.title}</div>
+                      <div style={{ fontSize: '0.8rem', color: '#64748b' }}>
+                        <i className="fas fa-user-edit mr-1 text-muted"></i> {authorDisplay}
+                      </div>
+                      {book.publisher && (
+                        <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>
+                          Pub: {book.publisher} {book.edition ? `(${book.edition})` : ''}
+                        </div>
+                      )}
+                    </td>
+                    <td>
+                      <div style={{ fontFamily: 'monospace', fontSize: '0.8rem', fontWeight: 600, color: '#334155' }}>
+                        {book.isbn13 ? <div>ISBN-13: {book.isbn13}</div> : null}
+                        {book.isbn10 ? <div>ISBN-10: {book.isbn10}</div> : (!book.isbn13 && book.isbn ? <div>ISBN: {book.isbn}</div> : null)}
+                      </div>
+                      {(book.accessionNumber || book.barcode) && (
+                        <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: 2 }}>
+                          {book.accessionNumber ? `Acc: ${book.accessionNumber}` : ''}
+                          {book.barcode ? ` | Barcode: ${book.barcode}` : ''}
+                        </div>
+                      )}
+                    </td>
+                    <td>
+                      <span className="portal-badge" style={{ background: '#eff6ff', color: '#1e40af', padding: '4px 10px', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 700 }}>
+                        {book.categoryName}
+                      </span>
+                    </td>
+                    <td>
+                      {book.shelfLocation ? (
+                        <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#475569', background: '#f1f5f9', padding: '4px 8px', borderRadius: '6px', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                          <i className="fas fa-map-marker-alt text-primary" style={{ fontSize: '0.75rem' }}></i>
+                          {book.shelfLocation}
+                        </span>
+                      ) : (
+                        <span style={{ color: '#cbd5e1', fontSize: '0.8rem' }}>Unassigned</span>
+                      )}
+                    </td>
+                    <td>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                        <div style={{ width: 60, height: 6, background: '#f1f5f9', borderRadius: 4, overflow: 'hidden' }}>
+                          <div 
+                            style={{ 
+                              width: `${book.totalCopies > 0 ? (book.available / book.totalCopies) * 100 : 0}%`, 
+                              height: '100%', 
+                              background: book.available > 0 ? '#10b981' : '#ef4444' 
+                            }}
+                          ></div>
+                        </div>
+                        <span style={{ fontWeight: 700, color: book.available > 0 ? '#059669' : '#dc2626', fontSize: '0.85rem' }}>
+                          {book.available} / {book.totalCopies}
+                        </span>
+                      </div>
+                    </td>
+                    <td>
+                      <span className={`portal-badge ${book.condition === 'Fair' ? 'warning' : book.condition === 'Poor' ? 'danger' : 'success'}`} style={{ fontSize: '0.75rem' }}>
+                        {book.condition || 'Good'}
+                      </span>
+                    </td>
+                    <td style={{ textAlign: 'center' }} className="no-print">
+                      <div style={{ display: 'flex', gap: 8, justifyContent: 'center' }}>
+                        <button 
+                          className="portal-link-btn" 
+                          onClick={() => openEditModal(book)} 
+                          title="Edit Book Details"
+                          style={{ color: '#2563eb', padding: 4 }}
+                        >
+                          <i className="fas fa-edit"></i>
+                        </button>
+                        <button 
+                          className="portal-link-btn" 
+                          onClick={() => handleDeleteBook(book.id, book.title)} 
+                          title="Remove Book"
+                          style={{ color: '#ef4444', padding: 4 }}
+                        >
+                          <i className="fas fa-trash-alt"></i>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        )}
+      </div>
+
+      {/* Add Book Modal */}
       {showAddModal && (
-        <div className="portal-modal-overlay" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <div className="portal-modal-card" style={{ maxWidth: '600px' }}>
-            <div className="portal-modal-header">
-              <div className="header-titles">
-                <h2>Library Registration</h2>
-                <span>Enter formal details for the new catalog acquisition.</span>
+        <div className="portal-modal-overlay" style={{ zIndex: 1100 }}>
+          <div className="portal-modal-card" style={{ maxWidth: 840, maxHeight: '90vh', overflowY: 'auto' }}>
+            <div className="portal-modal-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #e2e8f0', paddingBottom: 16 }}>
+              <div>
+                <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800, color: '#1e293b' }}>
+                  <i className="fas fa-book mr-2" style={{ color: '#2563eb' }}></i>
+                  Catalog New Book
+                </h2>
+                <p style={{ margin: '4px 0 0', fontSize: '0.85rem', color: '#64748b' }}>
+                  Register a physical volume into the school library inventory.
+                </p>
               </div>
-              <button className="close-panel" onClick={() => setShowAddModal(false)}>&times;</button>
+              <button className="close-btn" style={{ border: 'none', background: 'none', fontSize: '1.5rem', cursor: 'pointer' }} onClick={() => setShowAddModal(false)}>&times;</button>
             </div>
-            
-            <div className="portal-modal-body" style={{ padding: '30px' }}>
-              <form onSubmit={handleAddBook}>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px' }}>
-                  <div className="form-group" style={{ gridColumn: '1 / -1' }}>
-                    <label className="portal-label">Official Book Title *</label>
-                    <input 
-                      type="text" required className="portal-input"
-                      value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})}
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label className="portal-label">Lead Author *</label>
-                    <input 
-                      type="text" required className="portal-input"
-                      value={formData.author} onChange={e => setFormData({...formData, author: e.target.value})}
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label className="portal-label">ISBN Code</label>
-                    <input 
-                      type="text" className="portal-input"
-                      value={formData.isbn} onChange={e => setFormData({...formData, isbn: e.target.value})}
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label className="portal-label">Edition</label>
-                    <input 
-                      type="text" className="portal-input"
-                      value={formData.edition} onChange={e => setFormData({...formData, edition: e.target.value})}
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label className="portal-label">Publisher *</label>
-                    <input 
-                      type="text" required className="portal-input"
-                      value={formData.publisher} onChange={e => setFormData({...formData, publisher: e.target.value})}
-                    />
+
+            <form onSubmit={handleAddBook} style={{ padding: '20px 0' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+                {/* Book Title */}
+                <div className="portal-form-group" style={{ margin: 0 }}>
+                  <label style={{ fontWeight: 700, fontSize: '0.85rem' }}>Official Book Title *</label>
+                  <input 
+                    type="text" 
+                    required 
+                    className="portal-input" 
+                    placeholder="e.g. Principles of Modern Physics" 
+                    value={formData.title} 
+                    onChange={e => setFormData({ ...formData, title: e.target.value })} 
+                  />
+                </div>
+
+                {/* Multiple Authors Section */}
+                <div style={{ background: '#f8fafc', padding: 14, borderRadius: 10, border: '1px solid #e2e8f0' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+                    <label style={{ fontWeight: 700, fontSize: '0.85rem', color: '#334155' }}>
+                      <i className="fas fa-users mr-1"></i> Authors (Surname, First Name format) *
+                    </label>
+                    <button 
+                      type="button" 
+                      onClick={handleAddAuthor} 
+                      className="portal-btn-secondary" 
+                      style={{ padding: '4px 10px', fontSize: '0.75rem', borderRadius: 6 }}
+                    >
+                      <i className="fas fa-plus mr-1"></i> Add Author
+                    </button>
                   </div>
 
-                  <div className="form-group">
-                    <label className="portal-label">Target Class</label>
-                    <select className="portal-input" value={formData.classId} onChange={e => setFormData({...formData, classId: e.target.value})}>
-                      <option value="">Select Class</option>
-                      {classes.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-                    </select>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                    {authorList.map((auth, idx) => (
+                      <div key={idx} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 40px', gap: 10, alignItems: 'center' }}>
+                        <input 
+                          type="text" 
+                          placeholder={`Author ${idx + 1} Surname (e.g. Hawking)`} 
+                          className="portal-input" 
+                          value={auth.surname} 
+                          onChange={e => handleAuthorChange(idx, 'surname', e.target.value)} 
+                          style={{ fontSize: '0.85rem' }}
+                        />
+                        <input 
+                          type="text" 
+                          placeholder={`Author ${idx + 1} First Name (e.g. Stephen)`} 
+                          className="portal-input" 
+                          value={auth.firstName} 
+                          onChange={e => handleAuthorChange(idx, 'firstName', e.target.value)} 
+                          style={{ fontSize: '0.85rem' }}
+                        />
+                        {authorList.length > 1 ? (
+                          <button 
+                            type="button" 
+                            onClick={() => handleRemoveAuthor(idx)} 
+                            style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', textAlign: 'center' }}
+                            title="Remove Author"
+                          >
+                            <i className="fas fa-times"></i>
+                          </button>
+                        ) : <div></div>}
+                      </div>
+                    ))}
                   </div>
-                  <div className="form-group">
-                    <label className="portal-label">Related Subject</label>
-                    <select className="portal-input" value={formData.subjectId} onChange={e => setFormData({...formData, subjectId: e.target.value})}>
-                      <option value="">Select Subject</option>
-                      {subjects.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
-                    </select>
-                  </div>
+                </div>
 
-                  <div className="form-group">
-                    <label className="portal-label">Resource Category *</label>
+                {/* ISBN Identifiers (without hyphens) */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+                  <div className="portal-form-group" style={{ margin: 0 }}>
+                    <label style={{ fontWeight: 600, fontSize: '0.85rem' }}>ISBN-10 (10 digits, no hyphens)</label>
+                    <input 
+                      type="text" 
+                      maxLength={10} 
+                      placeholder="e.g. 0140449132" 
+                      className="portal-input" 
+                      value={formData.isbn10} 
+                      onChange={e => setFormData({ ...formData, isbn10: e.target.value })} 
+                    />
+                  </div>
+                  <div className="portal-form-group" style={{ margin: 0 }}>
+                    <label style={{ fontWeight: 600, fontSize: '0.85rem' }}>ISBN-13 (13 digits, no hyphens)</label>
+                    <input 
+                      type="text" 
+                      maxLength={13} 
+                      placeholder="e.g. 9780140449136" 
+                      className="portal-input" 
+                      value={formData.isbn13} 
+                      onChange={e => setFormData({ ...formData, isbn13: e.target.value })} 
+                    />
+                  </div>
+                </div>
+
+                {/* Shelf Location, Barcode & Accession Number */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr 1fr', gap: 14 }}>
+                  <div className="portal-form-group" style={{ margin: 0 }}>
+                    <label style={{ fontWeight: 600, fontSize: '0.85rem' }}>Shelf Location / Coordinate</label>
+                    <input 
+                      type="text" 
+                      placeholder="e.g. Aisle 4, Stack B, Shelf 3" 
+                      className="portal-input" 
+                      value={formData.shelfLocation} 
+                      onChange={e => setFormData({ ...formData, shelfLocation: e.target.value })} 
+                    />
+                  </div>
+                  <div className="portal-form-group" style={{ margin: 0 }}>
+                    <label style={{ fontWeight: 600, fontSize: '0.85rem' }}>Barcode</label>
+                    <input 
+                      type="text" 
+                      placeholder="e.g. BC-99482" 
+                      className="portal-input" 
+                      value={formData.barcode} 
+                      onChange={e => setFormData({ ...formData, barcode: e.target.value })} 
+                    />
+                  </div>
+                  <div className="portal-form-group" style={{ margin: 0 }}>
+                    <label style={{ fontWeight: 600, fontSize: '0.85rem' }}>Accession Number</label>
+                    <input 
+                      type="text" 
+                      placeholder="e.g. ACC-2026-004" 
+                      className="portal-input" 
+                      value={formData.accessionNumber} 
+                      onChange={e => setFormData({ ...formData, accessionNumber: e.target.value })} 
+                    />
+                  </div>
+                </div>
+
+                {/* Classification & Subject (NO Class Link) */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+                  <div className="portal-form-group" style={{ margin: 0 }}>
+                    <label style={{ fontWeight: 600, fontSize: '0.85rem' }}>Category *</label>
                     <select 
-                      className="portal-input" required
-                      value={formData.categoryId} onChange={e => setFormData({...formData, categoryId: e.target.value})}
+                      required 
+                      className="portal-input" 
+                      value={formData.categoryId} 
+                      onChange={e => setFormData({ ...formData, categoryId: e.target.value })}
                     >
                       <option value="">Select Category</option>
-                      {categories.map(cat => (
-                        <option key={cat.id} value={cat.id}>{cat.category}</option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div className="form-group">
-                    <label className="portal-label">Price</label>
-                    <input 
-                      type="number" step="0.01" className="portal-input"
-                      value={formData.price} onChange={e => setFormData({...formData, price: e.target.value})}
-                    />
-                  </div>
-
-                  <div className="form-group">
-                    <label className="portal-label">Quantity *</label>
-                    <input 
-                      type="number" required className="portal-input"
-                      value={formData.totalCopies} onChange={e => setFormData({...formData, totalCopies: e.target.value})}
-                    />
-                  </div>
-
-                  <div className="form-group">
-                    <label className="portal-label">Book Status *</label>
-                    <select className="portal-input" required value={formData.status} onChange={e => setFormData({...formData, status: e.target.value})}>
-                      <option value="Available">Available</option>
-                      <option value="Damaged">Damaged</option>
-                      <option value="Reserved">Reserved</option>
-                      <option value="Lost">Lost</option>
-                    </select>
-                  </div>
-
-                  <div className="form-group">
-                    <label className="portal-label">Date *</label>
-                    <input 
-                      type="date" required className="portal-input"
-                      value={formData.publishedDate} onChange={e => setFormData({...formData, publishedDate: e.target.value})}
-                    />
-                  </div>
-
-                  <div className="form-group" style={{ gridColumn: '1 / -1' }}>
-                    <label className="portal-label">Description</label>
-                    <textarea 
-                      className="portal-input" style={{ minHeight: '80px' }}
-                      value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})}
-                    ></textarea>
-                  </div>
-
-                  <div className="form-group" style={{ gridColumn: '1 / -1' }}>
-                    <label className="portal-label">Cover Image</label>
-                    <input 
-                      type="file" accept="image/*" className="portal-input"
-                      onChange={e => setFormData({...formData, cover: e.target.files?.[0]})}
-                    />
-                  </div>
-                </div>
-
-                <div style={{ display: 'flex', gap: '15px', marginTop: '30px' }}>
-                   <button type="button" onClick={() => setShowAddModal(false)} className="portal-btn-ghost" style={{ flex: 1 }}>Abort</button>
-                   <button type="submit" className="portal-btn-primary" style={{ flex: 2 }}>Finalize Entry</button>
-                </div>
-              </form>
-            </div>
-          </div>
-        </div>
-      )}
-      {editBook && (
-        <div className="portal-modal-overlay" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <div className="portal-modal-card" style={{ maxWidth: 540 }}>
-            <div className="portal-modal-header">
-              <div className="header-titles">
-                <h2>Edit Book</h2>
-                <span>Update the details for: <strong>{editBook.title}</strong></span>
-              </div>
-              <button className="close-panel" onClick={() => setEditBook(null)}>&times;</button>
-            </div>
-            <div className="portal-modal-body" style={{ padding: 30 }}>
-              <form onSubmit={handleEditBook}>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-                  <div className="form-group" style={{ gridColumn: '1 / -1' }}>
-                    <label className="portal-label">Title *</label>
-                    <input type="text" required className="portal-input" value={editForm.title || ''} onChange={e => setEditForm({ ...editForm, title: e.target.value })} />
-                  </div>
-                  <div className="form-group">
-                    <label className="portal-label">Author *</label>
-                    <input type="text" required className="portal-input" value={editForm.author || ''} onChange={e => setEditForm({ ...editForm, author: e.target.value })} />
-                  </div>
-                  <div className="form-group">
-                    <label className="portal-label">ISBN</label>
-                    <input type="text" className="portal-input" value={editForm.isbn || ''} onChange={e => setEditForm({ ...editForm, isbn: e.target.value })} />
-                  </div>
-                  <div className="form-group">
-                    <label className="portal-label">Category</label>
-                    <select className="portal-input" value={editForm.categoryId || ''} onChange={e => setEditForm({ ...editForm, categoryId: e.target.value })}>
-                      <option value="">Uncategorized</option>
                       {categories.map(c => <option key={c.id} value={c.id}>{c.category}</option>)}
                     </select>
                   </div>
-                  <div className="form-group">
-                    <label className="portal-label">Total Copies</label>
-                    <input type="number" className="portal-input" value={editForm.totalCopies || ''} onChange={e => setEditForm({ ...editForm, totalCopies: e.target.value })} />
+                  <div className="portal-form-group" style={{ margin: 0 }}>
+                    <label style={{ fontWeight: 600, fontSize: '0.85rem' }}>Subject Area</label>
+                    <select 
+                      className="portal-input" 
+                      value={formData.subjectId} 
+                      onChange={e => setFormData({ ...formData, subjectId: e.target.value })}
+                    >
+                      <option value="">Select Subject Area (Optional)</option>
+                      {subjects.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+                    </select>
                   </div>
                 </div>
-                <div style={{ display: 'flex', gap: 12, marginTop: 24 }}>
-                  <button type="button" className="portal-btn-ghost" style={{ flex: 1 }} onClick={() => setEditBook(null)}>Cancel</button>
-                  <button type="submit" className="portal-btn-primary" style={{ flex: 2 }} disabled={editSubmitting}>
-                    {editSubmitting ? 'Saving...' : 'Save Changes'}
-                  </button>
+
+                {/* Copies (Total & Available) */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 14 }}>
+                  <div className="portal-form-group" style={{ margin: 0 }}>
+                    <label style={{ fontWeight: 600, fontSize: '0.85rem' }}>Total Copies *</label>
+                    <input 
+                      type="number" 
+                      min="1" 
+                      required 
+                      className="portal-input" 
+                      value={formData.totalCopies} 
+                      onChange={e => {
+                        const val = parseInt(e.target.value) || 1;
+                        setFormData({ 
+                          ...formData, 
+                          totalCopies: val,
+                          availableCopies: Math.min(val, formData.availableCopies)
+                        });
+                      }} 
+                    />
+                  </div>
+                  <div className="portal-form-group" style={{ margin: 0 }}>
+                    <label style={{ fontWeight: 600, fontSize: '0.85rem' }}>Available Copies *</label>
+                    <input 
+                      type="number" 
+                      min="0" 
+                      max={formData.totalCopies}
+                      required 
+                      className="portal-input" 
+                      value={formData.availableCopies} 
+                      onChange={e => setFormData({ ...formData, availableCopies: parseInt(e.target.value) || 0 })} 
+                    />
+                  </div>
+                  <div className="portal-form-group" style={{ margin: 0 }}>
+                    <label style={{ fontWeight: 600, fontSize: '0.85rem' }}>Condition</label>
+                    <select 
+                      className="portal-input" 
+                      value={formData.condition} 
+                      onChange={e => setFormData({ ...formData, condition: e.target.value })}
+                    >
+                      <option value="New">New</option>
+                      <option value="Good">Good</option>
+                      <option value="Fair">Fair</option>
+                      <option value="Poor">Poor</option>
+                    </select>
+                  </div>
                 </div>
-              </form>
+
+                {/* Publisher, Edition, Language, Source */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr 1fr 1fr', gap: 14 }}>
+                  <div className="portal-form-group" style={{ margin: 0 }}>
+                    <label style={{ fontWeight: 600, fontSize: '0.85rem' }}>Publisher</label>
+                    <input 
+                      type="text" 
+                      placeholder="e.g. Oxford University Press" 
+                      className="portal-input" 
+                      value={formData.publisher} 
+                      onChange={e => setFormData({ ...formData, publisher: e.target.value })} 
+                    />
+                  </div>
+                  <div className="portal-form-group" style={{ margin: 0 }}>
+                    <label style={{ fontWeight: 600, fontSize: '0.85rem' }}>Edition</label>
+                    <input 
+                      type="text" 
+                      placeholder="e.g. 4th Edition" 
+                      className="portal-input" 
+                      value={formData.edition} 
+                      onChange={e => setFormData({ ...formData, edition: e.target.value })} 
+                    />
+                  </div>
+                  <div className="portal-form-group" style={{ margin: 0 }}>
+                    <label style={{ fontWeight: 600, fontSize: '0.85rem' }}>Language</label>
+                    <select 
+                      className="portal-input" 
+                      value={formData.language} 
+                      onChange={e => setFormData({ ...formData, language: e.target.value })}
+                    >
+                      <option value="English">English</option>
+                      <option value="French">French</option>
+                      <option value="Spanish">Spanish</option>
+                      <option value="Arabic">Arabic</option>
+                      <option value="Swahili">Swahili</option>
+                      <option value="Portuguese">Portuguese</option>
+                    </select>
+                  </div>
+                  <div className="portal-form-group" style={{ margin: 0 }}>
+                    <label style={{ fontWeight: 600, fontSize: '0.85rem' }}>Acquisition Source</label>
+                    <select 
+                      className="portal-input" 
+                      value={formData.source} 
+                      onChange={e => setFormData({ ...formData, source: e.target.value })}
+                    >
+                      <option value="Purchased">Purchased</option>
+                      <option value="Donated">Donated</option>
+                      <option value="Government Grant">Government Grant</option>
+                      <option value="Inter-Library Loan">Inter-Library Loan</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Keywords & Description */}
+                <div className="portal-form-group" style={{ margin: 0 }}>
+                  <label style={{ fontWeight: 600, fontSize: '0.85rem' }}>Keywords (Comma-separated for search discovery)</label>
+                  <input 
+                    type="text" 
+                    placeholder="e.g. quantum, mechanics, wave particle duality, physics" 
+                    className="portal-input" 
+                    value={formData.keywords} 
+                    onChange={e => setFormData({ ...formData, keywords: e.target.value })} 
+                  />
+                </div>
+
+                <div className="portal-form-group" style={{ margin: 0 }}>
+                  <label style={{ fontWeight: 600, fontSize: '0.85rem' }}>Summary / Description</label>
+                  <textarea 
+                    rows={2} 
+                    className="portal-input" 
+                    placeholder="Brief description or synopsis of the resource..." 
+                    value={formData.description} 
+                    onChange={e => setFormData({ ...formData, description: e.target.value })} 
+                  />
+                </div>
+
+                {/* Cover Image Upload */}
+                <div className="portal-form-group" style={{ margin: 0 }}>
+                  <label style={{ fontWeight: 600, fontSize: '0.85rem' }}>Book Cover Image (Optional)</label>
+                  <input 
+                    type="file" 
+                    accept="image/*" 
+                    className="portal-input" 
+                    onChange={e => setFormData({ ...formData, cover: e.target.files?.[0] || null })} 
+                  />
+                </div>
+              </div>
+
+              <div className="portal-modal-footer" style={{ display: 'flex', justifyContent: 'flex-end', gap: 12, marginTop: 24, borderTop: '1px solid #e2e8f0', paddingTop: 16 }}>
+                <button type="button" className="portal-btn-secondary" onClick={() => setShowAddModal(false)} disabled={submitting}>
+                  Cancel
+                </button>
+                <button type="submit" className="portal-btn-primary" disabled={submitting} style={{ background: '#2563eb' }}>
+                  {submitting ? 'Cataloging...' : 'Catalog Book'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Book Modal */}
+      {editBook && (
+        <div className="portal-modal-overlay" style={{ zIndex: 1100 }}>
+          <div className="portal-modal-card" style={{ maxWidth: 760, maxHeight: '90vh', overflowY: 'auto' }}>
+            <div className="portal-modal-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #e2e8f0', paddingBottom: 16 }}>
+              <div>
+                <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800, color: '#1e293b' }}>
+                  Edit Catalog Entry: {editBook.title}
+                </h2>
+              </div>
+              <button className="close-btn" style={{ border: 'none', background: 'none', fontSize: '1.5rem', cursor: 'pointer' }} onClick={() => setEditBook(null)}>&times;</button>
             </div>
+
+            <form onSubmit={handleEditBook} style={{ padding: '20px 0' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                <div className="portal-form-group" style={{ margin: 0 }}>
+                  <label style={{ fontWeight: 700, fontSize: '0.85rem' }}>Official Book Title *</label>
+                  <input 
+                    type="text" 
+                    required 
+                    className="portal-input" 
+                    value={editFormData.title || ''} 
+                    onChange={e => setEditFormData({ ...editFormData, title: e.target.value })} 
+                  />
+                </div>
+
+                {/* Multiple Authors */}
+                <div style={{ background: '#f8fafc', padding: 12, borderRadius: 8, border: '1px solid #e2e8f0' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                    <label style={{ fontWeight: 700, fontSize: '0.85rem' }}>Authors</label>
+                    <button 
+                      type="button" 
+                      onClick={() => setEditAuthorList(prev => [...prev, { surname: '', firstName: '' }])}
+                      className="portal-btn-secondary" 
+                      style={{ padding: '2px 8px', fontSize: '0.75rem' }}
+                    >
+                      + Add Author
+                    </button>
+                  </div>
+                  {editAuthorList.map((auth, idx) => (
+                    <div key={idx} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 40px', gap: 8, marginBottom: 6 }}>
+                      <input 
+                        type="text" 
+                        placeholder="Surname" 
+                        className="portal-input" 
+                        value={auth.surname} 
+                        onChange={e => {
+                          const updated = [...editAuthorList];
+                          updated[idx].surname = e.target.value;
+                          setEditAuthorList(updated);
+                        }} 
+                      />
+                      <input 
+                        type="text" 
+                        placeholder="First Name" 
+                        className="portal-input" 
+                        value={auth.firstName} 
+                        onChange={e => {
+                          const updated = [...editAuthorList];
+                          updated[idx].firstName = e.target.value;
+                          setEditAuthorList(updated);
+                        }} 
+                      />
+                      {editAuthorList.length > 1 ? (
+                        <button 
+                          type="button" 
+                          onClick={() => setEditAuthorList(prev => prev.filter((_, i) => i !== idx))}
+                          style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer' }}
+                        >
+                          &times;
+                        </button>
+                      ) : <div></div>}
+                    </div>
+                  ))}
+                </div>
+
+                {/* ISBNs */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+                  <div className="portal-form-group" style={{ margin: 0 }}>
+                    <label style={{ fontWeight: 600, fontSize: '0.85rem' }}>ISBN-10</label>
+                    <input 
+                      type="text" 
+                      maxLength={10} 
+                      className="portal-input" 
+                      value={editFormData.isbn10 || ''} 
+                      onChange={e => setEditFormData({ ...editFormData, isbn10: e.target.value })} 
+                    />
+                  </div>
+                  <div className="portal-form-group" style={{ margin: 0 }}>
+                    <label style={{ fontWeight: 600, fontSize: '0.85rem' }}>ISBN-13</label>
+                    <input 
+                      type="text" 
+                      maxLength={13} 
+                      className="portal-input" 
+                      value={editFormData.isbn13 || ''} 
+                      onChange={e => setEditFormData({ ...editFormData, isbn13: e.target.value })} 
+                    />
+                  </div>
+                </div>
+
+                {/* Shelf Location, Barcode & Accession */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr 1fr', gap: 14 }}>
+                  <div className="portal-form-group" style={{ margin: 0 }}>
+                    <label style={{ fontWeight: 600, fontSize: '0.85rem' }}>Shelf Location</label>
+                    <input 
+                      type="text" 
+                      className="portal-input" 
+                      value={editFormData.shelfLocation || ''} 
+                      onChange={e => setEditFormData({ ...editFormData, shelfLocation: e.target.value })} 
+                    />
+                  </div>
+                  <div className="portal-form-group" style={{ margin: 0 }}>
+                    <label style={{ fontWeight: 600, fontSize: '0.85rem' }}>Barcode</label>
+                    <input 
+                      type="text" 
+                      className="portal-input" 
+                      value={editFormData.barcode || ''} 
+                      onChange={e => setEditFormData({ ...editFormData, barcode: e.target.value })} 
+                    />
+                  </div>
+                  <div className="portal-form-group" style={{ margin: 0 }}>
+                    <label style={{ fontWeight: 600, fontSize: '0.85rem' }}>Accession Number</label>
+                    <input 
+                      type="text" 
+                      className="portal-input" 
+                      value={editFormData.accessionNumber || ''} 
+                      onChange={e => setEditFormData({ ...editFormData, accessionNumber: e.target.value })} 
+                    />
+                  </div>
+                </div>
+
+                {/* Copies */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 14 }}>
+                  <div className="portal-form-group" style={{ margin: 0 }}>
+                    <label style={{ fontWeight: 600, fontSize: '0.85rem' }}>Total Copies</label>
+                    <input 
+                      type="number" 
+                      min="1" 
+                      className="portal-input" 
+                      value={editFormData.totalCopies || 1} 
+                      onChange={e => setEditFormData({ ...editFormData, totalCopies: e.target.value })} 
+                    />
+                  </div>
+                  <div className="portal-form-group" style={{ margin: 0 }}>
+                    <label style={{ fontWeight: 600, fontSize: '0.85rem' }}>Available Copies</label>
+                    <input 
+                      type="number" 
+                      min="0" 
+                      className="portal-input" 
+                      value={editFormData.available || 0} 
+                      onChange={e => setEditFormData({ ...editFormData, available: e.target.value })} 
+                    />
+                  </div>
+                  <div className="portal-form-group" style={{ margin: 0 }}>
+                    <label style={{ fontWeight: 600, fontSize: '0.85rem' }}>Condition</label>
+                    <select 
+                      className="portal-input" 
+                      value={editFormData.condition || 'Good'} 
+                      onChange={e => setEditFormData({ ...editFormData, condition: e.target.value })}
+                    >
+                      <option value="New">New</option>
+                      <option value="Good">Good</option>
+                      <option value="Fair">Fair</option>
+                      <option value="Poor">Poor</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div className="portal-modal-footer" style={{ display: 'flex', justifyContent: 'flex-end', gap: 12, marginTop: 24, borderTop: '1px solid #e2e8f0', paddingTop: 16 }}>
+                <button type="button" className="portal-btn-secondary" onClick={() => setEditBook(null)} disabled={submitting}>
+                  Cancel
+                </button>
+                <button type="submit" className="portal-btn-primary" disabled={submitting} style={{ background: '#2563eb' }}>
+                  {submitting ? 'Saving Changes...' : 'Save Changes'}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

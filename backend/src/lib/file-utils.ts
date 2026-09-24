@@ -1,6 +1,32 @@
 import fs from 'fs';
 import path from 'path';
 
+export function getMimeExtension(mimeType: string): string {
+  if (!mimeType) return 'bin';
+  const cleanMime = mimeType.toLowerCase().split(';')[0].trim();
+  const mimeMap: Record<string, string> = {
+    'application/pdf': 'pdf',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'docx',
+    'application/msword': 'doc',
+    'application/vnd.ms-excel': 'xls',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': 'xlsx',
+    'image/jpeg': 'jpg',
+    'image/jpg': 'jpg',
+    'image/png': 'png',
+    'image/webp': 'webp',
+    'image/gif': 'gif',
+    'image/svg+xml': 'svg',
+    'text/plain': 'txt',
+    'video/mp4': 'mp4',
+    'audio/mpeg': 'mp3',
+    'audio/mp3': 'mp3'
+  };
+  if (mimeMap[cleanMime]) return mimeMap[cleanMime];
+  const sub = cleanMime.split('/')[1];
+  if (sub && sub.length <= 5 && !sub.includes('.')) return sub;
+  return 'bin';
+}
+
 /**
  * Saves a base64 encoded image to a structured directory
  * @param base64 String (data:image/png;base64,...)
@@ -24,7 +50,7 @@ export function saveBase64Image(
   try {
     const parts = base64.split(';base64,');
     const mimeType = parts[0].split(':')[1];
-    const extension = mimeType.split('/')[1] || 'png';
+    const extension = getMimeExtension(mimeType);
     const data = parts[1];
     const buffer = Buffer.from(data, 'base64');
 
