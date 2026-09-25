@@ -468,13 +468,39 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     portalVisibility: ['admin', 'bursar']
   },
   {
+    id: 'parent-fees',
+    label: 'Fees & Invoices',
+    route: '/parent/fees',
+    group: 'FINANCE_BILLING',
+    icon: 'fas fa-file-invoice-dollar',
+    permissionKey: PERMISSIONS.FINANCE_FEES_BILLING,
+    portalVisibility: ['parent'],
+    tabs: [
+      { id: 'overview', label: 'Overview' },
+      { id: 'invoices', label: 'Invoices & Receipts' },
+      { id: 'statement', label: 'Statement' },
+      { id: 'payment-plan', label: 'Payment Plan' }
+    ],
+    searchKeywords: ['fees', 'billing', 'invoices', 'receipts', 'statement', 'ledger', 'payment plans', 'tuition', 'zig']
+  },
+  {
+    id: 'parent-wallet',
+    label: 'Tuckshop & Dining',
+    route: '/parent/wallet',
+    group: 'FINANCE_BILLING',
+    icon: 'fas fa-utensils',
+    permissionKey: PERMISSIONS.FINANCE_FEES_BILLING,
+    portalVisibility: ['parent'],
+    searchKeywords: ['tuckshop', 'dining', 'wallet', 'pocket money', 'canteen', 'allowance', 'topup']
+  },
+  {
     id: 'admin-payment-plans',
     label: 'Payment Plans',
     route: '/admin/payment-plans',
     group: 'FINANCE_BILLING',
     icon: 'fas fa-calendar-check',
     permissionKey: PERMISSIONS.FINANCE_FEES_BILLING,
-    portalVisibility: ['admin', 'bursar', 'parent']
+    portalVisibility: ['admin', 'bursar']
   },
   {
     id: 'admin-reminder-logs',

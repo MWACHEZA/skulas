@@ -1005,7 +1005,7 @@ export default function App() {
               <Route path="timetable" element={<StudentTimetable />} />
               <Route path="calendar" element={<ParentCalendar />} />
               <Route path="fees" element={<ParentFees />} />
-              <Route path="payment-plans" element={<ParentPaymentPlans />} />
+              <Route path="payment-plans" element={<Navigate to="/parent/fees?tab=payment-plan" replace />} />
               <Route path="wallet" element={<ParentWallet />} />
               <Route path="uniforms" element={<UniformsPage />} />
               <Route path="transport" element={<ParentTransport />} />

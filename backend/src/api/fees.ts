@@ -1077,5 +1077,466 @@ router.get('/ledgers', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async
   }
 });
 
+/**
+ * @route   GET /api/fees/parent-summary
+ * @desc    [PARENT] Comprehensive 4-tab summary for parent fees & finances
+ *          Strict tenant isolation + parent link verification
+ *          Zero internal accounting jargon in outputs
+ */
+router.get('/parent-summary', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    let studentId = req.query.studentId as string;
+
+    // 1. Authorization & Tenant Boundary Guard
+    if (req.user?.role === 'PARENT') {
+      const parent = await prisma.parent.findUnique({
+        where: { userId: req.user.id }
+      });
+
+      if (!parent) {
+        return res.status(403).json({ error: 'Parent profile not found' });
+      }
+
+      if (!studentId) {
+        const firstLink = await prisma.parentStudent.findFirst({
+          where: { parentId: parent.id, status: 'APPROVED' },
+          select: { studentId: true }
+        });
+        if (!firstLink) {
+          return res.status(404).json({ error: 'No enrolled children found linked to your account' });
+        }
+        studentId = firstLink.studentId;
+      } else {
+        const link = await prisma.parentStudent.findFirst({
+          where: { parentId: parent.id, studentId, status: 'APPROVED' }
+        });
+        if (!link) {
+          return res.status(403).json({ error: 'Unauthorized: You are not authorized to view finances for this student' });
+        }
+      }
+    } else if (req.user?.role !== 'SUPER_ADMIN') {
+      if (!studentId) {
+        return res.status(400).json({ error: 'studentId query parameter is required' });
+      }
+    }
+
+    const student = await prisma.student.findUnique({
+      where: { id: studentId },
+      include: {
+        school: {
+          include: {
+            schoolSetting: true
+          }
+        },
+        class: true
+      }
+    });
+
+    if (!student) {
+      return res.status(404).json({ error: 'Student not found' });
+    }
+
+    if (req.user?.role !== 'SUPER_ADMIN' && req.user?.role !== 'PARENT') {
+      if (req.user?.schoolId && req.user.schoolId !== student.schoolId) {
+        return res.status(403).json({ error: 'Cross-tenant access forbidden' });
+      }
+    }
+
+    const schoolId = student.schoolId;
+    const schoolSetting = student.school?.schoolSetting;
+    const schoolSettings = (student.school?.settings as any) || {};
+
+    const currency = schoolSetting?.baseCurrency || 'USD';
+    const currencySymbol = schoolSetting?.baseCurrencySymbol || '$';
+    const altCurrency = schoolSetting?.altCurrency || 'ZiG';
+    const altCurrencySymbol = schoolSetting?.altCurrencySymbol || 'ZiG';
+    const exchangeRate = schoolSettings.exchangeRate || 26.50;
+
+    // Banking details for ZiG / Direct bank transfer
+    const bankingDetails = {
+      bankName: schoolSettings.bankName || 'CBZ Bank',
+      accountName: schoolSettings.accountName || student.school.name,
+      accountNumberUsd: schoolSettings.accountNumberUsd || '1029-3849-201',
+      accountNumberZig: schoolSettings.accountNumberZig || '9920-4821-391',
+      branchCode: schoolSettings.branchCodeZig || schoolSettings.branchCode || '042',
+      ecocashMerchantCode: schoolSettings.ecocashMerchantCode || '*151*2*2*778899#'
+    };
+
+    // 2. Fetch Invoices / Fees
+    const fees = await prisma.fee.findMany({
+      where: { studentId: student.id, schoolId },
+      include: { feeGroup: true },
+      orderBy: { dueDate: 'asc' }
+    });
+
+    // 3. Fetch Receipts / Payments
+    const payments = await prisma.studentPayment.findMany({
+      where: { studentId: student.id, schoolId },
+      include: { fee: true },
+      orderBy: { date: 'desc' }
+    });
+
+    // 4. Fetch Wallet Details
+    const walletBalance = await LedgerService.getWalletBalance(student.id);
+    const dailyLimit = schoolSettings.dailyWalletLimits?.[student.id] ?? 5.00;
+
+    // 5. Fetch Active Payment Plan
+    const paymentPlan = await prisma.paymentPlan.findFirst({
+      where: {
+        studentId: student.id,
+        schoolId,
+        status: { in: ['APPROVED', 'PENDING', 'OVERDUE'] }
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+
+    // Compute Totals
+    const totalBilled = Math.round(fees.reduce((sum, f) => sum + f.amount, 0) * 100) / 100;
+    const totalPaid = Math.round(fees.reduce((sum, f) => sum + f.paid, 0) * 100) / 100;
+    const totalBalanceDue = Math.round(fees.reduce((sum, f) => sum + Math.max(0, f.amount - f.paid), 0) * 100) / 100;
+    const zigBalanceDue = Math.round(totalBalanceDue * exchangeRate * 100) / 100;
+
+    // Due Date Warning Threshold (green > 14 days, amber 7-14 days, red < 7 days / overdue)
+    const unpaidFees = fees.filter(f => f.amount - f.paid > 0);
+    const now = new Date();
+    let dueDateSeverity: 'green' | 'amber' | 'red' = 'green';
+    let dueDateWarningText = 'All fees settled';
+    let earliestDueDate: string | null = null;
+    let daysRemaining: number | null = null;
+
+    if (unpaidFees.length > 0) {
+      const earliest = unpaidFees[0];
+      if (earliest.dueDate) {
+        earliestDueDate = earliest.dueDate.toISOString();
+        const diffMs = earliest.dueDate.getTime() - now.getTime();
+        daysRemaining = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+
+        const formattedDate = new Date(earliest.dueDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+
+        if (daysRemaining < 0) {
+          dueDateSeverity = 'red';
+          dueDateWarningText = `${Math.abs(daysRemaining)} day${Math.abs(daysRemaining) === 1 ? '' : 's'} overdue (Due ${formattedDate})`;
+        } else if (daysRemaining < 7) {
+          dueDateSeverity = 'red';
+          dueDateWarningText = daysRemaining === 0 ? `Due today (${formattedDate})` : `Due in ${daysRemaining} day${daysRemaining === 1 ? '' : 's'} (${formattedDate})`;
+        } else if (daysRemaining <= 14) {
+          dueDateSeverity = 'amber';
+          dueDateWarningText = `Due in ${daysRemaining} days (${formattedDate})`;
+        } else {
+          dueDateSeverity = 'green';
+          dueDateWarningText = `Due in ${daysRemaining} days (${formattedDate})`;
+        }
+      }
+    }
+
+    // Category Breakdown (Tuition, Boarding, Exam, Library, General, Tuckshop Topup cross-ref)
+    const categoryMap: Record<string, { name: string; billed: number; paid: number; balance: number }> = {
+      Tuition: { name: 'Tuition Fees', billed: 0, paid: 0, balance: 0 },
+      Boarding: { name: 'Boarding & Hostel', billed: 0, paid: 0, balance: 0 },
+      Exam: { name: 'Examination & Assessment', billed: 0, paid: 0, balance: 0 },
+      Library: { name: 'Library & Learning Media', billed: 0, paid: 0, balance: 0 },
+      General: { name: 'General & Development Levies', billed: 0, paid: 0, balance: 0 }
+    };
+
+    for (const f of fees) {
+      const text = `${f.term} ${f.description || ''} ${f.feeGroup?.name || ''}`.toLowerCase();
+      let cat = 'General';
+      if (text.includes('board') || text.includes('hostel')) cat = 'Boarding';
+      else if (text.includes('exam') || text.includes('cambridge') || text.includes('zimsec')) cat = 'Exam';
+      else if (text.includes('librar') || text.includes('book')) cat = 'Library';
+      else if (text.includes('tuit') || text.includes('term') || text.includes('school fee')) cat = 'Tuition';
+
+      categoryMap[cat].billed = Math.round((categoryMap[cat].billed + f.amount) * 100) / 100;
+      categoryMap[cat].paid = Math.round((categoryMap[cat].paid + f.paid) * 100) / 100;
+      categoryMap[cat].balance = Math.round((categoryMap[cat].balance + Math.max(0, f.amount - f.paid)) * 100) / 100;
+    }
+
+    const categoriesList = Object.values(categoryMap).filter(c => c.billed > 0 || c.balance > 0);
+    if (categoriesList.length === 0) {
+      categoriesList.push({ name: 'Tuition Fees', billed: totalBilled, paid: totalPaid, balance: totalBalanceDue });
+    }
+
+    // Cross-reference Tuckshop topup
+    const tuckshopCrossReference = {
+      name: 'Tuckshop & Dining Pocket Money',
+      balance: walletBalance,
+      isLow: walletBalance < 5.00,
+      suggestedTopup: walletBalance < 5.00 ? Math.max(10, Math.round((10 - walletBalance) * 100) / 100) : 0,
+      note: walletBalance < 5.00 
+        ? `Low balance ($${walletBalance.toFixed(2)}). Top-up recommended.` 
+        : `Sufficient balance ($${walletBalance.toFixed(2)}).`
+    };
+
+    // Tab 2: Invoices (sorted newest first)
+    const formattedInvoices = fees.map(f => {
+      const bal = Math.max(0, Math.round((f.amount - f.paid) * 100) / 100);
+      let status = f.status;
+      if (bal <= 0) status = 'paid';
+      else if (f.paid > 0) status = 'partial';
+      else if (f.dueDate && new Date(f.dueDate) < now) status = 'overdue';
+      else status = 'unpaid';
+
+      return {
+        id: f.id,
+        invoiceNumber: `INV-${f.id.slice(-6).toUpperCase()}`,
+        description: f.description || `${f.term} School Fees`,
+        amount: f.amount,
+        paid: f.paid,
+        balance: bal,
+        dueDate: f.dueDate,
+        status,
+        term: f.term,
+        year: f.year,
+        createdAt: f.createdAt
+      };
+    }).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+    // Tab 2: Receipts (sorted newest first)
+    const formattedReceipts = payments.map(p => ({
+      id: p.id,
+      receiptNumber: p.reference || `RCP-${p.id.slice(-6).toUpperCase()}`,
+      date: p.date,
+      amount: p.amount,
+      paymentMode: p.paymentMode,
+      description: p.fee?.description || 'School Fee Payment',
+      status: p.status === 'Pending' ? 'Pending Verification' : 'Verified',
+      isPending: p.status === 'Pending',
+      createdAt: p.createdAt
+    })).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+    // Tab 3: Full Statement (Student Ledger - read-only, strict plain English)
+    const arAccount = await prisma.chartOfAccount.findFirst({
+      where: { schoolId, code: '1210', isActive: true }
+    });
+
+    let statementEntries: any[] = [];
+
+    if (arAccount) {
+      const arLines = await prisma.journalEntryLine.findMany({
+        where: {
+          accountId: arAccount.id,
+          studentId: student.id,
+          journalEntry: { status: 'POSTED' }
+        },
+        include: {
+          journalEntry: { select: { date: true, description: true, sourceType: true } }
+        },
+        orderBy: { journalEntry: { date: 'asc' } }
+      });
+
+      if (arLines.length > 0) {
+        let running = 0;
+        statementEntries = arLines.map((line, idx) => {
+          const debit = Math.round((line.debit || 0) * 100) / 100;
+          const credit = Math.round((line.credit || 0) * 100) / 100;
+          running = Math.round((running + debit - credit) * 100) / 100;
+
+          // Plain English translator for accounting descriptions
+          let desc = line.description || line.journalEntry.description || 'Account Transaction';
+          desc = desc
+            .replace(/^Custom Invoice:\s*/i, 'Invoice: ')
+            .replace(/^Student Ledger:\s*/i, 'School Statement: ')
+            .replace(/Student AR — bulk fee billed for \d+ students/i, 'Tuition & Term Levies')
+            .replace(/Student AR — custom fee billed/i, 'Fee Billing')
+            .replace(/Reduce AR/i, 'Payment Applied')
+            .replace(/Reduce student AR/i, 'Payment Settlement')
+            .replace(/\[1210\]|\bAR\b|\bDR\b|\bCR\b/g, '')
+            .trim();
+
+          return {
+            id: line.id || `stmt-${idx}`,
+            date: line.journalEntry.date,
+            description: desc || 'Fee Assessment / Settlement',
+            debit,
+            credit,
+            runningBalance: running
+          };
+        });
+      }
+    }
+
+    // Fallback: If no posted journal lines exist, synthesize statement chronologically from fees & payments
+    if (statementEntries.length === 0) {
+      const combined = [
+        ...fees.map(f => ({
+          date: f.createdAt,
+          description: f.description || `${f.term} Fee Invoiced`,
+          debit: f.amount,
+          credit: 0
+        })),
+        ...payments.map(p => ({
+          date: p.date,
+          description: `Payment Received - ${p.paymentMode} (${p.reference || 'Official Receipt'})`,
+          debit: 0,
+          credit: p.amount
+        }))
+      ].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+      let running = 0;
+      statementEntries = combined.map((entry, idx) => {
+        running = Math.round((running + entry.debit - entry.credit) * 100) / 100;
+        return {
+          id: `stmt-synth-${idx}`,
+          date: entry.date,
+          description: entry.description,
+          debit: entry.debit,
+          credit: entry.credit,
+          runningBalance: running
+        };
+      });
+    }
+
+    // Tab 4: Conditional Payment Plan
+    let activePaymentPlanData: any = null;
+
+    if (paymentPlan) {
+      const planAmount = paymentPlan.amount;
+      const planDueDate = paymentPlan.dueDate;
+      const halfAmount = Math.round((planAmount / 2) * 100) / 100;
+      const remainingHalf = Math.round((planAmount - halfAmount) * 100) / 100;
+
+      const firstDue = new Date(paymentPlan.createdAt);
+      firstDue.setDate(firstDue.getDate() + 14);
+
+      const isFirstPaid = totalPaid >= halfAmount;
+      const isSecondPaid = totalPaid >= planAmount;
+
+      const progressPct = Math.min(100, Math.round((totalPaid / planAmount) * 100));
+
+      activePaymentPlanData = {
+        id: paymentPlan.id,
+        status: paymentPlan.status,
+        amount: planAmount,
+        dueDate: planDueDate,
+        notes: paymentPlan.notes,
+        createdAt: paymentPlan.createdAt,
+        progressPct,
+        totalPaidOnPlan: Math.min(planAmount, totalPaid),
+        milestones: [
+          {
+            id: 'm1',
+            title: '1st Installment (50%)',
+            amount: halfAmount,
+            dueDate: firstDue.toISOString(),
+            status: isFirstPaid ? 'PAID' : (firstDue < now ? 'OVERDUE' : 'DUE'),
+            paidDate: isFirstPaid ? firstDue.toISOString() : null
+          },
+          {
+            id: 'm2',
+            title: '2nd Installment (Final Balance)',
+            amount: remainingHalf,
+            dueDate: new Date(planDueDate).toISOString(),
+            status: isSecondPaid ? 'PAID' : (new Date(planDueDate) < now ? 'OVERDUE' : 'DUE'),
+            paidDate: isSecondPaid ? new Date(planDueDate).toISOString() : null
+          }
+        ]
+      };
+    }
+
+    res.json({
+      student: {
+        id: student.id,
+        name: student.name,
+        studentId: student.studentId,
+        className: student.class?.name || 'Class Unassigned',
+        schoolName: student.school.name
+      },
+      currency,
+      currencySymbol,
+      altCurrency,
+      altCurrencySymbol,
+      exchangeRate,
+      bankingDetails,
+      totals: {
+        totalBilled,
+        totalPaid,
+        totalBalanceDue,
+        zigBalanceDue
+      },
+      dueDateWarning: {
+        severity: dueDateSeverity,
+        text: dueDateWarningText,
+        earliestDueDate,
+        daysRemaining
+      },
+      categories: categoriesList,
+      tuckshopCrossReference,
+      invoices: formattedInvoices,
+      receipts: formattedReceipts,
+      statement: statementEntries,
+      activePaymentPlan: activePaymentPlanData
+    });
+  } catch (error: any) {
+    console.error('Parent fee summary error:', error);
+    res.status(500).json({ error: 'Failed to retrieve fees and financial overview' });
+  }
+});
+
+/**
+ * @route   POST /api/fees/upload-proof
+ * @desc    [PARENT] Upload Proof of Payment for Bursar reconciliation
+ *          Creates pending payment record (does NOT mutate balance until approved)
+ */
+router.post('/upload-proof', requireAuth, upload.single('document'), async (req: AuthRequest, res: Response) => {
+  try {
+    const { studentId, amount, paymentMode, reference, notes } = req.body;
+
+    if (!studentId || !amount) {
+      return res.status(400).json({ error: 'Student ID and payment amount are required' });
+    }
+
+    const parsedAmount = Math.round(parseFloat(amount) * 100) / 100;
+    if (isNaN(parsedAmount) || parsedAmount <= 0) {
+      return res.status(400).json({ error: 'Please enter a valid positive payment amount' });
+    }
+
+    // Authorization guard
+    if (req.user?.role === 'PARENT') {
+      const parent = await prisma.parent.findUnique({ where: { userId: req.user.id } });
+      if (!parent) return res.status(403).json({ error: 'Parent record not found' });
+      const link = await prisma.parentStudent.findFirst({
+        where: { parentId: parent.id, studentId, status: 'APPROVED' }
+      });
+      if (!link) return res.status(403).json({ error: 'You are not authorized for this student' });
+    }
+
+    const student = await prisma.student.findUnique({
+      where: { id: studentId },
+      select: { schoolId: true, name: true }
+    });
+    if (!student?.schoolId) return res.status(404).json({ error: 'Student not found' });
+
+    // Create a pending StudentPayment record
+    // Non-negotiable: does NOT alter fee balance or post double-entry ledger entries!
+    const pendingPayment = await prisma.studentPayment.create({
+      data: {
+        studentId,
+        schoolId: student.schoolId,
+        amount: parsedAmount,
+        paymentMode: paymentMode || 'Bank Transfer Proof',
+        reference: reference || `POP-${Date.now().toString().slice(-6)}`,
+        status: 'Pending',
+        date: new Date()
+      }
+    });
+
+    await logAction(req, 'UPLOAD_PROOF_OF_PAYMENT', 'StudentPayment', pendingPayment.id, {
+      studentId,
+      amount: parsedAmount,
+      reference,
+      notes
+    });
+
+    res.json({
+      success: true,
+      message: 'Proof of payment submitted successfully! The Bursar will verify and reconcile your transaction.',
+      payment: pendingPayment
+    });
+  } catch (error: any) {
+    console.error('Proof upload error:', error);
+    res.status(500).json({ error: 'Failed to process proof of payment submission' });
+  }
+});
+
 export default router;
 

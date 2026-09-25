@@ -178,7 +178,7 @@ const PORTAL_ROUTE_REWRITES: Record<string, Record<string, string>> = {
   },
   parent: {
     '/admin/timetable': '/parent/timetable',
-    '/admin/payment-plans': '/parent/payment-plans',
+    '/admin/payment-plans': '/parent/fees?tab=payment-plan',
     '/admin/clinic/appointments': '/parent/clinic?tab=appointments',
     '/admin/clinic/emergencies': '/parent/clinic?tab=emergencies',
     '/admin/clinic/complaints': '/parent/clinic?tab=complaints',
@@ -226,8 +226,19 @@ function generateParentPortalNavigation(user: UserContext | null | undefined, cu
       order: 2,
       defaultExpanded: true,
       items: [
-        { id: 'parent-fees', label: 'Fees & Invoices', to: '/parent/fees', icon: 'fas fa-file-invoice-dollar', searchKeywords: ['billing', 'payments', 'statements', 'receipts'] },
-        { id: 'parent-payment-plans', label: 'Payment Plans', to: '/parent/payment-plans', icon: 'fas fa-hand-holding-usd', searchKeywords: ['installments', 'plans', 'agreements'] },
+        { 
+          id: 'parent-fees', 
+          label: 'Fees & Invoices', 
+          to: '/parent/fees', 
+          icon: 'fas fa-file-invoice-dollar', 
+          tabs: [
+            { id: 'overview', label: 'Overview' },
+            { id: 'invoices', label: 'Invoices & Receipts' },
+            { id: 'statement', label: 'Statement' },
+            { id: 'payment-plan', label: 'Payment Plan' }
+          ],
+          searchKeywords: ['billing', 'payments', 'statements', 'receipts', 'invoices', 'payment plans', 'installments', 'tuition', 'zig'] 
+        },
         { id: 'parent-wallet', label: 'Tuckshop & Dining', to: '/parent/wallet', icon: 'fas fa-utensils', searchKeywords: ['pocket money', 'canteen', 'topup', 'tuckshop', 'dining', 'food', 'meals'] },
         { id: 'parent-uniforms', label: 'Uniforms', to: '/parent/uniforms', icon: 'fas fa-tshirt', searchKeywords: ['clothing', 'shop', 'books', 'supplies'] },
         { id: 'parent-transport', label: 'Transport', to: '/parent/transport', icon: 'fas fa-bus', searchKeywords: ['bus', 'route', 'tracking', 'pickup'] }

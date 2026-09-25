@@ -35,13 +35,91 @@ router.get('/:studentId', async (req, res) => {
     // Compute balance from transaction history
     const balance = await LedgerService.getWalletBalance(studentId);
 
-    res.json({ ...wallet, balance });
+    // Compute this week's spend total (purchases since Monday)
+    const now = new Date();
+    const day = now.getDay();
+    const diffToMonday = now.getDate() - day + (day === 0 ? -6 : 1);
+    const monday = new Date(now.setDate(diffToMonday));
+    monday.setHours(0, 0, 0, 0);
+
+    const weekPurchases = wallet.transactions.filter(
+      t => t.type === 'PURCHASE' && new Date(t.createdAt) >= monday
+    );
+    const weekSpendTotal = Math.round(
+      weekPurchases.reduce((sum, t) => sum + Math.abs(t.amount), 0) * 100
+    ) / 100;
+
+    // Get daily limit from school settings
+    const student = await prisma.student.findUnique({
+      where: { id: studentId },
+      select: { school: { select: { settings: true } } }
+    });
+    const schoolSettings = (student?.school?.settings as any) || {};
+    const dailyLimit = schoolSettings.dailyWalletLimits?.[studentId] ?? 5.00;
+
+    res.json({
+      ...wallet,
+      balance,
+      dailyLimit,
+      weekSpendTotal,
+      isLowBalance: balance < 5.00
+    });
   } catch (error) {
     console.error('Fetch wallet error:', error);
     res.status(500).json({
       error:
         "We're having trouble securely loading your current fee balance right now. Please refresh the page, or contact the Bursar's office if this continues."
     });
+  }
+});
+
+/**
+ * @route   POST /api/wallets/daily-limit
+ * @desc    Set daily wallet spend limit (Parent Portal)
+ */
+router.post('/daily-limit', async (req: AuthRequest, res) => {
+  try {
+    const { studentId, dailyLimit } = req.body;
+    const limitNum = parseFloat(dailyLimit);
+    if (isNaN(limitNum) || limitNum < 0) {
+      return res.status(400).json({ error: 'Please enter a valid daily limit (0 or higher)' });
+    }
+
+    const student = await prisma.student.findUnique({
+      where: { id: studentId },
+      select: { schoolId: true }
+    });
+    if (!student?.schoolId) return res.status(404).json({ error: 'Student not found' });
+
+    // Authorization guard
+    if (req.user?.role === 'PARENT') {
+      const parent = await prisma.parent.findUnique({ where: { userId: req.user.id } });
+      if (!parent) return res.status(403).json({ error: 'Parent record not found' });
+      const link = await prisma.parentStudent.findFirst({
+        where: { parentId: parent.id, studentId, status: 'APPROVED' }
+      });
+      if (!link) return res.status(403).json({ error: 'Not authorized for this student' });
+    }
+
+    const school = await prisma.school.findUnique({
+      where: { id: student.schoolId },
+      select: { settings: true }
+    });
+    const settings = (school?.settings as any) || {};
+    if (!settings.dailyWalletLimits) {
+      settings.dailyWalletLimits = {};
+    }
+    settings.dailyWalletLimits[studentId] = limitNum;
+
+    await prisma.school.update({
+      where: { id: student.schoolId },
+      data: { settings }
+    });
+
+    res.json({ success: true, dailyLimit: limitNum });
+  } catch (error) {
+    console.error('Set daily limit error:', error);
+    res.status(500).json({ error: 'Failed to update daily limit' });
   }
 });
 
