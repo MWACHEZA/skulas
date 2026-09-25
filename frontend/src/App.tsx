@@ -226,7 +226,8 @@ import ComplaintsPage from './portals/ancillary/pages/office/ComplaintsPage';
 import ParentDashboard from './portals/parent/pages/Dashboard';
 import ParentPaymentPlans from './portals/parent/pages/PaymentPlans';
 import ParentFees from './portals/parent/pages/Fees';
-import ParentAcademics from './portals/parent/pages/AcademicsDetail';
+import ParentAcademics from './portals/parent/pages/Academics';
+import ParentAcademicsDetail from './portals/parent/pages/AcademicsDetail';
 import ParentTransport from './portals/parent/pages/Transport';
 import ParentNotices from './portals/parent/pages/Notices';
 import ParentHistory from './portals/parent/pages/History';
@@ -1002,7 +1003,7 @@ export default function App() {
               <Route path="dashboard" element={<ParentDashboard />} />
               <Route path="reports" element={<ProgressReports />} />
               <Route path="academics" element={<ParentAcademics />} />
-              <Route path="academic-details" element={<ParentAcademics />} />
+              <Route path="academic-details" element={<ParentAcademicsDetail />} />
               <Route path="portfolio" element={<AcademicPortfolio />} />
               <Route path="attendance" element={<AttendanceHistory />} />
               <Route path="timetable" element={<StudentTimetable />} />

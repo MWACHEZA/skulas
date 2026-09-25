@@ -19,7 +19,7 @@ export default function ParentManagement() {
   const [pendingParents, setPendingParents] = useState<any[]>([]);
   
   const { user: currentUser } = useAuth();
-  const { showToast } = useToast();
+  const { showToast, toastConfirm } = useToast();
 
   useEffect(() => {
     fetchParents();

@@ -189,6 +189,184 @@ const PORTAL_ROUTE_REWRITES: Record<string, Record<string, string>> = {
   }
 };
 
+function generateParentPortalNavigation(user: UserContext | null | undefined, currentPath: string = ''): NavGroup[] {
+  const groups: NavGroup[] = [
+    {
+      id: 'ACADEMICS',
+      label: 'Academics & Performance',
+      icon: 'fas fa-graduation-cap',
+      order: 1,
+      defaultExpanded: true,
+      items: [
+        { id: 'parent-dashboard', label: 'Dashboard', to: '/parent/dashboard', icon: 'fas fa-th-large', searchKeywords: ['home', 'overview'] },
+        { id: 'parent-profile', label: 'Student Profile', to: '/parent/profile', icon: 'fas fa-user-graduate', searchKeywords: ['child', 'student', 'details'] },
+        { id: 'parent-academics', label: 'Academic Performance', to: '/parent/academics', icon: 'fas fa-graduation-cap', searchKeywords: ['grades', 'marks', 'performance'] },
+        { id: 'parent-reports', label: 'Report Cards', to: '/parent/reports', icon: 'fas fa-chart-line', searchKeywords: ['reports', 'progress', 'term'] },
+        { id: 'parent-academic-details', label: 'Subject Breakdown', to: '/parent/academic-details', icon: 'fas fa-file-alt', searchKeywords: ['subjects', 'scores'] },
+        { id: 'parent-history', label: 'Academic History', to: '/parent/history', icon: 'fas fa-history', searchKeywords: ['transcripts', 'past terms'] },
+        { id: 'parent-attendance', label: 'Attendance Record', to: '/parent/attendance', icon: 'fas fa-calendar-check', searchKeywords: ['present', 'absent', 'punctuality'] },
+        { id: 'parent-timetable', label: 'Class Timetable', to: '/parent/timetable', icon: 'fas fa-clock', searchKeywords: ['schedule', 'periods', 'classes'] },
+        { id: 'parent-calendar', label: 'School Calendar', to: '/parent/calendar', icon: 'fas fa-calendar-alt', searchKeywords: ['events', 'terms', 'holidays'] }
+      ]
+    },
+    {
+      id: 'FINANCE_BILLING',
+      label: 'Finance & Logistics',
+      icon: 'fas fa-receipt',
+      order: 2,
+      defaultExpanded: true,
+      items: [
+        { id: 'parent-fees', label: 'Fees & Invoices', to: '/parent/fees', icon: 'fas fa-file-invoice-dollar', searchKeywords: ['billing', 'payments', 'statements', 'receipts'] },
+        { id: 'parent-payment-plans', label: 'Payment Plans', to: '/parent/payment-plans', icon: 'fas fa-hand-holding-usd', searchKeywords: ['installments', 'plans', 'agreements'] },
+        { id: 'parent-wallet', label: 'Tuckshop Wallet', to: '/parent/wallet', icon: 'fas fa-wallet', searchKeywords: ['pocket money', 'canteen', 'topup'] },
+        { id: 'parent-uniforms', label: 'Uniforms & Supplies', to: '/parent/uniforms', icon: 'fas fa-tshirt', searchKeywords: ['clothing', 'shop', 'books'] },
+        { id: 'parent-transport', label: 'Transport Tracker', to: '/parent/transport', icon: 'fas fa-bus', searchKeywords: ['bus', 'route', 'tracking', 'pickup'] }
+      ]
+    },
+    {
+      id: 'COMMUNICATION_PORTAL',
+      label: 'Communication & Pastoral',
+      icon: 'fas fa-bullhorn',
+      order: 3,
+      items: [
+        { id: 'parent-messages', label: 'Recent Messages', to: '/parent/messages', icon: 'fas fa-envelope', searchKeywords: ['chat', 'inbox', 'teachers'] },
+        { id: 'parent-notices', label: 'Noticeboard', to: '/parent/notices', icon: 'fas fa-bullhorn', searchKeywords: ['announcements', 'circulars', 'news'] },
+        { id: 'parent-approvals', label: 'Approvals & Consents', to: '/parent/approvals', icon: 'fas fa-file-signature', searchKeywords: ['permission', 'consent', 'excursions'] }
+      ]
+    },
+    {
+      id: 'CLINIC_HEALTH',
+      label: 'Health & Wellbeing',
+      icon: 'fas fa-notes-medical',
+      order: 4,
+      items: [
+        { id: 'parent-wellbeing', label: 'Health & Conduct', to: '/parent/wellbeing', icon: 'fas fa-heartbeat', searchKeywords: ['pastoral', 'behavior', 'wellbeing'] },
+        { id: 'parent-clinic-complaints', label: 'Health Complaints', to: '/parent/clinic/complaints', icon: 'fas fa-stethoscope', searchKeywords: ['illness', 'symptoms', 'nurse'] },
+        { id: 'parent-clinic-appointments', label: 'Clinic Appointments', to: '/parent/clinic/appointments', icon: 'fas fa-calendar-check', searchKeywords: ['doctor', 'consultation'] },
+        { id: 'parent-clinic-emergencies', label: 'Emergencies', to: '/parent/clinic/emergencies', icon: 'fas fa-ambulance', searchKeywords: ['urgent', 'emergency'] }
+      ]
+    },
+    {
+      id: 'SYSTEM',
+      label: 'Settings & Support',
+      icon: 'fas fa-cog',
+      order: 5,
+      items: [
+        { id: 'parent-settings', label: 'My Settings', to: '/parent/settings', icon: 'fas fa-cog', searchKeywords: ['password', 'notifications', 'preferences'] },
+        { id: 'parent-support', label: 'IT Support', to: '/parent/support', icon: 'fas fa-headset', searchKeywords: ['helpdesk', 'tickets', 'help'] }
+      ]
+    }
+  ];
+
+  return groups.map(group => ({
+    ...group,
+    defaultExpanded: group.defaultExpanded || group.items.some(item => currentPath.startsWith(item.to) || currentPath === item.to)
+  }));
+}
+
+function generateStudentPortalNavigation(user: UserContext | null | undefined, currentPath: string = ''): NavGroup[] {
+  const userSecRoles = user?.secondaryRoles || [];
+  const isStudentLibrarian = userSecRoles.includes('Student Librarian');
+  const isClassMonitor = userSecRoles.includes('Class Monitor');
+  const isSportsCaptain = userSecRoles.includes('Sports Captain');
+  const isHouseCaptain = userSecRoles.includes('House Captain');
+  const isChurchPrefect = userSecRoles.includes('Church Prefect');
+
+  const groups: NavGroup[] = [
+    {
+      id: 'ACADEMICS',
+      label: 'Academics',
+      icon: 'fas fa-graduation-cap',
+      order: 1,
+      defaultExpanded: true,
+      items: [
+        { id: 'student-dashboard', label: 'Dashboard', to: '/student/dashboard', icon: 'fas fa-tachometer-alt', searchKeywords: ['home'] },
+        { id: 'student-profile', label: 'My Profile', to: '/student/profile', icon: 'fas fa-user', searchKeywords: ['details', 'bio'] },
+        { id: 'student-grades', label: 'Grades & Reports', to: '/student/grades', icon: 'fas fa-chart-line', searchKeywords: ['scores', 'report cards', 'marks'] },
+        { id: 'student-timetable', label: 'Timetable', to: '/student/timetable', icon: 'fas fa-calendar-alt', searchKeywords: ['schedule', 'periods'] },
+        { id: 'student-assignments', label: 'Assignments', to: '/student/assignments', icon: 'fas fa-tasks', searchKeywords: ['homework', 'tasks', 'submissions'] },
+        { id: 'student-cbt', label: 'Online Exams (CBT)', to: '/student/cbt', icon: 'fas fa-laptop-code', searchKeywords: ['exams', 'tests', 'quizzes'] },
+        { id: 'student-attendance', label: 'Attendance', to: '/student/attendance', icon: 'fas fa-clipboard-check', searchKeywords: ['roll call', 'presence'] },
+        { id: 'student-materials', label: 'Study Materials', to: '/student/study-materials', icon: 'fas fa-book-reader', searchKeywords: ['notes', 'documents', 'slides'] },
+        { id: 'student-awards', label: 'Awards & Certificates', to: '/student/awards', icon: 'fas fa-award', searchKeywords: ['merits', 'certificates', 'honors'] }
+      ]
+    },
+    {
+      id: 'LIBRARY',
+      label: 'Library & Resources',
+      icon: 'fas fa-book',
+      order: 2,
+      items: [
+        { id: 'student-my-books', label: 'My Books & Loans', to: '/student/my-books', icon: 'fas fa-book-open', searchKeywords: ['borrowed', 'due', 'reading'] },
+        { id: 'student-library-catalog', label: 'Library Catalog', to: '/student/library', icon: 'fas fa-book', searchKeywords: ['search books', 'catalog', 'reservations'] },
+        ...(isStudentLibrarian ? [
+          { id: 'student-library-staff', label: 'Library Desk (Staff)', to: '/student/library-staff', icon: 'fas fa-book-reader', badge: 'Librarian', searchKeywords: ['checkout', 'circulation', 'barcode'] }
+        ] : [])
+      ]
+    },
+    {
+      id: 'STUDENT_LIFE',
+      label: 'Student Life & Leadership',
+      icon: 'fas fa-user-shield',
+      order: 3,
+      items: [
+        { id: 'student-events', label: 'Events & Calendar', to: '/student/events', icon: 'fas fa-calendar-day', searchKeywords: ['activities', 'calendar'] },
+        { id: 'student-prefects', label: 'Prefects Board / SRC', to: '/student/prefects', icon: 'fas fa-user-tie', searchKeywords: ['leadership', 'council'] },
+        ...(isClassMonitor ? [
+          { id: 'student-class-monitor', label: 'Class Monitor Tool', to: '/student/class-monitor', icon: 'fas fa-clipboard-check', badge: 'Monitor', searchKeywords: ['register', 'attendance'] }
+        ] : []),
+        ...(isSportsCaptain ? [
+          { id: 'student-sports', label: 'Sports & Fixtures', to: '/student/sports', icon: 'fas fa-trophy', badge: 'Captain', searchKeywords: ['athletics', 'matches', 'games'] }
+        ] : []),
+        ...(isHouseCaptain ? [
+          { id: 'student-house', label: 'My House', to: '/student/house', icon: 'fas fa-house-user', badge: 'House', searchKeywords: ['dorm', 'points', 'hostel'] }
+        ] : []),
+        { id: 'student-dining-hall', label: 'Dining Hall (DH)', to: '/student/dining-hall', icon: 'fas fa-utensils', searchKeywords: ['meals', 'menu', 'food'] },
+        ...(isChurchPrefect ? [
+          { id: 'student-chaplaincy', label: 'Church & Chaplaincy', to: '/student/chaplaincy', icon: 'fas fa-church', badge: 'Prefect', searchKeywords: ['service', 'spiritual'] }
+        ] : [])
+      ]
+    },
+    {
+      id: 'FINANCE_BILLING',
+      label: 'Fees & Uniforms',
+      icon: 'fas fa-receipt',
+      order: 4,
+      items: [
+        { id: 'student-fees', label: 'Fees & Payments', to: '/student/fees', icon: 'fas fa-money-bill-wave', searchKeywords: ['tuition', 'receipts', 'billing'] },
+        { id: 'student-uniforms', label: 'Uniforms', to: '/student/uniforms', icon: 'fas fa-tshirt', searchKeywords: ['attire', 'store'] }
+      ]
+    },
+    {
+      id: 'CLINIC_HEALTH',
+      label: 'Health & Clinic',
+      icon: 'fas fa-notes-medical',
+      order: 5,
+      items: [
+        { id: 'student-complaints', label: 'Health Complaints', to: '/student/clinic/complaints', icon: 'fas fa-stethoscope', searchKeywords: ['sick', 'nurse', 'symptoms'] },
+        { id: 'student-appointments', label: 'Clinic Appointments', to: '/student/clinic/appointments', icon: 'fas fa-calendar-check', searchKeywords: ['visit', 'doctor'] },
+        { id: 'student-emergencies', label: 'Emergencies', to: '/student/clinic/emergencies', icon: 'fas fa-ambulance', searchKeywords: ['urgent', 'ambulance'] }
+      ]
+    },
+    {
+      id: 'SYSTEM',
+      label: 'Messages & Support',
+      icon: 'fas fa-cog',
+      order: 6,
+      items: [
+        { id: 'student-messages', label: 'Messages', to: '/student/messages', icon: 'fas fa-envelope', searchKeywords: ['chat', 'inbox'] },
+        { id: 'student-settings', label: 'Settings', to: '/student/settings', icon: 'fas fa-cog', searchKeywords: ['password', 'profile'] },
+        { id: 'student-support', label: 'IT Support', to: '/student/support', icon: 'fas fa-headset', searchKeywords: ['help', 'technical'] }
+      ]
+    }
+  ];
+
+  return groups.map(group => ({
+    ...group,
+    defaultExpanded: group.defaultExpanded || group.items.some(item => currentPath.startsWith(item.to) || currentPath === item.to)
+  }));
+}
+
 /**
  * Generates the role-scoped, grouped navigation structure from the Master Page Registry.
  */
@@ -197,6 +375,13 @@ export function generatePortalNavigation(
   user: UserContext | null | undefined,
   currentPath: string = ''
 ): NavGroup[] {
+  if (portal === 'parent') {
+    return generateParentPortalNavigation(user, currentPath);
+  }
+  if (portal === 'student') {
+    return generateStudentPortalNavigation(user, currentPath);
+  }
+
   // 1. Filter raw registry pages
   const allowedPages = PAGE_REGISTRY.filter((page: PageDefinition) => {
     // Portal visibility check
