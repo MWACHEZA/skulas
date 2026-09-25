@@ -58,7 +58,8 @@ export default function StudentLibraryAssistantPage() {
         api.get('/api/dashboard/library').catch(() => ({ data: {} }))
       ]);
 
-      setCatalog(Array.isArray(booksRes.data) ? booksRes.data : []);
+      const booksList = Array.isArray(booksRes.data) ? booksRes.data : (Array.isArray(booksRes.data?.books) ? booksRes.data.books : []);
+      setCatalog(booksList);
 
       // Parse recent issues from live dashboard
       const dashData = dashRes.data || {};

@@ -112,7 +112,8 @@ export default function Library() {
     try {
       setLoadingCatalog(true);
       const res = await api.get('/api/library/books');
-      setBooks(Array.isArray(res.data) ? res.data : []);
+      const list = Array.isArray(res.data) ? res.data : (Array.isArray(res.data?.books) ? res.data.books : []);
+      setBooks(list);
     } catch (err) {
       console.error('Library catalog fetch error:', err);
     } finally {

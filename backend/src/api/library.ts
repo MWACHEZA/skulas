@@ -576,16 +576,167 @@ router.patch('/categories/:id', requireAuth, requireRole('SCHOOL_ADMIN', 'LIBRAR
 // 4. ACTIVE LOANS & ISSUING (Section 4 & 5)
 // ----------------------------------------------------
 /**
+ * @route   GET /api/library/borrowers/search
+ * @desc    Live search borrowers (students & staff) with quota and status info
+ */
+router.get('/borrowers/search', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    const schoolId = req.user!.schoolId!;
+    const rawQuery = ((req.query.query || req.query.search || req.query.identifier || '') as string).trim();
+    const type = ((req.query.type || '') as string).trim().toUpperCase();
+
+    if (!rawQuery || rawQuery.length < 1) {
+      return res.json({ borrowers: [] });
+    }
+
+    const setting = await getOrCreateLibrarySetting(schoolId);
+    const results: any[] = [];
+
+    // Search students
+    if (type !== 'STAFF') {
+      const students = await prisma.student.findMany({
+        where: {
+          schoolId,
+          OR: [
+            { studentId: { contains: rawQuery, mode: 'insensitive' } },
+            { name: { contains: rawQuery, mode: 'insensitive' } },
+            { email: { contains: rawQuery, mode: 'insensitive' } },
+            { phone: { contains: rawQuery, mode: 'insensitive' } },
+            { user: { email: { contains: rawQuery, mode: 'insensitive' } } },
+            { id: rawQuery }
+          ]
+        },
+        include: {
+          user: { select: { id: true, name: true, email: true, avatar: true, phone: true } },
+          class: { select: { name: true } },
+          bookLoans: {
+            where: { status: 'borrowed' },
+            select: { id: true, dueDate: true, finePaid: true, borrowedAt: true }
+          }
+        },
+        take: 12
+      });
+
+      for (const s of students) {
+        let fine = 0;
+        for (const l of s.bookLoans) {
+          const { fineAmount } = computeLoanFine(l as any, setting);
+          fine += fineAmount;
+        }
+        const activeCount = s.bookLoans.length;
+        const maxLoans = setting.studentMaxLoans;
+        const isFineBlocked = fine >= setting.blockThresholdFine;
+        const isCapacityReached = activeCount >= maxLoans;
+        const isBlocked = isFineBlocked || isCapacityReached;
+
+        results.push({
+          id: s.id,
+          studentId: s.id,
+          userId: s.userId,
+          name: s.name,
+          identifier: s.studentId || s.id,
+          type: 'Student',
+          email: s.email || s.user?.email || '',
+          phone: s.phone || s.user?.phone || '',
+          avatar: s.user?.avatar,
+          departmentOrClass: s.class?.name || 'Class Assigned',
+          activeLoansCount: activeCount,
+          maxLoans,
+          capacityDisplay: `${activeCount}/${maxLoans} max`,
+          outstandingFines: parseFloat(fine.toFixed(2)),
+          isBlocked,
+          blockReason: isFineBlocked
+            ? `Fines ($${fine.toFixed(2)}) exceed limit`
+            : isCapacityReached
+            ? `Limit reached (${activeCount}/${maxLoans})`
+            : null,
+          canIssue: !isBlocked
+        });
+      }
+    }
+
+    // Search staff
+    if (type !== 'STUDENT') {
+      const users = await prisma.user.findMany({
+        where: {
+          schoolId,
+          role: { not: 'STUDENT' },
+          OR: [
+            { staffId: { contains: rawQuery, mode: 'insensitive' } },
+            { email: { contains: rawQuery, mode: 'insensitive' } },
+            { name: { contains: rawQuery, mode: 'insensitive' } },
+            { phone: { contains: rawQuery, mode: 'insensitive' } },
+            { teacher: { staffId: { contains: rawQuery, mode: 'insensitive' } } },
+            { id: rawQuery }
+          ]
+        },
+        include: {
+          dept: true,
+          teacher: true,
+          bookLoans: {
+            where: { status: 'borrowed' },
+            select: { id: true, dueDate: true, finePaid: true, borrowedAt: true }
+          }
+        },
+        take: 12
+      });
+
+      for (const u of users) {
+        let fine = 0;
+        for (const l of u.bookLoans) {
+          const { fineAmount } = computeLoanFine(l as any, setting);
+          fine += fineAmount;
+        }
+        const activeCount = u.bookLoans.length;
+        const maxLoans = setting.staffMaxLoans;
+        const isFineBlocked = fine >= setting.blockThresholdFine;
+        const isCapacityReached = activeCount >= maxLoans;
+        const isBlocked = isFineBlocked || isCapacityReached;
+
+        results.push({
+          id: u.id,
+          userId: u.id,
+          studentId: null,
+          name: u.name,
+          identifier: u.staffId || u.teacher?.staffId || u.email,
+          type: 'Staff',
+          email: u.email,
+          phone: u.phone || '',
+          avatar: u.avatar,
+          departmentOrClass: u.dept?.name || u.role || 'Staff Member',
+          activeLoansCount: activeCount,
+          maxLoans,
+          capacityDisplay: `${activeCount}/${maxLoans} max`,
+          outstandingFines: parseFloat(fine.toFixed(2)),
+          isBlocked,
+          blockReason: isFineBlocked
+            ? `Fines ($${fine.toFixed(2)}) exceed limit`
+            : isCapacityReached
+            ? `Limit reached (${activeCount}/${maxLoans})`
+            : null,
+          canIssue: !isBlocked
+        });
+      }
+    }
+
+    res.json({ borrowers: results });
+  } catch (error) {
+    console.error('Borrowers search error:', error);
+    res.status(500).json({ error: 'Failed to search borrowers' });
+  }
+});
+
+/**
  * @route   GET /api/library/borrowers/validate
  * @desc    Validate borrower details, capacity, fines, and borrowing block status
  */
 router.get('/borrowers/validate', requireAuth, async (req: AuthRequest, res: Response) => {
   try {
     const schoolId = req.user!.schoolId!;
-    const query = (req.query.query as string || '').trim().toLowerCase();
-    const type = req.query.type as string; // 'STUDENT' or 'STAFF'
+    const rawQuery = ((req.query.query || req.query.identifier || req.query.search || '') as string).trim();
+    const typeUpper = ((req.query.type || '') as string).trim().toUpperCase();
 
-    if (!query) {
+    if (!rawQuery) {
       return res.status(400).json({ error: 'Borrower query required' });
     }
 
@@ -595,15 +746,19 @@ router.get('/borrowers/validate', requireAuth, async (req: AuthRequest, res: Res
     let isStudent = false;
 
     // 1. Try finding Student
-    if (type !== 'STAFF') {
+    if (typeUpper !== 'STAFF') {
       const student = await prisma.student.findFirst({
         where: {
           schoolId,
           OR: [
-            { studentId: { equals: query, mode: 'insensitive' } },
-            { name: { contains: query, mode: 'insensitive' } },
-            { user: { email: { equals: query, mode: 'insensitive' } } },
-            { id: query }
+            { studentId: { equals: rawQuery, mode: 'insensitive' } },
+            { studentId: { contains: rawQuery, mode: 'insensitive' } },
+            { name: { contains: rawQuery, mode: 'insensitive' } },
+            { email: { equals: rawQuery, mode: 'insensitive' } },
+            { phone: { equals: rawQuery, mode: 'insensitive' } },
+            { user: { email: { equals: rawQuery, mode: 'insensitive' } } },
+            { user: { name: { contains: rawQuery, mode: 'insensitive' } } },
+            { id: rawQuery }
           ]
         },
         include: {
@@ -618,19 +773,22 @@ router.get('/borrowers/validate', requireAuth, async (req: AuthRequest, res: Res
     }
 
     // 2. Try finding Staff User
-    if (!borrower && type !== 'STUDENT') {
+    if (!borrower && typeUpper !== 'STUDENT') {
       const user = await prisma.user.findFirst({
         where: {
           schoolId,
-          role: { in: ['TEACHER', 'SCHOOL_ADMIN', 'BURSAR', 'LIBRARIAN', 'ANCILLARY'] },
+          role: { not: 'STUDENT' },
           OR: [
-            { staffId: { equals: query, mode: 'insensitive' } },
-            { email: { equals: query, mode: 'insensitive' } },
-            { name: { contains: query, mode: 'insensitive' } },
-            { id: query }
+            { staffId: { equals: rawQuery, mode: 'insensitive' } },
+            { staffId: { contains: rawQuery, mode: 'insensitive' } },
+            { email: { equals: rawQuery, mode: 'insensitive' } },
+            { email: { contains: rawQuery, mode: 'insensitive' } },
+            { name: { contains: rawQuery, mode: 'insensitive' } },
+            { teacher: { staffId: { equals: rawQuery, mode: 'insensitive' } } },
+            { id: rawQuery }
           ]
         },
-        include: { dept: true }
+        include: { dept: true, teacher: true }
       });
       if (user) {
         borrower = user;
@@ -663,17 +821,17 @@ router.get('/borrowers/validate', requireAuth, async (req: AuthRequest, res: Res
     const isFineBlocked = totalOutstandingFines >= setting.blockThresholdFine;
     const isCapacityReached = activeLoans.length >= maxLoans;
 
-    res.json({
+    const borrowerPayload = {
       id: borrower.id,
       userId: isStudent ? borrower.userId : borrower.id,
       studentId: isStudent ? borrower.id : null,
-      identifier: isStudent ? borrower.studentId : (borrower.staffId || borrower.email),
+      identifier: isStudent ? (borrower.studentId || borrower.id) : (borrower.staffId || borrower.teacher?.staffId || borrower.email),
       name: isStudent ? borrower.name : borrower.name,
       type: isStudent ? 'Student' : 'Staff',
-      email: isStudent ? (borrower.user?.email || borrower.email) : borrower.email,
-      phone: isStudent ? (borrower.user?.phone || borrower.phone) : borrower.phone,
+      email: isStudent ? (borrower.email || borrower.user?.email || '') : (borrower.email || ''),
+      phone: isStudent ? (borrower.phone || borrower.user?.phone || '') : (borrower.phone || ''),
       avatar: isStudent ? borrower.user?.avatar : borrower.avatar,
-      departmentOrClass: isStudent ? (borrower.class?.name || 'Class Assigned') : (borrower.dept?.name || borrower.role),
+      departmentOrClass: isStudent ? (borrower.class?.name || 'Class Assigned') : (borrower.dept?.name || borrower.role || 'Staff'),
       activeLoansCount: activeLoans.length,
       maxLoans,
       capacityDisplay: `${activeLoans.length}/${maxLoans} max`,
@@ -692,6 +850,11 @@ router.get('/borrowers/validate', requireAuth, async (req: AuthRequest, res: Res
         ? `Borrowing capacity reached (${activeLoans.length}/${maxLoans} books out)`
         : null,
       canIssue: !isFineBlocked && !isCapacityReached
+    };
+
+    res.json({
+      ...borrowerPayload,
+      borrower: borrowerPayload
     });
   } catch (error) {
     console.error('Borrower validation error:', error);
@@ -701,32 +864,36 @@ router.get('/borrowers/validate', requireAuth, async (req: AuthRequest, res: Res
 
 /**
  * @route   GET /api/library/books/validate
- * @desc    Validate book barcode/accession number and get availability
+ * @desc    Validate book barcode/accession number/title and get availability
  */
 router.get('/books/validate', requireAuth, async (req: AuthRequest, res: Response) => {
   try {
     const schoolId = req.user!.schoolId!;
-    const query = (req.query.query as string || '').trim();
+    const rawQuery = ((req.query.query || req.query.search || req.query.identifier || '') as string).trim();
 
-    if (!query) {
+    if (!rawQuery) {
       return res.status(400).json({ error: 'Book barcode/accession/ISBN query required' });
     }
 
-    const cleanIsbnQuery = normalizeIsbn(query);
+    const cleanIsbnQuery = normalizeIsbn(rawQuery);
 
     const book = await prisma.book.findFirst({
       where: {
         schoolId,
         OR: [
-          { barcode: { equals: query, mode: 'insensitive' } },
-          { accessionNumber: { equals: query, mode: 'insensitive' } },
-          { id: query },
+          { barcode: { equals: rawQuery, mode: 'insensitive' } },
+          { barcode: { contains: rawQuery, mode: 'insensitive' } },
+          { accessionNumber: { equals: rawQuery, mode: 'insensitive' } },
+          { accessionNumber: { contains: rawQuery, mode: 'insensitive' } },
+          { id: rawQuery },
           ...(cleanIsbnQuery ? [
             { isbn: cleanIsbnQuery },
             { isbn10: cleanIsbnQuery },
             { isbn13: cleanIsbnQuery }
           ] : []),
-          { title: { equals: query, mode: 'insensitive' } }
+          { title: { equals: rawQuery, mode: 'insensitive' } },
+          { title: { contains: rawQuery, mode: 'insensitive' } },
+          { author: { contains: rawQuery, mode: 'insensitive' } }
         ]
       },
       include: { category: true }
@@ -736,7 +903,7 @@ router.get('/books/validate', requireAuth, async (req: AuthRequest, res: Respons
       return res.status(404).json({ error: 'Book not found in catalog' });
     }
 
-    res.json({
+    const bookPayload = {
       id: book.id,
       title: book.title,
       author: book.author,
@@ -748,6 +915,11 @@ router.get('/books/validate', requireAuth, async (req: AuthRequest, res: Respons
       available: book.available,
       condition: book.condition || 'Good',
       isAvailable: book.available > 0
+    };
+
+    res.json({
+      ...bookPayload,
+      book: bookPayload
     });
   } catch (error) {
     res.status(500).json({ error: 'Failed to validate book' });
@@ -759,11 +931,59 @@ router.get('/books/validate', requireAuth, async (req: AuthRequest, res: Respons
  * @desc    Issue a book with validation (Section 4 & 5)
  */
 router.post('/loans/issue', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCILLARY', 'TEACHER', 'LIBRARIAN'), async (req: AuthRequest, res: Response) => {
-  const { studentId, userId, bookId, accessionNumber, dueDate } = req.body;
+  let { studentId, userId, bookId, accessionNumber, dueDate, borrowerType, identifier, studentIdentifier, staffIdentifier } = req.body;
   const schoolId = req.user!.schoolId!;
 
   try {
     const setting = await getOrCreateLibrarySetting(schoolId);
+
+    // Auto-resolve borrower from identifier if studentId / userId not explicitly supplied
+    const rawId = (identifier || studentIdentifier || staffIdentifier || '').toString().trim();
+    if (!studentId && !userId && rawId) {
+      const typeUpper = (borrowerType || '').toString().toUpperCase();
+      if (typeUpper !== 'STAFF') {
+        const student = await prisma.student.findFirst({
+          where: {
+            schoolId,
+            OR: [
+              { id: rawId },
+              { studentId: { equals: rawId, mode: 'insensitive' } },
+              { studentId: { contains: rawId, mode: 'insensitive' } },
+              { name: { contains: rawId, mode: 'insensitive' } },
+              { email: { equals: rawId, mode: 'insensitive' } },
+              { user: { email: { equals: rawId, mode: 'insensitive' } } }
+            ]
+          }
+        });
+        if (student) {
+          studentId = student.id;
+        }
+      }
+
+      if (!studentId && typeUpper !== 'STUDENT') {
+        const user = await prisma.user.findFirst({
+          where: {
+            schoolId,
+            role: { not: 'STUDENT' },
+            OR: [
+              { id: rawId },
+              { staffId: { equals: rawId, mode: 'insensitive' } },
+              { staffId: { contains: rawId, mode: 'insensitive' } },
+              { email: { equals: rawId, mode: 'insensitive' } },
+              { name: { contains: rawId, mode: 'insensitive' } },
+              { teacher: { staffId: { equals: rawId, mode: 'insensitive' } } }
+            ]
+          }
+        });
+        if (user) {
+          userId = user.id;
+        }
+      }
+    }
+
+    if (!studentId && !userId) {
+      return res.status(400).json({ error: 'Valid student or staff borrower is required to issue a book' });
+    }
 
     // 1. Verify book availability
     const book = await prisma.book.findFirst({ where: { id: bookId, schoolId } });

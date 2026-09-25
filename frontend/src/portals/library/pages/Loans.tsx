@@ -75,10 +75,12 @@ export default function LibraryLoans() {
   const [borrowerType, setBorrowerType] = useState<'ALL' | 'STUDENT' | 'STAFF'>('ALL');
   const [validatedBorrower, setValidatedBorrower] = useState<any>(null);
   const [borrowerSearching, setBorrowerSearching] = useState(false);
+  const [borrowerSuggestions, setBorrowerSuggestions] = useState<any[]>([]);
 
   const [bookQuery, setBookQuery] = useState('');
   const [validatedBook, setValidatedBook] = useState<any>(null);
   const [bookSearching, setBookSearching] = useState(false);
+  const [bookSuggestions, setBookSuggestions] = useState<any[]>([]);
 
   const [customDueDate, setCustomDueDate] = useState('');
   const [issuing, setIssuing] = useState(false);
@@ -86,6 +88,42 @@ export default function LibraryLoans() {
   useEffect(() => {
     fetchLoans();
   }, [statusFilter]);
+
+  // Live Borrower search suggestions for Loans Modal
+  useEffect(() => {
+    if (!showIssueModal || borrowerQuery.trim().length < 2 || validatedBorrower) {
+      setBorrowerSuggestions([]);
+      return;
+    }
+    const timer = setTimeout(async () => {
+      try {
+        const typeParam = borrowerType === 'ALL' ? '' : `&type=${borrowerType}`;
+        const res = await api.get(`/api/library/borrowers/search?query=${encodeURIComponent(borrowerQuery.trim())}${typeParam}`);
+        setBorrowerSuggestions(Array.isArray(res.data?.borrowers) ? res.data.borrowers : []);
+      } catch {
+        setBorrowerSuggestions([]);
+      }
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [borrowerQuery, borrowerType, showIssueModal, validatedBorrower]);
+
+  // Live Book search suggestions for Loans Modal
+  useEffect(() => {
+    if (!showIssueModal || bookQuery.trim().length < 2 || validatedBook) {
+      setBookSuggestions([]);
+      return;
+    }
+    const timer = setTimeout(async () => {
+      try {
+        const res = await api.get(`/api/library/books?search=${encodeURIComponent(bookQuery.trim())}`);
+        const list = Array.isArray(res.data) ? res.data : (Array.isArray(res.data?.books) ? res.data.books : []);
+        setBookSuggestions(list.slice(0, 8));
+      } catch {
+        setBookSuggestions([]);
+      }
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [bookQuery, showIssueModal, validatedBook]);
 
   const fetchLoans = async () => {
     setLoading(true);
@@ -146,7 +184,14 @@ export default function LibraryLoans() {
     try {
       const typeParam = borrowerType === 'ALL' ? '' : `&type=${borrowerType}`;
       const res = await api.get(`/api/library/borrowers/validate?query=${encodeURIComponent(borrowerQuery.trim())}${typeParam}`);
-      setValidatedBorrower(res.data);
+      const b = res.data?.borrower || (res.data?.id ? res.data : null);
+      if (b) {
+        setValidatedBorrower(b);
+        setBorrowerSuggestions([]);
+      } else {
+        setValidatedBorrower(null);
+        showToast('Borrower not found or invalid', 'error');
+      }
     } catch (err: any) {
       setValidatedBorrower(null);
       showToast(err.response?.data?.error || 'Borrower not found or invalid', 'error');
@@ -161,7 +206,14 @@ export default function LibraryLoans() {
     setBookSearching(true);
     try {
       const res = await api.get(`/api/library/books/validate?query=${encodeURIComponent(bookQuery.trim())}`);
-      setValidatedBook(res.data);
+      const b = res.data?.book || (res.data?.id ? res.data : null);
+      if (b) {
+        setValidatedBook(b);
+        setBookSuggestions([]);
+      } else {
+        setValidatedBook(null);
+        showToast('Book not found in catalog', 'error');
+      }
     } catch (err: any) {
       setValidatedBook(null);
       showToast(err.response?.data?.error || 'Book not found in catalog', 'error');
@@ -214,8 +266,10 @@ export default function LibraryLoans() {
   const resetIssueModal = () => {
     setBorrowerQuery('');
     setValidatedBorrower(null);
+    setBorrowerSuggestions([]);
     setBookQuery('');
     setValidatedBook(null);
+    setBookSuggestions([]);
     setCustomDueDate('');
   };
 
@@ -526,10 +580,13 @@ export default function LibraryLoans() {
                   <input 
                     type="text" 
                     placeholder="Enter Student ID, Staff ID, or full name..."
-                    className="portal-input"
+                    className="portal-input" 
                     style={{ flex: 1 }}
                     value={borrowerQuery}
-                    onChange={e => setBorrowerQuery(e.target.value)}
+                    onChange={e => {
+                      setBorrowerQuery(e.target.value);
+                      if (validatedBorrower) setValidatedBorrower(null);
+                    }}
                     onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); handleValidateBorrower(); } }}
                   />
                   <button 
@@ -543,6 +600,60 @@ export default function LibraryLoans() {
                   </button>
                 </div>
 
+                {/* Borrower Suggestions Dropdown */}
+                {borrowerSuggestions.length > 0 && !validatedBorrower && (
+                  <div style={{
+                    marginTop: -4,
+                    marginBottom: 10,
+                    maxHeight: 180,
+                    overflowY: 'auto',
+                    border: '1px solid #cbd5e1',
+                    borderRadius: 8,
+                    background: '#ffffff',
+                    boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)'
+                  }}>
+                    {borrowerSuggestions.map((b) => (
+                      <div
+                        key={b.id}
+                        onClick={() => {
+                          setValidatedBorrower(b);
+                          setBorrowerQuery(b.name);
+                          setBorrowerSuggestions([]);
+                        }}
+                        style={{
+                          padding: '10px 14px',
+                          borderBottom: '1px solid #f1f5f9',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center'
+                        }}
+                        onMouseEnter={(e) => (e.currentTarget.style.background = '#f8fafc')}
+                        onMouseLeave={(e) => (e.currentTarget.style.background = '#ffffff')}
+                      >
+                        <div>
+                          <div style={{ fontWeight: 800, fontSize: '0.85rem', color: '#1e293b' }}>
+                            {b.name} <span style={{ fontSize: '0.75rem', color: '#64748b' }}>({b.identifier})</span>
+                          </div>
+                          <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
+                            {b.type} • {b.departmentOrClass}
+                          </div>
+                        </div>
+                        <span style={{
+                          fontSize: '0.75rem',
+                          fontWeight: 800,
+                          color: b.isBlocked ? '#dc2626' : '#059669',
+                          background: b.isBlocked ? '#fee2e2' : '#ecfdf5',
+                          padding: '2px 8px',
+                          borderRadius: 6
+                        }}>
+                          {b.isBlocked ? 'Blocked' : b.capacityDisplay || 'Eligible'}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
                 {/* Validated Borrower Feedback Box */}
                 {validatedBorrower && (
                   <div style={{ background: validatedBorrower.isBlocked ? '#fee2e2' : '#f0fdf4', border: `1px solid ${validatedBorrower.isBlocked ? '#fca5a5' : '#86efac'}`, padding: 12, borderRadius: 8, marginTop: 8 }}>
@@ -550,9 +661,18 @@ export default function LibraryLoans() {
                       <div style={{ fontWeight: 700, color: validatedBorrower.isBlocked ? '#b91c1c' : '#15803d' }}>
                         {validatedBorrower.name} ({validatedBorrower.type}) — {validatedBorrower.departmentOrClass}
                       </div>
-                      <span className={`portal-badge ${validatedBorrower.isBlocked ? 'danger' : 'success'}`} style={{ fontSize: '0.75rem' }}>
-                        {validatedBorrower.capacityDisplay}
-                      </span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <span className={`portal-badge ${validatedBorrower.isBlocked ? 'danger' : 'success'}`} style={{ fontSize: '0.75rem' }}>
+                          {validatedBorrower.capacityDisplay}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => { setValidatedBorrower(null); setBorrowerQuery(''); setBorrowerSuggestions([]); }}
+                          style={{ background: 'none', border: 'none', color: '#dc2626', fontSize: '0.75rem', fontWeight: 800, cursor: 'pointer' }}
+                        >
+                          Change
+                        </button>
+                      </div>
                     </div>
 
                     {validatedBorrower.isBlocked ? (
@@ -561,7 +681,7 @@ export default function LibraryLoans() {
                       </div>
                     ) : (
                       <div style={{ fontSize: '0.8rem', color: '#15803d', marginTop: 4 }}>
-                        <i className="fas fa-check-circle mr-1"></i> Eligible to borrow. Outstanding fines: ${validatedBorrower.outstandingFines.toFixed(2)}
+                        <i className="fas fa-check-circle mr-1"></i> Eligible to borrow. Outstanding fines: ${Number(validatedBorrower.outstandingFines || 0).toFixed(2)}
                       </div>
                     )}
                   </div>
@@ -576,11 +696,14 @@ export default function LibraryLoans() {
                 <div style={{ display: 'flex', gap: 8, marginBottom: 10 }}>
                   <input 
                     type="text" 
-                    placeholder="Scan barcode or enter accession / ISBN..."
-                    className="portal-input"
+                    placeholder="Scan barcode or enter accession / ISBN / title..."
+                    className="portal-input" 
                     style={{ flex: 1 }}
                     value={bookQuery}
-                    onChange={e => setBookQuery(e.target.value)}
+                    onChange={e => {
+                      setBookQuery(e.target.value);
+                      if (validatedBook) setValidatedBook(null);
+                    }}
                     onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); handleValidateBook(); } }}
                   />
                   <button 
@@ -594,6 +717,66 @@ export default function LibraryLoans() {
                   </button>
                 </div>
 
+                {/* Book Suggestions Dropdown */}
+                {bookSuggestions.length > 0 && !validatedBook && (
+                  <div style={{
+                    marginTop: -4,
+                    marginBottom: 10,
+                    maxHeight: 180,
+                    overflowY: 'auto',
+                    border: '1px solid #cbd5e1',
+                    borderRadius: 8,
+                    background: '#ffffff',
+                    boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)'
+                  }}>
+                    {bookSuggestions.map((b) => (
+                      <div
+                        key={b.id}
+                        onClick={() => {
+                          setValidatedBook({
+                            id: b.id,
+                            title: b.title,
+                            author: b.author,
+                            accessionNumber: b.accessionNumber || 'N/A',
+                            shelfLocation: b.shelfLocation || 'Main Stack',
+                            condition: b.condition || 'Good',
+                            available: b.available,
+                            copies: b.copies || b.totalCopies,
+                            isAvailable: b.available > 0
+                          });
+                          setBookQuery(b.title);
+                          setBookSuggestions([]);
+                        }}
+                        style={{
+                          padding: '10px 14px',
+                          borderBottom: '1px solid #f1f5f9',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center'
+                        }}
+                        onMouseEnter={(e) => (e.currentTarget.style.background = '#f8fafc')}
+                        onMouseLeave={(e) => (e.currentTarget.style.background = '#ffffff')}
+                      >
+                        <div>
+                          <div style={{ fontWeight: 800, fontSize: '0.85rem', color: '#1e293b' }}>{b.title}</div>
+                          <div style={{ fontSize: '0.75rem', color: '#64748b' }}>By {b.author}</div>
+                        </div>
+                        <span style={{
+                          fontSize: '0.75rem',
+                          fontWeight: 800,
+                          color: b.available > 0 ? '#059669' : '#dc2626',
+                          background: b.available > 0 ? '#ecfdf5' : '#fee2e2',
+                          padding: '2px 8px',
+                          borderRadius: 6
+                        }}>
+                          {b.available > 0 ? `${b.available} Avail` : 'No Copies'}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
                 {/* Validated Book Feedback Box */}
                 {validatedBook && (
                   <div style={{ background: validatedBook.isAvailable ? '#f0fdf4' : '#fee2e2', border: `1px solid ${validatedBook.isAvailable ? '#86efac' : '#fca5a5'}`, padding: 12, borderRadius: 8, marginTop: 8 }}>
@@ -601,9 +784,18 @@ export default function LibraryLoans() {
                       <div style={{ fontWeight: 700, color: validatedBook.isAvailable ? '#15803d' : '#b91c1c' }}>
                         {validatedBook.title}
                       </div>
-                      <span className={`portal-badge ${validatedBook.isAvailable ? 'success' : 'danger'}`} style={{ fontSize: '0.75rem' }}>
-                        {validatedBook.available} / {validatedBook.copies} Available
-                      </span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <span className={`portal-badge ${validatedBook.isAvailable ? 'success' : 'danger'}`} style={{ fontSize: '0.75rem' }}>
+                          {validatedBook.available} / {validatedBook.copies} Available
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => { setValidatedBook(null); setBookQuery(''); setBookSuggestions([]); }}
+                          style={{ background: 'none', border: 'none', color: '#dc2626', fontSize: '0.75rem', fontWeight: 800, cursor: 'pointer' }}
+                        >
+                          Change
+                        </button>
+                      </div>
                     </div>
                     <div style={{ fontSize: '0.8rem', color: '#475569', marginTop: 4, display: 'flex', gap: 16 }}>
                       <span>Location: <strong>{validatedBook.shelfLocation}</strong></span>

@@ -62,6 +62,7 @@ export default function LibraryDashboard() {
   const [selectedBook, setSelectedBook] = useState<any>(null);
   const [selectedBorrower, setSelectedBorrower] = useState<any>(null);
   const [booksList, setBooksList] = useState<any[]>([]);
+  const [borrowersList, setBorrowersList] = useState<any[]>([]);
   const [isSearchingBooks, setIsSearchingBooks] = useState(false);
   const [isSearchingBorrower, setIsSearchingBorrower] = useState(false);
   const [issueSubmitting, setIssueSubmitting] = useState(false);
@@ -128,9 +129,11 @@ export default function LibraryDashboard() {
       setIsSearchingBooks(true);
       try {
         const res = await api.get(`/api/library/books?search=${encodeURIComponent(issueBookSearch)}`);
-        setBooksList(Array.isArray(res.data) ? res.data.slice(0, 8) : []);
+        const list = Array.isArray(res.data) ? res.data : (Array.isArray(res.data?.books) ? res.data.books : []);
+        setBooksList(list.slice(0, 8));
       } catch (e) {
         console.error('Failed to search books', e);
+        setBooksList([]);
       } finally {
         setIsSearchingBooks(false);
       }
@@ -141,24 +144,41 @@ export default function LibraryDashboard() {
   // Live Borrower Search for Quick Issue Modal
   useEffect(() => {
     if (!showIssueModal || issueBorrowerQuery.trim().length < 2) {
-      setSelectedBorrower(null);
+      setBorrowersList([]);
       return;
     }
     const timer = setTimeout(async () => {
       setIsSearchingBorrower(true);
       try {
-        const res = await api.get(`/api/library/borrowers/validate?type=${issueBorrowerType}&identifier=${encodeURIComponent(issueBorrowerQuery)}`);
-        if (res.data && res.data.borrower) {
-          setSelectedBorrower(res.data.borrower);
-        } else {
-          setSelectedBorrower(null);
+        const res = await api.get(`/api/library/borrowers/search?type=${issueBorrowerType}&query=${encodeURIComponent(issueBorrowerQuery)}`);
+        const list = Array.isArray(res.data?.borrowers) ? res.data.borrowers : [];
+        setBorrowersList(list);
+
+        // If there's an exact single match and no borrower selected yet, auto-select
+        if (list.length === 1 && !selectedBorrower) {
+          const b = list[0];
+          if (b.identifier.toLowerCase() === issueBorrowerQuery.trim().toLowerCase() || b.name.toLowerCase() === issueBorrowerQuery.trim().toLowerCase()) {
+            setSelectedBorrower(b);
+          }
         }
       } catch (e) {
-        setSelectedBorrower(null);
+        // Fallback to validate endpoint
+        try {
+          const valRes = await api.get(`/api/library/borrowers/validate?type=${issueBorrowerType}&query=${encodeURIComponent(issueBorrowerQuery)}`);
+          const b = valRes.data?.borrower || (valRes.data?.id ? valRes.data : null);
+          if (b) {
+            setSelectedBorrower(b);
+            setBorrowersList([]);
+          } else {
+            setBorrowersList([]);
+          }
+        } catch {
+          setBorrowersList([]);
+        }
       } finally {
         setIsSearchingBorrower(false);
       }
-    }, 400);
+    }, 300);
     return () => clearTimeout(timer);
   }, [issueBorrowerQuery, issueBorrowerType, showIssueModal]);
 
@@ -186,24 +206,45 @@ export default function LibraryDashboard() {
       showToast('Please select a book to issue', 'error');
       return;
     }
-    if (!issueBorrowerQuery) {
+    if (!selectedBook.available || selectedBook.available <= 0) {
+      showToast(`"${selectedBook.title}" has 0 copies available for issue`, 'error');
+      return;
+    }
+    if (!selectedBorrower && !issueBorrowerQuery.trim()) {
       showToast('Please specify a borrower student ID or staff email', 'error');
+      return;
+    }
+    if (selectedBorrower?.isBlocked) {
+      showToast(selectedBorrower.blockReason || 'Borrower is blocked from borrowing', 'error');
       return;
     }
 
     setIssueSubmitting(true);
     try {
-      await api.post('/api/library/loans/issue', {
+      const payload: any = {
         bookId: selectedBook.id,
+        accessionNumber: selectedBook.accessionNumber,
         borrowerType: issueBorrowerType,
-        identifier: issueBorrowerQuery
-      });
-      showToast(`Book "${selectedBook.title}" successfully issued!`, 'success');
+        identifier: issueBorrowerQuery.trim()
+      };
+
+      if (selectedBorrower) {
+        if (selectedBorrower.type === 'Student' || selectedBorrower.studentId) {
+          payload.studentId = selectedBorrower.studentId || selectedBorrower.id;
+        } else {
+          payload.userId = selectedBorrower.userId || selectedBorrower.id;
+        }
+      }
+
+      const res = await api.post('/api/library/loans/issue', payload);
+      showToast(`Book "${selectedBook.title}" successfully issued to ${res.data?.borrowerName || selectedBorrower?.name || 'borrower'}!`, 'success');
       setShowIssueModal(false);
       setSelectedBook(null);
       setSelectedBorrower(null);
       setIssueBookSearch('');
       setIssueBorrowerQuery('');
+      setBooksList([]);
+      setBorrowersList([]);
       fetchDashboardData();
     } catch (err: any) {
       const msg = err.response?.data?.error || 'Failed to issue book';
@@ -980,9 +1021,12 @@ export default function LibraryDashboard() {
                 <div style={{ position: 'relative' }}>
                   <input
                     type="text"
-                    placeholder={issueBorrowerType === 'student' ? 'Enter Student ID (e.g. STU-001) or Name' : 'Enter Staff Email or Name'}
+                    placeholder={issueBorrowerType === 'student' ? 'Type Student ID (e.g. STU-001) or Name...' : 'Type Staff Name or Email...'}
                     value={issueBorrowerQuery}
-                    onChange={(e) => setIssueBorrowerQuery(e.target.value)}
+                    onChange={(e) => {
+                      setIssueBorrowerQuery(e.target.value);
+                      if (selectedBorrower) setSelectedBorrower(null);
+                    }}
                     style={{
                       width: '100%',
                       padding: '10px 14px',
@@ -998,18 +1042,90 @@ export default function LibraryDashboard() {
                   )}
                 </div>
 
+                {/* Dropdown suggestions for Borrower */}
+                {borrowersList.length > 0 && !selectedBorrower && (
+                  <div style={{
+                    marginTop: 6,
+                    maxHeight: 180,
+                    overflowY: 'auto',
+                    border: '1px solid #cbd5e1',
+                    borderRadius: 8,
+                    background: '#ffffff',
+                    boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)'
+                  }}>
+                    {borrowersList.map((b) => (
+                      <div
+                        key={b.id}
+                        onClick={() => {
+                          setSelectedBorrower(b);
+                          setIssueBorrowerQuery(b.name);
+                          setBorrowersList([]);
+                        }}
+                        style={{
+                          padding: '10px 14px',
+                          borderBottom: '1px solid #f1f5f9',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center'
+                        }}
+                        onMouseEnter={(e) => (e.currentTarget.style.background = '#f8fafc')}
+                        onMouseLeave={(e) => (e.currentTarget.style.background = '#ffffff')}
+                      >
+                        <div>
+                          <div style={{ fontWeight: 800, fontSize: '0.85rem', color: '#1e293b' }}>
+                            {b.name} <span style={{ fontSize: '0.75rem', color: '#64748b' }}>({b.identifier})</span>
+                          </div>
+                          <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
+                            {b.type} • {b.departmentOrClass}
+                          </div>
+                        </div>
+                        <span style={{
+                          fontSize: '0.75rem',
+                          fontWeight: 800,
+                          color: b.isBlocked ? '#dc2626' : '#059669',
+                          background: b.isBlocked ? '#fee2e2' : '#ecfdf5',
+                          padding: '2px 8px',
+                          borderRadius: 6
+                        }}>
+                          {b.isBlocked ? 'Blocked' : b.capacityDisplay || 'Eligible'}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
                 {selectedBorrower && (
                   <div style={{
                     marginTop: 8,
-                    padding: '8px 12px',
-                    background: '#f0fdf4',
-                    border: '1px solid #bbf7d0',
-                    borderRadius: 6,
-                    fontSize: '0.85rem',
-                    color: '#166534',
-                    fontWeight: 700
+                    padding: '10px 14px',
+                    background: selectedBorrower.isBlocked ? '#fff1f2' : '#f0fdf4',
+                    border: `1px solid ${selectedBorrower.isBlocked ? '#fecdd3' : '#bbf7d0'}`,
+                    borderRadius: 8,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between'
                   }}>
-                    <i className="fas fa-user-check mr-1"></i> Borrower: {selectedBorrower.name} ({selectedBorrower.studentId || selectedBorrower.email || 'Verified'})
+                    <div>
+                      <div style={{ fontSize: '0.85rem', color: selectedBorrower.isBlocked ? '#991b1b' : '#166534', fontWeight: 800 }}>
+                        <i className={`fas fa-${selectedBorrower.isBlocked ? 'exclamation-circle' : 'user-check'} mr-1`}></i>
+                        {selectedBorrower.name} ({selectedBorrower.identifier}) — {selectedBorrower.departmentOrClass}
+                      </div>
+                      <div style={{ fontSize: '0.75rem', color: selectedBorrower.isBlocked ? '#b91c1c' : '#15803d', marginTop: 2 }}>
+                        {selectedBorrower.isBlocked ? (
+                          <span><strong>BLOCKED:</strong> {selectedBorrower.blockReason || 'Borrowing limit or fine reached'}</span>
+                        ) : (
+                          <span>Active loans: <strong>{selectedBorrower.capacityDisplay || 'Active'}</strong> • Fines: ${Number(selectedBorrower.outstandingFines || 0).toFixed(2)}</span>
+                        )}
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => { setSelectedBorrower(null); setIssueBorrowerQuery(''); setBorrowersList([]); }}
+                      style={{ background: 'none', border: 'none', color: '#dc2626', fontSize: '0.75rem', fontWeight: 800, cursor: 'pointer' }}
+                    >
+                      Change
+                    </button>
                   </div>
                 )}
               </div>
@@ -1026,7 +1142,7 @@ export default function LibraryDashboard() {
                 </button>
                 <button
                   type="submit"
-                  disabled={issueSubmitting || !selectedBook}
+                  disabled={issueSubmitting || !selectedBook || (selectedBook && selectedBook.available <= 0) || (!selectedBorrower && !issueBorrowerQuery.trim()) || selectedBorrower?.isBlocked}
                   className="portal-btn-primary"
                   style={{ padding: '10px 22px', fontSize: '0.85rem', fontWeight: 800 }}
                 >
