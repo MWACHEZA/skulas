@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import api, { BASE_URL } from '../../../lib/api';
 import ManagementDetailPanel from '../../../components/shared/ManagementDetailPanel';
 import UserEditModal from '../../../components/shared/UserEditModal';
@@ -11,6 +11,10 @@ import '../../../styles/portal.css';
 
 export default function AdminStudents() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const isBursar = location.pathname.startsWith('/bursar');
+  const baseStudentsUrl = isBursar ? '/bursar/students' : '/admin/students';
+
   const [students, setStudents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -85,7 +89,7 @@ export default function AdminStudents() {
   };
 
   const openDetail = (student: any) => {
-    navigate(`/admin/students/${student.id}`);
+    navigate(`${baseStudentsUrl}/${student.id}`);
   };
 
   const openEdit = (student: any) => {
@@ -212,10 +216,10 @@ export default function AdminStudents() {
                             <button className="portal-btn-ghost" title={s.user?.isLocked ? "Unlock Access" : "Lock Access"} style={{ padding: '8px', width: '36px', height: '36px', color: '#f97316', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => handleLockToggle(s)}>
                               <i className={`fas fa-${s.user?.isLocked ? 'unlock' : 'lock'}`}></i>
                             </button>
-                            <button className="portal-btn-ghost" title="Academic History" style={{ padding: '8px', width: '36px', height: '36px', color: '#8b5cf6', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => navigate(`/admin/students/${s.id}?tab=academics`)}>
+                            <button className="portal-btn-ghost" title="Academic History" style={{ padding: '8px', width: '36px', height: '36px', color: '#8b5cf6', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => navigate(`${baseStudentsUrl}/${s.id}?tab=academics`)}>
                               <i className="fas fa-history"></i>
                             </button>
-                            <button className="portal-btn-ghost" title="Generate Report Card" style={{ padding: '8px', width: '36px', height: '36px', color: '#ec4899', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => navigate(`/admin/academics/marks?studentId=${s.id}&tab=reports`)}>
+                            <button className="portal-btn-ghost" title="Generate Report Card" style={{ padding: '8px', width: '36px', height: '36px', color: '#ec4899', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => navigate(isBursar ? `/bursar/fees-management/ledgers?studentId=${s.id}` : `/admin/academics/marks?studentId=${s.id}&tab=reports`)}>
                               <i className="fas fa-file-pdf"></i>
                             </button>
                             <button className="portal-btn-ghost" title="Delete Permanent" style={{ padding: '8px', width: '36px', height: '36px', color: '#dc2626', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => handleDelete(s)}>
@@ -271,7 +275,7 @@ export default function AdminStudents() {
           secondaryRoles={selectedStudent.user?.secondaryRoles}
           avatarFilename={selectedStudent.user?.avatar}
           avatarText={(selectedStudent.user?.name || selectedStudent.name).charAt(0)}
-          onViewFullProfile={() => navigate(`/admin/student-profile?id=${selectedStudent.id}`)}
+          onViewFullProfile={() => navigate(`${baseStudentsUrl}/${selectedStudent.id}`)}
           onEdit={() => { setIsDetailOpen(false); openEdit(selectedStudent); }}
           onResetPassword={() => handleResetPassword(selectedStudent)}
           sections={[

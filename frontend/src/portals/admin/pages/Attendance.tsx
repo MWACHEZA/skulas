@@ -12,11 +12,12 @@ export default function AdminAttendance() {
   const { t } = useTerminology();
   const { showToast } = useToast();
 
-  const audience = (searchParams.get('tab') as AudienceType) || 'students';
+  const audience = ((searchParams.get('tab') || searchParams.get('audience')) as AudienceType) || 'students';
   const initialStatus = searchParams.get('status') || 'ALL';
+  const initialSearch = searchParams.get('studentId') || searchParams.get('search') || '';
 
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().slice(0, 10));
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState(initialSearch);
   const [statusFilter, setStatusFilter] = useState(initialStatus);
 
   const [studentLogs, setStudentLogs] = useState<any[]>([]);

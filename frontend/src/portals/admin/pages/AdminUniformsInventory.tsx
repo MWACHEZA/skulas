@@ -40,13 +40,22 @@ interface LibraryBook {
 export default function AdminUniformsInventory() {
   const { showToast } = useToast();
   const [searchParams, setSearchParams] = useSearchParams();
-  const activeCategory: InventoryCategory = (searchParams.get('category') as InventoryCategory) || 'uniforms';
+  const tabParam = searchParams.get('tab');
+  const catParam = searchParams.get('category');
+  const activeCategory: InventoryCategory = (catParam as InventoryCategory) || 
+    (tabParam === 'bookstore' ? 'bookstore' : tabParam === 'library' ? 'library' : 'uniforms');
 
   const [loading, setLoading] = useState(true);
   const [uniforms, setUniforms] = useState<UniformItem[]>([]);
   const [books, setBooks] = useState<LibraryBook[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [showLowStockOnly, setShowLowStockOnly] = useState(false);
+  const [showLowStockOnly, setShowLowStockOnly] = useState(searchParams.get('lowStock') === 'true');
+
+  useEffect(() => {
+    if (searchParams.get('lowStock') === 'true') {
+      setShowLowStockOnly(true);
+    }
+  }, [searchParams]);
 
   // Modals
   const [showAddModal, setShowAddModal] = useState(false);

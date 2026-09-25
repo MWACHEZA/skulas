@@ -27,7 +27,7 @@ export default function TeacherLoad() {
     if (teacherId) {
       fetchData();
     } else {
-      navigate('/admin/teachers');
+      navigate('/admin/system?role=TEACHER');
     }
   }, [teacherId]);
 
@@ -86,7 +86,7 @@ export default function TeacherLoad() {
     <>
       <div className="portal-page-header">
         <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-          <button onClick={() => navigate('/admin/teachers')} className="btn-icon">
+          <button onClick={() => navigate('/admin/system?role=TEACHER')} className="btn-icon">
             <i className="fas fa-arrow-left"></i>
           </button>
           <div>

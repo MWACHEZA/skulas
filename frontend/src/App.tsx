@@ -1,5 +1,5 @@
 // WebsiteSettings subcomponents and layout imports removed as they are unified in SettingsPage
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useSearchParams } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import { ToastProvider } from './context/ToastContext';
@@ -328,6 +328,13 @@ import SchoolRegister from './pages/register/SchoolRegister';
 
 // Clinic Staff Registration
 const ClinicRegister = () => <StaffRegister role="CLINIC" label="Clinic Staff" icon="fa-user-md" />;
+
+// Smart redirect for legacy admin student profile links preserving query id
+const AdminStudentProfileRedirect = () => {
+  const [searchParams] = useSearchParams();
+  const id = searchParams.get('id');
+  return <Navigate to={id ? `/admin/students/${id}` : '/admin/students'} replace />;
+};
 
 /**
  * SchoolCodeRedirect: Catches /:schoolCode URLs and redirects to /school/:schoolCode
@@ -697,8 +704,8 @@ export default function App() {
               <Route path="student-management" element={<Navigate to="/admin/students" replace />} />
               <Route path="add-student" element={<Navigate to="/admin/students?action=add" replace />} />
               <Route path="edit-student" element={<Navigate to="/admin/students" replace />} />
-              <Route path="student-profile" element={<Navigate to="/admin/students" replace />} />
-              <Route path="student-history" element={<Navigate to="/admin/students" replace />} />
+              <Route path="student-profile" element={<AdminStudentProfileRedirect />} />
+              <Route path="student-history" element={<AdminStudentProfileRedirect />} />
               <Route path="applications" element={<Navigate to="/admin/admissions" replace />} />
 
               <Route path="finance/fees-billing" element={<Navigate to="/admin/finance/billing?tab=invoices" replace />} />

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { useParams, useSearchParams, useNavigate, Link } from 'react-router-dom';
-import api from '../../../lib/api';
+import { useParams, useSearchParams, useNavigate, useLocation, Link } from 'react-router-dom';
+import api, { BASE_URL } from '../../../lib/api';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
 import { useTerminology } from '../../../hooks/useTerminology';
@@ -13,6 +13,10 @@ export default function StudentDetail() {
   const { id: paramId } = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
+  const location = useLocation();
+  const isBursar = location.pathname.startsWith('/bursar');
+  const baseStudentsUrl = isBursar ? '/bursar/students' : '/admin/students';
+
   const studentId = paramId || searchParams.get('id');
 
   const { user: currentUser } = useAuth();
@@ -28,7 +32,7 @@ export default function StudentDetail() {
     if (studentId) {
       fetchStudent();
     } else {
-      navigate('/admin/students', { replace: true });
+      navigate(baseStudentsUrl, { replace: true });
     }
   }, [studentId]);
 
@@ -61,7 +65,7 @@ export default function StudentDetail() {
     return (
       <div style={{ padding: 40, textAlign: 'center' }}>
         <p style={{ color: '#dc2626', fontWeight: 700 }}>Student not found.</p>
-        <Link to="/admin/students" className="portal-btn-primary" style={{ display: 'inline-block', marginTop: 12 }}>
+        <Link to={baseStudentsUrl} className="portal-btn-primary" style={{ display: 'inline-block', marginTop: 12 }}>
           Return to Student Directory
         </Link>
       </div>
@@ -88,7 +92,7 @@ export default function StudentDetail() {
       {/* Top Breadcrumb & Actions */}
       <div className="portal-page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-          <button onClick={() => navigate('/admin/students')} className="portal-btn-ghost" style={{ padding: '8px 12px' }}>
+          <button onClick={() => navigate(baseStudentsUrl)} className="portal-btn-ghost" style={{ padding: '8px 12px' }}>
             <i className="fas fa-arrow-left mr-2"></i>All Students
           </button>
           <div>
@@ -192,6 +196,32 @@ export default function StudentDetail() {
                 <span style={{ color: '#64748b' }}>National ID / Birth Cert:</span>
                 <span style={{ fontWeight: 700 }}>{student.nationalId || student.birthCertNumber || '—'}</span>
               </div>
+              {student.birthCertificateUrl && (
+                <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: 8, alignItems: 'center' }}>
+                  <span style={{ color: '#64748b' }}>Birth Certificate:</span>
+                  <a 
+                    href={`${BASE_URL}/api/storage/file/${student.birthCertificateUrl}?token=${localStorage.getItem('acadex_token')}`} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    style={{ color: '#2563eb', fontWeight: 700, textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.85rem' }}
+                  >
+                    <i className="fas fa-file-pdf"></i> View Certificate
+                  </a>
+                </div>
+              )}
+              {student.transferCertificateUrl && (
+                <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: 8, alignItems: 'center' }}>
+                  <span style={{ color: '#64748b' }}>Transfer Certificate:</span>
+                  <a 
+                    href={`${BASE_URL}/api/storage/file/${student.transferCertificateUrl}?token=${localStorage.getItem('acadex_token')}`} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    style={{ color: '#2563eb', fontWeight: 700, textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.85rem' }}
+                  >
+                    <i className="fas fa-file-pdf"></i> View Certificate
+                  </a>
+                </div>
+              )}
               <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: 8 }}>
                 <span style={{ color: '#64748b' }}>HEXCO Student ID:</span>
                 <span style={{ fontWeight: 700 }}>{student.hexcoId || '—'}</span>
@@ -248,8 +278,12 @@ export default function StudentDetail() {
         <div className="portal-card">
           <div className="portal-card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <h3 style={{ fontSize: '1rem', fontWeight: 800, margin: 0 }}>Subject Enrollments & Term Performance</h3>
-            <Link to={`/admin/academics/marks?studentId=${student.id}`} className="portal-btn-primary" style={{ fontSize: '0.8rem', padding: '6px 14px' }}>
-              <i className="fas fa-edit mr-2"></i>Enter / Adjust Marks
+            <Link 
+              to={isBursar ? `/bursar/fees-management/ledgers?studentId=${student.id}` : `/admin/academics/marks?studentId=${student.id}`} 
+              className="portal-btn-primary" 
+              style={{ fontSize: '0.8rem', padding: '6px 14px' }}
+            >
+              <i className={`fas fa-${isBursar ? 'book' : 'edit'} mr-2`}></i>{isBursar ? 'View Ledger Record' : 'Enter / Adjust Marks'}
             </Link>
           </div>
           <div className="portal-card-body portal-card-body-flat">
@@ -283,7 +317,11 @@ export default function StudentDetail() {
         <div className="portal-card">
           <div className="portal-card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <h3 style={{ fontSize: '1rem', fontWeight: 800, margin: 0 }}>Student Financial Ledger & Statements</h3>
-            <Link to={`/admin/finance/billing?studentId=${student.id}&tab=invoices`} className="portal-btn-primary" style={{ fontSize: '0.8rem', padding: '6px 14px' }}>
+            <Link 
+              to={isBursar ? `/bursar/fees-management/invoices?studentId=${student.id}` : `/admin/finance/billing?studentId=${student.id}&tab=invoices`} 
+              className="portal-btn-primary" 
+              style={{ fontSize: '0.8rem', padding: '6px 14px' }}
+            >
               <i className="fas fa-plus mr-2"></i>New Invoice / Fee Charge
             </Link>
           </div>
