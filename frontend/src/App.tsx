@@ -130,6 +130,21 @@ import PayrollList from './portals/shared/pages/human-resources/PayrollList';
 import ListLeaves from './portals/shared/pages/human-resources/ListLeaves';
 import ManageAwards from './portals/shared/pages/human-resources/ManageAwards';
 import AdminStudents from './portals/admin/pages/Students';
+import AdminStudentDetail from './portals/admin/pages/StudentDetail';
+import AdminFinanceBilling from './portals/admin/pages/FinanceBilling';
+import AdminFinanceWallets from './portals/admin/pages/FinanceWallets';
+import AdminAcademicsSetup from './portals/admin/pages/AcademicsSetup';
+import AdminAcademicsMarks from './portals/admin/pages/AcademicsMarks';
+import AdminAcademicsTimetable from './portals/admin/pages/AcademicsTimetable';
+import AdminAttendance from './portals/admin/pages/Attendance';
+import AdminClinic from './portals/admin/pages/AdminClinic';
+import AdminDiscipline from './portals/admin/pages/AdminDiscipline';
+import AdminTransport from './portals/admin/pages/AdminTransport';
+import AdminUniformsInventory from './portals/admin/pages/AdminUniformsInventory';
+import AdminCommunication from './portals/admin/pages/AdminCommunication';
+import AdminSystem from './portals/admin/pages/AdminSystem';
+import AdminBoarding from './portals/admin/pages/AdminBoarding';
+import AdminDining from './portals/admin/pages/AdminDining';
 import AdminTeachers from './portals/admin/pages/Teachers';
 import AdminApplications from './portals/admin/pages/Applications';
 import AdminReports from './portals/admin/pages/Reports';
@@ -615,148 +630,158 @@ export default function App() {
             }>
               <Route index element={<AdminDashboard />} />
               <Route path="dashboard" element={<AdminDashboard />} />
-              <Route path="syllabus" element={<CreateSyllabus />} />
-              <Route path="lesson-plan" element={<TeacherLessonPlan />} />
-              <Route path="study-materials" element={<StudyMaterial />} />
-              <Route path="leave" element={<MyLeave />} />
-              {/* LIBRARY MODULE ACCESS FOR ADMIN */}
-              <Route path="library">
-                <Route index element={<LibraryDashboard />} />
-                <Route path="dashboard" element={<LibraryDashboard />} />
-                <Route path="books" element={<LibraryBooks />} />
-                <Route path="categories" element={<LibraryResourceCategories />} />
-                <Route path="digital" element={<LibraryDigitalRepository />} />
-                <Route path="loans" element={<LibraryLoans />} />
-                <Route path="overdue" element={<LibraryOverdue />} />
-                <Route path="reports" element={<LibraryReports />} />
-                <Route path="reservations" element={<LibraryRequests />} />
-                <Route path="requests" element={<LibraryRequests />} />
-                <Route path="assets" element={<AdminAssetManagement />} />
-              </Route>
+
+              {/* CORE CONSOLIDATED ADMIN PAGES (16 PAGES + TENANT CONDITIONALS) */}
+              {/* 1. Students Module */}
               <Route path="students" element={<AdminStudents />} />
-              <Route path="awards" element={<MyAwards />} />
-              <Route path="parents" element={<AdminParents />} />
-              <Route path="teachers" element={<AdminTeachers />} />
-              <Route path="users" element={<AdminUsers />} />
-              <Route path="classes" element={<AdminClasses />} />
-              <Route path="setup" element={<SetupWizardPage />} />
-              <Route path="departments" element={<AdminDepartments />} />
-              <Route path="cbt/manage" element={<ManageCBT />} />
-              <Route path="website-settings" element={<SettingsPage />} />
-              <Route path="cbt/manage/:id/questions" element={<ManageQuestions />} />
-              <Route path="cbt/manage/:id/results" element={<CBTResults />} />
-              <Route path="subjects" element={<AdminSubjects />} />
-              <Route path="timetable" element={<AdminTimetable />} />
-              <Route path="applications" element={<AdminApplications />} />
-              <Route path="fees" element={<AdminFees />} />
-              <Route path="reports">
-                <Route index element={<AdminReports />} />
-                <Route path="dashboard" element={<ReportsDashboardPage />} />
-                <Route path="view/:type" element={<ReportViewerPage />} />
-              </Route>
-              <Route path="admin-reports" element={<AdminReports />} />
-              <Route path="announcements" element={<AdminAnnouncementsManagement />} />
-              <Route path="branding" element={<AdminDocumentTemplates />} />
-              <Route path="procurement" element={<AdminProcurement />} />
-              <Route path="teacher-load" element={<AdminTeacherLoad />} />
-              <Route path="alumni" element={<AdminAlumni />} />
-              <Route path="hr/vacancies" element={<ManageVacancies />} />
-              <Route path="hr/applications" element={<JobApplications />} />
-              <Route path="hr/payroll/create" element={<CreatePayslip />} />
-              <Route path="hr/payroll/list" element={<PayrollList />} />
-              <Route path="hr/leaves" element={<ListLeaves />} />
-              <Route path="hr/awards" element={<ManageAwards />} />
-              <Route path="hr/attendance" element={<ClockInLogsPage />} />
-              <Route path="ancillary" element={<AdminAncillary />} />
-              <Route path="bursars" element={<AdminBursars />} />
-              <Route path="librarians" element={<AdminLibrarians />} />
-              <Route path="suppliers" element={<AdminSuppliers />} />
-              <Route path="assets" element={<AdminAssetManagement />} />
-              <Route path="staff-admins" element={<AdminManagement />} />
-              {/* CLINIC MODULE ACCESS FOR ADMIN */}
-              <Route path="clinic">
-                <Route index element={<ClinicDashboard />} />
-                <Route path="dashboard" element={<ClinicDashboard />} />
-                <Route path="patients" element={<PatientManagement />} />
-                <Route path="hospitalization" element={<HospitalizationManager />} />
-                <Route path="triage" element={<TriageDashboard />} />
-                <Route path="pharmacy" element={<PharmacyDashboard />} />
-                <Route path="billing" element={<ClinicBillingPage />} />
-                <Route path="reports" element={<ClinicReportsPage />} />
-                <Route path="complaints" element={<HealthComplaints />} />
-                <Route path="appointments" element={<Appointments />} />
-                <Route path="emergencies" element={<Emergencies />} />
-                <Route path="referrals" element={<Referrals />} />
-                <Route path="immunizations" element={<Immunization />} />
-              </Route>
-              {/* cms integrated into website-settings */}
-              <Route path="document-templates" element={<AdminDocumentTemplates />} />
-              <Route path="subscription" element={<AdminSubscription />} />
-              <Route path="student-profile" element={<StudentProfile />} />
-              <Route path="student-history" element={<AdminAcademicHistory />} />
-              <Route path="assessments">
-                <Route path="marks-entry" element={<MarksEntryPage />} />
-                <Route path="principal-comments" element={<PrincipalCommentsPage />} />
-                <Route path="question-papers" element={<QuestionPapersPage />} />
-                <Route path="question-papers/new" element={<QuestionPaperBuilder />} />
-                <Route path="question-papers/edit/:id" element={<QuestionPaperBuilder />} />
-                <Route path="grading" element={<GradingSettingsPage />} />
-                <Route path="admission-letters" element={<AdmissionLetterPage />} />
-              </Route>
-              <Route path="sdc-minutes" element={<AdminSDCMinutes />} />
-              <Route path="sdc-funding" element={<AdminSDCFunding />} />
-              <Route path="asset-maintenance" element={<AdminAssetMaintenance />} />
-              <Route path="messages" element={<MessagesPage />} />
+              <Route path="students/:id" element={<AdminStudentDetail />} />
+              <Route path="admissions" element={<AdminApplications />} />
+
+              {/* 2. Finance Module */}
+              <Route path="finance/overview" element={<AdminFees />} />
+              <Route path="finance/billing" element={<AdminFinanceBilling />} />
+              <Route path="finance/payment-plans" element={<ManagePaymentPlans />} />
+              <Route path="finance/wallets" element={<AdminFinanceWallets />} />
+
+              {/* 3. Academics Module */}
+              <Route path="academics/setup" element={<AdminAcademicsSetup />} />
+              <Route path="academics/marks" element={<AdminAcademicsMarks />} />
+              <Route path="academics/timetable" element={<AdminAcademicsTimetable />} />
+
+              {/* 4. Attendance Module */}
+              <Route path="attendance" element={<AdminAttendance />} />
+
+              {/* 5. Welfare Module */}
+              <Route path="clinic" element={<AdminClinic />} />
+              <Route path="discipline" element={<AdminDiscipline />} />
+
+              {/* 6. Operations Module */}
+              <Route path="transport" element={<AdminTransport />} />
+              <Route path="uniforms" element={<AdminUniformsInventory />} />
+
+              {/* 7. Communication Module */}
+              <Route path="communication" element={<AdminCommunication />} />
+
+              {/* 8. System Module */}
+              <Route path="system" element={<AdminSystem />} />
               <Route path="settings" element={<SettingsPage />} />
               <Route path="personal-settings" element={<SettingsPage />} />
-              <Route path="payment-methods" element={<PaymentMethodsPage />} />
-              <Route path="fee-groups" element={<FeeGroupsPage />} />
-              <Route path="revenue-allocation" element={<RevenueAllocationPage />} />
-              <Route path="accounts">
-                <Route path="coa" element={<ChartOfAccountsPage />} />
-                <Route path="financial-reports" element={<FinancialReportsPage />} />
-                <Route path="bank-reconciliation" element={<BankReconciliationPage />} />
-                <Route path="liabilities" element={<LiabilitiesPage />} />
-                <Route path="income" element={<IncomePage />} />
-                <Route path="expenses" element={<ExpensesPage />} />
-                <Route path="uniforms" element={<UniformsPage />} />
-              </Route>
-              <Route path="fees-management">
-                <Route path="groups" element={<FeeGroupsPage />} />
-                <Route path="billing" element={<FeesBillingPage />} />
-                <Route path="invoices" element={<ManageInvoicesPage />} />
-                <Route path="payment-history" element={<PaymentHistoryPage />} />
-                <Route path="ledgers" element={<StudentLedgersPage />} />
-                <Route path="groceries" element={<GroceriesPage />} />
-                <Route path="bulk-invoices" element={<BulkInvoicesPage />} />
-                <Route path="reminder-logs" element={<FeeReminderLogsPage />} />
-              </Route>
-              <Route path="payroll">
-                <Route path="settings" element={<PayrollSettingsPage />} />
-                <Route path="employees" element={<EmployeeManagementPage />} />
-              </Route>
               <Route path="profile" element={<ProfilePage />} />
-              {/* clinic routes restored under admin portal */}
-              <Route path="clinic/complaints" element={<HealthComplaints />} />
-              <Route path="clinic/appointments" element={<Appointments />} />
-              <Route path="clinic/emergencies" element={<Emergencies />} />
-              <Route path="clinic/referrals" element={<Referrals />} />
-              <Route path="clinic/immunization" element={<Immunization />} />
-              <Route path="clinic/icd10" element={<Icd10Manager />} />
-              <Route path="transportation/routes" element={<TransportRoute />} />
-              <Route path="transportation/vehicles" element={<ManageVehicle />} />
-              <Route path="transportation/assignments" element={<SchoolTransportation />} />
+              <Route path="setup" element={<SetupWizardPage />} />
               <Route path="helpdesk" element={<AdminHelpdesk />} />
-              <Route path="class-migration" element={<AdminClassMigration />} />
-              <Route path="student-club" element={<AdminStudentClub />} />
-              <Route path="sports-management" element={<SportsManagement />} />
-              <Route path="payment-plans" element={<ManagePaymentPlans />} />
-              <Route path="house" element={<AdminStudentHouse />} />
-              <Route path="chaplaincy" element={<ChaplaincyDashboard />} />
-              <Route path="farm" element={<FarmManagement />} />
-              <Route path="dining-hall" element={<DHRepresentative />} />
-              <Route path="prefects" element={<PrefectCouncil />} />
-              <Route path="schedules" element={<AncillarySchedules />} />
+              <Route path="subscription" element={<AdminSubscription />} />
+
+              {/* Tenant-Conditional Additions */}
+              <Route path="boarding" element={<AdminBoarding />} />
+              <Route path="dining" element={<AdminDining />} />
+
+              {/* Remaining operational / governance child routes */}
+              <Route path="cbt/manage" element={<ManageCBT />} />
+              <Route path="cbt/manage/:id/questions" element={<ManageQuestions />} />
+              <Route path="cbt/manage/:id/results" element={<CBTResults />} />
+              <Route path="procurement" element={<AdminProcurement />} />
+              <Route path="suppliers" element={<AdminSuppliers />} />
+              <Route path="assets" element={<AdminAssetManagement />} />
+              <Route path="asset-maintenance" element={<AdminAssetMaintenance />} />
+              <Route path="sdc-minutes" element={<AdminSDCMinutes />} />
+              <Route path="sdc-funding" element={<AdminSDCFunding />} />
+              <Route path="document-templates" element={<AdminDocumentTemplates />} />
+              <Route path="branding" element={<AdminDocumentTemplates />} />
+              <Route path="website-settings" element={<SettingsPage />} />
+              <Route path="departments" element={<AdminDepartments />} />
+              <Route path="teacher-load" element={<AdminTeacherLoad />} />
+
+              {/* ============================================================== */}
+              {/* BACKWARD-COMPATIBLE REDIRECTS FOR CONSOLIDATED ADMIN ROUTES     */}
+              {/* ============================================================== */}
+              <Route path="student-management" element={<Navigate to="/admin/students" replace />} />
+              <Route path="add-student" element={<Navigate to="/admin/students?action=add" replace />} />
+              <Route path="edit-student" element={<Navigate to="/admin/students" replace />} />
+              <Route path="student-profile" element={<Navigate to="/admin/students" replace />} />
+              <Route path="student-history" element={<Navigate to="/admin/students" replace />} />
+              <Route path="applications" element={<Navigate to="/admin/admissions" replace />} />
+
+              <Route path="finance/fees-billing" element={<Navigate to="/admin/finance/billing?tab=invoices" replace />} />
+              <Route path="finance/invoices" element={<Navigate to="/admin/finance/billing?tab=invoices" replace />} />
+              <Route path="finance/receipts" element={<Navigate to="/admin/finance/billing?tab=receipts" replace />} />
+              <Route path="finance/student-ledgers" element={<Navigate to="/admin/finance/billing?tab=ledgers" replace />} />
+              <Route path="finance/groceries" element={<Navigate to="/admin/finance/wallets?tab=inventory" replace />} />
+              <Route path="fees" element={<Navigate to="/admin/finance/overview" replace />} />
+              <Route path="fee-groups" element={<Navigate to="/admin/finance/overview" replace />} />
+              <Route path="payment-methods" element={<Navigate to="/admin/finance/overview" replace />} />
+              <Route path="revenue-allocation" element={<Navigate to="/admin/finance/overview" replace />} />
+              <Route path="payment-plans" element={<Navigate to="/admin/finance/payment-plans" replace />} />
+              <Route path="fees-management/billing" element={<Navigate to="/admin/finance/billing?tab=invoices" replace />} />
+              <Route path="fees-management/invoices" element={<Navigate to="/admin/finance/billing?tab=invoices" replace />} />
+              <Route path="fees-management/bulk-invoices" element={<Navigate to="/admin/finance/billing?tab=invoices" replace />} />
+              <Route path="fees-management/payment-history" element={<Navigate to="/admin/finance/billing?tab=receipts" replace />} />
+              <Route path="fees-management/ledgers" element={<Navigate to="/admin/finance/billing?tab=ledgers" replace />} />
+              <Route path="fees-management/groceries" element={<Navigate to="/admin/finance/wallets?tab=inventory" replace />} />
+              <Route path="fees-management/reminder-logs" element={<Navigate to="/admin/finance/billing?tab=invoices" replace />} />
+              <Route path="grocery-store" element={<Navigate to="/admin/finance/wallets?tab=inventory" replace />} />
+              <Route path="dining-hall" element={<Navigate to="/admin/finance/wallets?tab=sales" replace />} />
+
+              <Route path="subjects" element={<Navigate to="/admin/academics/setup?tab=subjects" replace />} />
+              <Route path="classes" element={<Navigate to="/admin/academics/setup?tab=classes" replace />} />
+              <Route path="class-migration" element={<Navigate to="/admin/academics/setup?tab=classes" replace />} />
+              <Route path="syllabus" element={<Navigate to="/admin/academics/setup?tab=subjects" replace />} />
+              <Route path="lesson-plan" element={<Navigate to="/admin/academics/setup?tab=subjects" replace />} />
+              <Route path="assessments/grading" element={<Navigate to="/admin/academics/setup?tab=grading" replace />} />
+              <Route path="assessments/marks-entry" element={<Navigate to="/admin/academics/marks?tab=marks" replace />} />
+              <Route path="assessments/principal-comments" element={<Navigate to="/admin/academics/marks?tab=reports" replace />} />
+              <Route path="reports" element={<Navigate to="/admin/academics/marks?tab=reports" replace />} />
+              <Route path="reports/*" element={<Navigate to="/admin/academics/marks?tab=reports" replace />} />
+              <Route path="admin-reports" element={<Navigate to="/admin/academics/marks?tab=reports" replace />} />
+              <Route path="timetable" element={<Navigate to="/admin/academics/timetable?tab=schedule" replace />} />
+              <Route path="calendar" element={<Navigate to="/admin/academics/timetable?tab=calendar" replace />} />
+
+              <Route path="hr/attendance" element={<Navigate to="/admin/attendance" replace />} />
+              <Route path="clock-in-logs" element={<Navigate to="/admin/attendance?audience=staff" replace />} />
+
+              <Route path="clinic/dashboard" element={<Navigate to="/admin/clinic" replace />} />
+              <Route path="clinic/patients" element={<Navigate to="/admin/clinic?tab=visits" replace />} />
+              <Route path="clinic/triage" element={<Navigate to="/admin/clinic?tab=visits" replace />} />
+              <Route path="clinic/hospitalization" element={<Navigate to="/admin/clinic?tab=visits" replace />} />
+              <Route path="clinic/pharmacy" element={<Navigate to="/admin/clinic?tab=inventory" replace />} />
+              <Route path="clinic/reports" element={<Navigate to="/admin/clinic?tab=reports" replace />} />
+              <Route path="clinic/appointments" element={<Navigate to="/admin/clinic?tab=visits" replace />} />
+              <Route path="clinic/complaints" element={<Navigate to="/admin/clinic?tab=visits" replace />} />
+              <Route path="clinic/emergencies" element={<Navigate to="/admin/clinic?tab=visits" replace />} />
+              <Route path="clinic/referrals" element={<Navigate to="/admin/clinic?tab=visits" replace />} />
+              <Route path="clinic/immunization" element={<Navigate to="/admin/clinic?tab=visits" replace />} />
+              <Route path="clinic/immunizations" element={<Navigate to="/admin/clinic?tab=visits" replace />} />
+              <Route path="clinic/icd10" element={<Navigate to="/admin/clinic?tab=visits" replace />} />
+              <Route path="clinic/billing" element={<Navigate to="/admin/clinic?tab=inventory" replace />} />
+
+              <Route path="prefects" element={<Navigate to="/admin/discipline?tab=conduct" replace />} />
+              <Route path="awards" element={<Navigate to="/admin/discipline?tab=awards" replace />} />
+              <Route path="hr/awards" element={<Navigate to="/admin/discipline?tab=awards" replace />} />
+
+              <Route path="transportation/routes" element={<Navigate to="/admin/transport?tab=routes" replace />} />
+              <Route path="transportation/vehicles" element={<Navigate to="/admin/transport?tab=buses" replace />} />
+              <Route path="transportation/assignments" element={<Navigate to="/admin/transport?tab=fees" replace />} />
+              <Route path="transport-tracking" element={<Navigate to="/admin/transport?tab=map" replace />} />
+
+              <Route path="accounts/uniforms" element={<Navigate to="/admin/uniforms?category=uniforms" replace />} />
+              <Route path="bookstore" element={<Navigate to="/admin/uniforms?category=bookstore" replace />} />
+              <Route path="library" element={<Navigate to="/admin/uniforms?category=library" replace />} />
+              <Route path="library/*" element={<Navigate to="/admin/uniforms?category=library" replace />} />
+
+              <Route path="messages" element={<Navigate to="/admin/communication?tab=messages" replace />} />
+              <Route path="announcements" element={<Navigate to="/admin/communication?tab=announcements" replace />} />
+              <Route path="approvals" element={<Navigate to="/admin/communication?tab=approvals" replace />} />
+
+              <Route path="users" element={<Navigate to="/admin/system" replace />} />
+              <Route path="staff" element={<Navigate to="/admin/system" replace />} />
+              <Route path="roles" element={<Navigate to="/admin/system" replace />} />
+              <Route path="teachers" element={<Navigate to="/admin/system?role=TEACHER" replace />} />
+              <Route path="bursars" element={<Navigate to="/admin/system?role=BURSAR" replace />} />
+              <Route path="librarians" element={<Navigate to="/admin/system?role=LIBRARIAN" replace />} />
+              <Route path="ancillary" element={<Navigate to="/admin/system?role=ANCILLARY" replace />} />
+              <Route path="staff-admins" element={<Navigate to="/admin/system?role=SCHOOL_ADMIN" replace />} />
+              <Route path="parents" element={<Navigate to="/admin/system?role=PARENT" replace />} />
+              <Route path="alumni" element={<Navigate to="/admin/system?role=ALUMNI" replace />} />
+              <Route path="house" element={<Navigate to="/admin/boarding" replace />} />
             </Route>
 
             {/* BURSAR PORTAL  */}

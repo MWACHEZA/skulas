@@ -57,6 +57,265 @@ export const CANONICAL_GROUPS: Record<CanonicalGroupId, CanonicalGroupConfig> = 
  */
 export const PAGE_REGISTRY: PageDefinition[] = [
   // ==========================================
+  // CORE ADMIN CONSOLIDATED PAGES (16 PAGES + TENANT CONDITIONALS)
+  // ==========================================
+  {
+    id: 'admin-dashboard',
+    label: 'Dashboard',
+    route: '/admin/dashboard',
+    group: 'SYSTEM',
+    icon: 'fas fa-tachometer-alt',
+    permissionKey: PERMISSIONS.DASHBOARD_METRICS,
+    portalVisibility: ['admin'],
+    searchKeywords: ['home', 'actions', 'overview', 'summary']
+  },
+  {
+    id: 'admin-students',
+    label: 'Students Directory',
+    route: '/admin/students',
+    group: 'PEOPLE_ENROLLMENT',
+    icon: 'fas fa-user-graduate',
+    permissionKey: PERMISSIONS.PEOPLE_STUDENTS_VIEW,
+    portalVisibility: ['admin', 'bursar'],
+    tabs: [
+      { id: 'profile', label: 'Profile' },
+      { id: 'academics', label: 'Academics' },
+      { id: 'fees', label: 'Fees' },
+      { id: 'attendance', label: 'Attendance' },
+      { id: 'clinic', label: 'Clinic' },
+      { id: 'transport', label: 'Transport' },
+      { id: 'parents', label: 'Parents' }
+    ],
+    searchKeywords: ['pupils', 'learners', 'admission', 'enrollment', 'student directory']
+  },
+  {
+    id: 'admin-admissions',
+    label: 'Admissions Pipeline',
+    route: '/admin/admissions',
+    group: 'PEOPLE_ENROLLMENT',
+    icon: 'fas fa-id-card',
+    permissionKey: PERMISSIONS.PEOPLE_STUDENTS_MANAGE,
+    portalVisibility: ['admin'],
+    searchKeywords: ['applications', 'inquiries', 'intake', 'pipeline']
+  },
+  {
+    id: 'admin-finance-overview',
+    label: 'Finance Overview',
+    route: '/admin/finance/overview',
+    group: 'FINANCE_BILLING',
+    icon: 'fas fa-chart-pie',
+    permissionKey: PERMISSIONS.FINANCE_FEES_VIEW,
+    portalVisibility: ['admin', 'bursar'],
+    searchKeywords: ['finance dashboard', 'collections', 'overdue', 'total billed']
+  },
+  {
+    id: 'admin-finance-billing',
+    label: 'Fees & Billing',
+    route: '/admin/finance/billing',
+    group: 'FINANCE_BILLING',
+    icon: 'fas fa-receipt',
+    permissionKey: PERMISSIONS.FINANCE_FEES_BILLING,
+    portalVisibility: ['admin', 'bursar'],
+    tabs: [
+      { id: 'invoices', label: 'Invoices' },
+      { id: 'receipts', label: 'Receipts' },
+      { id: 'ledgers', label: 'Student Ledgers' }
+    ],
+    searchKeywords: ['invoices', 'receipts', 'student ledgers', 'billing', 'payments', 'statements']
+  },
+  {
+    id: 'admin-finance-payment-plans',
+    label: 'Payment Plans',
+    route: '/admin/finance/payment-plans',
+    group: 'FINANCE_BILLING',
+    icon: 'fas fa-calendar-check',
+    permissionKey: PERMISSIONS.FINANCE_FEES_BILLING,
+    portalVisibility: ['admin', 'bursar'],
+    searchKeywords: ['payment agreements', 'milestones', 'installments']
+  },
+  {
+    id: 'admin-finance-wallets',
+    label: 'Wallets & Tuckshop',
+    route: '/admin/finance/wallets',
+    group: 'FINANCE_BILLING',
+    icon: 'fas fa-wallet',
+    permissionKey: PERMISSIONS.FINANCE_FEES_BILLING,
+    portalVisibility: ['admin', 'bursar'],
+    tabs: [
+      { id: 'sales', label: 'Tuckshop Sales' },
+      { id: 'inventory', label: 'Store Inventory' },
+      { id: 'topups', label: 'Wallet Top-ups' }
+    ],
+    searchKeywords: ['canteen', 'tuckshop', 'pocket money', 'groceries', 'pos']
+  },
+  {
+    id: 'admin-academics-setup',
+    label: 'Academic Setup',
+    route: '/admin/academics/setup',
+    group: 'ACADEMICS',
+    icon: 'fas fa-sliders-h',
+    permissionKey: PERMISSIONS.ACADEMICS_SUBJECTS_VIEW,
+    portalVisibility: ['admin'],
+    tabs: [
+      { id: 'subjects', label: 'Subjects' },
+      { id: 'classes', label: 'Classes & Streams' },
+      { id: 'grading', label: 'Grading Scales' }
+    ],
+    searchKeywords: ['curriculum', 'subjects', 'classes', 'streams', 'grading settings']
+  },
+  {
+    id: 'admin-academics-marks',
+    label: 'Marks & Reports',
+    route: '/admin/academics/marks',
+    group: 'ACADEMICS',
+    icon: 'fas fa-pen-alt',
+    permissionKey: PERMISSIONS.ACADEMICS_MARKS_ENTRY,
+    portalVisibility: ['admin'],
+    tabs: [
+      { id: 'marks', label: 'Marks Entry' },
+      { id: 'reports', label: 'Academic Reports' }
+    ],
+    searchKeywords: ['marks entry', 'report cards', 'scores', 'transcripts', 'terminal reports']
+  },
+  {
+    id: 'admin-academics-timetable',
+    label: 'Timetable & Calendar',
+    route: '/admin/academics/timetable',
+    group: 'ACADEMICS',
+    icon: 'fas fa-calendar-alt',
+    permissionKey: PERMISSIONS.ACADEMICS_TIMETABLE_VIEW,
+    portalVisibility: ['admin'],
+    tabs: [
+      { id: 'schedule', label: 'Weekly Schedule' },
+      { id: 'calendar', label: 'Academic Calendar' }
+    ],
+    searchKeywords: ['timetable', 'periods', 'schedule', 'school calendar', 'term dates']
+  },
+  {
+    id: 'admin-attendance',
+    label: 'Attendance & Clock-In',
+    route: '/admin/attendance',
+    group: 'STUDENT_LIFE',
+    icon: 'fas fa-fingerprint',
+    permissionKey: PERMISSIONS.STUDENT_LIFE_CLOCK_LOGS,
+    portalVisibility: ['admin'],
+    searchKeywords: ['presence', 'roll call', 'clock-in logs', 'staff register', 'student attendance']
+  },
+  {
+    id: 'admin-clinic',
+    label: 'Clinic & Welfare',
+    route: '/admin/clinic',
+    group: 'CLINIC_HEALTH',
+    icon: 'fas fa-notes-medical',
+    permissionKey: PERMISSIONS.CLINIC_DASHBOARD_VIEW,
+    portalVisibility: ['admin'],
+    tabs: [
+      { id: 'visits', label: 'Patient Visits' },
+      { id: 'inventory', label: 'Pharmacy Inventory' },
+      { id: 'reports', label: 'Clinical Reports' }
+    ],
+    searchKeywords: ['health', 'sick bay', 'triage', 'nurse', 'vitals', 'drugs', 'dispensing']
+  },
+  {
+    id: 'admin-discipline',
+    label: 'Discipline & Awards',
+    route: '/admin/discipline',
+    group: 'STUDENT_LIFE',
+    icon: 'fas fa-balance-scale',
+    permissionKey: PERMISSIONS.STUDENT_LIFE_PREFECTS,
+    portalVisibility: ['admin'],
+    tabs: [
+      { id: 'conduct', label: 'Conduct Incidents' },
+      { id: 'awards', label: 'Merits & Awards' }
+    ],
+    searchKeywords: ['conduct', 'detention', 'punishment', 'infractions', 'merits', 'awards', 'certificates']
+  },
+  {
+    id: 'admin-transport',
+    label: 'Transport & Fleet',
+    route: '/admin/transport',
+    group: 'TRANSPORT',
+    icon: 'fas fa-bus',
+    permissionKey: PERMISSIONS.TRANSPORT_ROUTES_MANAGE,
+    portalVisibility: ['admin'],
+    tabs: [
+      { id: 'buses', label: 'Buses' },
+      { id: 'routes', label: 'Routes' },
+      { id: 'map', label: 'Live Map' },
+      { id: 'fees', label: 'Transport Fees' }
+    ],
+    searchKeywords: ['school bus', 'routes', 'fleet', 'gps tracking', 'bus fares', 'transportation']
+  },
+  {
+    id: 'admin-uniforms',
+    label: 'Uniforms & Supplies',
+    route: '/admin/uniforms',
+    group: 'PROCUREMENT_ASSETS',
+    icon: 'fas fa-boxes',
+    permissionKey: PERMISSIONS.PEOPLE_UNIFORMS_MANAGE,
+    portalVisibility: ['admin', 'bursar'],
+    tabs: [
+      { id: 'uniforms', label: 'Uniforms Stock' },
+      { id: 'bookstore', label: 'Bookstore' },
+      { id: 'library', label: 'Library Catalog' }
+    ],
+    searchKeywords: ['uniforms', 'blazers', 'books', 'stationery', 'library catalog', 'stock inventory']
+  },
+  {
+    id: 'admin-communication',
+    label: 'Communication Hub',
+    route: '/admin/communication',
+    group: 'COMMUNICATION_PORTAL',
+    icon: 'fas fa-bullhorn',
+    permissionKey: PERMISSIONS.COMMUNICATION_ANNOUNCEMENTS,
+    portalVisibility: ['admin'],
+    tabs: [
+      { id: 'messages', label: 'Messages Inbox' },
+      { id: 'announcements', label: 'Announcements Sent' },
+      { id: 'approvals', label: 'Pending Approvals' }
+    ],
+    searchKeywords: ['messages', 'broadcasts', 'circulars', 'approvals', 'consent forms', 'inbox']
+  },
+  {
+    id: 'admin-system',
+    label: 'Users & Access Control',
+    route: '/admin/system',
+    group: 'SYSTEM',
+    icon: 'fas fa-users-cog',
+    permissionKey: PERMISSIONS.PEOPLE_USERS_MANAGE,
+    portalVisibility: ['admin'],
+    searchKeywords: ['users', 'roles', 'staff', 'teachers', 'bursars', 'passwords', 'permissions']
+  },
+  {
+    id: 'admin-boarding',
+    label: 'Boarding & Hostels',
+    route: '/admin/boarding',
+    group: 'STUDENT_LIFE',
+    icon: 'fas fa-hotel',
+    permissionKey: PERMISSIONS.PEOPLE_HOUSES_MANAGE,
+    portalVisibility: ['admin'],
+    tabs: [
+      { id: 'hostels', label: 'Hostels' },
+      { id: 'rooms', label: 'Dorm Rooms' },
+      { id: 'allocations', label: 'Boarder Allocations' }
+    ],
+    searchKeywords: ['hostels', 'dorms', 'boarders', 'residential']
+  },
+  {
+    id: 'admin-dining',
+    label: 'Dining Hall Service',
+    route: '/admin/dining',
+    group: 'STUDENT_LIFE',
+    icon: 'fas fa-utensils',
+    permissionKey: PERMISSIONS.STUDENT_LIFE_PREFECTS,
+    portalVisibility: ['admin'],
+    tabs: [
+      { id: 'menu', label: 'Weekly Menu' },
+      { id: 'reports', label: 'Dietary Records' }
+    ],
+    searchKeywords: ['dining hall', 'weekly menu', 'food service', 'special diets']
+  },
+  // ==========================================
   // 1. PEOPLE & ENROLLMENT
   // ==========================================
   {
@@ -66,7 +325,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'PEOPLE_ENROLLMENT',
     icon: 'fas fa-user-graduate',
     permissionKey: PERMISSIONS.PEOPLE_STUDENTS_VIEW,
-    portalVisibility: ['admin', 'bursar'],
+    portalVisibility: ['bursar'],
     searchKeywords: ['pupils', 'learners', 'admission', 'enrollment']
   },
   {
@@ -76,7 +335,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'PEOPLE_ENROLLMENT',
     icon: 'fas fa-chalkboard-teacher',
     permissionKey: PERMISSIONS.PEOPLE_TEACHERS_VIEW,
-    portalVisibility: ['admin'],
+    portalVisibility: [],
     searchKeywords: ['faculty', 'instructors', 'tutors']
   },
   {
@@ -86,7 +345,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'PEOPLE_ENROLLMENT',
     icon: 'fas fa-user-shield',
     permissionKey: PERMISSIONS.PEOPLE_STAFF_VIEW,
-    portalVisibility: ['admin']
+    portalVisibility: []
   },
   {
     id: 'admin-bursars',
@@ -95,7 +354,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'PEOPLE_ENROLLMENT',
     icon: 'fas fa-money-check-alt',
     permissionKey: PERMISSIONS.PEOPLE_STAFF_VIEW,
-    portalVisibility: ['admin']
+    portalVisibility: []
   },
   {
     id: 'admin-librarians',
@@ -104,7 +363,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'PEOPLE_ENROLLMENT',
     icon: 'fas fa-book',
     permissionKey: PERMISSIONS.PEOPLE_STAFF_VIEW,
-    portalVisibility: ['admin']
+    portalVisibility: []
   },
   {
     id: 'admin-ancillary',
@@ -113,7 +372,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'PEOPLE_ENROLLMENT',
     icon: 'fas fa-hands-helping',
     permissionKey: PERMISSIONS.PEOPLE_STAFF_VIEW,
-    portalVisibility: ['admin']
+    portalVisibility: []
   },
   {
     id: 'admin-parents',
@@ -122,7 +381,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'PEOPLE_ENROLLMENT',
     icon: 'fas fa-user-friends',
     permissionKey: PERMISSIONS.PEOPLE_STAFF_VIEW,
-    portalVisibility: ['admin']
+    portalVisibility: []
   },
   {
     id: 'admin-alumni',
@@ -131,7 +390,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'PEOPLE_ENROLLMENT',
     icon: 'fas fa-user-tie',
     permissionKey: PERMISSIONS.PEOPLE_ALUMNI_VIEW,
-    portalVisibility: ['admin']
+    portalVisibility: []
   },
   {
     id: 'admin-users',
@@ -140,7 +399,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'PEOPLE_ENROLLMENT',
     icon: 'fas fa-users-cog',
     permissionKey: PERMISSIONS.PEOPLE_USERS_MANAGE,
-    portalVisibility: ['admin']
+    portalVisibility: []
   },
   {
     id: 'admin-classes',
@@ -149,7 +408,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'PEOPLE_ENROLLMENT',
     icon: 'fas fa-chalkboard',
     permissionKey: PERMISSIONS.PEOPLE_CLASSES_MANAGE,
-    portalVisibility: ['admin']
+    portalVisibility: []
   },
   {
     id: 'admin-class-migration',
@@ -158,7 +417,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'PEOPLE_ENROLLMENT',
     icon: 'fas fa-exchange-alt',
     permissionKey: PERMISSIONS.PEOPLE_CLASSES_MANAGE,
-    portalVisibility: ['admin', 'bursar']
+    portalVisibility: ['bursar']
   },
   {
     id: 'admin-departments',
@@ -167,7 +426,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'PEOPLE_ENROLLMENT',
     icon: 'fas fa-sitemap',
     permissionKey: PERMISSIONS.PEOPLE_CLASSES_MANAGE,
-    portalVisibility: ['admin']
+    portalVisibility: []
   },
   {
     id: 'admin-house',
@@ -176,7 +435,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'PEOPLE_ENROLLMENT',
     icon: 'fas fa-house-user',
     permissionKey: PERMISSIONS.PEOPLE_HOUSES_MANAGE,
-    portalVisibility: ['admin', 'ancillary']
+    portalVisibility: ['ancillary']
   },
   {
     id: 'admin-uniforms',
@@ -185,7 +444,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'PEOPLE_ENROLLMENT',
     icon: 'fas fa-tshirt',
     permissionKey: PERMISSIONS.PEOPLE_UNIFORMS_MANAGE,
-    portalVisibility: ['admin', 'bursar']
+    portalVisibility: ['bursar']
   },
   {
     id: 'admin-applications',
@@ -194,7 +453,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'PEOPLE_ENROLLMENT',
     icon: 'fas fa-id-card',
     permissionKey: PERMISSIONS.PEOPLE_STUDENTS_MANAGE,
-    portalVisibility: ['admin']
+    portalVisibility: []
   },
   {
     id: 'admin-student-profile',
@@ -203,7 +462,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'PEOPLE_ENROLLMENT',
     icon: 'fas fa-id-badge',
     permissionKey: PERMISSIONS.PEOPLE_STUDENTS_VIEW,
-    portalVisibility: ['admin']
+    portalVisibility: []
   },
   {
     id: 'admin-student-history',
@@ -212,7 +471,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'PEOPLE_ENROLLMENT',
     icon: 'fas fa-history',
     permissionKey: PERMISSIONS.PEOPLE_STUDENTS_VIEW,
-    portalVisibility: ['admin']
+    portalVisibility: []
   },
 
   // ==========================================
@@ -225,7 +484,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'ACADEMICS',
     icon: 'fas fa-book-open',
     permissionKey: PERMISSIONS.ACADEMICS_SUBJECTS_VIEW,
-    portalVisibility: ['admin']
+    portalVisibility: []
   },
   {
     id: 'admin-syllabus',
@@ -234,7 +493,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'ACADEMICS',
     icon: 'fas fa-scroll',
     permissionKey: PERMISSIONS.ACADEMICS_SYLLABUS_MANAGE,
-    portalVisibility: ['admin', 'teacher']
+    portalVisibility: ['teacher']
   },
   {
     id: 'admin-lesson-plan',
@@ -243,7 +502,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'ACADEMICS',
     icon: 'fas fa-calendar-check',
     permissionKey: PERMISSIONS.ACADEMICS_LESSON_PLAN,
-    portalVisibility: ['admin', 'teacher']
+    portalVisibility: ['teacher']
   },
   {
     id: 'admin-timetable',
@@ -252,7 +511,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'ACADEMICS',
     icon: 'fas fa-calendar-alt',
     permissionKey: PERMISSIONS.ACADEMICS_TIMETABLE_VIEW,
-    portalVisibility: ['admin', 'teacher', 'student', 'parent']
+    portalVisibility: ['teacher', 'student', 'parent']
   },
   {
     id: 'parent-academics',
@@ -277,7 +536,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'ACADEMICS',
     icon: 'fas fa-file-pdf',
     permissionKey: PERMISSIONS.ACADEMICS_STUDY_MATERIAL,
-    portalVisibility: ['admin', 'teacher', 'student']
+    portalVisibility: ['teacher', 'student']
   },
   {
     id: 'admin-marks-entry',
@@ -286,7 +545,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'ACADEMICS',
     icon: 'fas fa-pen-alt',
     permissionKey: PERMISSIONS.ACADEMICS_MARKS_ENTRY,
-    portalVisibility: ['admin', 'teacher']
+    portalVisibility: ['teacher']
   },
   {
     id: 'admin-principal-comments',
@@ -295,7 +554,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'ACADEMICS',
     icon: 'fas fa-comment-alt',
     permissionKey: PERMISSIONS.ACADEMICS_PRINCIPAL_COMMENTS,
-    portalVisibility: ['admin']
+    portalVisibility: []
   },
   {
     id: 'admin-question-papers',
@@ -304,7 +563,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'ACADEMICS',
     icon: 'fas fa-file-signature',
     permissionKey: PERMISSIONS.ACADEMICS_MARKS_ENTRY,
-    portalVisibility: ['admin', 'teacher']
+    portalVisibility: ['teacher']
   },
   {
     id: 'admin-grading',
@@ -313,7 +572,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'ACADEMICS',
     icon: 'fas fa-sliders-h',
     permissionKey: PERMISSIONS.ACADEMICS_MARKS_ENTRY,
-    portalVisibility: ['admin']
+    portalVisibility: []
   },
   {
     id: 'admin-cbt-manage',
@@ -322,7 +581,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'ACADEMICS',
     icon: 'fas fa-laptop-code',
     permissionKey: PERMISSIONS.ACADEMICS_CBT_MANAGE,
-    portalVisibility: ['admin', 'teacher']
+    portalVisibility: ['teacher']
   },
   {
     id: 'admin-academic-reports',
@@ -331,7 +590,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'ACADEMICS',
     icon: 'fas fa-chart-bar',
     permissionKey: PERMISSIONS.ACADEMICS_REPORTS_VIEW,
-    portalVisibility: ['admin', 'teacher']
+    portalVisibility: ['teacher']
   },
   {
     id: 'admin-schedules',
@@ -340,7 +599,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'ACADEMICS',
     icon: 'fas fa-clock',
     permissionKey: PERMISSIONS.ACADEMICS_WORK_SCHEDULE,
-    portalVisibility: ['admin', 'ancillary', 'librarian']
+    portalVisibility: ['ancillary', 'librarian']
   },
 
   // ==========================================
@@ -353,7 +612,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'STUDENT_LIFE',
     icon: 'fas fa-user-tie',
     permissionKey: PERMISSIONS.STUDENT_LIFE_PREFECTS,
-    portalVisibility: ['admin', 'teacher', 'student']
+    portalVisibility: ['teacher', 'student']
   },
   {
     id: 'admin-chaplaincy',
@@ -362,7 +621,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'STUDENT_LIFE',
     icon: 'fas fa-church',
     permissionKey: PERMISSIONS.STUDENT_LIFE_CHAPLAINCY,
-    portalVisibility: ['admin', 'teacher']
+    portalVisibility: ['teacher']
   },
   {
     id: 'admin-student-club',
@@ -371,7 +630,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'STUDENT_LIFE',
     icon: 'fas fa-users',
     permissionKey: PERMISSIONS.STUDENT_LIFE_CLUBS,
-    portalVisibility: ['admin', 'teacher']
+    portalVisibility: ['teacher']
   },
   {
     id: 'admin-sports-management',
@@ -380,7 +639,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'STUDENT_LIFE',
     icon: 'fas fa-running',
     permissionKey: PERMISSIONS.STUDENT_LIFE_SPORTS,
-    portalVisibility: ['admin', 'teacher', 'ancillary']
+    portalVisibility: ['teacher', 'ancillary']
   },
   {
     id: 'admin-attendance-logs',
@@ -389,7 +648,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'STUDENT_LIFE',
     icon: 'fas fa-fingerprint',
     permissionKey: PERMISSIONS.STUDENT_LIFE_CLOCK_LOGS,
-    portalVisibility: ['admin', 'teacher', 'ancillary']
+    portalVisibility: ['teacher', 'ancillary']
   },
   {
     id: 'admin-dining-hall',
@@ -398,7 +657,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'STUDENT_LIFE',
     icon: 'fas fa-utensils',
     permissionKey: PERMISSIONS.STUDENT_LIFE_PREFECTS,
-    portalVisibility: ['admin', 'ancillary', 'teacher']
+    portalVisibility: ['ancillary', 'teacher']
   },
 
   // ==========================================
@@ -411,7 +670,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'FINANCE_BILLING',
     icon: 'fas fa-money-bill-wave',
     permissionKey: PERMISSIONS.FINANCE_FEES_VIEW,
-    portalVisibility: ['admin', 'bursar']
+    portalVisibility: ['bursar']
   },
   {
     id: 'admin-fee-groups',
@@ -420,7 +679,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'FINANCE_BILLING',
     icon: 'fas fa-tags',
     permissionKey: PERMISSIONS.FINANCE_FEES_BILLING,
-    portalVisibility: ['admin', 'bursar']
+    portalVisibility: ['bursar']
   },
   {
     id: 'admin-fees-billing',
@@ -429,7 +688,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'FINANCE_BILLING',
     icon: 'fas fa-receipt',
     permissionKey: PERMISSIONS.FINANCE_FEES_BILLING,
-    portalVisibility: ['admin', 'bursar']
+    portalVisibility: ['bursar']
   },
   {
     id: 'admin-manage-invoices',
@@ -438,7 +697,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'FINANCE_BILLING',
     icon: 'fas fa-file-invoice',
     permissionKey: PERMISSIONS.FINANCE_INVOICES_MANAGE,
-    portalVisibility: ['admin', 'bursar']
+    portalVisibility: ['bursar']
   },
   {
     id: 'admin-bulk-invoices',
@@ -447,7 +706,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'FINANCE_BILLING',
     icon: 'fas fa-mail-bulk',
     permissionKey: PERMISSIONS.FINANCE_INVOICES_MANAGE,
-    portalVisibility: ['admin', 'bursar']
+    portalVisibility: ['bursar']
   },
   {
     id: 'admin-payment-history',
@@ -456,7 +715,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'FINANCE_BILLING',
     icon: 'fas fa-history',
     permissionKey: PERMISSIONS.FINANCE_PAYMENTS_VIEW,
-    portalVisibility: ['admin', 'bursar']
+    portalVisibility: ['bursar']
   },
   {
     id: 'admin-student-ledgers',
@@ -465,7 +724,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'FINANCE_BILLING',
     icon: 'fas fa-book',
     permissionKey: PERMISSIONS.FINANCE_LEDGERS_VIEW,
-    portalVisibility: ['admin', 'bursar']
+    portalVisibility: ['bursar']
   },
   {
     id: 'parent-fees',
@@ -520,7 +779,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'FINANCE_BILLING',
     icon: 'fas fa-calendar-check',
     permissionKey: PERMISSIONS.FINANCE_FEES_BILLING,
-    portalVisibility: ['admin', 'bursar']
+    portalVisibility: ['bursar']
   },
   {
     id: 'admin-reminder-logs',
@@ -529,7 +788,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'FINANCE_BILLING',
     icon: 'fas fa-bell',
     permissionKey: PERMISSIONS.FINANCE_FEES_BILLING,
-    portalVisibility: ['admin', 'bursar']
+    portalVisibility: ['bursar']
   },
   {
     id: 'admin-payment-methods',
@@ -538,7 +797,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'FINANCE_BILLING',
     icon: 'fas fa-credit-card',
     permissionKey: PERMISSIONS.FINANCE_COA_MANAGE,
-    portalVisibility: ['admin', 'bursar']
+    portalVisibility: ['bursar']
   },
   {
     id: 'admin-groceries',
@@ -547,7 +806,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'FINANCE_BILLING',
     icon: 'fas fa-shopping-basket',
     permissionKey: PERMISSIONS.FINANCE_FEES_BILLING,
-    portalVisibility: ['admin', 'bursar']
+    portalVisibility: ['bursar']
   },
   {
     id: 'admin-revenue-allocation',
@@ -556,7 +815,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'FINANCE_BILLING',
     icon: 'fas fa-chart-pie',
     permissionKey: PERMISSIONS.FINANCE_COA_MANAGE,
-    portalVisibility: ['admin', 'bursar']
+    portalVisibility: ['bursar']
   },
   {
     id: 'admin-coa',
@@ -565,7 +824,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'FINANCE_BILLING',
     icon: 'fas fa-sitemap',
     permissionKey: PERMISSIONS.FINANCE_COA_MANAGE,
-    portalVisibility: ['admin', 'bursar']
+    portalVisibility: ['bursar']
   },
   {
     id: 'admin-income',
@@ -574,7 +833,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'FINANCE_BILLING',
     icon: 'fas fa-hand-holding-usd',
     permissionKey: PERMISSIONS.FINANCE_INCOME_EXPENSES,
-    portalVisibility: ['admin', 'bursar']
+    portalVisibility: ['bursar']
   },
   {
     id: 'admin-expenses',
@@ -583,7 +842,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'FINANCE_BILLING',
     icon: 'fas fa-file-invoice-dollar',
     permissionKey: PERMISSIONS.FINANCE_INCOME_EXPENSES,
-    portalVisibility: ['admin', 'bursar']
+    portalVisibility: ['bursar']
   },
   {
     id: 'admin-liabilities',
@@ -592,7 +851,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'FINANCE_BILLING',
     icon: 'fas fa-balance-scale-right',
     permissionKey: PERMISSIONS.FINANCE_INCOME_EXPENSES,
-    portalVisibility: ['admin', 'bursar']
+    portalVisibility: ['bursar']
   },
   {
     id: 'admin-bank-reconciliation',
@@ -601,7 +860,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'FINANCE_BILLING',
     icon: 'fas fa-university',
     permissionKey: PERMISSIONS.FINANCE_RECONCILIATION,
-    portalVisibility: ['admin', 'bursar']
+    portalVisibility: ['bursar']
   },
   {
     id: 'admin-financial-reports',
@@ -610,7 +869,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'FINANCE_BILLING',
     icon: 'fas fa-chart-line',
     permissionKey: PERMISSIONS.FINANCE_REPORTS_VIEW,
-    portalVisibility: ['admin', 'bursar']
+    portalVisibility: ['bursar']
   },
 
   // ==========================================
@@ -623,7 +882,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'PROCUREMENT_ASSETS',
     icon: 'fas fa-shopping-cart',
     permissionKey: PERMISSIONS.PROCUREMENT_REQUISITIONS,
-    portalVisibility: ['admin', 'bursar', 'ancillary', 'teacher']
+    portalVisibility: ['bursar', 'ancillary', 'teacher']
   },
   {
     id: 'admin-suppliers',
@@ -632,7 +891,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'PROCUREMENT_ASSETS',
     icon: 'fas fa-truck',
     permissionKey: PERMISSIONS.PROCUREMENT_SUPPLIERS,
-    portalVisibility: ['admin', 'bursar']
+    portalVisibility: ['bursar']
   },
   {
     id: 'admin-assets',
@@ -641,7 +900,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'PROCUREMENT_ASSETS',
     icon: 'fas fa-boxes',
     permissionKey: PERMISSIONS.ASSETS_REGISTER_VIEW,
-    portalVisibility: ['admin', 'bursar', 'ancillary', 'teacher', 'librarian']
+    portalVisibility: ['bursar', 'ancillary', 'teacher', 'librarian']
   },
   {
     id: 'admin-asset-maintenance',
@@ -650,7 +909,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'PROCUREMENT_ASSETS',
     icon: 'fas fa-tools',
     permissionKey: PERMISSIONS.ASSETS_MAINTENANCE,
-    portalVisibility: ['admin', 'ancillary']
+    portalVisibility: ['ancillary']
   },
   {
     id: 'admin-farm',
@@ -659,7 +918,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'PROCUREMENT_ASSETS',
     icon: 'fas fa-tractor',
     permissionKey: PERMISSIONS.FARM_PROJECTS_MANAGE,
-    portalVisibility: ['admin', 'ancillary', 'teacher']
+    portalVisibility: ['ancillary', 'teacher']
   },
 
   // ==========================================
@@ -672,7 +931,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'HR_PAYROLL',
     icon: 'fas fa-briefcase',
     permissionKey: PERMISSIONS.HR_RECRUITMENT_MANAGE,
-    portalVisibility: ['admin']
+    portalVisibility: []
   },
   {
     id: 'admin-hr-applications',
@@ -681,7 +940,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'HR_PAYROLL',
     icon: 'fas fa-file-signature',
     permissionKey: PERMISSIONS.HR_RECRUITMENT_MANAGE,
-    portalVisibility: ['admin']
+    portalVisibility: []
   },
   {
     id: 'admin-payroll-list',
@@ -690,7 +949,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'HR_PAYROLL',
     icon: 'fas fa-money-check-alt',
     permissionKey: PERMISSIONS.HR_PAYROLL_MANAGE,
-    portalVisibility: ['admin', 'bursar']
+    portalVisibility: ['bursar']
   },
   {
     id: 'admin-hr-awards',
@@ -699,7 +958,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'HR_PAYROLL',
     icon: 'fas fa-award',
     permissionKey: PERMISSIONS.HR_AWARDS_MANAGE,
-    portalVisibility: ['admin']
+    portalVisibility: []
   },
   {
     id: 'admin-hr-leaves',
@@ -708,7 +967,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'HR_PAYROLL',
     icon: 'fas fa-calendar-times',
     permissionKey: PERMISSIONS.HR_LEAVE_MANAGE,
-    portalVisibility: ['admin']
+    portalVisibility: []
   },
   {
     id: 'admin-my-leave',
@@ -717,7 +976,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'HR_PAYROLL',
     icon: 'fas fa-calendar-minus',
     permissionKey: PERMISSIONS.HR_LEAVE_APPLY,
-    portalVisibility: ['admin', 'teacher', 'bursar', 'librarian', 'ancillary']
+    portalVisibility: ['teacher', 'bursar', 'librarian', 'ancillary']
   },
   {
     id: 'admin-my-awards',
@@ -726,7 +985,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'HR_PAYROLL',
     icon: 'fas fa-medal',
     permissionKey: PERMISSIONS.HR_LEAVE_APPLY,
-    portalVisibility: ['admin', 'teacher', 'bursar', 'librarian', 'ancillary']
+    portalVisibility: ['teacher', 'bursar', 'librarian', 'ancillary']
   },
 
   // ==========================================
@@ -739,7 +998,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'TRANSPORT',
     icon: 'fas fa-route',
     permissionKey: PERMISSIONS.TRANSPORT_ROUTES_MANAGE,
-    portalVisibility: ['admin', 'ancillary', 'bursar']
+    portalVisibility: ['ancillary', 'bursar']
   },
   {
     id: 'admin-transport-vehicles',
@@ -748,7 +1007,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'TRANSPORT',
     icon: 'fas fa-bus',
     permissionKey: PERMISSIONS.TRANSPORT_VEHICLES_MANAGE,
-    portalVisibility: ['admin', 'ancillary', 'bursar']
+    portalVisibility: ['ancillary', 'bursar']
   },
   {
     id: 'admin-transport-assignments',
@@ -757,7 +1016,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'TRANSPORT',
     icon: 'fas fa-shuttle-van',
     permissionKey: PERMISSIONS.TRANSPORT_VEHICLES_MANAGE,
-    portalVisibility: ['admin', 'ancillary', 'bursar']
+    portalVisibility: ['ancillary', 'bursar']
   },
 
   // ==========================================
@@ -770,7 +1029,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'LIBRARY',
     icon: 'fas fa-tachometer-alt',
     permissionKey: PERMISSIONS.LIBRARY_DASHBOARD_VIEW,
-    portalVisibility: ['admin', 'librarian', 'ancillary']
+    portalVisibility: ['librarian', 'ancillary']
   },
   {
     id: 'admin-library-books',
@@ -779,7 +1038,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'LIBRARY',
     icon: 'fas fa-book',
     permissionKey: PERMISSIONS.LIBRARY_CATALOG_VIEW,
-    portalVisibility: ['admin', 'librarian', 'teacher', 'ancillary']
+    portalVisibility: ['librarian', 'teacher', 'ancillary']
   },
   {
     id: 'admin-library-categories',
@@ -788,7 +1047,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'LIBRARY',
     icon: 'fas fa-tags',
     permissionKey: PERMISSIONS.LIBRARY_CATALOG_MANAGE,
-    portalVisibility: ['admin', 'librarian', 'ancillary']
+    portalVisibility: ['librarian', 'ancillary']
   },
   {
     id: 'admin-library-loans',
@@ -797,7 +1056,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'LIBRARY',
     icon: 'fas fa-handshake',
     permissionKey: PERMISSIONS.LIBRARY_CIRCULATION_MANAGE,
-    portalVisibility: ['admin', 'librarian', 'ancillary', 'teacher']
+    portalVisibility: ['librarian', 'ancillary', 'teacher']
   },
   {
     id: 'admin-library-overdue',
@@ -806,7 +1065,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'LIBRARY',
     icon: 'fas fa-exclamation-circle',
     permissionKey: PERMISSIONS.LIBRARY_OVERDUE_MANAGE,
-    portalVisibility: ['admin', 'librarian', 'ancillary']
+    portalVisibility: ['librarian', 'ancillary']
   },
   {
     id: 'admin-library-reservations',
@@ -815,7 +1074,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'LIBRARY',
     icon: 'fas fa-bookmark',
     permissionKey: PERMISSIONS.LIBRARY_CIRCULATION_MANAGE,
-    portalVisibility: ['admin', 'librarian', 'ancillary']
+    portalVisibility: ['librarian', 'ancillary']
   },
   {
     id: 'admin-library-digital',
@@ -824,7 +1083,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'LIBRARY',
     icon: 'fas fa-cloud-download-alt',
     permissionKey: PERMISSIONS.LIBRARY_CATALOG_VIEW,
-    portalVisibility: ['admin', 'librarian', 'teacher', 'ancillary', 'student']
+    portalVisibility: ['librarian', 'teacher', 'ancillary', 'student']
   },
   {
     id: 'admin-library-reports',
@@ -833,7 +1092,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'LIBRARY',
     icon: 'fas fa-chart-pie',
     permissionKey: PERMISSIONS.LIBRARY_REPORTS_VIEW,
-    portalVisibility: ['admin', 'librarian', 'bursar', 'ancillary']
+    portalVisibility: ['librarian', 'bursar', 'ancillary']
   },
 
   // ==========================================
@@ -846,7 +1105,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'CLINIC_HEALTH',
     icon: 'fas fa-notes-medical',
     permissionKey: PERMISSIONS.CLINIC_DASHBOARD_VIEW,
-    portalVisibility: ['admin', 'clinic']
+    portalVisibility: ['clinic']
   },
   {
     id: 'admin-clinic-patients',
@@ -855,7 +1114,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'CLINIC_HEALTH',
     icon: 'fas fa-user-injured',
     permissionKey: PERMISSIONS.CLINIC_PATIENTS_MANAGE,
-    portalVisibility: ['admin', 'clinic']
+    portalVisibility: ['clinic']
   },
   {
     id: 'admin-clinic-hospitalization',
@@ -864,7 +1123,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'CLINIC_HEALTH',
     icon: 'fas fa-bed',
     permissionKey: PERMISSIONS.CLINIC_PATIENTS_MANAGE,
-    portalVisibility: ['admin', 'clinic']
+    portalVisibility: ['clinic']
   },
   {
     id: 'admin-clinic-triage',
@@ -873,7 +1132,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'CLINIC_HEALTH',
     icon: 'fas fa-heartbeat',
     permissionKey: PERMISSIONS.CLINIC_TRIAGE_MANAGE,
-    portalVisibility: ['admin', 'clinic']
+    portalVisibility: ['clinic']
   },
   {
     id: 'parent-clinic',
@@ -897,7 +1156,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'CLINIC_HEALTH',
     icon: 'fas fa-calendar-check',
     permissionKey: PERMISSIONS.CLINIC_TRIAGE_MANAGE,
-    portalVisibility: ['admin', 'clinic', 'teacher', 'student']
+    portalVisibility: ['clinic', 'teacher', 'student']
   },
   {
     id: 'admin-clinic-emergencies',
@@ -906,7 +1165,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'CLINIC_HEALTH',
     icon: 'fas fa-ambulance',
     permissionKey: PERMISSIONS.CLINIC_TRIAGE_MANAGE,
-    portalVisibility: ['admin', 'clinic', 'teacher', 'student']
+    portalVisibility: ['clinic', 'teacher', 'student']
   },
   {
     id: 'admin-clinic-referrals',
@@ -915,7 +1174,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'CLINIC_HEALTH',
     icon: 'fas fa-file-medical',
     permissionKey: PERMISSIONS.CLINIC_PATIENTS_MANAGE,
-    portalVisibility: ['admin', 'clinic']
+    portalVisibility: ['clinic']
   },
   {
     id: 'admin-clinic-pharmacy',
@@ -924,7 +1183,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'CLINIC_HEALTH',
     icon: 'fas fa-pills',
     permissionKey: PERMISSIONS.CLINIC_PHARMACY_MANAGE,
-    portalVisibility: ['admin', 'clinic']
+    portalVisibility: ['clinic']
   },
   {
     id: 'admin-clinic-immunization',
@@ -933,7 +1192,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'CLINIC_HEALTH',
     icon: 'fas fa-syringe',
     permissionKey: PERMISSIONS.CLINIC_PATIENTS_MANAGE,
-    portalVisibility: ['admin', 'clinic']
+    portalVisibility: ['clinic']
   },
   {
     id: 'admin-clinic-billing',
@@ -942,7 +1201,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'CLINIC_HEALTH',
     icon: 'fas fa-file-invoice-dollar',
     permissionKey: PERMISSIONS.CLINIC_REPORTS_VIEW,
-    portalVisibility: ['admin', 'clinic']
+    portalVisibility: ['clinic']
   },
   {
     id: 'admin-clinic-reports',
@@ -951,7 +1210,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'CLINIC_HEALTH',
     icon: 'fas fa-chart-bar',
     permissionKey: PERMISSIONS.CLINIC_REPORTS_VIEW,
-    portalVisibility: ['admin', 'clinic']
+    portalVisibility: ['clinic']
   },
   {
     id: 'admin-clinic-complaints',
@@ -960,7 +1219,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'CLINIC_HEALTH',
     icon: 'fas fa-stethoscope',
     permissionKey: PERMISSIONS.CLINIC_PATIENTS_MANAGE,
-    portalVisibility: ['admin', 'clinic', 'teacher', 'student', 'ancillary']
+    portalVisibility: ['clinic', 'teacher', 'student', 'ancillary']
   },
   {
     id: 'admin-clinic-icd10',
@@ -969,7 +1228,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'CLINIC_HEALTH',
     icon: 'fas fa-notes-medical',
     permissionKey: PERMISSIONS.CLINIC_REPORTS_VIEW,
-    portalVisibility: ['admin', 'clinic']
+    portalVisibility: ['clinic']
   },
 
   // ==========================================
@@ -982,7 +1241,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'COMMUNICATION_PORTAL',
     icon: 'fas fa-bullhorn',
     permissionKey: PERMISSIONS.COMMUNICATION_ANNOUNCEMENTS,
-    portalVisibility: ['admin', 'teacher', 'parent', 'student']
+    portalVisibility: ['teacher', 'parent', 'student']
   },
   {
     id: 'admin-messages',
@@ -991,7 +1250,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'COMMUNICATION_PORTAL',
     icon: 'fas fa-envelope',
     permissionKey: PERMISSIONS.COMMUNICATION_MESSAGES,
-    portalVisibility: ['admin', 'teacher', 'bursar', 'librarian', 'ancillary', 'clinic', 'student', 'parent']
+    portalVisibility: ['teacher', 'bursar', 'librarian', 'ancillary', 'clinic', 'student', 'parent']
   },
   {
     id: 'parent-approvals',
@@ -1010,7 +1269,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'COMMUNICATION_PORTAL',
     icon: 'fas fa-globe',
     permissionKey: PERMISSIONS.COMMUNICATION_WEBSITE_CMS,
-    portalVisibility: ['admin']
+    portalVisibility: []
   },
   {
     id: 'admin-document-templates',
@@ -1019,7 +1278,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'COMMUNICATION_PORTAL',
     icon: 'fas fa-palette',
     permissionKey: PERMISSIONS.COMMUNICATION_TEMPLATES,
-    portalVisibility: ['admin']
+    portalVisibility: []
   },
 
   // ==========================================
@@ -1032,7 +1291,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'SDC_GOVERNANCE',
     icon: 'fas fa-file-signature',
     permissionKey: PERMISSIONS.GOVERNANCE_MINUTES,
-    portalVisibility: ['admin', 'bursar', 'sdc']
+    portalVisibility: ['bursar', 'sdc']
   },
   {
     id: 'admin-sdc-funding',
@@ -1041,7 +1300,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'SDC_GOVERNANCE',
     icon: 'fas fa-chart-line',
     permissionKey: PERMISSIONS.GOVERNANCE_FUNDING,
-    portalVisibility: ['admin', 'bursar', 'sdc']
+    portalVisibility: ['bursar', 'sdc']
   },
   {
     id: 'admin-subscription',
@@ -1050,7 +1309,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'SDC_GOVERNANCE',
     icon: 'fas fa-credit-card',
     permissionKey: PERMISSIONS.SYSTEM_SUBSCRIPTION,
-    portalVisibility: ['admin']
+    portalVisibility: []
   },
 
   // ==========================================
@@ -1063,7 +1322,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'SYSTEM',
     icon: 'fas fa-headset',
     permissionKey: PERMISSIONS.SYSTEM_HELPDESK,
-    portalVisibility: ['admin', 'teacher', 'bursar', 'librarian', 'ancillary', 'clinic', 'student', 'parent']
+    portalVisibility: ['teacher', 'bursar', 'librarian', 'ancillary', 'clinic', 'student', 'parent']
   },
   {
     id: 'admin-setup-wizard',
@@ -1072,7 +1331,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'SYSTEM',
     icon: 'fas fa-magic',
     permissionKey: PERMISSIONS.SETTINGS_INSTITUTIONAL,
-    portalVisibility: ['admin']
+    portalVisibility: []
   },
   {
     id: 'admin-institutional-settings',
@@ -1081,7 +1340,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'SYSTEM',
     icon: 'fas fa-cog',
     permissionKey: PERMISSIONS.SETTINGS_INSTITUTIONAL,
-    portalVisibility: ['admin', 'bursar', 'librarian', 'teacher', 'ancillary', 'clinic', 'student', 'parent']
+    portalVisibility: ['bursar', 'librarian', 'teacher', 'ancillary', 'clinic', 'student', 'parent']
   },
   {
     id: 'admin-my-profile',
@@ -1090,6 +1349,6 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'SYSTEM',
     icon: 'fas fa-user-circle',
     permissionKey: PERMISSIONS.SETTINGS_PERSONAL,
-    portalVisibility: ['admin', 'teacher', 'bursar', 'librarian', 'ancillary', 'clinic', 'student', 'parent']
+    portalVisibility: ['teacher', 'bursar', 'librarian', 'ancillary', 'clinic', 'student', 'parent']
   }
 ];

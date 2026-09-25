@@ -29,6 +29,10 @@ export default function AdminStudents() {
 
   useEffect(() => {
     fetchStudents();
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('action') === 'add') {
+      setIsCreateModalOpen(true);
+    }
   }, []);
 
   const fetchStudents = async () => {
@@ -81,8 +85,7 @@ export default function AdminStudents() {
   };
 
   const openDetail = (student: any) => {
-    setSelectedStudent(student);
-    setIsDetailOpen(true);
+    navigate(`/admin/students/${student.id}`);
   };
 
   const openEdit = (student: any) => {
@@ -209,10 +212,10 @@ export default function AdminStudents() {
                             <button className="portal-btn-ghost" title={s.user?.isLocked ? "Unlock Access" : "Lock Access"} style={{ padding: '8px', width: '36px', height: '36px', color: '#f97316', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => handleLockToggle(s)}>
                               <i className={`fas fa-${s.user?.isLocked ? 'unlock' : 'lock'}`}></i>
                             </button>
-                            <button className="portal-btn-ghost" title="Academic History" style={{ padding: '8px', width: '36px', height: '36px', color: '#8b5cf6', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => window.location.href = `/admin/student-history?id=${s.id}`}>
+                            <button className="portal-btn-ghost" title="Academic History" style={{ padding: '8px', width: '36px', height: '36px', color: '#8b5cf6', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => navigate(`/admin/students/${s.id}?tab=academics`)}>
                               <i className="fas fa-history"></i>
                             </button>
-                            <button className="portal-btn-ghost" title="Generate Report Card" style={{ padding: '8px', width: '36px', height: '36px', color: '#ec4899', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => navigate(`/admin/reports?studentId=${s.user?.id || s.id}`)}>
+                            <button className="portal-btn-ghost" title="Generate Report Card" style={{ padding: '8px', width: '36px', height: '36px', color: '#ec4899', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => navigate(`/admin/academics/marks?studentId=${s.id}&tab=reports`)}>
                               <i className="fas fa-file-pdf"></i>
                             </button>
                             <button className="portal-btn-ghost" title="Delete Permanent" style={{ padding: '8px', width: '36px', height: '36px', color: '#dc2626', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => handleDelete(s)}>

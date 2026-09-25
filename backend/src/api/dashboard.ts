@@ -12,12 +12,40 @@ const router = Router();
 router.get('/admin', requireAuth, async (req: AuthRequest, res: Response) => {
   const schoolId = req.user!.schoolId!;
   try {
-    // 1. Core aggregates - use individual try-catches if specific counts are non-critical
-    const [totalStudents, totalTeachers, pendingApplications, reportsCount] = await Promise.all([
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    // 1. Core aggregates & action-oriented counts
+    const [
+      totalStudents,
+      totalTeachers,
+      pendingApplications,
+      reportsCount,
+      todayAbsentStudents,
+      todayAbsentStaff,
+      todayClinicVisits,
+      todayFeePayments,
+      todayPaymentAgg,
+      lowStockTuckshop,
+      lowStockClinic,
+      pendingPaymentPlans,
+      pendingLeaves
+    ] = await Promise.all([
       prisma.student.count({ where: { schoolId } }).catch(() => 0),
       prisma.teacher.count({ where: { schoolId } }).catch(() => 0),
-      prisma.application.count({ where: { schoolId, status: 'pending' } }).catch(() => 0),
+      prisma.application.count({ where: { schoolId, status: { in: ['pending', 'PENDING', 'applied'] } } }).catch(() => 0),
       prisma.academicReport.count({ where: { schoolId } }).catch(() => 0),
+      prisma.attendance.count({ where: { student: { schoolId }, date: { gte: today, lt: tomorrow }, status: { in: ['absent', 'ABSENT'] } } }).catch(() => 0),
+      prisma.staffAttendance.count({ where: { schoolId, date: { gte: today, lt: tomorrow }, status: 'ABSENT' } }).catch(() => 0),
+      prisma.clinicVisit.count({ where: { schoolId, createdAt: { gte: today, lt: tomorrow } } }).catch(() => 0),
+      prisma.studentPayment.count({ where: { student: { schoolId }, date: { gte: today, lt: tomorrow } } }).catch(() => 0),
+      prisma.studentPayment.aggregate({ where: { student: { schoolId }, date: { gte: today, lt: tomorrow } }, _sum: { amount: true } }).catch(() => ({ _sum: { amount: 0 } })),
+      prisma.tuckshopItem.count({ where: { schoolId, stock: { lte: 10 } } }).catch(() => 0),
+      prisma.clinicInventoryItem.count({ where: { schoolId, stock: { lte: 10 } } }).catch(() => 0),
+      prisma.paymentPlan.count({ where: { schoolId, status: { in: ['PENDING', 'pending', 'REQUESTED'] } } }).catch(() => 0),
+      prisma.staffLeave.count({ where: { schoolId, status: { in: ['PENDING', 'pending'] } } }).catch(() => 0),
     ]);
 
     // 2. Financial aggregation
@@ -64,6 +92,20 @@ router.get('/admin', requireAuth, async (req: AuthRequest, res: Response) => {
         pendingApplications,
         totalRevenue,
         reportsCount,
+      },
+      todayActions: {
+        absentCount: todayAbsentStudents + todayAbsentStaff,
+        absentStudents: todayAbsentStudents,
+        absentStaff: todayAbsentStaff,
+        clinicVisits: todayClinicVisits,
+        feePaymentsCount: todayFeePayments,
+        feePaymentsTotal: todayPaymentAgg._sum.amount ?? 0,
+        lowStockAlerts: lowStockTuckshop + lowStockClinic,
+      },
+      needsApproval: {
+        admissions: pendingApplications,
+        paymentPlans: pendingPaymentPlans,
+        leaveRequests: pendingLeaves,
       },
       recentApplications,
       announcements,

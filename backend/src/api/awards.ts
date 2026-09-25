@@ -23,6 +23,32 @@ router.get('/my', requireAuth, async (req: AuthRequest, res) => {
   }
 });
 
+// Get all awards for the current school (tenant-scoped)
+router.get('/', requireAuth, async (req: AuthRequest, res) => {
+  try {
+    const schoolId = req.user!.schoolId!;
+    const awards = await prisma.award.findMany({
+      where: { schoolId },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            role: true,
+            studentId: true,
+            staffId: true
+          }
+        }
+      },
+      orderBy: { date: 'desc' }
+    });
+    res.json(awards);
+  } catch (error) {
+    console.error('Error fetching school awards:', error);
+    res.status(500).json({ error: 'Failed to fetch school awards' });
+  }
+});
+
 // Admin/Teacher/Ancillary endpoint to give an award
 // FIX: Post an expense journal entry when a monetary award (amount > 0) is issued:
 //   DR  7900 Miscellaneous Expense   [amount]  (awards/recognition cost)
