@@ -18,6 +18,7 @@ interface BookRecord {
   isbn13?: string;
   categoryId: string;
   categoryName: string;
+  subjectId?: string;
   totalCopies: number;
   available: number;
   shelfLocation?: string;
@@ -108,6 +109,11 @@ export default function LibraryBooks() {
   const [editBook, setEditBook] = useState<BookRecord | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
+  // Mutual exclusivity ISBN modes ('ISBN-13' | 'ISBN-10' | 'NONE')
+  const [addIsbnMode, setAddIsbnMode] = useState<'ISBN-13' | 'ISBN-10' | 'NONE'>('ISBN-13');
+  const [editIsbnMode, setEditIsbnMode] = useState<'ISBN-13' | 'ISBN-10' | 'NONE'>('ISBN-13');
+  const [loadingAccession, setLoadingAccession] = useState(false);
+
   // Add Form state
   const [authorList, setAuthorList] = useState<AuthorEntry[]>([{ surname: '', firstName: '' }]);
   const [formData, setFormData] = useState({
@@ -196,6 +202,26 @@ export default function LibraryBooks() {
     }
   };
 
+  const fetchNextAccession = async () => {
+    try {
+      setLoadingAccession(true);
+      const res = await api.get('/api/library/books/next-accession');
+      if (res.data?.nextAccessionNumber) {
+        setFormData(prev => ({ ...prev, accessionNumber: res.data.nextAccessionNumber }));
+      }
+    } catch (err) {
+      console.error('Failed to fetch next accession number:', err);
+    } finally {
+      setLoadingAccession(false);
+    }
+  };
+
+  const handleOpenAddModal = () => {
+    resetAddForm();
+    setShowAddModal(true);
+    fetchNextAccession();
+  };
+
   // Helper to format authors
   const formatAuthorsArray = (list: AuthorEntry[]): string[] => {
     return list
@@ -228,12 +254,16 @@ export default function LibraryBooks() {
       return;
     }
 
+    // Mutually exclusive ISBN 10 OR ISBN 13
+    const cleanIsbn10 = addIsbnMode === 'ISBN-10' ? formData.isbn10.replace(/[^0-9X]/gi, '') : '';
+    const cleanIsbn13 = addIsbnMode === 'ISBN-13' ? formData.isbn13.replace(/[^0-9]/g, '') : '';
+    if (cleanIsbn10 && cleanIsbn13) {
+      showToast('A book can have either an ISBN-10 OR an ISBN-13, not both.', 'error');
+      return;
+    }
+
     const formattedAuthors = formatAuthorsArray(authorList);
     const primaryAuthor = formattedAuthors.length > 0 ? formattedAuthors[0] : 'Unknown';
-
-    // Strip hyphens from ISBNs
-    const cleanIsbn10 = formData.isbn10.replace(/[^0-9X]/gi, '');
-    const cleanIsbn13 = formData.isbn13.replace(/[^0-9]/g, '');
 
     const data = new FormData();
     data.append('title', formData.title.trim());
@@ -245,6 +275,7 @@ export default function LibraryBooks() {
     data.append('categoryId', formData.categoryId);
     data.append('subjectId', formData.subjectId || '');
     data.append('totalCopies', String(formData.totalCopies));
+    data.append('available', String(formData.availableCopies));
     data.append('availableCopies', String(formData.availableCopies));
     data.append('shelfLocation', formData.shelfLocation.trim());
     data.append('barcode', formData.barcode.trim());
@@ -282,6 +313,7 @@ export default function LibraryBooks() {
 
   const resetAddForm = () => {
     setAuthorList([{ surname: '', firstName: '' }]);
+    setAddIsbnMode('ISBN-13');
     setFormData({
       title: '',
       isbn10: '',
@@ -307,7 +339,7 @@ export default function LibraryBooks() {
     });
   };
 
-  // Open edit modal
+  // Open edit modal with ALL fields populated
   const openEditModal = (book: BookRecord) => {
     setEditBook(book);
     let authors: AuthorEntry[] = [];
@@ -331,11 +363,25 @@ export default function LibraryBooks() {
     }
     setEditAuthorList(authors);
 
+    // Determine initial ISBN mode
+    let initialIsbnMode: 'ISBN-13' | 'ISBN-10' | 'NONE' = 'ISBN-13';
+    if (book.isbn10) {
+      initialIsbnMode = 'ISBN-10';
+    } else if (book.isbn13) {
+      initialIsbnMode = 'ISBN-13';
+    } else if (book.isbn) {
+      initialIsbnMode = book.isbn.length === 10 ? 'ISBN-10' : 'ISBN-13';
+    } else {
+      initialIsbnMode = 'NONE';
+    }
+    setEditIsbnMode(initialIsbnMode);
+
     setEditFormData({
       title: book.title || '',
-      isbn10: book.isbn10 || '',
-      isbn13: book.isbn13 || (book.isbn?.length === 13 ? book.isbn : ''),
+      isbn10: book.isbn10 || (initialIsbnMode === 'ISBN-10' ? book.isbn || '' : ''),
+      isbn13: book.isbn13 || (initialIsbnMode === 'ISBN-13' ? book.isbn || '' : ''),
       categoryId: book.categoryId || '',
+      subjectId: book.subjectId || '',
       totalCopies: book.totalCopies ?? 1,
       available: book.available ?? 1,
       shelfLocation: book.shelfLocation || '',
@@ -343,33 +389,73 @@ export default function LibraryBooks() {
       accessionNumber: book.accessionNumber || '',
       edition: book.edition || '',
       publisher: book.publisher || '',
+      price: book.price !== undefined && book.price !== null ? String(book.price) : '',
+      publishedDate: book.publishedDate ? book.publishedDate.split('T')[0] : '',
       language: book.language || 'English',
       source: book.source || 'Purchased',
       condition: book.condition || 'Good',
       status: book.status || 'Available',
-      description: book.description || ''
+      keywords: Array.isArray(book.keywords) ? book.keywords.join(', ') : (book.keywords || ''),
+      description: book.description || '',
+      cover: null as File | null,
+      currentCoverUrl: book.coverImage || (book as any).coverUrl || ''
     });
   };
 
   const handleEditBook = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editBook) return;
+    if (!editFormData.title?.trim()) {
+      showToast('Title is required', 'error');
+      return;
+    }
+
+    // Mutual exclusivity validation
+    const cleanIsbn10 = editIsbnMode === 'ISBN-10' ? (editFormData.isbn10 || '').replace(/[^0-9X]/gi, '') : '';
+    const cleanIsbn13 = editIsbnMode === 'ISBN-13' ? (editFormData.isbn13 || '').replace(/[^0-9]/g, '') : '';
+    if (cleanIsbn10 && cleanIsbn13) {
+      showToast('A book can have either an ISBN-10 OR an ISBN-13, not both.', 'error');
+      return;
+    }
 
     const formattedAuthors = formatAuthorsArray(editAuthorList);
     const primaryAuthor = formattedAuthors.length > 0 ? formattedAuthors[0] : 'Unknown';
 
+    const data = new FormData();
+    data.append('title', editFormData.title.trim());
+    data.append('author', primaryAuthor);
+    data.append('authors', JSON.stringify(formattedAuthors));
+    data.append('isbn', cleanIsbn13 || cleanIsbn10 || '');
+    data.append('isbn10', cleanIsbn10);
+    data.append('isbn13', cleanIsbn13);
+    data.append('categoryId', editFormData.categoryId || '');
+    data.append('subjectId', editFormData.subjectId || '');
+    data.append('totalCopies', String(editFormData.totalCopies || 1));
+    data.append('available', String(editFormData.available !== undefined ? editFormData.available : editFormData.totalCopies || 1));
+    data.append('shelfLocation', (editFormData.shelfLocation || '').trim());
+    data.append('barcode', (editFormData.barcode || '').trim());
+    data.append('accessionNumber', (editFormData.accessionNumber || '').trim());
+    data.append('edition', (editFormData.edition || '').trim());
+    data.append('publisher', (editFormData.publisher || '').trim());
+    data.append('price', editFormData.price ? String(editFormData.price) : '');
+    data.append('publishedDate', editFormData.publishedDate || '');
+    data.append('description', (editFormData.description || '').trim());
+    data.append('language', editFormData.language || 'English');
+    data.append('source', editFormData.source || 'Purchased');
+    data.append('condition', editFormData.condition || 'Good');
+    data.append('status', editFormData.status || 'Available');
+    data.append('keywords', editFormData.keywords || '');
+
+    if (editFormData.cover) {
+      data.append('cover', editFormData.cover);
+    }
+
     setSubmitting(true);
     try {
-      await api.patch(`/api/library/books/${editBook.id}`, {
-        ...editFormData,
-        author: primaryAuthor,
-        authors: formattedAuthors,
-        isbn10: editFormData.isbn10 ? editFormData.isbn10.replace(/[^0-9X]/gi, '') : '',
-        isbn13: editFormData.isbn13 ? editFormData.isbn13.replace(/[^0-9]/g, '') : '',
-        totalCopies: parseInt(editFormData.totalCopies) || 1,
-        available: parseInt(editFormData.available) || 0
+      await api.patch(`/api/library/books/${editBook.id}`, data, {
+        headers: { 'Content-Type': 'multipart/form-data' }
       });
-      showToast('Book details updated', 'success');
+      showToast('Book details successfully updated', 'success');
       setEditBook(null);
       fetchBooks();
     } catch (err: any) {
@@ -458,7 +544,7 @@ export default function LibraryBooks() {
             <i className="fas fa-print mr-1"></i> Print/PDF
           </button>
           <button 
-            onClick={() => setShowAddModal(true)}
+            onClick={handleOpenAddModal}
             className="portal-btn-primary" 
             style={{ padding: '10px 20px', fontSize: '0.9rem', background: '#2563eb', borderRadius: '10px', display: 'flex', alignItems: 'center', gap: '8px' }}
           >
@@ -765,30 +851,89 @@ export default function LibraryBooks() {
                   </div>
                 </div>
 
-                {/* ISBN Identifiers (without hyphens) */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
-                  <div className="portal-form-group" style={{ margin: 0 }}>
-                    <label style={{ fontWeight: 600, fontSize: '0.85rem' }}>ISBN-10 (10 digits, no hyphens)</label>
-                    <input 
-                      type="text" 
-                      maxLength={10} 
-                      placeholder="e.g. 0140449132" 
-                      className="portal-input" 
-                      value={formData.isbn10} 
-                      onChange={e => setFormData({ ...formData, isbn10: e.target.value })} 
-                    />
+                {/* ISBN Identifiers (Mutually Exclusive: ISBN-10 OR ISBN-13) */}
+                <div style={{ background: '#f8fafc', padding: 14, borderRadius: 10, border: '1px solid #e2e8f0' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10, flexWrap: 'wrap', gap: 8 }}>
+                    <label style={{ fontWeight: 700, fontSize: '0.85rem', color: '#334155' }}>
+                      <i className="fas fa-barcode mr-1"></i> ISBN Identifier (Choose either ISBN-13 OR ISBN-10)
+                    </label>
+                    <div style={{ display: 'flex', gap: 14, fontSize: '0.82rem', fontWeight: 600 }}>
+                      <label style={{ display: 'flex', alignItems: 'center', gap: 4, cursor: 'pointer' }}>
+                        <input
+                          type="radio"
+                          name="add_isbn_type"
+                          checked={addIsbnMode === 'ISBN-13'}
+                          onChange={() => {
+                            setAddIsbnMode('ISBN-13');
+                            setFormData(prev => ({ ...prev, isbn10: '' }));
+                          }}
+                        />
+                        ISBN-13 (Standard)
+                      </label>
+                      <label style={{ display: 'flex', alignItems: 'center', gap: 4, cursor: 'pointer' }}>
+                        <input
+                          type="radio"
+                          name="add_isbn_type"
+                          checked={addIsbnMode === 'ISBN-10'}
+                          onChange={() => {
+                            setAddIsbnMode('ISBN-10');
+                            setFormData(prev => ({ ...prev, isbn13: '' }));
+                          }}
+                        />
+                        ISBN-10 (Legacy)
+                      </label>
+                      <label style={{ display: 'flex', alignItems: 'center', gap: 4, cursor: 'pointer' }}>
+                        <input
+                          type="radio"
+                          name="add_isbn_type"
+                          checked={addIsbnMode === 'NONE'}
+                          onChange={() => {
+                            setAddIsbnMode('NONE');
+                            setFormData(prev => ({ ...prev, isbn10: '', isbn13: '' }));
+                          }}
+                        />
+                        No ISBN
+                      </label>
+                    </div>
                   </div>
-                  <div className="portal-form-group" style={{ margin: 0 }}>
-                    <label style={{ fontWeight: 600, fontSize: '0.85rem' }}>ISBN-13 (13 digits, no hyphens)</label>
-                    <input 
-                      type="text" 
-                      maxLength={13} 
-                      placeholder="e.g. 9780140449136" 
-                      className="portal-input" 
-                      value={formData.isbn13} 
-                      onChange={e => setFormData({ ...formData, isbn13: e.target.value })} 
-                    />
-                  </div>
+
+                  {addIsbnMode === 'ISBN-13' && (
+                    <div className="portal-form-group" style={{ margin: 0 }}>
+                      <input 
+                        type="text" 
+                        maxLength={13} 
+                        placeholder="e.g. 9780140449136 (13 digits, no hyphens)" 
+                        className="portal-input" 
+                        value={formData.isbn13} 
+                        onChange={e => setFormData({ ...formData, isbn13: e.target.value.replace(/[^0-9]/g, ''), isbn10: '' })} 
+                      />
+                      <small style={{ color: '#64748b', fontSize: '0.75rem', marginTop: 4, display: 'block' }}>
+                        Enter 13 numeric digits. (Mutually exclusive with ISBN-10)
+                      </small>
+                    </div>
+                  )}
+
+                  {addIsbnMode === 'ISBN-10' && (
+                    <div className="portal-form-group" style={{ margin: 0 }}>
+                      <input 
+                        type="text" 
+                        maxLength={10} 
+                        placeholder="e.g. 0140449132 (10 alphanumeric characters, no hyphens)" 
+                        className="portal-input" 
+                        value={formData.isbn10} 
+                        onChange={e => setFormData({ ...formData, isbn10: e.target.value.replace(/[^0-9X]/gi, ''), isbn13: '' })} 
+                      />
+                      <small style={{ color: '#64748b', fontSize: '0.75rem', marginTop: 4, display: 'block' }}>
+                        Enter 10 characters. (Mutually exclusive with ISBN-13)
+                      </small>
+                    </div>
+                  )}
+
+                  {addIsbnMode === 'NONE' && (
+                    <p style={{ margin: 0, fontSize: '0.8rem', color: '#94a3b8', fontStyle: 'italic' }}>
+                      No ISBN registered for this book entry.
+                    </p>
+                  )}
                 </div>
 
                 {/* Shelf Location, Barcode & Accession Number */}
@@ -814,14 +959,27 @@ export default function LibraryBooks() {
                     />
                   </div>
                   <div className="portal-form-group" style={{ margin: 0 }}>
-                    <label style={{ fontWeight: 600, fontSize: '0.85rem' }}>Accession Number</label>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <label style={{ fontWeight: 600, fontSize: '0.85rem' }}>Accession Number</label>
+                      <button
+                        type="button"
+                        onClick={fetchNextAccession}
+                        title="Re-generate sequential accession number"
+                        style={{ background: 'none', border: 'none', color: '#2563eb', cursor: 'pointer', fontSize: '0.72rem', fontWeight: 700 }}
+                      >
+                        <i className={`fas fa-sync-alt ${loadingAccession ? 'fa-spin' : ''} mr-1`}></i> Auto-gen
+                      </button>
+                    </div>
                     <input 
                       type="text" 
-                      placeholder="e.g. ACC-2026-004" 
+                      placeholder="e.g. ACC-0001 (auto-generated)" 
                       className="portal-input" 
                       value={formData.accessionNumber} 
                       onChange={e => setFormData({ ...formData, accessionNumber: e.target.value })} 
                     />
+                    <small style={{ color: '#059669', fontSize: '0.72rem', marginTop: 2, display: 'block', fontWeight: 600 }}>
+                      <i className="fas fa-magic mr-1"></i> Auto-generated per school sequence
+                    </small>
                   </div>
                 </div>
 
@@ -999,21 +1157,26 @@ export default function LibraryBooks() {
         </div>
       )}
 
-      {/* Edit Book Modal */}
+      {/* Edit Book Modal - Full entries visible during creation */}
       {editBook && (
         <div className="portal-modal-overlay" style={{ zIndex: 1100 }}>
-          <div className="portal-modal-card" style={{ maxWidth: 760, maxHeight: '90vh', overflowY: 'auto' }}>
+          <div className="portal-modal-card" style={{ maxWidth: 780, maxHeight: '90vh', overflowY: 'auto' }}>
             <div className="portal-modal-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #e2e8f0', paddingBottom: 16 }}>
               <div>
                 <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800, color: '#1e293b' }}>
+                  <i className="fas fa-edit mr-2 text-primary"></i>
                   Edit Catalog Entry: {editBook.title}
                 </h2>
+                <p style={{ margin: '4px 0 0', fontSize: '0.8rem', color: '#64748b' }}>
+                  Modify all catalog specifications, inventory copies, coordinates, and classification.
+                </p>
               </div>
               <button className="close-btn" style={{ border: 'none', background: 'none', fontSize: '1.5rem', cursor: 'pointer' }} onClick={() => setEditBook(null)}>&times;</button>
             </div>
 
             <form onSubmit={handleEditBook} style={{ padding: '20px 0' }}>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+                {/* Book Title */}
                 <div className="portal-form-group" style={{ margin: 0 }}>
                   <label style={{ fontWeight: 700, fontSize: '0.85rem' }}>Official Book Title *</label>
                   <input 
@@ -1026,85 +1189,155 @@ export default function LibraryBooks() {
                 </div>
 
                 {/* Multiple Authors */}
-                <div style={{ background: '#f8fafc', padding: 12, borderRadius: 8, border: '1px solid #e2e8f0' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                    <label style={{ fontWeight: 700, fontSize: '0.85rem' }}>Authors</label>
+                <div style={{ background: '#f8fafc', padding: 14, borderRadius: 10, border: '1px solid #e2e8f0' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+                    <label style={{ fontWeight: 700, fontSize: '0.85rem', color: '#334155' }}>
+                      <i className="fas fa-users mr-1"></i> Authors (Surname, First Name format) *
+                    </label>
                     <button 
                       type="button" 
                       onClick={() => setEditAuthorList(prev => [...prev, { surname: '', firstName: '' }])}
                       className="portal-btn-secondary" 
-                      style={{ padding: '2px 8px', fontSize: '0.75rem' }}
+                      style={{ padding: '4px 10px', fontSize: '0.75rem', borderRadius: 6 }}
                     >
-                      + Add Author
+                      <i className="fas fa-plus mr-1"></i> Add Author
                     </button>
                   </div>
-                  {editAuthorList.map((auth, idx) => (
-                    <div key={idx} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 40px', gap: 8, marginBottom: 6 }}>
-                      <input 
-                        type="text" 
-                        placeholder="Surname" 
-                        className="portal-input" 
-                        value={auth.surname} 
-                        onChange={e => {
-                          const updated = [...editAuthorList];
-                          updated[idx].surname = e.target.value;
-                          setEditAuthorList(updated);
-                        }} 
-                      />
-                      <input 
-                        type="text" 
-                        placeholder="First Name" 
-                        className="portal-input" 
-                        value={auth.firstName} 
-                        onChange={e => {
-                          const updated = [...editAuthorList];
-                          updated[idx].firstName = e.target.value;
-                          setEditAuthorList(updated);
-                        }} 
-                      />
-                      {editAuthorList.length > 1 ? (
-                        <button 
-                          type="button" 
-                          onClick={() => setEditAuthorList(prev => prev.filter((_, i) => i !== idx))}
-                          style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer' }}
-                        >
-                          &times;
-                        </button>
-                      ) : <div></div>}
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                    {editAuthorList.map((auth, idx) => (
+                      <div key={idx} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 40px', gap: 10, alignItems: 'center' }}>
+                        <input 
+                          type="text" 
+                          placeholder={`Author ${idx + 1} Surname`} 
+                          className="portal-input" 
+                          value={auth.surname} 
+                          onChange={e => {
+                            const updated = [...editAuthorList];
+                            updated[idx].surname = e.target.value;
+                            setEditAuthorList(updated);
+                          }} 
+                          style={{ fontSize: '0.85rem' }}
+                        />
+                        <input 
+                          type="text" 
+                          placeholder={`Author ${idx + 1} First Name`} 
+                          className="portal-input" 
+                          value={auth.firstName} 
+                          onChange={e => {
+                            const updated = [...editAuthorList];
+                            updated[idx].firstName = e.target.value;
+                            setEditAuthorList(updated);
+                          }} 
+                          style={{ fontSize: '0.85rem' }}
+                        />
+                        {editAuthorList.length > 1 ? (
+                          <button 
+                            type="button" 
+                            onClick={() => setEditAuthorList(prev => prev.filter((_, i) => i !== idx))} 
+                            style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', textAlign: 'center' }}
+                            title="Remove Author"
+                          >
+                            <i className="fas fa-times"></i>
+                          </button>
+                        ) : <div></div>}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* ISBN Mutually Exclusive Selection (ISBN-13 OR ISBN-10) */}
+                <div style={{ background: '#f8fafc', padding: 14, borderRadius: 10, border: '1px solid #e2e8f0' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10, flexWrap: 'wrap', gap: 8 }}>
+                    <label style={{ fontWeight: 700, fontSize: '0.85rem', color: '#334155' }}>
+                      <i className="fas fa-barcode mr-1"></i> ISBN Identifier (Choose either ISBN-13 OR ISBN-10)
+                    </label>
+                    <div style={{ display: 'flex', gap: 14, fontSize: '0.82rem', fontWeight: 600 }}>
+                      <label style={{ display: 'flex', alignItems: 'center', gap: 4, cursor: 'pointer' }}>
+                        <input
+                          type="radio"
+                          name="edit_isbn_type"
+                          checked={editIsbnMode === 'ISBN-13'}
+                          onChange={() => {
+                            setEditIsbnMode('ISBN-13');
+                            setEditFormData((prev: any) => ({ ...prev, isbn10: '' }));
+                          }}
+                        />
+                        ISBN-13 (Standard)
+                      </label>
+                      <label style={{ display: 'flex', alignItems: 'center', gap: 4, cursor: 'pointer' }}>
+                        <input
+                          type="radio"
+                          name="edit_isbn_type"
+                          checked={editIsbnMode === 'ISBN-10'}
+                          onChange={() => {
+                            setEditIsbnMode('ISBN-10');
+                            setEditFormData((prev: any) => ({ ...prev, isbn13: '' }));
+                          }}
+                        />
+                        ISBN-10 (Legacy)
+                      </label>
+                      <label style={{ display: 'flex', alignItems: 'center', gap: 4, cursor: 'pointer' }}>
+                        <input
+                          type="radio"
+                          name="edit_isbn_type"
+                          checked={editIsbnMode === 'NONE'}
+                          onChange={() => {
+                            setEditIsbnMode('NONE');
+                            setEditFormData((prev: any) => ({ ...prev, isbn10: '', isbn13: '' }));
+                          }}
+                        />
+                        No ISBN
+                      </label>
                     </div>
-                  ))}
+                  </div>
+
+                  {editIsbnMode === 'ISBN-13' && (
+                    <div className="portal-form-group" style={{ margin: 0 }}>
+                      <input 
+                        type="text" 
+                        maxLength={13} 
+                        placeholder="e.g. 9780140449136 (13 digits, no hyphens)" 
+                        className="portal-input" 
+                        value={editFormData.isbn13 || ''} 
+                        onChange={e => setEditFormData({ ...editFormData, isbn13: e.target.value.replace(/[^0-9]/g, ''), isbn10: '' })} 
+                      />
+                      <small style={{ color: '#64748b', fontSize: '0.75rem', marginTop: 4, display: 'block' }}>
+                        Enter 13 numeric digits. (Mutually exclusive with ISBN-10)
+                      </small>
+                    </div>
+                  )}
+
+                  {editIsbnMode === 'ISBN-10' && (
+                    <div className="portal-form-group" style={{ margin: 0 }}>
+                      <input 
+                        type="text" 
+                        maxLength={10} 
+                        placeholder="e.g. 0140449132 (10 alphanumeric characters, no hyphens)" 
+                        className="portal-input" 
+                        value={editFormData.isbn10 || ''} 
+                        onChange={e => setEditFormData({ ...editFormData, isbn10: e.target.value.replace(/[^0-9X]/gi, ''), isbn13: '' })} 
+                      />
+                      <small style={{ color: '#64748b', fontSize: '0.75rem', marginTop: 4, display: 'block' }}>
+                        Enter 10 characters. (Mutually exclusive with ISBN-13)
+                      </small>
+                    </div>
+                  )}
+
+                  {editIsbnMode === 'NONE' && (
+                    <p style={{ margin: 0, fontSize: '0.8rem', color: '#94a3b8', fontStyle: 'italic' }}>
+                      No ISBN registered for this book entry.
+                    </p>
+                  )}
                 </div>
 
-                {/* ISBNs */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
-                  <div className="portal-form-group" style={{ margin: 0 }}>
-                    <label style={{ fontWeight: 600, fontSize: '0.85rem' }}>ISBN-10</label>
-                    <input 
-                      type="text" 
-                      maxLength={10} 
-                      className="portal-input" 
-                      value={editFormData.isbn10 || ''} 
-                      onChange={e => setEditFormData({ ...editFormData, isbn10: e.target.value })} 
-                    />
-                  </div>
-                  <div className="portal-form-group" style={{ margin: 0 }}>
-                    <label style={{ fontWeight: 600, fontSize: '0.85rem' }}>ISBN-13</label>
-                    <input 
-                      type="text" 
-                      maxLength={13} 
-                      className="portal-input" 
-                      value={editFormData.isbn13 || ''} 
-                      onChange={e => setEditFormData({ ...editFormData, isbn13: e.target.value })} 
-                    />
-                  </div>
-                </div>
-
-                {/* Shelf Location, Barcode & Accession */}
+                {/* Shelf Location, Barcode & Accession Number */}
                 <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr 1fr', gap: 14 }}>
                   <div className="portal-form-group" style={{ margin: 0 }}>
-                    <label style={{ fontWeight: 600, fontSize: '0.85rem' }}>Shelf Location</label>
+                    <label style={{ fontWeight: 600, fontSize: '0.85rem' }}>Shelf Location / Coordinate</label>
                     <input 
                       type="text" 
+                      placeholder="e.g. Aisle 4, Stack B, Shelf 3" 
                       className="portal-input" 
                       value={editFormData.shelfLocation || ''} 
                       onChange={e => setEditFormData({ ...editFormData, shelfLocation: e.target.value })} 
@@ -1114,6 +1347,7 @@ export default function LibraryBooks() {
                     <label style={{ fontWeight: 600, fontSize: '0.85rem' }}>Barcode</label>
                     <input 
                       type="text" 
+                      placeholder="e.g. BC-99482" 
                       className="portal-input" 
                       value={editFormData.barcode || ''} 
                       onChange={e => setEditFormData({ ...editFormData, barcode: e.target.value })} 
@@ -1123,6 +1357,7 @@ export default function LibraryBooks() {
                     <label style={{ fontWeight: 600, fontSize: '0.85rem' }}>Accession Number</label>
                     <input 
                       type="text" 
+                      placeholder="e.g. ACC-0001" 
                       className="portal-input" 
                       value={editFormData.accessionNumber || ''} 
                       onChange={e => setEditFormData({ ...editFormData, accessionNumber: e.target.value })} 
@@ -1130,26 +1365,63 @@ export default function LibraryBooks() {
                   </div>
                 </div>
 
-                {/* Copies */}
+                {/* Category & Subject Area */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+                  <div className="portal-form-group" style={{ margin: 0 }}>
+                    <label style={{ fontWeight: 600, fontSize: '0.85rem' }}>Category *</label>
+                    <select 
+                      required 
+                      className="portal-input" 
+                      value={editFormData.categoryId || ''} 
+                      onChange={e => setEditFormData({ ...editFormData, categoryId: e.target.value })}
+                    >
+                      <option value="">Select Category</option>
+                      {categories.map(c => <option key={c.id} value={c.id}>{c.category}</option>)}
+                    </select>
+                  </div>
+                  <div className="portal-form-group" style={{ margin: 0 }}>
+                    <label style={{ fontWeight: 600, fontSize: '0.85rem' }}>Subject Area</label>
+                    <select 
+                      className="portal-input" 
+                      value={editFormData.subjectId || ''} 
+                      onChange={e => setEditFormData({ ...editFormData, subjectId: e.target.value })}
+                    >
+                      <option value="">Select Subject Area (Optional)</option>
+                      {subjects.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+                    </select>
+                  </div>
+                </div>
+
+                {/* Copies (Total, Available) & Condition */}
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 14 }}>
                   <div className="portal-form-group" style={{ margin: 0 }}>
-                    <label style={{ fontWeight: 600, fontSize: '0.85rem' }}>Total Copies</label>
+                    <label style={{ fontWeight: 600, fontSize: '0.85rem' }}>Total Copies *</label>
                     <input 
                       type="number" 
                       min="1" 
+                      required 
                       className="portal-input" 
                       value={editFormData.totalCopies || 1} 
-                      onChange={e => setEditFormData({ ...editFormData, totalCopies: e.target.value })} 
+                      onChange={e => {
+                        const val = parseInt(e.target.value) || 1;
+                        setEditFormData({ 
+                          ...editFormData, 
+                          totalCopies: val,
+                          available: Math.min(val, editFormData.available ?? val)
+                        });
+                      }} 
                     />
                   </div>
                   <div className="portal-form-group" style={{ margin: 0 }}>
-                    <label style={{ fontWeight: 600, fontSize: '0.85rem' }}>Available Copies</label>
+                    <label style={{ fontWeight: 600, fontSize: '0.85rem' }}>Available Copies *</label>
                     <input 
                       type="number" 
                       min="0" 
+                      max={editFormData.totalCopies || 9999}
+                      required 
                       className="portal-input" 
-                      value={editFormData.available || 0} 
-                      onChange={e => setEditFormData({ ...editFormData, available: e.target.value })} 
+                      value={editFormData.available ?? 1} 
+                      onChange={e => setEditFormData({ ...editFormData, available: parseInt(e.target.value) || 0 })} 
                     />
                   </div>
                   <div className="portal-form-group" style={{ margin: 0 }}>
@@ -1166,6 +1438,136 @@ export default function LibraryBooks() {
                     </select>
                   </div>
                 </div>
+
+                {/* Publisher, Edition, Language, Acquisition Source */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr 1fr 1fr', gap: 14 }}>
+                  <div className="portal-form-group" style={{ margin: 0 }}>
+                    <label style={{ fontWeight: 600, fontSize: '0.85rem' }}>Publisher</label>
+                    <input 
+                      type="text" 
+                      placeholder="e.g. Oxford University Press" 
+                      className="portal-input" 
+                      value={editFormData.publisher || ''} 
+                      onChange={e => setEditFormData({ ...editFormData, publisher: e.target.value })} 
+                    />
+                  </div>
+                  <div className="portal-form-group" style={{ margin: 0 }}>
+                    <label style={{ fontWeight: 600, fontSize: '0.85rem' }}>Edition</label>
+                    <input 
+                      type="text" 
+                      placeholder="e.g. 4th Edition" 
+                      className="portal-input" 
+                      value={editFormData.edition || ''} 
+                      onChange={e => setEditFormData({ ...editFormData, edition: e.target.value })} 
+                    />
+                  </div>
+                  <div className="portal-form-group" style={{ margin: 0 }}>
+                    <label style={{ fontWeight: 600, fontSize: '0.85rem' }}>Language</label>
+                    <select 
+                      className="portal-input" 
+                      value={editFormData.language || 'English'} 
+                      onChange={e => setEditFormData({ ...editFormData, language: e.target.value })}
+                    >
+                      <option value="English">English</option>
+                      <option value="French">French</option>
+                      <option value="Spanish">Spanish</option>
+                      <option value="Arabic">Arabic</option>
+                      <option value="Swahili">Swahili</option>
+                      <option value="Portuguese">Portuguese</option>
+                    </select>
+                  </div>
+                  <div className="portal-form-group" style={{ margin: 0 }}>
+                    <label style={{ fontWeight: 600, fontSize: '0.85rem' }}>Acquisition Source</label>
+                    <select 
+                      className="portal-input" 
+                      value={editFormData.source || 'Purchased'} 
+                      onChange={e => setEditFormData({ ...editFormData, source: e.target.value })}
+                    >
+                      <option value="Purchased">Purchased</option>
+                      <option value="Donated">Donated</option>
+                      <option value="Government Grant">Government Grant</option>
+                      <option value="Inter-Library Loan">Inter-Library Loan</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Price, Published Date, Status */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 14 }}>
+                  <div className="portal-form-group" style={{ margin: 0 }}>
+                    <label style={{ fontWeight: 600, fontSize: '0.85rem' }}>Purchase Price ($)</label>
+                    <input 
+                      type="number" 
+                      step="0.01" 
+                      placeholder="0.00" 
+                      className="portal-input" 
+                      value={editFormData.price || ''} 
+                      onChange={e => setEditFormData({ ...editFormData, price: e.target.value })} 
+                    />
+                  </div>
+                  <div className="portal-form-group" style={{ margin: 0 }}>
+                    <label style={{ fontWeight: 600, fontSize: '0.85rem' }}>Published Date</label>
+                    <input 
+                      type="date" 
+                      className="portal-input" 
+                      value={editFormData.publishedDate || ''} 
+                      onChange={e => setEditFormData({ ...editFormData, publishedDate: e.target.value })} 
+                    />
+                  </div>
+                  <div className="portal-form-group" style={{ margin: 0 }}>
+                    <label style={{ fontWeight: 600, fontSize: '0.85rem' }}>Status</label>
+                    <select 
+                      className="portal-input" 
+                      value={editFormData.status || 'Available'} 
+                      onChange={e => setEditFormData({ ...editFormData, status: e.target.value })}
+                    >
+                      <option value="Available">Available</option>
+                      <option value="Reserved">Reserved</option>
+                      <option value="Maintenance">Maintenance</option>
+                      <option value="Lost">Lost</option>
+                      <option value="Archived">Archived</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Keywords & Description */}
+                <div className="portal-form-group" style={{ margin: 0 }}>
+                  <label style={{ fontWeight: 600, fontSize: '0.85rem' }}>Keywords (Comma-separated for search discovery)</label>
+                  <input 
+                    type="text" 
+                    placeholder="e.g. quantum, mechanics, physics" 
+                    className="portal-input" 
+                    value={editFormData.keywords || ''} 
+                    onChange={e => setEditFormData({ ...editFormData, keywords: e.target.value })} 
+                  />
+                </div>
+
+                <div className="portal-form-group" style={{ margin: 0 }}>
+                  <label style={{ fontWeight: 600, fontSize: '0.85rem' }}>Summary / Description</label>
+                  <textarea 
+                    rows={2} 
+                    className="portal-input" 
+                    placeholder="Brief description or synopsis..." 
+                    value={editFormData.description || ''} 
+                    onChange={e => setEditFormData({ ...editFormData, description: e.target.value })} 
+                  />
+                </div>
+
+                {/* Book Cover Image */}
+                <div className="portal-form-group" style={{ margin: 0 }}>
+                  <label style={{ fontWeight: 600, fontSize: '0.85rem' }}>Replace Book Cover Image (Optional)</label>
+                  {editFormData.currentCoverUrl && (
+                    <div style={{ marginBottom: 8, display: 'flex', alignItems: 'center', gap: 10 }}>
+                      <span style={{ fontSize: '0.78rem', color: '#64748b' }}>Current image:</span>
+                      <span style={{ fontSize: '0.78rem', fontWeight: 600, color: '#2563eb' }}>Attached</span>
+                    </div>
+                  )}
+                  <input 
+                    type="file" 
+                    accept="image/*" 
+                    className="portal-input" 
+                    onChange={e => setEditFormData({ ...editFormData, cover: e.target.files?.[0] || null })} 
+                  />
+                </div>
               </div>
 
               <div className="portal-modal-footer" style={{ display: 'flex', justifyContent: 'flex-end', gap: 12, marginTop: 24, borderTop: '1px solid #e2e8f0', paddingTop: 16 }}>
@@ -1179,7 +1581,6 @@ export default function LibraryBooks() {
             </form>
           </div>
         </div>
-      )}
-    </div>
+      )}</div>
   );
 }

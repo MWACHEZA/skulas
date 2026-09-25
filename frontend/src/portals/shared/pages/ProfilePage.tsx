@@ -10,6 +10,7 @@ export default function ProfilePage() {
   const { user, refreshUser } = useAuth();
   const { showToast } = useToast();
   const [loading, setLoading] = useState(false);
+  const [fetchingProfile, setFetchingProfile] = useState(true);
   const [profileData, setProfileData] = useState<any>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [editingSection, setEditingSection] = useState<string | null>(null);
@@ -26,11 +27,20 @@ export default function ProfilePage() {
 
   const fetchProfile = async () => {
     try {
+      setFetchingProfile(true);
       const { data } = await api.get('/api/users/me');
       setProfileData(data);
     } catch (err) {
       console.error('Failed to fetch profile:', err);
+    } finally {
+      setFetchingProfile(false);
     }
+  };
+
+  const formatDate = (val: any) => {
+    if (!val) return '—';
+    const d = new Date(val);
+    return isNaN(d.getTime()) ? '—' : d.toLocaleDateString();
   };
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -86,15 +96,34 @@ export default function ProfilePage() {
     return name?.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || '??';
   };
 
-  const InfoRow = ({ label, value, icon }: { label: string, value: string, icon?: string }) => (
-    <div style={{ display: 'flex', borderBottom: '1px solid #f1f5f9', padding: '16px 0' }}>
-      <div style={{ width: 160, color: '#64748b', display: 'flex', alignItems: 'center', fontSize: '0.85rem', fontWeight: 700 }}>
-        {icon && <i className={icon} style={{ marginRight: 10, width: 16, color: '#94a3b8' }}></i>}
-        {label}
+  const InfoRow = ({ label, value, icon }: { label: string, value: any, icon?: string }) => {
+    let displayVal = '—';
+    if (value !== null && value !== undefined && value !== '') {
+      if (typeof value === 'object') {
+        displayVal = value.name || value.title || value.address || '—';
+      } else {
+        displayVal = String(value);
+      }
+    }
+    return (
+      <div style={{ display: 'flex', borderBottom: '1px solid #f1f5f9', padding: '16px 0' }}>
+        <div style={{ width: 160, color: '#64748b', display: 'flex', alignItems: 'center', fontSize: '0.85rem', fontWeight: 700 }}>
+          {icon && <i className={icon} style={{ marginRight: 10, width: 16, color: '#94a3b8' }}></i>}
+          {label}
+        </div>
+        <div style={{ flex: 1, fontWeight: 800, color: '#1e293b', fontSize: '0.95rem' }}>{displayVal}</div>
       </div>
-      <div style={{ flex: 1, fontWeight: 800, color: '#1e293b', fontSize: '0.95rem' }}>{value || '—'}</div>
-    </div>
-  );
+    );
+  };
+
+  if (fetchingProfile && !profileData) {
+    return (
+      <div className="portal-container" style={{ padding: 60, textAlign: 'center', color: '#64748b' }}>
+        <i className="fas fa-spinner fa-spin" style={{ fontSize: '2rem', color: '#2563eb', marginBottom: 16 }}></i>
+        <p style={{ fontWeight: 600 }}>Loading profile information...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="portal-container">
@@ -188,7 +217,7 @@ export default function ProfilePage() {
                     <InfoRow label="Class / Form" value={`${profileData.student.class.name} (${profileData.student.class.level || ''})`} icon="fas fa-chalkboard" />
                 )}
                 <InfoRow label="Gender" value={profileData?.student?.gender || profileData?.metadata?.gender} />
-                <InfoRow label="Date of Birth" value={profileData?.student?.dob ? new Date(profileData.student.dob).toLocaleDateString() : profileData?.metadata?.dob} />
+                <InfoRow label="Date of Birth" value={formatDate(profileData?.student?.dob || profileData?.metadata?.dob)} />
                 <InfoRow label="Religion" value={profileData?.metadata?.religion} />
                 {profileData?.student && <InfoRow label="Student ID" value={profileData.student.studentId} />}
                 {profileData?.student?.hexcoId && <InfoRow label="HEXCO ID" value={profileData.student.hexcoId} icon="fas fa-id-card-alt" />}
@@ -338,8 +367,8 @@ export default function ProfilePage() {
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 48px' }}>
                   <InfoRow label="Designation" value={profileData.employeeProfile.designation} />
                   <InfoRow label="Blood Group" value={profileData.employeeProfile.bloodGroup} />
-                  <InfoRow label="Date Assumed Post" value={profileData.employeeProfile.dateAssumedPost ? new Date(profileData.employeeProfile.dateAssumedPost).toLocaleDateString() : '—'} />
-                  <InfoRow label="Date of Leaving" value={profileData.employeeProfile.dateOfLeaving ? new Date(profileData.employeeProfile.dateOfLeaving).toLocaleDateString() : '—'} />
+                  <InfoRow label="Date Assumed Post" value={formatDate(profileData.employeeProfile.dateAssumedPost)} />
+                  <InfoRow label="Date of Leaving" value={formatDate(profileData.employeeProfile.dateOfLeaving)} />
               </div>
               
               <div className="section-divider" style={{ margin: '24px 0', height: '1px', background: '#f1f5f9' }}></div>
@@ -369,17 +398,23 @@ export default function ProfilePage() {
                   <InfoRow label="Twitter" value={profileData.employeeProfile.twitterLink} icon="fab fa-twitter" />
               </div>
 
-              {profileData.employeeProfile.staffDocuments && (
+              {profileData.employeeProfile.staffDocuments && typeof profileData.employeeProfile.staffDocuments === 'object' && (
                 <div style={{ marginTop: '24px', padding: '20px', background: '#f8fafc', borderRadius: '12px' }}>
                   <h5 style={{ fontSize: '0.8rem', fontWeight: 900, color: '#475569', marginBottom: '12px', textTransform: 'uppercase' }}>Verified Documents</h5>
                   <div style={{ display: 'flex', gap: '15px', flexWrap: 'wrap' }}>
-                    {Object.entries(profileData.employeeProfile.staffDocuments).map(([key, path]: [string, any]) => (
-                      <a key={key} href={`${BASE_URL}/api/storage/media/${user?.schoolCode}/staff/${user?.id}/documents/${path.split('/').pop()}`} target="_blank" rel="noopener noreferrer" 
-                         className="portal-btn-ghost" style={{ fontSize: '0.75rem', background: '#fff', border: '1px solid #e2e8f0' }}>
-                        <i className="fas fa-file-alt mr-2" style={{ color: '#2563eb' }}></i>
-                        {key.toUpperCase().replace('DOC', '')} Document
-                      </a>
-                    ))}
+                    {Object.entries(profileData.employeeProfile.staffDocuments).flatMap(([key, val]: [string, any]) => {
+                      const paths = Array.isArray(val) ? val : (typeof val === 'string' ? [val] : []);
+                      return paths.map((docPath: string, i: number) => {
+                        const filename = typeof docPath === 'string' ? (docPath.split('/').pop() || docPath) : `doc_${i}`;
+                        return (
+                          <a key={`${key}-${i}`} href={`${BASE_URL}/api/storage/media/${user?.schoolCode}/staff/${user?.id}/documents/${filename}`} target="_blank" rel="noopener noreferrer" 
+                             className="portal-btn-ghost" style={{ fontSize: '0.75rem', background: '#fff', border: '1px solid #e2e8f0', textDecoration: 'none', display: 'inline-flex', alignItems: 'center' }}>
+                            <i className="fas fa-file-alt mr-2" style={{ color: '#2563eb' }}></i>
+                            {key.toUpperCase().replace('DOC', '')} {paths.length > 1 ? `#${i + 1}` : ''}
+                          </a>
+                        );
+                      });
+                    })}
                   </div>
                 </div>
               )}

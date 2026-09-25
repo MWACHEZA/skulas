@@ -6,6 +6,7 @@ import MaintenanceRequestModal from '../shared/MaintenanceRequestModal';
 import AdminPortalFooter from './shared/AdminPortalFooter';
 import ClockInModal from '../attendance/ClockInModal';
 import { useLedgerSSE } from '../../hooks/useLedgerSSE';
+import ErrorBoundary from '../shared/ErrorBoundary';
 import type { NavGroup } from '../../config/navGenerator';
 import './portal.css';
 
@@ -630,7 +631,9 @@ export default function DashboardLayout({
           )}
 
           <div style={{ flex: 1 }}>
-            <Outlet />
+            <ErrorBoundary>
+              <Outlet />
+            </ErrorBoundary>
           </div>
           {portalName === 'Admin Portal' && <AdminPortalFooter />}
         </div>

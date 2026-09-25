@@ -485,7 +485,6 @@ export default function App() {
               <Route path="fees" element={<StudentFees />} />
               <Route path="study-materials" element={<StudentStudyMaterial />} />
               <Route path="awards" element={<MyAwards />} />
-              <Route path="*" element={<Navigate to="dashboard" replace />} />
               <Route path="library" element={<Library />} />
               <Route path="events" element={<StudentEvents />} />
               <Route path="prefects" element={<PrefectCouncil />} />
@@ -503,10 +502,12 @@ export default function App() {
               <Route path="uniforms" element={<UniformsPage />} />
               <Route path="research" element={<ResearchDashboard />} />
               <Route path="portfolio" element={<AcademicPortfolio />} />
+              <Route path="messages" element={<MessagesPage />} />
               <Route path="settings" element={<SettingsPage />} />
               <Route path="profile" element={<ProfilePage />} />
               <Route path="cbt" element={<CBTExams />} />
               <Route path="cbt/take/:id" element={<TakeExam />} />
+              <Route path="*" element={<Navigate to="dashboard" replace />} />
             </Route>
 
             {/* TEACHER PORTAL  */}
@@ -539,20 +540,15 @@ export default function App() {
               <Route path="leave" element={<MyLeave />} />
               <Route path="awards" element={<MyAwards />} />
               <Route path="payslips" element={<MyPaymentSlip />} />
-              <Route path="*" element={<Navigate to="dashboard" replace />} />
               <Route path="attendance" element={<TeacherClassAttendance />} />
               <Route path="attendance/mark" element={<TeacherAttendance />} />
 
               <Route path="live-class/zoom" element={<ZoomLiveClass />} />
               <Route path="live-class/jitsi" element={<JitsiLiveClass />} />
 
-              <Route path="leave" element={<MyLeave />} />
-              <Route path="awards" element={<MyAwards />} />
-
               <Route path="planner" element={<TeacherLessonPlan />} />
               <Route path="syllabus" element={<CreateSyllabus />} />
               <Route path="syllabus-manager" element={<TeacherSyllabusManager />} />
-
 
               <Route path="courses" element={<CoursesDashboard />} />
               <Route path="online-learning/revenue-report" element={<RevenueReport />} />
@@ -575,6 +571,7 @@ export default function App() {
 
               <Route path="messages" element={<MessagesPage />} />
               <Route path="reports" element={<TeacherReports />} />
+              <Route path="assessments/marks-entry" element={<MarksEntryPage />} />
               <Route path="question-papers" element={<QuestionPapersPage />} />
               <Route path="question-papers/new" element={<QuestionPaperBuilder />} />
               {/* LIBRARY MODULE ACCESS FOR TEACHER */}
@@ -602,6 +599,7 @@ export default function App() {
               <Route path="uniforms" element={<UniformsPage />} />
               <Route path="settings" element={<SettingsPage />} />
               <Route path="profile" element={<ProfilePage />} />
+              <Route path="*" element={<Navigate to="dashboard" replace />} />
             </Route>
 
             {/* ADMIN PORTAL */}
@@ -635,6 +633,8 @@ export default function App() {
                 <Route path="requests" element={<LibraryRequests />} />
                 <Route path="assets" element={<AdminAssetManagement />} />
               </Route>
+              <Route path="students" element={<AdminStudents />} />
+              <Route path="awards" element={<MyAwards />} />
               <Route path="parents" element={<AdminParents />} />
               <Route path="teachers" element={<AdminTeachers />} />
               <Route path="users" element={<AdminUsers />} />
@@ -844,6 +844,7 @@ export default function App() {
               <Route path="students" element={<AdminStudents />} />
               <Route path="leave" element={<MyLeave />} />
               <Route path="awards" element={<MyAwards />} />
+              <Route path="messages" element={<MessagesPage />} />
               {/* LIBRARY FINANCIAL MODULE ACCESS FOR BURSAR */}
               <Route path="library">
                 <Route index element={<LibraryReports />} />
@@ -930,6 +931,7 @@ export default function App() {
               <Route path="office/calls" element={<PhoneCallLogPage />} />
               <Route path="office/complaints" element={<ComplaintsPage />} />
               <Route path="it-support" element={<ITSupportPage />} />
+              <Route path="support" element={<ITSupportPage />} />
               <Route path="website-settings" element={<SettingsPage />} />
               <Route path="settings" element={<SettingsPage />} />
               <Route path="assets" element={<AncillaryAssets />} />
@@ -1065,6 +1067,8 @@ export default function App() {
               <Route index element={<ClinicDashboard />} />
               <Route path="dashboard" element={<ClinicDashboard />} />
               <Route path="patients" element={<PatientManagement />} />
+              <Route path="hospitalization" element={<HospitalizationManager />} />
+              <Route path="hospitalizations" element={<HospitalizationManager />} />
               <Route path="hospitalizations/:id" element={<HospitalizationManager />} />
               <Route path="appointments" element={<Appointments />} />
               <Route path="triage" element={<TriageDashboard />} />

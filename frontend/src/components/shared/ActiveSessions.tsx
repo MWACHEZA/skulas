@@ -19,7 +19,7 @@ export default function ActiveSessions() {
     try {
       setLoading(true);
       const res = await api.get('/api/auth/sessions');
-      setSessions(res.data);
+      setSessions(Array.isArray(res.data) ? res.data : []);
     } catch (err: any) {
       setError(err.response?.data?.error || 'Failed to load sessions');
     } finally {
@@ -32,7 +32,7 @@ export default function ActiveSessions() {
   }, []);
 
   const handleRevoke = async (id: string) => {
-    if (!(await toastConfirm('Are you sure you want to log out this device?'))) return;
+    if (!window.confirm('Are you sure you want to log out this device?')) return;
     
     try {
       setRevoking(id);

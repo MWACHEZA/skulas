@@ -308,6 +308,55 @@ router.get('/books', requireAuth, async (req: AuthRequest, res: Response) => {
 });
 
 /**
+ * Helper to generate sequential accession number for a school: ACC-0001, ACC-0002...
+ */
+export async function generateNextAccessionNumber(schoolId: string, prismaClient: any): Promise<string> {
+  const books = await prismaClient.book.findMany({
+    where: { schoolId, accessionNumber: { not: null } },
+    select: { accessionNumber: true },
+    orderBy: { createdAt: 'desc' },
+    take: 300
+  });
+
+  let maxNum = 0;
+  for (const b of books) {
+    if (b.accessionNumber) {
+      const matches = b.accessionNumber.match(/\d+/g);
+      if (matches && matches.length > 0) {
+        const num = parseInt(matches[matches.length - 1], 10);
+        if (!isNaN(num) && num > maxNum) {
+          maxNum = num;
+        }
+      }
+    }
+  }
+
+  if (maxNum === 0) {
+    const totalCount = await prismaClient.book.count({ where: { schoolId } });
+    maxNum = totalCount;
+  }
+
+  const nextNum = maxNum + 1;
+  const padded = String(nextNum).padStart(4, '0');
+  return `ACC-${padded}`;
+}
+
+/**
+ * @route   GET /api/library/books/next-accession
+ * @desc    Get next auto-generated accession number for the school
+ */
+router.get('/books/next-accession', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    const schoolId = req.user!.schoolId!;
+    const nextAccessionNumber = await generateNextAccessionNumber(schoolId, prisma);
+    res.json({ nextAccessionNumber });
+  } catch (error) {
+    console.error('Failed to generate next accession number:', error);
+    res.status(500).json({ error: 'Failed to generate next accession number' });
+  }
+});
+
+/**
  * @route   POST /api/library/books
  * @desc    Add a new book (with multiple authors, ISBN-10/13, accession/barcode, detached from class)
  */
@@ -326,6 +375,7 @@ router.post('/books', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCILLARY', 'TEA
     totalCopies,
     copies,
     availableCopies,
+    available,
     edition, 
     publisher, 
     price, 
@@ -348,12 +398,23 @@ router.post('/books', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCILLARY', 'TEA
   try {
     const bookPrice = price ? parseFloat(price) : null;
     const numCopies = parseInt(totalCopies || copies || '1') || 1;
-    const numAvailable = availableCopies !== undefined ? parseInt(availableCopies) : numCopies;
+    const numAvailable = available !== undefined 
+      ? parseInt(available) 
+      : (availableCopies !== undefined ? parseInt(availableCopies) : numCopies);
 
-    // Normalize ISBNs
-    const cleanIsbn = normalizeIsbn(isbn);
+    // Normalize ISBNs & Enforce mutual exclusivity (ISBN-10 OR ISBN-13, not both)
     const cleanIsbn10 = normalizeIsbn(isbn10);
     const cleanIsbn13 = normalizeIsbn(isbn13);
+    if (cleanIsbn10 && cleanIsbn13) {
+      return res.status(400).json({ error: 'A book can have either an ISBN-10 or an ISBN-13, not both.' });
+    }
+    const cleanIsbn = cleanIsbn13 || cleanIsbn10 || normalizeIsbn(isbn) || null;
+
+    // Auto-generate accession number if omitted or blank
+    let finalAccession = accessionNumber ? String(accessionNumber).trim() : '';
+    if (!finalAccession) {
+      finalAccession = await generateNextAccessionNumber(schoolId, prisma);
+    }
 
     // Support multiple authors
     let authorList: string[] = [];
@@ -407,7 +468,7 @@ router.post('/books', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCILLARY', 'TEA
         status: status || 'Available',
         shelfLocation: shelfLocation || null,
         barcode: barcode || null,
-        accessionNumber: accessionNumber || null,
+        accessionNumber: finalAccession || null,
         language: language || 'English',
         keywords: keywordList,
         source: source || 'Purchased',
@@ -465,7 +526,7 @@ router.patch('/books/:id', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCILLARY',
 ]), async (req: AuthRequest, res: Response) => {
   const id = req.params.id as string;
   const { 
-    title, author, authors, isbn, isbn10, isbn13, categoryId, totalCopies,
+    title, author, authors, isbn, isbn10, isbn13, categoryId, totalCopies, copies, available, availableCopies,
     edition, publisher, price, publishedDate, description,
     status, subjectId, shelfLocation, barcode, accessionNumber, language, keywords, source, condition
   } = req.body;
@@ -476,32 +537,63 @@ router.patch('/books/:id', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCILLARY',
     if (title) data.title = title;
     if (author) data.author = author;
     if (authors) {
-      data.authors = Array.isArray(authors) ? authors : JSON.parse(authors);
+      data.authors = Array.isArray(authors) ? authors : (typeof authors === 'string' ? JSON.parse(authors) : []);
     }
-    if (isbn) data.isbn = normalizeIsbn(isbn);
-    if (isbn10) data.isbn10 = normalizeIsbn(isbn10);
-    if (isbn13) data.isbn13 = normalizeIsbn(isbn13);
-    if (categoryId) data.categoryId = categoryId;
-    if (edition) data.edition = edition;
-    if (publisher) data.publisher = publisher;
+    
+    // Mutually exclusive ISBN 10 OR ISBN 13
+    if (isbn10 !== undefined || isbn13 !== undefined) {
+      const clean10 = normalizeIsbn(isbn10);
+      const clean13 = normalizeIsbn(isbn13);
+      if (clean10 && clean13) {
+        return res.status(400).json({ error: 'A book can have either an ISBN-10 or an ISBN-13, not both.' });
+      }
+      if (clean10) {
+        data.isbn10 = clean10;
+        data.isbn13 = null;
+        data.isbn = clean10;
+      } else if (clean13) {
+        data.isbn13 = clean13;
+        data.isbn10 = null;
+        data.isbn = clean13;
+      } else if (isbn10 === '' && isbn13 === '') {
+        data.isbn10 = null;
+        data.isbn13 = null;
+        data.isbn = null;
+      }
+    } else if (isbn !== undefined) {
+      data.isbn = normalizeIsbn(isbn);
+    }
+
+    if (categoryId !== undefined) data.categoryId = categoryId || null;
+    if (edition !== undefined) data.edition = edition;
+    if (publisher !== undefined) data.publisher = publisher;
     if (description !== undefined) data.description = description;
-    if (status) data.status = status;
+    if (status !== undefined) data.status = status;
     if (subjectId !== undefined) data.subjectId = subjectId || null;
     if (shelfLocation !== undefined) data.shelfLocation = shelfLocation;
     if (barcode !== undefined) data.barcode = barcode;
     if (accessionNumber !== undefined) data.accessionNumber = accessionNumber;
-    if (language) data.language = language;
-    if (keywords) {
-      data.keywords = Array.isArray(keywords) ? keywords : JSON.parse(keywords);
+    if (language !== undefined) data.language = language;
+    if (keywords !== undefined) {
+      data.keywords = Array.isArray(keywords) ? keywords : (typeof keywords === 'string' ? JSON.parse(keywords) : []);
     }
-    if (source) data.source = source;
-    if (condition) data.condition = condition;
+    if (source !== undefined) data.source = source;
+    if (condition !== undefined) data.condition = condition;
 
-    if (totalCopies) {
-      data.copies = parseInt(totalCopies);
+    const copyCount = totalCopies !== undefined ? totalCopies : copies;
+    if (copyCount !== undefined && copyCount !== null && copyCount !== '') {
+      data.copies = parseInt(copyCount);
     }
-    if (price) data.price = parseFloat(price);
-    if (publishedDate) data.publishedDate = new Date(publishedDate);
+    const availCount = available !== undefined ? available : availableCopies;
+    if (availCount !== undefined && availCount !== null && availCount !== '') {
+      data.available = parseInt(availCount);
+    }
+    if (price !== undefined && price !== null && price !== '') {
+      data.price = parseFloat(price);
+    }
+    if (publishedDate) {
+      data.publishedDate = new Date(publishedDate);
+    }
     
     if (files?.cover?.[0]) {
       data.coverUrl = path.join(req.uploadCategoryPath || '', files.cover[0].filename).replace(/\\/g, '/');
