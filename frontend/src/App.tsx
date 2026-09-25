@@ -1022,9 +1022,9 @@ export default function App() {
               <Route path="history" element={<Navigate to="/parent/academics?tab=history" replace />} />
               <Route path="portfolio" element={<Navigate to="/parent/academics?tab=subject-breakdown" replace />} />
               <Route path="wellbeing" element={<Navigate to="/parent/clinic?tab=wellbeing" replace />} />
-              <Route path="clinic/complaints" element={<Navigate to="/parent/clinic?tab=complaints" replace />} />
-              <Route path="clinic/appointments" element={<Navigate to="/parent/clinic?tab=appointments" replace />} />
-              <Route path="clinic/emergencies" element={<Navigate to="/parent/clinic?tab=emergencies" replace />} />
+              <Route path="clinic/complaints" element={<Navigate to="/parent/clinic?tab=visits" replace />} />
+              <Route path="clinic/appointments" element={<Navigate to="/parent/clinic?tab=visits" replace />} />
+              <Route path="clinic/emergencies" element={<Navigate to="/parent/clinic?tab=visits" replace />} />
             </Route>
 
             {/*  SUPPLIER PORTAL  */}

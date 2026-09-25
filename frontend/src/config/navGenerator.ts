@@ -256,13 +256,11 @@ function generateParentPortalNavigation(user: UserContext | null | undefined, cu
           to: '/parent/clinic', 
           icon: 'fas fa-heartbeat', 
           tabs: [
-            { id: 'visits', label: 'Visits' },
-            { id: 'complaints', label: 'Complaints Log' },
-            { id: 'appointments', label: 'Appointments' },
-            { id: 'wellbeing', label: 'Wellbeing/Conduct' },
-            { id: 'emergencies', label: 'Emergencies' }
+            { id: 'visits', label: 'Clinic Visits' },
+            { id: 'profile', label: 'Health Profile' },
+            { id: 'wellbeing', label: 'Wellbeing & Conduct' }
           ],
-          searchKeywords: ['health', 'clinic', 'visits', 'vitals', 'complaints', 'appointments', 'doctor', 'nurse', 'wellbeing', 'conduct', 'merits', 'emergencies'] 
+          searchKeywords: ['health', 'clinic', 'visits', 'allergies', 'profile', 'blood group', 'nurse', 'wellbeing', 'conduct', 'merits', 'counselor'] 
         }
       ]
     },

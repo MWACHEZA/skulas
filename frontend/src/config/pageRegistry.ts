@@ -838,13 +838,11 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     permissionKey: PERMISSIONS.CLINIC_APPOINTMENTS,
     portalVisibility: ['parent'],
     tabs: [
-      { id: 'visits', label: 'Visits' },
-      { id: 'complaints', label: 'Complaints Log' },
-      { id: 'appointments', label: 'Appointments' },
-      { id: 'wellbeing', label: 'Wellbeing/Conduct' },
-      { id: 'emergencies', label: 'Emergencies' }
+      { id: 'visits', label: 'Clinic Visits' },
+      { id: 'profile', label: 'Health Profile' },
+      { id: 'wellbeing', label: 'Wellbeing & Conduct' }
     ],
-    searchKeywords: ['health', 'clinic', 'visits', 'vitals', 'complaints', 'appointments', 'doctor', 'nurse', 'wellbeing', 'conduct', 'merits', 'emergencies']
+    searchKeywords: ['health', 'clinic', 'visits', 'allergies', 'profile', 'blood group', 'nurse', 'wellbeing', 'conduct', 'merits', 'counselor']
   },
   {
     id: 'admin-clinic-appointments',

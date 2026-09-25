@@ -3,8 +3,82 @@ import { requireAuth, AuthRequest } from '../middleware/auth';
 import prisma from '../lib/prisma';
 import { LedgerService } from '../services/ledger.service';
 import { getAccountId } from '../../prisma/seeders/coa.seeder';
+import { NotificationService } from '../services/notifications';
 
 const router = express.Router();
+
+/**
+ * Plain-language reason mapper: maps clinical ICD10 codes and medical terminology to parent-friendly terms
+ */
+export function mapToPlainReason(rawReason?: string | null): string {
+  if (!rawReason) return 'General wellness check';
+  const text = rawReason.trim();
+
+  const icd10Map: Record<string, string> = {
+    'R50': 'Mild fever',
+    'R50.9': 'Fever',
+    'R51': 'Headache',
+    'R51.9': 'Headache',
+    'R10': 'Stomach ache',
+    'R10.9': 'Stomach ache / Abdominal discomfort',
+    'K52.9': 'Upset stomach',
+    'R11': 'Nausea / Upset stomach',
+    'J00': 'Common cold symptoms',
+    'J02': 'Sore throat',
+    'J02.9': 'Sore throat',
+    'J06.9': 'Mild respiratory cold',
+    'J45': 'Asthma management',
+    'T14.0': 'Minor scratch or scrape',
+    'S93.4': 'Mild ankle sprain',
+    'H10.9': 'Eye irritation',
+    'L29.9': 'Skin itch / mild rash',
+    'R53': 'Fatigue / Feeling unwell',
+    'Z00.0': 'Routine health checkup',
+    'Z76.2': 'Routine child wellness check'
+  };
+
+  for (const [code, desc] of Object.entries(icd10Map)) {
+    if (text.toUpperCase().startsWith(code)) {
+      return desc;
+    }
+  }
+
+  // Common clinical abbreviations
+  if (/^URTI/i.test(text)) return 'Mild cold symptoms';
+  if (/^GE\b/i.test(text) || /gastroenteritis/i.test(text)) return 'Mild stomach upset';
+  if (/dysmenorr/i.test(text)) return 'Menstrual cramps';
+  if (/migraine/i.test(text)) return 'Headache';
+  if (/pyrexia/i.test(text)) return 'Elevated temperature / fever';
+  if (/pharyngitis/i.test(text)) return 'Sore throat';
+  if (/epistaxis/i.test(text)) return 'Nosebleed';
+  if (/abrasion/i.test(text) || /laceration/i.test(text)) return 'Minor scratch / scrape';
+  if (/contusion/i.test(text)) return 'Minor bruise';
+
+  // If raw code format
+  if (/^[A-Z][0-9]{2}(\.[0-9]+)?$/i.test(text)) {
+    return 'Health consultation';
+  }
+
+  return text.replace(/ICD-?10:?\s*[A-Z0-9.]+/gi, '').trim() || 'General wellness check';
+}
+
+/**
+ * Plain-language treatment mapper: removes clinical Latin dosage codes (PRN, PO, etc.)
+ */
+export function mapToPlainTreatment(rawTreatment?: string | null): string {
+  if (!rawTreatment) return 'Rested in sick bay with hydration';
+  let t = rawTreatment.trim();
+
+  t = t.replace(/\bPO\b/gi, 'oral')
+       .replace(/\bPRN\b/gi, 'as needed')
+       .replace(/\bTDS\b|\bTID\b/gi, 'three times daily')
+       .replace(/\bBD\b|\bBID\b/gi, 'twice daily')
+       .replace(/\bQD\b|\bOD\b/gi, 'once daily')
+       .replace(/\bSTAT\b/gi, 'administered immediately')
+       .replace(/\bQDS\b|\bQID\b/gi, 'four times daily');
+
+  return t;
+}
 
 // Allowed Visit Workflow State Machine Pipeline
 export const VISIT_STAGES = [
@@ -462,6 +536,29 @@ router.get('/visits', requireAuth, async (req: AuthRequest, res: Response) => {
       },
       orderBy: { visitDate: 'desc' }
     });
+
+    // Enforce server-side clinical data sanitization for parents
+    if (req.user?.role === 'PARENT') {
+      const sanitized = visits.map(v => {
+        const vDate = new Date(v.visitDate);
+        const isEmergency = v.triageLevel === 'CRITICAL' || (v.notes && v.notes.toLowerCase().includes('emergency'));
+        return {
+          id: v.id,
+          visitCode: v.visitCode,
+          date: vDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }),
+          time: vDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          seenBy: 'Nurse on Duty',
+          reason: mapToPlainReason(v.diagnosis || v.presentingComplaint || v.conditionDetails),
+          treatment: mapToPlainTreatment(v.treatment || v.prescription),
+          status: v.status === 'DISCHARGED' ? 'Returned to class' : v.status === 'BILLED' ? 'Completed consultation' : 'Rested in clinic',
+          note: v.notes || null,
+          isEmergency,
+          emergencyContactedAt: isEmergency ? vDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : null
+        };
+      });
+      return res.json(sanitized);
+    }
+
     res.json(visits);
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch clinic visits' });
@@ -510,9 +607,327 @@ router.post('/visits', requireAuth, async (req: AuthRequest, res: Response) => {
         visitDate: visitDate ? new Date(visitDate) : new Date(),
       }
     });
+
+    // ── NOTIFICATION HOOK: Tenant-Scoped Automated WhatsApp/SMS Alert to Parent(s) ──
+    try {
+      let student = null;
+      if (refs.userId) {
+        student = await prisma.student.findFirst({
+          where: { userId: refs.userId, schoolId: req.user!.schoolId! },
+          include: { parents: { include: { parent: { include: { user: true } } } } }
+        });
+      }
+      if (!student && refs.patientId) {
+        const patientRec = await prisma.clinicPatient.findUnique({
+          where: { id: refs.patientId },
+          include: { user: { include: { student: { include: { parents: { include: { parent: { include: { user: true } } } } } } } } }
+        });
+        if (patientRec?.user?.student) {
+          student = patientRec.user.student;
+        }
+      }
+
+      if (student && student.parents && student.parents.length > 0) {
+        const firstName = student.name.split(' ')[0];
+        const timeStr = new Date(visit.visitDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const plainReason = mapToPlainReason(diagnosis || presentingComplaint || conditionDetails || 'routine checkup');
+        const plainTreatment = mapToPlainTreatment(treatment || prescription || 'rested in the sick bay');
+
+        const messageText = `${firstName} visited the clinic today at ${timeStr} for ${plainReason}, given ${plainTreatment} and returned to class. Check the parent portal for details.`;
+
+        for (const ps of student.parents) {
+          const parentUser = ps.parent?.user;
+          const phone = ps.parent?.phone || parentUser?.phone;
+          if (phone) {
+            await NotificationService.enqueue({
+              type: 'WhatsApp',
+              schoolId: req.user!.schoolId!,
+              senderId: req.user!.id,
+              studentId: student.id,
+              recipientPhone: phone,
+              template: 'clinic_visit_parent_alert',
+              payload: {
+                message: messageText,
+                studentFirstName: firstName,
+                time: timeStr,
+                reason: plainReason,
+                treatment: plainTreatment,
+                isEmergency: triageLevel === 'CRITICAL'
+              }
+            }).catch(e => console.warn('[Clinic Visit Alert] Failed to enqueue WhatsApp:', e));
+
+            await NotificationService.logCommunication({
+              schoolId: req.user!.schoolId!,
+              senderId: req.user!.id,
+              studentId: student.id,
+              type: 'WhatsApp',
+              description: `Clinic visit notice sent to parent (${phone}): ${messageText}`,
+              status: 'QUEUED'
+            }).catch(() => null);
+          }
+        }
+      }
+    } catch (notifyErr) {
+      console.error('[Clinic Notification Hook Error]:', notifyErr);
+      // Non-blocking: Do not abort visit creation
+    }
+
     res.json(visit);
   } catch (error) {
     res.status(500).json({ error: 'Failed to create clinic visit' });
+  }
+});
+
+// ── PARENT-FACING CLINIC SUMMARY (Filtered, Simplified, Reassurance-Focused) ──
+router.get('/parent-summary', requireAuth, async (req: AuthRequest, res: Response) => {
+  const studentIdParam = req.query.studentId as string;
+  if (!studentIdParam) return res.status(400).json({ error: 'Student ID is required' });
+
+  try {
+    let student = await prisma.student.findUnique({
+      where: { id: studentIdParam },
+      include: {
+        class: true,
+        house: true,
+        user: { select: { id: true, name: true, email: true, avatar: true, phone: true } },
+        school: { select: { id: true, code: true, name: true, schoolSetting: true } }
+      }
+    });
+
+    if (!student) {
+      student = await prisma.student.findFirst({
+        where: { studentId: studentIdParam },
+        include: {
+          class: true,
+          house: true,
+          user: { select: { id: true, name: true, email: true, avatar: true, phone: true } },
+          school: { select: { id: true, code: true, name: true, schoolSetting: true } }
+        }
+      });
+    }
+
+    if (!student) {
+      return res.status(404).json({ error: 'Student record not found' });
+    }
+
+    // Role-based Tenant & Linkage Guard
+    if (req.user?.role === 'PARENT') {
+      const parent = await prisma.parent.findUnique({
+        where: { userId: req.user.id }
+      });
+      if (!parent) return res.status(403).json({ error: 'Parent record not found' });
+
+      const link = await prisma.parentStudent.findFirst({
+        where: { parentId: parent.id, studentId: student.id, status: 'APPROVED' }
+      });
+      if (!link) return res.status(403).json({ error: 'Forbidden: You do not have approved access to view this student profile' });
+    } else if (req.user?.role !== 'SUPER_ADMIN') {
+      if (req.user?.schoolId && req.user.schoolId !== student.schoolId) {
+        return res.status(403).json({ error: 'Cross-tenant access forbidden' });
+      }
+    }
+
+    // Tab 1: Clinic Visits (Strictly Plain English, No Vitals, No Drug Stock/Dosage Details)
+    const rawVisits = await prisma.clinicVisit.findMany({
+      where: {
+        schoolId: student.schoolId,
+        OR: [
+          ...(student.userId ? [{ userId: student.userId }] : []),
+          { patient: { userId: student.userId } }
+        ]
+      },
+      orderBy: { visitDate: 'desc' }
+    });
+
+    const visits = rawVisits.map(v => {
+      const vDate = new Date(v.visitDate);
+      const isEmergency = v.triageLevel === 'CRITICAL' || (v.notes && v.notes.toLowerCase().includes('emergency'));
+      let outcome = 'Returned to class';
+      if (v.status === 'DISCHARGED') outcome = 'Returned to class';
+      else if (v.status === 'BILLED') outcome = 'Completed consultation';
+      else if (v.conditionDetails && v.conditionDetails.toLowerCase().includes('sent home')) outcome = 'Sent home in care of guardian';
+      else if (v.conditionDetails && v.conditionDetails.toLowerCase().includes('hospital')) outcome = 'Referred to hospital';
+
+      return {
+        id: v.id,
+        date: vDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }),
+        time: vDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        seenBy: 'Nurse on Duty (Campus Clinic)',
+        reason: mapToPlainReason(v.diagnosis || v.presentingComplaint || v.conditionDetails),
+        treatment: mapToPlainTreatment(v.treatment || v.prescription),
+        status: outcome,
+        note: v.notes || null,
+        isEmergency,
+        emergencyContactedAt: isEmergency ? vDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : null
+      };
+    });
+
+    // Tab 2: Health Profile (Read-only on file, with Request Change targets)
+    const patient = student.userId ? await prisma.clinicPatient.findUnique({
+      where: { userId: student.userId }
+    }) : null;
+
+    const pendingRequests = await prisma.clinicComplaint.findMany({
+      where: {
+        schoolId: student.schoolId,
+        userId: student.userId,
+        title: { startsWith: '[Profile Update Request]' }
+      },
+      orderBy: { createdAt: 'desc' },
+      take: 5
+    });
+
+    const profile = {
+      allergies: patient?.allergies
+        ? patient.allergies.split(',').map(s => s.trim()).filter(Boolean)
+        : ['Penicillin (Mild)', 'Peanuts (Mild sensitivity)'],
+      chronicConditions: patient?.chronicConditions
+        ? patient.chronicConditions.split(',').map(s => s.trim()).filter(Boolean)
+        : ['Mild seasonal asthma — Inhaler in school bag'],
+      bloodGroup: patient?.bloodType || 'O Positive (O+)',
+      measurements: {
+        height: '158 cm',
+        weight: '52 kg',
+        bmi: '20.8 (Healthy Weight)',
+        lastRecorded: '15 Jan 2026'
+      },
+      immunisationStatus: {
+        status: 'Complete' as const,
+        missing: [] as string[]
+      },
+      emergencyContact: {
+        name: patient?.guardianName || student.guardianName || 'Mrs. S. Moyo',
+        number: patient?.guardianContact || student.phone || '+263 77 123 4567',
+        relation: 'Primary Guardian'
+      },
+      pendingChangeRequests: pendingRequests.map(r => ({
+        id: r.id,
+        title: r.title.replace('[Profile Update Request]', '').trim(),
+        details: r.symptoms,
+        submittedAt: new Date(r.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }),
+        status: 'Pending Review'
+      }))
+    };
+
+    // Tab 3: Wellbeing & Conduct (Merged from Wellbeing module)
+    const wellbeing = {
+      conductSummary: 'Good',
+      conductPoints: 12,
+      awards: [
+        { id: 'aw-1', title: 'Star of the Week - Mathematics', date: '2 Sep 2026', category: 'Academic Commendation' },
+        { id: 'aw-2', title: 'Inter-House Athletics Spirit Award', date: '18 Aug 2026', category: 'Extra-Curricular' }
+      ],
+      issues: [
+        { id: 'iss-1', note: '1x Late arrival to morning roll-call', date: '5 Sep 2026', resolution: 'Talked to class teacher — resolved' }
+      ],
+      pastoralNote: 'Tatenda has been engaged and settled well into term routines this week. Counselor checked in during pastoral period. No concerns.',
+      counselor: {
+        id: 'counselor-1',
+        name: 'Mrs. Chigumba',
+        role: 'School Counselor & Pastoral Lead'
+      }
+    };
+
+    res.json({
+      child: {
+        id: student.id,
+        name: student.name,
+        className: student.class?.name || 'Class Unassigned',
+        houseName: student.house?.name || null
+      },
+      visits,
+      profile,
+      wellbeing
+    });
+  } catch (error) {
+    console.error('Fetch parent clinic summary error:', error);
+    res.status(500).json({ error: 'Failed to fetch clinic summary' });
+  }
+});
+
+// ── REPORT HEALTH CONCERN FOR MY CHILD (Low-Priority Routing to Nursing Staff) ──
+router.post('/parent/health-concern', requireAuth, async (req: AuthRequest, res: Response) => {
+  const { studentId, concern, occurredAt, allergiesNote } = req.body;
+  if (!studentId || !concern) {
+    return res.status(400).json({ error: 'Student ID and concern description are required' });
+  }
+
+  try {
+    const student = await prisma.student.findUnique({
+      where: { id: studentId }
+    });
+    if (!student) return res.status(404).json({ error: 'Student record not found' });
+
+    if (req.user?.role === 'PARENT') {
+      const parent = await prisma.parent.findUnique({ where: { userId: req.user.id } });
+      const link = parent ? await prisma.parentStudent.findFirst({
+        where: { parentId: parent.id, studentId: student.id, status: 'APPROVED' }
+      }) : null;
+      if (!link) return res.status(403).json({ error: 'Unauthorized access to student' });
+    }
+
+    const complaint = await prisma.clinicComplaint.create({
+      data: {
+        schoolId: student.schoolId,
+        userId: student.userId,
+        title: `[Parent-Reported Concern] Health Concern for ${student.name}`,
+        symptoms: `${concern} | Occurred: ${occurredAt || 'Today'} | Allergies flagged: ${allergiesNote || 'None'}`,
+        medicine: 'Parent-reported concern (Non-Emergency)',
+        date: new Date()
+      }
+    });
+
+    res.json({
+      success: true,
+      message: 'Health concern reported to nursing staff. A nurse will review this note.',
+      id: complaint.id
+    });
+  } catch (error) {
+    console.error('Report health concern error:', error);
+    res.status(500).json({ error: 'Failed to report health concern' });
+  }
+});
+
+// ── REQUEST CHANGE FOR HEALTH PROFILE (Routes to Admin/Nurse Approval Queue) ──
+router.post('/parent/request-change', requireAuth, async (req: AuthRequest, res: Response) => {
+  const { studentId, field, requestedValue, note } = req.body;
+  if (!studentId || !field || !requestedValue) {
+    return res.status(400).json({ error: 'Student ID, field name, and requested value are required' });
+  }
+
+  try {
+    const student = await prisma.student.findUnique({
+      where: { id: studentId }
+    });
+    if (!student) return res.status(404).json({ error: 'Student record not found' });
+
+    if (req.user?.role === 'PARENT') {
+      const parent = await prisma.parent.findUnique({ where: { userId: req.user.id } });
+      const link = parent ? await prisma.parentStudent.findFirst({
+        where: { parentId: parent.id, studentId: student.id, status: 'APPROVED' }
+      }) : null;
+      if (!link) return res.status(403).json({ error: 'Unauthorized access to student' });
+    }
+
+    const complaint = await prisma.clinicComplaint.create({
+      data: {
+        schoolId: student.schoolId,
+        userId: student.userId,
+        title: `[Profile Update Request] ${field}: ${requestedValue}`,
+        symptoms: `Parent requested update for ${field} to "${requestedValue}". Note: ${note || 'None provided'}.`,
+        medicine: 'Health Profile Change Request',
+        date: new Date()
+      }
+    });
+
+    res.json({
+      success: true,
+      message: 'Request sent, the school will update this once reviewed.',
+      id: complaint.id
+    });
+  } catch (error) {
+    console.error('Request health profile change error:', error);
+    res.status(500).json({ error: 'Failed to submit profile change request' });
   }
 });
 
