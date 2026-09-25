@@ -472,7 +472,7 @@ export default function SharedAssetManagement() {
           <div style={{ background: '#ffffff', borderRadius: 12, border: '1px solid #e2e8f0', padding: 18 }}>
             <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>Valuation Sum</div>
             <div style={{ fontSize: '1.8rem', fontWeight: 900, color: '#0f172a', margin: '4px 0' }}>
-              ${totalValuation?.toLocaleString() || '0.00'}
+              ${Number(totalValuation || 0).toLocaleString()}
             </div>
             <div style={{ fontSize: '0.75rem', color: '#059669' }}>Total purchase value</div>
           </div>
@@ -690,10 +690,10 @@ export default function SharedAssetManagement() {
 
                       {/* 7. Value / Quantity */}
                       <td style={{ padding: '14px 18px', textAlign: 'right' }}>
-                        {isFinancial && asset.purchasePrice !== undefined ? (
+                        {isFinancial && asset.purchasePrice !== undefined && asset.purchasePrice !== null ? (
                           <div>
                             <div style={{ fontWeight: 900, color: '#0f172a', fontSize: '0.9rem' }}>
-                              ${asset.purchasePrice.toLocaleString()}
+                              ${Number(asset.purchasePrice).toLocaleString()}
                             </div>
                             <div style={{ fontSize: '0.75rem', color: '#64748b' }}>Qty: {asset.quantity || 1}</div>
                           </div>
@@ -1379,10 +1379,10 @@ export default function SharedAssetManagement() {
                   <div style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 700 }}>Total Registered Assets</div>
                   <div style={{ fontSize: '1.75rem', fontWeight: 900, color: '#0f172a' }}>{totalCount}</div>
                 </div>
-                {totalValuation !== null && (
+                {totalValuation !== null && totalValuation !== undefined && (
                   <div style={{ background: '#f0fdf4', padding: 14, borderRadius: 8, border: '1px solid #bbf7d0' }}>
                     <div style={{ fontSize: '0.75rem', color: '#166534', fontWeight: 700 }}>Total Ledger Valuation</div>
-                    <div style={{ fontSize: '1.75rem', fontWeight: 900, color: '#15803d' }}>${totalValuation.toLocaleString()}</div>
+                    <div style={{ fontSize: '1.75rem', fontWeight: 900, color: '#15803d' }}>${Number(totalValuation || 0).toLocaleString()}</div>
                   </div>
                 )}
               </div>
