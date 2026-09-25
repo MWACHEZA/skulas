@@ -836,7 +836,7 @@ router.get('/parent', requireAuth, async (req: AuthRequest, res: Response) => {
         description: `Installment agreement due ${new Date(pendingPaymentPlan.dueDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}`,
         dueDate: `Due ${new Date(pendingPaymentPlan.dueDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}`,
         isOverdue: new Date(pendingPaymentPlan.dueDate) < now,
-        actionUrl: '/parent/payment-plans',
+        actionUrl: '/parent/fees?tab=payment-plan',
         actionModal: 'PAY_NOW',
         payload: {
           planId: pendingPaymentPlan.id,

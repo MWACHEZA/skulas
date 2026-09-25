@@ -54,6 +54,22 @@ export default function ProfilePage() {
     return isNaN(d.getTime()) ? '—' : d.toLocaleDateString();
   };
 
+  const getStaffDocumentsEntries = (rawDocs: any): [string, any][] => {
+    if (!rawDocs) return [];
+    let docs = rawDocs;
+    if (typeof docs === 'string') {
+      try {
+        docs = JSON.parse(docs);
+      } catch {
+        return [];
+      }
+    }
+    if (docs && typeof docs === 'object' && !Array.isArray(docs)) {
+      return Object.entries(docs);
+    }
+    return [];
+  };
+
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -239,7 +255,11 @@ export default function ProfilePage() {
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 48px' }}>
                 <InfoRow label="Legal Name" value={isParent ? (targetStudent?.name || activeEntity?.name) : profileData?.name} />
                 {(targetStudent?.class || profileData?.student?.class) && (
-                    <InfoRow label="Class / Form" value={`${(targetStudent || profileData?.student)?.class.name} (${(targetStudent || profileData?.student)?.class.level || ''})`} icon="fas fa-chalkboard" />
+                    <InfoRow 
+                      label="Class / Form" 
+                      value={`${(targetStudent || profileData?.student)?.class?.name || (typeof (targetStudent || profileData?.student)?.class === 'string' ? (targetStudent || profileData?.student)?.class : '—')}${(targetStudent || profileData?.student)?.class?.level ? ` (${(targetStudent || profileData?.student)?.class?.level})` : ''}`} 
+                      icon="fas fa-chalkboard" 
+                    />
                 )}
                 <InfoRow label="Gender" value={targetStudent?.gender || profileData?.student?.gender || profileData?.metadata?.gender} />
                 <InfoRow label="Date of Birth" value={formatDate(targetStudent?.dob || profileData?.student?.dob || profileData?.metadata?.dob)} />
@@ -289,32 +309,42 @@ export default function ProfilePage() {
                   <InfoRow label="Transfer Reason" value={(targetStudent || profileData?.student)?.reasonForTransfer} />
                   <InfoRow label="Admissions Note" value={(targetStudent || profileData?.student)?.admissionsNotes} />
               </div>
-              {profileData.student.academicHistory && (
+              {(targetStudent || profileData?.student)?.academicHistory && (
                 <div style={{ marginTop: '24px', padding: '24px', background: '#f8fafc', borderRadius: '16px', border: '1px solid #f1f5f9' }}>
                     <h4 style={{ margin: '0 0 16px', fontSize: '0.85rem', color: '#64748b', fontWeight: 800, textTransform: 'uppercase' }}>Academic History / Results</h4>
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '20px' }}>
-                        {Object.entries(profileData.student.academicHistory).map(([key, val]: [string, any]) => (
-                            <div key={key} style={{ fontSize: '0.95rem', background: '#fff', padding: '12px', borderRadius: '12px', border: '1px solid #f1f5f9' }}>
-                                <span style={{ color: '#64748b', fontWeight: 700, textTransform: 'capitalize' }}>{key}:</span> 
-                                <span style={{ fontWeight: 800, marginLeft: '8px', color: '#1e293b' }}>{val}</span>
-                            </div>
-                        ))}
+                        {(() => {
+                          const rawHist = (targetStudent || profileData?.student)?.academicHistory;
+                          let histObj = rawHist;
+                          if (typeof rawHist === 'string') {
+                            try { histObj = JSON.parse(rawHist); } catch { histObj = null; }
+                          }
+                          if (histObj && typeof histObj === 'object' && !Array.isArray(histObj)) {
+                            return Object.entries(histObj).map(([key, val]: [string, any]) => (
+                              <div key={key} style={{ fontSize: '0.95rem', background: '#fff', padding: '12px', borderRadius: '12px', border: '1px solid #f1f5f9' }}>
+                                  <span style={{ color: '#64748b', fontWeight: 700, textTransform: 'capitalize' }}>{key}:</span> 
+                                  <span style={{ fontWeight: 800, marginLeft: '8px', color: '#1e293b' }}>{String(val)}</span>
+                              </div>
+                            ));
+                          }
+                          return null;
+                        })()}
                     </div>
                 </div>
               )}
-              {(profileData.student.birthCertificateUrl || profileData.student.transferCertificateUrl) && (
+              {((targetStudent || profileData?.student)?.birthCertificateUrl || (targetStudent || profileData?.student)?.transferCertificateUrl) && (
                 <div style={{ marginTop: '24px', padding: '20px', background: '#f8fafc', borderRadius: '12px' }}>
                   <h5 style={{ fontSize: '0.8rem', fontWeight: 900, color: '#475569', marginBottom: '12px', textTransform: 'uppercase' }}>Uploaded Documents</h5>
                   <div style={{ display: 'flex', gap: '15px', flexWrap: 'wrap' }}>
-                    {profileData.student.birthCertificateUrl && (
-                      <a href={`${BASE_URL}/api/storage/file/${profileData.student.birthCertificateUrl}?token=${localStorage.getItem('acadex_token')}`} target="_blank" rel="noopener noreferrer" 
+                    {(targetStudent || profileData?.student)?.birthCertificateUrl && (
+                      <a href={`${BASE_URL}/api/storage/file/${(targetStudent || profileData?.student)?.birthCertificateUrl}?token=${localStorage.getItem('acadex_token')}`} target="_blank" rel="noopener noreferrer" 
                          className="portal-btn-ghost" style={{ fontSize: '0.75rem', background: '#fff', border: '1px solid #e2e8f0', textDecoration: 'none', display: 'inline-flex', alignItems: 'center' }}>
                         <i className="fas fa-file-alt mr-2" style={{ color: '#2563eb' }}></i>
                         Birth Certificate
                       </a>
                     )}
-                    {profileData.student.transferCertificateUrl && (
-                      <a href={`${BASE_URL}/api/storage/file/${profileData.student.transferCertificateUrl}?token=${localStorage.getItem('acadex_token')}`} target="_blank" rel="noopener noreferrer" 
+                    {(targetStudent || profileData?.student)?.transferCertificateUrl && (
+                      <a href={`${BASE_URL}/api/storage/file/${(targetStudent || profileData?.student)?.transferCertificateUrl}?token=${localStorage.getItem('acadex_token')}`} target="_blank" rel="noopener noreferrer" 
                          className="portal-btn-ghost" style={{ fontSize: '0.75rem', background: '#fff', border: '1px solid #e2e8f0', textDecoration: 'none', display: 'inline-flex', alignItems: 'center' }}>
                         <i className="fas fa-file-alt mr-2" style={{ color: '#2563eb' }}></i>
                         Transfer Certificate
@@ -341,8 +371,8 @@ export default function ProfilePage() {
                     )}
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
-                    {Array.isArray(profileData?.student?.parents) && profileData.student.parents.length > 0 ? (
-                        profileData.student.parents.map((p: any, idx: number) => (
+                    {Array.isArray(profileData?.student?.parents) && profileData?.student?.parents.length > 0 ? (
+                        (profileData?.student?.parents || []).map((p: any, idx: number) => (
                             <div key={idx} style={{ padding: '24px', background: '#f8fafc', borderRadius: '20px', border: '1px solid #f1f5f9' }}>
                                 <h4 style={{ margin: '0 0 16px', fontSize: '1rem', fontWeight: 800, color: '#334155' }}>{p.relation} Contact</h4>
                                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 48px' }}>
@@ -426,26 +456,30 @@ export default function ProfilePage() {
                   <InfoRow label="Twitter" value={profileData.employeeProfile.twitterLink} icon="fab fa-twitter" />
               </div>
 
-              {profileData.employeeProfile.staffDocuments && typeof profileData.employeeProfile.staffDocuments === 'object' && (
-                <div style={{ marginTop: '24px', padding: '20px', background: '#f8fafc', borderRadius: '12px' }}>
-                  <h5 style={{ fontSize: '0.8rem', fontWeight: 900, color: '#475569', marginBottom: '12px', textTransform: 'uppercase' }}>Verified Documents</h5>
-                  <div style={{ display: 'flex', gap: '15px', flexWrap: 'wrap' }}>
-                    {Object.entries(profileData.employeeProfile.staffDocuments).flatMap(([key, val]: [string, any]) => {
-                      const paths = Array.isArray(val) ? val : (typeof val === 'string' ? [val] : []);
-                      return paths.map((docPath: string, i: number) => {
-                        const filename = typeof docPath === 'string' ? (docPath.split('/').pop() || docPath) : `doc_${i}`;
-                        return (
-                          <a key={`${key}-${i}`} href={`${BASE_URL}/api/storage/media/${user?.schoolCode}/staff/${user?.id}/documents/${filename}`} target="_blank" rel="noopener noreferrer" 
-                             className="portal-btn-ghost" style={{ fontSize: '0.75rem', background: '#fff', border: '1px solid #e2e8f0', textDecoration: 'none', display: 'inline-flex', alignItems: 'center' }}>
-                            <i className="fas fa-file-alt mr-2" style={{ color: '#2563eb' }}></i>
-                            {key.toUpperCase().replace('DOC', '')} {paths.length > 1 ? `#${i + 1}` : ''}
-                          </a>
-                        );
-                      });
-                    })}
+              {(() => {
+                const staffDocEntries = getStaffDocumentsEntries(profileData?.employeeProfile?.staffDocuments);
+                if (staffDocEntries.length === 0) return null;
+                return (
+                  <div style={{ marginTop: '24px', padding: '20px', background: '#f8fafc', borderRadius: '12px' }}>
+                    <h5 style={{ fontSize: '0.8rem', fontWeight: 900, color: '#475569', marginBottom: '12px', textTransform: 'uppercase' }}>Verified Documents</h5>
+                    <div style={{ display: 'flex', gap: '15px', flexWrap: 'wrap' }}>
+                      {staffDocEntries.flatMap(([key, val]: [string, any]) => {
+                        const paths = Array.isArray(val) ? val : (typeof val === 'string' ? [val] : []);
+                        return paths.map((docPath: string, i: number) => {
+                          const filename = typeof docPath === 'string' ? (docPath.split('/').pop() || docPath) : `doc_${i}`;
+                          return (
+                            <a key={`${key}-${i}`} href={`${BASE_URL}/api/storage/media/${user?.schoolCode}/staff/${user?.id}/documents/${filename}`} target="_blank" rel="noopener noreferrer" 
+                               className="portal-btn-ghost" style={{ fontSize: '0.75rem', background: '#fff', border: '1px solid #e2e8f0', textDecoration: 'none', display: 'inline-flex', alignItems: 'center' }}>
+                              <i className="fas fa-file-alt mr-2" style={{ color: '#2563eb' }}></i>
+                              {key.toUpperCase().replace('DOC', '')} {paths.length > 1 ? `#${i + 1}` : ''}
+                            </a>
+                          );
+                        });
+                      })}
+                    </div>
                   </div>
-                </div>
-              )}
+                );
+              })()}
             </div>
           )}
         </div>
@@ -467,7 +501,7 @@ export default function ProfilePage() {
                         dob: formData.get('dob'),
                         gender: formData.get('gender'),
                         hexcoId: formData.get('hexcoId'),
-                        metadata: { ...profileData.metadata, religion: formData.get('religion') }
+                        metadata: { ...(profileData?.metadata || {}), religion: formData.get('religion') }
                     });
                 }}>
                     <div className="portal-modal-body" style={{ padding: '32px' }}>
@@ -569,7 +603,7 @@ export default function ProfilePage() {
                     const formData = new FormData(e.target);
                     handleUpdateProfile({
                         metadata: { 
-                            ...profileData.metadata, 
+                            ...(profileData?.metadata || {}), 
                             emergencyName: formData.get('emergencyName'),
                             emergencyRelation: formData.get('emergencyRelation'),
                             emergencyPhone: formData.get('emergencyPhone')
@@ -666,7 +700,8 @@ export default function ProfilePage() {
                 </div>
                 <form onSubmit={(e: any) => {
                     e.preventDefault();
-                    const updatedParents = profileData.student.parents.map((p: any, idx: number) => ({
+                    const parentList = profileData?.student?.parents || [];
+                    const updatedParents = parentList.map((p: any, idx: number) => ({
                         parentId: p.parentId,
                         name: e.target[`parent_name_${idx}`].value,
                         phone: e.target[`parent_phone_${idx}`].value,
@@ -677,8 +712,8 @@ export default function ProfilePage() {
                     });
                 }}>
                     <div className="portal-modal-body" style={{ padding: '32px', maxHeight: '400px', overflowY: 'auto' }}>
-                        {profileData.student.parents.map((p: any, idx: number) => (
-                            <div key={idx} style={{ marginBottom: '24px', paddingBottom: '20px', borderBottom: idx < profileData.student.parents.length - 1 ? '1px solid #e2e8f0' : 'none' }}>
+                        {(profileData?.student?.parents || []).map((p: any, idx: number) => (
+                            <div key={idx} style={{ marginBottom: '24px', paddingBottom: '20px', borderBottom: idx < parentList.length - 1 ? '1px solid #e2e8f0' : 'none' }}>
                                 <h4 style={{ margin: '0 0 16px', fontSize: '1rem', fontWeight: 800, color: '#334155' }}>{p.relation} Contact</h4>
                                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
                                     <div className="form-group">
