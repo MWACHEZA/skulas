@@ -227,14 +227,12 @@ import ParentDashboard from './portals/parent/pages/Dashboard';
 import ParentPaymentPlans from './portals/parent/pages/PaymentPlans';
 import ParentFees from './portals/parent/pages/Fees';
 import ParentAcademics from './portals/parent/pages/Academics';
-import ParentAcademicsDetail from './portals/parent/pages/AcademicsDetail';
 import ParentTransport from './portals/parent/pages/Transport';
 import ParentNotices from './portals/parent/pages/Notices';
-import ParentHistory from './portals/parent/pages/History';
-import ParentWellbeing from './portals/parent/pages/Wellbeing';
 import ParentWallet from './portals/parent/pages/Wallet';
 import ParentCalendar from './portals/parent/pages/Calendar';
 import ParentApprovals from './portals/parent/pages/Approvals';
+import ParentClinic from './portals/parent/pages/Clinic';
 import TeacherProcurement from './portals/teacher/pages/Procurement';
 import AcademicPortfolio from './portals/shared/pages/AcademicPortfolio';
 import ProgressReports from './portals/shared/pages/ProgressReports';
@@ -1001,29 +999,32 @@ export default function App() {
             }>
               <Route index element={<ParentDashboard />} />
               <Route path="dashboard" element={<ParentDashboard />} />
-              <Route path="reports" element={<ProgressReports />} />
+              <Route path="profile" element={<ProfilePage />} />
               <Route path="academics" element={<ParentAcademics />} />
-              <Route path="academic-details" element={<ParentAcademicsDetail />} />
-              <Route path="portfolio" element={<AcademicPortfolio />} />
               <Route path="attendance" element={<AttendanceHistory />} />
               <Route path="timetable" element={<StudentTimetable />} />
-              <Route path="history" element={<ParentHistory />} />
-              <Route path="wellbeing" element={<ParentWellbeing />} />
               <Route path="calendar" element={<ParentCalendar />} />
-              <Route path="wallet" element={<ParentWallet />} />
-              <Route path="approvals" element={<ParentApprovals />} />
               <Route path="fees" element={<ParentFees />} />
               <Route path="payment-plans" element={<ParentPaymentPlans />} />
-              <Route path="notices" element={<ParentNotices />} />
-              <Route path="messages" element={<MessagesPage />} />
-              <Route path="transport" element={<ParentTransport />} />
+              <Route path="wallet" element={<ParentWallet />} />
               <Route path="uniforms" element={<UniformsPage />} />
+              <Route path="transport" element={<ParentTransport />} />
+              <Route path="messages" element={<MessagesPage />} />
+              <Route path="notices" element={<ParentNotices />} />
+              <Route path="approvals" element={<ParentApprovals />} />
+              <Route path="clinic" element={<ParentClinic />} />
               <Route path="settings" element={<SettingsPage />} />
-              <Route path="profile" element={<ProfilePage />} />
-              <Route path="clinic/complaints" element={<HealthComplaints />} />
-              <Route path="clinic/appointments" element={<Appointments />} />
-              <Route path="clinic/emergencies" element={<Emergencies />} />
               <Route path="support" element={<ITSupportPage />} />
+
+              {/* Backward-Compatible Redirects for Consolidated Pages */}
+              <Route path="reports" element={<Navigate to="/parent/academics?tab=report-cards" replace />} />
+              <Route path="academic-details" element={<Navigate to="/parent/academics?tab=subject-breakdown" replace />} />
+              <Route path="history" element={<Navigate to="/parent/academics?tab=history" replace />} />
+              <Route path="portfolio" element={<Navigate to="/parent/academics?tab=subject-breakdown" replace />} />
+              <Route path="wellbeing" element={<Navigate to="/parent/clinic?tab=wellbeing" replace />} />
+              <Route path="clinic/complaints" element={<Navigate to="/parent/clinic?tab=complaints" replace />} />
+              <Route path="clinic/appointments" element={<Navigate to="/parent/clinic?tab=appointments" replace />} />
+              <Route path="clinic/emergencies" element={<Navigate to="/parent/clinic?tab=emergencies" replace />} />
             </Route>
 
             {/*  SUPPLIER PORTAL  */}

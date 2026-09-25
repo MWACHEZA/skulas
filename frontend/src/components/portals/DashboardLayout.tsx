@@ -140,7 +140,10 @@ export default function DashboardLayout({
           const labelMatch = item.label.toLowerCase().includes(q);
           const keywordMatch = item.searchKeywords?.some(kw => kw.toLowerCase().includes(q));
           const groupMatch = group.label.toLowerCase().includes(q);
-          return labelMatch || keywordMatch || groupMatch;
+          const tabMatch = item.tabs?.some(tab => 
+            tab.label.toLowerCase().includes(q) || tab.id.toLowerCase().includes(q)
+          );
+          return labelMatch || keywordMatch || groupMatch || tabMatch;
         });
         return {
           ...group,

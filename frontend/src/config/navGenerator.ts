@@ -9,6 +9,7 @@ export interface NavLeafItem {
   permissionKey?: string;
   badge?: string;
   searchKeywords?: string[];
+  tabs?: { id: string; label: string; route?: string }[];
 }
 
 export interface NavGroup {
@@ -178,9 +179,9 @@ const PORTAL_ROUTE_REWRITES: Record<string, Record<string, string>> = {
   parent: {
     '/admin/timetable': '/parent/timetable',
     '/admin/payment-plans': '/parent/payment-plans',
-    '/admin/clinic/appointments': '/parent/clinic/appointments',
-    '/admin/clinic/emergencies': '/parent/clinic/emergencies',
-    '/admin/clinic/complaints': '/parent/clinic/complaints',
+    '/admin/clinic/appointments': '/parent/clinic?tab=appointments',
+    '/admin/clinic/emergencies': '/parent/clinic?tab=emergencies',
+    '/admin/clinic/complaints': '/parent/clinic?tab=complaints',
     '/admin/announcements': '/parent/notices',
     '/admin/messages': '/parent/messages',
     '/admin/helpdesk': '/parent/support',
@@ -199,14 +200,23 @@ function generateParentPortalNavigation(user: UserContext | null | undefined, cu
       defaultExpanded: true,
       items: [
         { id: 'parent-dashboard', label: 'Dashboard', to: '/parent/dashboard', icon: 'fas fa-th-large', searchKeywords: ['home', 'overview'] },
-        { id: 'parent-profile', label: 'Student Profile', to: '/parent/profile', icon: 'fas fa-user-graduate', searchKeywords: ['child', 'student', 'details'] },
-        { id: 'parent-academics', label: 'Academic Performance', to: '/parent/academics', icon: 'fas fa-graduation-cap', searchKeywords: ['grades', 'marks', 'performance'] },
-        { id: 'parent-reports', label: 'Report Cards', to: '/parent/reports', icon: 'fas fa-chart-line', searchKeywords: ['reports', 'progress', 'term'] },
-        { id: 'parent-academic-details', label: 'Subject Breakdown', to: '/parent/academic-details', icon: 'fas fa-file-alt', searchKeywords: ['subjects', 'scores'] },
-        { id: 'parent-history', label: 'Academic History', to: '/parent/history', icon: 'fas fa-history', searchKeywords: ['transcripts', 'past terms'] },
-        { id: 'parent-attendance', label: 'Attendance Record', to: '/parent/attendance', icon: 'fas fa-calendar-check', searchKeywords: ['present', 'absent', 'punctuality'] },
-        { id: 'parent-timetable', label: 'Class Timetable', to: '/parent/timetable', icon: 'fas fa-clock', searchKeywords: ['schedule', 'periods', 'classes'] },
-        { id: 'parent-calendar', label: 'School Calendar', to: '/parent/calendar', icon: 'fas fa-calendar-alt', searchKeywords: ['events', 'terms', 'holidays'] }
+        { id: 'parent-profile', label: 'Child Profile', to: '/parent/profile', icon: 'fas fa-user-graduate', searchKeywords: ['child', 'student', 'details', 'bio'] },
+        { 
+          id: 'parent-academics', 
+          label: 'Academics', 
+          to: '/parent/academics', 
+          icon: 'fas fa-graduation-cap', 
+          tabs: [
+            { id: 'current-term', label: 'Current Term' },
+            { id: 'report-cards', label: 'Report Cards (PDF)' },
+            { id: 'subject-breakdown', label: 'Subject Breakdown' },
+            { id: 'history', label: 'History' }
+          ],
+          searchKeywords: ['grades', 'marks', 'performance', 'report cards', 'reports', 'pdf', 'subject breakdown', 'history', 'transcripts', 'results'] 
+        },
+        { id: 'parent-attendance', label: 'Attendance', to: '/parent/attendance', icon: 'fas fa-calendar-check', searchKeywords: ['present', 'absent', 'punctuality', 'roll call'] },
+        { id: 'parent-timetable', label: 'Timetable', to: '/parent/timetable', icon: 'fas fa-clock', searchKeywords: ['schedule', 'periods', 'classes'] },
+        { id: 'parent-calendar', label: 'Calendar', to: '/parent/calendar', icon: 'fas fa-calendar-alt', searchKeywords: ['events', 'terms', 'holidays'] }
       ]
     },
     {
@@ -218,42 +228,52 @@ function generateParentPortalNavigation(user: UserContext | null | undefined, cu
       items: [
         { id: 'parent-fees', label: 'Fees & Invoices', to: '/parent/fees', icon: 'fas fa-file-invoice-dollar', searchKeywords: ['billing', 'payments', 'statements', 'receipts'] },
         { id: 'parent-payment-plans', label: 'Payment Plans', to: '/parent/payment-plans', icon: 'fas fa-hand-holding-usd', searchKeywords: ['installments', 'plans', 'agreements'] },
-        { id: 'parent-wallet', label: 'Tuckshop Wallet', to: '/parent/wallet', icon: 'fas fa-wallet', searchKeywords: ['pocket money', 'canteen', 'topup'] },
-        { id: 'parent-uniforms', label: 'Uniforms & Supplies', to: '/parent/uniforms', icon: 'fas fa-tshirt', searchKeywords: ['clothing', 'shop', 'books'] },
-        { id: 'parent-transport', label: 'Transport Tracker', to: '/parent/transport', icon: 'fas fa-bus', searchKeywords: ['bus', 'route', 'tracking', 'pickup'] }
+        { id: 'parent-wallet', label: 'Tuckshop & Dining', to: '/parent/wallet', icon: 'fas fa-utensils', searchKeywords: ['pocket money', 'canteen', 'topup', 'tuckshop', 'dining', 'food', 'meals'] },
+        { id: 'parent-uniforms', label: 'Uniforms', to: '/parent/uniforms', icon: 'fas fa-tshirt', searchKeywords: ['clothing', 'shop', 'books', 'supplies'] },
+        { id: 'parent-transport', label: 'Transport', to: '/parent/transport', icon: 'fas fa-bus', searchKeywords: ['bus', 'route', 'tracking', 'pickup'] }
       ]
     },
     {
       id: 'COMMUNICATION_PORTAL',
-      label: 'Communication & Pastoral',
+      label: 'Communication',
       icon: 'fas fa-bullhorn',
       order: 3,
       items: [
-        { id: 'parent-messages', label: 'Recent Messages', to: '/parent/messages', icon: 'fas fa-envelope', searchKeywords: ['chat', 'inbox', 'teachers'] },
-        { id: 'parent-notices', label: 'Noticeboard', to: '/parent/notices', icon: 'fas fa-bullhorn', searchKeywords: ['announcements', 'circulars', 'news'] },
-        { id: 'parent-approvals', label: 'Approvals & Consents', to: '/parent/approvals', icon: 'fas fa-file-signature', searchKeywords: ['permission', 'consent', 'excursions'] }
+        { id: 'parent-messages', label: 'Messages', to: '/parent/messages', icon: 'fas fa-envelope', searchKeywords: ['chat', 'inbox', 'teachers'] },
+        { id: 'parent-notices', label: 'Notices', to: '/parent/notices', icon: 'fas fa-bullhorn', searchKeywords: ['announcements', 'circulars', 'news'] },
+        { id: 'parent-approvals', label: 'Approvals', to: '/parent/approvals', icon: 'fas fa-file-signature', searchKeywords: ['permission', 'consent', 'excursions'] }
       ]
     },
     {
       id: 'CLINIC_HEALTH',
-      label: 'Health & Wellbeing',
+      label: 'Clinic & Wellbeing',
       icon: 'fas fa-notes-medical',
       order: 4,
       items: [
-        { id: 'parent-wellbeing', label: 'Health & Conduct', to: '/parent/wellbeing', icon: 'fas fa-heartbeat', searchKeywords: ['pastoral', 'behavior', 'wellbeing'] },
-        { id: 'parent-clinic-complaints', label: 'Health Complaints', to: '/parent/clinic/complaints', icon: 'fas fa-stethoscope', searchKeywords: ['illness', 'symptoms', 'nurse'] },
-        { id: 'parent-clinic-appointments', label: 'Clinic Appointments', to: '/parent/clinic/appointments', icon: 'fas fa-calendar-check', searchKeywords: ['doctor', 'consultation'] },
-        { id: 'parent-clinic-emergencies', label: 'Emergencies', to: '/parent/clinic/emergencies', icon: 'fas fa-ambulance', searchKeywords: ['urgent', 'emergency'] }
+        { 
+          id: 'parent-clinic', 
+          label: 'Clinic & Wellbeing', 
+          to: '/parent/clinic', 
+          icon: 'fas fa-heartbeat', 
+          tabs: [
+            { id: 'visits', label: 'Visits' },
+            { id: 'complaints', label: 'Complaints Log' },
+            { id: 'appointments', label: 'Appointments' },
+            { id: 'wellbeing', label: 'Wellbeing/Conduct' },
+            { id: 'emergencies', label: 'Emergencies' }
+          ],
+          searchKeywords: ['health', 'clinic', 'visits', 'vitals', 'complaints', 'appointments', 'doctor', 'nurse', 'wellbeing', 'conduct', 'merits', 'emergencies'] 
+        }
       ]
     },
     {
       id: 'SYSTEM',
-      label: 'Settings & Support',
+      label: 'Settings',
       icon: 'fas fa-cog',
       order: 5,
       items: [
-        { id: 'parent-settings', label: 'My Settings', to: '/parent/settings', icon: 'fas fa-cog', searchKeywords: ['password', 'notifications', 'preferences'] },
-        { id: 'parent-support', label: 'IT Support', to: '/parent/support', icon: 'fas fa-headset', searchKeywords: ['helpdesk', 'tickets', 'help'] }
+        { id: 'parent-settings', label: 'Settings', to: '/parent/settings', icon: 'fas fa-cog', searchKeywords: ['password', 'notifications', 'preferences'] },
+        { id: 'parent-support', label: 'Support', to: '/parent/support', icon: 'fas fa-headset', searchKeywords: ['helpdesk', 'tickets', 'help'] }
       ]
     }
   ];

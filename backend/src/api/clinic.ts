@@ -258,6 +258,12 @@ router.get('/emergencies', requireAuth, async (req: AuthRequest, res: Response) 
 });
 
 router.post('/emergencies', requireAuth, async (req: AuthRequest, res: Response) => {
+  // Strict role enforcement: Only school staff can create medical emergency records
+  const nonStaffRoles = ['PARENT', 'STUDENT', 'ALUMNI', 'SUPPLIER'];
+  if (!req.user || nonStaffRoles.includes(req.user.role)) {
+    return res.status(403).json({ error: 'Forbidden: Medical emergency records can only be created by school staff' });
+  }
+
   const { title, details, date, time, patientId } = req.body;
   try {
     const newEmergency = await prisma.clinicEmergency.create({
@@ -277,6 +283,12 @@ router.post('/emergencies', requireAuth, async (req: AuthRequest, res: Response)
 });
 
 router.delete('/emergencies/:id', requireAuth, async (req: AuthRequest, res: Response) => {
+  // Strict role enforcement: Only school staff can delete medical emergency records
+  const nonStaffRoles = ['PARENT', 'STUDENT', 'ALUMNI', 'SUPPLIER'];
+  if (!req.user || nonStaffRoles.includes(req.user.role)) {
+    return res.status(403).json({ error: 'Forbidden: Medical emergency records can only be deleted by school staff' });
+  }
+
   try {
     const record = await prisma.clinicEmergency.findFirst({
       where: { id: req.params.id as string, schoolId: req.user!.schoolId as string }

@@ -12,6 +12,7 @@ export interface PageDefinition {
   requiredSecondaryRoles?: string[];
   badge?: string;
   searchKeywords?: string[];
+  tabs?: { id: string; label: string; route?: string }[];
 }
 
 export type CanonicalGroupId = 
@@ -252,6 +253,22 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     icon: 'fas fa-calendar-alt',
     permissionKey: PERMISSIONS.ACADEMICS_TIMETABLE_VIEW,
     portalVisibility: ['admin', 'teacher', 'student', 'parent']
+  },
+  {
+    id: 'parent-academics',
+    label: 'Academics',
+    route: '/parent/academics',
+    group: 'ACADEMICS',
+    icon: 'fas fa-graduation-cap',
+    permissionKey: PERMISSIONS.ACADEMICS_REPORTS_VIEW,
+    portalVisibility: ['parent'],
+    tabs: [
+      { id: 'current-term', label: 'Current Term' },
+      { id: 'report-cards', label: 'Report Cards (PDF)' },
+      { id: 'subject-breakdown', label: 'Subject Breakdown' },
+      { id: 'history', label: 'History' }
+    ],
+    searchKeywords: ['grades', 'marks', 'performance', 'report cards', 'reports', 'pdf', 'subject breakdown', 'history', 'transcripts', 'results']
   },
   {
     id: 'admin-study-materials',
@@ -813,13 +830,30 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     portalVisibility: ['admin', 'clinic']
   },
   {
+    id: 'parent-clinic',
+    label: 'Clinic & Wellbeing',
+    route: '/parent/clinic',
+    group: 'CLINIC_HEALTH',
+    icon: 'fas fa-notes-medical',
+    permissionKey: PERMISSIONS.CLINIC_APPOINTMENTS,
+    portalVisibility: ['parent'],
+    tabs: [
+      { id: 'visits', label: 'Visits' },
+      { id: 'complaints', label: 'Complaints Log' },
+      { id: 'appointments', label: 'Appointments' },
+      { id: 'wellbeing', label: 'Wellbeing/Conduct' },
+      { id: 'emergencies', label: 'Emergencies' }
+    ],
+    searchKeywords: ['health', 'clinic', 'visits', 'vitals', 'complaints', 'appointments', 'doctor', 'nurse', 'wellbeing', 'conduct', 'merits', 'emergencies']
+  },
+  {
     id: 'admin-clinic-appointments',
     label: 'Appointments',
     route: '/admin/clinic/appointments',
     group: 'CLINIC_HEALTH',
     icon: 'fas fa-calendar-check',
     permissionKey: PERMISSIONS.CLINIC_TRIAGE_MANAGE,
-    portalVisibility: ['admin', 'clinic', 'teacher', 'student', 'parent']
+    portalVisibility: ['admin', 'clinic', 'teacher', 'student']
   },
   {
     id: 'admin-clinic-emergencies',
@@ -828,7 +862,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'CLINIC_HEALTH',
     icon: 'fas fa-ambulance',
     permissionKey: PERMISSIONS.CLINIC_TRIAGE_MANAGE,
-    portalVisibility: ['admin', 'clinic', 'teacher', 'student', 'parent']
+    portalVisibility: ['admin', 'clinic', 'teacher', 'student']
   },
   {
     id: 'admin-clinic-referrals',
@@ -882,7 +916,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'CLINIC_HEALTH',
     icon: 'fas fa-stethoscope',
     permissionKey: PERMISSIONS.CLINIC_PATIENTS_MANAGE,
-    portalVisibility: ['admin', 'clinic', 'teacher', 'student', 'parent', 'ancillary']
+    portalVisibility: ['admin', 'clinic', 'teacher', 'student', 'ancillary']
   },
   {
     id: 'admin-clinic-icd10',
