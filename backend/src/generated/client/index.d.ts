@@ -59255,6 +59255,7 @@ export namespace Prisma {
     id: string | null
     title: string | null
     content: string | null
+    category: string | null
     targetRole: string | null
     isPublic: boolean | null
     schoolId: string | null
@@ -59266,6 +59267,7 @@ export namespace Prisma {
     id: string | null
     title: string | null
     content: string | null
+    category: string | null
     targetRole: string | null
     isPublic: boolean | null
     schoolId: string | null
@@ -59277,6 +59279,7 @@ export namespace Prisma {
     id: number
     title: number
     content: number
+    category: number
     targetRole: number
     visiblePortals: number
     isPublic: number
@@ -59291,6 +59294,7 @@ export namespace Prisma {
     id?: true
     title?: true
     content?: true
+    category?: true
     targetRole?: true
     isPublic?: true
     schoolId?: true
@@ -59302,6 +59306,7 @@ export namespace Prisma {
     id?: true
     title?: true
     content?: true
+    category?: true
     targetRole?: true
     isPublic?: true
     schoolId?: true
@@ -59313,6 +59318,7 @@ export namespace Prisma {
     id?: true
     title?: true
     content?: true
+    category?: true
     targetRole?: true
     visiblePortals?: true
     isPublic?: true
@@ -59398,6 +59404,7 @@ export namespace Prisma {
     id: string
     title: string
     content: string
+    category: string
     targetRole: string
     visiblePortals: string[]
     isPublic: boolean
@@ -59427,6 +59434,7 @@ export namespace Prisma {
     id?: boolean
     title?: boolean
     content?: boolean
+    category?: boolean
     targetRole?: boolean
     visiblePortals?: boolean
     isPublic?: boolean
@@ -59440,6 +59448,7 @@ export namespace Prisma {
     id?: boolean
     title?: boolean
     content?: boolean
+    category?: boolean
     targetRole?: boolean
     visiblePortals?: boolean
     isPublic?: boolean
@@ -59453,6 +59462,7 @@ export namespace Prisma {
     id?: boolean
     title?: boolean
     content?: boolean
+    category?: boolean
     targetRole?: boolean
     visiblePortals?: boolean
     isPublic?: boolean
@@ -59477,6 +59487,7 @@ export namespace Prisma {
       id: string
       title: string
       content: string
+      category: string
       targetRole: string
       visiblePortals: string[]
       isPublic: boolean
@@ -59880,6 +59891,7 @@ export namespace Prisma {
     readonly id: FieldRef<"Announcement", 'String'>
     readonly title: FieldRef<"Announcement", 'String'>
     readonly content: FieldRef<"Announcement", 'String'>
+    readonly category: FieldRef<"Announcement", 'String'>
     readonly targetRole: FieldRef<"Announcement", 'String'>
     readonly visiblePortals: FieldRef<"Announcement", 'String[]'>
     readonly isPublic: FieldRef<"Announcement", 'Boolean'>
@@ -73477,6 +73489,8 @@ export namespace Prisma {
     idCardTemplateFront: string | null
     idCardTemplateBack: string | null
     housesModuleEnabled: boolean | null
+    transportGpsEnabled: boolean | null
+    transportTodayStatus: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -73548,6 +73562,8 @@ export namespace Prisma {
     idCardTemplateFront: string | null
     idCardTemplateBack: string | null
     housesModuleEnabled: boolean | null
+    transportGpsEnabled: boolean | null
+    transportTodayStatus: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -73621,6 +73637,8 @@ export namespace Prisma {
     idCardTemplateBack: number
     setupStatus: number
     housesModuleEnabled: number
+    transportGpsEnabled: number
+    transportTodayStatus: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -73714,6 +73732,8 @@ export namespace Prisma {
     idCardTemplateFront?: true
     idCardTemplateBack?: true
     housesModuleEnabled?: true
+    transportGpsEnabled?: true
+    transportTodayStatus?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -73785,6 +73805,8 @@ export namespace Prisma {
     idCardTemplateFront?: true
     idCardTemplateBack?: true
     housesModuleEnabled?: true
+    transportGpsEnabled?: true
+    transportTodayStatus?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -73858,6 +73880,8 @@ export namespace Prisma {
     idCardTemplateBack?: true
     setupStatus?: true
     housesModuleEnabled?: true
+    transportGpsEnabled?: true
+    transportTodayStatus?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -74018,6 +74042,8 @@ export namespace Prisma {
     idCardTemplateBack: string | null
     setupStatus: JsonValue | null
     housesModuleEnabled: boolean
+    transportGpsEnabled: boolean
+    transportTodayStatus: string | null
     createdAt: Date
     updatedAt: Date
     _count: SchoolSettingCountAggregateOutputType | null
@@ -74110,6 +74136,8 @@ export namespace Prisma {
     idCardTemplateBack?: boolean
     setupStatus?: boolean
     housesModuleEnabled?: boolean
+    transportGpsEnabled?: boolean
+    transportTodayStatus?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     school?: boolean | SchoolDefaultArgs<ExtArgs>
@@ -74184,6 +74212,8 @@ export namespace Prisma {
     idCardTemplateBack?: boolean
     setupStatus?: boolean
     housesModuleEnabled?: boolean
+    transportGpsEnabled?: boolean
+    transportTodayStatus?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     school?: boolean | SchoolDefaultArgs<ExtArgs>
@@ -74258,6 +74288,8 @@ export namespace Prisma {
     idCardTemplateBack?: boolean
     setupStatus?: boolean
     housesModuleEnabled?: boolean
+    transportGpsEnabled?: boolean
+    transportTodayStatus?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
@@ -74343,6 +74375,8 @@ export namespace Prisma {
       idCardTemplateBack: string | null
       setupStatus: Prisma.JsonValue | null
       housesModuleEnabled: boolean
+      transportGpsEnabled: boolean
+      transportTodayStatus: string | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["schoolSetting"]>
@@ -74807,6 +74841,8 @@ export namespace Prisma {
     readonly idCardTemplateBack: FieldRef<"SchoolSetting", 'String'>
     readonly setupStatus: FieldRef<"SchoolSetting", 'Json'>
     readonly housesModuleEnabled: FieldRef<"SchoolSetting", 'Boolean'>
+    readonly transportGpsEnabled: FieldRef<"SchoolSetting", 'Boolean'>
+    readonly transportTodayStatus: FieldRef<"SchoolSetting", 'String'>
     readonly createdAt: FieldRef<"SchoolSetting", 'DateTime'>
     readonly updatedAt: FieldRef<"SchoolSetting", 'DateTime'>
   }
@@ -190888,6 +190924,7 @@ export namespace Prisma {
     id: 'id',
     title: 'title',
     content: 'content',
+    category: 'category',
     targetRole: 'targetRole',
     visiblePortals: 'visiblePortals',
     isPublic: 'isPublic',
@@ -191206,6 +191243,8 @@ export namespace Prisma {
     idCardTemplateBack: 'idCardTemplateBack',
     setupStatus: 'setupStatus',
     housesModuleEnabled: 'housesModuleEnabled',
+    transportGpsEnabled: 'transportGpsEnabled',
+    transportTodayStatus: 'transportTodayStatus',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -197059,6 +197098,7 @@ export namespace Prisma {
     id?: StringFilter<"Announcement"> | string
     title?: StringFilter<"Announcement"> | string
     content?: StringFilter<"Announcement"> | string
+    category?: StringFilter<"Announcement"> | string
     targetRole?: StringFilter<"Announcement"> | string
     visiblePortals?: StringNullableListFilter<"Announcement">
     isPublic?: BoolFilter<"Announcement"> | boolean
@@ -197072,6 +197112,7 @@ export namespace Prisma {
     id?: SortOrder
     title?: SortOrder
     content?: SortOrder
+    category?: SortOrder
     targetRole?: SortOrder
     visiblePortals?: SortOrder
     isPublic?: SortOrder
@@ -197088,6 +197129,7 @@ export namespace Prisma {
     NOT?: AnnouncementWhereInput | AnnouncementWhereInput[]
     title?: StringFilter<"Announcement"> | string
     content?: StringFilter<"Announcement"> | string
+    category?: StringFilter<"Announcement"> | string
     targetRole?: StringFilter<"Announcement"> | string
     visiblePortals?: StringNullableListFilter<"Announcement">
     isPublic?: BoolFilter<"Announcement"> | boolean
@@ -197101,6 +197143,7 @@ export namespace Prisma {
     id?: SortOrder
     title?: SortOrder
     content?: SortOrder
+    category?: SortOrder
     targetRole?: SortOrder
     visiblePortals?: SortOrder
     isPublic?: SortOrder
@@ -197119,6 +197162,7 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"Announcement"> | string
     title?: StringWithAggregatesFilter<"Announcement"> | string
     content?: StringWithAggregatesFilter<"Announcement"> | string
+    category?: StringWithAggregatesFilter<"Announcement"> | string
     targetRole?: StringWithAggregatesFilter<"Announcement"> | string
     visiblePortals?: StringNullableListFilter<"Announcement">
     isPublic?: BoolWithAggregatesFilter<"Announcement"> | boolean
@@ -198473,6 +198517,8 @@ export namespace Prisma {
     idCardTemplateBack?: StringNullableFilter<"SchoolSetting"> | string | null
     setupStatus?: JsonNullableFilter<"SchoolSetting">
     housesModuleEnabled?: BoolFilter<"SchoolSetting"> | boolean
+    transportGpsEnabled?: BoolFilter<"SchoolSetting"> | boolean
+    transportTodayStatus?: StringNullableFilter<"SchoolSetting"> | string | null
     createdAt?: DateTimeFilter<"SchoolSetting"> | Date | string
     updatedAt?: DateTimeFilter<"SchoolSetting"> | Date | string
     school?: XOR<SchoolRelationFilter, SchoolWhereInput>
@@ -198547,6 +198593,8 @@ export namespace Prisma {
     idCardTemplateBack?: SortOrderInput | SortOrder
     setupStatus?: SortOrderInput | SortOrder
     housesModuleEnabled?: SortOrder
+    transportGpsEnabled?: SortOrder
+    transportTodayStatus?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     school?: SchoolOrderByWithRelationInput
@@ -198624,6 +198672,8 @@ export namespace Prisma {
     idCardTemplateBack?: StringNullableFilter<"SchoolSetting"> | string | null
     setupStatus?: JsonNullableFilter<"SchoolSetting">
     housesModuleEnabled?: BoolFilter<"SchoolSetting"> | boolean
+    transportGpsEnabled?: BoolFilter<"SchoolSetting"> | boolean
+    transportTodayStatus?: StringNullableFilter<"SchoolSetting"> | string | null
     createdAt?: DateTimeFilter<"SchoolSetting"> | Date | string
     updatedAt?: DateTimeFilter<"SchoolSetting"> | Date | string
     school?: XOR<SchoolRelationFilter, SchoolWhereInput>
@@ -198698,6 +198748,8 @@ export namespace Prisma {
     idCardTemplateBack?: SortOrderInput | SortOrder
     setupStatus?: SortOrderInput | SortOrder
     housesModuleEnabled?: SortOrder
+    transportGpsEnabled?: SortOrder
+    transportTodayStatus?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: SchoolSettingCountOrderByAggregateInput
@@ -198779,6 +198831,8 @@ export namespace Prisma {
     idCardTemplateBack?: StringNullableWithAggregatesFilter<"SchoolSetting"> | string | null
     setupStatus?: JsonNullableWithAggregatesFilter<"SchoolSetting">
     housesModuleEnabled?: BoolWithAggregatesFilter<"SchoolSetting"> | boolean
+    transportGpsEnabled?: BoolWithAggregatesFilter<"SchoolSetting"> | boolean
+    transportTodayStatus?: StringNullableWithAggregatesFilter<"SchoolSetting"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"SchoolSetting"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"SchoolSetting"> | Date | string
   }
@@ -212897,6 +212951,7 @@ export namespace Prisma {
     id?: string
     title: string
     content: string
+    category?: string
     targetRole?: string
     visiblePortals?: AnnouncementCreatevisiblePortalsInput | string[]
     isPublic?: boolean
@@ -212909,6 +212964,7 @@ export namespace Prisma {
     id?: string
     title: string
     content: string
+    category?: string
     targetRole?: string
     visiblePortals?: AnnouncementCreatevisiblePortalsInput | string[]
     isPublic?: boolean
@@ -212921,6 +212977,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     content?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
     targetRole?: StringFieldUpdateOperationsInput | string
     visiblePortals?: AnnouncementUpdatevisiblePortalsInput | string[]
     isPublic?: BoolFieldUpdateOperationsInput | boolean
@@ -212933,6 +212990,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     content?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
     targetRole?: StringFieldUpdateOperationsInput | string
     visiblePortals?: AnnouncementUpdatevisiblePortalsInput | string[]
     isPublic?: BoolFieldUpdateOperationsInput | boolean
@@ -212945,6 +213003,7 @@ export namespace Prisma {
     id?: string
     title: string
     content: string
+    category?: string
     targetRole?: string
     visiblePortals?: AnnouncementCreatevisiblePortalsInput | string[]
     isPublic?: boolean
@@ -212957,6 +213016,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     content?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
     targetRole?: StringFieldUpdateOperationsInput | string
     visiblePortals?: AnnouncementUpdatevisiblePortalsInput | string[]
     isPublic?: BoolFieldUpdateOperationsInput | boolean
@@ -212968,6 +213028,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     content?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
     targetRole?: StringFieldUpdateOperationsInput | string
     visiblePortals?: AnnouncementUpdatevisiblePortalsInput | string[]
     isPublic?: BoolFieldUpdateOperationsInput | boolean
@@ -214448,6 +214509,8 @@ export namespace Prisma {
     idCardTemplateBack?: string | null
     setupStatus?: NullableJsonNullValueInput | InputJsonValue
     housesModuleEnabled?: boolean
+    transportGpsEnabled?: boolean
+    transportTodayStatus?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     school: SchoolCreateNestedOneWithoutSchoolSettingInput
@@ -214522,6 +214585,8 @@ export namespace Prisma {
     idCardTemplateBack?: string | null
     setupStatus?: NullableJsonNullValueInput | InputJsonValue
     housesModuleEnabled?: boolean
+    transportGpsEnabled?: boolean
+    transportTodayStatus?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -214594,6 +214659,8 @@ export namespace Prisma {
     idCardTemplateBack?: NullableStringFieldUpdateOperationsInput | string | null
     setupStatus?: NullableJsonNullValueInput | InputJsonValue
     housesModuleEnabled?: BoolFieldUpdateOperationsInput | boolean
+    transportGpsEnabled?: BoolFieldUpdateOperationsInput | boolean
+    transportTodayStatus?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     school?: SchoolUpdateOneRequiredWithoutSchoolSettingNestedInput
@@ -214668,6 +214735,8 @@ export namespace Prisma {
     idCardTemplateBack?: NullableStringFieldUpdateOperationsInput | string | null
     setupStatus?: NullableJsonNullValueInput | InputJsonValue
     housesModuleEnabled?: BoolFieldUpdateOperationsInput | boolean
+    transportGpsEnabled?: BoolFieldUpdateOperationsInput | boolean
+    transportTodayStatus?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -214741,6 +214810,8 @@ export namespace Prisma {
     idCardTemplateBack?: string | null
     setupStatus?: NullableJsonNullValueInput | InputJsonValue
     housesModuleEnabled?: boolean
+    transportGpsEnabled?: boolean
+    transportTodayStatus?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -214813,6 +214884,8 @@ export namespace Prisma {
     idCardTemplateBack?: NullableStringFieldUpdateOperationsInput | string | null
     setupStatus?: NullableJsonNullValueInput | InputJsonValue
     housesModuleEnabled?: BoolFieldUpdateOperationsInput | boolean
+    transportGpsEnabled?: BoolFieldUpdateOperationsInput | boolean
+    transportTodayStatus?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -214886,6 +214959,8 @@ export namespace Prisma {
     idCardTemplateBack?: NullableStringFieldUpdateOperationsInput | string | null
     setupStatus?: NullableJsonNullValueInput | InputJsonValue
     housesModuleEnabled?: BoolFieldUpdateOperationsInput | boolean
+    transportGpsEnabled?: BoolFieldUpdateOperationsInput | boolean
+    transportTodayStatus?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -229210,6 +229285,7 @@ export namespace Prisma {
     id?: SortOrder
     title?: SortOrder
     content?: SortOrder
+    category?: SortOrder
     targetRole?: SortOrder
     visiblePortals?: SortOrder
     isPublic?: SortOrder
@@ -229222,6 +229298,7 @@ export namespace Prisma {
     id?: SortOrder
     title?: SortOrder
     content?: SortOrder
+    category?: SortOrder
     targetRole?: SortOrder
     isPublic?: SortOrder
     schoolId?: SortOrder
@@ -229233,6 +229310,7 @@ export namespace Prisma {
     id?: SortOrder
     title?: SortOrder
     content?: SortOrder
+    category?: SortOrder
     targetRole?: SortOrder
     isPublic?: SortOrder
     schoolId?: SortOrder
@@ -230047,6 +230125,8 @@ export namespace Prisma {
     idCardTemplateBack?: SortOrder
     setupStatus?: SortOrder
     housesModuleEnabled?: SortOrder
+    transportGpsEnabled?: SortOrder
+    transportTodayStatus?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -230128,6 +230208,8 @@ export namespace Prisma {
     idCardTemplateFront?: SortOrder
     idCardTemplateBack?: SortOrder
     housesModuleEnabled?: SortOrder
+    transportGpsEnabled?: SortOrder
+    transportTodayStatus?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -230199,6 +230281,8 @@ export namespace Prisma {
     idCardTemplateFront?: SortOrder
     idCardTemplateBack?: SortOrder
     housesModuleEnabled?: SortOrder
+    transportGpsEnabled?: SortOrder
+    transportTodayStatus?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -253605,6 +253689,7 @@ export namespace Prisma {
     id?: string
     title: string
     content: string
+    category?: string
     targetRole?: string
     visiblePortals?: AnnouncementCreatevisiblePortalsInput | string[]
     isPublic?: boolean
@@ -253616,6 +253701,7 @@ export namespace Prisma {
     id?: string
     title: string
     content: string
+    category?: string
     targetRole?: string
     visiblePortals?: AnnouncementCreatevisiblePortalsInput | string[]
     isPublic?: boolean
@@ -256316,6 +256402,8 @@ export namespace Prisma {
     idCardTemplateBack?: string | null
     setupStatus?: NullableJsonNullValueInput | InputJsonValue
     housesModuleEnabled?: boolean
+    transportGpsEnabled?: boolean
+    transportTodayStatus?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -256388,6 +256476,8 @@ export namespace Prisma {
     idCardTemplateBack?: string | null
     setupStatus?: NullableJsonNullValueInput | InputJsonValue
     housesModuleEnabled?: boolean
+    transportGpsEnabled?: boolean
+    transportTodayStatus?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -257829,6 +257919,7 @@ export namespace Prisma {
     id?: StringFilter<"Announcement"> | string
     title?: StringFilter<"Announcement"> | string
     content?: StringFilter<"Announcement"> | string
+    category?: StringFilter<"Announcement"> | string
     targetRole?: StringFilter<"Announcement"> | string
     visiblePortals?: StringNullableListFilter<"Announcement">
     isPublic?: BoolFilter<"Announcement"> | boolean
@@ -260181,6 +260272,8 @@ export namespace Prisma {
     idCardTemplateBack?: NullableStringFieldUpdateOperationsInput | string | null
     setupStatus?: NullableJsonNullValueInput | InputJsonValue
     housesModuleEnabled?: BoolFieldUpdateOperationsInput | boolean
+    transportGpsEnabled?: BoolFieldUpdateOperationsInput | boolean
+    transportTodayStatus?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -260253,6 +260346,8 @@ export namespace Prisma {
     idCardTemplateBack?: NullableStringFieldUpdateOperationsInput | string | null
     setupStatus?: NullableJsonNullValueInput | InputJsonValue
     housesModuleEnabled?: BoolFieldUpdateOperationsInput | boolean
+    transportGpsEnabled?: BoolFieldUpdateOperationsInput | boolean
+    transportTodayStatus?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -359355,6 +359450,7 @@ export namespace Prisma {
     id?: string
     title: string
     content: string
+    category?: string
     targetRole?: string
     visiblePortals?: AnnouncementCreatevisiblePortalsInput | string[]
     isPublic?: boolean
@@ -361475,6 +361571,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     content?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
     targetRole?: StringFieldUpdateOperationsInput | string
     visiblePortals?: AnnouncementUpdatevisiblePortalsInput | string[]
     isPublic?: BoolFieldUpdateOperationsInput | boolean
@@ -361486,6 +361583,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     content?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
     targetRole?: StringFieldUpdateOperationsInput | string
     visiblePortals?: AnnouncementUpdatevisiblePortalsInput | string[]
     isPublic?: BoolFieldUpdateOperationsInput | boolean
@@ -361497,6 +361595,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     content?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
     targetRole?: StringFieldUpdateOperationsInput | string
     visiblePortals?: AnnouncementUpdatevisiblePortalsInput | string[]
     isPublic?: BoolFieldUpdateOperationsInput | boolean

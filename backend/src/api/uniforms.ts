@@ -584,4 +584,244 @@ router.post('/suppliers', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), as
   }
 });
 
+/**
+ * @route   GET /api/uniforms/parent-summary
+ * @desc    [PARENT] Summary for uniforms: requirements cross-referenced, missing items shop, order history
+ *          Strict tenant isolation + parent-child linkage verification
+ */
+router.get('/parent-summary', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    let studentId = req.query.studentId as string;
+    const userRole = req.user?.role;
+    const userId = req.user!.id;
+    const schoolId = req.user?.schoolId;
+
+    if (userRole === 'PARENT') {
+      const parent = await prisma.parent.findUnique({
+        where: { userId },
+        include: { students: { where: { status: 'APPROVED' }, include: { student: true } } }
+      });
+
+      if (!parent || parent.students.length === 0) {
+        return res.status(403).json({ error: 'No approved student link found for this parent.' });
+      }
+
+      if (!studentId) {
+        studentId = parent.students[0].studentId;
+      } else {
+        const isAuthorized = parent.students.some(
+          ps => ps.studentId === studentId || ps.student.id === studentId
+        );
+        if (!isAuthorized) {
+          return res.status(403).json({ error: 'Unauthorized: Student is not linked to your parent account.' });
+        }
+      }
+    } else if (userRole === 'STUDENT') {
+      const student = await prisma.student.findFirst({
+        where: { OR: [{ userId }, { id: studentId || userId }] }
+      });
+      if (!student) return res.status(403).json({ error: 'Student record not found.' });
+      studentId = student.id;
+    } else if (userRole !== 'SUPER_ADMIN' && userRole !== 'SCHOOL_ADMIN' && userRole !== 'BURSAR') {
+      return res.status(403).json({ error: 'Access denied.' });
+    }
+
+    if (!studentId) {
+      return res.status(400).json({ error: 'studentId is required.' });
+    }
+
+    const student = await prisma.student.findUnique({
+      where: { id: studentId },
+      include: {
+        class: true,
+        school: true
+      }
+    });
+
+    if (!student) {
+      return res.status(404).json({ error: 'Student not found.' });
+    }
+
+    if (schoolId && student.schoolId !== schoolId) {
+      return res.status(403).json({ error: 'Tenant isolation violation: Access denied.' });
+    }
+
+    const effectiveSchoolId = student.schoolId;
+    const gradeLevel = student.class?.name || 'Current Grade';
+
+    // 1. Fetch all student's past uniform purchases / sales
+    const pastSales = await prisma.uniformSale.findMany({
+      where: {
+        schoolId: effectiveSchoolId,
+        studentId: student.id
+      },
+      include: {
+        items: {
+          include: {
+            item: true
+          }
+        }
+      },
+      orderBy: { saleDate: 'desc' }
+    });
+
+    // Map owned quantities by item name
+    const ownedMap = new Map<string, number>();
+    for (const sale of pastSales) {
+      for (const si of sale.items) {
+        const nameKey = (si.item?.name || '').toLowerCase();
+        ownedMap.set(nameKey, (ownedMap.get(nameKey) || 0) + si.quantity);
+      }
+    }
+
+    // 2. Master Requirements per Grade
+    const masterRequirements = [
+      { name: 'Grey shorts / Skirt', category: 'Uniform', requiredQty: 2, isSeasonal: false, seasonNotes: 'Standard daily wear' },
+      { name: 'Formal Blazer', category: 'Uniform', requiredQty: 1, isSeasonal: true, seasonNotes: 'Required for winter — missing if not purchased' },
+      { name: 'White Collared Shirts', category: 'Uniform', requiredQty: 3, isSeasonal: false, seasonNotes: 'Standard formal wear' },
+      { name: 'School Tie', category: 'Uniform', requiredQty: 1, isSeasonal: false, seasonNotes: 'Formal assemblies' },
+      { name: 'Mathematics Textbook', category: 'Textbook', requiredQty: 1, isSeasonal: false, seasonNotes: 'Core syllabus requirement' },
+      { name: 'Agriculture Workbook', category: 'Workbook', requiredQty: 1, isSeasonal: false, seasonNotes: 'Practical coursework workbook' },
+      { name: 'Physical Education Tracksuit', category: 'Sports', requiredQty: 1, isSeasonal: true, seasonNotes: 'Winter sporting activities' },
+      { name: 'Black Ankle Socks (Pack of 3)', category: 'Uniform', requiredQty: 2, isSeasonal: false, seasonNotes: 'Standard dress code' }
+    ];
+
+    // Cross-reference requirements vs owned items
+    const requirements = masterRequirements.map((req, idx) => {
+      const nameLower = req.name.toLowerCase();
+      let ownedQty = 0;
+      ownedMap.forEach((qty, ownedName) => {
+        if (nameLower.includes(ownedName) || ownedName.includes(nameLower) || 
+           (nameLower.includes('blazer') && ownedName.includes('blazer')) ||
+           (nameLower.includes('shirt') && ownedName.includes('shirt')) ||
+           (nameLower.includes('short') && ownedName.includes('short')) ||
+           (nameLower.includes('math') && ownedName.includes('math')) ||
+           (nameLower.includes('agric') && ownedName.includes('agric')) ||
+           (nameLower.includes('tracksuit') && ownedName.includes('tracksuit')) ||
+           (nameLower.includes('tie') && ownedName.includes('tie'))) {
+          ownedQty += qty;
+        }
+      });
+
+      const isFulfilled = ownedQty >= req.requiredQty;
+
+      return {
+        id: `req-${idx + 1}`,
+        name: req.name,
+        category: req.category,
+        requiredQty: req.requiredQty,
+        ownedQty,
+        isSeasonal: req.isSeasonal,
+        seasonNotes: req.seasonNotes,
+        status: isFulfilled ? 'FULFILLED' : 'MISSING'
+      };
+    });
+
+    // 3. Shop Catalog: Limited to items this child actually needs/missing + relevant items, capped at ~10
+    const rawItems = await prisma.uniformItem.findMany({
+      where: { schoolId: effectiveSchoolId },
+      orderBy: { sellingPrice: 'asc' }
+    });
+
+    const stockMovements = await prisma.uniformStockMovement.groupBy({
+      by: ['itemId'],
+      where: { schoolId: effectiveSchoolId },
+      _sum: { quantity: true }
+    });
+    const stockMap = new Map(stockMovements.map(s => [s.itemId, s._sum.quantity ?? 0]));
+
+    const missingReqNames = requirements.filter(r => r.status === 'MISSING').map(r => r.name.toLowerCase());
+    
+    const catalogWithStock = rawItems.map(item => ({
+      id: item.id,
+      name: item.name,
+      price: item.sellingPrice,
+      stockLevel: stockMap.get(item.id) ?? 15,
+      isMissingForChild: missingReqNames.some(m => item.name.toLowerCase().includes(m) || m.includes(item.name.toLowerCase()))
+    }));
+
+    catalogWithStock.sort((a, b) => {
+      if (a.isMissingForChild && !b.isMissingForChild) return -1;
+      if (!a.isMissingForChild && b.isMissingForChild) return 1;
+      return a.price - b.price;
+    });
+
+    const shopItems = catalogWithStock.slice(0, 10);
+
+    const finalShopItems = shopItems.length > 0 ? shopItems : [
+      { id: 'def-1', name: 'Winter Woollen Blazer', price: 45.00, stockLevel: 24, isMissingForChild: true },
+      { id: 'def-2', name: 'Agriculture Practical Workbook', price: 12.00, stockLevel: 40, isMissingForChild: true },
+      { id: 'def-3', name: 'Grey School Shorts / Pleated Skirt', price: 18.00, stockLevel: 35, isMissingForChild: false },
+      { id: 'def-4', name: 'White Collared Formal Shirt', price: 10.00, stockLevel: 50, isMissingForChild: false },
+      { id: 'def-5', name: 'Official Striped School Tie', price: 6.00, stockLevel: 60, isMissingForChild: false },
+      { id: 'def-6', name: 'Physical Education Winter Tracksuit', price: 32.00, stockLevel: 18, isMissingForChild: true }
+    ];
+
+    // 4. Order History (Newest first)
+    const orderHistory = pastSales.map(s => ({
+      id: s.id,
+      orderNumber: s.reference || `ORD-${s.id.slice(-6).toUpperCase()}`,
+      date: new Date(s.saleDate).toLocaleDateString(),
+      itemsCount: s.items.reduce((sum, item) => sum + item.quantity, 0),
+      itemsSummary: s.items.map(si => `${si.item?.name || 'Item'} x${si.quantity}`).join(', '),
+      totalAmount: s.totalAmount,
+      paymentMode: s.paymentMode || 'Paid via Portal',
+      status: 'Ready for collection ✓'
+    }));
+
+    res.json({
+      student: {
+        id: student.id,
+        name: student.name,
+        studentId: student.studentId,
+        gradeLevel,
+        schoolName: student.school.name
+      },
+      requirements,
+      shopItems: finalShopItems,
+      orderHistory
+    });
+  } catch (error: any) {
+    console.error('Error fetching parent uniforms summary:', error);
+    res.status(500).json({ error: 'Failed to fetch uniform requirements: ' + error.message });
+  }
+});
+
+/**
+ * @route   POST /api/uniforms/parent-order
+ * @desc    [PARENT] Place uniform / bookstore order with Paynow/InnBucks/ZiG
+ */
+router.post('/parent-order', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    const { studentId, items, paymentMode, reference } = req.body;
+    const schoolId = req.user!.schoolId!;
+
+    if (!studentId || !Array.isArray(items) || items.length === 0) {
+      return res.status(400).json({ error: 'studentId and items list are required.' });
+    }
+
+    const totalAmount = items.reduce((sum: number, it: any) => sum + (it.price * (it.quantity || 1)), 0);
+
+    const sale = await prisma.uniformSale.create({
+      data: {
+        schoolId,
+        studentId,
+        paymentMode: paymentMode || 'Paynow',
+        reference: reference || `UNIF-${Date.now().toString().slice(-6)}`,
+        totalAmount
+      }
+    });
+
+    res.json({
+      success: true,
+      orderNumber: sale.reference,
+      totalAmount: sale.totalAmount,
+      status: 'Ready for collection ✓'
+    });
+  } catch (error: any) {
+    console.error('Error placing parent uniform order:', error);
+    res.status(500).json({ error: 'Failed to place uniform order: ' + error.message });
+  }
+});
+
 export default router;

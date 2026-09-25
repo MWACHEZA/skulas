@@ -186,7 +186,9 @@ const PORTAL_ROUTE_REWRITES: Record<string, Record<string, string>> = {
     '/admin/messages': '/parent/messages',
     '/admin/helpdesk': '/parent/support',
     '/admin/settings': '/parent/settings',
-    '/admin/profile': '/parent/profile'
+    '/admin/profile': '/parent/profile',
+    '/admin/accounts/uniforms': '/parent/uniforms',
+    '/admin/transportation/routes': '/parent/transport'
   }
 };
 

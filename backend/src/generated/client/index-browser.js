@@ -610,6 +610,7 @@ exports.Prisma.AnnouncementScalarFieldEnum = {
   id: 'id',
   title: 'title',
   content: 'content',
+  category: 'category',
   targetRole: 'targetRole',
   visiblePortals: 'visiblePortals',
   isPublic: 'isPublic',
@@ -889,6 +890,8 @@ exports.Prisma.SchoolSettingScalarFieldEnum = {
   idCardTemplateBack: 'idCardTemplateBack',
   setupStatus: 'setupStatus',
   housesModuleEnabled: 'housesModuleEnabled',
+  transportGpsEnabled: 'transportGpsEnabled',
+  transportTodayStatus: 'transportTodayStatus',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };

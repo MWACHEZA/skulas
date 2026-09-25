@@ -13,6 +13,7 @@ export default function AdminAnnouncementsManagement() {
   const [formData, setFormData] = useState({
     title: '',
     content: '',
+    category: 'General',
     visiblePortals: [] as string[],
     isPublic: false,
     expiresAt: ''
@@ -66,7 +67,7 @@ export default function AdminAnnouncementsManagement() {
       }
       setShowModal(false);
       setEditingId(null);
-      setFormData({ title: '', content: '', visiblePortals: [], isPublic: false, expiresAt: '' });
+      setFormData({ title: '', content: '', category: 'General', visiblePortals: [], isPublic: false, expiresAt: '' });
       fetchAnnouncements();
     } catch (err) {
       showToast(`Failed to ${editingId ? 'update' : 'create'} announcement`, 'error');
@@ -78,6 +79,7 @@ export default function AdminAnnouncementsManagement() {
     setFormData({
       title: announcement.title,
       content: announcement.content,
+      category: announcement.category || 'General',
       visiblePortals: announcement.visiblePortals || [],
       isPublic: announcement.isPublic,
       expiresAt: announcement.expiresAt ? announcement.expiresAt.split('T')[0] : ''
@@ -123,6 +125,7 @@ export default function AdminAnnouncementsManagement() {
             <thead>
               <tr>
                 <th>Announcement Title</th>
+                <th>Category</th>
                 <th>Target Portals</th>
                 <th>Public?</th>
                 <th>Published</th>
@@ -131,12 +134,17 @@ export default function AdminAnnouncementsManagement() {
             </thead>
             <tbody>
               {loading && announcements.length === 0 ? (
-                <tr><td colSpan={5} style={{ textAlign: 'center', padding: 30 }}>Loading announcements...</td></tr>
+                <tr><td colSpan={6} style={{ textAlign: 'center', padding: 30 }}>Loading announcements...</td></tr>
               ) : announcements.length === 0 ? (
-                <tr><td colSpan={5} style={{ textAlign: 'center', padding: 30 }}>No announcements found.</td></tr>
+                <tr><td colSpan={6} style={{ textAlign: 'center', padding: 30 }}>No announcements found.</td></tr>
               ) : announcements.map((a) => (
                 <tr key={a.id}>
                   <td style={{ fontWeight: 600 }}>{a.title}</td>
+                  <td>
+                    <span className={`portal-badge ${a.category === 'Urgent' ? 'danger' : a.category === 'Fees' ? 'warning' : a.category === 'Academic' ? 'info' : 'neutral'}`} style={{ fontSize: '0.75rem', fontWeight: 700 }}>
+                      {a.category || 'General'}
+                    </span>
+                  </td>
                   <td>
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
                       {a.visiblePortals.map((p: string) => (
@@ -156,6 +164,7 @@ export default function AdminAnnouncementsManagement() {
                           setFormData({
                             title: a.title,
                             content: a.content,
+                            category: a.category || 'General',
                             visiblePortals: a.visiblePortals || [],
                             isPublic: a.isPublic,
                             expiresAt: a.expiresAt ? new Date(a.expiresAt).toISOString().split('T')[0] : ''
@@ -213,6 +222,22 @@ export default function AdminAnnouncementsManagement() {
                     value={formData.title} 
                     onChange={e => setFormData({...formData, title: e.target.value})} 
                   />
+                </div>
+
+                <div className="portal-form-group">
+                  <label className="portal-label">Category <span style={{ color: '#ef4444' }}>*</span></label>
+                  <select 
+                    className="portal-input"
+                    required
+                    value={formData.category}
+                    onChange={e => setFormData({...formData, category: e.target.value})}
+                  >
+                    <option value="General">General Circular</option>
+                    <option value="Academic">Academic</option>
+                    <option value="Fees">Fees & Finances</option>
+                    <option value="Events">School Events</option>
+                    <option value="Urgent">Urgent / Important Notice</option>
+                  </select>
                 </div>
 
                 <div className="portal-form-group">

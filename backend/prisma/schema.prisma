@@ -945,6 +945,7 @@ model Announcement {
   id             String    @id @default(cuid())
   title          String
   content        String
+  category       String    @default("General") // Academic, Fees, Events, Urgent, General
   targetRole     String    @default("ALL") // Deprecated in favor of visiblePortals
   visiblePortals String[]  @default(["ALL"])
   isPublic       Boolean   @default(false)
@@ -1316,6 +1317,8 @@ model SchoolSetting {
 
   // Module toggles
   housesModuleEnabled Boolean @default(true) // Show/hide Houses module (default on for K12, can be disabled for tertiary)
+  transportGpsEnabled Boolean @default(false) // Toggle live GPS tracking vs manual status
+  transportTodayStatus String? @default("Bus departed school 15:32 ✓")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

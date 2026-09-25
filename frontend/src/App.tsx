@@ -233,6 +233,7 @@ import ParentWallet from './portals/parent/pages/Wallet';
 import ParentCalendar from './portals/parent/pages/Calendar';
 import ParentApprovals from './portals/parent/pages/Approvals';
 import ParentClinic from './portals/parent/pages/Clinic';
+import ParentUniforms from './portals/parent/pages/Uniforms';
 import TeacherProcurement from './portals/teacher/pages/Procurement';
 import AcademicPortfolio from './portals/shared/pages/AcademicPortfolio';
 import ProgressReports from './portals/shared/pages/ProgressReports';
@@ -1007,7 +1008,7 @@ export default function App() {
               <Route path="fees" element={<ParentFees />} />
               <Route path="payment-plans" element={<Navigate to="/parent/fees?tab=payment-plan" replace />} />
               <Route path="wallet" element={<ParentWallet />} />
-              <Route path="uniforms" element={<UniformsPage />} />
+              <Route path="uniforms" element={<ParentUniforms />} />
               <Route path="transport" element={<ParentTransport />} />
               <Route path="messages" element={<MessagesPage />} />
               <Route path="notices" element={<ParentNotices />} />

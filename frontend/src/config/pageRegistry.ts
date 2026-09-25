@@ -494,6 +494,26 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     searchKeywords: ['tuckshop', 'dining', 'wallet', 'pocket money', 'canteen', 'allowance', 'topup']
   },
   {
+    id: 'parent-uniforms',
+    label: 'Uniforms',
+    route: '/parent/uniforms',
+    group: 'FINANCE_BILLING',
+    icon: 'fas fa-tshirt',
+    permissionKey: PERMISSIONS.PEOPLE_UNIFORMS_MANAGE,
+    portalVisibility: ['parent'],
+    searchKeywords: ['uniforms', 'blazer', 'shirts', 'stationery', 'books', 'order', 'clothing']
+  },
+  {
+    id: 'parent-transport',
+    label: 'Transport',
+    route: '/parent/transport',
+    group: 'FINANCE_BILLING',
+    icon: 'fas fa-bus',
+    permissionKey: PERMISSIONS.ANCILLARY_TRANSPORT,
+    portalVisibility: ['parent'],
+    searchKeywords: ['transport', 'bus', 'route', 'driver', 'pickup', 'tracking', 'drop-off']
+  },
+  {
     id: 'admin-payment-plans',
     label: 'Payment Plans',
     route: '/admin/payment-plans',
@@ -972,6 +992,16 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     icon: 'fas fa-envelope',
     permissionKey: PERMISSIONS.COMMUNICATION_MESSAGES,
     portalVisibility: ['admin', 'teacher', 'bursar', 'librarian', 'ancillary', 'clinic', 'student', 'parent']
+  },
+  {
+    id: 'parent-approvals',
+    label: 'Approvals & Consents',
+    route: '/parent/approvals',
+    group: 'COMMUNICATION_PORTAL',
+    icon: 'fas fa-file-signature',
+    permissionKey: PERMISSIONS.COMMUNICATION_ANNOUNCEMENTS,
+    portalVisibility: ['parent'],
+    searchKeywords: ['approvals', 'consent', 'excursions', 'trips', 'permissions', 'sign-off']
   },
   {
     id: 'admin-website-settings',
