@@ -7,13 +7,24 @@ import EmptyState from '../../../components/shared/EmptyState';
 import '../../../styles/portal.css';
 
 export default function ProfilePage() {
-  const { user, refreshUser } = useAuth();
+  const { user, refreshUser, activeEntity } = useAuth();
   const { showToast } = useToast();
   const [loading, setLoading] = useState(false);
   const [fetchingProfile, setFetchingProfile] = useState(true);
   const [profileData, setProfileData] = useState<any>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [editingSection, setEditingSection] = useState<string | null>(null);
+
+  const isParent = user?.role === 'PARENT';
+  const childLink = profileData?.parent?.students?.find(
+    (ps: any) => ps.studentId === activeEntity?.id || ps.student?.id === activeEntity?.id
+  ) || profileData?.parent?.students?.[0];
+  const targetStudent = isParent ? (childLink?.student || (activeEntity ? {
+    name: activeEntity.name,
+    studentId: (activeEntity as any).studentId || (activeEntity as any).code || 'N/A',
+    class: { name: (activeEntity as any).className || (activeEntity as any).class || 'Enrolled' },
+    school: { name: activeEntity.schoolName }
+  } : null)) : profileData?.student;
   
   const [passwordForm, setPasswordForm] = useState({
     currentPassword: '',
@@ -129,8 +140,8 @@ export default function ProfilePage() {
     <div className="portal-container">
       <div className="portal-page-header">
         <div className="header-content">
-          <h1>My Profile</h1>
-          <p>Manage your identity, security settings, and institutional credentials.</p>
+          <h1>{isParent ? `${activeEntity?.name || targetStudent?.name || 'Child'}'s Profile` : 'My Profile'}</h1>
+          <p>{isParent ? `Review academic enrollment, class records, and biographical details for ${activeEntity?.name || targetStudent?.name || 'your child'}.` : 'Manage your identity, security settings, and institutional credentials.'}</p>
         </div>
       </div>
 
@@ -150,24 +161,36 @@ export default function ProfilePage() {
                     ) : user?.avatar ? (
                         <img src={`${BASE_URL}/api/storage/media/${user.schoolCode}/${user.avatar}`} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     ) : (
-                        getInitials(user?.name || '')
+                        getInitials(isParent ? (activeEntity?.name || targetStudent?.name || user?.name || '') : (user?.name || ''))
                     )}
                 </div>
-                <label htmlFor="avatar-upload" className="portal-btn-icon" style={{ 
-                    position: 'absolute', bottom: '8px', right: '8px', background: '#fff', 
-                    boxShadow: '0 4px 10px rgba(0,0,0,0.2)', width: '44px', height: '44px',
-                    cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    borderRadius: '50%', color: '#2563eb', border: '1px solid #f1f5f9'
-                }}>
-                    <i className="fas fa-camera"></i>
-                    <input id="avatar-upload" type="file" hidden accept="image/*" onChange={handleAvatarChange} />
-                </label>
+                {!isParent && (
+                  <label htmlFor="avatar-upload" className="portal-btn-icon" style={{ 
+                      position: 'absolute', bottom: '8px', right: '8px', background: '#fff', 
+                      boxShadow: '0 4px 10px rgba(0,0,0,0.2)', width: '44px', height: '44px',
+                      cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      borderRadius: '50%', color: '#2563eb', border: '1px solid #f1f5f9'
+                  }}>
+                      <i className="fas fa-camera"></i>
+                      <input id="avatar-upload" type="file" hidden accept="image/*" onChange={handleAvatarChange} />
+                  </label>
+                )}
              </div>
-             <h2 style={{ margin: '0 0 8px', fontSize: '1.5rem', fontWeight: 900, color: '#1e293b' }}>{user?.name}</h2>
-             <p style={{ color: '#64748b', margin: '0 0 24px', fontWeight: 600 }}>{user?.email}</p>
-             <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
-                <span className="status-badge status-active" style={{ padding: '8px 20px', fontWeight: 900 }}>{user?.role}</span>
-                {user?.staffId && <span className="status-badge" style={{ padding: '8px 20px', fontWeight: 900, background: '#f1f5f9', color: '#475569' }}>{user.staffId}</span>}
+             <h2 style={{ margin: '0 0 8px', fontSize: '1.5rem', fontWeight: 900, color: '#1e293b' }}>
+               {isParent ? (activeEntity?.name || targetStudent?.name || user?.name) : user?.name}
+             </h2>
+             <p style={{ color: '#64748b', margin: '0 0 24px', fontWeight: 600 }}>
+               {isParent ? (targetStudent?.email || `${(targetStudent?.studentId || 'Enrolled Student')}`) : user?.email}
+             </p>
+             <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
+                <span className="status-badge status-active" style={{ padding: '8px 20px', fontWeight: 900 }}>
+                  {isParent ? 'Enrolled Student' : user?.role}
+                </span>
+                {(isParent ? (targetStudent?.class?.name || (targetStudent as any)?.className) : user?.staffId) && (
+                  <span className="status-badge" style={{ padding: '8px 20px', fontWeight: 900, background: '#eff6ff', color: '#1d4ed8' }}>
+                    {isParent ? (targetStudent?.class?.name || (targetStudent as any)?.className) : user?.staffId}
+                  </span>
+                )}
              </div>
              {avatarPreview && (
                <button className="portal-btn-primary" style={{ marginTop: 20 }} onClick={() => handleUpdateProfile({ avatar: avatarPreview })}>
@@ -205,23 +228,25 @@ export default function ProfilePage() {
             <div className="portal-card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
                 <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800 }}>
                   <i className="fas fa-user-circle mr-3" style={{ color: '#2563eb' }}></i>
-                  Personal Information
+                  {isParent ? 'Child Personal Information' : 'Personal Information'}
                 </h3>
-                <button className="portal-btn-ghost" onClick={() => setEditingSection('personal')} style={{ fontSize: '0.85rem', fontWeight: 800 }}>
-                  <i className="fas fa-edit mr-2"></i>Edit
-                </button>
+                {!isParent && (
+                  <button className="portal-btn-ghost" onClick={() => setEditingSection('personal')} style={{ fontSize: '0.85rem', fontWeight: 800 }}>
+                    <i className="fas fa-edit mr-2"></i>Edit
+                  </button>
+                )}
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 48px' }}>
-                <InfoRow label="Legal Name" value={profileData?.name} />
-                {profileData?.student?.class && (
-                    <InfoRow label="Class / Form" value={`${profileData.student.class.name} (${profileData.student.class.level || ''})`} icon="fas fa-chalkboard" />
+                <InfoRow label="Legal Name" value={isParent ? (targetStudent?.name || activeEntity?.name) : profileData?.name} />
+                {(targetStudent?.class || profileData?.student?.class) && (
+                    <InfoRow label="Class / Form" value={`${(targetStudent || profileData?.student)?.class.name} (${(targetStudent || profileData?.student)?.class.level || ''})`} icon="fas fa-chalkboard" />
                 )}
-                <InfoRow label="Gender" value={profileData?.student?.gender || profileData?.metadata?.gender} />
-                <InfoRow label="Date of Birth" value={formatDate(profileData?.student?.dob || profileData?.metadata?.dob)} />
+                <InfoRow label="Gender" value={targetStudent?.gender || profileData?.student?.gender || profileData?.metadata?.gender} />
+                <InfoRow label="Date of Birth" value={formatDate(targetStudent?.dob || profileData?.student?.dob || profileData?.metadata?.dob)} />
                 <InfoRow label="Religion" value={profileData?.metadata?.religion} />
-                {profileData?.student && <InfoRow label="Student ID" value={profileData.student.studentId} />}
-                {profileData?.student?.hexcoId && <InfoRow label="HEXCO ID" value={profileData.student.hexcoId} icon="fas fa-id-card-alt" />}
-                {profileData?.staffId && <InfoRow label="Staff ID" value={profileData.staffId} />}
+                {(targetStudent || profileData?.student) && <InfoRow label="Student ID" value={(targetStudent || profileData?.student)?.studentId} />}
+                {(targetStudent?.hexcoId || profileData?.student?.hexcoId) && <InfoRow label="HEXCO ID" value={(targetStudent || profileData?.student)?.hexcoId} icon="fas fa-id-card-alt" />}
+                {!isParent && profileData?.staffId && <InfoRow label="Staff ID" value={profileData.staffId} />}
             </div>
           </div>
 
@@ -230,36 +255,39 @@ export default function ProfilePage() {
             <div className="portal-card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
                 <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800 }}>
                   <i className="fas fa-address-book mr-3" style={{ color: '#059669' }}></i>
-                  Contact Information
+                  {isParent ? 'Parent & Guardian Contact' : 'Contact Information'}
                 </h3>
                 <button className="portal-btn-ghost" onClick={() => setEditingSection('contact')} style={{ fontSize: '0.85rem', fontWeight: 800 }}>
                   <i className="fas fa-edit mr-2"></i>Edit
                 </button>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column' }}>
+                {isParent && <InfoRow label="Guardian Name" value={profileData?.name} />}
                 <InfoRow label="Email Address" value={profileData?.email} />
                 <InfoRow label="Phone Number" value={profileData?.phone} />
-                <InfoRow label="Physical Address" value={profileData?.student?.address || profileData?.metadata?.address} />
+                <InfoRow label="Physical Address" value={(targetStudent || profileData?.student)?.address || profileData?.metadata?.address} />
             </div>
           </div>
 
           {/* Section 2.5: Academic Background */}
-          {profileData?.student && (
+          {(targetStudent || profileData?.student) && (
             <div className="portal-card">
               <div className="portal-card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
                   <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800 }}>
                     <i className="fas fa-graduation-cap mr-3" style={{ color: '#2563eb' }}></i>
-                    Academic Background
+                    Academic Background & History
                   </h3>
-                  <button className="portal-btn-ghost" onClick={() => setEditingSection('academic')} style={{ fontSize: '0.85rem', fontWeight: 800 }}>
-                    <i className="fas fa-edit mr-2"></i>Edit
-                  </button>
+                  {!isParent && (
+                    <button className="portal-btn-ghost" onClick={() => setEditingSection('academic')} style={{ fontSize: '0.85rem', fontWeight: 800 }}>
+                      <i className="fas fa-edit mr-2"></i>Edit
+                    </button>
+                  )}
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 48px' }}>
-                  <InfoRow label="Previous School" value={profileData.student.prevSchool} />
-                  <InfoRow label="Last Grade" value={profileData.student.lastGradeAchieved} />
-                  <InfoRow label="Transfer Reason" value={profileData.student.reasonForTransfer} />
-                  <InfoRow label="Admissions Note" value={profileData.student.admissionsNotes} />
+                  <InfoRow label="Previous School" value={(targetStudent || profileData?.student)?.prevSchool} />
+                  <InfoRow label="Last Grade" value={(targetStudent || profileData?.student)?.lastGradeAchieved} />
+                  <InfoRow label="Transfer Reason" value={(targetStudent || profileData?.student)?.reasonForTransfer} />
+                  <InfoRow label="Admissions Note" value={(targetStudent || profileData?.student)?.admissionsNotes} />
               </div>
               {profileData.student.academicHistory && (
                 <div style={{ marginTop: '24px', padding: '24px', background: '#f8fafc', borderRadius: '16px', border: '1px solid #f1f5f9' }}>

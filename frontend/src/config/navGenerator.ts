@@ -207,9 +207,9 @@ function generateParentPortalNavigation(user: UserContext | null | undefined, cu
           to: '/parent/academics', 
           icon: 'fas fa-graduation-cap', 
           tabs: [
-            { id: 'current-term', label: 'Current Term' },
-            { id: 'report-cards', label: 'Report Cards (PDF)' },
+            { id: 'overview', label: 'Overview' },
             { id: 'subject-breakdown', label: 'Subject Breakdown' },
+            { id: 'report-cards', label: 'Report Cards' },
             { id: 'history', label: 'History' }
           ],
           searchKeywords: ['grades', 'marks', 'performance', 'report cards', 'reports', 'pdf', 'subject breakdown', 'history', 'transcripts', 'results'] 

@@ -484,7 +484,7 @@ export default function ParentDashboard() {
           </div>
         ) : (
           <div
-            onClick={() => navigate('/parent/academics?tab=current-term')}
+            onClick={() => navigate('/parent/academics?tab=overview')}
             style={{
               background: '#ffffff',
               borderLeft: '4px solid #3b82f6',
