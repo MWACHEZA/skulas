@@ -13,6 +13,7 @@ import LibraryOverdue from '../../library/pages/Overdue';
 import LibraryRequests from '../../library/pages/Requests';
 import LibraryDigitalRepository from '../../library/pages/DigitalRepository';
 import LibraryReports from '../../library/pages/Reports';
+import StudentLibraryAssistantPage from '../../student/pages/StudentLibraryAssistantPage';
 
 interface Book {
   id: string;
@@ -300,9 +301,21 @@ export default function Library() {
             >
               <i className="fas fa-cloud-download-alt" style={{ marginRight: 6 }}></i>Digital Repository
             </button>
+            {user?.secondaryRoles?.includes('Student Librarian') && (
+              <button 
+                className={activeTab === 'duty-desk' ? 'portal-btn-primary' : 'portal-btn-secondary'}
+                onClick={() => handleTabChange('duty-desk')}
+                style={{ padding: '8px 16px', fontSize: '0.85rem', whiteSpace: 'nowrap', background: activeTab === 'duty-desk' ? undefined : '#fef3c7', color: activeTab === 'duty-desk' ? undefined : '#92400e' }}
+              >
+                <i className="fas fa-id-badge" style={{ marginRight: 6 }}></i>Duty Desk (Staff)
+              </button>
+            )}
           </>
         )}
       </div>
+
+      {/* STUDENT LIBRARIAN DUTY DESK */}
+      {activeTab === 'duty-desk' && <StudentLibraryAssistantPage />}
 
       {/* STAFF FULL MECHANISM VIEWS */}
       {isStaff && activeTab === 'dashboard' && <LibraryDashboard />}

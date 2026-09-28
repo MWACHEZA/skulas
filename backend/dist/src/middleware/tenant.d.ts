@@ -1,10 +1,18 @@
 import { Request, Response, NextFunction } from 'express';
+import { AuthRequest } from './auth';
 export interface TenantRequest extends Request {
     tenantId?: string;
     tenantCode?: string;
+    user?: any;
 }
 /**
  * Extracts school/tenant context from headers or URL parameters.
- * Ensures that requests are scoped to the correct school.
+ * For authenticated requests, JWT user school is authoritative.
  */
 export declare const tenantContext: (req: TenantRequest, res: Response, next: NextFunction) => void;
+/**
+ * Strict Tenant Boundary Enforcement Guard.
+ * Rejects any request where a non-SUPER_ADMIN client attempts to query,
+ * manipulate, or access data belonging to a different schoolId/schoolCode.
+ */
+export declare const enforceTenantIsolation: (req: AuthRequest, res: Response, next: NextFunction) => void;

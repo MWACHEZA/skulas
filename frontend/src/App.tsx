@@ -68,24 +68,27 @@ import StudentEvents from './portals/student/pages/Events';
 import ResearchDashboard from './portals/student/pages/ResearchDashboard';
 import CBTExams from './portals/student/pages/CBTExams';
 import CBTResults from './portals/shared/pages/cbt/CBTResults';
+import CleaningRequests from './portals/student/pages/CleaningRequests';
+import LeaderGuard from './components/auth/LeaderGuard';
+import StudentClinicUnified from './portals/student/pages/StudentClinicUnified';
+import TeacherAttendanceUnified from './portals/teacher/pages/TeacherAttendanceUnified';
+import TeacherClinicUnified from './portals/teacher/pages/TeacherClinicUnified';
+import TeacherGradesUnified from './portals/teacher/pages/TeacherGradesUnified';
+import TeacherCurriculum from './portals/teacher/pages/TeacherCurriculum';
+import AdminFinance from './portals/admin/pages/AdminFinance';
+import BursarFeesUnified from './portals/bursar/pages/BursarFeesUnified';
+import BursarTuckshopUnified from './portals/bursar/pages/BursarTuckshopUnified';
 
 //  Clinic Portal pages 
 import ClinicLayout from './portals/clinic/ClinicLayout';
-import ClinicDashboard from './portals/clinic/pages/Dashboard';
-import PatientManagement from './portals/clinic/pages/PatientManagement';
-import HospitalizationManager from './portals/clinic/pages/HospitalizationManager';
-
-import HealthComplaints from './portals/shared/pages/clinic/HealthComplaints';
-import Appointments from './portals/shared/pages/clinic/Appointments';
-import TriageDashboard from './portals/shared/pages/clinic/TriageDashboard';
-import Icd10Manager from './portals/shared/pages/clinic/Icd10Manager';
-import PatientHistory from './portals/shared/pages/clinic/PatientHistory';
-import Emergencies from './portals/shared/pages/clinic/Emergencies';
-import Referrals from './portals/shared/pages/clinic/Referrals';
-import Immunization from './portals/shared/pages/clinic/Immunization';
-import PharmacyDashboard from './portals/shared/pages/clinic/PharmacyDashboard';
-import ClinicBillingPage from './portals/shared/pages/clinic/ClinicBillingPage';
-import ClinicReportsPage from './portals/shared/pages/clinic/ClinicReportsPage';
+import ClinicDashboardPage from './portals/clinic/pages/ClinicDashboardPage';
+import ClinicTriagePage from './portals/clinic/pages/ClinicTriagePage';
+import ClinicConsultationsPage from './portals/clinic/pages/ClinicConsultationsPage';
+import ClinicHospitalizationPage from './portals/clinic/pages/ClinicHospitalizationPage';
+import ClinicPharmacyPage from './portals/clinic/pages/ClinicPharmacyPage';
+import ClinicWellnessPage from './portals/clinic/pages/ClinicWellnessPage';
+import ClinicEmergencyPage from './portals/clinic/pages/ClinicEmergencyPage';
+import ClinicReportsUnifiedPage from './portals/clinic/pages/ClinicReportsUnifiedPage';
 
 //  Teacher pages 
 import TeacherDashboard from './portals/teacher/pages/Dashboard';
@@ -502,7 +505,6 @@ export default function App() {
               <Route path="timetable" element={<StudentTimetable />} />
               <Route path="assignments" element={<StudentAssignments />} />
               <Route path="attendance" element={<StudentAttendance />} />
-              <Route path="my-books" element={<StudentMyBooks />} />
               <Route path="admission-letter" element={<AdmissionLetterPage />} />
               <Route path="fees" element={<StudentFees />} />
               <Route path="study-materials" element={<StudentStudyMaterial />} />
@@ -513,13 +515,9 @@ export default function App() {
               <Route path="class-monitor" element={<ClassMonitorDashboard />} />
               <Route path="chaplaincy" element={<ChaplaincyDashboard />} />
               <Route path="sports" element={<SportsManagement />} />
-              <Route path="house" element={<HouseDashboard />} />
               <Route path="dining-hall" element={<DHRepresentative />} />
               <Route path="farm" element={<FarmManagement />} />
-              <Route path="library-staff" element={<StudentLibraryAssistantPage />} />
-              <Route path="clinic/complaints" element={<HealthComplaints />} />
-              <Route path="clinic/appointments" element={<Appointments />} />
-              <Route path="clinic/emergencies" element={<Emergencies />} />
+              <Route path="clinic" element={<StudentClinicUnified />} />
               <Route path="support" element={<ITSupportPage />} />
               <Route path="uniforms" element={<UniformsPage />} />
               <Route path="research" element={<ResearchDashboard />} />
@@ -529,6 +527,20 @@ export default function App() {
               <Route path="profile" element={<ProfilePage />} />
               <Route path="cbt" element={<CBTExams />} />
               <Route path="cbt/take/:id" element={<TakeExam />} />
+              <Route path="cleaning-requests" element={
+                <LeaderGuard>
+                  <CleaningRequests />
+                </LeaderGuard>
+              } />
+
+              {/* Backward Compatibility Redirects */}
+              <Route path="my-books" element={<Navigate to="/student/library?tab=loans" replace />} />
+              <Route path="library-staff" element={<Navigate to="/student/library?tab=duty-desk" replace />} />
+              <Route path="requests" element={<Navigate to="/student/cleaning-requests" replace />} />
+              <Route path="house" element={<Navigate to="/student/dashboard" replace />} />
+              <Route path="clinic/complaints" element={<Navigate to="/student/clinic?tab=visits" replace />} />
+              <Route path="clinic/appointments" element={<Navigate to="/student/clinic?tab=book" replace />} />
+              <Route path="clinic/emergencies" element={<Navigate to="/student/clinic?tab=visits" replace />} />
               <Route path="*" element={<Navigate to="dashboard" replace />} />
             </Route>
 
@@ -549,28 +561,21 @@ export default function App() {
               <Route path="classes/:classId" element={<TeacherClassDetails />} />
               <Route path="students" element={<TeacherStudents />} />
               <Route path="student-profile" element={<StudentProfile />} />
-              <Route path="grades" element={<TeacherGrades />} />
+              <Route path="grades" element={<TeacherGradesUnified />} />
               <Route path="assignments" element={<TeacherAssignments />} />
+              <Route path="attendance" element={<TeacherAttendanceUnified />} />
 
-              <Route path="attendance/student" element={<DailyStudentAttendance />} />
-              <Route path="attendance/staff" element={<DailyStaffAttendance />} />
-              <Route path="attendance/qr" element={<QRAttendance />} />
-              <Route path="attendance/report" element={<DailyStudentAttendanceReport />} />
-              <Route path="attendance-logs" element={<ClockInLogsPage />} />
+              <Route path="curriculum" element={<TeacherCurriculum />} />
+              <Route path="clinic" element={<TeacherClinicUnified />} />
+              <Route path="library" element={<Library />} />
 
               <Route path="study-materials" element={<StudyMaterial />} />
               <Route path="leave" element={<MyLeave />} />
               <Route path="awards" element={<MyAwards />} />
               <Route path="payslips" element={<MyPaymentSlip />} />
-              <Route path="attendance" element={<TeacherClassAttendance />} />
-              <Route path="attendance/mark" element={<TeacherAttendance />} />
 
               <Route path="live-class/zoom" element={<ZoomLiveClass />} />
               <Route path="live-class/jitsi" element={<JitsiLiveClass />} />
-
-              <Route path="planner" element={<TeacherLessonPlan />} />
-              <Route path="syllabus" element={<CreateSyllabus />} />
-              <Route path="syllabus-manager" element={<TeacherSyllabusManager />} />
 
               <Route path="courses" element={<CoursesDashboard />} />
               <Route path="online-learning/revenue-report" element={<RevenueReport />} />
@@ -593,27 +598,10 @@ export default function App() {
 
               <Route path="messages" element={<MessagesPage />} />
               <Route path="reports" element={<TeacherReports />} />
-              <Route path="assessments/marks-entry" element={<MarksEntryPage />} />
               <Route path="question-papers" element={<QuestionPapersPage />} />
               <Route path="question-papers/new" element={<QuestionPaperBuilder />} />
-              {/* LIBRARY MODULE ACCESS FOR TEACHER */}
-              <Route path="library">
-                <Route index element={<Library />} />
-                <Route path="dashboard" element={<LibraryDashboard />} />
-                <Route path="books" element={<LibraryBooks />} />
-                <Route path="categories" element={<LibraryResourceCategories />} />
-                <Route path="digital" element={<LibraryDigitalRepository />} />
-                <Route path="loans" element={<LibraryLoans />} />
-                <Route path="overdue" element={<LibraryOverdue />} />
-                <Route path="reports" element={<LibraryReports />} />
-                <Route path="reservations" element={<LibraryRequests />} />
-                <Route path="requests" element={<LibraryRequests />} />
-              </Route>
               <Route path="resources" element={<TeacherResources />} />
               <Route path="digital-resources" element={<TeacherResources />} />
-              <Route path="clinic/complaints" element={<HealthComplaints />} />
-              <Route path="clinic/appointments" element={<Appointments />} />
-              <Route path="clinic/emergencies" element={<Emergencies />} />
               <Route path="support" element={<ITSupportPage />} />
               <Route path="procurement" element={<TeacherProcurement />} />
               <Route path="supervision" element={<SupervisorDashboard />} />
@@ -621,6 +609,34 @@ export default function App() {
               <Route path="uniforms" element={<UniformsPage />} />
               <Route path="settings" element={<SettingsPage />} />
               <Route path="profile" element={<ProfilePage />} />
+
+              {/* Backward-Compatible Redirects */}
+              <Route path="attendance/student" element={<Navigate to="/teacher/attendance?tab=roll-call" replace />} />
+              <Route path="attendance/staff" element={<Navigate to="/teacher/attendance?tab=roll-call" replace />} />
+              <Route path="attendance/qr" element={<Navigate to="/teacher/attendance?tab=qr" replace />} />
+              <Route path="attendance/report" element={<Navigate to="/teacher/attendance?tab=reports" replace />} />
+              <Route path="attendance-logs" element={<Navigate to="/teacher/attendance?tab=reports" replace />} />
+              <Route path="attendance/mark" element={<Navigate to="/teacher/attendance?tab=roll-call" replace />} />
+
+              <Route path="planner" element={<Navigate to="/teacher/curriculum?tab=lesson-plans" replace />} />
+              <Route path="syllabus" element={<Navigate to="/teacher/curriculum?tab=syllabus" replace />} />
+              <Route path="syllabus-manager" element={<Navigate to="/teacher/curriculum?tab=syllabus" replace />} />
+
+              <Route path="assessments/marks-entry" element={<Navigate to="/teacher/grades?tab=marks-entry" replace />} />
+
+              <Route path="clinic/complaints" element={<Navigate to="/teacher/clinic?tab=refer" replace />} />
+              <Route path="clinic/appointments" element={<Navigate to="/teacher/clinic?tab=my-referrals" replace />} />
+              <Route path="clinic/emergencies" element={<Navigate to="/teacher/clinic?tab=refer" replace />} />
+
+              <Route path="library/dashboard" element={<Navigate to="/teacher/library" replace />} />
+              <Route path="library/books" element={<Navigate to="/teacher/library?tab=catalog" replace />} />
+              <Route path="library/categories" element={<Navigate to="/teacher/library?tab=catalog" replace />} />
+              <Route path="library/digital" element={<Navigate to="/teacher/library?tab=digital" replace />} />
+              <Route path="library/loans" element={<Navigate to="/teacher/library?tab=loans" replace />} />
+              <Route path="library/overdue" element={<Navigate to="/teacher/library?tab=loans" replace />} />
+              <Route path="library/reports" element={<Navigate to="/teacher/library" replace />} />
+              <Route path="library/reservations" element={<Navigate to="/teacher/library?tab=reservations" replace />} />
+              <Route path="library/requests" element={<Navigate to="/teacher/library?tab=reservations" replace />} />
               <Route path="*" element={<Navigate to="dashboard" replace />} />
             </Route>
 
@@ -645,10 +661,11 @@ export default function App() {
               <Route path="admissions" element={<AdminApplications />} />
 
               {/* 2. Finance Module */}
-              <Route path="finance/overview" element={<AdminFees />} />
-              <Route path="finance/billing" element={<AdminFinanceBilling />} />
-              <Route path="finance/payment-plans" element={<ManagePaymentPlans />} />
-              <Route path="finance/wallets" element={<AdminFinanceWallets />} />
+              <Route path="finance" element={<AdminFinance />} />
+              <Route path="finance/overview" element={<Navigate to="/admin/finance?tab=overview" replace />} />
+              <Route path="finance/billing" element={<Navigate to="/admin/finance?tab=billing" replace />} />
+              <Route path="finance/payment-plans" element={<Navigate to="/admin/finance?tab=payment-plans" replace />} />
+              <Route path="finance/wallets" element={<Navigate to="/admin/finance?tab=wallets" replace />} />
 
               {/* 3. Academics Module */}
               <Route path="academics/setup" element={<AdminAcademicsSetup />} />
@@ -689,7 +706,7 @@ export default function App() {
               <Route path="procurement" element={<AdminProcurement />} />
               <Route path="suppliers" element={<AdminSuppliers />} />
               <Route path="assets" element={<AdminAssetManagement />} />
-              <Route path="asset-maintenance" element={<AdminAssetMaintenance />} />
+              <Route path="asset-maintenance" element={<Navigate to="/admin/assets?tab=maintenance" replace />} />
               <Route path="sdc-minutes" element={<AdminSDCMinutes />} />
               <Route path="sdc-funding" element={<AdminSDCFunding />} />
               <Route path="document-templates" element={<AdminDocumentTemplates />} />
@@ -708,25 +725,25 @@ export default function App() {
               <Route path="student-history" element={<AdminStudentProfileRedirect />} />
               <Route path="applications" element={<Navigate to="/admin/admissions" replace />} />
 
-              <Route path="finance/fees-billing" element={<Navigate to="/admin/finance/billing?tab=invoices" replace />} />
-              <Route path="finance/invoices" element={<Navigate to="/admin/finance/billing?tab=invoices" replace />} />
-              <Route path="finance/receipts" element={<Navigate to="/admin/finance/billing?tab=receipts" replace />} />
-              <Route path="finance/student-ledgers" element={<Navigate to="/admin/finance/billing?tab=ledgers" replace />} />
-              <Route path="finance/groceries" element={<Navigate to="/admin/finance/wallets?tab=inventory" replace />} />
-              <Route path="fees" element={<Navigate to="/admin/finance/overview" replace />} />
-              <Route path="fee-groups" element={<Navigate to="/admin/finance/overview" replace />} />
-              <Route path="payment-methods" element={<Navigate to="/admin/finance/overview" replace />} />
-              <Route path="revenue-allocation" element={<Navigate to="/admin/finance/overview" replace />} />
-              <Route path="payment-plans" element={<Navigate to="/admin/finance/payment-plans" replace />} />
-              <Route path="fees-management/billing" element={<Navigate to="/admin/finance/billing?tab=invoices" replace />} />
-              <Route path="fees-management/invoices" element={<Navigate to="/admin/finance/billing?tab=invoices" replace />} />
-              <Route path="fees-management/bulk-invoices" element={<Navigate to="/admin/finance/billing?tab=invoices" replace />} />
-              <Route path="fees-management/payment-history" element={<Navigate to="/admin/finance/billing?tab=receipts" replace />} />
-              <Route path="fees-management/ledgers" element={<Navigate to="/admin/finance/billing?tab=ledgers" replace />} />
-              <Route path="fees-management/groceries" element={<Navigate to="/admin/finance/wallets?tab=inventory" replace />} />
-              <Route path="fees-management/reminder-logs" element={<Navigate to="/admin/finance/billing?tab=invoices" replace />} />
-              <Route path="grocery-store" element={<Navigate to="/admin/finance/wallets?tab=inventory" replace />} />
-              <Route path="dining-hall" element={<Navigate to="/admin/finance/wallets?tab=sales" replace />} />
+              <Route path="finance/fees-billing" element={<Navigate to="/admin/finance?tab=billing" replace />} />
+              <Route path="finance/invoices" element={<Navigate to="/admin/finance?tab=billing" replace />} />
+              <Route path="finance/receipts" element={<Navigate to="/admin/finance?tab=billing" replace />} />
+              <Route path="finance/student-ledgers" element={<Navigate to="/admin/finance?tab=billing" replace />} />
+              <Route path="finance/groceries" element={<Navigate to="/admin/finance?tab=wallets" replace />} />
+              <Route path="fees" element={<Navigate to="/admin/finance?tab=overview" replace />} />
+              <Route path="fee-groups" element={<Navigate to="/admin/finance?tab=overview" replace />} />
+              <Route path="payment-methods" element={<Navigate to="/admin/finance?tab=overview" replace />} />
+              <Route path="revenue-allocation" element={<Navigate to="/admin/finance?tab=overview" replace />} />
+              <Route path="payment-plans" element={<Navigate to="/admin/finance?tab=payment-plans" replace />} />
+              <Route path="fees-management/billing" element={<Navigate to="/admin/finance?tab=billing" replace />} />
+              <Route path="fees-management/invoices" element={<Navigate to="/admin/finance?tab=billing" replace />} />
+              <Route path="fees-management/bulk-invoices" element={<Navigate to="/admin/finance?tab=billing" replace />} />
+              <Route path="fees-management/payment-history" element={<Navigate to="/admin/finance?tab=billing" replace />} />
+              <Route path="fees-management/ledgers" element={<Navigate to="/admin/finance?tab=billing" replace />} />
+              <Route path="fees-management/groceries" element={<Navigate to="/admin/finance?tab=wallets" replace />} />
+              <Route path="fees-management/reminder-logs" element={<Navigate to="/admin/finance?tab=billing" replace />} />
+              <Route path="grocery-store" element={<Navigate to="/admin/finance?tab=wallets" replace />} />
+              <Route path="dining-hall" element={<Navigate to="/admin/finance?tab=wallets" replace />} />
 
               <Route path="subjects" element={<Navigate to="/admin/academics/setup?tab=subjects" replace />} />
               <Route path="classes" element={<Navigate to="/admin/academics/setup?tab=classes" replace />} />
@@ -805,7 +822,7 @@ export default function App() {
               <Route index element={<BursarDashboard />} />
               <Route path="dashboard" element={<BursarDashboard />} />
               <Route path="assets" element={<AdminAssetManagement />} />
-              <Route path="fees" element={<FeesBillingPage />} />
+              <Route path="fees" element={<BursarFeesUnified />} />
               <Route path="payments" element={<PaymentHistoryPage />} />
               <Route path="expenses" element={<ExpensesPage />} />
               <Route path="reconcile" element={<BursarFinancialReconciliation />} />
@@ -824,22 +841,20 @@ export default function App() {
                 <Route path="settings" element={<PayrollSettingsPage />} />
                 <Route path="employees" element={<EmployeeManagementPage />} />
               </Route>
-              <Route path="tuckshop">
-                <Route index element={<BursarTuckshop />} />
-                <Route path="inventory" element={<BursarTuckshopInventory />} />
-                <Route path="sales" element={<BursarTuckshopSales />} />
-                <Route path="reports" element={<BursarTuckshopReports />} />
-              </Route>
-              <Route path="fees-management">
-                <Route path="groups" element={<FeeGroupsPage />} />
-                <Route path="billing" element={<FeesBillingPage />} />
-                <Route path="invoices" element={<ManageInvoicesPage />} />
-                <Route path="payment-history" element={<PaymentHistoryPage />} />
-                <Route path="ledgers" element={<StudentLedgersPage />} />
-                <Route path="groceries" element={<GroceriesPage />} />
-                <Route path="bulk-invoices" element={<BulkInvoicesPage />} />
-                <Route path="reminder-logs" element={<FeeReminderLogsPage />} />
-              </Route>
+              <Route path="tuckshop" element={<BursarTuckshopUnified />} />
+              <Route path="tuckshop/inventory" element={<Navigate to="/bursar/tuckshop?tab=inventory" replace />} />
+              <Route path="tuckshop/sales" element={<Navigate to="/bursar/tuckshop?tab=sales" replace />} />
+              <Route path="tuckshop/reports" element={<Navigate to="/bursar/tuckshop?tab=reports" replace />} />
+
+              {/* Backward-Compatible Fees Management Redirects */}
+              <Route path="fees-management/groups" element={<Navigate to="/bursar/fees?tab=billing" replace />} />
+              <Route path="fees-management/billing" element={<Navigate to="/bursar/fees?tab=billing" replace />} />
+              <Route path="fees-management/invoices" element={<Navigate to="/bursar/fees?tab=invoices" replace />} />
+              <Route path="fees-management/payment-history" element={<Navigate to="/bursar/payments" replace />} />
+              <Route path="fees-management/ledgers" element={<Navigate to="/bursar/fees?tab=ledgers" replace />} />
+              <Route path="fees-management/groceries" element={<Navigate to="/bursar/tuckshop?tab=inventory" replace />} />
+              <Route path="fees-management/bulk-invoices" element={<Navigate to="/bursar/fees?tab=bulk-invoices" replace />} />
+              <Route path="fees-management/reminder-logs" element={<Navigate to="/bursar/fees?tab=invoices" replace />} />
               <Route path="sdc">
                 <Route index element={<BursarSDC />} />
                 <Route path="funding" element={<BursarSDCFunding />} />
@@ -866,9 +881,9 @@ export default function App() {
               </Route>
               <Route path="profile" element={<ProfilePage />} />
               <Route path="assets" element={<AncillaryAssets />} />
-              <Route path="transportation/routes" element={<TransportRoute />} />
-              <Route path="transportation/vehicles" element={<ManageVehicle />} />
-              <Route path="transportation/assignments" element={<SchoolTransportation />} />
+              <Route path="transportation/routes" element={<Navigate to="/admin/transport?tab=routes" replace />} />
+              <Route path="transportation/vehicles" element={<Navigate to="/admin/transport?tab=buses" replace />} />
+              <Route path="transportation/assignments" element={<Navigate to="/admin/transport?tab=fees" replace />} />
               <Route path="support" element={<ITSupportPage />} />
               <Route path="procurement" element={<BursarProcurement />} />
               <Route path="class-migration" element={<AdminClassMigration />} />
@@ -977,15 +992,11 @@ export default function App() {
               <Route path="boarding/assign-students" element={<AssignStudents />} />
               <Route path="security" element={<SecurityLog />} />
               <Route path="kitchen" element={<KitchenManagement />} />
-              <Route path="tuckshop">
-                <Route index element={<BursarTuckshop />} />
-                <Route path="inventory" element={<BursarTuckshopInventory />} />
-                <Route path="sales" element={<BursarTuckshopSales />} />
-                <Route path="reports" element={<BursarTuckshopReports />} />
-              </Route>
-              <Route path="transportation/routes" element={<TransportRoute />} />
-              <Route path="transportation/vehicles" element={<ManageVehicle />} />
-              <Route path="transportation/assignments" element={<SchoolTransportation />} />
+              <Route path="tuckshop" element={<Navigate to="/bursar/tuckshop" replace />} />
+              <Route path="tuckshop/*" element={<Navigate to="/bursar/tuckshop" replace />} />
+              <Route path="transportation/routes" element={<Navigate to="/admin/transport?tab=routes" replace />} />
+              <Route path="transportation/vehicles" element={<Navigate to="/admin/transport?tab=buses" replace />} />
+              <Route path="transportation/assignments" element={<Navigate to="/admin/transport?tab=fees" replace />} />
               <Route path="house" element={<HouseDashboard />} />
               <Route path="farm" element={<FarmManagement />} />
               <Route path="dining-hall" element={<DHRepresentative />} />
@@ -998,11 +1009,6 @@ export default function App() {
               <Route path="messages" element={<MessagesPage />} />
               <Route path="profile" element={<ProfilePage />} />
               <Route path="payslips" element={<MyPaymentSlip />} />
-              <Route path="clinic/complaints" element={<HealthComplaints />} />
-              <Route path="clinic/appointments" element={<Appointments />} />
-              <Route path="clinic/emergencies" element={<Emergencies />} />
-              <Route path="clinic/referrals" element={<Referrals />} />
-              <Route path="clinic/immunization" element={<Immunization />} />
               {/* LIBRARY MODULE ACCESS FOR ANCILLARY */}
               <Route path="library">
                 <Route index element={<LibraryDashboard />} />
@@ -1099,23 +1105,31 @@ export default function App() {
                 <ClinicLayout />
               </ProtectedRoute>
             }>
-              <Route index element={<ClinicDashboard />} />
-              <Route path="dashboard" element={<ClinicDashboard />} />
-              <Route path="patients" element={<PatientManagement />} />
-              <Route path="hospitalization" element={<HospitalizationManager />} />
-              <Route path="hospitalizations" element={<HospitalizationManager />} />
-              <Route path="hospitalizations/:id" element={<HospitalizationManager />} />
-              <Route path="appointments" element={<Appointments />} />
-              <Route path="triage" element={<TriageDashboard />} />
-              <Route path="icd10" element={<Icd10Manager />} />
-              <Route path="patient-history" element={<PatientHistory />} />
-              <Route path="pharmacy" element={<PharmacyDashboard />} />
-              <Route path="billing" element={<ClinicBillingPage />} />
-              <Route path="emergencies" element={<Emergencies />} />
-              <Route path="referrals" element={<Referrals />} />
-              <Route path="immunization" element={<Immunization />} />
-              <Route path="reports" element={<ClinicReportsPage />} />
-              <Route path="complaints" element={<HealthComplaints />} />
+              <Route index element={<ClinicDashboardPage />} />
+              <Route path="dashboard" element={<ClinicDashboardPage />} />
+              <Route path="triage" element={<ClinicTriagePage />} />
+              <Route path="consultations" element={<ClinicConsultationsPage />} />
+              <Route path="hospitalization" element={<ClinicHospitalizationPage />} />
+              <Route path="pharmacy" element={<ClinicPharmacyPage />} />
+              <Route path="wellness" element={<ClinicWellnessPage />} />
+              <Route path="emergency" element={<ClinicEmergencyPage />} />
+              <Route path="reports" element={<ClinicReportsUnifiedPage />} />
+
+              {/* Backward-Compatible Redirects */}
+              <Route path="emergencies" element={<Navigate to="/clinic/emergency?tab=emergency-log" replace />} />
+              <Route path="referrals" element={<Navigate to="/clinic/emergency?tab=referrals" replace />} />
+              <Route path="appointments" element={<Navigate to="/clinic/wellness?tab=appointments" replace />} />
+              <Route path="immunization" element={<Navigate to="/clinic/wellness?tab=vaccines" replace />} />
+              <Route path="immunizations" element={<Navigate to="/clinic/wellness?tab=vaccines" replace />} />
+              <Route path="icd10" element={<Navigate to="/clinic/consultations?tab=icd10" replace />} />
+              <Route path="billing" element={<Navigate to="/clinic/reports?tab=billing" replace />} />
+              <Route path="patients" element={<Navigate to="/clinic/reports?tab=patients" replace />} />
+              <Route path="patient-history" element={<Navigate to="/clinic/reports?tab=patients" replace />} />
+              <Route path="complaints" element={<Navigate to="/clinic/triage" replace />} />
+              <Route path="hospitalizations" element={<Navigate to="/clinic/hospitalization" replace />} />
+              <Route path="hospitalizations/:id" element={<Navigate to="/clinic/hospitalization" replace />} />
+
+              {/* Shared operational / utility routes */}
               <Route path="messages" element={<MessagesPage />} />
               <Route path="profile" element={<ProfilePage />} />
               <Route path="support" element={<ITSupportPage />} />
@@ -1140,11 +1154,6 @@ export default function App() {
               <Route path="messages" element={<MessagesPage />} />
               <Route path="faq" element={<ApplicantFAQPage />} />
               <Route path="settings" element={<SettingsPage />} />
-              <Route path="clinic/complaints" element={<HealthComplaints />} />
-              <Route path="clinic/appointments" element={<Appointments />} />
-              <Route path="clinic/emergencies" element={<Emergencies />} />
-              <Route path="clinic/referrals" element={<Referrals />} />
-              <Route path="clinic/immunization" element={<Immunization />} />
               <Route path="support" element={<ITSupportPage />} />
             </Route>
 
@@ -1164,11 +1173,6 @@ export default function App() {
               <Route path="logs" element={<PlatformLogs />} />
               <Route path="settings" element={<PlatformSettings />} />
               <Route path="profile" element={<ProfilePage />} />
-              <Route path="clinic/complaints" element={<HealthComplaints />} />
-              <Route path="clinic/appointments" element={<Appointments />} />
-              <Route path="clinic/emergencies" element={<Emergencies />} />
-              <Route path="clinic/referrals" element={<Referrals />} />
-              <Route path="clinic/immunization" element={<Immunization />} />
               <Route path="support" element={<ITSupportPage />} />
             </Route>
           </Routes>

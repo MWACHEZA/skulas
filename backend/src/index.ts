@@ -77,6 +77,8 @@ import walletRoutes from './api/wallets';
 import icd10Routes from './api/icd10';
 import setupRoutes from './api/setup';
 import acadexRoutes from './api/acadex';
+import studentRequestsRoutes from './api/student-requests';
+import adminLeadershipRoutes from './api/admin-leadership';
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -157,6 +159,7 @@ app.use('/api/syllabus', syllabusRoutes);
 app.use('/api/lesson-plan', lessonPlanRoutes);
 app.use('/api/staff-attendance', staffAttendanceRoutes);
 app.use('/api/clinic', clinicRoutes);
+app.use('/clinic', clinicRoutes);
 app.use('/api/attendance', attendanceRoutes);
 app.use('/api/live-class', liveClassRoutes);
 app.use('/api/leave', leaveRoutes);
@@ -185,6 +188,8 @@ app.use('/api/tuckshop', tuckshopRoutes);
 app.use('/api/wallets', walletRoutes);
 app.use('/api/icd10', icd10Routes);
 app.use('/api/setup', setupRoutes);
+app.use('/api/student-requests', studentRequestsRoutes);
+app.use('/api/admin/leadership', adminLeadershipRoutes);
 app.use('/public', publicRoutes);
 app.use('/api/public', publicRoutes);
 

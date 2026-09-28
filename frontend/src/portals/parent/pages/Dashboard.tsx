@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useAuth, LinkedEntity } from '../../../contexts/AuthContext';
+import { useAuth, type LinkedEntity } from '../../../contexts/AuthContext';
 import api, { BASE_URL } from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 

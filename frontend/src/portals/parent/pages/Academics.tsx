@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
 import api, { BASE_URL } from '../../../lib/api';
-import TabbedPage, { TabItem } from '../../../components/portals/shared/TabbedPage';
+import TabbedPage, { type TabItem } from '../../../components/portals/shared/TabbedPage';
 import ReportDocument from '../../../components/portals/shared/ReportDocument';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';

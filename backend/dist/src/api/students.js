@@ -144,18 +144,25 @@ router.post('/import', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN
  * @desc    List students in the current user's school (paginated)
  */
 router.get('/', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'TEACHER', 'BURSAR', 'LIBRARIAN'), async (req, res) => {
-    const { page = '1', limit = '20', search = '' } = req.query;
+    const { page = '1', limit = '20', search = '', leadersOnly = 'false' } = req.query;
     const schoolId = req.user.schoolId;
     const skip = (parseInt(page) - 1) * parseInt(limit);
     try {
+        const whereCondition = {
+            schoolId: schoolId,
+            ...(search ? { name: { contains: String(search), mode: 'insensitive' } } : {}),
+            ...(leadersOnly === 'true' ? { leadershipAssignments: { some: { isActive: true } } } : {})
+        };
         const [students, total] = await Promise.all([
             prisma_1.default.student.findMany({
-                where: {
-                    schoolId: schoolId,
-                    ...(search ? { name: { contains: String(search), mode: 'insensitive' } } : {}),
-                },
+                where: whereCondition,
                 include: {
                     class: { select: { name: true, level: true } },
+                    hostel: { select: { id: true, name: true } },
+                    leadershipAssignments: {
+                        where: { isActive: true },
+                        include: { hostel: { select: { id: true, name: true } } }
+                    },
                     user: {
                         select: {
                             id: true, name: true, role: true, isLocked: true,
@@ -169,7 +176,7 @@ router.get('/', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'TEA
                 skip,
                 take: parseInt(limit),
             }),
-            prisma_1.default.student.count({ where: { schoolId: schoolId } }),
+            prisma_1.default.student.count({ where: whereCondition }),
         ]);
         res.json({ students, total, page: parseInt(page), totalPages: Math.ceil(total / parseInt(limit)) });
     }

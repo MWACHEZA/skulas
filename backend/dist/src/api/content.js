@@ -82,9 +82,14 @@ router.delete('/news/:id', async (req, res) => {
  * @desc    Get all announcements
  */
 router.get('/announcements', async (req, res) => {
+    const { category } = req.query;
     try {
+        const where = { schoolId: req.user.schoolId };
+        if (category && category !== 'ALL') {
+            where.category = String(category);
+        }
         const list = await prisma_1.default.announcement.findMany({
-            where: { schoolId: req.user.schoolId },
+            where,
             orderBy: { publishedAt: 'desc' },
         });
         res.json(list);
@@ -95,10 +100,10 @@ router.get('/announcements', async (req, res) => {
 });
 /**
  * @route   POST /api/admin/announcements
- * @desc    Create announcement with multi-portal visibility
+ * @desc    Create announcement with multi-portal visibility and category
  */
 router.post('/announcements', async (req, res) => {
-    const { title, content, visiblePortals, isPublic, expiresAt, publishedAt } = req.body;
+    const { title, content, category, visiblePortals, isPublic, expiresAt, publishedAt } = req.body;
     const schoolId = req.user.schoolId;
     try {
         let parsedPublishedAt = new Date();
@@ -111,6 +116,7 @@ router.post('/announcements', async (req, res) => {
             data: {
                 title,
                 content,
+                category: category || 'General',
                 visiblePortals: visiblePortals || ['ALL'],
                 isPublic: !!isPublic,
                 publishedAt: parsedPublishedAt,
@@ -131,7 +137,7 @@ router.post('/announcements', async (req, res) => {
  */
 router.put('/announcements/:id', async (req, res) => {
     const id = req.params.id;
-    const { title, content, visiblePortals, isPublic, expiresAt, publishedAt } = req.body;
+    const { title, content, category, visiblePortals, isPublic, expiresAt, publishedAt } = req.body;
     try {
         const updateData = {
             title,
@@ -140,6 +146,8 @@ router.put('/announcements/:id', async (req, res) => {
             isPublic,
             expiresAt: expiresAt ? new Date(expiresAt) : null,
         };
+        if (category)
+            updateData.category = category;
         if (publishedAt) {
             const d = new Date(publishedAt);
             if (!isNaN(d.getTime()))

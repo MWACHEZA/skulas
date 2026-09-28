@@ -106,10 +106,15 @@ export default function AdminStudents() {
     setIsEditModalOpen(true);
   };
 
-  const filteredStudents = students.filter(s => 
-    (s.user?.name || s.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (s.studentId || '').toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const [leadersOnly, setLeadersOnly] = useState(false);
+
+  const filteredStudents = students.filter(s => {
+    const name = s.user?.name || s.name || '';
+    const id = s.studentId || '';
+    const matchesSearch = name.toLowerCase().includes(searchTerm.toLowerCase()) || id.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesLeader = !leadersOnly || (Array.isArray(s.leadershipAssignments) && s.leadershipAssignments.length > 0);
+    return matchesSearch && matchesLeader;
+  });
 
   return (
     <>
@@ -119,17 +124,28 @@ export default function AdminStudents() {
       </div>
 
       <div className="portal-card">
-        <div className="portal-card-header">
-          <div style={{ position: 'relative', width: '300px' }}>
-            <input 
-              type="text" 
-              placeholder="Search students..." 
-              className="portal-input"
-              value={searchTerm}
-              onChange={e => setSearchTerm(e.target.value)}
-              style={{ paddingLeft: '40px' }}
-            />
-            <i className="fas fa-search" style={{ position: 'absolute', left: 14, top: 14, color: '#a0aec0' }}></i>
+        <div className="portal-card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+            <div style={{ position: 'relative', width: '280px' }}>
+              <input 
+                type="text" 
+                placeholder="Search students..." 
+                className="portal-input"
+                value={searchTerm}
+                onChange={e => setSearchTerm(e.target.value)}
+                style={{ paddingLeft: '40px' }}
+              />
+              <i className="fas fa-search" style={{ position: 'absolute', left: 14, top: 14, color: '#a0aec0' }}></i>
+            </div>
+            <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: '0.9rem', fontWeight: 600, color: '#4a5568', margin: 0 }}>
+              <input
+                type="checkbox"
+                checked={leadersOnly}
+                onChange={e => setLeadersOnly(e.target.checked)}
+                style={{ width: 18, height: 18, cursor: 'pointer' }}
+              />
+              <i className="fas fa-award text-primary"></i> Leaders Only
+            </label>
           </div>
           <button className="portal-btn-primary" onClick={() => setIsCreateModalOpen(true)} style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}>
             <i className="fas fa-plus-circle"></i> NEW STUDENT
@@ -150,6 +166,7 @@ export default function AdminStudents() {
                   <th>Student ID</th>
                   <th>Name & Profile</th>
                   <th>Class</th>
+                  <th>Leader?</th>
                   <th>Email</th>
                   <th>Phone</th>
                   <th>Status</th>
@@ -162,7 +179,7 @@ export default function AdminStudents() {
                   if (safeFiltered.length === 0) {
                     return (
                       <tr>
-                        <td colSpan={7} style={{ textAlign: 'center', padding: 40, color: '#718096' }}>No students found.</td>
+                        <td colSpan={8} style={{ textAlign: 'center', padding: 40, color: '#718096' }}>No students found.</td>
                       </tr>
                     );
                   }
@@ -173,6 +190,10 @@ export default function AdminStudents() {
                   
                   return currentItems.map(s => {
                     const name = s.user?.name || s.name;
+                    const leaderAssignment = Array.isArray(s.leadershipAssignments) && s.leadershipAssignments.length > 0
+                      ? s.leadershipAssignments[0]
+                      : null;
+
                     return (
                       <tr key={s.id}>
                         <td style={{ color: '#718096', fontFamily: 'monospace', fontWeight: 600 }}>{s.studentId}</td>
@@ -197,6 +218,17 @@ export default function AdminStudents() {
                           </div>
                         </td>
                         <td>{s.class?.name || 'Unassigned'}</td>
+                        <td>
+                          {leaderAssignment ? (
+                            <span className="badge bg-primary" style={{ padding: '4px 8px', borderRadius: '6px', fontSize: '0.8rem', background: '#3182ce', color: '#fff' }}>
+                              <i className="fas fa-award mr-1"></i>
+                              Yes — {leaderAssignment.leadershipRole?.replace('_', ' ')}
+                              {leaderAssignment.hostel?.name ? ` (${leaderAssignment.hostel.name})` : ''}
+                            </span>
+                          ) : (
+                            <span style={{ color: '#a0aec0', fontSize: '0.85rem' }}>-</span>
+                          )}
+                        </td>
                         <td>{s.user?.email || s.email || 'N/A'}</td>
                         <td>{s.user?.phone || s.phone || 'N/A'}</td>
                         <td>

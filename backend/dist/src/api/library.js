@@ -3,6 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.generateNextAccessionNumber = generateNextAccessionNumber;
 const express_1 = require("express");
 const path_1 = __importDefault(require("path"));
 const prisma_1 = __importDefault(require("../lib/prisma"));
@@ -303,6 +304,51 @@ router.get('/books', auth_1.requireAuth, async (req, res) => {
     }
 });
 /**
+ * Helper to generate sequential accession number for a school: ACC-0001, ACC-0002...
+ */
+async function generateNextAccessionNumber(schoolId, prismaClient) {
+    const books = await prismaClient.book.findMany({
+        where: { schoolId, accessionNumber: { not: null } },
+        select: { accessionNumber: true },
+        orderBy: { createdAt: 'desc' },
+        take: 300
+    });
+    let maxNum = 0;
+    for (const b of books) {
+        if (b.accessionNumber) {
+            const matches = b.accessionNumber.match(/\d+/g);
+            if (matches && matches.length > 0) {
+                const num = parseInt(matches[matches.length - 1], 10);
+                if (!isNaN(num) && num > maxNum) {
+                    maxNum = num;
+                }
+            }
+        }
+    }
+    if (maxNum === 0) {
+        const totalCount = await prismaClient.book.count({ where: { schoolId } });
+        maxNum = totalCount;
+    }
+    const nextNum = maxNum + 1;
+    const padded = String(nextNum).padStart(4, '0');
+    return `ACC-${padded}`;
+}
+/**
+ * @route   GET /api/library/books/next-accession
+ * @desc    Get next auto-generated accession number for the school
+ */
+router.get('/books/next-accession', auth_1.requireAuth, async (req, res) => {
+    try {
+        const schoolId = req.user.schoolId;
+        const nextAccessionNumber = await generateNextAccessionNumber(schoolId, prisma_1.default);
+        res.json({ nextAccessionNumber });
+    }
+    catch (error) {
+        console.error('Failed to generate next accession number:', error);
+        res.status(500).json({ error: 'Failed to generate next accession number' });
+    }
+});
+/**
  * @route   POST /api/library/books
  * @desc    Add a new book (with multiple authors, ISBN-10/13, accession/barcode, detached from class)
  */
@@ -310,17 +356,27 @@ router.post('/books', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN'
     { name: 'cover', maxCount: 1 },
     { name: 'pdf', maxCount: 1 }
 ]), async (req, res) => {
-    const { title, author, authors, isbn, isbn10, isbn13, categoryId, totalCopies, copies, availableCopies, edition, publisher, price, publishedDate, publicationYear, description, status = 'Available', shelfLocation, barcode, accessionNumber, language = 'English', keywords, source = 'Purchased', condition = 'Good', subjectId } = req.body;
+    const { title, author, authors, isbn, isbn10, isbn13, categoryId, totalCopies, copies, availableCopies, available, edition, publisher, price, publishedDate, publicationYear, description, status = 'Available', shelfLocation, barcode, accessionNumber, language = 'English', keywords, source = 'Purchased', condition = 'Good', subjectId } = req.body;
     const schoolId = req.user.schoolId;
     const files = req.files;
     try {
         const bookPrice = price ? parseFloat(price) : null;
         const numCopies = parseInt(totalCopies || copies || '1') || 1;
-        const numAvailable = availableCopies !== undefined ? parseInt(availableCopies) : numCopies;
-        // Normalize ISBNs
-        const cleanIsbn = normalizeIsbn(isbn);
+        const numAvailable = available !== undefined
+            ? parseInt(available)
+            : (availableCopies !== undefined ? parseInt(availableCopies) : numCopies);
+        // Normalize ISBNs & Enforce mutual exclusivity (ISBN-10 OR ISBN-13, not both)
         const cleanIsbn10 = normalizeIsbn(isbn10);
         const cleanIsbn13 = normalizeIsbn(isbn13);
+        if (cleanIsbn10 && cleanIsbn13) {
+            return res.status(400).json({ error: 'A book can have either an ISBN-10 or an ISBN-13, not both.' });
+        }
+        const cleanIsbn = cleanIsbn13 || cleanIsbn10 || normalizeIsbn(isbn) || null;
+        // Auto-generate accession number if omitted or blank
+        let finalAccession = accessionNumber ? String(accessionNumber).trim() : '';
+        if (!finalAccession) {
+            finalAccession = await generateNextAccessionNumber(schoolId, prisma_1.default);
+        }
         // Support multiple authors
         let authorList = [];
         if (Array.isArray(authors)) {
@@ -375,7 +431,7 @@ router.post('/books', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN'
                 status: status || 'Available',
                 shelfLocation: shelfLocation || null,
                 barcode: barcode || null,
-                accessionNumber: accessionNumber || null,
+                accessionNumber: finalAccession || null,
                 language: language || 'English',
                 keywords: keywordList,
                 source: source || 'Purchased',
@@ -430,7 +486,7 @@ router.patch('/books/:id', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_A
     { name: 'pdf', maxCount: 1 }
 ]), async (req, res) => {
     const id = req.params.id;
-    const { title, author, authors, isbn, isbn10, isbn13, categoryId, totalCopies, edition, publisher, price, publishedDate, description, status, subjectId, shelfLocation, barcode, accessionNumber, language, keywords, source, condition } = req.body;
+    const { title, author, authors, isbn, isbn10, isbn13, categoryId, totalCopies, copies, available, availableCopies, edition, publisher, price, publishedDate, description, status, subjectId, shelfLocation, barcode, accessionNumber, language, keywords, source, condition } = req.body;
     const files = req.files;
     try {
         const data = {};
@@ -439,23 +495,43 @@ router.patch('/books/:id', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_A
         if (author)
             data.author = author;
         if (authors) {
-            data.authors = Array.isArray(authors) ? authors : JSON.parse(authors);
+            data.authors = Array.isArray(authors) ? authors : (typeof authors === 'string' ? JSON.parse(authors) : []);
         }
-        if (isbn)
+        // Mutually exclusive ISBN 10 OR ISBN 13
+        if (isbn10 !== undefined || isbn13 !== undefined) {
+            const clean10 = normalizeIsbn(isbn10);
+            const clean13 = normalizeIsbn(isbn13);
+            if (clean10 && clean13) {
+                return res.status(400).json({ error: 'A book can have either an ISBN-10 or an ISBN-13, not both.' });
+            }
+            if (clean10) {
+                data.isbn10 = clean10;
+                data.isbn13 = null;
+                data.isbn = clean10;
+            }
+            else if (clean13) {
+                data.isbn13 = clean13;
+                data.isbn10 = null;
+                data.isbn = clean13;
+            }
+            else if (isbn10 === '' && isbn13 === '') {
+                data.isbn10 = null;
+                data.isbn13 = null;
+                data.isbn = null;
+            }
+        }
+        else if (isbn !== undefined) {
             data.isbn = normalizeIsbn(isbn);
-        if (isbn10)
-            data.isbn10 = normalizeIsbn(isbn10);
-        if (isbn13)
-            data.isbn13 = normalizeIsbn(isbn13);
-        if (categoryId)
-            data.categoryId = categoryId;
-        if (edition)
+        }
+        if (categoryId !== undefined)
+            data.categoryId = categoryId || null;
+        if (edition !== undefined)
             data.edition = edition;
-        if (publisher)
+        if (publisher !== undefined)
             data.publisher = publisher;
         if (description !== undefined)
             data.description = description;
-        if (status)
+        if (status !== undefined)
             data.status = status;
         if (subjectId !== undefined)
             data.subjectId = subjectId || null;
@@ -465,22 +541,29 @@ router.patch('/books/:id', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_A
             data.barcode = barcode;
         if (accessionNumber !== undefined)
             data.accessionNumber = accessionNumber;
-        if (language)
+        if (language !== undefined)
             data.language = language;
-        if (keywords) {
-            data.keywords = Array.isArray(keywords) ? keywords : JSON.parse(keywords);
+        if (keywords !== undefined) {
+            data.keywords = Array.isArray(keywords) ? keywords : (typeof keywords === 'string' ? JSON.parse(keywords) : []);
         }
-        if (source)
+        if (source !== undefined)
             data.source = source;
-        if (condition)
+        if (condition !== undefined)
             data.condition = condition;
-        if (totalCopies) {
-            data.copies = parseInt(totalCopies);
+        const copyCount = totalCopies !== undefined ? totalCopies : copies;
+        if (copyCount !== undefined && copyCount !== null && copyCount !== '') {
+            data.copies = parseInt(copyCount);
         }
-        if (price)
+        const availCount = available !== undefined ? available : availableCopies;
+        if (availCount !== undefined && availCount !== null && availCount !== '') {
+            data.available = parseInt(availCount);
+        }
+        if (price !== undefined && price !== null && price !== '') {
             data.price = parseFloat(price);
-        if (publishedDate)
+        }
+        if (publishedDate) {
             data.publishedDate = new Date(publishedDate);
+        }
         if (files?.cover?.[0]) {
             data.coverUrl = path_1.default.join(req.uploadCategoryPath || '', files.cover[0].filename).replace(/\\/g, '/');
         }
@@ -551,30 +634,176 @@ router.patch('/categories/:id', auth_1.requireAuth, (0, auth_1.requireRole)('SCH
 // 4. ACTIVE LOANS & ISSUING (Section 4 & 5)
 // ----------------------------------------------------
 /**
+ * @route   GET /api/library/borrowers/search
+ * @desc    Live search borrowers (students & staff) with quota and status info
+ */
+router.get('/borrowers/search', auth_1.requireAuth, async (req, res) => {
+    try {
+        const schoolId = req.user.schoolId;
+        const rawQuery = (req.query.query || req.query.search || req.query.identifier || '').trim();
+        const type = (req.query.type || '').trim().toUpperCase();
+        if (!rawQuery || rawQuery.length < 1) {
+            return res.json({ borrowers: [] });
+        }
+        const setting = await getOrCreateLibrarySetting(schoolId);
+        const results = [];
+        // Search students
+        if (type !== 'STAFF') {
+            const students = await prisma_1.default.student.findMany({
+                where: {
+                    schoolId,
+                    OR: [
+                        { studentId: { contains: rawQuery, mode: 'insensitive' } },
+                        { name: { contains: rawQuery, mode: 'insensitive' } },
+                        { email: { contains: rawQuery, mode: 'insensitive' } },
+                        { phone: { contains: rawQuery, mode: 'insensitive' } },
+                        { user: { email: { contains: rawQuery, mode: 'insensitive' } } },
+                        { id: rawQuery }
+                    ]
+                },
+                include: {
+                    user: { select: { id: true, name: true, email: true, avatar: true, phone: true } },
+                    class: { select: { name: true } },
+                    bookLoans: {
+                        where: { status: 'borrowed' },
+                        select: { id: true, dueDate: true, finePaid: true, borrowedAt: true }
+                    }
+                },
+                take: 12
+            });
+            for (const s of students) {
+                let fine = 0;
+                for (const l of s.bookLoans) {
+                    const { fineAmount } = (0, library_reminder_job_1.computeLoanFine)(l, setting);
+                    fine += fineAmount;
+                }
+                const activeCount = s.bookLoans.length;
+                const maxLoans = setting.studentMaxLoans;
+                const isFineBlocked = fine >= setting.blockThresholdFine;
+                const isCapacityReached = activeCount >= maxLoans;
+                const isBlocked = isFineBlocked || isCapacityReached;
+                results.push({
+                    id: s.id,
+                    studentId: s.id,
+                    userId: s.userId,
+                    name: s.name,
+                    identifier: s.studentId || s.id,
+                    type: 'Student',
+                    email: s.email || s.user?.email || '',
+                    phone: s.phone || s.user?.phone || '',
+                    avatar: s.user?.avatar,
+                    departmentOrClass: s.class?.name || 'Class Assigned',
+                    activeLoansCount: activeCount,
+                    maxLoans,
+                    capacityDisplay: `${activeCount}/${maxLoans} max`,
+                    outstandingFines: parseFloat(fine.toFixed(2)),
+                    isBlocked,
+                    blockReason: isFineBlocked
+                        ? `Fines ($${fine.toFixed(2)}) exceed limit`
+                        : isCapacityReached
+                            ? `Limit reached (${activeCount}/${maxLoans})`
+                            : null,
+                    canIssue: !isBlocked
+                });
+            }
+        }
+        // Search staff
+        if (type !== 'STUDENT') {
+            const users = await prisma_1.default.user.findMany({
+                where: {
+                    schoolId,
+                    role: { not: 'STUDENT' },
+                    OR: [
+                        { staffId: { contains: rawQuery, mode: 'insensitive' } },
+                        { email: { contains: rawQuery, mode: 'insensitive' } },
+                        { name: { contains: rawQuery, mode: 'insensitive' } },
+                        { phone: { contains: rawQuery, mode: 'insensitive' } },
+                        { teacher: { staffId: { contains: rawQuery, mode: 'insensitive' } } },
+                        { id: rawQuery }
+                    ]
+                },
+                include: {
+                    dept: true,
+                    teacher: true,
+                    bookLoans: {
+                        where: { status: 'borrowed' },
+                        select: { id: true, dueDate: true, finePaid: true, borrowedAt: true }
+                    }
+                },
+                take: 12
+            });
+            for (const u of users) {
+                let fine = 0;
+                for (const l of u.bookLoans) {
+                    const { fineAmount } = (0, library_reminder_job_1.computeLoanFine)(l, setting);
+                    fine += fineAmount;
+                }
+                const activeCount = u.bookLoans.length;
+                const maxLoans = setting.staffMaxLoans;
+                const isFineBlocked = fine >= setting.blockThresholdFine;
+                const isCapacityReached = activeCount >= maxLoans;
+                const isBlocked = isFineBlocked || isCapacityReached;
+                results.push({
+                    id: u.id,
+                    userId: u.id,
+                    studentId: null,
+                    name: u.name,
+                    identifier: u.staffId || u.teacher?.staffId || u.email,
+                    type: 'Staff',
+                    email: u.email,
+                    phone: u.phone || '',
+                    avatar: u.avatar,
+                    departmentOrClass: u.dept?.name || u.role || 'Staff Member',
+                    activeLoansCount: activeCount,
+                    maxLoans,
+                    capacityDisplay: `${activeCount}/${maxLoans} max`,
+                    outstandingFines: parseFloat(fine.toFixed(2)),
+                    isBlocked,
+                    blockReason: isFineBlocked
+                        ? `Fines ($${fine.toFixed(2)}) exceed limit`
+                        : isCapacityReached
+                            ? `Limit reached (${activeCount}/${maxLoans})`
+                            : null,
+                    canIssue: !isBlocked
+                });
+            }
+        }
+        res.json({ borrowers: results });
+    }
+    catch (error) {
+        console.error('Borrowers search error:', error);
+        res.status(500).json({ error: 'Failed to search borrowers' });
+    }
+});
+/**
  * @route   GET /api/library/borrowers/validate
  * @desc    Validate borrower details, capacity, fines, and borrowing block status
  */
 router.get('/borrowers/validate', auth_1.requireAuth, async (req, res) => {
     try {
         const schoolId = req.user.schoolId;
-        const query = (req.query.query || '').trim().toLowerCase();
-        const type = req.query.type; // 'STUDENT' or 'STAFF'
-        if (!query) {
+        const rawQuery = (req.query.query || req.query.identifier || req.query.search || '').trim();
+        const typeUpper = (req.query.type || '').trim().toUpperCase();
+        if (!rawQuery) {
             return res.status(400).json({ error: 'Borrower query required' });
         }
         const setting = await getOrCreateLibrarySetting(schoolId);
         let borrower = null;
         let isStudent = false;
         // 1. Try finding Student
-        if (type !== 'STAFF') {
+        if (typeUpper !== 'STAFF') {
             const student = await prisma_1.default.student.findFirst({
                 where: {
                     schoolId,
                     OR: [
-                        { studentId: { equals: query, mode: 'insensitive' } },
-                        { name: { contains: query, mode: 'insensitive' } },
-                        { user: { email: { equals: query, mode: 'insensitive' } } },
-                        { id: query }
+                        { studentId: { equals: rawQuery, mode: 'insensitive' } },
+                        { studentId: { contains: rawQuery, mode: 'insensitive' } },
+                        { name: { contains: rawQuery, mode: 'insensitive' } },
+                        { email: { equals: rawQuery, mode: 'insensitive' } },
+                        { phone: { equals: rawQuery, mode: 'insensitive' } },
+                        { user: { email: { equals: rawQuery, mode: 'insensitive' } } },
+                        { user: { name: { contains: rawQuery, mode: 'insensitive' } } },
+                        { id: rawQuery }
                     ]
                 },
                 include: {
@@ -588,19 +817,22 @@ router.get('/borrowers/validate', auth_1.requireAuth, async (req, res) => {
             }
         }
         // 2. Try finding Staff User
-        if (!borrower && type !== 'STUDENT') {
+        if (!borrower && typeUpper !== 'STUDENT') {
             const user = await prisma_1.default.user.findFirst({
                 where: {
                     schoolId,
-                    role: { in: ['TEACHER', 'SCHOOL_ADMIN', 'BURSAR', 'LIBRARIAN', 'ANCILLARY'] },
+                    role: { not: 'STUDENT' },
                     OR: [
-                        { staffId: { equals: query, mode: 'insensitive' } },
-                        { email: { equals: query, mode: 'insensitive' } },
-                        { name: { contains: query, mode: 'insensitive' } },
-                        { id: query }
+                        { staffId: { equals: rawQuery, mode: 'insensitive' } },
+                        { staffId: { contains: rawQuery, mode: 'insensitive' } },
+                        { email: { equals: rawQuery, mode: 'insensitive' } },
+                        { email: { contains: rawQuery, mode: 'insensitive' } },
+                        { name: { contains: rawQuery, mode: 'insensitive' } },
+                        { teacher: { staffId: { equals: rawQuery, mode: 'insensitive' } } },
+                        { id: rawQuery }
                     ]
                 },
-                include: { dept: true }
+                include: { dept: true, teacher: true }
             });
             if (user) {
                 borrower = user;
@@ -627,17 +859,17 @@ router.get('/borrowers/validate', auth_1.requireAuth, async (req, res) => {
         const maxLoans = isStudent ? setting.studentMaxLoans : setting.staffMaxLoans;
         const isFineBlocked = totalOutstandingFines >= setting.blockThresholdFine;
         const isCapacityReached = activeLoans.length >= maxLoans;
-        res.json({
+        const borrowerPayload = {
             id: borrower.id,
             userId: isStudent ? borrower.userId : borrower.id,
             studentId: isStudent ? borrower.id : null,
-            identifier: isStudent ? borrower.studentId : (borrower.staffId || borrower.email),
+            identifier: isStudent ? (borrower.studentId || borrower.id) : (borrower.staffId || borrower.teacher?.staffId || borrower.email),
             name: isStudent ? borrower.name : borrower.name,
             type: isStudent ? 'Student' : 'Staff',
-            email: isStudent ? (borrower.user?.email || borrower.email) : borrower.email,
-            phone: isStudent ? (borrower.user?.phone || borrower.phone) : borrower.phone,
+            email: isStudent ? (borrower.email || borrower.user?.email || '') : (borrower.email || ''),
+            phone: isStudent ? (borrower.phone || borrower.user?.phone || '') : (borrower.phone || ''),
             avatar: isStudent ? borrower.user?.avatar : borrower.avatar,
-            departmentOrClass: isStudent ? (borrower.class?.name || 'Class Assigned') : (borrower.dept?.name || borrower.role),
+            departmentOrClass: isStudent ? (borrower.class?.name || 'Class Assigned') : (borrower.dept?.name || borrower.role || 'Staff'),
             activeLoansCount: activeLoans.length,
             maxLoans,
             capacityDisplay: `${activeLoans.length}/${maxLoans} max`,
@@ -656,6 +888,10 @@ router.get('/borrowers/validate', auth_1.requireAuth, async (req, res) => {
                     ? `Borrowing capacity reached (${activeLoans.length}/${maxLoans} books out)`
                     : null,
             canIssue: !isFineBlocked && !isCapacityReached
+        };
+        res.json({
+            ...borrowerPayload,
+            borrower: borrowerPayload
         });
     }
     catch (error) {
@@ -665,29 +901,33 @@ router.get('/borrowers/validate', auth_1.requireAuth, async (req, res) => {
 });
 /**
  * @route   GET /api/library/books/validate
- * @desc    Validate book barcode/accession number and get availability
+ * @desc    Validate book barcode/accession number/title and get availability
  */
 router.get('/books/validate', auth_1.requireAuth, async (req, res) => {
     try {
         const schoolId = req.user.schoolId;
-        const query = (req.query.query || '').trim();
-        if (!query) {
+        const rawQuery = (req.query.query || req.query.search || req.query.identifier || '').trim();
+        if (!rawQuery) {
             return res.status(400).json({ error: 'Book barcode/accession/ISBN query required' });
         }
-        const cleanIsbnQuery = normalizeIsbn(query);
+        const cleanIsbnQuery = normalizeIsbn(rawQuery);
         const book = await prisma_1.default.book.findFirst({
             where: {
                 schoolId,
                 OR: [
-                    { barcode: { equals: query, mode: 'insensitive' } },
-                    { accessionNumber: { equals: query, mode: 'insensitive' } },
-                    { id: query },
+                    { barcode: { equals: rawQuery, mode: 'insensitive' } },
+                    { barcode: { contains: rawQuery, mode: 'insensitive' } },
+                    { accessionNumber: { equals: rawQuery, mode: 'insensitive' } },
+                    { accessionNumber: { contains: rawQuery, mode: 'insensitive' } },
+                    { id: rawQuery },
                     ...(cleanIsbnQuery ? [
                         { isbn: cleanIsbnQuery },
                         { isbn10: cleanIsbnQuery },
                         { isbn13: cleanIsbnQuery }
                     ] : []),
-                    { title: { equals: query, mode: 'insensitive' } }
+                    { title: { equals: rawQuery, mode: 'insensitive' } },
+                    { title: { contains: rawQuery, mode: 'insensitive' } },
+                    { author: { contains: rawQuery, mode: 'insensitive' } }
                 ]
             },
             include: { category: true }
@@ -695,7 +935,7 @@ router.get('/books/validate', auth_1.requireAuth, async (req, res) => {
         if (!book) {
             return res.status(404).json({ error: 'Book not found in catalog' });
         }
-        res.json({
+        const bookPayload = {
             id: book.id,
             title: book.title,
             author: book.author,
@@ -707,6 +947,10 @@ router.get('/books/validate', auth_1.requireAuth, async (req, res) => {
             available: book.available,
             condition: book.condition || 'Good',
             isAvailable: book.available > 0
+        };
+        res.json({
+            ...bookPayload,
+            book: bookPayload
         });
     }
     catch (error) {
@@ -718,10 +962,55 @@ router.get('/books/validate', auth_1.requireAuth, async (req, res) => {
  * @desc    Issue a book with validation (Section 4 & 5)
  */
 router.post('/loans/issue', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'ANCILLARY', 'TEACHER', 'LIBRARIAN'), async (req, res) => {
-    const { studentId, userId, bookId, accessionNumber, dueDate } = req.body;
+    let { studentId, userId, bookId, accessionNumber, dueDate, borrowerType, identifier, studentIdentifier, staffIdentifier } = req.body;
     const schoolId = req.user.schoolId;
     try {
         const setting = await getOrCreateLibrarySetting(schoolId);
+        // Auto-resolve borrower from identifier if studentId / userId not explicitly supplied
+        const rawId = (identifier || studentIdentifier || staffIdentifier || '').toString().trim();
+        if (!studentId && !userId && rawId) {
+            const typeUpper = (borrowerType || '').toString().toUpperCase();
+            if (typeUpper !== 'STAFF') {
+                const student = await prisma_1.default.student.findFirst({
+                    where: {
+                        schoolId,
+                        OR: [
+                            { id: rawId },
+                            { studentId: { equals: rawId, mode: 'insensitive' } },
+                            { studentId: { contains: rawId, mode: 'insensitive' } },
+                            { name: { contains: rawId, mode: 'insensitive' } },
+                            { email: { equals: rawId, mode: 'insensitive' } },
+                            { user: { email: { equals: rawId, mode: 'insensitive' } } }
+                        ]
+                    }
+                });
+                if (student) {
+                    studentId = student.id;
+                }
+            }
+            if (!studentId && typeUpper !== 'STUDENT') {
+                const user = await prisma_1.default.user.findFirst({
+                    where: {
+                        schoolId,
+                        role: { not: 'STUDENT' },
+                        OR: [
+                            { id: rawId },
+                            { staffId: { equals: rawId, mode: 'insensitive' } },
+                            { staffId: { contains: rawId, mode: 'insensitive' } },
+                            { email: { equals: rawId, mode: 'insensitive' } },
+                            { name: { contains: rawId, mode: 'insensitive' } },
+                            { teacher: { staffId: { equals: rawId, mode: 'insensitive' } } }
+                        ]
+                    }
+                });
+                if (user) {
+                    userId = user.id;
+                }
+            }
+        }
+        if (!studentId && !userId) {
+            return res.status(400).json({ error: 'Valid student or staff borrower is required to issue a book' });
+        }
         // 1. Verify book availability
         const book = await prisma_1.default.book.findFirst({ where: { id: bookId, schoolId } });
         if (!book)

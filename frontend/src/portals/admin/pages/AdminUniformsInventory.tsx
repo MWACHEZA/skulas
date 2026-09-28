@@ -5,7 +5,7 @@ import { useToast } from '../../../context/ToastContext';
 import { formatCurrency } from '../../../utils/formatters';
 import '../../../styles/portal.css';
 
-type InventoryCategory = 'uniforms' | 'bookstore' | 'library';
+type InventoryCategory = 'uniforms' | 'bookstore';
 
 interface UniformItem {
   id: string;
@@ -26,24 +26,12 @@ interface BookstoreItem {
   isbn?: string;
 }
 
-interface LibraryBook {
-  id: string;
-  title: string;
-  author: string;
-  isbn?: string;
-  copies: number;
-  available: number;
-  category?: { name: string } | null;
-  shelfLocation?: string;
-}
-
 export default function AdminUniformsInventory() {
   const { showToast } = useToast();
   const [searchParams, setSearchParams] = useSearchParams();
   const tabParam = searchParams.get('tab');
   const catParam = searchParams.get('category');
-  const activeCategory: InventoryCategory = (catParam as InventoryCategory) || 
-    (tabParam === 'bookstore' ? 'bookstore' : tabParam === 'library' ? 'library' : 'uniforms');
+  const activeCategory: InventoryCategory = (catParam === 'bookstore' || tabParam === 'bookstore') ? 'bookstore' : 'uniforms';
 
   const [loading, setLoading] = useState(true);
   const [uniforms, setUniforms] = useState<UniformItem[]>([]);
@@ -283,28 +271,6 @@ export default function AdminUniformsInventory() {
           <i className="fas fa-store"></i>
           Bookstore & Stationery
         </button>
-
-        <button
-          type="button"
-          onClick={() => handleCategoryChange('library')}
-          style={{
-            padding: '10px 18px',
-            border: 'none',
-            background: 'none',
-            cursor: 'pointer',
-            fontWeight: activeCategory === 'library' ? 700 : 500,
-            color: activeCategory === 'library' ? '#0284c7' : '#64748b',
-            borderBottom: activeCategory === 'library' ? '3px solid #0284c7' : '3px solid transparent',
-            marginBottom: '-2px',
-            fontSize: '0.95rem',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px'
-          }}
-        >
-          <i className="fas fa-book"></i>
-          Library Catalog Stock
-        </button>
       </div>
 
       {/* Search & Low Stock Toggle */}
@@ -360,90 +326,6 @@ export default function AdminUniformsInventory() {
         <div style={{ padding: 60, textAlign: 'center', background: '#fff', borderRadius: '8px' }}>
           <i className="fas fa-spinner fa-spin fa-2x" style={{ color: '#0284c7' }}></i>
           <p style={{ marginTop: 12, color: '#64748b' }}>Loading inventory records...</p>
-        </div>
-      ) : activeCategory === 'library' ? (
-        /* Library Catalog Table */
-        <div style={{ background: '#fff', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)', overflow: 'hidden' }}>
-          {filteredBooks.length === 0 ? (
-            <div style={{ padding: 48, textAlign: 'center', color: '#64748b' }}>
-              <i className="fas fa-book fa-3x" style={{ color: '#cbd5e1', marginBottom: 12 }}></i>
-              <p style={{ fontWeight: 600 }}>No books found in catalog</p>
-              <p style={{ fontSize: '0.85rem', marginTop: 4 }}>Add books using the button above.</p>
-            </div>
-          ) : (
-            <table className="portal-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
-              <thead>
-                <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', textAlign: 'left' }}>
-                  <th style={{ padding: '12px 16px', fontWeight: 600, color: '#475569', fontSize: '0.85rem' }}>Book Title</th>
-                  <th style={{ padding: '12px 16px', fontWeight: 600, color: '#475569', fontSize: '0.85rem' }}>Author</th>
-                  <th style={{ padding: '12px 16px', fontWeight: 600, color: '#475569', fontSize: '0.85rem' }}>Category</th>
-                  <th style={{ padding: '12px 16px', fontWeight: 600, color: '#475569', fontSize: '0.85rem' }}>Shelf Location</th>
-                  <th style={{ padding: '12px 16px', fontWeight: 600, color: '#475569', fontSize: '0.85rem' }}>Total Copies</th>
-                  <th style={{ padding: '12px 16px', fontWeight: 600, color: '#475569', fontSize: '0.85rem' }}>Available Stock</th>
-                  <th style={{ padding: '12px 16px', fontWeight: 600, color: '#475569', fontSize: '0.85rem' }}>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredBooks.map(b => (
-                  <tr key={b.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
-                    <td style={{ padding: '12px 16px', fontWeight: 600, color: '#1e293b' }}>
-                      <i className="fas fa-book" style={{ color: '#0284c7', marginRight: 8 }}></i>
-                      {b.title}
-                    </td>
-                    <td style={{ padding: '12px 16px', color: '#475569', fontSize: '0.9rem' }}>
-                      {b.author}
-                    </td>
-                    <td style={{ padding: '12px 16px' }}>
-                      <span style={{ background: '#e0f2fe', color: '#0369a1', padding: '3px 8px', borderRadius: '4px', fontSize: '0.8rem', fontWeight: 600 }}>
-                        {b.category?.name || 'General Reading'}
-                      </span>
-                    </td>
-                    <td style={{ padding: '12px 16px', color: '#64748b', fontSize: '0.85rem' }}>
-                      {b.shelfLocation || 'Section A'}
-                    </td>
-                    <td style={{ padding: '12px 16px', fontWeight: 600, color: '#1e293b' }}>
-                      {b.copies}
-                    </td>
-                    <td style={{ padding: '12px 16px' }}>
-                      <span
-                        style={{
-                          fontWeight: 700,
-                          color: b.available <= 2 ? '#b91c1c' : '#15803d',
-                          background: b.available <= 2 ? '#fee2e2' : '#dcfce7',
-                          padding: '3px 8px',
-                          borderRadius: '4px',
-                          fontSize: '0.85rem'
-                        }}
-                      >
-                        {b.available} Available
-                      </span>
-                    </td>
-                    <td style={{ padding: '12px 16px' }}>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setSelectedItem(b);
-                          setShowRestockModal(true);
-                        }}
-                        style={{
-                          padding: '4px 10px',
-                          borderRadius: '4px',
-                          border: '1px solid #cbd5e1',
-                          background: '#f8fafc',
-                          color: '#0284c7',
-                          fontSize: '0.8rem',
-                          fontWeight: 600,
-                          cursor: 'pointer'
-                        }}
-                      >
-                        <i className="fas fa-plus" style={{ marginRight: 4 }}></i> Add Copies
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
         </div>
       ) : (
         /* Uniforms / Bookstore Table */

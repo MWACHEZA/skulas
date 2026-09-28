@@ -11,6 +11,24 @@ enum AccountType {
   EXPENSE
 }
 
+enum LeadershipRole {
+  HEAD_BOY
+  HEAD_GIRL
+  HOSTEL_PREFECT
+  DINING_PREFECT
+  SRC_PRESIDENT
+  SRC_MEMBER
+}
+
+enum RequesterRole {
+  TEACHER
+  ANCILLARY
+  ADMIN
+  STUDENT_LEADER
+  CLINIC
+}
+
+
 generator client {
   provider      = "prisma-client-js"
   output        = "../src/generated/client"
@@ -93,9 +111,26 @@ model School {
   websiteSettings WebsiteSettings?
   requisitions    Requisition[]
   auditLogs       AuditLog[]
+
+  leadershipAssignments LeadershipAssignment[]
+  studentAllowedItems StudentAllowedItem[]
+
   departments     Department[]
   hostels         Hostel[]
   weeklyMenus     WeeklyMenu[]
+
+  clinicSettings        ClinicSetting?
+  clinicBeds            ClinicBed[]
+  clinicAdmissions      ClinicAdmission[]
+  pharmacyStocks        PharmacyStock[]
+  studentHealthProfiles StudentHealthProfile[]
+  clinicAccessAudits    ClinicAccessAudit[]
+  clinicEmergencyLogs   ClinicEmergencyLog[]
+  clinicDiagnoses       ClinicDiagnosis[]
+  clinicPrescriptions   ClinicPrescription[]
+  pharmacyDispensings   PharmacyDispense[]
+  clinicMonitoringLogs  ClinicMonitoringLog[]
+  clinicVitals          ClinicVital[]
 
   originTransfers TransferAuthorization[] @relation("OriginTransfers")
   targetTransfers TransferAuthorization[] @relation("TargetTransfers")
@@ -207,6 +242,41 @@ model HostelRoom {
 }
 
 // ... (other models)
+
+
+model LeadershipAssignment {
+  id             String         @id @default(cuid())
+  schoolId       String
+  school         School         @relation(fields: [schoolId], references: [id])
+  studentId      String
+  student        Student        @relation(fields: [studentId], references: [id])
+  leadershipRole LeadershipRole
+  hostelId       String?
+  hostel         Hostel?        @relation("LeadershipHostel", fields: [hostelId], references: [id])
+  term           String
+  academicYear   String
+  isActive       Boolean        @default(true)
+  assignedById   String
+  assignedBy     User           @relation("LeadershipAssignedBy", fields: [assignedById], references: [id])
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  @@index([schoolId, studentId, isActive])
+}
+
+model StudentAllowedItem {
+  id        String   @id @default(cuid())
+  schoolId  String
+  school    School   @relation(fields: [schoolId], references: [id])
+  itemSku   String
+  itemName  String
+  category  String   @default("cleaning")
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  @@unique([schoolId, itemSku])
+  @@index([schoolId])
+}
 
 model UniformItem {
   id           String                  @id @default(cuid())
@@ -425,6 +495,12 @@ model User {
   adminRequisitions          Requisition[]           @relation("RequisitionAdmin")
   transfers                  TransferAuthorization[] @relation("StudentTransfers")
 
+  leadershipAssigned LeadershipAssignment[] @relation("LeadershipAssignedBy")
+  wardenOfHostels Hostel[] @relation("HostelWarden")
+  matronApprovedRequisitions Requisition[] @relation("RequisitionMatronApprover")
+  issuedRequisitions Requisition[] @relation("RequisitionIssuer")
+
+
   communicationLogs CommunicationLog[] @relation("CommunicationSender")
 
   metadata            Json? // Role-specific data
@@ -448,6 +524,15 @@ model User {
   clinicHospitalizations ClinicHospitalization[]
   clinicPatient       ClinicPatient?
   createdSubjects     Subject[]                 @relation("SubjectCreatedByUser")
+
+  vitalsRecorded          ClinicVital[]             @relation("VitalRecordedBy")
+  prescriptionsWritten    ClinicPrescription[]      @relation("PrescriptionPrescribedBy")
+  pharmacyDispensingsMade PharmacyDispense[]        @relation("PharmacyDispensedBy")
+  monitoringLogsRecorded  ClinicMonitoringLog[]     @relation("MonitoringLogRecordedBy")
+  emergencyLogsRecorded   ClinicEmergencyLog[]      @relation("EmergencyLoggedBy")
+  clinicAccessAudits      ClinicAccessAudit[]       @relation("ClinicAccessAudits")
+  visitsTriaged           ClinicVisit[]             @relation("VisitTriageBy")
+  visitsConsulted         ClinicVisit[]             @relation("VisitConsultedBy")
 
   @@index([schoolId])
 }
@@ -522,6 +607,15 @@ model Student {
   bookReservations  BookReservation[]
   submissions       AssignmentSubmission[]
   courseEnrollments CourseEnrollment[]
+
+  leadershipAssignments LeadershipAssignment[]
+  studentRequisitions Requisition[] @relation("StudentRequisitions")
+
+  healthProfile         StudentHealthProfile?
+  clinicAdmissions      ClinicAdmission[]
+  clinicEmergencyLogs   ClinicEmergencyLog[]
+  clinicAccessAudits    ClinicAccessAudit[]
+
 
   // Postgraduate Fields
   programLevel      String?   @default("UNDERGRADUATE") // UNDERGRADUATE, PG_DIPLOMA, MASTERS_TAUGHT, MASTERS_RESEARCH, MPHIL, PHD
@@ -2020,6 +2114,20 @@ model Requisition {
   updatedAt DateTime @updatedAt
 
   @@index([schoolId])
+  requesterRole            RequesterRole?
+  hostelReqId              String?  
+  hostelReq                Hostel?  @relation("RequisitionHostel", fields: [hostelReqId], references: [id])
+  requestedByStudentId     String?
+  requestedByStudent       Student? @relation("StudentRequisitions", fields: [requestedByStudentId], references: [id])
+  matronApprovedAt         DateTime?
+  matronApprovedById       String?
+  matronApprovedBy         User?    @relation("RequisitionMatronApprover", fields: [matronApprovedById], references: [id])
+  rejectionReason          String?
+  issuedAt                 DateTime?
+  issuedById               String?
+  issuedBy                 User?    @relation("RequisitionIssuer", fields: [issuedById], references: [id])
+  receivedAt               DateTime?
+
 }
 
 // ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚Â ANCILLARY SERVICES ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚Â
@@ -2045,6 +2153,11 @@ model Hostel {
   createdAt DateTime  @default(now())
 
   @@index([schoolId])
+  wardenUserId String?
+  warden       User?   @relation("HostelWarden", fields: [wardenUserId], references: [id])
+  leadershipAssignments LeadershipAssignment[] @relation("LeadershipHostel")
+  requisitionsAsHostel Requisition[] @relation("RequisitionHostel")
+
 }
 
 model Room {
@@ -2332,12 +2445,14 @@ model PhysicalProductConsumption {
 
   schoolId String
   school   School @relation(fields: [schoolId], references: [id])
+  hostelId String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([schoolId])
   @@index([productId])
+  @@index([hostelId])
 }
 
 model FeeReminderLog {
@@ -3164,6 +3279,26 @@ model ClinicVisit {
   // Dispensing logs tied to this visit
   dispensings ClinicDispensingLog[]
 
+  // Additional fields for consolidated clinic workflow
+  source                  String                    @default("WALK_IN") // WALK_IN, TEACHER_REFERRAL, STUDENT_APPOINTMENT, MATRON_ALERT
+  acuity                  String                    @default("GREEN")   // GREEN, YELLOW, RED
+  isEmergency             Boolean                   @default(false)
+  isConfidential          Boolean                   @default(false)
+  disposition             String?                                       // DISCHARGE_CLASS, ADMIT_SICK_BAY, REFER_HOSPITAL, EXCUSE_SPORTS
+  triageById              String?
+  triageBy                User?                     @relation("VisitTriageBy", fields: [triageById], references: [id])
+  consultedById           String?
+  consultedBy             User?                     @relation("VisitConsultedBy", fields: [consultedById], references: [id])
+  closedAt                DateTime?
+
+  // Relations to dedicated clinical entities
+  vitalsRecord            ClinicVital?
+  diagnosesList           ClinicDiagnosis[]
+  prescriptionsList       ClinicPrescription[]
+  pharmacyDispensings     PharmacyDispense[]
+  admissionsList          ClinicAdmission[]
+  emergencyLogsList       ClinicEmergencyLog[]
+
   // Follow-up
   status    String   @default("OPEN") // OPEN, CHECK_IN, TRIAGE, CONSULTATION, PRESCRIBED, DISPENSED, BILLED, DISCHARGED
   visitDate DateTime @default(now())
@@ -3402,6 +3537,9 @@ model Icd10Code {
   category    String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  diagnoses   ClinicDiagnosis[]
+  parentLabel Icd10ParentLabel?
 }
 
 // ═══════════════════════════════════════════════════════════════════
@@ -3624,3 +3762,274 @@ model PlatformSetting {
   updatedAt             DateTime @updatedAt
   createdAt             DateTime @default(now())
 }
+
+// ==========================================
+// CLINIC MODULE UNIFIED MODELS
+// ==========================================
+
+// Plain-language mapping table for ICD-10 codes
+model Icd10ParentLabel {
+  id          String    @id @default(cuid())
+  code        String    @unique
+  plainLabel  String
+  icd10       Icd10Code @relation(fields: [code], references: [code], onDelete: Cascade)
+  createdAt   DateTime  @default(now())
+}
+
+// Student Health Profile (Allergies, chronic conditions, treatment consent)
+model StudentHealthProfile {
+  id                    String   @id @default(cuid())
+  schoolId              String
+  school                School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  studentId             String   @unique
+  student               Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  allergies             String?
+  chronicConditions     String?
+  bloodGroup            String?
+  emergencyContactName  String?
+  emergencyContactPhone String?
+  emergencyContactRel   String?
+  treatmentConsent      Boolean  @default(false)
+  consentBy             String?
+  consentedAt           DateTime?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@index([schoolId])
+}
+
+// Dedicated Vitals Table (Kept separate so no serializer outside clinic portal can include them)
+model ClinicVital {
+  id          String      @id @default(cuid())
+  schoolId    String
+  school      School      @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  visitId     String      @unique
+  visit       ClinicVisit @relation(fields: [visitId], references: [id], onDelete: Cascade)
+  temp        Float?
+  bp          String?
+  pulse       Int?
+  spo2        Int?
+  weight      Float?
+  height      Float?
+  recordedById String?
+  recordedBy  User?       @relation("VitalRecordedBy", fields: [recordedById], references: [id], onDelete: SetNull)
+  recordedAt  DateTime    @default(now())
+
+  @@index([schoolId])
+}
+
+// Clinic Diagnoses
+model ClinicDiagnosis {
+  id          String      @id @default(cuid())
+  schoolId    String
+  school      School      @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  visitId     String
+  visit       ClinicVisit @relation(fields: [visitId], references: [id], onDelete: Cascade)
+  icd10Code   String?
+  icd10       Icd10Code?  @relation(fields: [icd10Code], references: [code], onDelete: SetNull)
+  notes       String?
+  parentNote  String?
+  createdAt   DateTime    @default(now())
+
+  @@index([schoolId])
+  @@index([visitId])
+}
+
+// Clinic Prescriptions
+model ClinicPrescription {
+  id             String      @id @default(cuid())
+  schoolId       String
+  school         School      @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  visitId        String
+  visit          ClinicVisit @relation(fields: [visitId], references: [id], onDelete: Cascade)
+  drugName       String
+  dosage         String
+  frequency      String?
+  duration       String?
+  prescribedById String?
+  prescribedBy   User?       @relation("PrescriptionPrescribedBy", fields: [prescribedById], references: [id], onDelete: SetNull)
+  createdAt      DateTime    @default(now())
+
+  @@index([schoolId])
+  @@index([visitId])
+}
+
+// Pharmacy Stock
+model PharmacyStock {
+  id          String            @id @default(cuid())
+  schoolId    String
+  school      School            @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  drugName    String
+  category    String            @default("MEDICATION")
+  unit        String            @default("tablets")
+  minStock    Int               @default(10)
+  location    String?
+  batches     PharmacyBatch[]
+  dispensings PharmacyDispense[]
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  @@unique([schoolId, drugName])
+  @@index([schoolId])
+}
+
+// Pharmacy Batches (FEFO: First-Expiry-First-Out)
+model PharmacyBatch {
+  id          String            @id @default(cuid())
+  schoolId    String
+  stockId     String
+  stock       PharmacyStock     @relation(fields: [stockId], references: [id], onDelete: Cascade)
+  batchNumber String
+  quantity    Int               @default(0)
+  expiryDate  DateTime
+  receivedAt  DateTime          @default(now())
+  dispensings PharmacyDispense[]
+
+  @@index([schoolId])
+  @@index([stockId])
+  @@index([expiryDate])
+}
+
+// Pharmacy Dispensing Log
+model PharmacyDispense {
+  id           String         @id @default(cuid())
+  schoolId     String
+  school       School         @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  visitId      String?
+  visit        ClinicVisit?   @relation(fields: [visitId], references: [id], onDelete: SetNull)
+  stockId      String
+  stock        PharmacyStock  @relation(fields: [stockId], references: [id], onDelete: Cascade)
+  batchId      String
+  batch        PharmacyBatch  @relation(fields: [batchId], references: [id], onDelete: Cascade)
+  quantity     Int
+  dispensedById String?
+  dispensedBy  User?          @relation("PharmacyDispensedBy", fields: [dispensedById], references: [id], onDelete: SetNull)
+  dispensedAt  DateTime       @default(now())
+
+  @@index([schoolId])
+  @@index([visitId])
+}
+
+// Clinic Beds (configurable count per tenant)
+model ClinicBed {
+  id         String            @id @default(cuid())
+  schoolId   String
+  school     School            @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  bedNumber  String
+  ward       String            @default("Main Sick Bay")
+  status     String            @default("AVAILABLE") // AVAILABLE, OCCUPIED, MAINTENANCE
+  notes      String?
+  admissions ClinicAdmission[]
+  createdAt  DateTime          @default(now())
+  updatedAt  DateTime          @updatedAt
+
+  @@unique([schoolId, bedNumber])
+  @@index([schoolId])
+}
+
+// Clinic Admissions
+model ClinicAdmission {
+  id             String                @id @default(cuid())
+  schoolId       String
+  school         School                @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  bedId          String
+  bed            ClinicBed             @relation(fields: [bedId], references: [id], onDelete: Cascade)
+  visitId        String?
+  visit          ClinicVisit?          @relation(fields: [visitId], references: [id], onDelete: SetNull)
+  studentId      String
+  student        Student               @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  status         String                @default("ADMITTED") // ADMITTED, DISCHARGED, TRANSFERRED
+  dietNotes      String?
+  dischargeNotes String?
+  admittedAt     DateTime              @default(now())
+  dischargedAt   DateTime?
+  logs           ClinicMonitoringLog[]
+
+  createdAt      DateTime              @default(now())
+  updatedAt      DateTime              @updatedAt
+
+  @@index([schoolId])
+  @@index([studentId])
+  @@index([status])
+}
+
+// Clinic Monitoring Logs (configurable interval, default 4 hours)
+model ClinicMonitoringLog {
+  id           String          @id @default(cuid())
+  schoolId     String
+  school       School          @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  admissionId  String
+  admission    ClinicAdmission @relation(fields: [admissionId], references: [id], onDelete: Cascade)
+  temp         Float?
+  bp           String?
+  pulse        Int?
+  spo2         Int?
+  notes        String?
+  recordedById String?
+  recordedBy   User?           @relation("MonitoringLogRecordedBy", fields: [recordedById], references: [id], onDelete: SetNull)
+  recordedAt   DateTime        @default(now())
+
+  @@index([schoolId])
+  @@index([admissionId])
+}
+
+// Clinic Access Audit (who viewed or edited which student's clinical record, when)
+model ClinicAccessAudit {
+  id        String   @id @default(cuid())
+  schoolId  String
+  school    School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  studentId String?
+  student   Student? @relation(fields: [studentId], references: [id], onDelete: SetNull)
+  userId    String
+  user      User     @relation("ClinicAccessAudits", fields: [userId], references: [id], onDelete: Cascade)
+  action    String   // VIEW_RECORD, EDIT_RECORD, VIEW_VITALS, DISPENSE_DRUG, ADMIT_PATIENT, DISCHARGE
+  resource  String   // e.g. "Visit #visit-123", "HealthProfile"
+  ipAddress String?
+  createdAt DateTime @default(now())
+
+  @@index([schoolId])
+  @@index([studentId])
+  @@index([userId])
+  @@index([createdAt])
+}
+
+// Clinic Emergency Log
+model ClinicEmergencyLog {
+  id                 String      @id @default(cuid())
+  schoolId           String
+  school             School      @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  visitId            String?
+  visit              ClinicVisit? @relation(fields: [visitId], references: [id], onDelete: SetNull)
+  studentId          String
+  student            Student     @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  title              String
+  description        String
+  acuity             String      @default("RED") // RED, CRITICAL
+  ambulanceCalled    Boolean     @default(false)
+  ambulanceDetails   String?
+  parentContacted    Boolean     @default(false)
+  parentContactPhone String?
+  parentContactNotes String?
+  photoUrls          String[]    @default([]) // Private tenant-namespaced bucket signed URLs
+  loggedById         String
+  loggedBy           User        @relation("EmergencyLoggedBy", fields: [loggedById], references: [id], onDelete: Cascade)
+  createdAt          DateTime    @default(now())
+
+  @@index([schoolId])
+  @@index([studentId])
+}
+
+// Tenant Clinic Configuration
+model ClinicSetting {
+  id                     String   @id @default(cuid())
+  schoolId               String   @unique
+  school                 School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  hasDoctorQueue         Boolean  @default(false)
+  bedCount               Int      @default(10)
+  monitoringIntervalHours Int     @default(4)
+  tempAlertThreshold     Float    @default(38.0)
+  billingEnabled         Boolean  @default(false)
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+}
+

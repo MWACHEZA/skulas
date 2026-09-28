@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
 import api from '../../../lib/api';
-import TabbedPage, { TabItem } from '../../../components/portals/shared/TabbedPage';
+import TabbedPage, { type TabItem } from '../../../components/portals/shared/TabbedPage';
 
 // ── TYPES ──
 

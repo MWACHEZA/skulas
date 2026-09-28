@@ -184,6 +184,30 @@ exports.Prisma.HostelRoomScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.LeadershipAssignmentScalarFieldEnum = {
+  id: 'id',
+  schoolId: 'schoolId',
+  studentId: 'studentId',
+  leadershipRole: 'leadershipRole',
+  hostelId: 'hostelId',
+  term: 'term',
+  academicYear: 'academicYear',
+  isActive: 'isActive',
+  assignedById: 'assignedById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.StudentAllowedItemScalarFieldEnum = {
+  id: 'id',
+  schoolId: 'schoolId',
+  itemSku: 'itemSku',
+  itemName: 'itemName',
+  category: 'category',
+  isActive: 'isActive',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.UniformItemScalarFieldEnum = {
   id: 'id',
   name: 'name',
@@ -1362,7 +1386,16 @@ exports.Prisma.RequisitionScalarFieldEnum = {
   schoolId: 'schoolId',
   purchaseOrderId: 'purchaseOrderId',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  requesterRole: 'requesterRole',
+  hostelReqId: 'hostelReqId',
+  requestedByStudentId: 'requestedByStudentId',
+  matronApprovedAt: 'matronApprovedAt',
+  matronApprovedById: 'matronApprovedById',
+  rejectionReason: 'rejectionReason',
+  issuedAt: 'issuedAt',
+  issuedById: 'issuedById',
+  receivedAt: 'receivedAt'
 };
 
 exports.Prisma.HostelScalarFieldEnum = {
@@ -1375,7 +1408,8 @@ exports.Prisma.HostelScalarFieldEnum = {
   categoryId: 'categoryId',
   roomId: 'roomId',
   schoolId: 'schoolId',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  wardenUserId: 'wardenUserId'
 };
 
 exports.Prisma.RoomScalarFieldEnum = {
@@ -1568,6 +1602,7 @@ exports.Prisma.PhysicalProductConsumptionScalarFieldEnum = {
   dispatchedBy: 'dispatchedBy',
   date: 'date',
   schoolId: 'schoolId',
+  hostelId: 'hostelId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -2145,6 +2180,14 @@ exports.Prisma.ClinicVisitScalarFieldEnum = {
   treatment: 'treatment',
   prescription: 'prescription',
   notes: 'notes',
+  source: 'source',
+  acuity: 'acuity',
+  isEmergency: 'isEmergency',
+  isConfidential: 'isConfidential',
+  disposition: 'disposition',
+  triageById: 'triageById',
+  consultedById: 'consultedById',
+  closedAt: 'closedAt',
   status: 'status',
   visitDate: 'visitDate',
   createdAt: 'createdAt',
@@ -2440,6 +2483,179 @@ exports.Prisma.PlatformSettingScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.Icd10ParentLabelScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  plainLabel: 'plainLabel',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.StudentHealthProfileScalarFieldEnum = {
+  id: 'id',
+  schoolId: 'schoolId',
+  studentId: 'studentId',
+  allergies: 'allergies',
+  chronicConditions: 'chronicConditions',
+  bloodGroup: 'bloodGroup',
+  emergencyContactName: 'emergencyContactName',
+  emergencyContactPhone: 'emergencyContactPhone',
+  emergencyContactRel: 'emergencyContactRel',
+  treatmentConsent: 'treatmentConsent',
+  consentBy: 'consentBy',
+  consentedAt: 'consentedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ClinicVitalScalarFieldEnum = {
+  id: 'id',
+  schoolId: 'schoolId',
+  visitId: 'visitId',
+  temp: 'temp',
+  bp: 'bp',
+  pulse: 'pulse',
+  spo2: 'spo2',
+  weight: 'weight',
+  height: 'height',
+  recordedById: 'recordedById',
+  recordedAt: 'recordedAt'
+};
+
+exports.Prisma.ClinicDiagnosisScalarFieldEnum = {
+  id: 'id',
+  schoolId: 'schoolId',
+  visitId: 'visitId',
+  icd10Code: 'icd10Code',
+  notes: 'notes',
+  parentNote: 'parentNote',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.ClinicPrescriptionScalarFieldEnum = {
+  id: 'id',
+  schoolId: 'schoolId',
+  visitId: 'visitId',
+  drugName: 'drugName',
+  dosage: 'dosage',
+  frequency: 'frequency',
+  duration: 'duration',
+  prescribedById: 'prescribedById',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.PharmacyStockScalarFieldEnum = {
+  id: 'id',
+  schoolId: 'schoolId',
+  drugName: 'drugName',
+  category: 'category',
+  unit: 'unit',
+  minStock: 'minStock',
+  location: 'location',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.PharmacyBatchScalarFieldEnum = {
+  id: 'id',
+  schoolId: 'schoolId',
+  stockId: 'stockId',
+  batchNumber: 'batchNumber',
+  quantity: 'quantity',
+  expiryDate: 'expiryDate',
+  receivedAt: 'receivedAt'
+};
+
+exports.Prisma.PharmacyDispenseScalarFieldEnum = {
+  id: 'id',
+  schoolId: 'schoolId',
+  visitId: 'visitId',
+  stockId: 'stockId',
+  batchId: 'batchId',
+  quantity: 'quantity',
+  dispensedById: 'dispensedById',
+  dispensedAt: 'dispensedAt'
+};
+
+exports.Prisma.ClinicBedScalarFieldEnum = {
+  id: 'id',
+  schoolId: 'schoolId',
+  bedNumber: 'bedNumber',
+  ward: 'ward',
+  status: 'status',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ClinicAdmissionScalarFieldEnum = {
+  id: 'id',
+  schoolId: 'schoolId',
+  bedId: 'bedId',
+  visitId: 'visitId',
+  studentId: 'studentId',
+  status: 'status',
+  dietNotes: 'dietNotes',
+  dischargeNotes: 'dischargeNotes',
+  admittedAt: 'admittedAt',
+  dischargedAt: 'dischargedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ClinicMonitoringLogScalarFieldEnum = {
+  id: 'id',
+  schoolId: 'schoolId',
+  admissionId: 'admissionId',
+  temp: 'temp',
+  bp: 'bp',
+  pulse: 'pulse',
+  spo2: 'spo2',
+  notes: 'notes',
+  recordedById: 'recordedById',
+  recordedAt: 'recordedAt'
+};
+
+exports.Prisma.ClinicAccessAuditScalarFieldEnum = {
+  id: 'id',
+  schoolId: 'schoolId',
+  studentId: 'studentId',
+  userId: 'userId',
+  action: 'action',
+  resource: 'resource',
+  ipAddress: 'ipAddress',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.ClinicEmergencyLogScalarFieldEnum = {
+  id: 'id',
+  schoolId: 'schoolId',
+  visitId: 'visitId',
+  studentId: 'studentId',
+  title: 'title',
+  description: 'description',
+  acuity: 'acuity',
+  ambulanceCalled: 'ambulanceCalled',
+  ambulanceDetails: 'ambulanceDetails',
+  parentContacted: 'parentContacted',
+  parentContactPhone: 'parentContactPhone',
+  parentContactNotes: 'parentContactNotes',
+  photoUrls: 'photoUrls',
+  loggedById: 'loggedById',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.ClinicSettingScalarFieldEnum = {
+  id: 'id',
+  schoolId: 'schoolId',
+  hasDoctorQueue: 'hasDoctorQueue',
+  bedCount: 'bedCount',
+  monitoringIntervalHours: 'monitoringIntervalHours',
+  tempAlertThreshold: 'tempAlertThreshold',
+  billingEnabled: 'billingEnabled',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -2469,6 +2685,23 @@ exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
 };
+exports.LeadershipRole = exports.$Enums.LeadershipRole = {
+  HEAD_BOY: 'HEAD_BOY',
+  HEAD_GIRL: 'HEAD_GIRL',
+  HOSTEL_PREFECT: 'HOSTEL_PREFECT',
+  DINING_PREFECT: 'DINING_PREFECT',
+  SRC_PRESIDENT: 'SRC_PRESIDENT',
+  SRC_MEMBER: 'SRC_MEMBER'
+};
+
+exports.RequesterRole = exports.$Enums.RequesterRole = {
+  TEACHER: 'TEACHER',
+  ANCILLARY: 'ANCILLARY',
+  ADMIN: 'ADMIN',
+  STUDENT_LEADER: 'STUDENT_LEADER',
+  CLINIC: 'CLINIC'
+};
+
 exports.AccountType = exports.$Enums.AccountType = {
   ASSET: 'ASSET',
   LIABILITY: 'LIABILITY',
@@ -2483,6 +2716,8 @@ exports.Prisma.ModelName = {
   GradingScale: 'GradingScale',
   HostelCategory: 'HostelCategory',
   HostelRoom: 'HostelRoom',
+  LeadershipAssignment: 'LeadershipAssignment',
+  StudentAllowedItem: 'StudentAllowedItem',
   UniformItem: 'UniformItem',
   UniformStockOrder: 'UniformStockOrder',
   UniformStockOrderItem: 'UniformStockOrderItem',
@@ -2636,7 +2871,21 @@ exports.Prisma.ModelName = {
   UniformStockMovement: 'UniformStockMovement',
   BankStatement: 'BankStatement',
   BankStatementLine: 'BankStatementLine',
-  PlatformSetting: 'PlatformSetting'
+  PlatformSetting: 'PlatformSetting',
+  Icd10ParentLabel: 'Icd10ParentLabel',
+  StudentHealthProfile: 'StudentHealthProfile',
+  ClinicVital: 'ClinicVital',
+  ClinicDiagnosis: 'ClinicDiagnosis',
+  ClinicPrescription: 'ClinicPrescription',
+  PharmacyStock: 'PharmacyStock',
+  PharmacyBatch: 'PharmacyBatch',
+  PharmacyDispense: 'PharmacyDispense',
+  ClinicBed: 'ClinicBed',
+  ClinicAdmission: 'ClinicAdmission',
+  ClinicMonitoringLog: 'ClinicMonitoringLog',
+  ClinicAccessAudit: 'ClinicAccessAudit',
+  ClinicEmergencyLog: 'ClinicEmergencyLog',
+  ClinicSetting: 'ClinicSetting'
 };
 
 /**

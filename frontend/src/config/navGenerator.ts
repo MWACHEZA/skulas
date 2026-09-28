@@ -26,11 +26,11 @@ export interface NavGroup {
  */
 const PORTAL_ROUTE_REWRITES: Record<string, Record<string, string>> = {
   teacher: {
-    '/admin/syllabus': '/teacher/syllabus',
-    '/admin/lesson-plan': '/teacher/planner',
+    '/admin/syllabus': '/teacher/curriculum',
+    '/admin/lesson-plan': '/teacher/curriculum?tab=lesson-plans',
     '/admin/timetable': '/teacher/timetable',
     '/admin/study-materials': '/teacher/study-materials',
-    '/admin/assessments/marks-entry': '/teacher/assessments/marks-entry',
+    '/admin/assessments/marks-entry': '/teacher/grades?tab=marks-entry',
     '/admin/cbt/manage': '/teacher/cbt/manage',
     '/admin/reports': '/teacher/reports',
     '/admin/students': '/teacher/students',
@@ -39,20 +39,20 @@ const PORTAL_ROUTE_REWRITES: Record<string, Record<string, string>> = {
     '/admin/chaplaincy': '/teacher/chaplaincy',
     '/admin/student-club': '/teacher/classes',
     '/admin/sports-management': '/teacher/sports',
-    '/admin/hr/attendance': '/teacher/attendance-logs',
+    '/admin/hr/attendance': '/teacher/attendance',
     '/admin/procurement': '/teacher/procurement',
     '/admin/assets': '/teacher/assets',
     '/admin/farm': '/teacher/farm',
     '/admin/dining-hall': '/teacher/dining-hall',
     '/admin/leave': '/teacher/leave',
     '/admin/awards': '/teacher/awards',
-    '/admin/library/books': '/teacher/library/books',
-    '/admin/library/loans': '/teacher/library/loans',
-    '/admin/library/digital': '/teacher/library/digital',
-    '/admin/library/reports': '/teacher/library/reports',
-    '/admin/clinic/complaints': '/teacher/clinic/complaints',
-    '/admin/clinic/appointments': '/teacher/clinic/appointments',
-    '/admin/clinic/emergencies': '/teacher/clinic/emergencies',
+    '/admin/library/books': '/teacher/library',
+    '/admin/library/loans': '/teacher/library',
+    '/admin/library/digital': '/teacher/library',
+    '/admin/library/reports': '/teacher/library',
+    '/admin/clinic/complaints': '/teacher/clinic',
+    '/admin/clinic/appointments': '/teacher/clinic',
+    '/admin/clinic/emergencies': '/teacher/clinic',
     '/admin/announcements': '/teacher/dashboard',
     '/admin/messages': '/teacher/messages',
     '/admin/helpdesk': '/teacher/support',
@@ -64,21 +64,21 @@ const PORTAL_ROUTE_REWRITES: Record<string, Record<string, string>> = {
     '/admin/class-migration': '/bursar/class-migration',
     '/admin/accounts/uniforms': '/bursar/accounts/uniforms',
     '/admin/uniforms': '/bursar/accounts/uniforms',
-    '/admin/fees': '/bursar/fees-management/billing',
-    '/admin/fee-groups': '/bursar/fees-management/groups',
-    '/admin/fees-management/billing': '/bursar/fees-management/billing',
-    '/admin/finance/overview': '/bursar/fees-management/billing',
-    '/admin/finance/billing': '/bursar/fees-management/billing',
+    '/admin/fees': '/bursar/fees',
+    '/admin/fee-groups': '/bursar/fees?tab=billing',
+    '/admin/fees-management/billing': '/bursar/fees?tab=billing',
+    '/admin/finance/overview': '/bursar/fees?tab=billing',
+    '/admin/finance/billing': '/bursar/fees?tab=billing',
     '/admin/finance/payment-plans': '/bursar/payment-plans',
     '/admin/finance/wallets': '/bursar/tuckshop',
-    '/admin/fees-management/invoices': '/bursar/fees-management/invoices',
-    '/admin/fees-management/bulk-invoices': '/bursar/fees-management/bulk-invoices',
-    '/admin/fees-management/payment-history': '/bursar/fees-management/payment-history',
-    '/admin/fees-management/ledgers': '/bursar/fees-management/ledgers',
+    '/admin/fees-management/invoices': '/bursar/fees?tab=invoices',
+    '/admin/fees-management/bulk-invoices': '/bursar/fees?tab=bulk-invoices',
+    '/admin/fees-management/payment-history': '/bursar/fees?tab=invoices',
+    '/admin/fees-management/ledgers': '/bursar/fees?tab=ledgers',
     '/admin/payment-plans': '/bursar/payment-plans',
-    '/admin/fees-management/reminder-logs': '/bursar/fees-management/reminder-logs',
+    '/admin/fees-management/reminder-logs': '/bursar/fees?tab=invoices',
     '/admin/payment-methods': '/bursar/payment-methods',
-    '/admin/fees-management/groceries': '/bursar/fees-management/groceries',
+    '/admin/fees-management/groceries': '/bursar/tuckshop?tab=inventory',
     '/admin/revenue-allocation': '/bursar/revenue-allocation',
     '/admin/accounts/coa': '/bursar/accounts/coa',
     '/admin/accounts/income': '/bursar/accounts/income',
@@ -152,18 +152,13 @@ const PORTAL_ROUTE_REWRITES: Record<string, Record<string, string>> = {
   },
   clinic: {
     '/admin/clinic/dashboard': '/clinic/dashboard',
-    '/admin/clinic/patients': '/clinic/patients',
-    '/admin/clinic/hospitalization': '/clinic/hospitalization',
     '/admin/clinic/triage': '/clinic/triage',
-    '/admin/clinic/appointments': '/clinic/appointments',
-    '/admin/clinic/emergencies': '/clinic/emergencies',
-    '/admin/clinic/referrals': '/clinic/referrals',
+    '/admin/clinic/consultations': '/clinic/consultations',
+    '/admin/clinic/hospitalization': '/clinic/hospitalization',
     '/admin/clinic/pharmacy': '/clinic/pharmacy',
-    '/admin/clinic/immunization': '/clinic/immunization',
-    '/admin/clinic/billing': '/clinic/billing',
+    '/admin/clinic/wellness': '/clinic/wellness',
+    '/admin/clinic/emergency': '/clinic/emergency',
     '/admin/clinic/reports': '/clinic/reports',
-    '/admin/clinic/complaints': '/clinic/complaints',
-    '/admin/clinic/icd10': '/clinic/icd10',
     '/admin/messages': '/clinic/messages',
     '/admin/helpdesk': '/clinic/support',
     '/admin/settings': '/clinic/settings',
@@ -310,6 +305,8 @@ function generateStudentPortalNavigation(user: UserContext | null | undefined, c
   const isHouseCaptain = userSecRoles.includes('House Captain');
   const isChurchPrefect = userSecRoles.includes('Church Prefect');
 
+  const isLeader = !!user?.isLeader;
+
   const groups: NavGroup[] = [
     {
       id: 'ACADEMICS',
@@ -335,11 +332,18 @@ function generateStudentPortalNavigation(user: UserContext | null | undefined, c
       icon: 'fas fa-book',
       order: 2,
       items: [
-        { id: 'student-my-books', label: 'My Books & Loans', to: '/student/my-books', icon: 'fas fa-book-open', searchKeywords: ['borrowed', 'due', 'reading'] },
-        { id: 'student-library-catalog', label: 'Library Catalog', to: '/student/library', icon: 'fas fa-book', searchKeywords: ['search books', 'catalog', 'reservations'] },
-        ...(isStudentLibrarian ? [
-          { id: 'student-library-staff', label: 'Library Desk (Staff)', to: '/student/library-staff', icon: 'fas fa-book-reader', badge: 'Librarian', searchKeywords: ['checkout', 'circulation', 'barcode'] }
-        ] : [])
+        { 
+          id: 'student-library-catalog', 
+          label: 'Library & Loans', 
+          to: '/student/library', 
+          icon: 'fas fa-book', 
+          tabs: [
+            { id: 'catalog', label: 'Catalog' },
+            { id: 'loans', label: 'My Loans' },
+            { id: 'reservations', label: 'Reserve' }
+          ],
+          searchKeywords: ['search books', 'catalog', 'reservations', 'my books', 'borrowed'] 
+        }
       ]
     },
     {
@@ -350,14 +354,21 @@ function generateStudentPortalNavigation(user: UserContext | null | undefined, c
       items: [
         { id: 'student-events', label: 'Events & Calendar', to: '/student/events', icon: 'fas fa-calendar-day', searchKeywords: ['activities', 'calendar'] },
         { id: 'student-prefects', label: 'Prefects Board / SRC', to: '/student/prefects', icon: 'fas fa-user-tie', searchKeywords: ['leadership', 'council'] },
+        ...(isLeader ? [
+          { 
+            id: 'student-cleaning-requests', 
+            label: 'Cleaning Requests', 
+            to: '/student/cleaning-requests', 
+            icon: 'fas fa-broom', 
+            badge: 'Leader', 
+            searchKeywords: ['cleaning', 'supplies', 'hostel', 'prefect', 'request', 'mop', 'broom', 'soap', 'detergent'] 
+          }
+        ] : []),
         ...(isClassMonitor ? [
           { id: 'student-class-monitor', label: 'Class Monitor Tool', to: '/student/class-monitor', icon: 'fas fa-clipboard-check', badge: 'Monitor', searchKeywords: ['register', 'attendance'] }
         ] : []),
         ...(isSportsCaptain ? [
           { id: 'student-sports', label: 'Sports & Fixtures', to: '/student/sports', icon: 'fas fa-trophy', badge: 'Captain', searchKeywords: ['athletics', 'matches', 'games'] }
-        ] : []),
-        ...(isHouseCaptain ? [
-          { id: 'student-house', label: 'My House', to: '/student/house', icon: 'fas fa-house-user', badge: 'House', searchKeywords: ['dorm', 'points', 'hostel'] }
         ] : []),
         { id: 'student-dining-hall', label: 'Dining Hall (DH)', to: '/student/dining-hall', icon: 'fas fa-utensils', searchKeywords: ['meals', 'menu', 'food'] },
         ...(isChurchPrefect ? [
@@ -381,9 +392,17 @@ function generateStudentPortalNavigation(user: UserContext | null | undefined, c
       icon: 'fas fa-notes-medical',
       order: 5,
       items: [
-        { id: 'student-complaints', label: 'Health Complaints', to: '/student/clinic/complaints', icon: 'fas fa-stethoscope', searchKeywords: ['sick', 'nurse', 'symptoms'] },
-        { id: 'student-appointments', label: 'Clinic Appointments', to: '/student/clinic/appointments', icon: 'fas fa-calendar-check', searchKeywords: ['visit', 'doctor'] },
-        { id: 'student-emergencies', label: 'Emergencies', to: '/student/clinic/emergencies', icon: 'fas fa-ambulance', searchKeywords: ['urgent', 'ambulance'] }
+        { 
+          id: 'student-clinic', 
+          label: 'Health & Clinic', 
+          to: '/student/clinic', 
+          icon: 'fas fa-notes-medical', 
+          tabs: [
+            { id: 'visits', label: 'My Visits' },
+            { id: 'book', label: 'Book Appointment' }
+          ],
+          searchKeywords: ['clinic', 'doctor', 'nurse', 'visits', 'appointments', 'sick'] 
+        }
       ]
     },
     {

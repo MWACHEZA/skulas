@@ -13,6 +13,9 @@ export interface PageDefinition {
   badge?: string;
   searchKeywords?: string[];
   tabs?: { id: string; label: string; route?: string }[];
+  department?: string;
+  approvalChain?: string[];
+  condition?: (user: any) => boolean;
 }
 
 export type CanonicalGroupId = 
@@ -256,10 +259,9 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     portalVisibility: ['admin', 'bursar'],
     tabs: [
       { id: 'uniforms', label: 'Uniforms Stock' },
-      { id: 'bookstore', label: 'Bookstore' },
-      { id: 'library', label: 'Library Catalog' }
+      { id: 'bookstore', label: 'Bookstore' }
     ],
-    searchKeywords: ['uniforms', 'blazers', 'books', 'stationery', 'library catalog', 'stock inventory']
+    searchKeywords: ['uniforms', 'blazers', 'books', 'stationery', 'stock inventory']
   },
   {
     id: 'admin-communication',
@@ -1103,16 +1105,25 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     label: 'Clinic Dashboard',
     route: '/admin/clinic/dashboard',
     group: 'CLINIC_HEALTH',
-    icon: 'fas fa-notes-medical',
+    icon: 'fas fa-stethoscope',
     permissionKey: PERMISSIONS.CLINIC_DASHBOARD_VIEW,
     portalVisibility: ['clinic']
   },
   {
-    id: 'admin-clinic-patients',
-    label: 'Patient Management',
-    route: '/admin/clinic/patients',
+    id: 'admin-clinic-triage',
+    label: 'Triage & Vitals',
+    route: '/admin/clinic/triage',
     group: 'CLINIC_HEALTH',
-    icon: 'fas fa-user-injured',
+    icon: 'fas fa-heartbeat',
+    permissionKey: PERMISSIONS.CLINIC_TRIAGE_MANAGE,
+    portalVisibility: ['clinic']
+  },
+  {
+    id: 'admin-clinic-consultations',
+    label: 'Consultations',
+    route: '/admin/clinic/consultations',
+    group: 'CLINIC_HEALTH',
+    icon: 'fas fa-user-md',
     permissionKey: PERMISSIONS.CLINIC_PATIENTS_MANAGE,
     portalVisibility: ['clinic']
   },
@@ -1126,12 +1137,39 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     portalVisibility: ['clinic']
   },
   {
-    id: 'admin-clinic-triage',
-    label: 'Triage & Vitals',
-    route: '/admin/clinic/triage',
+    id: 'admin-clinic-pharmacy',
+    label: 'Pharmacy & Dispensary',
+    route: '/admin/clinic/pharmacy',
     group: 'CLINIC_HEALTH',
-    icon: 'fas fa-heartbeat',
+    icon: 'fas fa-pills',
+    permissionKey: PERMISSIONS.CLINIC_PHARMACY_MANAGE,
+    portalVisibility: ['clinic']
+  },
+  {
+    id: 'admin-clinic-wellness',
+    label: 'Wellness & Vaccines',
+    route: '/admin/clinic/wellness',
+    group: 'CLINIC_HEALTH',
+    icon: 'fas fa-syringe',
+    permissionKey: PERMISSIONS.CLINIC_PATIENTS_MANAGE,
+    portalVisibility: ['clinic']
+  },
+  {
+    id: 'admin-clinic-emergency',
+    label: 'Emergencies & Referrals',
+    route: '/admin/clinic/emergency',
+    group: 'CLINIC_HEALTH',
+    icon: 'fas fa-ambulance',
     permissionKey: PERMISSIONS.CLINIC_TRIAGE_MANAGE,
+    portalVisibility: ['clinic']
+  },
+  {
+    id: 'admin-clinic-reports',
+    label: 'Reports & Medical Files',
+    route: '/admin/clinic/reports',
+    group: 'CLINIC_HEALTH',
+    icon: 'fas fa-chart-line',
+    permissionKey: PERMISSIONS.CLINIC_REPORTS_VIEW,
     portalVisibility: ['clinic']
   },
   {
@@ -1148,87 +1186,6 @@ export const PAGE_REGISTRY: PageDefinition[] = [
       { id: 'wellbeing', label: 'Wellbeing & Conduct' }
     ],
     searchKeywords: ['health', 'clinic', 'visits', 'allergies', 'profile', 'blood group', 'nurse', 'wellbeing', 'conduct', 'merits', 'counselor']
-  },
-  {
-    id: 'admin-clinic-appointments',
-    label: 'Appointments',
-    route: '/admin/clinic/appointments',
-    group: 'CLINIC_HEALTH',
-    icon: 'fas fa-calendar-check',
-    permissionKey: PERMISSIONS.CLINIC_TRIAGE_MANAGE,
-    portalVisibility: ['clinic', 'teacher', 'student']
-  },
-  {
-    id: 'admin-clinic-emergencies',
-    label: 'Emergencies',
-    route: '/admin/clinic/emergencies',
-    group: 'CLINIC_HEALTH',
-    icon: 'fas fa-ambulance',
-    permissionKey: PERMISSIONS.CLINIC_TRIAGE_MANAGE,
-    portalVisibility: ['clinic', 'teacher', 'student']
-  },
-  {
-    id: 'admin-clinic-referrals',
-    label: 'Referrals',
-    route: '/admin/clinic/referrals',
-    group: 'CLINIC_HEALTH',
-    icon: 'fas fa-file-medical',
-    permissionKey: PERMISSIONS.CLINIC_PATIENTS_MANAGE,
-    portalVisibility: ['clinic']
-  },
-  {
-    id: 'admin-clinic-pharmacy',
-    label: 'Pharmacy & Dispensing',
-    route: '/admin/clinic/pharmacy',
-    group: 'CLINIC_HEALTH',
-    icon: 'fas fa-pills',
-    permissionKey: PERMISSIONS.CLINIC_PHARMACY_MANAGE,
-    portalVisibility: ['clinic']
-  },
-  {
-    id: 'admin-clinic-immunization',
-    label: 'Immunisation',
-    route: '/admin/clinic/immunization',
-    group: 'CLINIC_HEALTH',
-    icon: 'fas fa-syringe',
-    permissionKey: PERMISSIONS.CLINIC_PATIENTS_MANAGE,
-    portalVisibility: ['clinic']
-  },
-  {
-    id: 'admin-clinic-billing',
-    label: 'Clinic Billing',
-    route: '/admin/clinic/billing',
-    group: 'CLINIC_HEALTH',
-    icon: 'fas fa-file-invoice-dollar',
-    permissionKey: PERMISSIONS.CLINIC_REPORTS_VIEW,
-    portalVisibility: ['clinic']
-  },
-  {
-    id: 'admin-clinic-reports',
-    label: 'Clinical Reports',
-    route: '/admin/clinic/reports',
-    group: 'CLINIC_HEALTH',
-    icon: 'fas fa-chart-bar',
-    permissionKey: PERMISSIONS.CLINIC_REPORTS_VIEW,
-    portalVisibility: ['clinic']
-  },
-  {
-    id: 'admin-clinic-complaints',
-    label: 'Health Complaints',
-    route: '/admin/clinic/complaints',
-    group: 'CLINIC_HEALTH',
-    icon: 'fas fa-stethoscope',
-    permissionKey: PERMISSIONS.CLINIC_PATIENTS_MANAGE,
-    portalVisibility: ['clinic', 'teacher', 'student', 'ancillary']
-  },
-  {
-    id: 'admin-clinic-icd10',
-    label: 'ICD10 Disease Codes',
-    route: '/admin/clinic/icd10',
-    group: 'CLINIC_HEALTH',
-    icon: 'fas fa-notes-medical',
-    permissionKey: PERMISSIONS.CLINIC_REPORTS_VIEW,
-    portalVisibility: ['clinic']
   },
 
   // ==========================================
@@ -1350,5 +1307,24 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     icon: 'fas fa-user-circle',
     permissionKey: PERMISSIONS.SETTINGS_PERSONAL,
     portalVisibility: ['teacher', 'bursar', 'librarian', 'ancillary', 'clinic', 'student', 'parent']
+  },
+  {
+    id: 'student-cleaning-requests',
+    label: 'Cleaning Requests',
+    route: '/student/cleaning-requests',
+    group: 'STUDENT_LIFE',
+    icon: 'fas fa-broom',
+    permissionKey: PERMISSIONS.STUDENT_CLEANING_REQUESTS,
+    portalVisibility: ['student'],
+    badge: 'Leader',
+    department: 'boarding',
+    approvalChain: ['HOD_BOARDING', 'ADMIN', 'BURSAR', 'STORE'],
+    condition: (user: any) => !!user?.isLeader,
+    tabs: [
+      { id: 'request', label: 'Request' },
+      { id: 'my-requests', label: 'My Requests' },
+      { id: 'stock', label: 'Hostel Stock' }
+    ],
+    searchKeywords: ['cleaning', 'supplies', 'hostel', 'prefect', 'request', 'mop', 'broom', 'soap', 'detergent']
   }
 ];

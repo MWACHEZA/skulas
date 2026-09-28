@@ -24,6 +24,8 @@ export declare function seedUsers(prisma: PrismaClient, school: School, emailPre
         status: string;
         schoolId: string;
         studentId: string;
+        hostelId: string | null;
+        category: string | null;
         preferredLanguage: string | null;
         userId: string | null;
         dob: Date | null;
@@ -41,7 +43,6 @@ export declare function seedUsers(prisma: PrismaClient, school: School, emailPre
         guardianName: string | null;
         boardingStatus: string;
         roomId: string | null;
-        hostelId: string | null;
         prevSchool: string | null;
         reasonForTransfer: string | null;
         lastGradeAchieved: string | null;
@@ -60,7 +61,6 @@ export declare function seedUsers(prisma: PrismaClient, school: School, emailPre
         transferCertificateUrl: string | null;
         isPhysicallyHandicapped: boolean;
         handicapDetails: string | null;
-        category: string | null;
         dormitory: string | null;
         birthCertificateUrl: string | null;
         age: number | null;

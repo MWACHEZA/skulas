@@ -69,6 +69,9 @@ interface AuthContextType {
   isAuthenticated: boolean;
   hasRole: (...roles: string[]) => boolean;
   refreshUser: () => Promise<void>;
+  isLeader: boolean;
+  leadershipAssignment: any | null;
+  refreshLeadership: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -79,6 +82,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const stored = localStorage.getItem('acadex_user');
     return stored ? JSON.parse(stored) : null;
   });
+
+  const [isLeader, setIsLeader] = useState<boolean>(false);
+  const [leadershipAssignment, setLeadershipAssignment] = useState<any | null>(null);
 
   const [activeEntity, setActiveEntityState] = useState<LinkedEntity | null>(() => {
     const stored = localStorage.getItem('acadex_active_entity');
@@ -364,6 +370,38 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const refreshLeadership = async () => {
+    if (!token || user?.role !== 'STUDENT') {
+      setIsLeader(false);
+      setLeadershipAssignment(null);
+      return;
+    }
+    try {
+      const { default: api } = await import('../lib/api');
+      const res = await api.get('/api/student-requests/leadership-check');
+      if (res.data?.isLeader) {
+        setIsLeader(true);
+        setLeadershipAssignment(res.data.assignment);
+      } else {
+        setIsLeader(false);
+        setLeadershipAssignment(null);
+      }
+    } catch (err) {
+      console.error('Failed to check leadership status:', err);
+      setIsLeader(false);
+      setLeadershipAssignment(null);
+    }
+  };
+
+  useEffect(() => {
+    if (user?.role === 'STUDENT' && token) {
+      refreshLeadership();
+    } else {
+      setIsLeader(false);
+      setLeadershipAssignment(null);
+    }
+  }, [user?.id, user?.role, token]);
+
   return (
     <AuthContext.Provider value={{ 
       user, 
@@ -375,7 +413,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       updateLinkedEntities,
       isAuthenticated: !!token && !!user, 
       hasRole,
-      refreshUser
+      refreshUser,
+      isLeader,
+      leadershipAssignment,
+      refreshLeadership
     }}>
       {children}
     </AuthContext.Provider>

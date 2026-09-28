@@ -72,8 +72,8 @@ export declare const LedgerService: {
             createdAt: Date;
             schoolId: string;
             description: string | null;
-            supplierId: string | null;
             studentId: string | null;
+            supplierId: string | null;
             currency: string;
             journalEntryId: string;
             accountId: string;
@@ -113,8 +113,8 @@ export declare const LedgerService: {
             createdAt: Date;
             schoolId: string;
             description: string | null;
-            supplierId: string | null;
             studentId: string | null;
+            supplierId: string | null;
             currency: string;
             journalEntryId: string;
             accountId: string;

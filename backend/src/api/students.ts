@@ -153,19 +153,27 @@ router.post('/import', requireAuth, requireRole('SCHOOL_ADMIN'), upload.single('
  * @desc    List students in the current user's school (paginated)
  */
 router.get('/', requireAuth, requireRole('SCHOOL_ADMIN', 'TEACHER', 'BURSAR', 'LIBRARIAN'), async (req: AuthRequest, res: Response) => {
-  const { page = '1', limit = '20', search = '' } = req.query as Record<string, string>;
+  const { page = '1', limit = '20', search = '', leadersOnly = 'false' } = req.query as Record<string, string>;
   const schoolId = req.user!.schoolId;
   const skip = (parseInt(page) - 1) * parseInt(limit);
 
   try {
+    const whereCondition: any = {
+      schoolId: schoolId!,
+      ...(search ? { name: { contains: String(search), mode: 'insensitive' as const } } : {}),
+      ...(leadersOnly === 'true' ? { leadershipAssignments: { some: { isActive: true } } } : {})
+    };
+
     const [students, total] = await Promise.all([
       prisma.student.findMany({
-        where: {
-          schoolId: schoolId!,
-          ...(search ? { name: { contains: String(search), mode: 'insensitive' as const } } : {}),
-        },
+        where: whereCondition,
         include: {
           class: { select: { name: true, level: true } },
+          hostel: { select: { id: true, name: true } },
+          leadershipAssignments: {
+            where: { isActive: true },
+            include: { hostel: { select: { id: true, name: true } } }
+          },
           user: { 
             select: { 
               id: true, name: true, role: true, isLocked: true, 
@@ -179,7 +187,7 @@ router.get('/', requireAuth, requireRole('SCHOOL_ADMIN', 'TEACHER', 'BURSAR', 'L
         skip,
         take: parseInt(limit),
       }),
-      prisma.student.count({ where: { schoolId: schoolId! } }),
+      prisma.student.count({ where: whereCondition }),
     ]);
 
     res.json({ students, total, page: parseInt(page), totalPages: Math.ceil(total / parseInt(limit)) });

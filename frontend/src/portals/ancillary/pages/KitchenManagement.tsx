@@ -6,6 +6,7 @@ import { useToast } from '../../../context/ToastContext';
 export default function KitchenManagement() {
   const [menu, setMenu] = useState<any>(null);
   const [studentCounts, setStudentCounts] = useState({ total: 0, boarders: 0, staff: 0 });
+  const [clinicDietNotes, setClinicDietNotes] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [isMenuModalOpen, setIsMenuModalOpen] = useState(false);
   
@@ -19,13 +20,15 @@ export default function KitchenManagement() {
 
   const fetchKitchenData = async () => {
     try {
-      const [menuRes, studentRes, staffRes] = await Promise.all([
+      const [menuRes, studentRes, staffRes, dietRes] = await Promise.all([
         api.get('/api/ancillary/menu/current'),
         api.get('/api/students'),
-        api.get('/api/users')
+        api.get('/api/users'),
+        api.get('/clinic/kitchen/diet-notes').catch(() => ({ data: [] }))
       ]);
       
       setMenu(menuRes.data);
+      setClinicDietNotes(dietRes.data || []);
       
       const allStudents = studentRes.data.students || [];
       const boarders = allStudents.filter((s: any) => s.boardingStatus === 'Boarder').length;
@@ -111,20 +114,30 @@ export default function KitchenManagement() {
       </div>
 
       <div className="portal-card" style={{ marginTop: 30 }}>
-        <div className="portal-card-header">Kitchen Status</div>
-        <div className="portal-card-body">
-          <div style={{ display: 'flex', gap: 40 }}>
-             <div>
-               <p style={{ color: '#718096', margin: '0 0 5px', fontSize: '0.85rem' }}>Special Diets Requested</p>
-               <p style={{ fontSize: '1.2rem', fontWeight: 700 }}>12</p>
-             </div>
-             <div>
-               <p style={{ color: '#718096', margin: '0 0 5px', fontSize: '0.85rem' }}>Gas Level</p>
-               <div style={{ width: 120, height: 10, background: '#e2e8f0', borderRadius: 5, marginTop: 5 }}>
-                 <div style={{ width: '65%', height: '100%', background: 'var(--portal-success)', borderRadius: 5 }}></div>
-               </div>
-             </div>
-          </div>
+        <div className="portal-card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <h2><i className="fas fa-heartbeat" style={{ marginRight: 8, color: '#e53e3e' }}></i>Sick Bay Dietary Orders & Allergies</h2>
+          <span className="badge bg-info text-white">{clinicDietNotes.length} Active Notes</span>
+        </div>
+        <div className="portal-card-body" style={{ padding: 20 }}>
+          {clinicDietNotes.length === 0 ? (
+            <p style={{ color: '#718096', margin: 0, fontSize: '0.9rem' }}>
+              <i className="fas fa-check-circle" style={{ color: 'var(--portal-success)', marginRight: 6 }}></i>
+              No active sick bay dietary restrictions or special food orders logged today.
+            </p>
+          ) : (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 14 }}>
+              {clinicDietNotes.map((note: any, idx: number) => (
+                <div key={idx} style={{ padding: 12, background: '#fffaf0', border: '1px solid #feebc8', borderRadius: 8 }}>
+                  <div style={{ fontWeight: 700, color: '#7b341e', marginBottom: 4 }}>
+                    {note.studentName} ({note.bedNumber})
+                  </div>
+                  <div style={{ fontSize: '0.85rem', color: '#9c4221' }}>
+                    <strong>Kitchen Requirement:</strong> {note.dietNotes || 'Bland diet / plenty of fluids'}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </>

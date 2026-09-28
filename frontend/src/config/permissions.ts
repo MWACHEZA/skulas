@@ -10,6 +10,8 @@ export interface UserContext {
   role?: string;
   secondaryRoles?: string[];
   schoolId?: string;
+  isLeader?: boolean;
+  leadershipAssignment?: any;
 }
 
 export const PERMISSIONS = {
@@ -47,6 +49,9 @@ export const PERMISSIONS = {
   STUDENT_LIFE_CLUBS: 'student_life.clubs:manage',
   STUDENT_LIFE_SPORTS: 'student_life.sports:manage',
   STUDENT_LIFE_CLOCK_LOGS: 'student_life.clock_logs:view',
+  STUDENT_CLEANING_REQUESTS: 'student.cleaning_requests:manage',
+  BOARDING_STUDENT_APPROVALS: 'boarding.approvals.student_leader:manage',
+  ADMIN_LEADERSHIP_ASSIGN: 'admin.leadership:assign',
 
   // 4. Finance & Billing
   FINANCE_FEES_VIEW: 'finance.fees:view',
@@ -197,6 +202,7 @@ export const ROLE_PERMISSIONS: Record<string, string[]> = {
   ANCILLARY: [
     PERMISSIONS.ASSETS_REGISTER_VIEW,
     PERMISSIONS.PROCUREMENT_REQUISITIONS,
+    PERMISSIONS.BOARDING_STUDENT_APPROVALS,
     PERMISSIONS.TRANSPORT_ROUTES_MANAGE,
     PERMISSIONS.STUDENT_LIFE_CLOCK_LOGS,
     PERMISSIONS.COMMUNICATION_MESSAGES,
@@ -209,6 +215,7 @@ export const ROLE_PERMISSIONS: Record<string, string[]> = {
     PERMISSIONS.ACADEMICS_TIMETABLE_VIEW,
     PERMISSIONS.ACADEMICS_STUDY_MATERIAL,
     PERMISSIONS.ACADEMICS_REPORTS_VIEW,
+    PERMISSIONS.STUDENT_CLEANING_REQUESTS,
     PERMISSIONS.FINANCE_FEES_VIEW,
     PERMISSIONS.LIBRARY_CATALOG_VIEW,
     PERMISSIONS.COMMUNICATION_MESSAGES,

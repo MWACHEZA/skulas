@@ -1,8 +1,8 @@
 import React from 'react';
 import { useSearchParams } from 'react-router-dom';
-import TriageDashboard from '../../shared/pages/clinic/TriageDashboard';
-import PharmacyDashboard from '../../shared/pages/clinic/PharmacyDashboard';
-import ClinicReportsPage from '../../shared/pages/clinic/ClinicReportsPage';
+import ClinicTriagePage from '../../clinic/pages/ClinicTriagePage';
+import ClinicPharmacyPage from '../../clinic/pages/ClinicPharmacyPage';
+import ClinicReportsUnifiedPage from '../../clinic/pages/ClinicReportsUnifiedPage';
 import '../../../styles/portal.css';
 
 type ClinicTab = 'visits' | 'inventory' | 'reports';
@@ -115,9 +115,9 @@ export default function AdminClinic() {
 
       {/* Tab Panels */}
       <div>
-        {activeTab === 'visits' && <TriageDashboard />}
-        {activeTab === 'inventory' && <PharmacyDashboard />}
-        {activeTab === 'reports' && <ClinicReportsPage />}
+        {activeTab === 'visits' && <ClinicTriagePage />}
+        {activeTab === 'inventory' && <ClinicPharmacyPage />}
+        {activeTab === 'reports' && <ClinicReportsUnifiedPage />}
       </div>
     </div>
   );

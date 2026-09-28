@@ -537,8 +537,8 @@ router.get('/visits', requireAuth, async (req: AuthRequest, res: Response) => {
       orderBy: { visitDate: 'desc' }
     });
 
-    // Enforce server-side clinical data sanitization for parents
-    if (req.user?.role === 'PARENT') {
+    // Enforce server-side clinical data sanitization for parents and students (no vitals, no ICD-10, plain language only)
+    if (req.user?.role === 'PARENT' || req.user?.role === 'STUDENT') {
       const sanitized = visits.map(v => {
         const vDate = new Date(v.visitDate);
         const isEmergency = v.triageLevel === 'CRITICAL' || (v.notes && v.notes.toLowerCase().includes('emergency'));
@@ -1526,5 +1526,1447 @@ router.get('/reports/surveillance', requireAuth, async (req: AuthRequest, res: R
   }
 });
 
+// =========================================================================
+// UNIFIED CLINIC PORTAL: 8 TABBED PAGES & INTEGRATION ENDPOINTS
+// =========================================================================
+
+// Clinical audit logging helper
+async function logClinicAccess(
+  schoolId: string,
+  userId: string,
+  action: string,
+  resource: string,
+  studentId?: string,
+  ipAddress?: string
+) {
+  try {
+    await prisma.clinicAccessAudit.create({
+      data: {
+        schoolId,
+        userId,
+        studentId: studentId || null,
+        action,
+        resource,
+        ipAddress: ipAddress || null
+      }
+    });
+  } catch (err) {
+    console.error('Failed to log clinic access audit:', err);
+  }
+}
+
+// -------------------------------------------------------------------------
+// 1. /clinic/dashboard — KPIs, Queues, Critical Alerts, Low Stock
+// -------------------------------------------------------------------------
+router.get('/dashboard-kpis', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    if (!isClinicalStaff(req.user)) {
+      return res.status(403).json({ error: 'Clinical staff authorization required' });
+    }
+    const schoolId = req.user!.schoolId!;
+
+    let settings = await prisma.clinicSetting.findUnique({ where: { schoolId } });
+    if (!settings) {
+      settings = await prisma.clinicSetting.create({
+        data: {
+          schoolId,
+          hasDoctorQueue: false,
+          bedCount: 10,
+          monitoringIntervalHours: 4,
+          tempAlertThreshold: 38.0,
+          billingEnabled: false
+        }
+      });
+    }
+
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+
+    const [openVisits, triageQueue, todayConsults, admissions, allStocks, weekEmergencies] = await Promise.all([
+      prisma.clinicVisit.findMany({
+        where: { schoolId, status: { in: ['OPEN', 'CHECK_IN', 'TRIAGE', 'CONSULTATION', 'DOCTOR_QUEUE'] } },
+        include: {
+          patient: true,
+          user: { select: { id: true, name: true, role: true } },
+          vitalsRecord: true
+        },
+        orderBy: { createdAt: 'desc' }
+      }),
+      prisma.clinicVisit.findMany({
+        where: { schoolId, status: { in: ['OPEN', 'CHECK_IN', 'TRIAGE'] } },
+        include: {
+          patient: true,
+          user: { select: { id: true, name: true, role: true } },
+          vitalsRecord: true
+        },
+        orderBy: { createdAt: 'asc' }
+      }),
+      prisma.clinicVisit.findMany({
+        where: { schoolId, status: { in: ['CONSULTATION', 'DOCTOR_QUEUE'] } },
+        include: {
+          patient: true,
+          user: { select: { id: true, name: true, role: true } },
+          vitalsRecord: true
+        },
+        orderBy: { createdAt: 'asc' }
+      }),
+      prisma.clinicAdmission.findMany({
+        where: { schoolId, status: 'ADMITTED' },
+        include: { bed: true, student: true }
+      }),
+      prisma.pharmacyStock.findMany({
+        where: { schoolId },
+        include: { batches: true }
+      }),
+      prisma.clinicEmergencyLog.count({
+        where: {
+          schoolId,
+          createdAt: { gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) }
+        }
+      })
+    ]);
+
+    const criticalAlerts = openVisits.filter(v => {
+      const temp = v.vitalsRecord?.temp || v.temperature || 0;
+      const isRed = v.acuity === 'RED' || v.triageLevel === 'CRITICAL';
+      const highTemp = temp >= settings!.tempAlertThreshold;
+      return isRed || highTemp;
+    }).map(v => ({
+      visitId: v.id,
+      patientName: v.patient?.firstName ? `${v.patient.firstName} ${v.patient.lastName || ''}` : v.user?.name || 'Student',
+      reason: v.presentingComplaint || 'High acuity alert',
+      temp: v.vitalsRecord?.temp || v.temperature,
+      acuity: v.acuity || v.triageLevel || 'RED',
+      time: v.createdAt
+    }));
+
+    const lowStockItems = allStocks.map(s => {
+      const totalQty = s.batches.reduce((sum, b) => sum + b.quantity, 0);
+      return {
+        id: s.id,
+        drugName: s.drugName,
+        unit: s.unit,
+        minStock: s.minStock,
+        totalQty,
+        isLow: totalQty <= s.minStock
+      };
+    }).filter(s => s.isLow);
+
+    const totalBeds = settings.bedCount || 10;
+    const occupiedBeds = admissions.length;
+
+    res.json({
+      kpis: {
+        activePatients: openVisits.length,
+        triageQueueLength: triageQueue.length,
+        todayConsultsCount: todayConsults.length,
+        occupiedBeds,
+        totalBeds,
+        bedOccupancyRate: totalBeds > 0 ? Math.round((occupiedBeds / totalBeds) * 100) : 0,
+        emergenciesThisWeek: weekEmergencies
+      },
+      settings,
+      triageQueue,
+      todayConsults,
+      criticalAlerts,
+      lowStockItems,
+      admissions
+    });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message || 'Failed to load clinic dashboard KPIs' });
+  }
+});
+
+// -------------------------------------------------------------------------
+// 2. /clinic/triage — Patient search, Vitals, Allergy banner, Consent check
+// -------------------------------------------------------------------------
+router.get('/triage/patient-banner/:studentId', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    const schoolId = req.user!.schoolId!;
+    const { studentId } = req.params;
+
+    const student: any = await (prisma as any).student.findFirst({
+      where: { schoolId, id: studentId as string },
+      include: {
+        healthProfile: true,
+        class: true,
+        hostel: true
+      }
+    });
+
+    if (!student) return res.status(404).json({ error: 'Student not found' });
+
+    // Audit individual patient view
+    await logClinicAccess(schoolId, req.user!.id, 'VIEW_RECORD', 'TriagePatientBanner', student.id, req.ip);
+
+    res.json({
+      id: student.id,
+      name: student.name,
+      studentId: student.studentId,
+      className: student.class?.name || 'Unassigned',
+      hostelName: student.hostel?.name || 'Day Scholar',
+      allergies: student.healthProfile?.allergies || 'None recorded',
+      chronicConditions: student.healthProfile?.chronicConditions || 'None recorded',
+      bloodGroup: student.healthProfile?.bloodGroup || 'Unknown',
+      treatmentConsent: student.healthProfile?.treatmentConsent || false,
+      emergencyContact: {
+        name: student.healthProfile?.emergencyContactName || student.guardianName,
+        phone: student.healthProfile?.emergencyContactPhone,
+        relationship: student.healthProfile?.emergencyContactRel
+      }
+    });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message || 'Failed to fetch patient banner' });
+  }
+});
+
+router.post('/triage/record', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    if (!isClinicalStaff(req.user)) {
+      return res.status(403).json({ error: 'Clinical authorization required for triage' });
+    }
+    const schoolId = req.user!.schoolId!;
+    const {
+      studentId,
+      source = 'WALK_IN',
+      presentingComplaint,
+      acuity = 'GREEN',
+      isConfidential = false,
+      isEmergency = false,
+      temp,
+      bp,
+      pulse,
+      spo2,
+      weight,
+      height
+    } = req.body;
+
+    const student = await prisma.student.findFirst({
+      where: { schoolId, id: studentId },
+      include: { healthProfile: true, user: true }
+    });
+    if (!student) return res.status(404).json({ error: 'Student not found' });
+
+    // Check treatment consent on file for non-emergency treatment
+    if (!isEmergency && !student.healthProfile?.treatmentConsent) {
+      if (!req.body.consentOverride) {
+        return res.status(400).json({
+          error: 'Treatment consent is not on file for this student. Explicit override required.',
+          requiresConsentOverride: true
+        });
+      }
+    }
+
+    const settings = await prisma.clinicSetting.findUnique({ where: { schoolId } });
+    const targetStatus = settings?.hasDoctorQueue ? 'DOCTOR_QUEUE' : 'CONSULTATION';
+
+    // Generate Visit Code (EP-YYYYMMDD-XXX)
+    const dateStr = new Date().toISOString().split('T')[0].replace(/-/g, '');
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+    const count = await prisma.clinicVisit.count({
+      where: { schoolId, createdAt: { gte: todayStart } }
+    });
+    const visitCode = `EP-${dateStr}-${(count + 1).toString().padStart(3, '0')}`;
+
+    const visit = await prisma.clinicVisit.create({
+      data: {
+        schoolId,
+        visitCode,
+        userId: student.userId,
+        source,
+        acuity,
+        isEmergency: Boolean(isEmergency),
+        isConfidential: Boolean(isConfidential),
+        presentingComplaint,
+        triageLevel: acuity,
+        status: targetStatus,
+        triageById: req.user!.id,
+        vitalsRecord: {
+          create: {
+            schoolId,
+            temp: temp ? parseFloat(temp) : null,
+            bp: bp || null,
+            pulse: pulse ? parseInt(pulse) : null,
+            spo2: spo2 ? parseInt(spo2) : null,
+            weight: weight ? parseFloat(weight) : null,
+            height: height ? parseFloat(height) : null,
+            recordedById: req.user!.id
+          }
+        }
+      },
+      include: { vitalsRecord: true }
+    });
+
+    // Notify parent if NOT confidential and NOT an emergency (emergencies phoned manually)
+    if (!isConfidential && student.userId) {
+      const parentRel = await prisma.parentStudent.findFirst({
+        where: { studentId: student.id },
+        include: { parent: true }
+      });
+      if (parentRel?.parent?.phone) {
+        await NotificationService.enqueue({
+          type: 'SMS',
+          schoolId,
+          senderId: req.user!.id,
+          recipientPhone: parentRel.parent.phone,
+          payload: {
+            text: `Notice: Your child ${student.name} attended the school clinic today (${new Date().toLocaleDateString()}). Please check the parent portal for details.`
+          }
+        }).catch(() => {});
+      }
+    }
+
+    await logClinicAccess(schoolId, req.user!.id, 'CREATE_RECORD', `TriageVisit:${visit.id}`, student.id, req.ip);
+
+    res.json({ success: true, visit });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message || 'Failed to record triage visit' });
+  }
+});
+
+// -------------------------------------------------------------------------
+// 3. /clinic/consultations — Notes, ICD-10, Pharmacy Prescription, Dispositions
+// -------------------------------------------------------------------------
+router.get('/consultations/queue', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    if (!isClinicalStaff(req.user)) {
+      return res.status(403).json({ error: 'Clinical authorization required' });
+    }
+    const schoolId = req.user!.schoolId!;
+
+    const queue = await prisma.clinicVisit.findMany({
+      where: {
+        schoolId,
+        status: { in: ['DOCTOR_QUEUE', 'CONSULTATION', 'TRIAGE'] }
+      },
+      include: {
+        vitalsRecord: true,
+        user: { select: { id: true, name: true } },
+        diagnosesList: { include: { icd10: true } },
+        prescriptionsList: true
+      },
+      orderBy: { createdAt: 'asc' }
+    });
+
+    res.json(queue);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message || 'Failed to load consultation queue' });
+  }
+});
+
+router.get('/icd10/search', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    const query = (req.query.q as string || '').trim();
+    if (!query) return res.json([]);
+
+    const codes = await prisma.icd10Code.findMany({
+      where: {
+        OR: [
+          { code: { contains: query, mode: 'insensitive' } },
+          { description: { contains: query, mode: 'insensitive' } }
+        ]
+      },
+      include: { parentLabel: true },
+      take: 20
+    });
+
+    res.json(codes);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message || 'Failed to search ICD-10 codes' });
+  }
+});
+
+router.post('/consultations/finalize', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    if (!isClinicalStaff(req.user)) {
+      return res.status(403).json({ error: 'Clinical authorization required' });
+    }
+    const schoolId = req.user!.schoolId!;
+    const {
+      visitId,
+      examNotes,
+      icd10Code,
+      parentNote,
+      prescriptions = [],
+      disposition = 'DISCHARGE_CLASS',
+      bedId,
+      dietNotes,
+      hospitalName,
+      referralReason
+    } = req.body;
+
+    const visit = await prisma.clinicVisit.findFirst({
+      where: { id: visitId, schoolId },
+      include: { user: true }
+    });
+    if (!visit) return res.status(404).json({ error: 'Visit not found' });
+
+    // 1. Create Diagnosis record
+    if (icd10Code || examNotes) {
+      await prisma.clinicDiagnosis.create({
+        data: {
+          schoolId,
+          visitId: visit.id,
+          icd10Code: icd10Code || null,
+          notes: examNotes || null,
+          parentNote: parentNote || null
+        }
+      });
+    }
+
+    // 2. Create Prescription records
+    if (Array.isArray(prescriptions)) {
+      for (const rx of prescriptions) {
+        if (rx.drugName) {
+          await prisma.clinicPrescription.create({
+            data: {
+              schoolId,
+              visitId: visit.id,
+              drugName: rx.drugName,
+              dosage: rx.dosage || '1 dose',
+              frequency: rx.frequency || 'PRN',
+              duration: rx.duration || '3 days',
+              prescribedById: req.user!.id
+            }
+          });
+        }
+      }
+    }
+
+    // 3. Handle Disposition
+    let finalStatus = 'DISCHARGED';
+    let studentId = '';
+    if (visit.userId) {
+      const stud = await prisma.student.findUnique({ where: { userId: visit.userId } });
+      if (stud) studentId = stud.id;
+    }
+
+    if (disposition === 'ADMIT_SICK_BAY' && bedId && studentId) {
+      finalStatus = 'ADMITTED';
+      await prisma.clinicBed.update({
+        where: { id: bedId },
+        data: { status: 'OCCUPIED' }
+      });
+
+      await prisma.clinicAdmission.create({
+        data: {
+          schoolId,
+          bedId,
+          visitId: visit.id,
+          studentId,
+          status: 'ADMITTED',
+          dietNotes: dietNotes || null,
+          admittedAt: new Date()
+        }
+      });
+
+      // Automatically excuse attendance for the admitted period
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const studentRecord = await prisma.student.findUnique({ where: { id: studentId } });
+      if (studentRecord) {
+        await prisma.attendance.upsert({
+          where: {
+            schoolId_studentId_date_classId: {
+              schoolId,
+              studentId,
+              date: today,
+              classId: studentRecord.classId || 'DEFAULT_CLASS'
+            }
+          },
+          update: { status: 'excused', note: 'Excused - Clinic' },
+          create: {
+            schoolId,
+            studentId,
+            teacherId: req.user!.id,
+            date: today,
+            status: 'excused',
+            note: 'Excused - Clinic',
+            classId: studentRecord.classId || null
+          }
+        }).catch(() => {});
+      }
+    } else if (disposition === 'REFER_HOSPITAL' && hospitalName) {
+      finalStatus = 'REFERRAL';
+      await prisma.clinicReferral.create({
+        data: {
+          schoolId,
+          userId: visit.userId,
+          title: `External Hospital Referral: ${hospitalName}`,
+          details: referralReason || examNotes || 'Referred for specialist care',
+          to: hospitalName,
+          address: 'Local Health Facility',
+          urgency: 'URGENT',
+          status: 'PENDING'
+        }
+      });
+    } else if (disposition === 'DISCHARGE_CLASS') {
+      finalStatus = 'DISCHARGED';
+      // Mark excused attendance note
+      if (studentId) {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const studentRecord = await prisma.student.findUnique({ where: { id: studentId } });
+        if (studentRecord) {
+          await prisma.attendance.upsert({
+            where: {
+              schoolId_studentId_date_classId: {
+                schoolId,
+                studentId,
+                date: today,
+                classId: studentRecord.classId || 'DEFAULT_CLASS'
+              }
+            },
+            update: { status: 'excused', note: 'Excused - Clinic' },
+            create: {
+              schoolId,
+              studentId,
+              teacherId: req.user!.id,
+              date: today,
+              status: 'excused',
+              note: 'Excused - Clinic',
+              classId: studentRecord.classId || null
+            }
+          }).catch(() => {});
+        }
+      }
+    }
+
+    const updatedVisit = await prisma.clinicVisit.update({
+      where: { id: visit.id },
+      data: {
+        disposition,
+        status: finalStatus,
+        consultedById: req.user!.id,
+        closedAt: finalStatus === 'DISCHARGED' ? new Date() : null,
+        conditionDetails: examNotes || null
+      }
+    });
+
+    await logClinicAccess(schoolId, req.user!.id, 'FINALIZE_CONSULTATION', `Visit:${visit.id}`, studentId, req.ip);
+
+    res.json({ success: true, visit: updatedVisit });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message || 'Failed to finalize consultation' });
+  }
+});
+
+// -------------------------------------------------------------------------
+// 4. /clinic/hospitalization — Bed Map, Monitoring Log, Discharge
+// -------------------------------------------------------------------------
+router.get('/hospitalization/overview', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    if (!isClinicalStaff(req.user)) {
+      return res.status(403).json({ error: 'Clinical authorization required' });
+    }
+    const schoolId = req.user!.schoolId!;
+
+    let beds: any = await prisma.clinicBed.findMany({
+      where: { schoolId },
+      include: {
+        admissions: {
+          where: { status: 'ADMITTED' },
+          include: {
+            student: {
+              include: {
+                healthProfile: true,
+                hostel: true,
+                class: true
+              }
+            },
+            logs: { orderBy: { recordedAt: 'desc' }, take: 1 }
+          }
+        }
+      },
+      orderBy: { bedNumber: 'asc' }
+    });
+
+    // Seed default 10 beds if none exist
+    if (beds.length === 0) {
+      for (let i = 1; i <= 10; i++) {
+        await prisma.clinicBed.create({
+          data: {
+            schoolId,
+            bedNumber: `BED-${i.toString().padStart(2, '0')}`,
+            ward: 'Main Sick Bay',
+            status: 'AVAILABLE'
+          }
+        });
+      }
+      beds = await (prisma as any).clinicBed.findMany({
+        where: { schoolId },
+        include: {
+          admissions: { where: { status: 'ADMITTED' }, include: { student: true, logs: true } }
+        },
+        orderBy: { bedNumber: 'asc' }
+      });
+    }
+
+    const admissions = await prisma.clinicAdmission.findMany({
+      where: { schoolId, status: 'ADMITTED' },
+      include: {
+        bed: true,
+        student: { include: { healthProfile: true, hostel: true } },
+        logs: { orderBy: { recordedAt: 'desc' } }
+      }
+    });
+
+    res.json({ beds, admissions });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message || 'Failed to fetch hospitalization overview' });
+  }
+});
+
+router.post('/hospitalization/monitoring-log', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    if (!isClinicalStaff(req.user)) {
+      return res.status(403).json({ error: 'Clinical authorization required' });
+    }
+    const schoolId = req.user!.schoolId!;
+    const { admissionId, temp, bp, pulse, spo2, notes } = req.body;
+
+    const log = await prisma.clinicMonitoringLog.create({
+      data: {
+        schoolId,
+        admissionId,
+        temp: temp ? parseFloat(temp) : null,
+        bp: bp || null,
+        pulse: pulse ? parseInt(pulse) : null,
+        spo2: spo2 ? parseInt(spo2) : null,
+        notes: notes || null,
+        recordedById: req.user!.id
+      }
+    });
+
+    res.json({ success: true, log });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message || 'Failed to record monitoring log' });
+  }
+});
+
+router.post('/hospitalization/discharge', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    if (!isClinicalStaff(req.user)) {
+      return res.status(403).json({ error: 'Clinical authorization required' });
+    }
+    const schoolId = req.user!.schoolId!;
+    const { admissionId, dischargeNotes } = req.body;
+
+    const admission = await prisma.clinicAdmission.findFirst({
+      where: { id: admissionId, schoolId },
+      include: { student: true, bed: true }
+    });
+    if (!admission) return res.status(404).json({ error: 'Admission not found' });
+
+    await prisma.$transaction([
+      prisma.clinicAdmission.update({
+        where: { id: admission.id },
+        data: {
+          status: 'DISCHARGED',
+          dischargedAt: new Date(),
+          dischargeNotes: dischargeNotes || 'Discharged in stable condition'
+        }
+      }),
+      prisma.clinicBed.update({
+        where: { id: admission.bedId },
+        data: { status: 'AVAILABLE' }
+      })
+    ]);
+
+    // Mark attendance excused note
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    await prisma.attendance.upsert({
+      where: {
+        schoolId_studentId_date_classId: {
+          schoolId,
+          studentId: admission.studentId,
+          date: today,
+          classId: admission.student?.classId || 'DEFAULT_CLASS'
+        }
+      },
+      update: { status: 'excused', note: 'Excused - Clinic' },
+      create: {
+        schoolId,
+        studentId: admission.studentId,
+        teacherId: req.user!.id,
+        date: today,
+        status: 'excused',
+        note: 'Excused - Clinic',
+        classId: admission.student?.classId || null
+      }
+    }).catch(() => {});
+
+    await logClinicAccess(schoolId, req.user!.id, 'DISCHARGE_PATIENT', `Admission:${admission.id}`, admission.studentId, req.ip);
+
+    res.json({ success: true, message: 'Patient discharged and bed freed' });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message || 'Failed to discharge patient' });
+  }
+});
+
+// -------------------------------------------------------------------------
+// 5. /clinic/pharmacy — FEFO Batches, Negative Stock Protection, Deduplicated Auto-Procurement
+// -------------------------------------------------------------------------
+router.get('/pharmacy/catalog', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    if (!isClinicalStaff(req.user)) {
+      return res.status(403).json({ error: 'Clinical authorization required' });
+    }
+    const schoolId = req.user!.schoolId!;
+
+    const stocks = await prisma.pharmacyStock.findMany({
+      where: { schoolId },
+      include: {
+        batches: { orderBy: { expiryDate: 'asc' } }
+      },
+      orderBy: { drugName: 'asc' }
+    });
+
+    const enriched = stocks.map(s => {
+      const totalQty = s.batches.reduce((sum, b) => sum + b.quantity, 0);
+      const earliestBatch = s.batches.find(b => b.quantity > 0);
+      return {
+        ...s,
+        totalQty,
+        isLowStock: totalQty <= s.minStock,
+        earliestExpiry: earliestBatch?.expiryDate || null
+      };
+    });
+
+    res.json(enriched);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message || 'Failed to fetch pharmacy catalog' });
+  }
+});
+
+router.post('/pharmacy/stock', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    if (!isClinicalStaff(req.user)) {
+      return res.status(403).json({ error: 'Clinical authorization required' });
+    }
+    const schoolId = req.user!.schoolId!;
+    const { drugName, category = 'MEDICATION', unit = 'tablets', minStock = 10, location } = req.body;
+
+    const stock = await prisma.pharmacyStock.upsert({
+      where: { schoolId_drugName: { schoolId, drugName: drugName.trim() } },
+      update: { minStock: parseInt(minStock), location },
+      create: {
+        schoolId,
+        drugName: drugName.trim(),
+        category,
+        unit,
+        minStock: parseInt(minStock),
+        location
+      }
+    });
+
+    res.json({ success: true, stock });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message || 'Failed to save medication stock' });
+  }
+});
+
+router.post('/pharmacy/batch', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    if (!isClinicalStaff(req.user)) {
+      return res.status(403).json({ error: 'Clinical authorization required' });
+    }
+    const schoolId = req.user!.schoolId!;
+    const { stockId, batchNumber, quantity, expiryDate } = req.body;
+
+    const qty = parseInt(quantity);
+    if (isNaN(qty) || qty <= 0) {
+      return res.status(400).json({ error: 'Valid positive quantity required' });
+    }
+
+    const batch = await prisma.pharmacyBatch.create({
+      data: {
+        schoolId,
+        stockId,
+        batchNumber: batchNumber.trim(),
+        quantity: qty,
+        expiryDate: new Date(expiryDate)
+      }
+    });
+
+    res.json({ success: true, batch });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message || 'Failed to add batch' });
+  }
+});
+
+// FEFO Dispense endpoint
+router.post('/pharmacy/dispense-fefo', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    if (!isClinicalStaff(req.user)) {
+      return res.status(403).json({ error: 'Clinical authorization required to dispense drugs' });
+    }
+    const schoolId = req.user!.schoolId!;
+    const { stockId, visitId, quantity, notes } = req.body;
+
+    const requestedQty = parseInt(quantity);
+    if (isNaN(requestedQty) || requestedQty <= 0) {
+      return res.status(400).json({ error: 'Valid positive dispense quantity required' });
+    }
+
+    const stock = await prisma.pharmacyStock.findFirst({
+      where: { id: stockId, schoolId },
+      include: {
+        batches: {
+          where: { quantity: { gt: 0 } },
+          orderBy: { expiryDate: 'asc' }
+        }
+      }
+    });
+
+    if (!stock) return res.status(404).json({ error: 'Medication stock item not found' });
+
+    const totalAvailable = stock.batches.reduce((sum, b) => sum + b.quantity, 0);
+    if (totalAvailable < requestedQty) {
+      return res.status(400).json({
+        error: `Insufficient stock! Cannot allow negative balance. Requested: ${requestedQty}, Available: ${totalAvailable}`
+      });
+    }
+
+    // FEFO Sequential Batch Allocation in a Transaction
+    let remainingToDeduct = requestedQty;
+    const dispenseLogs: any[] = [];
+
+    await prisma.$transaction(async (tx) => {
+      for (const batch of stock.batches) {
+        if (remainingToDeduct <= 0) break;
+
+        const deductFromThisBatch = Math.min(batch.quantity, remainingToDeduct);
+        await tx.pharmacyBatch.update({
+          where: { id: batch.id },
+          data: { quantity: batch.quantity - deductFromThisBatch }
+        });
+
+        const log = await tx.pharmacyDispense.create({
+          data: {
+            schoolId,
+            visitId: visitId || null,
+            stockId: stock.id,
+            batchId: batch.id,
+            quantity: deductFromThisBatch,
+            dispensedById: req.user!.id
+          }
+        });
+        dispenseLogs.push(log);
+
+        remainingToDeduct -= deductFromThisBatch;
+      }
+    });
+
+    // Check remaining total stock after dispense
+    const updatedStock = await prisma.pharmacyStock.findUnique({
+      where: { id: stock.id },
+      include: { batches: true }
+    });
+    const newTotal = updatedStock?.batches.reduce((sum, b) => sum + b.quantity, 0) || 0;
+
+    // Deduplicated Low-Stock Auto Procurement Trigger
+    let autoRequisitionCreated = false;
+    if (newTotal <= stock.minStock) {
+      const existingOpenReq = await (prisma as any).requisition.findFirst({
+        where: {
+          schoolId,
+          requesterRole: 'CLINIC',
+          title: { contains: stock.drugName },
+          status: { in: ['PENDING_ADMIN', 'PENDING_BURSAR', 'PENDING_HOD_BOARDING'] }
+        }
+      });
+
+      if (!existingOpenReq) {
+        const refNumber = `REQ-CLN-${Date.now()}`;
+        await (prisma as any).requisition.create({
+          data: {
+            refNumber,
+            schoolId,
+            requesterId: req.user!.id,
+            requesterRole: 'CLINIC',
+            title: `Pharmacy Restock: ${stock.drugName}`,
+            description: `Automated low-stock threshold trigger. Current quantity: ${newTotal} ${stock.unit} (Min: ${stock.minStock})`,
+            priority: 'Urgent',
+            status: 'PENDING_ADMIN',
+            estimatedAmount: 0,
+            items: JSON.stringify([{
+              name: stock.drugName,
+              quantity: stock.minStock * 2,
+              unit: stock.unit,
+              reason: 'Automatic pharmacy safety reorder'
+            }])
+          }
+        }).catch((err: any) => console.error('Failed to create auto-procurement request:', err));
+        autoRequisitionCreated = true;
+      }
+    }
+
+    await logClinicAccess(schoolId, req.user!.id, 'DISPENSE_DRUG', `Stock:${stock.drugName}`, undefined, req.ip);
+
+    res.json({
+      success: true,
+      dispensedQty: requestedQty,
+      remainingTotal: newTotal,
+      autoRequisitionCreated,
+      dispenseLogs
+    });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message || 'Failed to dispense medication' });
+  }
+});
+
+router.get('/pharmacy/dispense-log', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    if (!isClinicalStaff(req.user)) {
+      return res.status(403).json({ error: 'Clinical authorization required' });
+    }
+    const schoolId = req.user!.schoolId!;
+
+    const logs = await prisma.pharmacyDispense.findMany({
+      where: { schoolId },
+      include: {
+        stock: true,
+        batch: true,
+        dispensedBy: { select: { id: true, name: true } },
+        visit: { select: { id: true, visitCode: true } }
+      },
+      orderBy: { dispensedAt: 'desc' },
+      take: 50
+    });
+
+    res.json(logs);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message || 'Failed to fetch dispense logs' });
+  }
+});
+
+// -------------------------------------------------------------------------
+// 6. /clinic/wellness — Appointments & Vaccine Compliance Register
+// -------------------------------------------------------------------------
+router.get('/wellness/appointments', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    if (!isClinicalStaff(req.user)) {
+      return res.status(403).json({ error: 'Clinical authorization required' });
+    }
+    const schoolId = req.user!.schoolId!;
+
+    const appointments = await prisma.clinicAppointment.findMany({
+      where: { schoolId },
+      include: {
+        user: { select: { id: true, name: true, email: true } },
+        patient: true
+      },
+      orderBy: { date: 'asc' }
+    });
+
+    res.json(appointments);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message || 'Failed to fetch appointments' });
+  }
+});
+
+router.get('/wellness/vaccines', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    if (!isClinicalStaff(req.user)) {
+      return res.status(403).json({ error: 'Clinical authorization required' });
+    }
+    const schoolId = req.user!.schoolId!;
+
+    const immunizations = await prisma.clinicImmunization.findMany({
+      where: { schoolId },
+      include: {
+        user: { select: { id: true, name: true } },
+        patient: true
+      },
+      orderBy: { date: 'desc' }
+    });
+
+    res.json(immunizations);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message || 'Failed to fetch immunizations' });
+  }
+});
+
+// -------------------------------------------------------------------------
+// 7. /clinic/emergency — Emergency Log, Calling Records, Signed Photos, Referrals
+// -------------------------------------------------------------------------
+router.get('/emergency/logs', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    if (!isClinicalStaff(req.user)) {
+      return res.status(403).json({ error: 'Clinical authorization required' });
+    }
+    const schoolId = req.user!.schoolId!;
+
+    const emergencies = await prisma.clinicEmergencyLog.findMany({
+      where: { schoolId },
+      include: {
+        student: { include: { class: true, hostel: true } },
+        loggedBy: { select: { id: true, name: true } }
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+
+    res.json(emergencies);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message || 'Failed to fetch emergency logs' });
+  }
+});
+
+router.post('/emergency/log', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    // Only clinical staff or ancillary matron can create emergency records (parents/students forbidden)
+    if (!isClinicalStaff(req.user) && req.user?.role !== 'ANCILLARY') {
+      return res.status(403).json({ error: 'Forbidden: Parents and students cannot create emergency records' });
+    }
+
+    const schoolId = req.user!.schoolId!;
+    const {
+      studentId,
+      title,
+      description,
+      acuity = 'RED',
+      ambulanceCalled = false,
+      ambulanceDetails,
+      parentContacted = false,
+      parentContactPhone,
+      parentContactNotes,
+      photoUrls = []
+    } = req.body;
+
+    const student = await prisma.student.findFirst({
+      where: { id: studentId, schoolId }
+    });
+    if (!student) return res.status(404).json({ error: 'Student not found' });
+
+    const emergency = await prisma.clinicEmergencyLog.create({
+      data: {
+        schoolId,
+        studentId: student.id,
+        title,
+        description,
+        acuity,
+        ambulanceCalled: Boolean(ambulanceCalled),
+        ambulanceDetails: ambulanceDetails || null,
+        parentContacted: Boolean(parentContacted),
+        parentContactPhone: parentContactPhone || null,
+        parentContactNotes: parentContactNotes || null,
+        photoUrls: Array.isArray(photoUrls) ? photoUrls : [],
+        loggedById: req.user!.id
+      }
+    });
+
+    await logClinicAccess(schoolId, req.user!.id, 'CREATE_EMERGENCY', `Emergency:${emergency.id}`, student.id, req.ip);
+
+    res.json({ success: true, emergency });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message || 'Failed to record emergency' });
+  }
+});
+
+// -------------------------------------------------------------------------
+// 8. /clinic/reports — Patients Search, Plain Aggregates, Optional Billing
+// -------------------------------------------------------------------------
+router.get('/reports/patients-search', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    if (!isClinicalStaff(req.user)) {
+      return res.status(403).json({ error: 'Clinical authorization required' });
+    }
+    const schoolId = req.user!.schoolId!;
+    const q = (req.query.q as string || '').trim();
+
+    const students = await prisma.student.findMany({
+      where: {
+        schoolId,
+        ...(q ? {
+          OR: [
+            { name: { contains: q, mode: 'insensitive' } },
+            { studentId: { contains: q, mode: 'insensitive' } }
+          ]
+        } : {})
+      },
+      include: {
+        healthProfile: true,
+        class: true,
+        hostel: true
+      },
+      take: 25
+    });
+
+    res.json(students);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message || 'Failed to search patients' });
+  }
+});
+
+router.get('/reports/analytics', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    if (!isClinicalStaff(req.user) && req.user?.role !== 'SCHOOL_ADMIN') {
+      return res.status(403).json({ error: 'Clinical or Admin authorization required' });
+    }
+    const schoolId = req.user!.schoolId!;
+
+    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+    const visits = await prisma.clinicVisit.findMany({
+      where: { schoolId, createdAt: { gte: thirtyDaysAgo } },
+      select: {
+        presentingComplaint: true,
+        acuity: true,
+        status: true,
+        source: true,
+        createdAt: true
+      }
+    });
+
+    // Aggregate ailments
+    const ailmentCounts: Record<string, number> = {};
+    visits.forEach(v => {
+      const reason = mapToPlainReason(v.presentingComplaint);
+      ailmentCounts[reason] = (ailmentCounts[reason] || 0) + 1;
+    });
+
+    const topAilments = Object.entries(ailmentCounts)
+      .map(([name, count]) => ({ name, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 10);
+
+    res.json({
+      totalVisitsMonth: visits.length,
+      topAilments,
+      visitsBySource: {
+        walkIn: visits.filter(v => v.source === 'WALK_IN').length,
+        teacherReferral: visits.filter(v => v.source === 'TEACHER_REFERRAL').length,
+        studentBooking: visits.filter(v => v.source === 'STUDENT_APPOINTMENT').length,
+        matronAlert: visits.filter(v => v.source === 'MATRON_ALERT').length
+      }
+    });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message || 'Failed to fetch analytics' });
+  }
+});
+
+// -------------------------------------------------------------------------
+// CROSS-PORTAL INTEGRATION SERIALIZERS
+// -------------------------------------------------------------------------
+
+// Student Portal Serializer (/student/clinic)
+router.get('/student-visits', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    const schoolId = req.user!.schoolId!;
+    const userId = req.user!.id;
+
+    const visits = await prisma.clinicVisit.findMany({
+      where: { schoolId, userId },
+      orderBy: { createdAt: 'desc' }
+    });
+
+    // Sanitize: plain language, no vitals, no ICD10, no dosage
+    const sanitized = visits.map(v => ({
+      id: v.id,
+      visitCode: v.visitCode,
+      date: v.createdAt.toLocaleDateString(),
+      reason: mapToPlainReason(v.presentingComplaint),
+      treatment: mapToPlainTreatment(v.treatment || v.prescription),
+      status: v.status === 'DISCHARGED' ? 'Returned to Class' : v.status === 'ADMITTED' ? 'In Sick Bay' : 'Under Observation'
+    }));
+
+    res.json(sanitized);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message || 'Failed to fetch student visits' });
+  }
+});
+
+// Student Booking Endpoint (/student/clinic book appointment)
+router.post('/student/book', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    const schoolId = req.user!.schoolId!;
+    const userId = req.user!.id;
+    const { appointmentReason, date } = req.body;
+
+    // Rate-limiting abuse protection: max 3 pending appointments
+    const pendingCount = await prisma.clinicAppointment.count({
+      where: { schoolId, userId }
+    });
+    if (pendingCount >= 3) {
+      return res.status(429).json({ error: 'You have reached the maximum of 3 pending clinic appointments' });
+    }
+
+    const appt = await prisma.clinicAppointment.create({
+      data: {
+        schoolId,
+        userId,
+        appointment: appointmentReason || 'Routine Checkup',
+        symptoms: 'Student Portal Booking',
+        date: date ? new Date(date) : new Date(Date.now() + 24 * 60 * 60 * 1000)
+      }
+    });
+
+    res.json({ success: true, appt });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message || 'Failed to book appointment' });
+  }
+});
+
+// Teacher Portal Serializer (/teacher/clinic)
+router.get('/teacher/referrals', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    const schoolId = req.user!.schoolId!;
+    const teacherId = req.user!.id;
+
+    const visits = await prisma.clinicVisit.findMany({
+      where: {
+        schoolId,
+        source: 'TEACHER_REFERRAL',
+        triageById: teacherId
+      },
+      include: { user: { select: { id: true, name: true } } },
+      orderBy: { createdAt: 'desc' }
+    });
+
+    // Sanitize: seen status only, NO medical details or vitals
+    const sanitized = visits.map(v => ({
+      id: v.id,
+      studentName: v.user?.name || 'Student',
+      date: v.createdAt.toLocaleDateString(),
+      status: v.status === 'DISCHARGED' ? 'Returned to class' : v.status === 'ADMITTED' ? 'In Sick Bay' : 'Seen by Nurse'
+    }));
+
+    res.json(sanitized);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message || 'Failed to fetch teacher referrals' });
+  }
+});
+
+router.post('/teacher/refer', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    if (req.user?.role !== 'TEACHER') {
+      return res.status(403).json({ error: 'Only teachers can create classroom referrals' });
+    }
+    const schoolId = req.user!.schoolId!;
+    const { studentId, note } = req.body;
+
+    const student = await prisma.student.findFirst({
+      where: { id: studentId, schoolId },
+      include: { user: true }
+    });
+    if (!student) return res.status(404).json({ error: 'Student not found' });
+
+    const visit = await prisma.clinicVisit.create({
+      data: {
+        schoolId,
+        userId: student.userId,
+        source: 'TEACHER_REFERRAL',
+        status: 'OPEN',
+        presentingComplaint: note || 'Referred from classroom by teacher',
+        triageById: req.user!.id
+      }
+    });
+
+    res.json({ success: true, visitId: visit.id });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message || 'Failed to refer student to clinic' });
+  }
+});
+
+// Matron Boarding Serializer (/ancillary/boarding)
+router.get('/matron/boarders', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    const schoolId = req.user!.schoolId!;
+    const userId = req.user!.id;
+
+    // Find hostel warden assignment
+    const hostel = await prisma.hostel.findFirst({
+      where: { schoolId, wardenUserId: userId }
+    });
+
+    const admissions = await prisma.clinicAdmission.findMany({
+      where: {
+        schoolId,
+        status: 'ADMITTED',
+        ...(hostel ? { student: { hostelId: hostel.id } } : {})
+      },
+      include: {
+        bed: true,
+        student: { include: { room: true } }
+      }
+    });
+
+    // Sanitize: boarder name, bed, "in sick bay", NO diagnosis
+    const sanitized = admissions.map(a => ({
+      id: a.id,
+      studentName: a.student.name,
+      roomNumber: a.student.room?.name || 'Unassigned',
+      bedNumber: a.bed.bedNumber,
+      ward: a.bed.ward,
+      admittedAt: a.admittedAt.toLocaleDateString(),
+      status: 'In Sick Bay'
+    }));
+
+    res.json(sanitized);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message || 'Failed to fetch matron boarders' });
+  }
+});
+
+router.post('/matron/alert', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    if (req.user?.role !== 'ANCILLARY' && !isClinicalStaff(req.user)) {
+      return res.status(403).json({ error: 'Only matrons or clinic staff can issue emergency alerts' });
+    }
+    const schoolId = req.user!.schoolId!;
+    const { studentId, alertNote } = req.body;
+
+    const student = await prisma.student.findFirst({
+      where: { id: studentId, schoolId },
+      include: { user: true }
+    });
+    if (!student) return res.status(404).json({ error: 'Student not found' });
+
+    const visit = await prisma.clinicVisit.create({
+      data: {
+        schoolId,
+        userId: student.userId,
+        source: 'MATRON_ALERT',
+        acuity: 'RED',
+        isEmergency: true,
+        status: 'TRIAGE',
+        presentingComplaint: `MATRON URGENT ALERT: ${alertNote || 'Reported sudden acute condition in hostel'}`,
+        triageById: req.user!.id
+      }
+    });
+
+    res.json({ success: true, visitId: visit.id });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message || 'Failed to create matron alert' });
+  }
+});
+
+// Kitchen / Dining Serializer (Diet notes only, NO diagnosis)
+router.get('/kitchen/diet-notes', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    const schoolId = req.user!.schoolId!;
+
+    const admissions = await prisma.clinicAdmission.findMany({
+      where: { schoolId, status: 'ADMITTED', dietNotes: { not: null } },
+      include: {
+        student: {
+          select: {
+            id: true,
+            name: true,
+            healthProfile: { select: { allergies: true } }
+          }
+        },
+        bed: { select: { bedNumber: true, ward: true } }
+      }
+    });
+
+    const sanitized = admissions.map(a => ({
+      studentName: a.student.name,
+      location: `${a.bed.ward} (${a.bed.bedNumber})`,
+      dietNotes: a.dietNotes,
+      chronicAllergies: a.student.healthProfile?.allergies || 'None reported'
+    }));
+
+    res.json(sanitized);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message || 'Failed to fetch kitchen diet notes' });
+  }
+});
+
+// Admin Audited Patient File Access
+router.get('/admin/patient-file/:studentId', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    if (req.user?.role !== 'SCHOOL_ADMIN' && req.user?.role !== 'SUPER_ADMIN') {
+      return res.status(403).json({ error: 'Admin permission required' });
+    }
+    const schoolId = req.user!.schoolId!;
+    const { studentId } = req.params;
+
+    const student: any = await (prisma as any).student.findFirst({
+      where: { id: studentId as string, schoolId },
+      include: {
+        healthProfile: true,
+        class: true,
+        hostel: true
+      }
+    });
+    if (!student) return res.status(404).json({ error: 'Student not found' });
+
+    // Strict audit logging for admin medical access
+    await logClinicAccess(
+      schoolId,
+      req.user!.id,
+      'ADMIN_VIEW_FILE',
+      `AdminPatientFile:${student.id}`,
+      student.id,
+      req.ip
+    );
+
+    res.json({
+      student: {
+        id: student.id,
+        name: student.name,
+        className: student.class?.name || 'Unassigned',
+        hostelName: student.hostel?.name || 'Day Scholar',
+        healthProfile: student.healthProfile
+      }
+    });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message || 'Failed to fetch audited patient file' });
+  }
+});
+
+// Tenant Clinic Settings
+router.get('/settings', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    const schoolId = req.user!.schoolId!;
+    let settings = await prisma.clinicSetting.findUnique({ where: { schoolId } });
+    if (!settings) {
+      settings = await prisma.clinicSetting.create({
+        data: { schoolId }
+      });
+    }
+    res.json(settings);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message || 'Failed to fetch settings' });
+  }
+});
+
+router.patch('/settings', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    if (!isClinicalStaff(req.user) && req.user?.role !== 'SCHOOL_ADMIN') {
+      return res.status(403).json({ error: 'Authorization required' });
+    }
+    const schoolId = req.user!.schoolId!;
+    const { hasDoctorQueue, bedCount, monitoringIntervalHours, tempAlertThreshold, billingEnabled } = req.body;
+
+    const settings = await prisma.clinicSetting.upsert({
+      where: { schoolId },
+      update: {
+        hasDoctorQueue: hasDoctorQueue !== undefined ? Boolean(hasDoctorQueue) : undefined,
+        bedCount: bedCount ? parseInt(bedCount) : undefined,
+        monitoringIntervalHours: monitoringIntervalHours ? parseInt(monitoringIntervalHours) : undefined,
+        tempAlertThreshold: tempAlertThreshold ? parseFloat(tempAlertThreshold) : undefined,
+        billingEnabled: billingEnabled !== undefined ? Boolean(billingEnabled) : undefined
+      },
+      create: {
+        schoolId,
+        hasDoctorQueue: Boolean(hasDoctorQueue),
+        bedCount: bedCount ? parseInt(bedCount) : 10,
+        monitoringIntervalHours: monitoringIntervalHours ? parseInt(monitoringIntervalHours) : 4,
+        tempAlertThreshold: tempAlertThreshold ? parseFloat(tempAlertThreshold) : 38.0,
+        billingEnabled: Boolean(billingEnabled)
+      }
+    });
+
+    res.json({ success: true, settings });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message || 'Failed to update clinic settings' });
+  }
+});
+
 export default router;
+
 

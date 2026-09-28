@@ -50,9 +50,9 @@ router.get('/settings', auth_1.requireAuth, async (req, res) => {
 });
 /**
  * @route   PATCH /api/schools/settings
- * @desc    [SCHOOL_ADMIN] Update institutional settings
+ * @desc    [SCHOOL_ADMIN, BURSAR] Update institutional settings
  */
-router.patch('/settings', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN'), (0, validation_1.validate)(school_schema_1.SystemSettingsSchema), async (req, res) => {
+router.patch('/settings', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'BURSAR'), (0, validation_1.validate)(school_schema_1.SystemSettingsSchema), async (req, res) => {
     try {
         const schoolId = req.user.schoolId;
         const settingsData = req.body;
