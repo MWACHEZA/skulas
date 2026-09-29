@@ -199,6 +199,11 @@ model School {
   accountingPeriods     AccountingPeriod[]
   uniformStockMovements UniformStockMovement[]
   bankStatements        BankStatement[]
+  exchangeRates         ExchangeRate[]
+  approvals             Approval[]
+  budgets               Budget[]
+  stockMovements        StockMovement[]
+  taxBrackets           TaxBracket[]
 
   @@index([code])
 }
@@ -1339,22 +1344,25 @@ model SchoolSetting {
   idleTime          Int?    @default(0)
   idleTimeCountdown Int?    @default(0)
 
-  baseCurrency          String? @default("USD")
-  baseCurrencySymbol    String? @default("$")
-  altCurrency           String? @default("ZWG")
-  altCurrencySymbol     String? @default("ZWG")
-  mandatoryReceipts     Boolean @default(true)
-  showBalanceOnReceipts Boolean @default(true)
-  showUniformsModule    Boolean @default(true)
-  smtpEmail             String?
-  smtpHost              String?
-  smtpPort              Int?    @default(465)
-  smtpPassword          String?
-  smtpSsl               Boolean @default(true)
-  systemUrl             String?
-  whatsappApiUrl        String?
-  whatsappAccessToken   String?
-  countryPhoneCode      String? @default("263")
+  baseCurrency               String? @default("USD")
+  baseCurrencySymbol         String? @default("$")
+  altCurrency                String? @default("ZWG")
+  altCurrencySymbol          String? @default("ZWG")
+  mandatoryReceipts          Boolean @default(true)
+  showBalanceOnReceipts      Boolean @default(true)
+  showUniformsModule         Boolean @default(true)
+  financialApprovalThreshold Float?  @default(50.0)
+  tier1ApprovalRole          String? @default("BURSAR")
+  tier2ApprovalRole          String? @default("SCHOOL_ADMIN")
+  smtpEmail                  String?
+  smtpHost                   String?
+  smtpPort                   Int?    @default(465)
+  smtpPassword               String?
+  smtpSsl                    Boolean @default(true)
+  systemUrl                  String?
+  whatsappApiUrl             String?
+  whatsappAccessToken        String?
+  countryPhoneCode           String? @default("263")
 
   systemName                      String?
   systemTitle                     String?
@@ -3554,6 +3562,8 @@ model ChartOfAccount {
   parent          ChartOfAccount?  @relation("AccountHierarchy", fields: [parentId], references: [id])
   children        ChartOfAccount[] @relation("AccountHierarchy")
   isSystemAccount Boolean          @default(false) // system accounts cannot be deleted/renamed
+  isBank          Boolean          @default(false)
+  isTemplate      Boolean          @default(false)
   isActive        Boolean          @default(true)
   description     String?
 
@@ -3580,6 +3590,11 @@ model JournalEntry {
   date        DateTime
   description String
   status      String   @default("POSTED") // POSTED | REVERSED | VOID
+
+  // Currency & FX audit
+  currency         String  @default("USD")
+  exchangeRateUsed Float   @default(1.0)
+  ipAddress        String?
 
   // Reversal chain — never delete; always reverse
   isReversing  Boolean        @default(false) // true if this entry was created to reverse another
@@ -3621,12 +3636,15 @@ model JournalEntryLine {
   accountId      String
   account        ChartOfAccount @relation(fields: [accountId], references: [id])
   schoolId       String
+  coaCode        String?
 
   description String?
 
   // Base currency amounts (always stored in school's baseCurrency)
-  debit  Float @default(0)
-  credit Float @default(0)
+  debit      Float   @default(0)
+  credit     Float   @default(0)
+  baseAmount Float   @default(0)
+  taxCode    String?
 
   // Foreign currency support
   currency      String @default("USD") // ISO 4217 code
@@ -3659,6 +3677,10 @@ model AccountingPeriod {
   schoolId  String
   school    School    @relation(fields: [schoolId], references: [id])
   period    String // "YYYY-MM"
+  year      Int?
+  term      String?
+  startDate DateTime?
+  endDate   DateTime?
   status    String    @default("OPEN") // OPEN | CLOSED | LOCKED
   closedBy  String?
   closedAt  DateTime?
@@ -3668,6 +3690,101 @@ model AccountingPeriod {
 
   @@unique([schoolId, period])
   @@index([schoolId])
+}
+
+model ExchangeRate {
+  id           String   @id @default(cuid())
+  schoolId     String
+  school       School   @relation(fields: [schoolId], references: [id])
+  date         DateTime
+  fromCurrency String   @default("USD")
+  toCurrency   String   @default("ZWG")
+  rate         Float
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([schoolId, date])
+  @@index([schoolId, fromCurrency, toCurrency])
+}
+
+model Approval {
+  id              String    @id @default(cuid())
+  schoolId        String
+  school          School    @relation(fields: [schoolId], references: [id])
+  entityType      String // EXPENSE | REQUISITION | FEE_ADJUSTMENT | PAYROLL | TUCKSHOP
+  entityId        String
+  requestedBy     String // userId
+  amount          Float
+  currency        String    @default("USD")
+  status          String    @default("PENDING") // PENDING | APPROVED | REJECTED
+  tier            Int       @default(1) // 1 = Tier 1 (<= $500), 2 = Tier 2 (> $500)
+  approverRole    String // BURSAR | SCHOOL_ADMIN
+  approvedBy      String? // userId
+  approvedAt      DateTime?
+  rejectionReason String?
+  thresholdRule   String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([schoolId, status])
+  @@index([schoolId, entityType, entityId])
+}
+
+model Budget {
+  id        String   @id @default(cuid())
+  schoolId  String
+  school    School   @relation(fields: [schoolId], references: [id])
+  year      Int
+  term      String? // e.g. "Term 1", "Term 2", "Term 3", "Annual"
+  coaCode   String
+  amount    Float
+  currency  String   @default("USD")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([schoolId, year, term, coaCode])
+  @@index([schoolId, year])
+}
+
+model StockMovement {
+  id             String   @id @default(cuid())
+  schoolId       String
+  school         School   @relation(fields: [schoolId], references: [id])
+  module         String // TUCKSHOP | UNIFORM | PHARMACY | MAINTENANCE
+  itemId         String
+  itemName       String
+  batchNumber    String?
+  direction      String // IN | OUT
+  quantity       Float
+  unitCost       Float    @default(0)
+  totalCost      Float    @default(0)
+  date           DateTime @default(now())
+  reference      String?
+  journalEntryId String?
+  createdAt      DateTime @default(now())
+
+  @@index([schoolId, module, itemId])
+  @@index([schoolId, date])
+}
+
+model TaxBracket {
+  id            String    @id @default(cuid())
+  schoolId      String
+  school        School    @relation(fields: [schoolId], references: [id])
+  currency      String    @default("USD") // USD | ZWG
+  effectiveFrom DateTime
+  effectiveTo   DateTime?
+  minIncome     Float
+  maxIncome     Float? // null = no upper limit
+  rate          Float // percentage, e.g. 20, 25, 30, 40
+  deduction     Float     @default(0) // cumulative fixed deduction
+  aidsLevyRate  Float     @default(3.0) // 3% of PAYE
+  nssaCeiling   Float     @default(700.0) // insurable earnings ceiling
+  nssaRate      Float     @default(4.5) // 4.5% employee / 4.5% employer
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([schoolId, currency, effectiveFrom])
 }
 
 /// Every stock change to a uniform item is recorded here.

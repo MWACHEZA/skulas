@@ -1,17 +1,20 @@
 /**
- * LedgerService — the single posting engine for all financial events.
+ * LedgerService — the core double-entry accounting engine.
  *
- * RULES enforced here:
- *  1. Every posted entry must balance: SUM(debit) === SUM(credit)
- *  2. All account IDs must belong to the same schoolId
- *  3. Period must be OPEN (not CLOSED or LOCKED)
- *  4. Reversal creates a new entry with swapped DR/CR — never deletes
- *  5. Dual-currency: base-currency amounts always stored alongside foreign amounts
+ * Enforces:
+ *  1. Every posted entry balances: SUM(debit) === SUM(credit).
+ *  2. All accounts belong strictly to the tenant (schoolId).
+ *  3. Period must be OPEN (posting to CLOSED or LOCKED periods is rejected).
+ *  4. Immutability: No direct UPDATE/DELETE on posted entries; corrections only via reversal.
+ *  5. Dual-currency: base-currency and foreign amounts with historical exchange rates recorded at posting.
+ *  6. Threshold-based multi-tier approvals.
+ *  7. Full audit logging on every write.
  */
 
 import prisma from '../lib/prisma';
 import type { Prisma } from '../generated/client';
 import { LedgerEvents } from './ledger-events';
+import { getAccountId } from '../../prisma/seeders/coa.seeder';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Types
@@ -24,9 +27,10 @@ export interface JournalLine {
   description?: string;
   studentId?: string;
   supplierId?: string;
-  /** ISO 4217 currency code — defaults to school's baseCurrency */
+  coaCode?: string;
+  baseAmount?: number;
+  taxCode?: string;
   currency?: string;
-  /** Exchange rate to base currency — defaults to 1.0 */
   exchangeRate?: number;
 }
 
@@ -38,8 +42,33 @@ export interface PostEntryArgs {
   sourceId: string;
   lines: JournalLine[];
   createdByUserId?: string;
-  /** Pass the caller's transaction client so the JE is atomic with the source record */
+  currency?: string;
+  exchangeRateUsed?: number;
+  ipAddress?: string;
+  period?: string;
   tx?: Prisma.TransactionClient;
+}
+
+export interface PostDoubleEntryArgs {
+  tenantId: string; // schoolId
+  debitCode: string;
+  creditCode: string;
+  amount: number;
+  currency?: string;
+  reference?: string;
+  description: string;
+  studentId?: string;
+  supplierId?: string;
+  sourceModule: string; // fees | procurement | tuckshop | payroll | inventory | manual
+  period?: string; // YYYY-MM
+  date?: Date;
+  taxCode?: string; // e.g. STANDARD_VAT_15 | EXEMPT
+  vatCreditCode?: string; // default '2021'
+  vatAmount?: number;
+  userId?: string;
+  ipAddress?: string;
+  tx?: Prisma.TransactionClient;
+  bypassApprovalCheck?: boolean;
 }
 
 export interface TrialBalanceLine {
@@ -48,7 +77,7 @@ export interface TrialBalanceLine {
   accountType: string;
   totalDebit: number;
   totalCredit: number;
-  balance: number; // debit - credit (positive for DR accounts, negative for CR accounts)
+  balance: number;
 }
 
 export interface LedgerEntry {
@@ -60,6 +89,8 @@ export interface LedgerEntry {
   debit: number;
   credit: number;
   runningBalance: number;
+  currency: string;
+  coaCode?: string | null;
 }
 
 export interface ARAgingRow {
@@ -67,9 +98,9 @@ export interface ARAgingRow {
   studentName: string;
   className: string | null;
   current: number;    // 0–30 days
-  days31_60: number;
-  days61_90: number;
-  over90: number;
+  days31_60: number;  // 31–60 days
+  days61_90: number;  // 61–90 days
+  over90: number;     // 90+ days
   total: number;
 }
 
@@ -91,7 +122,6 @@ async function getNextEntryNumber(
   schoolId: string,
   db: Prisma.TransactionClient
 ): Promise<string> {
-  // Use SchoolSequence for atomic increment
   const seq = await db.schoolSequence.upsert({
     where: { schoolId_entity: { schoolId, entity: 'JOURNAL_ENTRY' } },
     update: { lastValue: { increment: 1 } },
@@ -111,9 +141,8 @@ async function assertPeriodOpen(
     where: { schoolId_period: { schoolId, period } }
   });
   if (p && (p.status === 'CLOSED' || p.status === 'LOCKED')) {
-    throw new Error(`Accounting period ${period} is ${p.status} — cannot post new entries.`);
+    throw new Error(`Accounting period ${period} is ${p.status} — cannot post new transactions.`);
   }
-  // If no period record exists, the period is implicitly OPEN
 }
 
 async function assertAccountsBelongToSchool(
@@ -133,17 +162,223 @@ async function assertAccountsBelongToSchool(
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// LedgerService
+// LedgerService Implementation
 // ─────────────────────────────────────────────────────────────────────────────
 
 export const LedgerService = {
   /**
-   * Post a balanced journal entry.
-   * Must be called inside the same DB transaction as the triggering operation
-   * so that either both commit or both roll back.
+   * High-level single posting function mandated by specification.
+   * Every financial module calls this function.
+   */
+  async postDoubleEntry(args: PostDoubleEntryArgs) {
+    const {
+      tenantId,
+      debitCode,
+      creditCode,
+      amount,
+      currency,
+      reference,
+      description,
+      studentId,
+      supplierId,
+      sourceModule,
+      period: customPeriod,
+      date = new Date(),
+      taxCode,
+      vatCreditCode = '2021',
+      vatAmount = 0,
+      userId,
+      ipAddress,
+      tx,
+      bypassApprovalCheck = false
+    } = args;
+
+    if (!amount || amount <= 0) {
+      throw new Error(`Invalid posting amount: ${amount}. Must be strictly positive.`);
+    }
+
+    const run = async (db: Prisma.TransactionClient) => {
+      // 1. Fetch Tenant Settings
+      const setting = await db.schoolSetting.findUnique({
+        where: { schoolId: tenantId }
+      });
+      const baseCurrency = setting?.baseCurrency || 'USD';
+      const entryCurrency = currency || baseCurrency;
+      const threshold = setting?.financialApprovalThreshold ?? 50.0;
+
+      // 2. Approval Enforcement for transactions exceeding threshold
+      if (!bypassApprovalCheck && amount > threshold) {
+        const approved = await db.approval.findFirst({
+          where: {
+            schoolId: tenantId,
+            entityType: sourceModule,
+            entityId: reference || 'general',
+            status: 'APPROVED'
+          }
+        });
+
+        if (!approved) {
+          // Segregation of duties: requester cannot approve
+          const tier = amount > 500 ? 2 : 1;
+          const approverRole = tier === 2
+            ? (setting?.tier2ApprovalRole || 'SCHOOL_ADMIN')
+            : (setting?.tier1ApprovalRole || 'BURSAR');
+
+          const newApproval = await db.approval.create({
+            data: {
+              schoolId: tenantId,
+              entityType: sourceModule,
+              entityId: reference || `REF-${Date.now()}`,
+              requestedBy: userId || 'SYSTEM',
+              amount,
+              currency: entryCurrency,
+              status: 'PENDING',
+              tier,
+              approverRole,
+              thresholdRule: `Amount $${amount} exceeds approval threshold ($${threshold})`
+            }
+          });
+
+          throw new Error(
+            `APPROVAL_REQUIRED: Amount $${amount} exceeds approval threshold ($${threshold}). Approval pending (ID: ${newApproval.id}, Required Approver: ${approverRole}).`
+          );
+        }
+      }
+
+      // 3. Resolve Exchange Rate
+      let exchangeRateUsed = 1.0;
+      if (entryCurrency !== baseCurrency) {
+        const fxRecord = await db.exchangeRate.findFirst({
+          where: {
+            schoolId: tenantId,
+            fromCurrency: baseCurrency,
+            toCurrency: entryCurrency,
+            date: { lte: date }
+          },
+          orderBy: { date: 'desc' }
+        });
+        exchangeRateUsed = fxRecord?.rate || (setting as any)?.exchangeRate || 1.0;
+      }
+
+      // 4. Resolve Account IDs
+      const debitAccountId = await getAccountId(tenantId, debitCode, db);
+      const creditAccountId = await getAccountId(tenantId, creditCode, db);
+
+      const netAmount = round2(amount);
+      const netVat = round2(vatAmount);
+      const mainCredit = round2(netAmount - netVat);
+
+      const lines: JournalLine[] = [];
+
+      // DR Line
+      lines.push({
+        accountId: debitAccountId,
+        coaCode: debitCode,
+        debit: netAmount,
+        credit: 0,
+        description: description || `Debit ${debitCode}`,
+        studentId,
+        supplierId,
+        currency: entryCurrency,
+        exchangeRate: exchangeRateUsed,
+        baseAmount: round2(netAmount / exchangeRateUsed),
+        taxCode
+      });
+
+      // CR Line (Net of VAT)
+      lines.push({
+        accountId: creditAccountId,
+        coaCode: creditCode,
+        debit: 0,
+        credit: mainCredit,
+        description: description || `Credit ${creditCode}`,
+        studentId,
+        supplierId,
+        currency: entryCurrency,
+        exchangeRate: exchangeRateUsed,
+        baseAmount: round2(mainCredit / exchangeRateUsed),
+        taxCode
+      });
+
+      // VAT Split if applicable
+      if (netVat > 0) {
+        const vatAccountId = await getAccountId(tenantId, vatCreditCode, db);
+        lines.push({
+          accountId: vatAccountId,
+          coaCode: vatCreditCode,
+          debit: 0,
+          credit: netVat,
+          description: `VAT Output Tax (ZIMRA 15%)`,
+          currency: entryCurrency,
+          exchangeRate: exchangeRateUsed,
+          baseAmount: round2(netVat / exchangeRateUsed),
+          taxCode: 'STANDARD_VAT_15'
+        });
+      }
+
+      // 5. Post Balanced Journal Entry
+      const entry = await LedgerService.postEntry({
+        schoolId: tenantId,
+        date,
+        description,
+        sourceType: sourceModule,
+        sourceId: reference || `REF-${Date.now()}`,
+        lines,
+        createdByUserId: userId,
+        currency: entryCurrency,
+        exchangeRateUsed,
+        ipAddress,
+        period: customPeriod,
+        tx: db
+      });
+
+      // 6. Mandatory Audit Log
+      await db.auditLog.create({
+        data: {
+          schoolId: tenantId,
+          actorId: userId || 'SYSTEM',
+          action: 'POST_DOUBLE_ENTRY',
+          entityType: 'JournalEntry',
+          entityId: entry.id,
+          details: {
+            entryNumber: entry.entryNumber,
+            debitCode,
+            creditCode,
+            amount: netAmount,
+            currency: entryCurrency,
+            rate: exchangeRateUsed,
+            sourceModule,
+            reference
+          },
+          status: 'SUCCESS',
+          ipAddress: ipAddress || '127.0.0.1'
+        }
+      });
+
+      return entry;
+    };
+
+    return tx ? run(tx) : prisma.$transaction(run);
+  },
+
+  /**
+   * Post a balanced journal entry with multiple lines.
    */
   async postEntry(args: PostEntryArgs) {
-    const { schoolId, date, description, sourceType, sourceId, lines, createdByUserId, tx } = args;
+    const {
+      schoolId,
+      date,
+      description,
+      sourceType,
+      sourceId,
+      lines,
+      createdByUserId,
+      currency = 'USD',
+      exchangeRateUsed = 1.0,
+      ipAddress,
+      period: userPeriod,
+      tx
+    } = args;
     const db = tx ?? prisma;
 
     // 1. Validate balance
@@ -151,7 +386,7 @@ export const LedgerService = {
     const totalCredit = round2(lines.reduce((s, l) => s + (l.credit ?? 0), 0));
     if (Math.abs(totalDebit - totalCredit) > 0.005) {
       throw new Error(
-        `Journal entry imbalanced: DR ${totalDebit} ≠ CR ${totalCredit} (diff: ${round2(Math.abs(totalDebit - totalCredit))})`
+        `Journal entry imbalanced: DR ${totalDebit} !== CR ${totalCredit} (diff: ${round2(Math.abs(totalDebit - totalCredit))})`
       );
     }
 
@@ -167,7 +402,7 @@ export const LedgerService = {
       }
     }
 
-    const period = getPeriod(date);
+    const period = userPeriod || getPeriod(date);
 
     // 3. Check period is open
     await assertPeriodOpen(schoolId, period, db as Prisma.TransactionClient);
@@ -182,14 +417,7 @@ export const LedgerService = {
     // 5. Generate entry number atomically
     const entryNumber = await getNextEntryNumber(schoolId, db as Prisma.TransactionClient);
 
-    // 6. Get school's base currency for default
-    const setting = await db.schoolSetting.findUnique({
-      where: { schoolId },
-      select: { baseCurrency: true }
-    });
-    const baseCurrency = setting?.baseCurrency ?? 'USD';
-
-    // 7. Create the journal entry with lines
+    // 6. Create the journal entry with lines
     const entry = await db.journalEntry.create({
       data: {
         schoolId,
@@ -199,23 +427,30 @@ export const LedgerService = {
         sourceType,
         sourceId,
         period,
+        currency,
+        exchangeRateUsed,
+        ipAddress,
         createdByUserId,
         lines: {
           create: lines.map(line => {
-            const currency = line.currency ?? baseCurrency;
-            const rate = line.exchangeRate ?? 1.0;
+            const lineCurr = line.currency ?? currency;
+            const rate = line.exchangeRate ?? exchangeRateUsed;
             const debit = round2(line.debit ?? 0);
             const credit = round2(line.credit ?? 0);
+            const baseAmount = line.baseAmount ?? round2((debit > 0 ? debit : credit) / rate);
             return {
               schoolId,
               accountId: line.accountId,
+              coaCode: line.coaCode,
               description: line.description,
               debit,
               credit,
-              currency,
+              baseAmount,
+              taxCode: line.taxCode,
+              currency: lineCurr,
               exchangeRate: rate,
-              debitForeign: currency !== baseCurrency ? round2(debit / rate) : debit,
-              creditForeign: currency !== baseCurrency ? round2(credit / rate) : credit,
+              debitForeign: lineCurr !== currency ? round2(debit / rate) : debit,
+              creditForeign: lineCurr !== currency ? round2(credit / rate) : credit,
               studentId: line.studentId,
               supplierId: line.supplierId
             };
@@ -225,7 +460,7 @@ export const LedgerService = {
       include: { lines: true }
     });
 
-    // Broadcast SSE event for real-time UI synchronization across tenant screens/tabs
+    // Broadcast SSE event for real-time UI synchronization
     LedgerEvents.broadcast({
       type: 'LEDGER_POSTED',
       schoolId,
@@ -240,8 +475,8 @@ export const LedgerService = {
   },
 
   /**
-   * Reverse a posted entry. Creates a new entry with all DR/CR swapped.
-   * The original entry is marked REVERSED — never deleted.
+   * Reverse a posted entry. Creates an immutable new entry with all DR/CR swapped.
+   * Original entry status updated to REVERSED — never deleted.
    */
   async reverseEntry(
     journalEntryId: string,
@@ -268,9 +503,12 @@ export const LedgerService = {
       const reversalLines = original.lines.map(l => ({
         schoolId: l.schoolId,
         accountId: l.accountId,
+        coaCode: l.coaCode,
         description: `Reversal: ${l.description ?? ''}`,
         debit: round2(l.credit),
         credit: round2(l.debit),
+        baseAmount: round2(l.baseAmount),
+        taxCode: l.taxCode,
         currency: l.currency,
         exchangeRate: l.exchangeRate,
         debitForeign: round2(l.creditForeign),
@@ -290,6 +528,8 @@ export const LedgerService = {
           sourceType: original.sourceType,
           sourceId: original.sourceId,
           period,
+          currency: original.currency,
+          exchangeRateUsed: original.exchangeRateUsed,
           isReversing: true,
           reversedById: original.id,
           createdByUserId: userId,
@@ -302,6 +542,18 @@ export const LedgerService = {
       await tx.journalEntry.update({
         where: { id: original.id },
         data: { status: 'REVERSED' }
+      });
+
+      await tx.auditLog.create({
+        data: {
+          schoolId: original.schoolId,
+          actorId: userId,
+          action: 'REVERSE_JOURNAL_ENTRY',
+          entityType: 'JournalEntry',
+          entityId: original.id,
+          details: { originalEntryNumber: original.entryNumber, reversalEntryNumber: entryNumber, reason },
+          status: 'SUCCESS'
+        }
       });
 
       LedgerEvents.broadcast({
@@ -318,14 +570,126 @@ export const LedgerService = {
   },
 
   /**
-   * Compute an account's balance from posted journal entries.
-   * For ASSET & EXPENSE: balance = SUM(debit) - SUM(credit)
-   * For LIABILITY, EQUITY, INCOME: balance = SUM(credit) - SUM(debit)
+   * Year-End / Period Close Function:
+   * Transfers net Income - Expense to Retained Surplus (3020) and marks period CLOSED.
    */
-  async getAccountBalance(
-    accountId: string,
-    upToDate?: Date
-  ): Promise<number> {
+  async closePeriod(
+    tenantId: string,
+    periodStr: string,
+    userId: string,
+    notes?: string,
+    isYearEnd: boolean = false
+  ) {
+    return prisma.$transaction(async tx => {
+      // 1. Check current period state
+      const current = await tx.accountingPeriod.findUnique({
+        where: { schoolId_period: { schoolId: tenantId, period: periodStr } }
+      });
+      if (current && (current.status === 'CLOSED' || current.status === 'LOCKED')) {
+        throw new Error(`Period ${periodStr} is already ${current.status}.`);
+      }
+
+      // 2. If Year-End close: Transfer Net Surplus / (Deficit) to Retained Surplus (3020)
+      if (isYearEnd) {
+        const [year] = periodStr.split('-').map(Number);
+        const yearStart = new Date(year, 0, 1);
+        const yearEnd = new Date(year, 11, 31, 23, 59, 59);
+
+        // Aggregate Income & Expense accounts
+        const incAgg = await tx.journalEntryLine.aggregate({
+          where: {
+            schoolId: tenantId,
+            account: { type: 'INCOME' },
+            journalEntry: { status: 'POSTED', date: { gte: yearStart, lte: yearEnd } }
+          },
+          _sum: { credit: true, debit: true }
+        });
+        const expAgg = await tx.journalEntryLine.aggregate({
+          where: {
+            schoolId: tenantId,
+            account: { type: 'EXPENSE' },
+            journalEntry: { status: 'POSTED', date: { gte: yearStart, lte: yearEnd } }
+          },
+          _sum: { debit: true, credit: true }
+        });
+
+        const totalIncome = round2((incAgg._sum.credit ?? 0) - (incAgg._sum.debit ?? 0));
+        const totalExpense = round2((expAgg._sum.debit ?? 0) - (expAgg._sum.credit ?? 0));
+        const netSurplus = round2(totalIncome - totalExpense);
+
+        if (netSurplus !== 0) {
+          const retainedSurplusId = await getAccountId(tenantId, '3020', tx);
+          const currentYearSurplusId = await getAccountId(tenantId, '3050', tx);
+
+          const lines: JournalLine[] = [];
+          if (netSurplus > 0) {
+            // Surplus: Debit Current Year Surplus / Credit Retained Surplus
+            lines.push({ accountId: currentYearSurplusId, coaCode: '3050', debit: netSurplus, credit: 0, description: `Year-end transfer of net surplus` });
+            lines.push({ accountId: retainedSurplusId, coaCode: '3020', debit: 0, credit: netSurplus, description: `Year-end retained surplus transfer` });
+          } else {
+            // Deficit: Debit Retained Surplus / Credit Current Year Surplus
+            const absDeficit = Math.abs(netSurplus);
+            lines.push({ accountId: retainedSurplusId, coaCode: '3020', debit: absDeficit, credit: 0, description: `Year-end absorption of operational deficit` });
+            lines.push({ accountId: currentYearSurplusId, coaCode: '3050', debit: 0, credit: absDeficit, description: `Year-end deficit transfer` });
+          }
+
+          const entryNumber = await getNextEntryNumber(tenantId, tx);
+          await tx.journalEntry.create({
+            data: {
+              schoolId: tenantId,
+              entryNumber,
+              date: yearEnd,
+              description: `[YEAR-END CLOSE] Transfer of surplus/deficit for ${year} to Retained Earnings`,
+              sourceType: 'year_end_close',
+              sourceId: `CLOSE-${year}`,
+              period: periodStr,
+              createdByUserId: userId,
+              lines: {
+                create: lines.map(l => ({
+                  schoolId: tenantId,
+                  accountId: l.accountId,
+                  coaCode: l.coaCode,
+                  description: l.description,
+                  debit: l.debit ?? 0,
+                  credit: l.credit ?? 0,
+                  baseAmount: l.debit ?? l.credit ?? 0,
+                  currency: 'USD',
+                  exchangeRate: 1.0
+                }))
+              }
+            }
+          });
+        }
+      }
+
+      // 3. Mark Period Closed
+      const updated = await tx.accountingPeriod.upsert({
+        where: { schoolId_period: { schoolId: tenantId, period: periodStr } },
+        update: { status: 'CLOSED', closedBy: userId, closedAt: new Date(), notes },
+        create: { schoolId: tenantId, period: periodStr, status: 'CLOSED', closedBy: userId, closedAt: new Date(), notes }
+      });
+
+      // 4. Audit Log
+      await tx.auditLog.create({
+        data: {
+          schoolId: tenantId,
+          actorId: userId,
+          action: isYearEnd ? 'YEAR_END_CLOSE_PERIOD' : 'CLOSE_ACCOUNTING_PERIOD',
+          entityType: 'AccountingPeriod',
+          entityId: updated.id,
+          details: { period: periodStr, isYearEnd, notes },
+          status: 'SUCCESS'
+        }
+      });
+
+      return updated;
+    });
+  },
+
+  /**
+   * Account balance from posted journal lines.
+   */
+  async getAccountBalance(accountId: string, upToDate?: Date): Promise<number> {
     const account = await prisma.chartOfAccount.findUnique({ where: { id: accountId } });
     if (!account) throw new Error(`Account ${accountId} not found.`);
 
@@ -346,16 +710,23 @@ export const LedgerService = {
     const totalCredit = agg._sum.credit ?? 0;
 
     const normalBalance = ['ASSET', 'EXPENSE'].includes(account.type)
-      ? totalDebit - totalCredit   // DR normal balance
-      : totalCredit - totalDebit;  // CR normal balance
+      ? totalDebit - totalCredit
+      : totalCredit - totalDebit;
 
     return round2(normalBalance);
   },
 
   /**
-   * Trial Balance — sum all accounts and verify debit === credit.
+   * Trial Balance — verified sum of debit === credit across all accounts.
    */
-  async trialBalance(schoolId: string, period?: string): Promise<TrialBalanceLine[]> {
+  async trialBalance(schoolId: string, period?: string): Promise<{
+    lines: TrialBalanceLine[];
+    totalDebit: number;
+    totalCredit: number;
+    difference: number;
+    isBalanced: boolean;
+    period: string;
+  }> {
     const currentPeriod = period || `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}`;
     const [year, month] = currentPeriod.split('-').map(Number);
     const periodStart = new Date(year, month - 1, 1);
@@ -393,11 +764,23 @@ export const LedgerService = {
       });
     }
 
-    return lines;
+    const totalDebit = round2(lines.reduce((s, l) => s + l.totalDebit, 0));
+    const totalCredit = round2(lines.reduce((s, l) => s + l.totalCredit, 0));
+    const difference = round2(Math.abs(totalDebit - totalCredit));
+    const isBalanced = difference < 0.01;
+
+    return {
+      lines,
+      totalDebit,
+      totalCredit,
+      difference,
+      isBalanced,
+      period: currentPeriod
+    };
   },
 
   /**
-   * Income Statement (P&L) for a date range.
+   * Income Statement (Profit & Loss).
    */
   async incomeStatement(schoolId: string, from: Date, to: Date) {
     const incomeAccounts = await prisma.chartOfAccount.findMany({
@@ -405,7 +788,7 @@ export const LedgerService = {
       orderBy: { code: 'asc' }
     });
     const expenseAccounts = await prisma.chartOfAccount.findMany({
-      where: { schoolId, type: { in: ['EXPENSE'] }, isActive: true },
+      where: { schoolId, type: 'EXPENSE', isActive: true },
       orderBy: { code: 'asc' }
     });
 
@@ -441,7 +824,7 @@ export const LedgerService = {
   },
 
   /**
-   * Balance Sheet as of a given date.
+   * Balance Sheet (Assets = Liabilities + Equity).
    */
   async balanceSheet(schoolId: string, asOfDate: Date) {
     const types: Array<'ASSET' | 'LIABILITY' | 'EQUITY'> = ['ASSET', 'LIABILITY', 'EQUITY'];
@@ -465,6 +848,7 @@ export const LedgerService = {
     const totalAssets = round2(result.ASSET.reduce((s, a) => s + a.balance, 0));
     const totalLiabilities = round2(result.LIABILITY.reduce((s, a) => s + a.balance, 0));
     const totalEquity = round2(result.EQUITY.reduce((s, a) => s + a.balance, 0));
+    const difference = round2(Math.abs(totalAssets - (totalLiabilities + totalEquity)));
 
     return {
       assets: result.ASSET,
@@ -473,12 +857,13 @@ export const LedgerService = {
       totalAssets,
       totalLiabilities,
       totalEquity,
+      isValid: difference < 0.05,
       asOfDate
     };
   },
 
   /**
-   * General Ledger — all transactions for a given account with running balance.
+   * General Ledger drilldown for a specific account.
    */
   async generalLedger(accountId: string, from: Date, to: Date): Promise<LedgerEntry[]> {
     const account = await prisma.chartOfAccount.findUnique({ where: { id: accountId } });
@@ -511,26 +896,26 @@ export const LedgerService = {
         sourceId: line.journalEntry.sourceId,
         debit,
         credit,
-        runningBalance
+        runningBalance,
+        currency: line.currency,
+        coaCode: line.coaCode
       };
     });
   },
 
   /**
-   * Accounts Receivable Aging — per student sub-ledger.
-   * Buckets: Current (0–30 days), 31–60, 61–90, 90+
+   * Accounts Receivable (Debtors) Aging with 0-30, 31-60, 61-90, 90+ buckets.
    */
   async arAging(schoolId: string, asOfDate: Date): Promise<ARAgingRow[]> {
-    // Find the AR account (1210 Student Accounts Receivable)
-    const arAccount = await prisma.chartOfAccount.findFirst({
-      where: { schoolId, code: '1210', isActive: true }
+    // Look up AR accounts (1100 or 1210)
+    const arAccounts = await prisma.chartOfAccount.findMany({
+      where: { schoolId, code: { in: ['1100', '1210'] }, isActive: true }
     });
-    if (!arAccount) return [];
+    if (arAccounts.length === 0) return [];
 
-    // Get all open AR lines grouped by studentId
     const lines = await prisma.journalEntryLine.findMany({
       where: {
-        accountId: arAccount.id,
+        accountId: { in: arAccounts.map(a => a.id) },
         studentId: { not: null },
         journalEntry: { status: 'POSTED', date: { lte: asOfDate } }
       },
@@ -556,7 +941,6 @@ export const LedgerService = {
       const daysDiff = Math.floor(
         (asOfDate.getTime() - line.journalEntry.date.getTime()) / (1000 * 60 * 60 * 24)
       );
-      // AR: debit = invoice, credit = payment
       const netAmount = round2(line.debit - line.credit);
 
       if (daysDiff <= 30) entry.current += netAmount;
@@ -585,27 +969,203 @@ export const LedgerService = {
   },
 
   /**
-   * Compute a student wallet balance on-the-fly (no cached field).
-   * DEPOSIT = positive, PURCHASE = negative, REFUND = positive.
+   * ZIMRA VAT Report — split standard-rated (15%) vs exempt education supplies.
    */
-  async getWalletBalance(studentId: string): Promise<number> {
-    const agg = await prisma.walletTransaction.aggregate({
-      where: { wallet: { studentId } },
-      _sum: { amount: true }
+  async vatReport(schoolId: string, from: Date, to: Date) {
+    const vatLines = await prisma.journalEntryLine.findMany({
+      where: {
+        schoolId,
+        journalEntry: { status: 'POSTED', date: { gte: from, lte: to } },
+        OR: [
+          { taxCode: { not: null } },
+          { account: { code: '2021' } }
+        ]
+      },
+      include: {
+        account: { select: { code: true, name: true, type: true } },
+        journalEntry: { select: { entryNumber: true, date: true, description: true } }
+      }
     });
-    return round2(agg._sum.amount ?? 0);
+
+    let standardRatedSales = 0;
+    let vatOutputCollected = 0;
+    let exemptTuitionSales = 0;
+
+    for (const l of vatLines) {
+      if (l.account.code === '2021') {
+        vatOutputCollected += round2(l.credit - l.debit);
+      } else if (l.taxCode === 'STANDARD_VAT_15') {
+        standardRatedSales += round2(l.credit - l.debit);
+      } else if (l.taxCode === 'EXEMPT') {
+        exemptTuitionSales += round2(l.credit - l.debit);
+      }
+    }
+
+    return {
+      standardRatedSales: round2(standardRatedSales),
+      vatOutputCollected: round2(vatOutputCollected),
+      exemptTuitionSales: round2(exemptTuitionSales),
+      effectiveRate: standardRatedSales > 0 ? round2((vatOutputCollected / standardRatedSales) * 100) : 15,
+      from,
+      to,
+      details: vatLines.slice(0, 50)
+    };
   },
 
   /**
-   * Compute uniform stock level on-the-fly from stock movements.
+   * Cash Flow Statement — movement through all liquid bank & cash accounts.
+   */
+  async cashFlowStatement(schoolId: string, from: Date, to: Date) {
+    // 1. Identify bank and cash accounts (isBank = true or codes 1010-1024)
+    const bankAccounts = await prisma.chartOfAccount.findMany({
+      where: {
+        schoolId,
+        isActive: true,
+        OR: [{ isBank: true }, { code: { in: ['1010', '1011', '1012', '1013', '1020', '1021', '1022', '1023', '1024', '1100'] } }]
+      }
+    });
+    const bankAccountIds = bankAccounts.map(b => b.id);
+
+    // 2. Opening Balance (before 'from' date)
+    const openingAgg = await prisma.journalEntryLine.aggregate({
+      where: {
+        accountId: { in: bankAccountIds },
+        journalEntry: { status: 'POSTED', date: { lt: from } }
+      },
+      _sum: { debit: true, credit: true }
+    });
+    const openingCash = round2((openingAgg._sum.debit ?? 0) - (openingAgg._sum.credit ?? 0));
+
+    // 3. Current period inflows and outflows
+    const periodLines = await prisma.journalEntryLine.findMany({
+      where: {
+        accountId: { in: bankAccountIds },
+        journalEntry: { status: 'POSTED', date: { gte: from, lte: to } }
+      },
+      include: { journalEntry: true }
+    });
+
+    let operatingInflows = 0; // Fee payments, tuckshop cash
+    let operatingOutflows = 0; // Staff salaries, groceries, utilities
+    let capitalExpenditure = 0; // Fixed asset purchases
+
+    for (const l of periodLines) {
+      const src = l.journalEntry.sourceType;
+      const net = round2(l.debit - l.credit);
+
+      if (net > 0) {
+        // Cash Inflow
+        operatingInflows += net;
+      } else {
+        // Cash Outflow
+        const out = Math.abs(net);
+        if (src.includes('asset') || src.includes('capital')) {
+          capitalExpenditure += out;
+        } else {
+          operatingOutflows += out;
+        }
+      }
+    }
+
+    const netChange = round2(operatingInflows - operatingOutflows - capitalExpenditure);
+    const closingCash = round2(openingCash + netChange);
+
+    return {
+      openingCash,
+      operatingInflows: round2(operatingInflows),
+      operatingOutflows: round2(operatingOutflows),
+      capitalExpenditure: round2(capitalExpenditure),
+      netChange,
+      closingCash,
+      from,
+      to
+    };
+  },
+
+  /**
+   * Budget vs Actual variance report.
+   */
+  async budgetVsActual(schoolId: string, year: number, term?: string) {
+    const budgets = await prisma.budget.findMany({
+      where: {
+        schoolId,
+        year,
+        ...(term ? { term } : {})
+      }
+    });
+
+    const accounts = await prisma.chartOfAccount.findMany({
+      where: { schoolId, isActive: true },
+      select: { id: true, code: true, name: true, type: true }
+    });
+    const accMap = new Map(accounts.map(a => [a.code, a]));
+
+    const yearStart = new Date(year, 0, 1);
+    const yearEnd = new Date(year, 11, 31, 23, 59, 59);
+
+    const rows = await Promise.all(
+      budgets.map(async b => {
+        const acc = accMap.get(b.coaCode);
+        let actual = 0;
+
+        if (acc) {
+          const agg = await prisma.journalEntryLine.aggregate({
+            where: {
+              accountId: acc.id,
+              journalEntry: { status: 'POSTED', date: { gte: yearStart, lte: yearEnd } }
+            },
+            _sum: { debit: true, credit: true }
+          });
+          const d = agg._sum.debit ?? 0;
+          const c = agg._sum.credit ?? 0;
+          actual = ['EXPENSE', 'ASSET'].includes(acc.type) ? round2(d - c) : round2(c - d);
+        }
+
+        const variance = round2(b.amount - actual);
+        const percentUtilized = b.amount > 0 ? round2((actual / b.amount) * 100) : 0;
+
+        return {
+          code: b.coaCode,
+          name: acc?.name || b.coaCode,
+          type: acc?.type || 'EXPENSE',
+          budget: round2(b.amount),
+          actual: round2(actual),
+          variance,
+          percentUtilized,
+          term: b.term
+        };
+      })
+    );
+
+    return {
+      year,
+      term: term || 'Annual',
+      rows: rows.sort((a, b) => a.code.localeCompare(b.code))
+    };
+  },
+
+  /**
+   * Calculate wallet balance for student from WalletTransaction table.
+   */
+  async getWalletBalance(studentId: string): Promise<number> {
+    const txs = await prisma.walletTransaction.findMany({
+      where: { studentId },
+      select: { type: true, amount: true }
+    });
+    return round2(txs.reduce((sum, t) => sum + (t.type === 'CREDIT' ? t.amount : -t.amount), 0));
+  },
+
+  /**
+   * Calculate current stock level for item from StockMovement table.
    */
   async getStockLevel(itemId: string): Promise<number> {
-    const agg = await prisma.uniformStockMovement.aggregate({
+    const movements = await prisma.stockMovement.findMany({
       where: { itemId },
-      _sum: { quantity: true }
+      select: { direction: true, quantity: true }
     });
-    return agg._sum.quantity ?? 0;
+    return movements.reduce((sum, m) => sum + (m.direction === 'IN' ? m.quantity : -m.quantity), 0);
   }
 };
 
 export default LedgerService;
+

@@ -866,12 +866,32 @@ export const PAGE_REGISTRY: PageDefinition[] = [
   },
   {
     id: 'admin-financial-reports',
-    label: 'Financial Reports (P&L)',
-    route: '/admin/accounts/financial-reports',
+    label: 'Financial Reports Suite',
+    route: '/bursar/accounts/financial-reports',
     group: 'FINANCE_BILLING',
     icon: 'fas fa-chart-line',
     permissionKey: PERMISSIONS.FINANCE_REPORTS_VIEW,
-    portalVisibility: ['bursar']
+    portalVisibility: ['bursar', 'admin']
+  },
+  {
+    id: 'admin-gl',
+    label: 'General Ledger (GL)',
+    route: '/bursar/accounts/gl',
+    group: 'FINANCE_BILLING',
+    icon: 'fas fa-book-open',
+    permissionKey: PERMISSIONS.FINANCE_REPORTS_VIEW,
+    portalVisibility: ['bursar', 'admin'],
+    searchKeywords: ['gl', 'general ledger', 'journal entries', 'audit trail', 'reversals']
+  },
+  {
+    id: 'admin-budgets',
+    label: 'Budgets & Approvals',
+    route: '/bursar/budgets',
+    group: 'FINANCE_BILLING',
+    icon: 'fas fa-balance-scale',
+    permissionKey: PERMISSIONS.FINANCE_COA_MANAGE,
+    portalVisibility: ['bursar', 'admin'],
+    searchKeywords: ['budget', 'approvals', 'threshold', 'governance', 'tier']
   },
 
   // ==========================================

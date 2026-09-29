@@ -808,6 +808,31 @@ export type JournalEntryLine = $Result.DefaultSelection<Prisma.$JournalEntryLine
  */
 export type AccountingPeriod = $Result.DefaultSelection<Prisma.$AccountingPeriodPayload>
 /**
+ * Model ExchangeRate
+ * 
+ */
+export type ExchangeRate = $Result.DefaultSelection<Prisma.$ExchangeRatePayload>
+/**
+ * Model Approval
+ * 
+ */
+export type Approval = $Result.DefaultSelection<Prisma.$ApprovalPayload>
+/**
+ * Model Budget
+ * 
+ */
+export type Budget = $Result.DefaultSelection<Prisma.$BudgetPayload>
+/**
+ * Model StockMovement
+ * 
+ */
+export type StockMovement = $Result.DefaultSelection<Prisma.$StockMovementPayload>
+/**
+ * Model TaxBracket
+ * 
+ */
+export type TaxBracket = $Result.DefaultSelection<Prisma.$TaxBracketPayload>
+/**
  * Model UniformStockMovement
  * Every stock change to a uniform item is recorded here.
  * stockLevel is computed as SUM(quantity) — never stored separately.
@@ -2644,6 +2669,56 @@ export class PrismaClient<
   get accountingPeriod(): Prisma.AccountingPeriodDelegate<ExtArgs>;
 
   /**
+   * `prisma.exchangeRate`: Exposes CRUD operations for the **ExchangeRate** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more ExchangeRates
+    * const exchangeRates = await prisma.exchangeRate.findMany()
+    * ```
+    */
+  get exchangeRate(): Prisma.ExchangeRateDelegate<ExtArgs>;
+
+  /**
+   * `prisma.approval`: Exposes CRUD operations for the **Approval** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Approvals
+    * const approvals = await prisma.approval.findMany()
+    * ```
+    */
+  get approval(): Prisma.ApprovalDelegate<ExtArgs>;
+
+  /**
+   * `prisma.budget`: Exposes CRUD operations for the **Budget** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Budgets
+    * const budgets = await prisma.budget.findMany()
+    * ```
+    */
+  get budget(): Prisma.BudgetDelegate<ExtArgs>;
+
+  /**
+   * `prisma.stockMovement`: Exposes CRUD operations for the **StockMovement** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more StockMovements
+    * const stockMovements = await prisma.stockMovement.findMany()
+    * ```
+    */
+  get stockMovement(): Prisma.StockMovementDelegate<ExtArgs>;
+
+  /**
+   * `prisma.taxBracket`: Exposes CRUD operations for the **TaxBracket** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more TaxBrackets
+    * const taxBrackets = await prisma.taxBracket.findMany()
+    * ```
+    */
+  get taxBracket(): Prisma.TaxBracketDelegate<ExtArgs>;
+
+  /**
    * `prisma.uniformStockMovement`: Exposes CRUD operations for the **UniformStockMovement** model.
     * Example usage:
     * ```ts
@@ -3420,6 +3495,11 @@ export namespace Prisma {
     JournalEntry: 'JournalEntry',
     JournalEntryLine: 'JournalEntryLine',
     AccountingPeriod: 'AccountingPeriod',
+    ExchangeRate: 'ExchangeRate',
+    Approval: 'Approval',
+    Budget: 'Budget',
+    StockMovement: 'StockMovement',
+    TaxBracket: 'TaxBracket',
     UniformStockMovement: 'UniformStockMovement',
     BankStatement: 'BankStatement',
     BankStatementLine: 'BankStatementLine',
@@ -3453,7 +3533,7 @@ export namespace Prisma {
 
   export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> = {
     meta: {
-      modelProps: "plan" | "school" | "gradingScale" | "hostelCategory" | "hostelRoom" | "leadershipAssignment" | "studentAllowedItem" | "uniformItem" | "uniformStockOrder" | "uniformStockOrderItem" | "uniformSale" | "uniformSaleItem" | "uniformSupplierPayment" | "accountCategory" | "liability" | "income" | "expense" | "user" | "userSession" | "teacher" | "student" | "schoolClass" | "section" | "subject" | "teacherSubject" | "classSubjectTeacher" | "grade" | "faculty" | "department" | "attendance" | "staffAttendance" | "fee" | "feeLineItem" | "assignment" | "questionPaper" | "timetableSlot" | "announcement" | "auditLog" | "book" | "studentHouse" | "chaplaincyEvent" | "holiday" | "libraryCategory" | "bookLoan" | "librarySetting" | "bookReservation" | "libraryDigitalResource" | "assignmentSubmission" | "news" | "schoolSetting" | "paymentPlan" | "gallery" | "club" | "sport" | "sportingEquipment" | "application" | "supplier" | "schoolSupplier" | "parent" | "parentStudent" | "tender" | "tenderBid" | "purchaseOrder" | "invoice" | "message" | "supportTicket" | "staffLeave" | "asset" | "assetIncident" | "assetMaintenance" | "transportRoute" | "schoolEvent" | "tuckshopItem" | "tuckshopSale" | "digitalResource" | "syllabus" | "lessonPlan" | "salaryStub" | "shiftAssignment" | "applicantDocument" | "applicantTimeline" | "academicReport" | "reportTemplate" | "requisition" | "hostel" | "room" | "boardingLog" | "visitorLog" | "admissionInquiry" | "phoneCallLog" | "frontOfficeComplaint" | "securityIncident" | "weeklyMenu" | "transferAuthorization" | "supervisorAssignment" | "extensionRequest" | "progressReport" | "paymentMethod" | "feeGroup" | "feeGroupClassAmount" | "physicalProduct" | "physicalProductConsumption" | "feeReminderLog" | "studentPayment" | "communicationLog" | "notificationQueue" | "revenueAllocation" | "payrollAllowance" | "payrollDeduction" | "taxTable" | "taxBand" | "employeeProfile" | "termlyComment" | "payrollRun" | "payrollEntry" | "cBTExam" | "cBTQuestion" | "cBTResult" | "liveClass" | "award" | "course" | "courseEnrollment" | "studyMaterial" | "websiteSettings" | "websiteInquiry" | "noticeboard" | "vacancy" | "jobApplication" | "schoolVehicle" | "schoolTransport" | "meetingMinutes" | "projectFunding" | "clinicPatient" | "clinicAppointment" | "clinicComplaint" | "clinicEmergency" | "clinicImmunization" | "clinicReferral" | "clinicVisit" | "clinicInventoryItem" | "clinicDispensingLog" | "clinicHospitalization" | "farmLivestockBatch" | "farmCropCycle" | "farmInventoryItem" | "diningHallReport" | "prefectDuty" | "prefectMeeting" | "prefectReport" | "studentWallet" | "walletTransaction" | "schoolSequence" | "icd10Code" | "chartOfAccount" | "journalEntry" | "journalEntryLine" | "accountingPeriod" | "uniformStockMovement" | "bankStatement" | "bankStatementLine" | "platformSetting" | "icd10ParentLabel" | "studentHealthProfile" | "clinicVital" | "clinicDiagnosis" | "clinicPrescription" | "pharmacyStock" | "pharmacyBatch" | "pharmacyDispense" | "clinicBed" | "clinicAdmission" | "clinicMonitoringLog" | "clinicAccessAudit" | "clinicEmergencyLog" | "clinicSetting"
+      modelProps: "plan" | "school" | "gradingScale" | "hostelCategory" | "hostelRoom" | "leadershipAssignment" | "studentAllowedItem" | "uniformItem" | "uniformStockOrder" | "uniformStockOrderItem" | "uniformSale" | "uniformSaleItem" | "uniformSupplierPayment" | "accountCategory" | "liability" | "income" | "expense" | "user" | "userSession" | "teacher" | "student" | "schoolClass" | "section" | "subject" | "teacherSubject" | "classSubjectTeacher" | "grade" | "faculty" | "department" | "attendance" | "staffAttendance" | "fee" | "feeLineItem" | "assignment" | "questionPaper" | "timetableSlot" | "announcement" | "auditLog" | "book" | "studentHouse" | "chaplaincyEvent" | "holiday" | "libraryCategory" | "bookLoan" | "librarySetting" | "bookReservation" | "libraryDigitalResource" | "assignmentSubmission" | "news" | "schoolSetting" | "paymentPlan" | "gallery" | "club" | "sport" | "sportingEquipment" | "application" | "supplier" | "schoolSupplier" | "parent" | "parentStudent" | "tender" | "tenderBid" | "purchaseOrder" | "invoice" | "message" | "supportTicket" | "staffLeave" | "asset" | "assetIncident" | "assetMaintenance" | "transportRoute" | "schoolEvent" | "tuckshopItem" | "tuckshopSale" | "digitalResource" | "syllabus" | "lessonPlan" | "salaryStub" | "shiftAssignment" | "applicantDocument" | "applicantTimeline" | "academicReport" | "reportTemplate" | "requisition" | "hostel" | "room" | "boardingLog" | "visitorLog" | "admissionInquiry" | "phoneCallLog" | "frontOfficeComplaint" | "securityIncident" | "weeklyMenu" | "transferAuthorization" | "supervisorAssignment" | "extensionRequest" | "progressReport" | "paymentMethod" | "feeGroup" | "feeGroupClassAmount" | "physicalProduct" | "physicalProductConsumption" | "feeReminderLog" | "studentPayment" | "communicationLog" | "notificationQueue" | "revenueAllocation" | "payrollAllowance" | "payrollDeduction" | "taxTable" | "taxBand" | "employeeProfile" | "termlyComment" | "payrollRun" | "payrollEntry" | "cBTExam" | "cBTQuestion" | "cBTResult" | "liveClass" | "award" | "course" | "courseEnrollment" | "studyMaterial" | "websiteSettings" | "websiteInquiry" | "noticeboard" | "vacancy" | "jobApplication" | "schoolVehicle" | "schoolTransport" | "meetingMinutes" | "projectFunding" | "clinicPatient" | "clinicAppointment" | "clinicComplaint" | "clinicEmergency" | "clinicImmunization" | "clinicReferral" | "clinicVisit" | "clinicInventoryItem" | "clinicDispensingLog" | "clinicHospitalization" | "farmLivestockBatch" | "farmCropCycle" | "farmInventoryItem" | "diningHallReport" | "prefectDuty" | "prefectMeeting" | "prefectReport" | "studentWallet" | "walletTransaction" | "schoolSequence" | "icd10Code" | "chartOfAccount" | "journalEntry" | "journalEntryLine" | "accountingPeriod" | "exchangeRate" | "approval" | "budget" | "stockMovement" | "taxBracket" | "uniformStockMovement" | "bankStatement" | "bankStatementLine" | "platformSetting" | "icd10ParentLabel" | "studentHealthProfile" | "clinicVital" | "clinicDiagnosis" | "clinicPrescription" | "pharmacyStock" | "pharmacyBatch" | "pharmacyDispense" | "clinicBed" | "clinicAdmission" | "clinicMonitoringLog" | "clinicAccessAudit" | "clinicEmergencyLog" | "clinicSetting"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -14447,6 +14527,356 @@ export namespace Prisma {
           }
         }
       }
+      ExchangeRate: {
+        payload: Prisma.$ExchangeRatePayload<ExtArgs>
+        fields: Prisma.ExchangeRateFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ExchangeRateFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExchangeRatePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ExchangeRateFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExchangeRatePayload>
+          }
+          findFirst: {
+            args: Prisma.ExchangeRateFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExchangeRatePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ExchangeRateFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExchangeRatePayload>
+          }
+          findMany: {
+            args: Prisma.ExchangeRateFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExchangeRatePayload>[]
+          }
+          create: {
+            args: Prisma.ExchangeRateCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExchangeRatePayload>
+          }
+          createMany: {
+            args: Prisma.ExchangeRateCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.ExchangeRateCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExchangeRatePayload>[]
+          }
+          delete: {
+            args: Prisma.ExchangeRateDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExchangeRatePayload>
+          }
+          update: {
+            args: Prisma.ExchangeRateUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExchangeRatePayload>
+          }
+          deleteMany: {
+            args: Prisma.ExchangeRateDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ExchangeRateUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.ExchangeRateUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExchangeRatePayload>
+          }
+          aggregate: {
+            args: Prisma.ExchangeRateAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateExchangeRate>
+          }
+          groupBy: {
+            args: Prisma.ExchangeRateGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ExchangeRateGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ExchangeRateCountArgs<ExtArgs>
+            result: $Utils.Optional<ExchangeRateCountAggregateOutputType> | number
+          }
+        }
+      }
+      Approval: {
+        payload: Prisma.$ApprovalPayload<ExtArgs>
+        fields: Prisma.ApprovalFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ApprovalFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ApprovalPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ApprovalFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ApprovalPayload>
+          }
+          findFirst: {
+            args: Prisma.ApprovalFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ApprovalPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ApprovalFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ApprovalPayload>
+          }
+          findMany: {
+            args: Prisma.ApprovalFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ApprovalPayload>[]
+          }
+          create: {
+            args: Prisma.ApprovalCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ApprovalPayload>
+          }
+          createMany: {
+            args: Prisma.ApprovalCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.ApprovalCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ApprovalPayload>[]
+          }
+          delete: {
+            args: Prisma.ApprovalDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ApprovalPayload>
+          }
+          update: {
+            args: Prisma.ApprovalUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ApprovalPayload>
+          }
+          deleteMany: {
+            args: Prisma.ApprovalDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ApprovalUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.ApprovalUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ApprovalPayload>
+          }
+          aggregate: {
+            args: Prisma.ApprovalAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateApproval>
+          }
+          groupBy: {
+            args: Prisma.ApprovalGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ApprovalGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ApprovalCountArgs<ExtArgs>
+            result: $Utils.Optional<ApprovalCountAggregateOutputType> | number
+          }
+        }
+      }
+      Budget: {
+        payload: Prisma.$BudgetPayload<ExtArgs>
+        fields: Prisma.BudgetFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.BudgetFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BudgetPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.BudgetFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BudgetPayload>
+          }
+          findFirst: {
+            args: Prisma.BudgetFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BudgetPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.BudgetFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BudgetPayload>
+          }
+          findMany: {
+            args: Prisma.BudgetFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BudgetPayload>[]
+          }
+          create: {
+            args: Prisma.BudgetCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BudgetPayload>
+          }
+          createMany: {
+            args: Prisma.BudgetCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.BudgetCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BudgetPayload>[]
+          }
+          delete: {
+            args: Prisma.BudgetDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BudgetPayload>
+          }
+          update: {
+            args: Prisma.BudgetUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BudgetPayload>
+          }
+          deleteMany: {
+            args: Prisma.BudgetDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.BudgetUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.BudgetUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BudgetPayload>
+          }
+          aggregate: {
+            args: Prisma.BudgetAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateBudget>
+          }
+          groupBy: {
+            args: Prisma.BudgetGroupByArgs<ExtArgs>
+            result: $Utils.Optional<BudgetGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.BudgetCountArgs<ExtArgs>
+            result: $Utils.Optional<BudgetCountAggregateOutputType> | number
+          }
+        }
+      }
+      StockMovement: {
+        payload: Prisma.$StockMovementPayload<ExtArgs>
+        fields: Prisma.StockMovementFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.StockMovementFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StockMovementPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.StockMovementFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StockMovementPayload>
+          }
+          findFirst: {
+            args: Prisma.StockMovementFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StockMovementPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.StockMovementFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StockMovementPayload>
+          }
+          findMany: {
+            args: Prisma.StockMovementFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StockMovementPayload>[]
+          }
+          create: {
+            args: Prisma.StockMovementCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StockMovementPayload>
+          }
+          createMany: {
+            args: Prisma.StockMovementCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.StockMovementCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StockMovementPayload>[]
+          }
+          delete: {
+            args: Prisma.StockMovementDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StockMovementPayload>
+          }
+          update: {
+            args: Prisma.StockMovementUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StockMovementPayload>
+          }
+          deleteMany: {
+            args: Prisma.StockMovementDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.StockMovementUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.StockMovementUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StockMovementPayload>
+          }
+          aggregate: {
+            args: Prisma.StockMovementAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateStockMovement>
+          }
+          groupBy: {
+            args: Prisma.StockMovementGroupByArgs<ExtArgs>
+            result: $Utils.Optional<StockMovementGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.StockMovementCountArgs<ExtArgs>
+            result: $Utils.Optional<StockMovementCountAggregateOutputType> | number
+          }
+        }
+      }
+      TaxBracket: {
+        payload: Prisma.$TaxBracketPayload<ExtArgs>
+        fields: Prisma.TaxBracketFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.TaxBracketFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TaxBracketPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.TaxBracketFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TaxBracketPayload>
+          }
+          findFirst: {
+            args: Prisma.TaxBracketFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TaxBracketPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.TaxBracketFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TaxBracketPayload>
+          }
+          findMany: {
+            args: Prisma.TaxBracketFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TaxBracketPayload>[]
+          }
+          create: {
+            args: Prisma.TaxBracketCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TaxBracketPayload>
+          }
+          createMany: {
+            args: Prisma.TaxBracketCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.TaxBracketCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TaxBracketPayload>[]
+          }
+          delete: {
+            args: Prisma.TaxBracketDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TaxBracketPayload>
+          }
+          update: {
+            args: Prisma.TaxBracketUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TaxBracketPayload>
+          }
+          deleteMany: {
+            args: Prisma.TaxBracketDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.TaxBracketUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.TaxBracketUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TaxBracketPayload>
+          }
+          aggregate: {
+            args: Prisma.TaxBracketAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateTaxBracket>
+          }
+          groupBy: {
+            args: Prisma.TaxBracketGroupByArgs<ExtArgs>
+            result: $Utils.Optional<TaxBracketGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.TaxBracketCountArgs<ExtArgs>
+            result: $Utils.Optional<TaxBracketCountAggregateOutputType> | number
+          }
+        }
+      }
       UniformStockMovement: {
         payload: Prisma.$UniformStockMovementPayload<ExtArgs>
         fields: Prisma.UniformStockMovementFieldRefs
@@ -16013,6 +16443,11 @@ export namespace Prisma {
     accountingPeriods: number
     uniformStockMovements: number
     bankStatements: number
+    exchangeRates: number
+    approvals: number
+    budgets: number
+    stockMovements: number
+    taxBrackets: number
   }
 
   export type SchoolCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -16130,6 +16565,11 @@ export namespace Prisma {
     accountingPeriods?: boolean | SchoolCountOutputTypeCountAccountingPeriodsArgs
     uniformStockMovements?: boolean | SchoolCountOutputTypeCountUniformStockMovementsArgs
     bankStatements?: boolean | SchoolCountOutputTypeCountBankStatementsArgs
+    exchangeRates?: boolean | SchoolCountOutputTypeCountExchangeRatesArgs
+    approvals?: boolean | SchoolCountOutputTypeCountApprovalsArgs
+    budgets?: boolean | SchoolCountOutputTypeCountBudgetsArgs
+    stockMovements?: boolean | SchoolCountOutputTypeCountStockMovementsArgs
+    taxBrackets?: boolean | SchoolCountOutputTypeCountTaxBracketsArgs
   }
 
   // Custom InputTypes
@@ -16939,6 +17379,41 @@ export namespace Prisma {
    */
   export type SchoolCountOutputTypeCountBankStatementsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: BankStatementWhereInput
+  }
+
+  /**
+   * SchoolCountOutputType without action
+   */
+  export type SchoolCountOutputTypeCountExchangeRatesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ExchangeRateWhereInput
+  }
+
+  /**
+   * SchoolCountOutputType without action
+   */
+  export type SchoolCountOutputTypeCountApprovalsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ApprovalWhereInput
+  }
+
+  /**
+   * SchoolCountOutputType without action
+   */
+  export type SchoolCountOutputTypeCountBudgetsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: BudgetWhereInput
+  }
+
+  /**
+   * SchoolCountOutputType without action
+   */
+  export type SchoolCountOutputTypeCountStockMovementsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: StockMovementWhereInput
+  }
+
+  /**
+   * SchoolCountOutputType without action
+   */
+  export type SchoolCountOutputTypeCountTaxBracketsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TaxBracketWhereInput
   }
 
 
@@ -21335,6 +21810,11 @@ export namespace Prisma {
     accountingPeriods?: boolean | School$accountingPeriodsArgs<ExtArgs>
     uniformStockMovements?: boolean | School$uniformStockMovementsArgs<ExtArgs>
     bankStatements?: boolean | School$bankStatementsArgs<ExtArgs>
+    exchangeRates?: boolean | School$exchangeRatesArgs<ExtArgs>
+    approvals?: boolean | School$approvalsArgs<ExtArgs>
+    budgets?: boolean | School$budgetsArgs<ExtArgs>
+    stockMovements?: boolean | School$stockMovementsArgs<ExtArgs>
+    taxBrackets?: boolean | School$taxBracketsArgs<ExtArgs>
     _count?: boolean | SchoolCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["school"]>
 
@@ -21506,6 +21986,11 @@ export namespace Prisma {
     accountingPeriods?: boolean | School$accountingPeriodsArgs<ExtArgs>
     uniformStockMovements?: boolean | School$uniformStockMovementsArgs<ExtArgs>
     bankStatements?: boolean | School$bankStatementsArgs<ExtArgs>
+    exchangeRates?: boolean | School$exchangeRatesArgs<ExtArgs>
+    approvals?: boolean | School$approvalsArgs<ExtArgs>
+    budgets?: boolean | School$budgetsArgs<ExtArgs>
+    stockMovements?: boolean | School$stockMovementsArgs<ExtArgs>
+    taxBrackets?: boolean | School$taxBracketsArgs<ExtArgs>
     _count?: boolean | SchoolCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type SchoolIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -21635,6 +22120,11 @@ export namespace Prisma {
       accountingPeriods: Prisma.$AccountingPeriodPayload<ExtArgs>[]
       uniformStockMovements: Prisma.$UniformStockMovementPayload<ExtArgs>[]
       bankStatements: Prisma.$BankStatementPayload<ExtArgs>[]
+      exchangeRates: Prisma.$ExchangeRatePayload<ExtArgs>[]
+      approvals: Prisma.$ApprovalPayload<ExtArgs>[]
+      budgets: Prisma.$BudgetPayload<ExtArgs>[]
+      stockMovements: Prisma.$StockMovementPayload<ExtArgs>[]
+      taxBrackets: Prisma.$TaxBracketPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -22141,6 +22631,11 @@ export namespace Prisma {
     accountingPeriods<T extends School$accountingPeriodsArgs<ExtArgs> = {}>(args?: Subset<T, School$accountingPeriodsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AccountingPeriodPayload<ExtArgs>, T, "findMany"> | Null>
     uniformStockMovements<T extends School$uniformStockMovementsArgs<ExtArgs> = {}>(args?: Subset<T, School$uniformStockMovementsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UniformStockMovementPayload<ExtArgs>, T, "findMany"> | Null>
     bankStatements<T extends School$bankStatementsArgs<ExtArgs> = {}>(args?: Subset<T, School$bankStatementsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BankStatementPayload<ExtArgs>, T, "findMany"> | Null>
+    exchangeRates<T extends School$exchangeRatesArgs<ExtArgs> = {}>(args?: Subset<T, School$exchangeRatesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ExchangeRatePayload<ExtArgs>, T, "findMany"> | Null>
+    approvals<T extends School$approvalsArgs<ExtArgs> = {}>(args?: Subset<T, School$approvalsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ApprovalPayload<ExtArgs>, T, "findMany"> | Null>
+    budgets<T extends School$budgetsArgs<ExtArgs> = {}>(args?: Subset<T, School$budgetsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BudgetPayload<ExtArgs>, T, "findMany"> | Null>
+    stockMovements<T extends School$stockMovementsArgs<ExtArgs> = {}>(args?: Subset<T, School$stockMovementsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StockMovementPayload<ExtArgs>, T, "findMany"> | Null>
+    taxBrackets<T extends School$taxBracketsArgs<ExtArgs> = {}>(args?: Subset<T, School$taxBracketsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TaxBracketPayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -24860,6 +25355,106 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: BankStatementScalarFieldEnum | BankStatementScalarFieldEnum[]
+  }
+
+  /**
+   * School.exchangeRates
+   */
+  export type School$exchangeRatesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExchangeRate
+     */
+    select?: ExchangeRateSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExchangeRateInclude<ExtArgs> | null
+    where?: ExchangeRateWhereInput
+    orderBy?: ExchangeRateOrderByWithRelationInput | ExchangeRateOrderByWithRelationInput[]
+    cursor?: ExchangeRateWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ExchangeRateScalarFieldEnum | ExchangeRateScalarFieldEnum[]
+  }
+
+  /**
+   * School.approvals
+   */
+  export type School$approvalsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Approval
+     */
+    select?: ApprovalSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ApprovalInclude<ExtArgs> | null
+    where?: ApprovalWhereInput
+    orderBy?: ApprovalOrderByWithRelationInput | ApprovalOrderByWithRelationInput[]
+    cursor?: ApprovalWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ApprovalScalarFieldEnum | ApprovalScalarFieldEnum[]
+  }
+
+  /**
+   * School.budgets
+   */
+  export type School$budgetsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Budget
+     */
+    select?: BudgetSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BudgetInclude<ExtArgs> | null
+    where?: BudgetWhereInput
+    orderBy?: BudgetOrderByWithRelationInput | BudgetOrderByWithRelationInput[]
+    cursor?: BudgetWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: BudgetScalarFieldEnum | BudgetScalarFieldEnum[]
+  }
+
+  /**
+   * School.stockMovements
+   */
+  export type School$stockMovementsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StockMovement
+     */
+    select?: StockMovementSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StockMovementInclude<ExtArgs> | null
+    where?: StockMovementWhereInput
+    orderBy?: StockMovementOrderByWithRelationInput | StockMovementOrderByWithRelationInput[]
+    cursor?: StockMovementWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: StockMovementScalarFieldEnum | StockMovementScalarFieldEnum[]
+  }
+
+  /**
+   * School.taxBrackets
+   */
+  export type School$taxBracketsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TaxBracket
+     */
+    select?: TaxBracketSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TaxBracketInclude<ExtArgs> | null
+    where?: TaxBracketWhereInput
+    orderBy?: TaxBracketOrderByWithRelationInput | TaxBracketOrderByWithRelationInput[]
+    cursor?: TaxBracketWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: TaxBracketScalarFieldEnum | TaxBracketScalarFieldEnum[]
   }
 
   /**
@@ -78062,6 +78657,7 @@ export namespace Prisma {
   export type SchoolSettingAvgAggregateOutputType = {
     idleTime: number | null
     idleTimeCountdown: number | null
+    financialApprovalThreshold: number | null
     smtpPort: number | null
     mapLatitude: number | null
     mapLongitude: number | null
@@ -78072,6 +78668,7 @@ export namespace Prisma {
   export type SchoolSettingSumAggregateOutputType = {
     idleTime: number | null
     idleTimeCountdown: number | null
+    financialApprovalThreshold: number | null
     smtpPort: number | null
     mapLatitude: number | null
     mapLongitude: number | null
@@ -78092,6 +78689,9 @@ export namespace Prisma {
     mandatoryReceipts: boolean | null
     showBalanceOnReceipts: boolean | null
     showUniformsModule: boolean | null
+    financialApprovalThreshold: number | null
+    tier1ApprovalRole: string | null
+    tier2ApprovalRole: string | null
     smtpEmail: string | null
     smtpHost: string | null
     smtpPort: number | null
@@ -78165,6 +78765,9 @@ export namespace Prisma {
     mandatoryReceipts: boolean | null
     showBalanceOnReceipts: boolean | null
     showUniformsModule: boolean | null
+    financialApprovalThreshold: number | null
+    tier1ApprovalRole: string | null
+    tier2ApprovalRole: string | null
     smtpEmail: string | null
     smtpHost: string | null
     smtpPort: number | null
@@ -78238,6 +78841,9 @@ export namespace Prisma {
     mandatoryReceipts: number
     showBalanceOnReceipts: number
     showUniformsModule: number
+    financialApprovalThreshold: number
+    tier1ApprovalRole: number
+    tier2ApprovalRole: number
     smtpEmail: number
     smtpHost: number
     smtpPort: number
@@ -78305,6 +78911,7 @@ export namespace Prisma {
   export type SchoolSettingAvgAggregateInputType = {
     idleTime?: true
     idleTimeCountdown?: true
+    financialApprovalThreshold?: true
     smtpPort?: true
     mapLatitude?: true
     mapLongitude?: true
@@ -78315,6 +78922,7 @@ export namespace Prisma {
   export type SchoolSettingSumAggregateInputType = {
     idleTime?: true
     idleTimeCountdown?: true
+    financialApprovalThreshold?: true
     smtpPort?: true
     mapLatitude?: true
     mapLongitude?: true
@@ -78335,6 +78943,9 @@ export namespace Prisma {
     mandatoryReceipts?: true
     showBalanceOnReceipts?: true
     showUniformsModule?: true
+    financialApprovalThreshold?: true
+    tier1ApprovalRole?: true
+    tier2ApprovalRole?: true
     smtpEmail?: true
     smtpHost?: true
     smtpPort?: true
@@ -78408,6 +79019,9 @@ export namespace Prisma {
     mandatoryReceipts?: true
     showBalanceOnReceipts?: true
     showUniformsModule?: true
+    financialApprovalThreshold?: true
+    tier1ApprovalRole?: true
+    tier2ApprovalRole?: true
     smtpEmail?: true
     smtpHost?: true
     smtpPort?: true
@@ -78481,6 +79095,9 @@ export namespace Prisma {
     mandatoryReceipts?: true
     showBalanceOnReceipts?: true
     showUniformsModule?: true
+    financialApprovalThreshold?: true
+    tier1ApprovalRole?: true
+    tier2ApprovalRole?: true
     smtpEmail?: true
     smtpHost?: true
     smtpPort?: true
@@ -78643,6 +79260,9 @@ export namespace Prisma {
     mandatoryReceipts: boolean
     showBalanceOnReceipts: boolean
     showUniformsModule: boolean
+    financialApprovalThreshold: number | null
+    tier1ApprovalRole: string | null
+    tier2ApprovalRole: string | null
     smtpEmail: string | null
     smtpHost: string | null
     smtpPort: number | null
@@ -78737,6 +79357,9 @@ export namespace Prisma {
     mandatoryReceipts?: boolean
     showBalanceOnReceipts?: boolean
     showUniformsModule?: boolean
+    financialApprovalThreshold?: boolean
+    tier1ApprovalRole?: boolean
+    tier2ApprovalRole?: boolean
     smtpEmail?: boolean
     smtpHost?: boolean
     smtpPort?: boolean
@@ -78813,6 +79436,9 @@ export namespace Prisma {
     mandatoryReceipts?: boolean
     showBalanceOnReceipts?: boolean
     showUniformsModule?: boolean
+    financialApprovalThreshold?: boolean
+    tier1ApprovalRole?: boolean
+    tier2ApprovalRole?: boolean
     smtpEmail?: boolean
     smtpHost?: boolean
     smtpPort?: boolean
@@ -78889,6 +79515,9 @@ export namespace Prisma {
     mandatoryReceipts?: boolean
     showBalanceOnReceipts?: boolean
     showUniformsModule?: boolean
+    financialApprovalThreshold?: boolean
+    tier1ApprovalRole?: boolean
+    tier2ApprovalRole?: boolean
     smtpEmail?: boolean
     smtpHost?: boolean
     smtpPort?: boolean
@@ -78976,6 +79605,9 @@ export namespace Prisma {
       mandatoryReceipts: boolean
       showBalanceOnReceipts: boolean
       showUniformsModule: boolean
+      financialApprovalThreshold: number | null
+      tier1ApprovalRole: string | null
+      tier2ApprovalRole: string | null
       smtpEmail: string | null
       smtpHost: string | null
       smtpPort: number | null
@@ -79442,6 +80074,9 @@ export namespace Prisma {
     readonly mandatoryReceipts: FieldRef<"SchoolSetting", 'Boolean'>
     readonly showBalanceOnReceipts: FieldRef<"SchoolSetting", 'Boolean'>
     readonly showUniformsModule: FieldRef<"SchoolSetting", 'Boolean'>
+    readonly financialApprovalThreshold: FieldRef<"SchoolSetting", 'Float'>
+    readonly tier1ApprovalRole: FieldRef<"SchoolSetting", 'String'>
+    readonly tier2ApprovalRole: FieldRef<"SchoolSetting", 'String'>
     readonly smtpEmail: FieldRef<"SchoolSetting", 'String'>
     readonly smtpHost: FieldRef<"SchoolSetting", 'String'>
     readonly smtpPort: FieldRef<"SchoolSetting", 'Int'>
@@ -187131,6 +187766,8 @@ export namespace Prisma {
     type: $Enums.AccountType | null
     parentId: string | null
     isSystemAccount: boolean | null
+    isBank: boolean | null
+    isTemplate: boolean | null
     isActive: boolean | null
     description: string | null
     createdAt: Date | null
@@ -187145,6 +187782,8 @@ export namespace Prisma {
     type: $Enums.AccountType | null
     parentId: string | null
     isSystemAccount: boolean | null
+    isBank: boolean | null
+    isTemplate: boolean | null
     isActive: boolean | null
     description: string | null
     createdAt: Date | null
@@ -187159,6 +187798,8 @@ export namespace Prisma {
     type: number
     parentId: number
     isSystemAccount: number
+    isBank: number
+    isTemplate: number
     isActive: number
     description: number
     createdAt: number
@@ -187175,6 +187816,8 @@ export namespace Prisma {
     type?: true
     parentId?: true
     isSystemAccount?: true
+    isBank?: true
+    isTemplate?: true
     isActive?: true
     description?: true
     createdAt?: true
@@ -187189,6 +187832,8 @@ export namespace Prisma {
     type?: true
     parentId?: true
     isSystemAccount?: true
+    isBank?: true
+    isTemplate?: true
     isActive?: true
     description?: true
     createdAt?: true
@@ -187203,6 +187848,8 @@ export namespace Prisma {
     type?: true
     parentId?: true
     isSystemAccount?: true
+    isBank?: true
+    isTemplate?: true
     isActive?: true
     description?: true
     createdAt?: true
@@ -187290,6 +187937,8 @@ export namespace Prisma {
     type: $Enums.AccountType
     parentId: string | null
     isSystemAccount: boolean
+    isBank: boolean
+    isTemplate: boolean
     isActive: boolean
     description: string | null
     createdAt: Date
@@ -187321,6 +187970,8 @@ export namespace Prisma {
     type?: boolean
     parentId?: boolean
     isSystemAccount?: boolean
+    isBank?: boolean
+    isTemplate?: boolean
     isActive?: boolean
     description?: boolean
     createdAt?: boolean
@@ -187341,6 +187992,8 @@ export namespace Prisma {
     type?: boolean
     parentId?: boolean
     isSystemAccount?: boolean
+    isBank?: boolean
+    isTemplate?: boolean
     isActive?: boolean
     description?: boolean
     createdAt?: boolean
@@ -187357,6 +188010,8 @@ export namespace Prisma {
     type?: boolean
     parentId?: boolean
     isSystemAccount?: boolean
+    isBank?: boolean
+    isTemplate?: boolean
     isActive?: boolean
     description?: boolean
     createdAt?: boolean
@@ -187393,6 +188048,8 @@ export namespace Prisma {
       type: $Enums.AccountType
       parentId: string | null
       isSystemAccount: boolean
+      isBank: boolean
+      isTemplate: boolean
       isActive: boolean
       description: string | null
       createdAt: Date
@@ -187802,6 +188459,8 @@ export namespace Prisma {
     readonly type: FieldRef<"ChartOfAccount", 'AccountType'>
     readonly parentId: FieldRef<"ChartOfAccount", 'String'>
     readonly isSystemAccount: FieldRef<"ChartOfAccount", 'Boolean'>
+    readonly isBank: FieldRef<"ChartOfAccount", 'Boolean'>
+    readonly isTemplate: FieldRef<"ChartOfAccount", 'Boolean'>
     readonly isActive: FieldRef<"ChartOfAccount", 'Boolean'>
     readonly description: FieldRef<"ChartOfAccount", 'String'>
     readonly createdAt: FieldRef<"ChartOfAccount", 'DateTime'>
@@ -188219,8 +188878,18 @@ export namespace Prisma {
 
   export type AggregateJournalEntry = {
     _count: JournalEntryCountAggregateOutputType | null
+    _avg: JournalEntryAvgAggregateOutputType | null
+    _sum: JournalEntrySumAggregateOutputType | null
     _min: JournalEntryMinAggregateOutputType | null
     _max: JournalEntryMaxAggregateOutputType | null
+  }
+
+  export type JournalEntryAvgAggregateOutputType = {
+    exchangeRateUsed: number | null
+  }
+
+  export type JournalEntrySumAggregateOutputType = {
+    exchangeRateUsed: number | null
   }
 
   export type JournalEntryMinAggregateOutputType = {
@@ -188230,6 +188899,9 @@ export namespace Prisma {
     date: Date | null
     description: string | null
     status: string | null
+    currency: string | null
+    exchangeRateUsed: number | null
+    ipAddress: string | null
     isReversing: boolean | null
     reversedById: string | null
     sourceType: string | null
@@ -188248,6 +188920,9 @@ export namespace Prisma {
     date: Date | null
     description: string | null
     status: string | null
+    currency: string | null
+    exchangeRateUsed: number | null
+    ipAddress: string | null
     isReversing: boolean | null
     reversedById: string | null
     sourceType: string | null
@@ -188266,6 +188941,9 @@ export namespace Prisma {
     date: number
     description: number
     status: number
+    currency: number
+    exchangeRateUsed: number
+    ipAddress: number
     isReversing: number
     reversedById: number
     sourceType: number
@@ -188279,6 +188957,14 @@ export namespace Prisma {
   }
 
 
+  export type JournalEntryAvgAggregateInputType = {
+    exchangeRateUsed?: true
+  }
+
+  export type JournalEntrySumAggregateInputType = {
+    exchangeRateUsed?: true
+  }
+
   export type JournalEntryMinAggregateInputType = {
     id?: true
     schoolId?: true
@@ -188286,6 +188972,9 @@ export namespace Prisma {
     date?: true
     description?: true
     status?: true
+    currency?: true
+    exchangeRateUsed?: true
+    ipAddress?: true
     isReversing?: true
     reversedById?: true
     sourceType?: true
@@ -188304,6 +188993,9 @@ export namespace Prisma {
     date?: true
     description?: true
     status?: true
+    currency?: true
+    exchangeRateUsed?: true
+    ipAddress?: true
     isReversing?: true
     reversedById?: true
     sourceType?: true
@@ -188322,6 +189014,9 @@ export namespace Prisma {
     date?: true
     description?: true
     status?: true
+    currency?: true
+    exchangeRateUsed?: true
+    ipAddress?: true
     isReversing?: true
     reversedById?: true
     sourceType?: true
@@ -188372,6 +189067,18 @@ export namespace Prisma {
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
+     * Select which fields to average
+    **/
+    _avg?: JournalEntryAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: JournalEntrySumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: JournalEntryMinAggregateInputType
@@ -188402,6 +189109,8 @@ export namespace Prisma {
     take?: number
     skip?: number
     _count?: JournalEntryCountAggregateInputType | true
+    _avg?: JournalEntryAvgAggregateInputType
+    _sum?: JournalEntrySumAggregateInputType
     _min?: JournalEntryMinAggregateInputType
     _max?: JournalEntryMaxAggregateInputType
   }
@@ -188413,6 +189122,9 @@ export namespace Prisma {
     date: Date
     description: string
     status: string
+    currency: string
+    exchangeRateUsed: number
+    ipAddress: string | null
     isReversing: boolean
     reversedById: string | null
     sourceType: string
@@ -188423,6 +189135,8 @@ export namespace Prisma {
     createdAt: Date
     updatedAt: Date
     _count: JournalEntryCountAggregateOutputType | null
+    _avg: JournalEntryAvgAggregateOutputType | null
+    _sum: JournalEntrySumAggregateOutputType | null
     _min: JournalEntryMinAggregateOutputType | null
     _max: JournalEntryMaxAggregateOutputType | null
   }
@@ -188448,6 +189162,9 @@ export namespace Prisma {
     date?: boolean
     description?: boolean
     status?: boolean
+    currency?: boolean
+    exchangeRateUsed?: boolean
+    ipAddress?: boolean
     isReversing?: boolean
     reversedById?: boolean
     sourceType?: boolean
@@ -188471,6 +189188,9 @@ export namespace Prisma {
     date?: boolean
     description?: boolean
     status?: boolean
+    currency?: boolean
+    exchangeRateUsed?: boolean
+    ipAddress?: boolean
     isReversing?: boolean
     reversedById?: boolean
     sourceType?: boolean
@@ -188491,6 +189211,9 @@ export namespace Prisma {
     date?: boolean
     description?: boolean
     status?: boolean
+    currency?: boolean
+    exchangeRateUsed?: boolean
+    ipAddress?: boolean
     isReversing?: boolean
     reversedById?: boolean
     sourceType?: boolean
@@ -188529,6 +189252,9 @@ export namespace Prisma {
       date: Date
       description: string
       status: string
+      currency: string
+      exchangeRateUsed: number
+      ipAddress: string | null
       isReversing: boolean
       reversedById: string | null
       sourceType: string
@@ -188941,6 +189667,9 @@ export namespace Prisma {
     readonly date: FieldRef<"JournalEntry", 'DateTime'>
     readonly description: FieldRef<"JournalEntry", 'String'>
     readonly status: FieldRef<"JournalEntry", 'String'>
+    readonly currency: FieldRef<"JournalEntry", 'String'>
+    readonly exchangeRateUsed: FieldRef<"JournalEntry", 'Float'>
+    readonly ipAddress: FieldRef<"JournalEntry", 'String'>
     readonly isReversing: FieldRef<"JournalEntry", 'Boolean'>
     readonly reversedById: FieldRef<"JournalEntry", 'String'>
     readonly sourceType: FieldRef<"JournalEntry", 'String'>
@@ -189352,6 +190081,7 @@ export namespace Prisma {
   export type JournalEntryLineAvgAggregateOutputType = {
     debit: number | null
     credit: number | null
+    baseAmount: number | null
     exchangeRate: number | null
     debitForeign: number | null
     creditForeign: number | null
@@ -189360,6 +190090,7 @@ export namespace Prisma {
   export type JournalEntryLineSumAggregateOutputType = {
     debit: number | null
     credit: number | null
+    baseAmount: number | null
     exchangeRate: number | null
     debitForeign: number | null
     creditForeign: number | null
@@ -189370,9 +190101,12 @@ export namespace Prisma {
     journalEntryId: string | null
     accountId: string | null
     schoolId: string | null
+    coaCode: string | null
     description: string | null
     debit: number | null
     credit: number | null
+    baseAmount: number | null
+    taxCode: string | null
     currency: string | null
     exchangeRate: number | null
     debitForeign: number | null
@@ -189390,9 +190124,12 @@ export namespace Prisma {
     journalEntryId: string | null
     accountId: string | null
     schoolId: string | null
+    coaCode: string | null
     description: string | null
     debit: number | null
     credit: number | null
+    baseAmount: number | null
+    taxCode: string | null
     currency: string | null
     exchangeRate: number | null
     debitForeign: number | null
@@ -189410,9 +190147,12 @@ export namespace Prisma {
     journalEntryId: number
     accountId: number
     schoolId: number
+    coaCode: number
     description: number
     debit: number
     credit: number
+    baseAmount: number
+    taxCode: number
     currency: number
     exchangeRate: number
     debitForeign: number
@@ -189430,6 +190170,7 @@ export namespace Prisma {
   export type JournalEntryLineAvgAggregateInputType = {
     debit?: true
     credit?: true
+    baseAmount?: true
     exchangeRate?: true
     debitForeign?: true
     creditForeign?: true
@@ -189438,6 +190179,7 @@ export namespace Prisma {
   export type JournalEntryLineSumAggregateInputType = {
     debit?: true
     credit?: true
+    baseAmount?: true
     exchangeRate?: true
     debitForeign?: true
     creditForeign?: true
@@ -189448,9 +190190,12 @@ export namespace Prisma {
     journalEntryId?: true
     accountId?: true
     schoolId?: true
+    coaCode?: true
     description?: true
     debit?: true
     credit?: true
+    baseAmount?: true
+    taxCode?: true
     currency?: true
     exchangeRate?: true
     debitForeign?: true
@@ -189468,9 +190213,12 @@ export namespace Prisma {
     journalEntryId?: true
     accountId?: true
     schoolId?: true
+    coaCode?: true
     description?: true
     debit?: true
     credit?: true
+    baseAmount?: true
+    taxCode?: true
     currency?: true
     exchangeRate?: true
     debitForeign?: true
@@ -189488,9 +190236,12 @@ export namespace Prisma {
     journalEntryId?: true
     accountId?: true
     schoolId?: true
+    coaCode?: true
     description?: true
     debit?: true
     credit?: true
+    baseAmount?: true
+    taxCode?: true
     currency?: true
     exchangeRate?: true
     debitForeign?: true
@@ -189595,9 +190346,12 @@ export namespace Prisma {
     journalEntryId: string
     accountId: string
     schoolId: string
+    coaCode: string | null
     description: string | null
     debit: number
     credit: number
+    baseAmount: number
+    taxCode: string | null
     currency: string
     exchangeRate: number
     debitForeign: number
@@ -189634,9 +190388,12 @@ export namespace Prisma {
     journalEntryId?: boolean
     accountId?: boolean
     schoolId?: boolean
+    coaCode?: boolean
     description?: boolean
     debit?: boolean
     credit?: boolean
+    baseAmount?: boolean
+    taxCode?: boolean
     currency?: boolean
     exchangeRate?: boolean
     debitForeign?: boolean
@@ -189656,9 +190413,12 @@ export namespace Prisma {
     journalEntryId?: boolean
     accountId?: boolean
     schoolId?: boolean
+    coaCode?: boolean
     description?: boolean
     debit?: boolean
     credit?: boolean
+    baseAmount?: boolean
+    taxCode?: boolean
     currency?: boolean
     exchangeRate?: boolean
     debitForeign?: boolean
@@ -189678,9 +190438,12 @@ export namespace Prisma {
     journalEntryId?: boolean
     accountId?: boolean
     schoolId?: boolean
+    coaCode?: boolean
     description?: boolean
     debit?: boolean
     credit?: boolean
+    baseAmount?: boolean
+    taxCode?: boolean
     currency?: boolean
     exchangeRate?: boolean
     debitForeign?: boolean
@@ -189713,9 +190476,12 @@ export namespace Prisma {
       journalEntryId: string
       accountId: string
       schoolId: string
+      coaCode: string | null
       description: string | null
       debit: number
       credit: number
+      baseAmount: number
+      taxCode: string | null
       currency: string
       exchangeRate: number
       debitForeign: number
@@ -190125,9 +190891,12 @@ export namespace Prisma {
     readonly journalEntryId: FieldRef<"JournalEntryLine", 'String'>
     readonly accountId: FieldRef<"JournalEntryLine", 'String'>
     readonly schoolId: FieldRef<"JournalEntryLine", 'String'>
+    readonly coaCode: FieldRef<"JournalEntryLine", 'String'>
     readonly description: FieldRef<"JournalEntryLine", 'String'>
     readonly debit: FieldRef<"JournalEntryLine", 'Float'>
     readonly credit: FieldRef<"JournalEntryLine", 'Float'>
+    readonly baseAmount: FieldRef<"JournalEntryLine", 'Float'>
+    readonly taxCode: FieldRef<"JournalEntryLine", 'String'>
     readonly currency: FieldRef<"JournalEntryLine", 'String'>
     readonly exchangeRate: FieldRef<"JournalEntryLine", 'Float'>
     readonly debitForeign: FieldRef<"JournalEntryLine", 'Float'>
@@ -190476,14 +191245,28 @@ export namespace Prisma {
 
   export type AggregateAccountingPeriod = {
     _count: AccountingPeriodCountAggregateOutputType | null
+    _avg: AccountingPeriodAvgAggregateOutputType | null
+    _sum: AccountingPeriodSumAggregateOutputType | null
     _min: AccountingPeriodMinAggregateOutputType | null
     _max: AccountingPeriodMaxAggregateOutputType | null
+  }
+
+  export type AccountingPeriodAvgAggregateOutputType = {
+    year: number | null
+  }
+
+  export type AccountingPeriodSumAggregateOutputType = {
+    year: number | null
   }
 
   export type AccountingPeriodMinAggregateOutputType = {
     id: string | null
     schoolId: string | null
     period: string | null
+    year: number | null
+    term: string | null
+    startDate: Date | null
+    endDate: Date | null
     status: string | null
     closedBy: string | null
     closedAt: Date | null
@@ -190496,6 +191279,10 @@ export namespace Prisma {
     id: string | null
     schoolId: string | null
     period: string | null
+    year: number | null
+    term: string | null
+    startDate: Date | null
+    endDate: Date | null
     status: string | null
     closedBy: string | null
     closedAt: Date | null
@@ -190508,6 +191295,10 @@ export namespace Prisma {
     id: number
     schoolId: number
     period: number
+    year: number
+    term: number
+    startDate: number
+    endDate: number
     status: number
     closedBy: number
     closedAt: number
@@ -190518,10 +191309,22 @@ export namespace Prisma {
   }
 
 
+  export type AccountingPeriodAvgAggregateInputType = {
+    year?: true
+  }
+
+  export type AccountingPeriodSumAggregateInputType = {
+    year?: true
+  }
+
   export type AccountingPeriodMinAggregateInputType = {
     id?: true
     schoolId?: true
     period?: true
+    year?: true
+    term?: true
+    startDate?: true
+    endDate?: true
     status?: true
     closedBy?: true
     closedAt?: true
@@ -190534,6 +191337,10 @@ export namespace Prisma {
     id?: true
     schoolId?: true
     period?: true
+    year?: true
+    term?: true
+    startDate?: true
+    endDate?: true
     status?: true
     closedBy?: true
     closedAt?: true
@@ -190546,6 +191353,10 @@ export namespace Prisma {
     id?: true
     schoolId?: true
     period?: true
+    year?: true
+    term?: true
+    startDate?: true
+    endDate?: true
     status?: true
     closedBy?: true
     closedAt?: true
@@ -190593,6 +191404,18 @@ export namespace Prisma {
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
+     * Select which fields to average
+    **/
+    _avg?: AccountingPeriodAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: AccountingPeriodSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: AccountingPeriodMinAggregateInputType
@@ -190623,6 +191446,8 @@ export namespace Prisma {
     take?: number
     skip?: number
     _count?: AccountingPeriodCountAggregateInputType | true
+    _avg?: AccountingPeriodAvgAggregateInputType
+    _sum?: AccountingPeriodSumAggregateInputType
     _min?: AccountingPeriodMinAggregateInputType
     _max?: AccountingPeriodMaxAggregateInputType
   }
@@ -190631,6 +191456,10 @@ export namespace Prisma {
     id: string
     schoolId: string
     period: string
+    year: number | null
+    term: string | null
+    startDate: Date | null
+    endDate: Date | null
     status: string
     closedBy: string | null
     closedAt: Date | null
@@ -190638,6 +191467,8 @@ export namespace Prisma {
     createdAt: Date
     updatedAt: Date
     _count: AccountingPeriodCountAggregateOutputType | null
+    _avg: AccountingPeriodAvgAggregateOutputType | null
+    _sum: AccountingPeriodSumAggregateOutputType | null
     _min: AccountingPeriodMinAggregateOutputType | null
     _max: AccountingPeriodMaxAggregateOutputType | null
   }
@@ -190660,6 +191491,10 @@ export namespace Prisma {
     id?: boolean
     schoolId?: boolean
     period?: boolean
+    year?: boolean
+    term?: boolean
+    startDate?: boolean
+    endDate?: boolean
     status?: boolean
     closedBy?: boolean
     closedAt?: boolean
@@ -190673,6 +191508,10 @@ export namespace Prisma {
     id?: boolean
     schoolId?: boolean
     period?: boolean
+    year?: boolean
+    term?: boolean
+    startDate?: boolean
+    endDate?: boolean
     status?: boolean
     closedBy?: boolean
     closedAt?: boolean
@@ -190686,6 +191525,10 @@ export namespace Prisma {
     id?: boolean
     schoolId?: boolean
     period?: boolean
+    year?: boolean
+    term?: boolean
+    startDate?: boolean
+    endDate?: boolean
     status?: boolean
     closedBy?: boolean
     closedAt?: boolean
@@ -190710,6 +191553,10 @@ export namespace Prisma {
       id: string
       schoolId: string
       period: string
+      year: number | null
+      term: string | null
+      startDate: Date | null
+      endDate: Date | null
       status: string
       closedBy: string | null
       closedAt: Date | null
@@ -191113,6 +191960,10 @@ export namespace Prisma {
     readonly id: FieldRef<"AccountingPeriod", 'String'>
     readonly schoolId: FieldRef<"AccountingPeriod", 'String'>
     readonly period: FieldRef<"AccountingPeriod", 'String'>
+    readonly year: FieldRef<"AccountingPeriod", 'Int'>
+    readonly term: FieldRef<"AccountingPeriod", 'String'>
+    readonly startDate: FieldRef<"AccountingPeriod", 'DateTime'>
+    readonly endDate: FieldRef<"AccountingPeriod", 'DateTime'>
     readonly status: FieldRef<"AccountingPeriod", 'String'>
     readonly closedBy: FieldRef<"AccountingPeriod", 'String'>
     readonly closedAt: FieldRef<"AccountingPeriod", 'DateTime'>
@@ -191448,6 +192299,5313 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: AccountingPeriodInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model ExchangeRate
+   */
+
+  export type AggregateExchangeRate = {
+    _count: ExchangeRateCountAggregateOutputType | null
+    _avg: ExchangeRateAvgAggregateOutputType | null
+    _sum: ExchangeRateSumAggregateOutputType | null
+    _min: ExchangeRateMinAggregateOutputType | null
+    _max: ExchangeRateMaxAggregateOutputType | null
+  }
+
+  export type ExchangeRateAvgAggregateOutputType = {
+    rate: number | null
+  }
+
+  export type ExchangeRateSumAggregateOutputType = {
+    rate: number | null
+  }
+
+  export type ExchangeRateMinAggregateOutputType = {
+    id: string | null
+    schoolId: string | null
+    date: Date | null
+    fromCurrency: string | null
+    toCurrency: string | null
+    rate: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type ExchangeRateMaxAggregateOutputType = {
+    id: string | null
+    schoolId: string | null
+    date: Date | null
+    fromCurrency: string | null
+    toCurrency: string | null
+    rate: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type ExchangeRateCountAggregateOutputType = {
+    id: number
+    schoolId: number
+    date: number
+    fromCurrency: number
+    toCurrency: number
+    rate: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type ExchangeRateAvgAggregateInputType = {
+    rate?: true
+  }
+
+  export type ExchangeRateSumAggregateInputType = {
+    rate?: true
+  }
+
+  export type ExchangeRateMinAggregateInputType = {
+    id?: true
+    schoolId?: true
+    date?: true
+    fromCurrency?: true
+    toCurrency?: true
+    rate?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type ExchangeRateMaxAggregateInputType = {
+    id?: true
+    schoolId?: true
+    date?: true
+    fromCurrency?: true
+    toCurrency?: true
+    rate?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type ExchangeRateCountAggregateInputType = {
+    id?: true
+    schoolId?: true
+    date?: true
+    fromCurrency?: true
+    toCurrency?: true
+    rate?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type ExchangeRateAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ExchangeRate to aggregate.
+     */
+    where?: ExchangeRateWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ExchangeRates to fetch.
+     */
+    orderBy?: ExchangeRateOrderByWithRelationInput | ExchangeRateOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ExchangeRateWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ExchangeRates from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ExchangeRates.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned ExchangeRates
+    **/
+    _count?: true | ExchangeRateCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: ExchangeRateAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: ExchangeRateSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ExchangeRateMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ExchangeRateMaxAggregateInputType
+  }
+
+  export type GetExchangeRateAggregateType<T extends ExchangeRateAggregateArgs> = {
+        [P in keyof T & keyof AggregateExchangeRate]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateExchangeRate[P]>
+      : GetScalarType<T[P], AggregateExchangeRate[P]>
+  }
+
+
+
+
+  export type ExchangeRateGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ExchangeRateWhereInput
+    orderBy?: ExchangeRateOrderByWithAggregationInput | ExchangeRateOrderByWithAggregationInput[]
+    by: ExchangeRateScalarFieldEnum[] | ExchangeRateScalarFieldEnum
+    having?: ExchangeRateScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ExchangeRateCountAggregateInputType | true
+    _avg?: ExchangeRateAvgAggregateInputType
+    _sum?: ExchangeRateSumAggregateInputType
+    _min?: ExchangeRateMinAggregateInputType
+    _max?: ExchangeRateMaxAggregateInputType
+  }
+
+  export type ExchangeRateGroupByOutputType = {
+    id: string
+    schoolId: string
+    date: Date
+    fromCurrency: string
+    toCurrency: string
+    rate: number
+    createdAt: Date
+    updatedAt: Date
+    _count: ExchangeRateCountAggregateOutputType | null
+    _avg: ExchangeRateAvgAggregateOutputType | null
+    _sum: ExchangeRateSumAggregateOutputType | null
+    _min: ExchangeRateMinAggregateOutputType | null
+    _max: ExchangeRateMaxAggregateOutputType | null
+  }
+
+  type GetExchangeRateGroupByPayload<T extends ExchangeRateGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ExchangeRateGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ExchangeRateGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ExchangeRateGroupByOutputType[P]>
+            : GetScalarType<T[P], ExchangeRateGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ExchangeRateSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    schoolId?: boolean
+    date?: boolean
+    fromCurrency?: boolean
+    toCurrency?: boolean
+    rate?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    school?: boolean | SchoolDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["exchangeRate"]>
+
+  export type ExchangeRateSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    schoolId?: boolean
+    date?: boolean
+    fromCurrency?: boolean
+    toCurrency?: boolean
+    rate?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    school?: boolean | SchoolDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["exchangeRate"]>
+
+  export type ExchangeRateSelectScalar = {
+    id?: boolean
+    schoolId?: boolean
+    date?: boolean
+    fromCurrency?: boolean
+    toCurrency?: boolean
+    rate?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type ExchangeRateInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    school?: boolean | SchoolDefaultArgs<ExtArgs>
+  }
+  export type ExchangeRateIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    school?: boolean | SchoolDefaultArgs<ExtArgs>
+  }
+
+  export type $ExchangeRatePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "ExchangeRate"
+    objects: {
+      school: Prisma.$SchoolPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      schoolId: string
+      date: Date
+      fromCurrency: string
+      toCurrency: string
+      rate: number
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["exchangeRate"]>
+    composites: {}
+  }
+
+  type ExchangeRateGetPayload<S extends boolean | null | undefined | ExchangeRateDefaultArgs> = $Result.GetResult<Prisma.$ExchangeRatePayload, S>
+
+  type ExchangeRateCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<ExchangeRateFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: ExchangeRateCountAggregateInputType | true
+    }
+
+  export interface ExchangeRateDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['ExchangeRate'], meta: { name: 'ExchangeRate' } }
+    /**
+     * Find zero or one ExchangeRate that matches the filter.
+     * @param {ExchangeRateFindUniqueArgs} args - Arguments to find a ExchangeRate
+     * @example
+     * // Get one ExchangeRate
+     * const exchangeRate = await prisma.exchangeRate.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ExchangeRateFindUniqueArgs>(args: SelectSubset<T, ExchangeRateFindUniqueArgs<ExtArgs>>): Prisma__ExchangeRateClient<$Result.GetResult<Prisma.$ExchangeRatePayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one ExchangeRate that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {ExchangeRateFindUniqueOrThrowArgs} args - Arguments to find a ExchangeRate
+     * @example
+     * // Get one ExchangeRate
+     * const exchangeRate = await prisma.exchangeRate.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ExchangeRateFindUniqueOrThrowArgs>(args: SelectSubset<T, ExchangeRateFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ExchangeRateClient<$Result.GetResult<Prisma.$ExchangeRatePayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first ExchangeRate that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExchangeRateFindFirstArgs} args - Arguments to find a ExchangeRate
+     * @example
+     * // Get one ExchangeRate
+     * const exchangeRate = await prisma.exchangeRate.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ExchangeRateFindFirstArgs>(args?: SelectSubset<T, ExchangeRateFindFirstArgs<ExtArgs>>): Prisma__ExchangeRateClient<$Result.GetResult<Prisma.$ExchangeRatePayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first ExchangeRate that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExchangeRateFindFirstOrThrowArgs} args - Arguments to find a ExchangeRate
+     * @example
+     * // Get one ExchangeRate
+     * const exchangeRate = await prisma.exchangeRate.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ExchangeRateFindFirstOrThrowArgs>(args?: SelectSubset<T, ExchangeRateFindFirstOrThrowArgs<ExtArgs>>): Prisma__ExchangeRateClient<$Result.GetResult<Prisma.$ExchangeRatePayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more ExchangeRates that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExchangeRateFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all ExchangeRates
+     * const exchangeRates = await prisma.exchangeRate.findMany()
+     * 
+     * // Get first 10 ExchangeRates
+     * const exchangeRates = await prisma.exchangeRate.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const exchangeRateWithIdOnly = await prisma.exchangeRate.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ExchangeRateFindManyArgs>(args?: SelectSubset<T, ExchangeRateFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ExchangeRatePayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a ExchangeRate.
+     * @param {ExchangeRateCreateArgs} args - Arguments to create a ExchangeRate.
+     * @example
+     * // Create one ExchangeRate
+     * const ExchangeRate = await prisma.exchangeRate.create({
+     *   data: {
+     *     // ... data to create a ExchangeRate
+     *   }
+     * })
+     * 
+     */
+    create<T extends ExchangeRateCreateArgs>(args: SelectSubset<T, ExchangeRateCreateArgs<ExtArgs>>): Prisma__ExchangeRateClient<$Result.GetResult<Prisma.$ExchangeRatePayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many ExchangeRates.
+     * @param {ExchangeRateCreateManyArgs} args - Arguments to create many ExchangeRates.
+     * @example
+     * // Create many ExchangeRates
+     * const exchangeRate = await prisma.exchangeRate.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ExchangeRateCreateManyArgs>(args?: SelectSubset<T, ExchangeRateCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many ExchangeRates and returns the data saved in the database.
+     * @param {ExchangeRateCreateManyAndReturnArgs} args - Arguments to create many ExchangeRates.
+     * @example
+     * // Create many ExchangeRates
+     * const exchangeRate = await prisma.exchangeRate.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many ExchangeRates and only return the `id`
+     * const exchangeRateWithIdOnly = await prisma.exchangeRate.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends ExchangeRateCreateManyAndReturnArgs>(args?: SelectSubset<T, ExchangeRateCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ExchangeRatePayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a ExchangeRate.
+     * @param {ExchangeRateDeleteArgs} args - Arguments to delete one ExchangeRate.
+     * @example
+     * // Delete one ExchangeRate
+     * const ExchangeRate = await prisma.exchangeRate.delete({
+     *   where: {
+     *     // ... filter to delete one ExchangeRate
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ExchangeRateDeleteArgs>(args: SelectSubset<T, ExchangeRateDeleteArgs<ExtArgs>>): Prisma__ExchangeRateClient<$Result.GetResult<Prisma.$ExchangeRatePayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one ExchangeRate.
+     * @param {ExchangeRateUpdateArgs} args - Arguments to update one ExchangeRate.
+     * @example
+     * // Update one ExchangeRate
+     * const exchangeRate = await prisma.exchangeRate.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ExchangeRateUpdateArgs>(args: SelectSubset<T, ExchangeRateUpdateArgs<ExtArgs>>): Prisma__ExchangeRateClient<$Result.GetResult<Prisma.$ExchangeRatePayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more ExchangeRates.
+     * @param {ExchangeRateDeleteManyArgs} args - Arguments to filter ExchangeRates to delete.
+     * @example
+     * // Delete a few ExchangeRates
+     * const { count } = await prisma.exchangeRate.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ExchangeRateDeleteManyArgs>(args?: SelectSubset<T, ExchangeRateDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ExchangeRates.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExchangeRateUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many ExchangeRates
+     * const exchangeRate = await prisma.exchangeRate.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ExchangeRateUpdateManyArgs>(args: SelectSubset<T, ExchangeRateUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one ExchangeRate.
+     * @param {ExchangeRateUpsertArgs} args - Arguments to update or create a ExchangeRate.
+     * @example
+     * // Update or create a ExchangeRate
+     * const exchangeRate = await prisma.exchangeRate.upsert({
+     *   create: {
+     *     // ... data to create a ExchangeRate
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the ExchangeRate we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ExchangeRateUpsertArgs>(args: SelectSubset<T, ExchangeRateUpsertArgs<ExtArgs>>): Prisma__ExchangeRateClient<$Result.GetResult<Prisma.$ExchangeRatePayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of ExchangeRates.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExchangeRateCountArgs} args - Arguments to filter ExchangeRates to count.
+     * @example
+     * // Count the number of ExchangeRates
+     * const count = await prisma.exchangeRate.count({
+     *   where: {
+     *     // ... the filter for the ExchangeRates we want to count
+     *   }
+     * })
+    **/
+    count<T extends ExchangeRateCountArgs>(
+      args?: Subset<T, ExchangeRateCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ExchangeRateCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a ExchangeRate.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExchangeRateAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ExchangeRateAggregateArgs>(args: Subset<T, ExchangeRateAggregateArgs>): Prisma.PrismaPromise<GetExchangeRateAggregateType<T>>
+
+    /**
+     * Group by ExchangeRate.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExchangeRateGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ExchangeRateGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ExchangeRateGroupByArgs['orderBy'] }
+        : { orderBy?: ExchangeRateGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ExchangeRateGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetExchangeRateGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the ExchangeRate model
+   */
+  readonly fields: ExchangeRateFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for ExchangeRate.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ExchangeRateClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    school<T extends SchoolDefaultArgs<ExtArgs> = {}>(args?: Subset<T, SchoolDefaultArgs<ExtArgs>>): Prisma__SchoolClient<$Result.GetResult<Prisma.$SchoolPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the ExchangeRate model
+   */ 
+  interface ExchangeRateFieldRefs {
+    readonly id: FieldRef<"ExchangeRate", 'String'>
+    readonly schoolId: FieldRef<"ExchangeRate", 'String'>
+    readonly date: FieldRef<"ExchangeRate", 'DateTime'>
+    readonly fromCurrency: FieldRef<"ExchangeRate", 'String'>
+    readonly toCurrency: FieldRef<"ExchangeRate", 'String'>
+    readonly rate: FieldRef<"ExchangeRate", 'Float'>
+    readonly createdAt: FieldRef<"ExchangeRate", 'DateTime'>
+    readonly updatedAt: FieldRef<"ExchangeRate", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * ExchangeRate findUnique
+   */
+  export type ExchangeRateFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExchangeRate
+     */
+    select?: ExchangeRateSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExchangeRateInclude<ExtArgs> | null
+    /**
+     * Filter, which ExchangeRate to fetch.
+     */
+    where: ExchangeRateWhereUniqueInput
+  }
+
+  /**
+   * ExchangeRate findUniqueOrThrow
+   */
+  export type ExchangeRateFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExchangeRate
+     */
+    select?: ExchangeRateSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExchangeRateInclude<ExtArgs> | null
+    /**
+     * Filter, which ExchangeRate to fetch.
+     */
+    where: ExchangeRateWhereUniqueInput
+  }
+
+  /**
+   * ExchangeRate findFirst
+   */
+  export type ExchangeRateFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExchangeRate
+     */
+    select?: ExchangeRateSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExchangeRateInclude<ExtArgs> | null
+    /**
+     * Filter, which ExchangeRate to fetch.
+     */
+    where?: ExchangeRateWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ExchangeRates to fetch.
+     */
+    orderBy?: ExchangeRateOrderByWithRelationInput | ExchangeRateOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ExchangeRates.
+     */
+    cursor?: ExchangeRateWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ExchangeRates from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ExchangeRates.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ExchangeRates.
+     */
+    distinct?: ExchangeRateScalarFieldEnum | ExchangeRateScalarFieldEnum[]
+  }
+
+  /**
+   * ExchangeRate findFirstOrThrow
+   */
+  export type ExchangeRateFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExchangeRate
+     */
+    select?: ExchangeRateSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExchangeRateInclude<ExtArgs> | null
+    /**
+     * Filter, which ExchangeRate to fetch.
+     */
+    where?: ExchangeRateWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ExchangeRates to fetch.
+     */
+    orderBy?: ExchangeRateOrderByWithRelationInput | ExchangeRateOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ExchangeRates.
+     */
+    cursor?: ExchangeRateWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ExchangeRates from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ExchangeRates.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ExchangeRates.
+     */
+    distinct?: ExchangeRateScalarFieldEnum | ExchangeRateScalarFieldEnum[]
+  }
+
+  /**
+   * ExchangeRate findMany
+   */
+  export type ExchangeRateFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExchangeRate
+     */
+    select?: ExchangeRateSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExchangeRateInclude<ExtArgs> | null
+    /**
+     * Filter, which ExchangeRates to fetch.
+     */
+    where?: ExchangeRateWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ExchangeRates to fetch.
+     */
+    orderBy?: ExchangeRateOrderByWithRelationInput | ExchangeRateOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing ExchangeRates.
+     */
+    cursor?: ExchangeRateWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ExchangeRates from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ExchangeRates.
+     */
+    skip?: number
+    distinct?: ExchangeRateScalarFieldEnum | ExchangeRateScalarFieldEnum[]
+  }
+
+  /**
+   * ExchangeRate create
+   */
+  export type ExchangeRateCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExchangeRate
+     */
+    select?: ExchangeRateSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExchangeRateInclude<ExtArgs> | null
+    /**
+     * The data needed to create a ExchangeRate.
+     */
+    data: XOR<ExchangeRateCreateInput, ExchangeRateUncheckedCreateInput>
+  }
+
+  /**
+   * ExchangeRate createMany
+   */
+  export type ExchangeRateCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many ExchangeRates.
+     */
+    data: ExchangeRateCreateManyInput | ExchangeRateCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * ExchangeRate createManyAndReturn
+   */
+  export type ExchangeRateCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExchangeRate
+     */
+    select?: ExchangeRateSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many ExchangeRates.
+     */
+    data: ExchangeRateCreateManyInput | ExchangeRateCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExchangeRateIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * ExchangeRate update
+   */
+  export type ExchangeRateUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExchangeRate
+     */
+    select?: ExchangeRateSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExchangeRateInclude<ExtArgs> | null
+    /**
+     * The data needed to update a ExchangeRate.
+     */
+    data: XOR<ExchangeRateUpdateInput, ExchangeRateUncheckedUpdateInput>
+    /**
+     * Choose, which ExchangeRate to update.
+     */
+    where: ExchangeRateWhereUniqueInput
+  }
+
+  /**
+   * ExchangeRate updateMany
+   */
+  export type ExchangeRateUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update ExchangeRates.
+     */
+    data: XOR<ExchangeRateUpdateManyMutationInput, ExchangeRateUncheckedUpdateManyInput>
+    /**
+     * Filter which ExchangeRates to update
+     */
+    where?: ExchangeRateWhereInput
+  }
+
+  /**
+   * ExchangeRate upsert
+   */
+  export type ExchangeRateUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExchangeRate
+     */
+    select?: ExchangeRateSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExchangeRateInclude<ExtArgs> | null
+    /**
+     * The filter to search for the ExchangeRate to update in case it exists.
+     */
+    where: ExchangeRateWhereUniqueInput
+    /**
+     * In case the ExchangeRate found by the `where` argument doesn't exist, create a new ExchangeRate with this data.
+     */
+    create: XOR<ExchangeRateCreateInput, ExchangeRateUncheckedCreateInput>
+    /**
+     * In case the ExchangeRate was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ExchangeRateUpdateInput, ExchangeRateUncheckedUpdateInput>
+  }
+
+  /**
+   * ExchangeRate delete
+   */
+  export type ExchangeRateDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExchangeRate
+     */
+    select?: ExchangeRateSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExchangeRateInclude<ExtArgs> | null
+    /**
+     * Filter which ExchangeRate to delete.
+     */
+    where: ExchangeRateWhereUniqueInput
+  }
+
+  /**
+   * ExchangeRate deleteMany
+   */
+  export type ExchangeRateDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ExchangeRates to delete
+     */
+    where?: ExchangeRateWhereInput
+  }
+
+  /**
+   * ExchangeRate without action
+   */
+  export type ExchangeRateDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExchangeRate
+     */
+    select?: ExchangeRateSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExchangeRateInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model Approval
+   */
+
+  export type AggregateApproval = {
+    _count: ApprovalCountAggregateOutputType | null
+    _avg: ApprovalAvgAggregateOutputType | null
+    _sum: ApprovalSumAggregateOutputType | null
+    _min: ApprovalMinAggregateOutputType | null
+    _max: ApprovalMaxAggregateOutputType | null
+  }
+
+  export type ApprovalAvgAggregateOutputType = {
+    amount: number | null
+    tier: number | null
+  }
+
+  export type ApprovalSumAggregateOutputType = {
+    amount: number | null
+    tier: number | null
+  }
+
+  export type ApprovalMinAggregateOutputType = {
+    id: string | null
+    schoolId: string | null
+    entityType: string | null
+    entityId: string | null
+    requestedBy: string | null
+    amount: number | null
+    currency: string | null
+    status: string | null
+    tier: number | null
+    approverRole: string | null
+    approvedBy: string | null
+    approvedAt: Date | null
+    rejectionReason: string | null
+    thresholdRule: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type ApprovalMaxAggregateOutputType = {
+    id: string | null
+    schoolId: string | null
+    entityType: string | null
+    entityId: string | null
+    requestedBy: string | null
+    amount: number | null
+    currency: string | null
+    status: string | null
+    tier: number | null
+    approverRole: string | null
+    approvedBy: string | null
+    approvedAt: Date | null
+    rejectionReason: string | null
+    thresholdRule: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type ApprovalCountAggregateOutputType = {
+    id: number
+    schoolId: number
+    entityType: number
+    entityId: number
+    requestedBy: number
+    amount: number
+    currency: number
+    status: number
+    tier: number
+    approverRole: number
+    approvedBy: number
+    approvedAt: number
+    rejectionReason: number
+    thresholdRule: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type ApprovalAvgAggregateInputType = {
+    amount?: true
+    tier?: true
+  }
+
+  export type ApprovalSumAggregateInputType = {
+    amount?: true
+    tier?: true
+  }
+
+  export type ApprovalMinAggregateInputType = {
+    id?: true
+    schoolId?: true
+    entityType?: true
+    entityId?: true
+    requestedBy?: true
+    amount?: true
+    currency?: true
+    status?: true
+    tier?: true
+    approverRole?: true
+    approvedBy?: true
+    approvedAt?: true
+    rejectionReason?: true
+    thresholdRule?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type ApprovalMaxAggregateInputType = {
+    id?: true
+    schoolId?: true
+    entityType?: true
+    entityId?: true
+    requestedBy?: true
+    amount?: true
+    currency?: true
+    status?: true
+    tier?: true
+    approverRole?: true
+    approvedBy?: true
+    approvedAt?: true
+    rejectionReason?: true
+    thresholdRule?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type ApprovalCountAggregateInputType = {
+    id?: true
+    schoolId?: true
+    entityType?: true
+    entityId?: true
+    requestedBy?: true
+    amount?: true
+    currency?: true
+    status?: true
+    tier?: true
+    approverRole?: true
+    approvedBy?: true
+    approvedAt?: true
+    rejectionReason?: true
+    thresholdRule?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type ApprovalAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Approval to aggregate.
+     */
+    where?: ApprovalWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Approvals to fetch.
+     */
+    orderBy?: ApprovalOrderByWithRelationInput | ApprovalOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ApprovalWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Approvals from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Approvals.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Approvals
+    **/
+    _count?: true | ApprovalCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: ApprovalAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: ApprovalSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ApprovalMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ApprovalMaxAggregateInputType
+  }
+
+  export type GetApprovalAggregateType<T extends ApprovalAggregateArgs> = {
+        [P in keyof T & keyof AggregateApproval]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateApproval[P]>
+      : GetScalarType<T[P], AggregateApproval[P]>
+  }
+
+
+
+
+  export type ApprovalGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ApprovalWhereInput
+    orderBy?: ApprovalOrderByWithAggregationInput | ApprovalOrderByWithAggregationInput[]
+    by: ApprovalScalarFieldEnum[] | ApprovalScalarFieldEnum
+    having?: ApprovalScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ApprovalCountAggregateInputType | true
+    _avg?: ApprovalAvgAggregateInputType
+    _sum?: ApprovalSumAggregateInputType
+    _min?: ApprovalMinAggregateInputType
+    _max?: ApprovalMaxAggregateInputType
+  }
+
+  export type ApprovalGroupByOutputType = {
+    id: string
+    schoolId: string
+    entityType: string
+    entityId: string
+    requestedBy: string
+    amount: number
+    currency: string
+    status: string
+    tier: number
+    approverRole: string
+    approvedBy: string | null
+    approvedAt: Date | null
+    rejectionReason: string | null
+    thresholdRule: string | null
+    createdAt: Date
+    updatedAt: Date
+    _count: ApprovalCountAggregateOutputType | null
+    _avg: ApprovalAvgAggregateOutputType | null
+    _sum: ApprovalSumAggregateOutputType | null
+    _min: ApprovalMinAggregateOutputType | null
+    _max: ApprovalMaxAggregateOutputType | null
+  }
+
+  type GetApprovalGroupByPayload<T extends ApprovalGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ApprovalGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ApprovalGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ApprovalGroupByOutputType[P]>
+            : GetScalarType<T[P], ApprovalGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ApprovalSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    schoolId?: boolean
+    entityType?: boolean
+    entityId?: boolean
+    requestedBy?: boolean
+    amount?: boolean
+    currency?: boolean
+    status?: boolean
+    tier?: boolean
+    approverRole?: boolean
+    approvedBy?: boolean
+    approvedAt?: boolean
+    rejectionReason?: boolean
+    thresholdRule?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    school?: boolean | SchoolDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["approval"]>
+
+  export type ApprovalSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    schoolId?: boolean
+    entityType?: boolean
+    entityId?: boolean
+    requestedBy?: boolean
+    amount?: boolean
+    currency?: boolean
+    status?: boolean
+    tier?: boolean
+    approverRole?: boolean
+    approvedBy?: boolean
+    approvedAt?: boolean
+    rejectionReason?: boolean
+    thresholdRule?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    school?: boolean | SchoolDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["approval"]>
+
+  export type ApprovalSelectScalar = {
+    id?: boolean
+    schoolId?: boolean
+    entityType?: boolean
+    entityId?: boolean
+    requestedBy?: boolean
+    amount?: boolean
+    currency?: boolean
+    status?: boolean
+    tier?: boolean
+    approverRole?: boolean
+    approvedBy?: boolean
+    approvedAt?: boolean
+    rejectionReason?: boolean
+    thresholdRule?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type ApprovalInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    school?: boolean | SchoolDefaultArgs<ExtArgs>
+  }
+  export type ApprovalIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    school?: boolean | SchoolDefaultArgs<ExtArgs>
+  }
+
+  export type $ApprovalPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Approval"
+    objects: {
+      school: Prisma.$SchoolPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      schoolId: string
+      entityType: string
+      entityId: string
+      requestedBy: string
+      amount: number
+      currency: string
+      status: string
+      tier: number
+      approverRole: string
+      approvedBy: string | null
+      approvedAt: Date | null
+      rejectionReason: string | null
+      thresholdRule: string | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["approval"]>
+    composites: {}
+  }
+
+  type ApprovalGetPayload<S extends boolean | null | undefined | ApprovalDefaultArgs> = $Result.GetResult<Prisma.$ApprovalPayload, S>
+
+  type ApprovalCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<ApprovalFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: ApprovalCountAggregateInputType | true
+    }
+
+  export interface ApprovalDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Approval'], meta: { name: 'Approval' } }
+    /**
+     * Find zero or one Approval that matches the filter.
+     * @param {ApprovalFindUniqueArgs} args - Arguments to find a Approval
+     * @example
+     * // Get one Approval
+     * const approval = await prisma.approval.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ApprovalFindUniqueArgs>(args: SelectSubset<T, ApprovalFindUniqueArgs<ExtArgs>>): Prisma__ApprovalClient<$Result.GetResult<Prisma.$ApprovalPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one Approval that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {ApprovalFindUniqueOrThrowArgs} args - Arguments to find a Approval
+     * @example
+     * // Get one Approval
+     * const approval = await prisma.approval.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ApprovalFindUniqueOrThrowArgs>(args: SelectSubset<T, ApprovalFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ApprovalClient<$Result.GetResult<Prisma.$ApprovalPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first Approval that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ApprovalFindFirstArgs} args - Arguments to find a Approval
+     * @example
+     * // Get one Approval
+     * const approval = await prisma.approval.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ApprovalFindFirstArgs>(args?: SelectSubset<T, ApprovalFindFirstArgs<ExtArgs>>): Prisma__ApprovalClient<$Result.GetResult<Prisma.$ApprovalPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first Approval that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ApprovalFindFirstOrThrowArgs} args - Arguments to find a Approval
+     * @example
+     * // Get one Approval
+     * const approval = await prisma.approval.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ApprovalFindFirstOrThrowArgs>(args?: SelectSubset<T, ApprovalFindFirstOrThrowArgs<ExtArgs>>): Prisma__ApprovalClient<$Result.GetResult<Prisma.$ApprovalPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more Approvals that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ApprovalFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Approvals
+     * const approvals = await prisma.approval.findMany()
+     * 
+     * // Get first 10 Approvals
+     * const approvals = await prisma.approval.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const approvalWithIdOnly = await prisma.approval.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ApprovalFindManyArgs>(args?: SelectSubset<T, ApprovalFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ApprovalPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a Approval.
+     * @param {ApprovalCreateArgs} args - Arguments to create a Approval.
+     * @example
+     * // Create one Approval
+     * const Approval = await prisma.approval.create({
+     *   data: {
+     *     // ... data to create a Approval
+     *   }
+     * })
+     * 
+     */
+    create<T extends ApprovalCreateArgs>(args: SelectSubset<T, ApprovalCreateArgs<ExtArgs>>): Prisma__ApprovalClient<$Result.GetResult<Prisma.$ApprovalPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many Approvals.
+     * @param {ApprovalCreateManyArgs} args - Arguments to create many Approvals.
+     * @example
+     * // Create many Approvals
+     * const approval = await prisma.approval.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ApprovalCreateManyArgs>(args?: SelectSubset<T, ApprovalCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Approvals and returns the data saved in the database.
+     * @param {ApprovalCreateManyAndReturnArgs} args - Arguments to create many Approvals.
+     * @example
+     * // Create many Approvals
+     * const approval = await prisma.approval.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Approvals and only return the `id`
+     * const approvalWithIdOnly = await prisma.approval.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends ApprovalCreateManyAndReturnArgs>(args?: SelectSubset<T, ApprovalCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ApprovalPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a Approval.
+     * @param {ApprovalDeleteArgs} args - Arguments to delete one Approval.
+     * @example
+     * // Delete one Approval
+     * const Approval = await prisma.approval.delete({
+     *   where: {
+     *     // ... filter to delete one Approval
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ApprovalDeleteArgs>(args: SelectSubset<T, ApprovalDeleteArgs<ExtArgs>>): Prisma__ApprovalClient<$Result.GetResult<Prisma.$ApprovalPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one Approval.
+     * @param {ApprovalUpdateArgs} args - Arguments to update one Approval.
+     * @example
+     * // Update one Approval
+     * const approval = await prisma.approval.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ApprovalUpdateArgs>(args: SelectSubset<T, ApprovalUpdateArgs<ExtArgs>>): Prisma__ApprovalClient<$Result.GetResult<Prisma.$ApprovalPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more Approvals.
+     * @param {ApprovalDeleteManyArgs} args - Arguments to filter Approvals to delete.
+     * @example
+     * // Delete a few Approvals
+     * const { count } = await prisma.approval.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ApprovalDeleteManyArgs>(args?: SelectSubset<T, ApprovalDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Approvals.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ApprovalUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Approvals
+     * const approval = await prisma.approval.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ApprovalUpdateManyArgs>(args: SelectSubset<T, ApprovalUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one Approval.
+     * @param {ApprovalUpsertArgs} args - Arguments to update or create a Approval.
+     * @example
+     * // Update or create a Approval
+     * const approval = await prisma.approval.upsert({
+     *   create: {
+     *     // ... data to create a Approval
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Approval we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ApprovalUpsertArgs>(args: SelectSubset<T, ApprovalUpsertArgs<ExtArgs>>): Prisma__ApprovalClient<$Result.GetResult<Prisma.$ApprovalPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of Approvals.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ApprovalCountArgs} args - Arguments to filter Approvals to count.
+     * @example
+     * // Count the number of Approvals
+     * const count = await prisma.approval.count({
+     *   where: {
+     *     // ... the filter for the Approvals we want to count
+     *   }
+     * })
+    **/
+    count<T extends ApprovalCountArgs>(
+      args?: Subset<T, ApprovalCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ApprovalCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Approval.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ApprovalAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ApprovalAggregateArgs>(args: Subset<T, ApprovalAggregateArgs>): Prisma.PrismaPromise<GetApprovalAggregateType<T>>
+
+    /**
+     * Group by Approval.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ApprovalGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ApprovalGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ApprovalGroupByArgs['orderBy'] }
+        : { orderBy?: ApprovalGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ApprovalGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetApprovalGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Approval model
+   */
+  readonly fields: ApprovalFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Approval.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ApprovalClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    school<T extends SchoolDefaultArgs<ExtArgs> = {}>(args?: Subset<T, SchoolDefaultArgs<ExtArgs>>): Prisma__SchoolClient<$Result.GetResult<Prisma.$SchoolPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Approval model
+   */ 
+  interface ApprovalFieldRefs {
+    readonly id: FieldRef<"Approval", 'String'>
+    readonly schoolId: FieldRef<"Approval", 'String'>
+    readonly entityType: FieldRef<"Approval", 'String'>
+    readonly entityId: FieldRef<"Approval", 'String'>
+    readonly requestedBy: FieldRef<"Approval", 'String'>
+    readonly amount: FieldRef<"Approval", 'Float'>
+    readonly currency: FieldRef<"Approval", 'String'>
+    readonly status: FieldRef<"Approval", 'String'>
+    readonly tier: FieldRef<"Approval", 'Int'>
+    readonly approverRole: FieldRef<"Approval", 'String'>
+    readonly approvedBy: FieldRef<"Approval", 'String'>
+    readonly approvedAt: FieldRef<"Approval", 'DateTime'>
+    readonly rejectionReason: FieldRef<"Approval", 'String'>
+    readonly thresholdRule: FieldRef<"Approval", 'String'>
+    readonly createdAt: FieldRef<"Approval", 'DateTime'>
+    readonly updatedAt: FieldRef<"Approval", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Approval findUnique
+   */
+  export type ApprovalFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Approval
+     */
+    select?: ApprovalSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ApprovalInclude<ExtArgs> | null
+    /**
+     * Filter, which Approval to fetch.
+     */
+    where: ApprovalWhereUniqueInput
+  }
+
+  /**
+   * Approval findUniqueOrThrow
+   */
+  export type ApprovalFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Approval
+     */
+    select?: ApprovalSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ApprovalInclude<ExtArgs> | null
+    /**
+     * Filter, which Approval to fetch.
+     */
+    where: ApprovalWhereUniqueInput
+  }
+
+  /**
+   * Approval findFirst
+   */
+  export type ApprovalFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Approval
+     */
+    select?: ApprovalSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ApprovalInclude<ExtArgs> | null
+    /**
+     * Filter, which Approval to fetch.
+     */
+    where?: ApprovalWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Approvals to fetch.
+     */
+    orderBy?: ApprovalOrderByWithRelationInput | ApprovalOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Approvals.
+     */
+    cursor?: ApprovalWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Approvals from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Approvals.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Approvals.
+     */
+    distinct?: ApprovalScalarFieldEnum | ApprovalScalarFieldEnum[]
+  }
+
+  /**
+   * Approval findFirstOrThrow
+   */
+  export type ApprovalFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Approval
+     */
+    select?: ApprovalSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ApprovalInclude<ExtArgs> | null
+    /**
+     * Filter, which Approval to fetch.
+     */
+    where?: ApprovalWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Approvals to fetch.
+     */
+    orderBy?: ApprovalOrderByWithRelationInput | ApprovalOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Approvals.
+     */
+    cursor?: ApprovalWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Approvals from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Approvals.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Approvals.
+     */
+    distinct?: ApprovalScalarFieldEnum | ApprovalScalarFieldEnum[]
+  }
+
+  /**
+   * Approval findMany
+   */
+  export type ApprovalFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Approval
+     */
+    select?: ApprovalSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ApprovalInclude<ExtArgs> | null
+    /**
+     * Filter, which Approvals to fetch.
+     */
+    where?: ApprovalWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Approvals to fetch.
+     */
+    orderBy?: ApprovalOrderByWithRelationInput | ApprovalOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Approvals.
+     */
+    cursor?: ApprovalWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Approvals from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Approvals.
+     */
+    skip?: number
+    distinct?: ApprovalScalarFieldEnum | ApprovalScalarFieldEnum[]
+  }
+
+  /**
+   * Approval create
+   */
+  export type ApprovalCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Approval
+     */
+    select?: ApprovalSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ApprovalInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Approval.
+     */
+    data: XOR<ApprovalCreateInput, ApprovalUncheckedCreateInput>
+  }
+
+  /**
+   * Approval createMany
+   */
+  export type ApprovalCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Approvals.
+     */
+    data: ApprovalCreateManyInput | ApprovalCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Approval createManyAndReturn
+   */
+  export type ApprovalCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Approval
+     */
+    select?: ApprovalSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many Approvals.
+     */
+    data: ApprovalCreateManyInput | ApprovalCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ApprovalIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Approval update
+   */
+  export type ApprovalUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Approval
+     */
+    select?: ApprovalSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ApprovalInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Approval.
+     */
+    data: XOR<ApprovalUpdateInput, ApprovalUncheckedUpdateInput>
+    /**
+     * Choose, which Approval to update.
+     */
+    where: ApprovalWhereUniqueInput
+  }
+
+  /**
+   * Approval updateMany
+   */
+  export type ApprovalUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Approvals.
+     */
+    data: XOR<ApprovalUpdateManyMutationInput, ApprovalUncheckedUpdateManyInput>
+    /**
+     * Filter which Approvals to update
+     */
+    where?: ApprovalWhereInput
+  }
+
+  /**
+   * Approval upsert
+   */
+  export type ApprovalUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Approval
+     */
+    select?: ApprovalSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ApprovalInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Approval to update in case it exists.
+     */
+    where: ApprovalWhereUniqueInput
+    /**
+     * In case the Approval found by the `where` argument doesn't exist, create a new Approval with this data.
+     */
+    create: XOR<ApprovalCreateInput, ApprovalUncheckedCreateInput>
+    /**
+     * In case the Approval was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ApprovalUpdateInput, ApprovalUncheckedUpdateInput>
+  }
+
+  /**
+   * Approval delete
+   */
+  export type ApprovalDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Approval
+     */
+    select?: ApprovalSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ApprovalInclude<ExtArgs> | null
+    /**
+     * Filter which Approval to delete.
+     */
+    where: ApprovalWhereUniqueInput
+  }
+
+  /**
+   * Approval deleteMany
+   */
+  export type ApprovalDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Approvals to delete
+     */
+    where?: ApprovalWhereInput
+  }
+
+  /**
+   * Approval without action
+   */
+  export type ApprovalDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Approval
+     */
+    select?: ApprovalSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ApprovalInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model Budget
+   */
+
+  export type AggregateBudget = {
+    _count: BudgetCountAggregateOutputType | null
+    _avg: BudgetAvgAggregateOutputType | null
+    _sum: BudgetSumAggregateOutputType | null
+    _min: BudgetMinAggregateOutputType | null
+    _max: BudgetMaxAggregateOutputType | null
+  }
+
+  export type BudgetAvgAggregateOutputType = {
+    year: number | null
+    amount: number | null
+  }
+
+  export type BudgetSumAggregateOutputType = {
+    year: number | null
+    amount: number | null
+  }
+
+  export type BudgetMinAggregateOutputType = {
+    id: string | null
+    schoolId: string | null
+    year: number | null
+    term: string | null
+    coaCode: string | null
+    amount: number | null
+    currency: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type BudgetMaxAggregateOutputType = {
+    id: string | null
+    schoolId: string | null
+    year: number | null
+    term: string | null
+    coaCode: string | null
+    amount: number | null
+    currency: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type BudgetCountAggregateOutputType = {
+    id: number
+    schoolId: number
+    year: number
+    term: number
+    coaCode: number
+    amount: number
+    currency: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type BudgetAvgAggregateInputType = {
+    year?: true
+    amount?: true
+  }
+
+  export type BudgetSumAggregateInputType = {
+    year?: true
+    amount?: true
+  }
+
+  export type BudgetMinAggregateInputType = {
+    id?: true
+    schoolId?: true
+    year?: true
+    term?: true
+    coaCode?: true
+    amount?: true
+    currency?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type BudgetMaxAggregateInputType = {
+    id?: true
+    schoolId?: true
+    year?: true
+    term?: true
+    coaCode?: true
+    amount?: true
+    currency?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type BudgetCountAggregateInputType = {
+    id?: true
+    schoolId?: true
+    year?: true
+    term?: true
+    coaCode?: true
+    amount?: true
+    currency?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type BudgetAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Budget to aggregate.
+     */
+    where?: BudgetWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Budgets to fetch.
+     */
+    orderBy?: BudgetOrderByWithRelationInput | BudgetOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: BudgetWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Budgets from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Budgets.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Budgets
+    **/
+    _count?: true | BudgetCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: BudgetAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: BudgetSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: BudgetMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: BudgetMaxAggregateInputType
+  }
+
+  export type GetBudgetAggregateType<T extends BudgetAggregateArgs> = {
+        [P in keyof T & keyof AggregateBudget]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateBudget[P]>
+      : GetScalarType<T[P], AggregateBudget[P]>
+  }
+
+
+
+
+  export type BudgetGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: BudgetWhereInput
+    orderBy?: BudgetOrderByWithAggregationInput | BudgetOrderByWithAggregationInput[]
+    by: BudgetScalarFieldEnum[] | BudgetScalarFieldEnum
+    having?: BudgetScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: BudgetCountAggregateInputType | true
+    _avg?: BudgetAvgAggregateInputType
+    _sum?: BudgetSumAggregateInputType
+    _min?: BudgetMinAggregateInputType
+    _max?: BudgetMaxAggregateInputType
+  }
+
+  export type BudgetGroupByOutputType = {
+    id: string
+    schoolId: string
+    year: number
+    term: string | null
+    coaCode: string
+    amount: number
+    currency: string
+    createdAt: Date
+    updatedAt: Date
+    _count: BudgetCountAggregateOutputType | null
+    _avg: BudgetAvgAggregateOutputType | null
+    _sum: BudgetSumAggregateOutputType | null
+    _min: BudgetMinAggregateOutputType | null
+    _max: BudgetMaxAggregateOutputType | null
+  }
+
+  type GetBudgetGroupByPayload<T extends BudgetGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<BudgetGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof BudgetGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], BudgetGroupByOutputType[P]>
+            : GetScalarType<T[P], BudgetGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type BudgetSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    schoolId?: boolean
+    year?: boolean
+    term?: boolean
+    coaCode?: boolean
+    amount?: boolean
+    currency?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    school?: boolean | SchoolDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["budget"]>
+
+  export type BudgetSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    schoolId?: boolean
+    year?: boolean
+    term?: boolean
+    coaCode?: boolean
+    amount?: boolean
+    currency?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    school?: boolean | SchoolDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["budget"]>
+
+  export type BudgetSelectScalar = {
+    id?: boolean
+    schoolId?: boolean
+    year?: boolean
+    term?: boolean
+    coaCode?: boolean
+    amount?: boolean
+    currency?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type BudgetInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    school?: boolean | SchoolDefaultArgs<ExtArgs>
+  }
+  export type BudgetIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    school?: boolean | SchoolDefaultArgs<ExtArgs>
+  }
+
+  export type $BudgetPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Budget"
+    objects: {
+      school: Prisma.$SchoolPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      schoolId: string
+      year: number
+      term: string | null
+      coaCode: string
+      amount: number
+      currency: string
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["budget"]>
+    composites: {}
+  }
+
+  type BudgetGetPayload<S extends boolean | null | undefined | BudgetDefaultArgs> = $Result.GetResult<Prisma.$BudgetPayload, S>
+
+  type BudgetCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<BudgetFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: BudgetCountAggregateInputType | true
+    }
+
+  export interface BudgetDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Budget'], meta: { name: 'Budget' } }
+    /**
+     * Find zero or one Budget that matches the filter.
+     * @param {BudgetFindUniqueArgs} args - Arguments to find a Budget
+     * @example
+     * // Get one Budget
+     * const budget = await prisma.budget.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends BudgetFindUniqueArgs>(args: SelectSubset<T, BudgetFindUniqueArgs<ExtArgs>>): Prisma__BudgetClient<$Result.GetResult<Prisma.$BudgetPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one Budget that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {BudgetFindUniqueOrThrowArgs} args - Arguments to find a Budget
+     * @example
+     * // Get one Budget
+     * const budget = await prisma.budget.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends BudgetFindUniqueOrThrowArgs>(args: SelectSubset<T, BudgetFindUniqueOrThrowArgs<ExtArgs>>): Prisma__BudgetClient<$Result.GetResult<Prisma.$BudgetPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first Budget that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BudgetFindFirstArgs} args - Arguments to find a Budget
+     * @example
+     * // Get one Budget
+     * const budget = await prisma.budget.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends BudgetFindFirstArgs>(args?: SelectSubset<T, BudgetFindFirstArgs<ExtArgs>>): Prisma__BudgetClient<$Result.GetResult<Prisma.$BudgetPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first Budget that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BudgetFindFirstOrThrowArgs} args - Arguments to find a Budget
+     * @example
+     * // Get one Budget
+     * const budget = await prisma.budget.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends BudgetFindFirstOrThrowArgs>(args?: SelectSubset<T, BudgetFindFirstOrThrowArgs<ExtArgs>>): Prisma__BudgetClient<$Result.GetResult<Prisma.$BudgetPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more Budgets that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BudgetFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Budgets
+     * const budgets = await prisma.budget.findMany()
+     * 
+     * // Get first 10 Budgets
+     * const budgets = await prisma.budget.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const budgetWithIdOnly = await prisma.budget.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends BudgetFindManyArgs>(args?: SelectSubset<T, BudgetFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BudgetPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a Budget.
+     * @param {BudgetCreateArgs} args - Arguments to create a Budget.
+     * @example
+     * // Create one Budget
+     * const Budget = await prisma.budget.create({
+     *   data: {
+     *     // ... data to create a Budget
+     *   }
+     * })
+     * 
+     */
+    create<T extends BudgetCreateArgs>(args: SelectSubset<T, BudgetCreateArgs<ExtArgs>>): Prisma__BudgetClient<$Result.GetResult<Prisma.$BudgetPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many Budgets.
+     * @param {BudgetCreateManyArgs} args - Arguments to create many Budgets.
+     * @example
+     * // Create many Budgets
+     * const budget = await prisma.budget.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends BudgetCreateManyArgs>(args?: SelectSubset<T, BudgetCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Budgets and returns the data saved in the database.
+     * @param {BudgetCreateManyAndReturnArgs} args - Arguments to create many Budgets.
+     * @example
+     * // Create many Budgets
+     * const budget = await prisma.budget.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Budgets and only return the `id`
+     * const budgetWithIdOnly = await prisma.budget.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends BudgetCreateManyAndReturnArgs>(args?: SelectSubset<T, BudgetCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BudgetPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a Budget.
+     * @param {BudgetDeleteArgs} args - Arguments to delete one Budget.
+     * @example
+     * // Delete one Budget
+     * const Budget = await prisma.budget.delete({
+     *   where: {
+     *     // ... filter to delete one Budget
+     *   }
+     * })
+     * 
+     */
+    delete<T extends BudgetDeleteArgs>(args: SelectSubset<T, BudgetDeleteArgs<ExtArgs>>): Prisma__BudgetClient<$Result.GetResult<Prisma.$BudgetPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one Budget.
+     * @param {BudgetUpdateArgs} args - Arguments to update one Budget.
+     * @example
+     * // Update one Budget
+     * const budget = await prisma.budget.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends BudgetUpdateArgs>(args: SelectSubset<T, BudgetUpdateArgs<ExtArgs>>): Prisma__BudgetClient<$Result.GetResult<Prisma.$BudgetPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more Budgets.
+     * @param {BudgetDeleteManyArgs} args - Arguments to filter Budgets to delete.
+     * @example
+     * // Delete a few Budgets
+     * const { count } = await prisma.budget.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends BudgetDeleteManyArgs>(args?: SelectSubset<T, BudgetDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Budgets.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BudgetUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Budgets
+     * const budget = await prisma.budget.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends BudgetUpdateManyArgs>(args: SelectSubset<T, BudgetUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one Budget.
+     * @param {BudgetUpsertArgs} args - Arguments to update or create a Budget.
+     * @example
+     * // Update or create a Budget
+     * const budget = await prisma.budget.upsert({
+     *   create: {
+     *     // ... data to create a Budget
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Budget we want to update
+     *   }
+     * })
+     */
+    upsert<T extends BudgetUpsertArgs>(args: SelectSubset<T, BudgetUpsertArgs<ExtArgs>>): Prisma__BudgetClient<$Result.GetResult<Prisma.$BudgetPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of Budgets.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BudgetCountArgs} args - Arguments to filter Budgets to count.
+     * @example
+     * // Count the number of Budgets
+     * const count = await prisma.budget.count({
+     *   where: {
+     *     // ... the filter for the Budgets we want to count
+     *   }
+     * })
+    **/
+    count<T extends BudgetCountArgs>(
+      args?: Subset<T, BudgetCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], BudgetCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Budget.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BudgetAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends BudgetAggregateArgs>(args: Subset<T, BudgetAggregateArgs>): Prisma.PrismaPromise<GetBudgetAggregateType<T>>
+
+    /**
+     * Group by Budget.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BudgetGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends BudgetGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: BudgetGroupByArgs['orderBy'] }
+        : { orderBy?: BudgetGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, BudgetGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetBudgetGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Budget model
+   */
+  readonly fields: BudgetFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Budget.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__BudgetClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    school<T extends SchoolDefaultArgs<ExtArgs> = {}>(args?: Subset<T, SchoolDefaultArgs<ExtArgs>>): Prisma__SchoolClient<$Result.GetResult<Prisma.$SchoolPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Budget model
+   */ 
+  interface BudgetFieldRefs {
+    readonly id: FieldRef<"Budget", 'String'>
+    readonly schoolId: FieldRef<"Budget", 'String'>
+    readonly year: FieldRef<"Budget", 'Int'>
+    readonly term: FieldRef<"Budget", 'String'>
+    readonly coaCode: FieldRef<"Budget", 'String'>
+    readonly amount: FieldRef<"Budget", 'Float'>
+    readonly currency: FieldRef<"Budget", 'String'>
+    readonly createdAt: FieldRef<"Budget", 'DateTime'>
+    readonly updatedAt: FieldRef<"Budget", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Budget findUnique
+   */
+  export type BudgetFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Budget
+     */
+    select?: BudgetSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BudgetInclude<ExtArgs> | null
+    /**
+     * Filter, which Budget to fetch.
+     */
+    where: BudgetWhereUniqueInput
+  }
+
+  /**
+   * Budget findUniqueOrThrow
+   */
+  export type BudgetFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Budget
+     */
+    select?: BudgetSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BudgetInclude<ExtArgs> | null
+    /**
+     * Filter, which Budget to fetch.
+     */
+    where: BudgetWhereUniqueInput
+  }
+
+  /**
+   * Budget findFirst
+   */
+  export type BudgetFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Budget
+     */
+    select?: BudgetSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BudgetInclude<ExtArgs> | null
+    /**
+     * Filter, which Budget to fetch.
+     */
+    where?: BudgetWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Budgets to fetch.
+     */
+    orderBy?: BudgetOrderByWithRelationInput | BudgetOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Budgets.
+     */
+    cursor?: BudgetWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Budgets from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Budgets.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Budgets.
+     */
+    distinct?: BudgetScalarFieldEnum | BudgetScalarFieldEnum[]
+  }
+
+  /**
+   * Budget findFirstOrThrow
+   */
+  export type BudgetFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Budget
+     */
+    select?: BudgetSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BudgetInclude<ExtArgs> | null
+    /**
+     * Filter, which Budget to fetch.
+     */
+    where?: BudgetWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Budgets to fetch.
+     */
+    orderBy?: BudgetOrderByWithRelationInput | BudgetOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Budgets.
+     */
+    cursor?: BudgetWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Budgets from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Budgets.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Budgets.
+     */
+    distinct?: BudgetScalarFieldEnum | BudgetScalarFieldEnum[]
+  }
+
+  /**
+   * Budget findMany
+   */
+  export type BudgetFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Budget
+     */
+    select?: BudgetSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BudgetInclude<ExtArgs> | null
+    /**
+     * Filter, which Budgets to fetch.
+     */
+    where?: BudgetWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Budgets to fetch.
+     */
+    orderBy?: BudgetOrderByWithRelationInput | BudgetOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Budgets.
+     */
+    cursor?: BudgetWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Budgets from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Budgets.
+     */
+    skip?: number
+    distinct?: BudgetScalarFieldEnum | BudgetScalarFieldEnum[]
+  }
+
+  /**
+   * Budget create
+   */
+  export type BudgetCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Budget
+     */
+    select?: BudgetSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BudgetInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Budget.
+     */
+    data: XOR<BudgetCreateInput, BudgetUncheckedCreateInput>
+  }
+
+  /**
+   * Budget createMany
+   */
+  export type BudgetCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Budgets.
+     */
+    data: BudgetCreateManyInput | BudgetCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Budget createManyAndReturn
+   */
+  export type BudgetCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Budget
+     */
+    select?: BudgetSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many Budgets.
+     */
+    data: BudgetCreateManyInput | BudgetCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BudgetIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Budget update
+   */
+  export type BudgetUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Budget
+     */
+    select?: BudgetSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BudgetInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Budget.
+     */
+    data: XOR<BudgetUpdateInput, BudgetUncheckedUpdateInput>
+    /**
+     * Choose, which Budget to update.
+     */
+    where: BudgetWhereUniqueInput
+  }
+
+  /**
+   * Budget updateMany
+   */
+  export type BudgetUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Budgets.
+     */
+    data: XOR<BudgetUpdateManyMutationInput, BudgetUncheckedUpdateManyInput>
+    /**
+     * Filter which Budgets to update
+     */
+    where?: BudgetWhereInput
+  }
+
+  /**
+   * Budget upsert
+   */
+  export type BudgetUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Budget
+     */
+    select?: BudgetSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BudgetInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Budget to update in case it exists.
+     */
+    where: BudgetWhereUniqueInput
+    /**
+     * In case the Budget found by the `where` argument doesn't exist, create a new Budget with this data.
+     */
+    create: XOR<BudgetCreateInput, BudgetUncheckedCreateInput>
+    /**
+     * In case the Budget was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<BudgetUpdateInput, BudgetUncheckedUpdateInput>
+  }
+
+  /**
+   * Budget delete
+   */
+  export type BudgetDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Budget
+     */
+    select?: BudgetSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BudgetInclude<ExtArgs> | null
+    /**
+     * Filter which Budget to delete.
+     */
+    where: BudgetWhereUniqueInput
+  }
+
+  /**
+   * Budget deleteMany
+   */
+  export type BudgetDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Budgets to delete
+     */
+    where?: BudgetWhereInput
+  }
+
+  /**
+   * Budget without action
+   */
+  export type BudgetDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Budget
+     */
+    select?: BudgetSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BudgetInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model StockMovement
+   */
+
+  export type AggregateStockMovement = {
+    _count: StockMovementCountAggregateOutputType | null
+    _avg: StockMovementAvgAggregateOutputType | null
+    _sum: StockMovementSumAggregateOutputType | null
+    _min: StockMovementMinAggregateOutputType | null
+    _max: StockMovementMaxAggregateOutputType | null
+  }
+
+  export type StockMovementAvgAggregateOutputType = {
+    quantity: number | null
+    unitCost: number | null
+    totalCost: number | null
+  }
+
+  export type StockMovementSumAggregateOutputType = {
+    quantity: number | null
+    unitCost: number | null
+    totalCost: number | null
+  }
+
+  export type StockMovementMinAggregateOutputType = {
+    id: string | null
+    schoolId: string | null
+    module: string | null
+    itemId: string | null
+    itemName: string | null
+    batchNumber: string | null
+    direction: string | null
+    quantity: number | null
+    unitCost: number | null
+    totalCost: number | null
+    date: Date | null
+    reference: string | null
+    journalEntryId: string | null
+    createdAt: Date | null
+  }
+
+  export type StockMovementMaxAggregateOutputType = {
+    id: string | null
+    schoolId: string | null
+    module: string | null
+    itemId: string | null
+    itemName: string | null
+    batchNumber: string | null
+    direction: string | null
+    quantity: number | null
+    unitCost: number | null
+    totalCost: number | null
+    date: Date | null
+    reference: string | null
+    journalEntryId: string | null
+    createdAt: Date | null
+  }
+
+  export type StockMovementCountAggregateOutputType = {
+    id: number
+    schoolId: number
+    module: number
+    itemId: number
+    itemName: number
+    batchNumber: number
+    direction: number
+    quantity: number
+    unitCost: number
+    totalCost: number
+    date: number
+    reference: number
+    journalEntryId: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type StockMovementAvgAggregateInputType = {
+    quantity?: true
+    unitCost?: true
+    totalCost?: true
+  }
+
+  export type StockMovementSumAggregateInputType = {
+    quantity?: true
+    unitCost?: true
+    totalCost?: true
+  }
+
+  export type StockMovementMinAggregateInputType = {
+    id?: true
+    schoolId?: true
+    module?: true
+    itemId?: true
+    itemName?: true
+    batchNumber?: true
+    direction?: true
+    quantity?: true
+    unitCost?: true
+    totalCost?: true
+    date?: true
+    reference?: true
+    journalEntryId?: true
+    createdAt?: true
+  }
+
+  export type StockMovementMaxAggregateInputType = {
+    id?: true
+    schoolId?: true
+    module?: true
+    itemId?: true
+    itemName?: true
+    batchNumber?: true
+    direction?: true
+    quantity?: true
+    unitCost?: true
+    totalCost?: true
+    date?: true
+    reference?: true
+    journalEntryId?: true
+    createdAt?: true
+  }
+
+  export type StockMovementCountAggregateInputType = {
+    id?: true
+    schoolId?: true
+    module?: true
+    itemId?: true
+    itemName?: true
+    batchNumber?: true
+    direction?: true
+    quantity?: true
+    unitCost?: true
+    totalCost?: true
+    date?: true
+    reference?: true
+    journalEntryId?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type StockMovementAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which StockMovement to aggregate.
+     */
+    where?: StockMovementWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of StockMovements to fetch.
+     */
+    orderBy?: StockMovementOrderByWithRelationInput | StockMovementOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: StockMovementWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` StockMovements from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` StockMovements.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned StockMovements
+    **/
+    _count?: true | StockMovementCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: StockMovementAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: StockMovementSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: StockMovementMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: StockMovementMaxAggregateInputType
+  }
+
+  export type GetStockMovementAggregateType<T extends StockMovementAggregateArgs> = {
+        [P in keyof T & keyof AggregateStockMovement]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateStockMovement[P]>
+      : GetScalarType<T[P], AggregateStockMovement[P]>
+  }
+
+
+
+
+  export type StockMovementGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: StockMovementWhereInput
+    orderBy?: StockMovementOrderByWithAggregationInput | StockMovementOrderByWithAggregationInput[]
+    by: StockMovementScalarFieldEnum[] | StockMovementScalarFieldEnum
+    having?: StockMovementScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: StockMovementCountAggregateInputType | true
+    _avg?: StockMovementAvgAggregateInputType
+    _sum?: StockMovementSumAggregateInputType
+    _min?: StockMovementMinAggregateInputType
+    _max?: StockMovementMaxAggregateInputType
+  }
+
+  export type StockMovementGroupByOutputType = {
+    id: string
+    schoolId: string
+    module: string
+    itemId: string
+    itemName: string
+    batchNumber: string | null
+    direction: string
+    quantity: number
+    unitCost: number
+    totalCost: number
+    date: Date
+    reference: string | null
+    journalEntryId: string | null
+    createdAt: Date
+    _count: StockMovementCountAggregateOutputType | null
+    _avg: StockMovementAvgAggregateOutputType | null
+    _sum: StockMovementSumAggregateOutputType | null
+    _min: StockMovementMinAggregateOutputType | null
+    _max: StockMovementMaxAggregateOutputType | null
+  }
+
+  type GetStockMovementGroupByPayload<T extends StockMovementGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<StockMovementGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof StockMovementGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], StockMovementGroupByOutputType[P]>
+            : GetScalarType<T[P], StockMovementGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type StockMovementSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    schoolId?: boolean
+    module?: boolean
+    itemId?: boolean
+    itemName?: boolean
+    batchNumber?: boolean
+    direction?: boolean
+    quantity?: boolean
+    unitCost?: boolean
+    totalCost?: boolean
+    date?: boolean
+    reference?: boolean
+    journalEntryId?: boolean
+    createdAt?: boolean
+    school?: boolean | SchoolDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["stockMovement"]>
+
+  export type StockMovementSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    schoolId?: boolean
+    module?: boolean
+    itemId?: boolean
+    itemName?: boolean
+    batchNumber?: boolean
+    direction?: boolean
+    quantity?: boolean
+    unitCost?: boolean
+    totalCost?: boolean
+    date?: boolean
+    reference?: boolean
+    journalEntryId?: boolean
+    createdAt?: boolean
+    school?: boolean | SchoolDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["stockMovement"]>
+
+  export type StockMovementSelectScalar = {
+    id?: boolean
+    schoolId?: boolean
+    module?: boolean
+    itemId?: boolean
+    itemName?: boolean
+    batchNumber?: boolean
+    direction?: boolean
+    quantity?: boolean
+    unitCost?: boolean
+    totalCost?: boolean
+    date?: boolean
+    reference?: boolean
+    journalEntryId?: boolean
+    createdAt?: boolean
+  }
+
+  export type StockMovementInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    school?: boolean | SchoolDefaultArgs<ExtArgs>
+  }
+  export type StockMovementIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    school?: boolean | SchoolDefaultArgs<ExtArgs>
+  }
+
+  export type $StockMovementPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "StockMovement"
+    objects: {
+      school: Prisma.$SchoolPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      schoolId: string
+      module: string
+      itemId: string
+      itemName: string
+      batchNumber: string | null
+      direction: string
+      quantity: number
+      unitCost: number
+      totalCost: number
+      date: Date
+      reference: string | null
+      journalEntryId: string | null
+      createdAt: Date
+    }, ExtArgs["result"]["stockMovement"]>
+    composites: {}
+  }
+
+  type StockMovementGetPayload<S extends boolean | null | undefined | StockMovementDefaultArgs> = $Result.GetResult<Prisma.$StockMovementPayload, S>
+
+  type StockMovementCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<StockMovementFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: StockMovementCountAggregateInputType | true
+    }
+
+  export interface StockMovementDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['StockMovement'], meta: { name: 'StockMovement' } }
+    /**
+     * Find zero or one StockMovement that matches the filter.
+     * @param {StockMovementFindUniqueArgs} args - Arguments to find a StockMovement
+     * @example
+     * // Get one StockMovement
+     * const stockMovement = await prisma.stockMovement.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends StockMovementFindUniqueArgs>(args: SelectSubset<T, StockMovementFindUniqueArgs<ExtArgs>>): Prisma__StockMovementClient<$Result.GetResult<Prisma.$StockMovementPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one StockMovement that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {StockMovementFindUniqueOrThrowArgs} args - Arguments to find a StockMovement
+     * @example
+     * // Get one StockMovement
+     * const stockMovement = await prisma.stockMovement.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends StockMovementFindUniqueOrThrowArgs>(args: SelectSubset<T, StockMovementFindUniqueOrThrowArgs<ExtArgs>>): Prisma__StockMovementClient<$Result.GetResult<Prisma.$StockMovementPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first StockMovement that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StockMovementFindFirstArgs} args - Arguments to find a StockMovement
+     * @example
+     * // Get one StockMovement
+     * const stockMovement = await prisma.stockMovement.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends StockMovementFindFirstArgs>(args?: SelectSubset<T, StockMovementFindFirstArgs<ExtArgs>>): Prisma__StockMovementClient<$Result.GetResult<Prisma.$StockMovementPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first StockMovement that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StockMovementFindFirstOrThrowArgs} args - Arguments to find a StockMovement
+     * @example
+     * // Get one StockMovement
+     * const stockMovement = await prisma.stockMovement.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends StockMovementFindFirstOrThrowArgs>(args?: SelectSubset<T, StockMovementFindFirstOrThrowArgs<ExtArgs>>): Prisma__StockMovementClient<$Result.GetResult<Prisma.$StockMovementPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more StockMovements that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StockMovementFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all StockMovements
+     * const stockMovements = await prisma.stockMovement.findMany()
+     * 
+     * // Get first 10 StockMovements
+     * const stockMovements = await prisma.stockMovement.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const stockMovementWithIdOnly = await prisma.stockMovement.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends StockMovementFindManyArgs>(args?: SelectSubset<T, StockMovementFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StockMovementPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a StockMovement.
+     * @param {StockMovementCreateArgs} args - Arguments to create a StockMovement.
+     * @example
+     * // Create one StockMovement
+     * const StockMovement = await prisma.stockMovement.create({
+     *   data: {
+     *     // ... data to create a StockMovement
+     *   }
+     * })
+     * 
+     */
+    create<T extends StockMovementCreateArgs>(args: SelectSubset<T, StockMovementCreateArgs<ExtArgs>>): Prisma__StockMovementClient<$Result.GetResult<Prisma.$StockMovementPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many StockMovements.
+     * @param {StockMovementCreateManyArgs} args - Arguments to create many StockMovements.
+     * @example
+     * // Create many StockMovements
+     * const stockMovement = await prisma.stockMovement.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends StockMovementCreateManyArgs>(args?: SelectSubset<T, StockMovementCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many StockMovements and returns the data saved in the database.
+     * @param {StockMovementCreateManyAndReturnArgs} args - Arguments to create many StockMovements.
+     * @example
+     * // Create many StockMovements
+     * const stockMovement = await prisma.stockMovement.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many StockMovements and only return the `id`
+     * const stockMovementWithIdOnly = await prisma.stockMovement.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends StockMovementCreateManyAndReturnArgs>(args?: SelectSubset<T, StockMovementCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StockMovementPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a StockMovement.
+     * @param {StockMovementDeleteArgs} args - Arguments to delete one StockMovement.
+     * @example
+     * // Delete one StockMovement
+     * const StockMovement = await prisma.stockMovement.delete({
+     *   where: {
+     *     // ... filter to delete one StockMovement
+     *   }
+     * })
+     * 
+     */
+    delete<T extends StockMovementDeleteArgs>(args: SelectSubset<T, StockMovementDeleteArgs<ExtArgs>>): Prisma__StockMovementClient<$Result.GetResult<Prisma.$StockMovementPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one StockMovement.
+     * @param {StockMovementUpdateArgs} args - Arguments to update one StockMovement.
+     * @example
+     * // Update one StockMovement
+     * const stockMovement = await prisma.stockMovement.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends StockMovementUpdateArgs>(args: SelectSubset<T, StockMovementUpdateArgs<ExtArgs>>): Prisma__StockMovementClient<$Result.GetResult<Prisma.$StockMovementPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more StockMovements.
+     * @param {StockMovementDeleteManyArgs} args - Arguments to filter StockMovements to delete.
+     * @example
+     * // Delete a few StockMovements
+     * const { count } = await prisma.stockMovement.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends StockMovementDeleteManyArgs>(args?: SelectSubset<T, StockMovementDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more StockMovements.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StockMovementUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many StockMovements
+     * const stockMovement = await prisma.stockMovement.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends StockMovementUpdateManyArgs>(args: SelectSubset<T, StockMovementUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one StockMovement.
+     * @param {StockMovementUpsertArgs} args - Arguments to update or create a StockMovement.
+     * @example
+     * // Update or create a StockMovement
+     * const stockMovement = await prisma.stockMovement.upsert({
+     *   create: {
+     *     // ... data to create a StockMovement
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the StockMovement we want to update
+     *   }
+     * })
+     */
+    upsert<T extends StockMovementUpsertArgs>(args: SelectSubset<T, StockMovementUpsertArgs<ExtArgs>>): Prisma__StockMovementClient<$Result.GetResult<Prisma.$StockMovementPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of StockMovements.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StockMovementCountArgs} args - Arguments to filter StockMovements to count.
+     * @example
+     * // Count the number of StockMovements
+     * const count = await prisma.stockMovement.count({
+     *   where: {
+     *     // ... the filter for the StockMovements we want to count
+     *   }
+     * })
+    **/
+    count<T extends StockMovementCountArgs>(
+      args?: Subset<T, StockMovementCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], StockMovementCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a StockMovement.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StockMovementAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends StockMovementAggregateArgs>(args: Subset<T, StockMovementAggregateArgs>): Prisma.PrismaPromise<GetStockMovementAggregateType<T>>
+
+    /**
+     * Group by StockMovement.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StockMovementGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends StockMovementGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: StockMovementGroupByArgs['orderBy'] }
+        : { orderBy?: StockMovementGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, StockMovementGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetStockMovementGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the StockMovement model
+   */
+  readonly fields: StockMovementFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for StockMovement.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__StockMovementClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    school<T extends SchoolDefaultArgs<ExtArgs> = {}>(args?: Subset<T, SchoolDefaultArgs<ExtArgs>>): Prisma__SchoolClient<$Result.GetResult<Prisma.$SchoolPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the StockMovement model
+   */ 
+  interface StockMovementFieldRefs {
+    readonly id: FieldRef<"StockMovement", 'String'>
+    readonly schoolId: FieldRef<"StockMovement", 'String'>
+    readonly module: FieldRef<"StockMovement", 'String'>
+    readonly itemId: FieldRef<"StockMovement", 'String'>
+    readonly itemName: FieldRef<"StockMovement", 'String'>
+    readonly batchNumber: FieldRef<"StockMovement", 'String'>
+    readonly direction: FieldRef<"StockMovement", 'String'>
+    readonly quantity: FieldRef<"StockMovement", 'Float'>
+    readonly unitCost: FieldRef<"StockMovement", 'Float'>
+    readonly totalCost: FieldRef<"StockMovement", 'Float'>
+    readonly date: FieldRef<"StockMovement", 'DateTime'>
+    readonly reference: FieldRef<"StockMovement", 'String'>
+    readonly journalEntryId: FieldRef<"StockMovement", 'String'>
+    readonly createdAt: FieldRef<"StockMovement", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * StockMovement findUnique
+   */
+  export type StockMovementFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StockMovement
+     */
+    select?: StockMovementSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StockMovementInclude<ExtArgs> | null
+    /**
+     * Filter, which StockMovement to fetch.
+     */
+    where: StockMovementWhereUniqueInput
+  }
+
+  /**
+   * StockMovement findUniqueOrThrow
+   */
+  export type StockMovementFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StockMovement
+     */
+    select?: StockMovementSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StockMovementInclude<ExtArgs> | null
+    /**
+     * Filter, which StockMovement to fetch.
+     */
+    where: StockMovementWhereUniqueInput
+  }
+
+  /**
+   * StockMovement findFirst
+   */
+  export type StockMovementFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StockMovement
+     */
+    select?: StockMovementSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StockMovementInclude<ExtArgs> | null
+    /**
+     * Filter, which StockMovement to fetch.
+     */
+    where?: StockMovementWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of StockMovements to fetch.
+     */
+    orderBy?: StockMovementOrderByWithRelationInput | StockMovementOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for StockMovements.
+     */
+    cursor?: StockMovementWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` StockMovements from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` StockMovements.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of StockMovements.
+     */
+    distinct?: StockMovementScalarFieldEnum | StockMovementScalarFieldEnum[]
+  }
+
+  /**
+   * StockMovement findFirstOrThrow
+   */
+  export type StockMovementFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StockMovement
+     */
+    select?: StockMovementSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StockMovementInclude<ExtArgs> | null
+    /**
+     * Filter, which StockMovement to fetch.
+     */
+    where?: StockMovementWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of StockMovements to fetch.
+     */
+    orderBy?: StockMovementOrderByWithRelationInput | StockMovementOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for StockMovements.
+     */
+    cursor?: StockMovementWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` StockMovements from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` StockMovements.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of StockMovements.
+     */
+    distinct?: StockMovementScalarFieldEnum | StockMovementScalarFieldEnum[]
+  }
+
+  /**
+   * StockMovement findMany
+   */
+  export type StockMovementFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StockMovement
+     */
+    select?: StockMovementSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StockMovementInclude<ExtArgs> | null
+    /**
+     * Filter, which StockMovements to fetch.
+     */
+    where?: StockMovementWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of StockMovements to fetch.
+     */
+    orderBy?: StockMovementOrderByWithRelationInput | StockMovementOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing StockMovements.
+     */
+    cursor?: StockMovementWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` StockMovements from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` StockMovements.
+     */
+    skip?: number
+    distinct?: StockMovementScalarFieldEnum | StockMovementScalarFieldEnum[]
+  }
+
+  /**
+   * StockMovement create
+   */
+  export type StockMovementCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StockMovement
+     */
+    select?: StockMovementSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StockMovementInclude<ExtArgs> | null
+    /**
+     * The data needed to create a StockMovement.
+     */
+    data: XOR<StockMovementCreateInput, StockMovementUncheckedCreateInput>
+  }
+
+  /**
+   * StockMovement createMany
+   */
+  export type StockMovementCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many StockMovements.
+     */
+    data: StockMovementCreateManyInput | StockMovementCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * StockMovement createManyAndReturn
+   */
+  export type StockMovementCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StockMovement
+     */
+    select?: StockMovementSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many StockMovements.
+     */
+    data: StockMovementCreateManyInput | StockMovementCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StockMovementIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * StockMovement update
+   */
+  export type StockMovementUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StockMovement
+     */
+    select?: StockMovementSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StockMovementInclude<ExtArgs> | null
+    /**
+     * The data needed to update a StockMovement.
+     */
+    data: XOR<StockMovementUpdateInput, StockMovementUncheckedUpdateInput>
+    /**
+     * Choose, which StockMovement to update.
+     */
+    where: StockMovementWhereUniqueInput
+  }
+
+  /**
+   * StockMovement updateMany
+   */
+  export type StockMovementUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update StockMovements.
+     */
+    data: XOR<StockMovementUpdateManyMutationInput, StockMovementUncheckedUpdateManyInput>
+    /**
+     * Filter which StockMovements to update
+     */
+    where?: StockMovementWhereInput
+  }
+
+  /**
+   * StockMovement upsert
+   */
+  export type StockMovementUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StockMovement
+     */
+    select?: StockMovementSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StockMovementInclude<ExtArgs> | null
+    /**
+     * The filter to search for the StockMovement to update in case it exists.
+     */
+    where: StockMovementWhereUniqueInput
+    /**
+     * In case the StockMovement found by the `where` argument doesn't exist, create a new StockMovement with this data.
+     */
+    create: XOR<StockMovementCreateInput, StockMovementUncheckedCreateInput>
+    /**
+     * In case the StockMovement was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<StockMovementUpdateInput, StockMovementUncheckedUpdateInput>
+  }
+
+  /**
+   * StockMovement delete
+   */
+  export type StockMovementDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StockMovement
+     */
+    select?: StockMovementSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StockMovementInclude<ExtArgs> | null
+    /**
+     * Filter which StockMovement to delete.
+     */
+    where: StockMovementWhereUniqueInput
+  }
+
+  /**
+   * StockMovement deleteMany
+   */
+  export type StockMovementDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which StockMovements to delete
+     */
+    where?: StockMovementWhereInput
+  }
+
+  /**
+   * StockMovement without action
+   */
+  export type StockMovementDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StockMovement
+     */
+    select?: StockMovementSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StockMovementInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model TaxBracket
+   */
+
+  export type AggregateTaxBracket = {
+    _count: TaxBracketCountAggregateOutputType | null
+    _avg: TaxBracketAvgAggregateOutputType | null
+    _sum: TaxBracketSumAggregateOutputType | null
+    _min: TaxBracketMinAggregateOutputType | null
+    _max: TaxBracketMaxAggregateOutputType | null
+  }
+
+  export type TaxBracketAvgAggregateOutputType = {
+    minIncome: number | null
+    maxIncome: number | null
+    rate: number | null
+    deduction: number | null
+    aidsLevyRate: number | null
+    nssaCeiling: number | null
+    nssaRate: number | null
+  }
+
+  export type TaxBracketSumAggregateOutputType = {
+    minIncome: number | null
+    maxIncome: number | null
+    rate: number | null
+    deduction: number | null
+    aidsLevyRate: number | null
+    nssaCeiling: number | null
+    nssaRate: number | null
+  }
+
+  export type TaxBracketMinAggregateOutputType = {
+    id: string | null
+    schoolId: string | null
+    currency: string | null
+    effectiveFrom: Date | null
+    effectiveTo: Date | null
+    minIncome: number | null
+    maxIncome: number | null
+    rate: number | null
+    deduction: number | null
+    aidsLevyRate: number | null
+    nssaCeiling: number | null
+    nssaRate: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type TaxBracketMaxAggregateOutputType = {
+    id: string | null
+    schoolId: string | null
+    currency: string | null
+    effectiveFrom: Date | null
+    effectiveTo: Date | null
+    minIncome: number | null
+    maxIncome: number | null
+    rate: number | null
+    deduction: number | null
+    aidsLevyRate: number | null
+    nssaCeiling: number | null
+    nssaRate: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type TaxBracketCountAggregateOutputType = {
+    id: number
+    schoolId: number
+    currency: number
+    effectiveFrom: number
+    effectiveTo: number
+    minIncome: number
+    maxIncome: number
+    rate: number
+    deduction: number
+    aidsLevyRate: number
+    nssaCeiling: number
+    nssaRate: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type TaxBracketAvgAggregateInputType = {
+    minIncome?: true
+    maxIncome?: true
+    rate?: true
+    deduction?: true
+    aidsLevyRate?: true
+    nssaCeiling?: true
+    nssaRate?: true
+  }
+
+  export type TaxBracketSumAggregateInputType = {
+    minIncome?: true
+    maxIncome?: true
+    rate?: true
+    deduction?: true
+    aidsLevyRate?: true
+    nssaCeiling?: true
+    nssaRate?: true
+  }
+
+  export type TaxBracketMinAggregateInputType = {
+    id?: true
+    schoolId?: true
+    currency?: true
+    effectiveFrom?: true
+    effectiveTo?: true
+    minIncome?: true
+    maxIncome?: true
+    rate?: true
+    deduction?: true
+    aidsLevyRate?: true
+    nssaCeiling?: true
+    nssaRate?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type TaxBracketMaxAggregateInputType = {
+    id?: true
+    schoolId?: true
+    currency?: true
+    effectiveFrom?: true
+    effectiveTo?: true
+    minIncome?: true
+    maxIncome?: true
+    rate?: true
+    deduction?: true
+    aidsLevyRate?: true
+    nssaCeiling?: true
+    nssaRate?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type TaxBracketCountAggregateInputType = {
+    id?: true
+    schoolId?: true
+    currency?: true
+    effectiveFrom?: true
+    effectiveTo?: true
+    minIncome?: true
+    maxIncome?: true
+    rate?: true
+    deduction?: true
+    aidsLevyRate?: true
+    nssaCeiling?: true
+    nssaRate?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type TaxBracketAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which TaxBracket to aggregate.
+     */
+    where?: TaxBracketWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TaxBrackets to fetch.
+     */
+    orderBy?: TaxBracketOrderByWithRelationInput | TaxBracketOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: TaxBracketWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TaxBrackets from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TaxBrackets.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned TaxBrackets
+    **/
+    _count?: true | TaxBracketCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: TaxBracketAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: TaxBracketSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: TaxBracketMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: TaxBracketMaxAggregateInputType
+  }
+
+  export type GetTaxBracketAggregateType<T extends TaxBracketAggregateArgs> = {
+        [P in keyof T & keyof AggregateTaxBracket]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateTaxBracket[P]>
+      : GetScalarType<T[P], AggregateTaxBracket[P]>
+  }
+
+
+
+
+  export type TaxBracketGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TaxBracketWhereInput
+    orderBy?: TaxBracketOrderByWithAggregationInput | TaxBracketOrderByWithAggregationInput[]
+    by: TaxBracketScalarFieldEnum[] | TaxBracketScalarFieldEnum
+    having?: TaxBracketScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: TaxBracketCountAggregateInputType | true
+    _avg?: TaxBracketAvgAggregateInputType
+    _sum?: TaxBracketSumAggregateInputType
+    _min?: TaxBracketMinAggregateInputType
+    _max?: TaxBracketMaxAggregateInputType
+  }
+
+  export type TaxBracketGroupByOutputType = {
+    id: string
+    schoolId: string
+    currency: string
+    effectiveFrom: Date
+    effectiveTo: Date | null
+    minIncome: number
+    maxIncome: number | null
+    rate: number
+    deduction: number
+    aidsLevyRate: number
+    nssaCeiling: number
+    nssaRate: number
+    createdAt: Date
+    updatedAt: Date
+    _count: TaxBracketCountAggregateOutputType | null
+    _avg: TaxBracketAvgAggregateOutputType | null
+    _sum: TaxBracketSumAggregateOutputType | null
+    _min: TaxBracketMinAggregateOutputType | null
+    _max: TaxBracketMaxAggregateOutputType | null
+  }
+
+  type GetTaxBracketGroupByPayload<T extends TaxBracketGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<TaxBracketGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof TaxBracketGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], TaxBracketGroupByOutputType[P]>
+            : GetScalarType<T[P], TaxBracketGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type TaxBracketSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    schoolId?: boolean
+    currency?: boolean
+    effectiveFrom?: boolean
+    effectiveTo?: boolean
+    minIncome?: boolean
+    maxIncome?: boolean
+    rate?: boolean
+    deduction?: boolean
+    aidsLevyRate?: boolean
+    nssaCeiling?: boolean
+    nssaRate?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    school?: boolean | SchoolDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["taxBracket"]>
+
+  export type TaxBracketSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    schoolId?: boolean
+    currency?: boolean
+    effectiveFrom?: boolean
+    effectiveTo?: boolean
+    minIncome?: boolean
+    maxIncome?: boolean
+    rate?: boolean
+    deduction?: boolean
+    aidsLevyRate?: boolean
+    nssaCeiling?: boolean
+    nssaRate?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    school?: boolean | SchoolDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["taxBracket"]>
+
+  export type TaxBracketSelectScalar = {
+    id?: boolean
+    schoolId?: boolean
+    currency?: boolean
+    effectiveFrom?: boolean
+    effectiveTo?: boolean
+    minIncome?: boolean
+    maxIncome?: boolean
+    rate?: boolean
+    deduction?: boolean
+    aidsLevyRate?: boolean
+    nssaCeiling?: boolean
+    nssaRate?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type TaxBracketInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    school?: boolean | SchoolDefaultArgs<ExtArgs>
+  }
+  export type TaxBracketIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    school?: boolean | SchoolDefaultArgs<ExtArgs>
+  }
+
+  export type $TaxBracketPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "TaxBracket"
+    objects: {
+      school: Prisma.$SchoolPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      schoolId: string
+      currency: string
+      effectiveFrom: Date
+      effectiveTo: Date | null
+      minIncome: number
+      maxIncome: number | null
+      rate: number
+      deduction: number
+      aidsLevyRate: number
+      nssaCeiling: number
+      nssaRate: number
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["taxBracket"]>
+    composites: {}
+  }
+
+  type TaxBracketGetPayload<S extends boolean | null | undefined | TaxBracketDefaultArgs> = $Result.GetResult<Prisma.$TaxBracketPayload, S>
+
+  type TaxBracketCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<TaxBracketFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: TaxBracketCountAggregateInputType | true
+    }
+
+  export interface TaxBracketDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['TaxBracket'], meta: { name: 'TaxBracket' } }
+    /**
+     * Find zero or one TaxBracket that matches the filter.
+     * @param {TaxBracketFindUniqueArgs} args - Arguments to find a TaxBracket
+     * @example
+     * // Get one TaxBracket
+     * const taxBracket = await prisma.taxBracket.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends TaxBracketFindUniqueArgs>(args: SelectSubset<T, TaxBracketFindUniqueArgs<ExtArgs>>): Prisma__TaxBracketClient<$Result.GetResult<Prisma.$TaxBracketPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one TaxBracket that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {TaxBracketFindUniqueOrThrowArgs} args - Arguments to find a TaxBracket
+     * @example
+     * // Get one TaxBracket
+     * const taxBracket = await prisma.taxBracket.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends TaxBracketFindUniqueOrThrowArgs>(args: SelectSubset<T, TaxBracketFindUniqueOrThrowArgs<ExtArgs>>): Prisma__TaxBracketClient<$Result.GetResult<Prisma.$TaxBracketPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first TaxBracket that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TaxBracketFindFirstArgs} args - Arguments to find a TaxBracket
+     * @example
+     * // Get one TaxBracket
+     * const taxBracket = await prisma.taxBracket.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends TaxBracketFindFirstArgs>(args?: SelectSubset<T, TaxBracketFindFirstArgs<ExtArgs>>): Prisma__TaxBracketClient<$Result.GetResult<Prisma.$TaxBracketPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first TaxBracket that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TaxBracketFindFirstOrThrowArgs} args - Arguments to find a TaxBracket
+     * @example
+     * // Get one TaxBracket
+     * const taxBracket = await prisma.taxBracket.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends TaxBracketFindFirstOrThrowArgs>(args?: SelectSubset<T, TaxBracketFindFirstOrThrowArgs<ExtArgs>>): Prisma__TaxBracketClient<$Result.GetResult<Prisma.$TaxBracketPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more TaxBrackets that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TaxBracketFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all TaxBrackets
+     * const taxBrackets = await prisma.taxBracket.findMany()
+     * 
+     * // Get first 10 TaxBrackets
+     * const taxBrackets = await prisma.taxBracket.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const taxBracketWithIdOnly = await prisma.taxBracket.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends TaxBracketFindManyArgs>(args?: SelectSubset<T, TaxBracketFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TaxBracketPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a TaxBracket.
+     * @param {TaxBracketCreateArgs} args - Arguments to create a TaxBracket.
+     * @example
+     * // Create one TaxBracket
+     * const TaxBracket = await prisma.taxBracket.create({
+     *   data: {
+     *     // ... data to create a TaxBracket
+     *   }
+     * })
+     * 
+     */
+    create<T extends TaxBracketCreateArgs>(args: SelectSubset<T, TaxBracketCreateArgs<ExtArgs>>): Prisma__TaxBracketClient<$Result.GetResult<Prisma.$TaxBracketPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many TaxBrackets.
+     * @param {TaxBracketCreateManyArgs} args - Arguments to create many TaxBrackets.
+     * @example
+     * // Create many TaxBrackets
+     * const taxBracket = await prisma.taxBracket.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends TaxBracketCreateManyArgs>(args?: SelectSubset<T, TaxBracketCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many TaxBrackets and returns the data saved in the database.
+     * @param {TaxBracketCreateManyAndReturnArgs} args - Arguments to create many TaxBrackets.
+     * @example
+     * // Create many TaxBrackets
+     * const taxBracket = await prisma.taxBracket.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many TaxBrackets and only return the `id`
+     * const taxBracketWithIdOnly = await prisma.taxBracket.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends TaxBracketCreateManyAndReturnArgs>(args?: SelectSubset<T, TaxBracketCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TaxBracketPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a TaxBracket.
+     * @param {TaxBracketDeleteArgs} args - Arguments to delete one TaxBracket.
+     * @example
+     * // Delete one TaxBracket
+     * const TaxBracket = await prisma.taxBracket.delete({
+     *   where: {
+     *     // ... filter to delete one TaxBracket
+     *   }
+     * })
+     * 
+     */
+    delete<T extends TaxBracketDeleteArgs>(args: SelectSubset<T, TaxBracketDeleteArgs<ExtArgs>>): Prisma__TaxBracketClient<$Result.GetResult<Prisma.$TaxBracketPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one TaxBracket.
+     * @param {TaxBracketUpdateArgs} args - Arguments to update one TaxBracket.
+     * @example
+     * // Update one TaxBracket
+     * const taxBracket = await prisma.taxBracket.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends TaxBracketUpdateArgs>(args: SelectSubset<T, TaxBracketUpdateArgs<ExtArgs>>): Prisma__TaxBracketClient<$Result.GetResult<Prisma.$TaxBracketPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more TaxBrackets.
+     * @param {TaxBracketDeleteManyArgs} args - Arguments to filter TaxBrackets to delete.
+     * @example
+     * // Delete a few TaxBrackets
+     * const { count } = await prisma.taxBracket.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends TaxBracketDeleteManyArgs>(args?: SelectSubset<T, TaxBracketDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more TaxBrackets.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TaxBracketUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many TaxBrackets
+     * const taxBracket = await prisma.taxBracket.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends TaxBracketUpdateManyArgs>(args: SelectSubset<T, TaxBracketUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one TaxBracket.
+     * @param {TaxBracketUpsertArgs} args - Arguments to update or create a TaxBracket.
+     * @example
+     * // Update or create a TaxBracket
+     * const taxBracket = await prisma.taxBracket.upsert({
+     *   create: {
+     *     // ... data to create a TaxBracket
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the TaxBracket we want to update
+     *   }
+     * })
+     */
+    upsert<T extends TaxBracketUpsertArgs>(args: SelectSubset<T, TaxBracketUpsertArgs<ExtArgs>>): Prisma__TaxBracketClient<$Result.GetResult<Prisma.$TaxBracketPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of TaxBrackets.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TaxBracketCountArgs} args - Arguments to filter TaxBrackets to count.
+     * @example
+     * // Count the number of TaxBrackets
+     * const count = await prisma.taxBracket.count({
+     *   where: {
+     *     // ... the filter for the TaxBrackets we want to count
+     *   }
+     * })
+    **/
+    count<T extends TaxBracketCountArgs>(
+      args?: Subset<T, TaxBracketCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], TaxBracketCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a TaxBracket.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TaxBracketAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends TaxBracketAggregateArgs>(args: Subset<T, TaxBracketAggregateArgs>): Prisma.PrismaPromise<GetTaxBracketAggregateType<T>>
+
+    /**
+     * Group by TaxBracket.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TaxBracketGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends TaxBracketGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: TaxBracketGroupByArgs['orderBy'] }
+        : { orderBy?: TaxBracketGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, TaxBracketGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetTaxBracketGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the TaxBracket model
+   */
+  readonly fields: TaxBracketFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for TaxBracket.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__TaxBracketClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    school<T extends SchoolDefaultArgs<ExtArgs> = {}>(args?: Subset<T, SchoolDefaultArgs<ExtArgs>>): Prisma__SchoolClient<$Result.GetResult<Prisma.$SchoolPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the TaxBracket model
+   */ 
+  interface TaxBracketFieldRefs {
+    readonly id: FieldRef<"TaxBracket", 'String'>
+    readonly schoolId: FieldRef<"TaxBracket", 'String'>
+    readonly currency: FieldRef<"TaxBracket", 'String'>
+    readonly effectiveFrom: FieldRef<"TaxBracket", 'DateTime'>
+    readonly effectiveTo: FieldRef<"TaxBracket", 'DateTime'>
+    readonly minIncome: FieldRef<"TaxBracket", 'Float'>
+    readonly maxIncome: FieldRef<"TaxBracket", 'Float'>
+    readonly rate: FieldRef<"TaxBracket", 'Float'>
+    readonly deduction: FieldRef<"TaxBracket", 'Float'>
+    readonly aidsLevyRate: FieldRef<"TaxBracket", 'Float'>
+    readonly nssaCeiling: FieldRef<"TaxBracket", 'Float'>
+    readonly nssaRate: FieldRef<"TaxBracket", 'Float'>
+    readonly createdAt: FieldRef<"TaxBracket", 'DateTime'>
+    readonly updatedAt: FieldRef<"TaxBracket", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * TaxBracket findUnique
+   */
+  export type TaxBracketFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TaxBracket
+     */
+    select?: TaxBracketSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TaxBracketInclude<ExtArgs> | null
+    /**
+     * Filter, which TaxBracket to fetch.
+     */
+    where: TaxBracketWhereUniqueInput
+  }
+
+  /**
+   * TaxBracket findUniqueOrThrow
+   */
+  export type TaxBracketFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TaxBracket
+     */
+    select?: TaxBracketSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TaxBracketInclude<ExtArgs> | null
+    /**
+     * Filter, which TaxBracket to fetch.
+     */
+    where: TaxBracketWhereUniqueInput
+  }
+
+  /**
+   * TaxBracket findFirst
+   */
+  export type TaxBracketFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TaxBracket
+     */
+    select?: TaxBracketSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TaxBracketInclude<ExtArgs> | null
+    /**
+     * Filter, which TaxBracket to fetch.
+     */
+    where?: TaxBracketWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TaxBrackets to fetch.
+     */
+    orderBy?: TaxBracketOrderByWithRelationInput | TaxBracketOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for TaxBrackets.
+     */
+    cursor?: TaxBracketWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TaxBrackets from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TaxBrackets.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of TaxBrackets.
+     */
+    distinct?: TaxBracketScalarFieldEnum | TaxBracketScalarFieldEnum[]
+  }
+
+  /**
+   * TaxBracket findFirstOrThrow
+   */
+  export type TaxBracketFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TaxBracket
+     */
+    select?: TaxBracketSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TaxBracketInclude<ExtArgs> | null
+    /**
+     * Filter, which TaxBracket to fetch.
+     */
+    where?: TaxBracketWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TaxBrackets to fetch.
+     */
+    orderBy?: TaxBracketOrderByWithRelationInput | TaxBracketOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for TaxBrackets.
+     */
+    cursor?: TaxBracketWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TaxBrackets from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TaxBrackets.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of TaxBrackets.
+     */
+    distinct?: TaxBracketScalarFieldEnum | TaxBracketScalarFieldEnum[]
+  }
+
+  /**
+   * TaxBracket findMany
+   */
+  export type TaxBracketFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TaxBracket
+     */
+    select?: TaxBracketSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TaxBracketInclude<ExtArgs> | null
+    /**
+     * Filter, which TaxBrackets to fetch.
+     */
+    where?: TaxBracketWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TaxBrackets to fetch.
+     */
+    orderBy?: TaxBracketOrderByWithRelationInput | TaxBracketOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing TaxBrackets.
+     */
+    cursor?: TaxBracketWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TaxBrackets from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TaxBrackets.
+     */
+    skip?: number
+    distinct?: TaxBracketScalarFieldEnum | TaxBracketScalarFieldEnum[]
+  }
+
+  /**
+   * TaxBracket create
+   */
+  export type TaxBracketCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TaxBracket
+     */
+    select?: TaxBracketSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TaxBracketInclude<ExtArgs> | null
+    /**
+     * The data needed to create a TaxBracket.
+     */
+    data: XOR<TaxBracketCreateInput, TaxBracketUncheckedCreateInput>
+  }
+
+  /**
+   * TaxBracket createMany
+   */
+  export type TaxBracketCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many TaxBrackets.
+     */
+    data: TaxBracketCreateManyInput | TaxBracketCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * TaxBracket createManyAndReturn
+   */
+  export type TaxBracketCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TaxBracket
+     */
+    select?: TaxBracketSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many TaxBrackets.
+     */
+    data: TaxBracketCreateManyInput | TaxBracketCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TaxBracketIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * TaxBracket update
+   */
+  export type TaxBracketUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TaxBracket
+     */
+    select?: TaxBracketSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TaxBracketInclude<ExtArgs> | null
+    /**
+     * The data needed to update a TaxBracket.
+     */
+    data: XOR<TaxBracketUpdateInput, TaxBracketUncheckedUpdateInput>
+    /**
+     * Choose, which TaxBracket to update.
+     */
+    where: TaxBracketWhereUniqueInput
+  }
+
+  /**
+   * TaxBracket updateMany
+   */
+  export type TaxBracketUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update TaxBrackets.
+     */
+    data: XOR<TaxBracketUpdateManyMutationInput, TaxBracketUncheckedUpdateManyInput>
+    /**
+     * Filter which TaxBrackets to update
+     */
+    where?: TaxBracketWhereInput
+  }
+
+  /**
+   * TaxBracket upsert
+   */
+  export type TaxBracketUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TaxBracket
+     */
+    select?: TaxBracketSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TaxBracketInclude<ExtArgs> | null
+    /**
+     * The filter to search for the TaxBracket to update in case it exists.
+     */
+    where: TaxBracketWhereUniqueInput
+    /**
+     * In case the TaxBracket found by the `where` argument doesn't exist, create a new TaxBracket with this data.
+     */
+    create: XOR<TaxBracketCreateInput, TaxBracketUncheckedCreateInput>
+    /**
+     * In case the TaxBracket was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<TaxBracketUpdateInput, TaxBracketUncheckedUpdateInput>
+  }
+
+  /**
+   * TaxBracket delete
+   */
+  export type TaxBracketDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TaxBracket
+     */
+    select?: TaxBracketSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TaxBracketInclude<ExtArgs> | null
+    /**
+     * Filter which TaxBracket to delete.
+     */
+    where: TaxBracketWhereUniqueInput
+  }
+
+  /**
+   * TaxBracket deleteMany
+   */
+  export type TaxBracketDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which TaxBrackets to delete
+     */
+    where?: TaxBracketWhereInput
+  }
+
+  /**
+   * TaxBracket without action
+   */
+  export type TaxBracketDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TaxBracket
+     */
+    select?: TaxBracketSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TaxBracketInclude<ExtArgs> | null
   }
 
 
@@ -210940,6 +217098,9 @@ export namespace Prisma {
     mandatoryReceipts: 'mandatoryReceipts',
     showBalanceOnReceipts: 'showBalanceOnReceipts',
     showUniformsModule: 'showUniformsModule',
+    financialApprovalThreshold: 'financialApprovalThreshold',
+    tier1ApprovalRole: 'tier1ApprovalRole',
+    tier2ApprovalRole: 'tier2ApprovalRole',
     smtpEmail: 'smtpEmail',
     smtpHost: 'smtpHost',
     smtpPort: 'smtpPort',
@@ -212761,6 +218922,8 @@ export namespace Prisma {
     type: 'type',
     parentId: 'parentId',
     isSystemAccount: 'isSystemAccount',
+    isBank: 'isBank',
+    isTemplate: 'isTemplate',
     isActive: 'isActive',
     description: 'description',
     createdAt: 'createdAt',
@@ -212777,6 +218940,9 @@ export namespace Prisma {
     date: 'date',
     description: 'description',
     status: 'status',
+    currency: 'currency',
+    exchangeRateUsed: 'exchangeRateUsed',
+    ipAddress: 'ipAddress',
     isReversing: 'isReversing',
     reversedById: 'reversedById',
     sourceType: 'sourceType',
@@ -212796,9 +218962,12 @@ export namespace Prisma {
     journalEntryId: 'journalEntryId',
     accountId: 'accountId',
     schoolId: 'schoolId',
+    coaCode: 'coaCode',
     description: 'description',
     debit: 'debit',
     credit: 'credit',
+    baseAmount: 'baseAmount',
+    taxCode: 'taxCode',
     currency: 'currency',
     exchangeRate: 'exchangeRate',
     debitForeign: 'debitForeign',
@@ -212818,6 +218987,10 @@ export namespace Prisma {
     id: 'id',
     schoolId: 'schoolId',
     period: 'period',
+    year: 'year',
+    term: 'term',
+    startDate: 'startDate',
+    endDate: 'endDate',
     status: 'status',
     closedBy: 'closedBy',
     closedAt: 'closedAt',
@@ -212827,6 +219000,97 @@ export namespace Prisma {
   };
 
   export type AccountingPeriodScalarFieldEnum = (typeof AccountingPeriodScalarFieldEnum)[keyof typeof AccountingPeriodScalarFieldEnum]
+
+
+  export const ExchangeRateScalarFieldEnum: {
+    id: 'id',
+    schoolId: 'schoolId',
+    date: 'date',
+    fromCurrency: 'fromCurrency',
+    toCurrency: 'toCurrency',
+    rate: 'rate',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type ExchangeRateScalarFieldEnum = (typeof ExchangeRateScalarFieldEnum)[keyof typeof ExchangeRateScalarFieldEnum]
+
+
+  export const ApprovalScalarFieldEnum: {
+    id: 'id',
+    schoolId: 'schoolId',
+    entityType: 'entityType',
+    entityId: 'entityId',
+    requestedBy: 'requestedBy',
+    amount: 'amount',
+    currency: 'currency',
+    status: 'status',
+    tier: 'tier',
+    approverRole: 'approverRole',
+    approvedBy: 'approvedBy',
+    approvedAt: 'approvedAt',
+    rejectionReason: 'rejectionReason',
+    thresholdRule: 'thresholdRule',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type ApprovalScalarFieldEnum = (typeof ApprovalScalarFieldEnum)[keyof typeof ApprovalScalarFieldEnum]
+
+
+  export const BudgetScalarFieldEnum: {
+    id: 'id',
+    schoolId: 'schoolId',
+    year: 'year',
+    term: 'term',
+    coaCode: 'coaCode',
+    amount: 'amount',
+    currency: 'currency',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type BudgetScalarFieldEnum = (typeof BudgetScalarFieldEnum)[keyof typeof BudgetScalarFieldEnum]
+
+
+  export const StockMovementScalarFieldEnum: {
+    id: 'id',
+    schoolId: 'schoolId',
+    module: 'module',
+    itemId: 'itemId',
+    itemName: 'itemName',
+    batchNumber: 'batchNumber',
+    direction: 'direction',
+    quantity: 'quantity',
+    unitCost: 'unitCost',
+    totalCost: 'totalCost',
+    date: 'date',
+    reference: 'reference',
+    journalEntryId: 'journalEntryId',
+    createdAt: 'createdAt'
+  };
+
+  export type StockMovementScalarFieldEnum = (typeof StockMovementScalarFieldEnum)[keyof typeof StockMovementScalarFieldEnum]
+
+
+  export const TaxBracketScalarFieldEnum: {
+    id: 'id',
+    schoolId: 'schoolId',
+    currency: 'currency',
+    effectiveFrom: 'effectiveFrom',
+    effectiveTo: 'effectiveTo',
+    minIncome: 'minIncome',
+    maxIncome: 'maxIncome',
+    rate: 'rate',
+    deduction: 'deduction',
+    aidsLevyRate: 'aidsLevyRate',
+    nssaCeiling: 'nssaCeiling',
+    nssaRate: 'nssaRate',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type TaxBracketScalarFieldEnum = (typeof TaxBracketScalarFieldEnum)[keyof typeof TaxBracketScalarFieldEnum]
 
 
   export const UniformStockMovementScalarFieldEnum: {
@@ -213504,6 +219768,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodListRelationFilter
     uniformStockMovements?: UniformStockMovementListRelationFilter
     bankStatements?: BankStatementListRelationFilter
+    exchangeRates?: ExchangeRateListRelationFilter
+    approvals?: ApprovalListRelationFilter
+    budgets?: BudgetListRelationFilter
+    stockMovements?: StockMovementListRelationFilter
+    taxBrackets?: TaxBracketListRelationFilter
   }
 
   export type SchoolOrderByWithRelationInput = {
@@ -213647,6 +219916,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodOrderByRelationAggregateInput
     uniformStockMovements?: UniformStockMovementOrderByRelationAggregateInput
     bankStatements?: BankStatementOrderByRelationAggregateInput
+    exchangeRates?: ExchangeRateOrderByRelationAggregateInput
+    approvals?: ApprovalOrderByRelationAggregateInput
+    budgets?: BudgetOrderByRelationAggregateInput
+    stockMovements?: StockMovementOrderByRelationAggregateInput
+    taxBrackets?: TaxBracketOrderByRelationAggregateInput
   }
 
   export type SchoolWhereUniqueInput = Prisma.AtLeast<{
@@ -213793,6 +220067,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodListRelationFilter
     uniformStockMovements?: UniformStockMovementListRelationFilter
     bankStatements?: BankStatementListRelationFilter
+    exchangeRates?: ExchangeRateListRelationFilter
+    approvals?: ApprovalListRelationFilter
+    budgets?: BudgetListRelationFilter
+    stockMovements?: StockMovementListRelationFilter
+    taxBrackets?: TaxBracketListRelationFilter
   }, "id" | "code" | "email">
 
   export type SchoolOrderByWithAggregationInput = {
@@ -218732,6 +225011,9 @@ export namespace Prisma {
     mandatoryReceipts?: BoolFilter<"SchoolSetting"> | boolean
     showBalanceOnReceipts?: BoolFilter<"SchoolSetting"> | boolean
     showUniformsModule?: BoolFilter<"SchoolSetting"> | boolean
+    financialApprovalThreshold?: FloatNullableFilter<"SchoolSetting"> | number | null
+    tier1ApprovalRole?: StringNullableFilter<"SchoolSetting"> | string | null
+    tier2ApprovalRole?: StringNullableFilter<"SchoolSetting"> | string | null
     smtpEmail?: StringNullableFilter<"SchoolSetting"> | string | null
     smtpHost?: StringNullableFilter<"SchoolSetting"> | string | null
     smtpPort?: IntNullableFilter<"SchoolSetting"> | number | null
@@ -218808,6 +225090,9 @@ export namespace Prisma {
     mandatoryReceipts?: SortOrder
     showBalanceOnReceipts?: SortOrder
     showUniformsModule?: SortOrder
+    financialApprovalThreshold?: SortOrderInput | SortOrder
+    tier1ApprovalRole?: SortOrderInput | SortOrder
+    tier2ApprovalRole?: SortOrderInput | SortOrder
     smtpEmail?: SortOrderInput | SortOrder
     smtpHost?: SortOrderInput | SortOrder
     smtpPort?: SortOrderInput | SortOrder
@@ -218887,6 +225172,9 @@ export namespace Prisma {
     mandatoryReceipts?: BoolFilter<"SchoolSetting"> | boolean
     showBalanceOnReceipts?: BoolFilter<"SchoolSetting"> | boolean
     showUniformsModule?: BoolFilter<"SchoolSetting"> | boolean
+    financialApprovalThreshold?: FloatNullableFilter<"SchoolSetting"> | number | null
+    tier1ApprovalRole?: StringNullableFilter<"SchoolSetting"> | string | null
+    tier2ApprovalRole?: StringNullableFilter<"SchoolSetting"> | string | null
     smtpEmail?: StringNullableFilter<"SchoolSetting"> | string | null
     smtpHost?: StringNullableFilter<"SchoolSetting"> | string | null
     smtpPort?: IntNullableFilter<"SchoolSetting"> | number | null
@@ -218963,6 +225251,9 @@ export namespace Prisma {
     mandatoryReceipts?: SortOrder
     showBalanceOnReceipts?: SortOrder
     showUniformsModule?: SortOrder
+    financialApprovalThreshold?: SortOrderInput | SortOrder
+    tier1ApprovalRole?: SortOrderInput | SortOrder
+    tier2ApprovalRole?: SortOrderInput | SortOrder
     smtpEmail?: SortOrderInput | SortOrder
     smtpHost?: SortOrderInput | SortOrder
     smtpPort?: SortOrderInput | SortOrder
@@ -219046,6 +225337,9 @@ export namespace Prisma {
     mandatoryReceipts?: BoolWithAggregatesFilter<"SchoolSetting"> | boolean
     showBalanceOnReceipts?: BoolWithAggregatesFilter<"SchoolSetting"> | boolean
     showUniformsModule?: BoolWithAggregatesFilter<"SchoolSetting"> | boolean
+    financialApprovalThreshold?: FloatNullableWithAggregatesFilter<"SchoolSetting"> | number | null
+    tier1ApprovalRole?: StringNullableWithAggregatesFilter<"SchoolSetting"> | string | null
+    tier2ApprovalRole?: StringNullableWithAggregatesFilter<"SchoolSetting"> | string | null
     smtpEmail?: StringNullableWithAggregatesFilter<"SchoolSetting"> | string | null
     smtpHost?: StringNullableWithAggregatesFilter<"SchoolSetting"> | string | null
     smtpPort?: IntNullableWithAggregatesFilter<"SchoolSetting"> | number | null
@@ -228354,6 +234648,8 @@ export namespace Prisma {
     type?: EnumAccountTypeFilter<"ChartOfAccount"> | $Enums.AccountType
     parentId?: StringNullableFilter<"ChartOfAccount"> | string | null
     isSystemAccount?: BoolFilter<"ChartOfAccount"> | boolean
+    isBank?: BoolFilter<"ChartOfAccount"> | boolean
+    isTemplate?: BoolFilter<"ChartOfAccount"> | boolean
     isActive?: BoolFilter<"ChartOfAccount"> | boolean
     description?: StringNullableFilter<"ChartOfAccount"> | string | null
     createdAt?: DateTimeFilter<"ChartOfAccount"> | Date | string
@@ -228373,6 +234669,8 @@ export namespace Prisma {
     type?: SortOrder
     parentId?: SortOrderInput | SortOrder
     isSystemAccount?: SortOrder
+    isBank?: SortOrder
+    isTemplate?: SortOrder
     isActive?: SortOrder
     description?: SortOrderInput | SortOrder
     createdAt?: SortOrder
@@ -228396,6 +234694,8 @@ export namespace Prisma {
     type?: EnumAccountTypeFilter<"ChartOfAccount"> | $Enums.AccountType
     parentId?: StringNullableFilter<"ChartOfAccount"> | string | null
     isSystemAccount?: BoolFilter<"ChartOfAccount"> | boolean
+    isBank?: BoolFilter<"ChartOfAccount"> | boolean
+    isTemplate?: BoolFilter<"ChartOfAccount"> | boolean
     isActive?: BoolFilter<"ChartOfAccount"> | boolean
     description?: StringNullableFilter<"ChartOfAccount"> | string | null
     createdAt?: DateTimeFilter<"ChartOfAccount"> | Date | string
@@ -228415,6 +234715,8 @@ export namespace Prisma {
     type?: SortOrder
     parentId?: SortOrderInput | SortOrder
     isSystemAccount?: SortOrder
+    isBank?: SortOrder
+    isTemplate?: SortOrder
     isActive?: SortOrder
     description?: SortOrderInput | SortOrder
     createdAt?: SortOrder
@@ -228435,6 +234737,8 @@ export namespace Prisma {
     type?: EnumAccountTypeWithAggregatesFilter<"ChartOfAccount"> | $Enums.AccountType
     parentId?: StringNullableWithAggregatesFilter<"ChartOfAccount"> | string | null
     isSystemAccount?: BoolWithAggregatesFilter<"ChartOfAccount"> | boolean
+    isBank?: BoolWithAggregatesFilter<"ChartOfAccount"> | boolean
+    isTemplate?: BoolWithAggregatesFilter<"ChartOfAccount"> | boolean
     isActive?: BoolWithAggregatesFilter<"ChartOfAccount"> | boolean
     description?: StringNullableWithAggregatesFilter<"ChartOfAccount"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"ChartOfAccount"> | Date | string
@@ -228451,6 +234755,9 @@ export namespace Prisma {
     date?: DateTimeFilter<"JournalEntry"> | Date | string
     description?: StringFilter<"JournalEntry"> | string
     status?: StringFilter<"JournalEntry"> | string
+    currency?: StringFilter<"JournalEntry"> | string
+    exchangeRateUsed?: FloatFilter<"JournalEntry"> | number
+    ipAddress?: StringNullableFilter<"JournalEntry"> | string | null
     isReversing?: BoolFilter<"JournalEntry"> | boolean
     reversedById?: StringNullableFilter<"JournalEntry"> | string | null
     sourceType?: StringFilter<"JournalEntry"> | string
@@ -228473,6 +234780,9 @@ export namespace Prisma {
     date?: SortOrder
     description?: SortOrder
     status?: SortOrder
+    currency?: SortOrder
+    exchangeRateUsed?: SortOrder
+    ipAddress?: SortOrderInput | SortOrder
     isReversing?: SortOrder
     reversedById?: SortOrderInput | SortOrder
     sourceType?: SortOrder
@@ -228499,6 +234809,9 @@ export namespace Prisma {
     date?: DateTimeFilter<"JournalEntry"> | Date | string
     description?: StringFilter<"JournalEntry"> | string
     status?: StringFilter<"JournalEntry"> | string
+    currency?: StringFilter<"JournalEntry"> | string
+    exchangeRateUsed?: FloatFilter<"JournalEntry"> | number
+    ipAddress?: StringNullableFilter<"JournalEntry"> | string | null
     isReversing?: BoolFilter<"JournalEntry"> | boolean
     reversedById?: StringNullableFilter<"JournalEntry"> | string | null
     sourceType?: StringFilter<"JournalEntry"> | string
@@ -228521,6 +234834,9 @@ export namespace Prisma {
     date?: SortOrder
     description?: SortOrder
     status?: SortOrder
+    currency?: SortOrder
+    exchangeRateUsed?: SortOrder
+    ipAddress?: SortOrderInput | SortOrder
     isReversing?: SortOrder
     reversedById?: SortOrderInput | SortOrder
     sourceType?: SortOrder
@@ -228531,8 +234847,10 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: JournalEntryCountOrderByAggregateInput
+    _avg?: JournalEntryAvgOrderByAggregateInput
     _max?: JournalEntryMaxOrderByAggregateInput
     _min?: JournalEntryMinOrderByAggregateInput
+    _sum?: JournalEntrySumOrderByAggregateInput
   }
 
   export type JournalEntryScalarWhereWithAggregatesInput = {
@@ -228545,6 +234863,9 @@ export namespace Prisma {
     date?: DateTimeWithAggregatesFilter<"JournalEntry"> | Date | string
     description?: StringWithAggregatesFilter<"JournalEntry"> | string
     status?: StringWithAggregatesFilter<"JournalEntry"> | string
+    currency?: StringWithAggregatesFilter<"JournalEntry"> | string
+    exchangeRateUsed?: FloatWithAggregatesFilter<"JournalEntry"> | number
+    ipAddress?: StringNullableWithAggregatesFilter<"JournalEntry"> | string | null
     isReversing?: BoolWithAggregatesFilter<"JournalEntry"> | boolean
     reversedById?: StringNullableWithAggregatesFilter<"JournalEntry"> | string | null
     sourceType?: StringWithAggregatesFilter<"JournalEntry"> | string
@@ -228564,9 +234885,12 @@ export namespace Prisma {
     journalEntryId?: StringFilter<"JournalEntryLine"> | string
     accountId?: StringFilter<"JournalEntryLine"> | string
     schoolId?: StringFilter<"JournalEntryLine"> | string
+    coaCode?: StringNullableFilter<"JournalEntryLine"> | string | null
     description?: StringNullableFilter<"JournalEntryLine"> | string | null
     debit?: FloatFilter<"JournalEntryLine"> | number
     credit?: FloatFilter<"JournalEntryLine"> | number
+    baseAmount?: FloatFilter<"JournalEntryLine"> | number
+    taxCode?: StringNullableFilter<"JournalEntryLine"> | string | null
     currency?: StringFilter<"JournalEntryLine"> | string
     exchangeRate?: FloatFilter<"JournalEntryLine"> | number
     debitForeign?: FloatFilter<"JournalEntryLine"> | number
@@ -228586,9 +234910,12 @@ export namespace Prisma {
     journalEntryId?: SortOrder
     accountId?: SortOrder
     schoolId?: SortOrder
+    coaCode?: SortOrderInput | SortOrder
     description?: SortOrderInput | SortOrder
     debit?: SortOrder
     credit?: SortOrder
+    baseAmount?: SortOrder
+    taxCode?: SortOrderInput | SortOrder
     currency?: SortOrder
     exchangeRate?: SortOrder
     debitForeign?: SortOrder
@@ -228611,9 +234938,12 @@ export namespace Prisma {
     journalEntryId?: StringFilter<"JournalEntryLine"> | string
     accountId?: StringFilter<"JournalEntryLine"> | string
     schoolId?: StringFilter<"JournalEntryLine"> | string
+    coaCode?: StringNullableFilter<"JournalEntryLine"> | string | null
     description?: StringNullableFilter<"JournalEntryLine"> | string | null
     debit?: FloatFilter<"JournalEntryLine"> | number
     credit?: FloatFilter<"JournalEntryLine"> | number
+    baseAmount?: FloatFilter<"JournalEntryLine"> | number
+    taxCode?: StringNullableFilter<"JournalEntryLine"> | string | null
     currency?: StringFilter<"JournalEntryLine"> | string
     exchangeRate?: FloatFilter<"JournalEntryLine"> | number
     debitForeign?: FloatFilter<"JournalEntryLine"> | number
@@ -228633,9 +234963,12 @@ export namespace Prisma {
     journalEntryId?: SortOrder
     accountId?: SortOrder
     schoolId?: SortOrder
+    coaCode?: SortOrderInput | SortOrder
     description?: SortOrderInput | SortOrder
     debit?: SortOrder
     credit?: SortOrder
+    baseAmount?: SortOrder
+    taxCode?: SortOrderInput | SortOrder
     currency?: SortOrder
     exchangeRate?: SortOrder
     debitForeign?: SortOrder
@@ -228661,9 +234994,12 @@ export namespace Prisma {
     journalEntryId?: StringWithAggregatesFilter<"JournalEntryLine"> | string
     accountId?: StringWithAggregatesFilter<"JournalEntryLine"> | string
     schoolId?: StringWithAggregatesFilter<"JournalEntryLine"> | string
+    coaCode?: StringNullableWithAggregatesFilter<"JournalEntryLine"> | string | null
     description?: StringNullableWithAggregatesFilter<"JournalEntryLine"> | string | null
     debit?: FloatWithAggregatesFilter<"JournalEntryLine"> | number
     credit?: FloatWithAggregatesFilter<"JournalEntryLine"> | number
+    baseAmount?: FloatWithAggregatesFilter<"JournalEntryLine"> | number
+    taxCode?: StringNullableWithAggregatesFilter<"JournalEntryLine"> | string | null
     currency?: StringWithAggregatesFilter<"JournalEntryLine"> | string
     exchangeRate?: FloatWithAggregatesFilter<"JournalEntryLine"> | number
     debitForeign?: FloatWithAggregatesFilter<"JournalEntryLine"> | number
@@ -228683,6 +235019,10 @@ export namespace Prisma {
     id?: StringFilter<"AccountingPeriod"> | string
     schoolId?: StringFilter<"AccountingPeriod"> | string
     period?: StringFilter<"AccountingPeriod"> | string
+    year?: IntNullableFilter<"AccountingPeriod"> | number | null
+    term?: StringNullableFilter<"AccountingPeriod"> | string | null
+    startDate?: DateTimeNullableFilter<"AccountingPeriod"> | Date | string | null
+    endDate?: DateTimeNullableFilter<"AccountingPeriod"> | Date | string | null
     status?: StringFilter<"AccountingPeriod"> | string
     closedBy?: StringNullableFilter<"AccountingPeriod"> | string | null
     closedAt?: DateTimeNullableFilter<"AccountingPeriod"> | Date | string | null
@@ -228696,6 +235036,10 @@ export namespace Prisma {
     id?: SortOrder
     schoolId?: SortOrder
     period?: SortOrder
+    year?: SortOrderInput | SortOrder
+    term?: SortOrderInput | SortOrder
+    startDate?: SortOrderInput | SortOrder
+    endDate?: SortOrderInput | SortOrder
     status?: SortOrder
     closedBy?: SortOrderInput | SortOrder
     closedAt?: SortOrderInput | SortOrder
@@ -228713,6 +235057,10 @@ export namespace Prisma {
     NOT?: AccountingPeriodWhereInput | AccountingPeriodWhereInput[]
     schoolId?: StringFilter<"AccountingPeriod"> | string
     period?: StringFilter<"AccountingPeriod"> | string
+    year?: IntNullableFilter<"AccountingPeriod"> | number | null
+    term?: StringNullableFilter<"AccountingPeriod"> | string | null
+    startDate?: DateTimeNullableFilter<"AccountingPeriod"> | Date | string | null
+    endDate?: DateTimeNullableFilter<"AccountingPeriod"> | Date | string | null
     status?: StringFilter<"AccountingPeriod"> | string
     closedBy?: StringNullableFilter<"AccountingPeriod"> | string | null
     closedAt?: DateTimeNullableFilter<"AccountingPeriod"> | Date | string | null
@@ -228726,6 +235074,10 @@ export namespace Prisma {
     id?: SortOrder
     schoolId?: SortOrder
     period?: SortOrder
+    year?: SortOrderInput | SortOrder
+    term?: SortOrderInput | SortOrder
+    startDate?: SortOrderInput | SortOrder
+    endDate?: SortOrderInput | SortOrder
     status?: SortOrder
     closedBy?: SortOrderInput | SortOrder
     closedAt?: SortOrderInput | SortOrder
@@ -228733,8 +235085,10 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: AccountingPeriodCountOrderByAggregateInput
+    _avg?: AccountingPeriodAvgOrderByAggregateInput
     _max?: AccountingPeriodMaxOrderByAggregateInput
     _min?: AccountingPeriodMinOrderByAggregateInput
+    _sum?: AccountingPeriodSumOrderByAggregateInput
   }
 
   export type AccountingPeriodScalarWhereWithAggregatesInput = {
@@ -228744,12 +235098,482 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"AccountingPeriod"> | string
     schoolId?: StringWithAggregatesFilter<"AccountingPeriod"> | string
     period?: StringWithAggregatesFilter<"AccountingPeriod"> | string
+    year?: IntNullableWithAggregatesFilter<"AccountingPeriod"> | number | null
+    term?: StringNullableWithAggregatesFilter<"AccountingPeriod"> | string | null
+    startDate?: DateTimeNullableWithAggregatesFilter<"AccountingPeriod"> | Date | string | null
+    endDate?: DateTimeNullableWithAggregatesFilter<"AccountingPeriod"> | Date | string | null
     status?: StringWithAggregatesFilter<"AccountingPeriod"> | string
     closedBy?: StringNullableWithAggregatesFilter<"AccountingPeriod"> | string | null
     closedAt?: DateTimeNullableWithAggregatesFilter<"AccountingPeriod"> | Date | string | null
     notes?: StringNullableWithAggregatesFilter<"AccountingPeriod"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"AccountingPeriod"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"AccountingPeriod"> | Date | string
+  }
+
+  export type ExchangeRateWhereInput = {
+    AND?: ExchangeRateWhereInput | ExchangeRateWhereInput[]
+    OR?: ExchangeRateWhereInput[]
+    NOT?: ExchangeRateWhereInput | ExchangeRateWhereInput[]
+    id?: StringFilter<"ExchangeRate"> | string
+    schoolId?: StringFilter<"ExchangeRate"> | string
+    date?: DateTimeFilter<"ExchangeRate"> | Date | string
+    fromCurrency?: StringFilter<"ExchangeRate"> | string
+    toCurrency?: StringFilter<"ExchangeRate"> | string
+    rate?: FloatFilter<"ExchangeRate"> | number
+    createdAt?: DateTimeFilter<"ExchangeRate"> | Date | string
+    updatedAt?: DateTimeFilter<"ExchangeRate"> | Date | string
+    school?: XOR<SchoolRelationFilter, SchoolWhereInput>
+  }
+
+  export type ExchangeRateOrderByWithRelationInput = {
+    id?: SortOrder
+    schoolId?: SortOrder
+    date?: SortOrder
+    fromCurrency?: SortOrder
+    toCurrency?: SortOrder
+    rate?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    school?: SchoolOrderByWithRelationInput
+  }
+
+  export type ExchangeRateWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: ExchangeRateWhereInput | ExchangeRateWhereInput[]
+    OR?: ExchangeRateWhereInput[]
+    NOT?: ExchangeRateWhereInput | ExchangeRateWhereInput[]
+    schoolId?: StringFilter<"ExchangeRate"> | string
+    date?: DateTimeFilter<"ExchangeRate"> | Date | string
+    fromCurrency?: StringFilter<"ExchangeRate"> | string
+    toCurrency?: StringFilter<"ExchangeRate"> | string
+    rate?: FloatFilter<"ExchangeRate"> | number
+    createdAt?: DateTimeFilter<"ExchangeRate"> | Date | string
+    updatedAt?: DateTimeFilter<"ExchangeRate"> | Date | string
+    school?: XOR<SchoolRelationFilter, SchoolWhereInput>
+  }, "id">
+
+  export type ExchangeRateOrderByWithAggregationInput = {
+    id?: SortOrder
+    schoolId?: SortOrder
+    date?: SortOrder
+    fromCurrency?: SortOrder
+    toCurrency?: SortOrder
+    rate?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: ExchangeRateCountOrderByAggregateInput
+    _avg?: ExchangeRateAvgOrderByAggregateInput
+    _max?: ExchangeRateMaxOrderByAggregateInput
+    _min?: ExchangeRateMinOrderByAggregateInput
+    _sum?: ExchangeRateSumOrderByAggregateInput
+  }
+
+  export type ExchangeRateScalarWhereWithAggregatesInput = {
+    AND?: ExchangeRateScalarWhereWithAggregatesInput | ExchangeRateScalarWhereWithAggregatesInput[]
+    OR?: ExchangeRateScalarWhereWithAggregatesInput[]
+    NOT?: ExchangeRateScalarWhereWithAggregatesInput | ExchangeRateScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"ExchangeRate"> | string
+    schoolId?: StringWithAggregatesFilter<"ExchangeRate"> | string
+    date?: DateTimeWithAggregatesFilter<"ExchangeRate"> | Date | string
+    fromCurrency?: StringWithAggregatesFilter<"ExchangeRate"> | string
+    toCurrency?: StringWithAggregatesFilter<"ExchangeRate"> | string
+    rate?: FloatWithAggregatesFilter<"ExchangeRate"> | number
+    createdAt?: DateTimeWithAggregatesFilter<"ExchangeRate"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"ExchangeRate"> | Date | string
+  }
+
+  export type ApprovalWhereInput = {
+    AND?: ApprovalWhereInput | ApprovalWhereInput[]
+    OR?: ApprovalWhereInput[]
+    NOT?: ApprovalWhereInput | ApprovalWhereInput[]
+    id?: StringFilter<"Approval"> | string
+    schoolId?: StringFilter<"Approval"> | string
+    entityType?: StringFilter<"Approval"> | string
+    entityId?: StringFilter<"Approval"> | string
+    requestedBy?: StringFilter<"Approval"> | string
+    amount?: FloatFilter<"Approval"> | number
+    currency?: StringFilter<"Approval"> | string
+    status?: StringFilter<"Approval"> | string
+    tier?: IntFilter<"Approval"> | number
+    approverRole?: StringFilter<"Approval"> | string
+    approvedBy?: StringNullableFilter<"Approval"> | string | null
+    approvedAt?: DateTimeNullableFilter<"Approval"> | Date | string | null
+    rejectionReason?: StringNullableFilter<"Approval"> | string | null
+    thresholdRule?: StringNullableFilter<"Approval"> | string | null
+    createdAt?: DateTimeFilter<"Approval"> | Date | string
+    updatedAt?: DateTimeFilter<"Approval"> | Date | string
+    school?: XOR<SchoolRelationFilter, SchoolWhereInput>
+  }
+
+  export type ApprovalOrderByWithRelationInput = {
+    id?: SortOrder
+    schoolId?: SortOrder
+    entityType?: SortOrder
+    entityId?: SortOrder
+    requestedBy?: SortOrder
+    amount?: SortOrder
+    currency?: SortOrder
+    status?: SortOrder
+    tier?: SortOrder
+    approverRole?: SortOrder
+    approvedBy?: SortOrderInput | SortOrder
+    approvedAt?: SortOrderInput | SortOrder
+    rejectionReason?: SortOrderInput | SortOrder
+    thresholdRule?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    school?: SchoolOrderByWithRelationInput
+  }
+
+  export type ApprovalWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: ApprovalWhereInput | ApprovalWhereInput[]
+    OR?: ApprovalWhereInput[]
+    NOT?: ApprovalWhereInput | ApprovalWhereInput[]
+    schoolId?: StringFilter<"Approval"> | string
+    entityType?: StringFilter<"Approval"> | string
+    entityId?: StringFilter<"Approval"> | string
+    requestedBy?: StringFilter<"Approval"> | string
+    amount?: FloatFilter<"Approval"> | number
+    currency?: StringFilter<"Approval"> | string
+    status?: StringFilter<"Approval"> | string
+    tier?: IntFilter<"Approval"> | number
+    approverRole?: StringFilter<"Approval"> | string
+    approvedBy?: StringNullableFilter<"Approval"> | string | null
+    approvedAt?: DateTimeNullableFilter<"Approval"> | Date | string | null
+    rejectionReason?: StringNullableFilter<"Approval"> | string | null
+    thresholdRule?: StringNullableFilter<"Approval"> | string | null
+    createdAt?: DateTimeFilter<"Approval"> | Date | string
+    updatedAt?: DateTimeFilter<"Approval"> | Date | string
+    school?: XOR<SchoolRelationFilter, SchoolWhereInput>
+  }, "id">
+
+  export type ApprovalOrderByWithAggregationInput = {
+    id?: SortOrder
+    schoolId?: SortOrder
+    entityType?: SortOrder
+    entityId?: SortOrder
+    requestedBy?: SortOrder
+    amount?: SortOrder
+    currency?: SortOrder
+    status?: SortOrder
+    tier?: SortOrder
+    approverRole?: SortOrder
+    approvedBy?: SortOrderInput | SortOrder
+    approvedAt?: SortOrderInput | SortOrder
+    rejectionReason?: SortOrderInput | SortOrder
+    thresholdRule?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: ApprovalCountOrderByAggregateInput
+    _avg?: ApprovalAvgOrderByAggregateInput
+    _max?: ApprovalMaxOrderByAggregateInput
+    _min?: ApprovalMinOrderByAggregateInput
+    _sum?: ApprovalSumOrderByAggregateInput
+  }
+
+  export type ApprovalScalarWhereWithAggregatesInput = {
+    AND?: ApprovalScalarWhereWithAggregatesInput | ApprovalScalarWhereWithAggregatesInput[]
+    OR?: ApprovalScalarWhereWithAggregatesInput[]
+    NOT?: ApprovalScalarWhereWithAggregatesInput | ApprovalScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"Approval"> | string
+    schoolId?: StringWithAggregatesFilter<"Approval"> | string
+    entityType?: StringWithAggregatesFilter<"Approval"> | string
+    entityId?: StringWithAggregatesFilter<"Approval"> | string
+    requestedBy?: StringWithAggregatesFilter<"Approval"> | string
+    amount?: FloatWithAggregatesFilter<"Approval"> | number
+    currency?: StringWithAggregatesFilter<"Approval"> | string
+    status?: StringWithAggregatesFilter<"Approval"> | string
+    tier?: IntWithAggregatesFilter<"Approval"> | number
+    approverRole?: StringWithAggregatesFilter<"Approval"> | string
+    approvedBy?: StringNullableWithAggregatesFilter<"Approval"> | string | null
+    approvedAt?: DateTimeNullableWithAggregatesFilter<"Approval"> | Date | string | null
+    rejectionReason?: StringNullableWithAggregatesFilter<"Approval"> | string | null
+    thresholdRule?: StringNullableWithAggregatesFilter<"Approval"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"Approval"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"Approval"> | Date | string
+  }
+
+  export type BudgetWhereInput = {
+    AND?: BudgetWhereInput | BudgetWhereInput[]
+    OR?: BudgetWhereInput[]
+    NOT?: BudgetWhereInput | BudgetWhereInput[]
+    id?: StringFilter<"Budget"> | string
+    schoolId?: StringFilter<"Budget"> | string
+    year?: IntFilter<"Budget"> | number
+    term?: StringNullableFilter<"Budget"> | string | null
+    coaCode?: StringFilter<"Budget"> | string
+    amount?: FloatFilter<"Budget"> | number
+    currency?: StringFilter<"Budget"> | string
+    createdAt?: DateTimeFilter<"Budget"> | Date | string
+    updatedAt?: DateTimeFilter<"Budget"> | Date | string
+    school?: XOR<SchoolRelationFilter, SchoolWhereInput>
+  }
+
+  export type BudgetOrderByWithRelationInput = {
+    id?: SortOrder
+    schoolId?: SortOrder
+    year?: SortOrder
+    term?: SortOrderInput | SortOrder
+    coaCode?: SortOrder
+    amount?: SortOrder
+    currency?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    school?: SchoolOrderByWithRelationInput
+  }
+
+  export type BudgetWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    schoolId_year_term_coaCode?: BudgetSchoolIdYearTermCoaCodeCompoundUniqueInput
+    AND?: BudgetWhereInput | BudgetWhereInput[]
+    OR?: BudgetWhereInput[]
+    NOT?: BudgetWhereInput | BudgetWhereInput[]
+    schoolId?: StringFilter<"Budget"> | string
+    year?: IntFilter<"Budget"> | number
+    term?: StringNullableFilter<"Budget"> | string | null
+    coaCode?: StringFilter<"Budget"> | string
+    amount?: FloatFilter<"Budget"> | number
+    currency?: StringFilter<"Budget"> | string
+    createdAt?: DateTimeFilter<"Budget"> | Date | string
+    updatedAt?: DateTimeFilter<"Budget"> | Date | string
+    school?: XOR<SchoolRelationFilter, SchoolWhereInput>
+  }, "id" | "schoolId_year_term_coaCode">
+
+  export type BudgetOrderByWithAggregationInput = {
+    id?: SortOrder
+    schoolId?: SortOrder
+    year?: SortOrder
+    term?: SortOrderInput | SortOrder
+    coaCode?: SortOrder
+    amount?: SortOrder
+    currency?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: BudgetCountOrderByAggregateInput
+    _avg?: BudgetAvgOrderByAggregateInput
+    _max?: BudgetMaxOrderByAggregateInput
+    _min?: BudgetMinOrderByAggregateInput
+    _sum?: BudgetSumOrderByAggregateInput
+  }
+
+  export type BudgetScalarWhereWithAggregatesInput = {
+    AND?: BudgetScalarWhereWithAggregatesInput | BudgetScalarWhereWithAggregatesInput[]
+    OR?: BudgetScalarWhereWithAggregatesInput[]
+    NOT?: BudgetScalarWhereWithAggregatesInput | BudgetScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"Budget"> | string
+    schoolId?: StringWithAggregatesFilter<"Budget"> | string
+    year?: IntWithAggregatesFilter<"Budget"> | number
+    term?: StringNullableWithAggregatesFilter<"Budget"> | string | null
+    coaCode?: StringWithAggregatesFilter<"Budget"> | string
+    amount?: FloatWithAggregatesFilter<"Budget"> | number
+    currency?: StringWithAggregatesFilter<"Budget"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"Budget"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"Budget"> | Date | string
+  }
+
+  export type StockMovementWhereInput = {
+    AND?: StockMovementWhereInput | StockMovementWhereInput[]
+    OR?: StockMovementWhereInput[]
+    NOT?: StockMovementWhereInput | StockMovementWhereInput[]
+    id?: StringFilter<"StockMovement"> | string
+    schoolId?: StringFilter<"StockMovement"> | string
+    module?: StringFilter<"StockMovement"> | string
+    itemId?: StringFilter<"StockMovement"> | string
+    itemName?: StringFilter<"StockMovement"> | string
+    batchNumber?: StringNullableFilter<"StockMovement"> | string | null
+    direction?: StringFilter<"StockMovement"> | string
+    quantity?: FloatFilter<"StockMovement"> | number
+    unitCost?: FloatFilter<"StockMovement"> | number
+    totalCost?: FloatFilter<"StockMovement"> | number
+    date?: DateTimeFilter<"StockMovement"> | Date | string
+    reference?: StringNullableFilter<"StockMovement"> | string | null
+    journalEntryId?: StringNullableFilter<"StockMovement"> | string | null
+    createdAt?: DateTimeFilter<"StockMovement"> | Date | string
+    school?: XOR<SchoolRelationFilter, SchoolWhereInput>
+  }
+
+  export type StockMovementOrderByWithRelationInput = {
+    id?: SortOrder
+    schoolId?: SortOrder
+    module?: SortOrder
+    itemId?: SortOrder
+    itemName?: SortOrder
+    batchNumber?: SortOrderInput | SortOrder
+    direction?: SortOrder
+    quantity?: SortOrder
+    unitCost?: SortOrder
+    totalCost?: SortOrder
+    date?: SortOrder
+    reference?: SortOrderInput | SortOrder
+    journalEntryId?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    school?: SchoolOrderByWithRelationInput
+  }
+
+  export type StockMovementWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: StockMovementWhereInput | StockMovementWhereInput[]
+    OR?: StockMovementWhereInput[]
+    NOT?: StockMovementWhereInput | StockMovementWhereInput[]
+    schoolId?: StringFilter<"StockMovement"> | string
+    module?: StringFilter<"StockMovement"> | string
+    itemId?: StringFilter<"StockMovement"> | string
+    itemName?: StringFilter<"StockMovement"> | string
+    batchNumber?: StringNullableFilter<"StockMovement"> | string | null
+    direction?: StringFilter<"StockMovement"> | string
+    quantity?: FloatFilter<"StockMovement"> | number
+    unitCost?: FloatFilter<"StockMovement"> | number
+    totalCost?: FloatFilter<"StockMovement"> | number
+    date?: DateTimeFilter<"StockMovement"> | Date | string
+    reference?: StringNullableFilter<"StockMovement"> | string | null
+    journalEntryId?: StringNullableFilter<"StockMovement"> | string | null
+    createdAt?: DateTimeFilter<"StockMovement"> | Date | string
+    school?: XOR<SchoolRelationFilter, SchoolWhereInput>
+  }, "id">
+
+  export type StockMovementOrderByWithAggregationInput = {
+    id?: SortOrder
+    schoolId?: SortOrder
+    module?: SortOrder
+    itemId?: SortOrder
+    itemName?: SortOrder
+    batchNumber?: SortOrderInput | SortOrder
+    direction?: SortOrder
+    quantity?: SortOrder
+    unitCost?: SortOrder
+    totalCost?: SortOrder
+    date?: SortOrder
+    reference?: SortOrderInput | SortOrder
+    journalEntryId?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    _count?: StockMovementCountOrderByAggregateInput
+    _avg?: StockMovementAvgOrderByAggregateInput
+    _max?: StockMovementMaxOrderByAggregateInput
+    _min?: StockMovementMinOrderByAggregateInput
+    _sum?: StockMovementSumOrderByAggregateInput
+  }
+
+  export type StockMovementScalarWhereWithAggregatesInput = {
+    AND?: StockMovementScalarWhereWithAggregatesInput | StockMovementScalarWhereWithAggregatesInput[]
+    OR?: StockMovementScalarWhereWithAggregatesInput[]
+    NOT?: StockMovementScalarWhereWithAggregatesInput | StockMovementScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"StockMovement"> | string
+    schoolId?: StringWithAggregatesFilter<"StockMovement"> | string
+    module?: StringWithAggregatesFilter<"StockMovement"> | string
+    itemId?: StringWithAggregatesFilter<"StockMovement"> | string
+    itemName?: StringWithAggregatesFilter<"StockMovement"> | string
+    batchNumber?: StringNullableWithAggregatesFilter<"StockMovement"> | string | null
+    direction?: StringWithAggregatesFilter<"StockMovement"> | string
+    quantity?: FloatWithAggregatesFilter<"StockMovement"> | number
+    unitCost?: FloatWithAggregatesFilter<"StockMovement"> | number
+    totalCost?: FloatWithAggregatesFilter<"StockMovement"> | number
+    date?: DateTimeWithAggregatesFilter<"StockMovement"> | Date | string
+    reference?: StringNullableWithAggregatesFilter<"StockMovement"> | string | null
+    journalEntryId?: StringNullableWithAggregatesFilter<"StockMovement"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"StockMovement"> | Date | string
+  }
+
+  export type TaxBracketWhereInput = {
+    AND?: TaxBracketWhereInput | TaxBracketWhereInput[]
+    OR?: TaxBracketWhereInput[]
+    NOT?: TaxBracketWhereInput | TaxBracketWhereInput[]
+    id?: StringFilter<"TaxBracket"> | string
+    schoolId?: StringFilter<"TaxBracket"> | string
+    currency?: StringFilter<"TaxBracket"> | string
+    effectiveFrom?: DateTimeFilter<"TaxBracket"> | Date | string
+    effectiveTo?: DateTimeNullableFilter<"TaxBracket"> | Date | string | null
+    minIncome?: FloatFilter<"TaxBracket"> | number
+    maxIncome?: FloatNullableFilter<"TaxBracket"> | number | null
+    rate?: FloatFilter<"TaxBracket"> | number
+    deduction?: FloatFilter<"TaxBracket"> | number
+    aidsLevyRate?: FloatFilter<"TaxBracket"> | number
+    nssaCeiling?: FloatFilter<"TaxBracket"> | number
+    nssaRate?: FloatFilter<"TaxBracket"> | number
+    createdAt?: DateTimeFilter<"TaxBracket"> | Date | string
+    updatedAt?: DateTimeFilter<"TaxBracket"> | Date | string
+    school?: XOR<SchoolRelationFilter, SchoolWhereInput>
+  }
+
+  export type TaxBracketOrderByWithRelationInput = {
+    id?: SortOrder
+    schoolId?: SortOrder
+    currency?: SortOrder
+    effectiveFrom?: SortOrder
+    effectiveTo?: SortOrderInput | SortOrder
+    minIncome?: SortOrder
+    maxIncome?: SortOrderInput | SortOrder
+    rate?: SortOrder
+    deduction?: SortOrder
+    aidsLevyRate?: SortOrder
+    nssaCeiling?: SortOrder
+    nssaRate?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    school?: SchoolOrderByWithRelationInput
+  }
+
+  export type TaxBracketWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: TaxBracketWhereInput | TaxBracketWhereInput[]
+    OR?: TaxBracketWhereInput[]
+    NOT?: TaxBracketWhereInput | TaxBracketWhereInput[]
+    schoolId?: StringFilter<"TaxBracket"> | string
+    currency?: StringFilter<"TaxBracket"> | string
+    effectiveFrom?: DateTimeFilter<"TaxBracket"> | Date | string
+    effectiveTo?: DateTimeNullableFilter<"TaxBracket"> | Date | string | null
+    minIncome?: FloatFilter<"TaxBracket"> | number
+    maxIncome?: FloatNullableFilter<"TaxBracket"> | number | null
+    rate?: FloatFilter<"TaxBracket"> | number
+    deduction?: FloatFilter<"TaxBracket"> | number
+    aidsLevyRate?: FloatFilter<"TaxBracket"> | number
+    nssaCeiling?: FloatFilter<"TaxBracket"> | number
+    nssaRate?: FloatFilter<"TaxBracket"> | number
+    createdAt?: DateTimeFilter<"TaxBracket"> | Date | string
+    updatedAt?: DateTimeFilter<"TaxBracket"> | Date | string
+    school?: XOR<SchoolRelationFilter, SchoolWhereInput>
+  }, "id">
+
+  export type TaxBracketOrderByWithAggregationInput = {
+    id?: SortOrder
+    schoolId?: SortOrder
+    currency?: SortOrder
+    effectiveFrom?: SortOrder
+    effectiveTo?: SortOrderInput | SortOrder
+    minIncome?: SortOrder
+    maxIncome?: SortOrderInput | SortOrder
+    rate?: SortOrder
+    deduction?: SortOrder
+    aidsLevyRate?: SortOrder
+    nssaCeiling?: SortOrder
+    nssaRate?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: TaxBracketCountOrderByAggregateInput
+    _avg?: TaxBracketAvgOrderByAggregateInput
+    _max?: TaxBracketMaxOrderByAggregateInput
+    _min?: TaxBracketMinOrderByAggregateInput
+    _sum?: TaxBracketSumOrderByAggregateInput
+  }
+
+  export type TaxBracketScalarWhereWithAggregatesInput = {
+    AND?: TaxBracketScalarWhereWithAggregatesInput | TaxBracketScalarWhereWithAggregatesInput[]
+    OR?: TaxBracketScalarWhereWithAggregatesInput[]
+    NOT?: TaxBracketScalarWhereWithAggregatesInput | TaxBracketScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"TaxBracket"> | string
+    schoolId?: StringWithAggregatesFilter<"TaxBracket"> | string
+    currency?: StringWithAggregatesFilter<"TaxBracket"> | string
+    effectiveFrom?: DateTimeWithAggregatesFilter<"TaxBracket"> | Date | string
+    effectiveTo?: DateTimeNullableWithAggregatesFilter<"TaxBracket"> | Date | string | null
+    minIncome?: FloatWithAggregatesFilter<"TaxBracket"> | number
+    maxIncome?: FloatNullableWithAggregatesFilter<"TaxBracket"> | number | null
+    rate?: FloatWithAggregatesFilter<"TaxBracket"> | number
+    deduction?: FloatWithAggregatesFilter<"TaxBracket"> | number
+    aidsLevyRate?: FloatWithAggregatesFilter<"TaxBracket"> | number
+    nssaCeiling?: FloatWithAggregatesFilter<"TaxBracket"> | number
+    nssaRate?: FloatWithAggregatesFilter<"TaxBracket"> | number
+    createdAt?: DateTimeWithAggregatesFilter<"TaxBracket"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"TaxBracket"> | Date | string
   }
 
   export type UniformStockMovementWhereInput = {
@@ -230498,6 +237322,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateInput = {
@@ -230640,6 +237469,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUpdateInput = {
@@ -230782,6 +237616,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateInput = {
@@ -230924,6 +237763,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolCreateManyInput = {
@@ -236328,6 +243172,9 @@ export namespace Prisma {
     mandatoryReceipts?: boolean
     showBalanceOnReceipts?: boolean
     showUniformsModule?: boolean
+    financialApprovalThreshold?: number | null
+    tier1ApprovalRole?: string | null
+    tier2ApprovalRole?: string | null
     smtpEmail?: string | null
     smtpHost?: string | null
     smtpPort?: number | null
@@ -236404,6 +243251,9 @@ export namespace Prisma {
     mandatoryReceipts?: boolean
     showBalanceOnReceipts?: boolean
     showUniformsModule?: boolean
+    financialApprovalThreshold?: number | null
+    tier1ApprovalRole?: string | null
+    tier2ApprovalRole?: string | null
     smtpEmail?: string | null
     smtpHost?: string | null
     smtpPort?: number | null
@@ -236478,6 +243328,9 @@ export namespace Prisma {
     mandatoryReceipts?: BoolFieldUpdateOperationsInput | boolean
     showBalanceOnReceipts?: BoolFieldUpdateOperationsInput | boolean
     showUniformsModule?: BoolFieldUpdateOperationsInput | boolean
+    financialApprovalThreshold?: NullableFloatFieldUpdateOperationsInput | number | null
+    tier1ApprovalRole?: NullableStringFieldUpdateOperationsInput | string | null
+    tier2ApprovalRole?: NullableStringFieldUpdateOperationsInput | string | null
     smtpEmail?: NullableStringFieldUpdateOperationsInput | string | null
     smtpHost?: NullableStringFieldUpdateOperationsInput | string | null
     smtpPort?: NullableIntFieldUpdateOperationsInput | number | null
@@ -236554,6 +243407,9 @@ export namespace Prisma {
     mandatoryReceipts?: BoolFieldUpdateOperationsInput | boolean
     showBalanceOnReceipts?: BoolFieldUpdateOperationsInput | boolean
     showUniformsModule?: BoolFieldUpdateOperationsInput | boolean
+    financialApprovalThreshold?: NullableFloatFieldUpdateOperationsInput | number | null
+    tier1ApprovalRole?: NullableStringFieldUpdateOperationsInput | string | null
+    tier2ApprovalRole?: NullableStringFieldUpdateOperationsInput | string | null
     smtpEmail?: NullableStringFieldUpdateOperationsInput | string | null
     smtpHost?: NullableStringFieldUpdateOperationsInput | string | null
     smtpPort?: NullableIntFieldUpdateOperationsInput | number | null
@@ -236629,6 +243485,9 @@ export namespace Prisma {
     mandatoryReceipts?: boolean
     showBalanceOnReceipts?: boolean
     showUniformsModule?: boolean
+    financialApprovalThreshold?: number | null
+    tier1ApprovalRole?: string | null
+    tier2ApprovalRole?: string | null
     smtpEmail?: string | null
     smtpHost?: string | null
     smtpPort?: number | null
@@ -236703,6 +243562,9 @@ export namespace Prisma {
     mandatoryReceipts?: BoolFieldUpdateOperationsInput | boolean
     showBalanceOnReceipts?: BoolFieldUpdateOperationsInput | boolean
     showUniformsModule?: BoolFieldUpdateOperationsInput | boolean
+    financialApprovalThreshold?: NullableFloatFieldUpdateOperationsInput | number | null
+    tier1ApprovalRole?: NullableStringFieldUpdateOperationsInput | string | null
+    tier2ApprovalRole?: NullableStringFieldUpdateOperationsInput | string | null
     smtpEmail?: NullableStringFieldUpdateOperationsInput | string | null
     smtpHost?: NullableStringFieldUpdateOperationsInput | string | null
     smtpPort?: NullableIntFieldUpdateOperationsInput | number | null
@@ -236778,6 +243640,9 @@ export namespace Prisma {
     mandatoryReceipts?: BoolFieldUpdateOperationsInput | boolean
     showBalanceOnReceipts?: BoolFieldUpdateOperationsInput | boolean
     showUniformsModule?: BoolFieldUpdateOperationsInput | boolean
+    financialApprovalThreshold?: NullableFloatFieldUpdateOperationsInput | number | null
+    tier1ApprovalRole?: NullableStringFieldUpdateOperationsInput | string | null
+    tier2ApprovalRole?: NullableStringFieldUpdateOperationsInput | string | null
     smtpEmail?: NullableStringFieldUpdateOperationsInput | string | null
     smtpHost?: NullableStringFieldUpdateOperationsInput | string | null
     smtpPort?: NullableIntFieldUpdateOperationsInput | number | null
@@ -246969,6 +253834,8 @@ export namespace Prisma {
     name: string
     type: $Enums.AccountType
     isSystemAccount?: boolean
+    isBank?: boolean
+    isTemplate?: boolean
     isActive?: boolean
     description?: string | null
     createdAt?: Date | string
@@ -246988,6 +253855,8 @@ export namespace Prisma {
     type: $Enums.AccountType
     parentId?: string | null
     isSystemAccount?: boolean
+    isBank?: boolean
+    isTemplate?: boolean
     isActive?: boolean
     description?: string | null
     createdAt?: Date | string
@@ -247003,6 +253872,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumAccountTypeFieldUpdateOperationsInput | $Enums.AccountType
     isSystemAccount?: BoolFieldUpdateOperationsInput | boolean
+    isBank?: BoolFieldUpdateOperationsInput | boolean
+    isTemplate?: BoolFieldUpdateOperationsInput | boolean
     isActive?: BoolFieldUpdateOperationsInput | boolean
     description?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -247022,6 +253893,8 @@ export namespace Prisma {
     type?: EnumAccountTypeFieldUpdateOperationsInput | $Enums.AccountType
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
     isSystemAccount?: BoolFieldUpdateOperationsInput | boolean
+    isBank?: BoolFieldUpdateOperationsInput | boolean
+    isTemplate?: BoolFieldUpdateOperationsInput | boolean
     isActive?: BoolFieldUpdateOperationsInput | boolean
     description?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -247039,6 +253912,8 @@ export namespace Prisma {
     type: $Enums.AccountType
     parentId?: string | null
     isSystemAccount?: boolean
+    isBank?: boolean
+    isTemplate?: boolean
     isActive?: boolean
     description?: string | null
     createdAt?: Date | string
@@ -247051,6 +253926,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumAccountTypeFieldUpdateOperationsInput | $Enums.AccountType
     isSystemAccount?: BoolFieldUpdateOperationsInput | boolean
+    isBank?: BoolFieldUpdateOperationsInput | boolean
+    isTemplate?: BoolFieldUpdateOperationsInput | boolean
     isActive?: BoolFieldUpdateOperationsInput | boolean
     description?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -247065,6 +253942,8 @@ export namespace Prisma {
     type?: EnumAccountTypeFieldUpdateOperationsInput | $Enums.AccountType
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
     isSystemAccount?: BoolFieldUpdateOperationsInput | boolean
+    isBank?: BoolFieldUpdateOperationsInput | boolean
+    isTemplate?: BoolFieldUpdateOperationsInput | boolean
     isActive?: BoolFieldUpdateOperationsInput | boolean
     description?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -247077,6 +253956,9 @@ export namespace Prisma {
     date: Date | string
     description: string
     status?: string
+    currency?: string
+    exchangeRateUsed?: number
+    ipAddress?: string | null
     isReversing?: boolean
     sourceType: string
     sourceId: string
@@ -247098,6 +253980,9 @@ export namespace Prisma {
     date: Date | string
     description: string
     status?: string
+    currency?: string
+    exchangeRateUsed?: number
+    ipAddress?: string | null
     isReversing?: boolean
     reversedById?: string | null
     sourceType: string
@@ -247117,6 +254002,9 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     description?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    currency?: StringFieldUpdateOperationsInput | string
+    exchangeRateUsed?: FloatFieldUpdateOperationsInput | number
+    ipAddress?: NullableStringFieldUpdateOperationsInput | string | null
     isReversing?: BoolFieldUpdateOperationsInput | boolean
     sourceType?: StringFieldUpdateOperationsInput | string
     sourceId?: StringFieldUpdateOperationsInput | string
@@ -247138,6 +254026,9 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     description?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    currency?: StringFieldUpdateOperationsInput | string
+    exchangeRateUsed?: FloatFieldUpdateOperationsInput | number
+    ipAddress?: NullableStringFieldUpdateOperationsInput | string | null
     isReversing?: BoolFieldUpdateOperationsInput | boolean
     reversedById?: NullableStringFieldUpdateOperationsInput | string | null
     sourceType?: StringFieldUpdateOperationsInput | string
@@ -247158,6 +254049,9 @@ export namespace Prisma {
     date: Date | string
     description: string
     status?: string
+    currency?: string
+    exchangeRateUsed?: number
+    ipAddress?: string | null
     isReversing?: boolean
     reversedById?: string | null
     sourceType: string
@@ -247175,6 +254069,9 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     description?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    currency?: StringFieldUpdateOperationsInput | string
+    exchangeRateUsed?: FloatFieldUpdateOperationsInput | number
+    ipAddress?: NullableStringFieldUpdateOperationsInput | string | null
     isReversing?: BoolFieldUpdateOperationsInput | boolean
     sourceType?: StringFieldUpdateOperationsInput | string
     sourceId?: StringFieldUpdateOperationsInput | string
@@ -247192,6 +254089,9 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     description?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    currency?: StringFieldUpdateOperationsInput | string
+    exchangeRateUsed?: FloatFieldUpdateOperationsInput | number
+    ipAddress?: NullableStringFieldUpdateOperationsInput | string | null
     isReversing?: BoolFieldUpdateOperationsInput | boolean
     reversedById?: NullableStringFieldUpdateOperationsInput | string | null
     sourceType?: StringFieldUpdateOperationsInput | string
@@ -247206,9 +254106,12 @@ export namespace Prisma {
   export type JournalEntryLineCreateInput = {
     id?: string
     schoolId: string
+    coaCode?: string | null
     description?: string | null
     debit?: number
     credit?: number
+    baseAmount?: number
+    taxCode?: string | null
     currency?: string
     exchangeRate?: number
     debitForeign?: number
@@ -247228,9 +254131,12 @@ export namespace Prisma {
     journalEntryId: string
     accountId: string
     schoolId: string
+    coaCode?: string | null
     description?: string | null
     debit?: number
     credit?: number
+    baseAmount?: number
+    taxCode?: string | null
     currency?: string
     exchangeRate?: number
     debitForeign?: number
@@ -247246,9 +254152,12 @@ export namespace Prisma {
   export type JournalEntryLineUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     schoolId?: StringFieldUpdateOperationsInput | string
+    coaCode?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     debit?: FloatFieldUpdateOperationsInput | number
     credit?: FloatFieldUpdateOperationsInput | number
+    baseAmount?: FloatFieldUpdateOperationsInput | number
+    taxCode?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: StringFieldUpdateOperationsInput | string
     exchangeRate?: FloatFieldUpdateOperationsInput | number
     debitForeign?: FloatFieldUpdateOperationsInput | number
@@ -247268,9 +254177,12 @@ export namespace Prisma {
     journalEntryId?: StringFieldUpdateOperationsInput | string
     accountId?: StringFieldUpdateOperationsInput | string
     schoolId?: StringFieldUpdateOperationsInput | string
+    coaCode?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     debit?: FloatFieldUpdateOperationsInput | number
     credit?: FloatFieldUpdateOperationsInput | number
+    baseAmount?: FloatFieldUpdateOperationsInput | number
+    taxCode?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: StringFieldUpdateOperationsInput | string
     exchangeRate?: FloatFieldUpdateOperationsInput | number
     debitForeign?: FloatFieldUpdateOperationsInput | number
@@ -247288,9 +254200,12 @@ export namespace Prisma {
     journalEntryId: string
     accountId: string
     schoolId: string
+    coaCode?: string | null
     description?: string | null
     debit?: number
     credit?: number
+    baseAmount?: number
+    taxCode?: string | null
     currency?: string
     exchangeRate?: number
     debitForeign?: number
@@ -247306,9 +254221,12 @@ export namespace Prisma {
   export type JournalEntryLineUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     schoolId?: StringFieldUpdateOperationsInput | string
+    coaCode?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     debit?: FloatFieldUpdateOperationsInput | number
     credit?: FloatFieldUpdateOperationsInput | number
+    baseAmount?: FloatFieldUpdateOperationsInput | number
+    taxCode?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: StringFieldUpdateOperationsInput | string
     exchangeRate?: FloatFieldUpdateOperationsInput | number
     debitForeign?: FloatFieldUpdateOperationsInput | number
@@ -247326,9 +254244,12 @@ export namespace Prisma {
     journalEntryId?: StringFieldUpdateOperationsInput | string
     accountId?: StringFieldUpdateOperationsInput | string
     schoolId?: StringFieldUpdateOperationsInput | string
+    coaCode?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     debit?: FloatFieldUpdateOperationsInput | number
     credit?: FloatFieldUpdateOperationsInput | number
+    baseAmount?: FloatFieldUpdateOperationsInput | number
+    taxCode?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: StringFieldUpdateOperationsInput | string
     exchangeRate?: FloatFieldUpdateOperationsInput | number
     debitForeign?: FloatFieldUpdateOperationsInput | number
@@ -247344,6 +254265,10 @@ export namespace Prisma {
   export type AccountingPeriodCreateInput = {
     id?: string
     period: string
+    year?: number | null
+    term?: string | null
+    startDate?: Date | string | null
+    endDate?: Date | string | null
     status?: string
     closedBy?: string | null
     closedAt?: Date | string | null
@@ -247357,6 +254282,10 @@ export namespace Prisma {
     id?: string
     schoolId: string
     period: string
+    year?: number | null
+    term?: string | null
+    startDate?: Date | string | null
+    endDate?: Date | string | null
     status?: string
     closedBy?: string | null
     closedAt?: Date | string | null
@@ -247368,6 +254297,10 @@ export namespace Prisma {
   export type AccountingPeriodUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     period?: StringFieldUpdateOperationsInput | string
+    year?: NullableIntFieldUpdateOperationsInput | number | null
+    term?: NullableStringFieldUpdateOperationsInput | string | null
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
     closedBy?: NullableStringFieldUpdateOperationsInput | string | null
     closedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -247381,6 +254314,10 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     schoolId?: StringFieldUpdateOperationsInput | string
     period?: StringFieldUpdateOperationsInput | string
+    year?: NullableIntFieldUpdateOperationsInput | number | null
+    term?: NullableStringFieldUpdateOperationsInput | string | null
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
     closedBy?: NullableStringFieldUpdateOperationsInput | string | null
     closedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -247393,6 +254330,10 @@ export namespace Prisma {
     id?: string
     schoolId: string
     period: string
+    year?: number | null
+    term?: string | null
+    startDate?: Date | string | null
+    endDate?: Date | string | null
     status?: string
     closedBy?: string | null
     closedAt?: Date | string | null
@@ -247404,6 +254345,10 @@ export namespace Prisma {
   export type AccountingPeriodUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     period?: StringFieldUpdateOperationsInput | string
+    year?: NullableIntFieldUpdateOperationsInput | number | null
+    term?: NullableStringFieldUpdateOperationsInput | string | null
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
     closedBy?: NullableStringFieldUpdateOperationsInput | string | null
     closedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -247416,10 +254361,541 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     schoolId?: StringFieldUpdateOperationsInput | string
     period?: StringFieldUpdateOperationsInput | string
+    year?: NullableIntFieldUpdateOperationsInput | number | null
+    term?: NullableStringFieldUpdateOperationsInput | string | null
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
     closedBy?: NullableStringFieldUpdateOperationsInput | string | null
     closedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ExchangeRateCreateInput = {
+    id?: string
+    date: Date | string
+    fromCurrency?: string
+    toCurrency?: string
+    rate: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    school: SchoolCreateNestedOneWithoutExchangeRatesInput
+  }
+
+  export type ExchangeRateUncheckedCreateInput = {
+    id?: string
+    schoolId: string
+    date: Date | string
+    fromCurrency?: string
+    toCurrency?: string
+    rate: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ExchangeRateUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    fromCurrency?: StringFieldUpdateOperationsInput | string
+    toCurrency?: StringFieldUpdateOperationsInput | string
+    rate?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    school?: SchoolUpdateOneRequiredWithoutExchangeRatesNestedInput
+  }
+
+  export type ExchangeRateUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    schoolId?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    fromCurrency?: StringFieldUpdateOperationsInput | string
+    toCurrency?: StringFieldUpdateOperationsInput | string
+    rate?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ExchangeRateCreateManyInput = {
+    id?: string
+    schoolId: string
+    date: Date | string
+    fromCurrency?: string
+    toCurrency?: string
+    rate: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ExchangeRateUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    fromCurrency?: StringFieldUpdateOperationsInput | string
+    toCurrency?: StringFieldUpdateOperationsInput | string
+    rate?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ExchangeRateUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    schoolId?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    fromCurrency?: StringFieldUpdateOperationsInput | string
+    toCurrency?: StringFieldUpdateOperationsInput | string
+    rate?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ApprovalCreateInput = {
+    id?: string
+    entityType: string
+    entityId: string
+    requestedBy: string
+    amount: number
+    currency?: string
+    status?: string
+    tier?: number
+    approverRole: string
+    approvedBy?: string | null
+    approvedAt?: Date | string | null
+    rejectionReason?: string | null
+    thresholdRule?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    school: SchoolCreateNestedOneWithoutApprovalsInput
+  }
+
+  export type ApprovalUncheckedCreateInput = {
+    id?: string
+    schoolId: string
+    entityType: string
+    entityId: string
+    requestedBy: string
+    amount: number
+    currency?: string
+    status?: string
+    tier?: number
+    approverRole: string
+    approvedBy?: string | null
+    approvedAt?: Date | string | null
+    rejectionReason?: string | null
+    thresholdRule?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ApprovalUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    entityType?: StringFieldUpdateOperationsInput | string
+    entityId?: StringFieldUpdateOperationsInput | string
+    requestedBy?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    tier?: IntFieldUpdateOperationsInput | number
+    approverRole?: StringFieldUpdateOperationsInput | string
+    approvedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    thresholdRule?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    school?: SchoolUpdateOneRequiredWithoutApprovalsNestedInput
+  }
+
+  export type ApprovalUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    schoolId?: StringFieldUpdateOperationsInput | string
+    entityType?: StringFieldUpdateOperationsInput | string
+    entityId?: StringFieldUpdateOperationsInput | string
+    requestedBy?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    tier?: IntFieldUpdateOperationsInput | number
+    approverRole?: StringFieldUpdateOperationsInput | string
+    approvedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    thresholdRule?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ApprovalCreateManyInput = {
+    id?: string
+    schoolId: string
+    entityType: string
+    entityId: string
+    requestedBy: string
+    amount: number
+    currency?: string
+    status?: string
+    tier?: number
+    approverRole: string
+    approvedBy?: string | null
+    approvedAt?: Date | string | null
+    rejectionReason?: string | null
+    thresholdRule?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ApprovalUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    entityType?: StringFieldUpdateOperationsInput | string
+    entityId?: StringFieldUpdateOperationsInput | string
+    requestedBy?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    tier?: IntFieldUpdateOperationsInput | number
+    approverRole?: StringFieldUpdateOperationsInput | string
+    approvedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    thresholdRule?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ApprovalUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    schoolId?: StringFieldUpdateOperationsInput | string
+    entityType?: StringFieldUpdateOperationsInput | string
+    entityId?: StringFieldUpdateOperationsInput | string
+    requestedBy?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    tier?: IntFieldUpdateOperationsInput | number
+    approverRole?: StringFieldUpdateOperationsInput | string
+    approvedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    thresholdRule?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BudgetCreateInput = {
+    id?: string
+    year: number
+    term?: string | null
+    coaCode: string
+    amount: number
+    currency?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    school: SchoolCreateNestedOneWithoutBudgetsInput
+  }
+
+  export type BudgetUncheckedCreateInput = {
+    id?: string
+    schoolId: string
+    year: number
+    term?: string | null
+    coaCode: string
+    amount: number
+    currency?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type BudgetUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    year?: IntFieldUpdateOperationsInput | number
+    term?: NullableStringFieldUpdateOperationsInput | string | null
+    coaCode?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    school?: SchoolUpdateOneRequiredWithoutBudgetsNestedInput
+  }
+
+  export type BudgetUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    schoolId?: StringFieldUpdateOperationsInput | string
+    year?: IntFieldUpdateOperationsInput | number
+    term?: NullableStringFieldUpdateOperationsInput | string | null
+    coaCode?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BudgetCreateManyInput = {
+    id?: string
+    schoolId: string
+    year: number
+    term?: string | null
+    coaCode: string
+    amount: number
+    currency?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type BudgetUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    year?: IntFieldUpdateOperationsInput | number
+    term?: NullableStringFieldUpdateOperationsInput | string | null
+    coaCode?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BudgetUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    schoolId?: StringFieldUpdateOperationsInput | string
+    year?: IntFieldUpdateOperationsInput | number
+    term?: NullableStringFieldUpdateOperationsInput | string | null
+    coaCode?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type StockMovementCreateInput = {
+    id?: string
+    module: string
+    itemId: string
+    itemName: string
+    batchNumber?: string | null
+    direction: string
+    quantity: number
+    unitCost?: number
+    totalCost?: number
+    date?: Date | string
+    reference?: string | null
+    journalEntryId?: string | null
+    createdAt?: Date | string
+    school: SchoolCreateNestedOneWithoutStockMovementsInput
+  }
+
+  export type StockMovementUncheckedCreateInput = {
+    id?: string
+    schoolId: string
+    module: string
+    itemId: string
+    itemName: string
+    batchNumber?: string | null
+    direction: string
+    quantity: number
+    unitCost?: number
+    totalCost?: number
+    date?: Date | string
+    reference?: string | null
+    journalEntryId?: string | null
+    createdAt?: Date | string
+  }
+
+  export type StockMovementUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    module?: StringFieldUpdateOperationsInput | string
+    itemId?: StringFieldUpdateOperationsInput | string
+    itemName?: StringFieldUpdateOperationsInput | string
+    batchNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    direction?: StringFieldUpdateOperationsInput | string
+    quantity?: FloatFieldUpdateOperationsInput | number
+    unitCost?: FloatFieldUpdateOperationsInput | number
+    totalCost?: FloatFieldUpdateOperationsInput | number
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    reference?: NullableStringFieldUpdateOperationsInput | string | null
+    journalEntryId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    school?: SchoolUpdateOneRequiredWithoutStockMovementsNestedInput
+  }
+
+  export type StockMovementUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    schoolId?: StringFieldUpdateOperationsInput | string
+    module?: StringFieldUpdateOperationsInput | string
+    itemId?: StringFieldUpdateOperationsInput | string
+    itemName?: StringFieldUpdateOperationsInput | string
+    batchNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    direction?: StringFieldUpdateOperationsInput | string
+    quantity?: FloatFieldUpdateOperationsInput | number
+    unitCost?: FloatFieldUpdateOperationsInput | number
+    totalCost?: FloatFieldUpdateOperationsInput | number
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    reference?: NullableStringFieldUpdateOperationsInput | string | null
+    journalEntryId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type StockMovementCreateManyInput = {
+    id?: string
+    schoolId: string
+    module: string
+    itemId: string
+    itemName: string
+    batchNumber?: string | null
+    direction: string
+    quantity: number
+    unitCost?: number
+    totalCost?: number
+    date?: Date | string
+    reference?: string | null
+    journalEntryId?: string | null
+    createdAt?: Date | string
+  }
+
+  export type StockMovementUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    module?: StringFieldUpdateOperationsInput | string
+    itemId?: StringFieldUpdateOperationsInput | string
+    itemName?: StringFieldUpdateOperationsInput | string
+    batchNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    direction?: StringFieldUpdateOperationsInput | string
+    quantity?: FloatFieldUpdateOperationsInput | number
+    unitCost?: FloatFieldUpdateOperationsInput | number
+    totalCost?: FloatFieldUpdateOperationsInput | number
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    reference?: NullableStringFieldUpdateOperationsInput | string | null
+    journalEntryId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type StockMovementUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    schoolId?: StringFieldUpdateOperationsInput | string
+    module?: StringFieldUpdateOperationsInput | string
+    itemId?: StringFieldUpdateOperationsInput | string
+    itemName?: StringFieldUpdateOperationsInput | string
+    batchNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    direction?: StringFieldUpdateOperationsInput | string
+    quantity?: FloatFieldUpdateOperationsInput | number
+    unitCost?: FloatFieldUpdateOperationsInput | number
+    totalCost?: FloatFieldUpdateOperationsInput | number
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    reference?: NullableStringFieldUpdateOperationsInput | string | null
+    journalEntryId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TaxBracketCreateInput = {
+    id?: string
+    currency?: string
+    effectiveFrom: Date | string
+    effectiveTo?: Date | string | null
+    minIncome: number
+    maxIncome?: number | null
+    rate: number
+    deduction?: number
+    aidsLevyRate?: number
+    nssaCeiling?: number
+    nssaRate?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    school: SchoolCreateNestedOneWithoutTaxBracketsInput
+  }
+
+  export type TaxBracketUncheckedCreateInput = {
+    id?: string
+    schoolId: string
+    currency?: string
+    effectiveFrom: Date | string
+    effectiveTo?: Date | string | null
+    minIncome: number
+    maxIncome?: number | null
+    rate: number
+    deduction?: number
+    aidsLevyRate?: number
+    nssaCeiling?: number
+    nssaRate?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type TaxBracketUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    currency?: StringFieldUpdateOperationsInput | string
+    effectiveFrom?: DateTimeFieldUpdateOperationsInput | Date | string
+    effectiveTo?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    minIncome?: FloatFieldUpdateOperationsInput | number
+    maxIncome?: NullableFloatFieldUpdateOperationsInput | number | null
+    rate?: FloatFieldUpdateOperationsInput | number
+    deduction?: FloatFieldUpdateOperationsInput | number
+    aidsLevyRate?: FloatFieldUpdateOperationsInput | number
+    nssaCeiling?: FloatFieldUpdateOperationsInput | number
+    nssaRate?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    school?: SchoolUpdateOneRequiredWithoutTaxBracketsNestedInput
+  }
+
+  export type TaxBracketUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    schoolId?: StringFieldUpdateOperationsInput | string
+    currency?: StringFieldUpdateOperationsInput | string
+    effectiveFrom?: DateTimeFieldUpdateOperationsInput | Date | string
+    effectiveTo?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    minIncome?: FloatFieldUpdateOperationsInput | number
+    maxIncome?: NullableFloatFieldUpdateOperationsInput | number | null
+    rate?: FloatFieldUpdateOperationsInput | number
+    deduction?: FloatFieldUpdateOperationsInput | number
+    aidsLevyRate?: FloatFieldUpdateOperationsInput | number
+    nssaCeiling?: FloatFieldUpdateOperationsInput | number
+    nssaRate?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TaxBracketCreateManyInput = {
+    id?: string
+    schoolId: string
+    currency?: string
+    effectiveFrom: Date | string
+    effectiveTo?: Date | string | null
+    minIncome: number
+    maxIncome?: number | null
+    rate: number
+    deduction?: number
+    aidsLevyRate?: number
+    nssaCeiling?: number
+    nssaRate?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type TaxBracketUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    currency?: StringFieldUpdateOperationsInput | string
+    effectiveFrom?: DateTimeFieldUpdateOperationsInput | Date | string
+    effectiveTo?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    minIncome?: FloatFieldUpdateOperationsInput | number
+    maxIncome?: NullableFloatFieldUpdateOperationsInput | number | null
+    rate?: FloatFieldUpdateOperationsInput | number
+    deduction?: FloatFieldUpdateOperationsInput | number
+    aidsLevyRate?: FloatFieldUpdateOperationsInput | number
+    nssaCeiling?: FloatFieldUpdateOperationsInput | number
+    nssaRate?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TaxBracketUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    schoolId?: StringFieldUpdateOperationsInput | string
+    currency?: StringFieldUpdateOperationsInput | string
+    effectiveFrom?: DateTimeFieldUpdateOperationsInput | Date | string
+    effectiveTo?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    minIncome?: FloatFieldUpdateOperationsInput | number
+    maxIncome?: NullableFloatFieldUpdateOperationsInput | number | null
+    rate?: FloatFieldUpdateOperationsInput | number
+    deduction?: FloatFieldUpdateOperationsInput | number
+    aidsLevyRate?: FloatFieldUpdateOperationsInput | number
+    nssaCeiling?: FloatFieldUpdateOperationsInput | number
+    nssaRate?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -249925,6 +257401,36 @@ export namespace Prisma {
     none?: BankStatementWhereInput
   }
 
+  export type ExchangeRateListRelationFilter = {
+    every?: ExchangeRateWhereInput
+    some?: ExchangeRateWhereInput
+    none?: ExchangeRateWhereInput
+  }
+
+  export type ApprovalListRelationFilter = {
+    every?: ApprovalWhereInput
+    some?: ApprovalWhereInput
+    none?: ApprovalWhereInput
+  }
+
+  export type BudgetListRelationFilter = {
+    every?: BudgetWhereInput
+    some?: BudgetWhereInput
+    none?: BudgetWhereInput
+  }
+
+  export type StockMovementListRelationFilter = {
+    every?: StockMovementWhereInput
+    some?: StockMovementWhereInput
+    none?: StockMovementWhereInput
+  }
+
+  export type TaxBracketListRelationFilter = {
+    every?: TaxBracketWhereInput
+    some?: TaxBracketWhereInput
+    none?: TaxBracketWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -250379,6 +257885,26 @@ export namespace Prisma {
   }
 
   export type BankStatementOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type ExchangeRateOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type ApprovalOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type BudgetOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type StockMovementOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type TaxBracketOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -253540,6 +261066,9 @@ export namespace Prisma {
     mandatoryReceipts?: SortOrder
     showBalanceOnReceipts?: SortOrder
     showUniformsModule?: SortOrder
+    financialApprovalThreshold?: SortOrder
+    tier1ApprovalRole?: SortOrder
+    tier2ApprovalRole?: SortOrder
     smtpEmail?: SortOrder
     smtpHost?: SortOrder
     smtpPort?: SortOrder
@@ -253605,6 +261134,7 @@ export namespace Prisma {
   export type SchoolSettingAvgOrderByAggregateInput = {
     idleTime?: SortOrder
     idleTimeCountdown?: SortOrder
+    financialApprovalThreshold?: SortOrder
     smtpPort?: SortOrder
     mapLatitude?: SortOrder
     mapLongitude?: SortOrder
@@ -253625,6 +261155,9 @@ export namespace Prisma {
     mandatoryReceipts?: SortOrder
     showBalanceOnReceipts?: SortOrder
     showUniformsModule?: SortOrder
+    financialApprovalThreshold?: SortOrder
+    tier1ApprovalRole?: SortOrder
+    tier2ApprovalRole?: SortOrder
     smtpEmail?: SortOrder
     smtpHost?: SortOrder
     smtpPort?: SortOrder
@@ -253698,6 +261231,9 @@ export namespace Prisma {
     mandatoryReceipts?: SortOrder
     showBalanceOnReceipts?: SortOrder
     showUniformsModule?: SortOrder
+    financialApprovalThreshold?: SortOrder
+    tier1ApprovalRole?: SortOrder
+    tier2ApprovalRole?: SortOrder
     smtpEmail?: SortOrder
     smtpHost?: SortOrder
     smtpPort?: SortOrder
@@ -253761,6 +261297,7 @@ export namespace Prisma {
   export type SchoolSettingSumOrderByAggregateInput = {
     idleTime?: SortOrder
     idleTimeCountdown?: SortOrder
+    financialApprovalThreshold?: SortOrder
     smtpPort?: SortOrder
     mapLatitude?: SortOrder
     mapLongitude?: SortOrder
@@ -258935,6 +266472,8 @@ export namespace Prisma {
     type?: SortOrder
     parentId?: SortOrder
     isSystemAccount?: SortOrder
+    isBank?: SortOrder
+    isTemplate?: SortOrder
     isActive?: SortOrder
     description?: SortOrder
     createdAt?: SortOrder
@@ -258949,6 +266488,8 @@ export namespace Prisma {
     type?: SortOrder
     parentId?: SortOrder
     isSystemAccount?: SortOrder
+    isBank?: SortOrder
+    isTemplate?: SortOrder
     isActive?: SortOrder
     description?: SortOrder
     createdAt?: SortOrder
@@ -258963,6 +266504,8 @@ export namespace Prisma {
     type?: SortOrder
     parentId?: SortOrder
     isSystemAccount?: SortOrder
+    isBank?: SortOrder
+    isTemplate?: SortOrder
     isActive?: SortOrder
     description?: SortOrder
     createdAt?: SortOrder
@@ -258996,6 +266539,9 @@ export namespace Prisma {
     date?: SortOrder
     description?: SortOrder
     status?: SortOrder
+    currency?: SortOrder
+    exchangeRateUsed?: SortOrder
+    ipAddress?: SortOrder
     isReversing?: SortOrder
     reversedById?: SortOrder
     sourceType?: SortOrder
@@ -259007,6 +266553,10 @@ export namespace Prisma {
     updatedAt?: SortOrder
   }
 
+  export type JournalEntryAvgOrderByAggregateInput = {
+    exchangeRateUsed?: SortOrder
+  }
+
   export type JournalEntryMaxOrderByAggregateInput = {
     id?: SortOrder
     schoolId?: SortOrder
@@ -259014,6 +266564,9 @@ export namespace Prisma {
     date?: SortOrder
     description?: SortOrder
     status?: SortOrder
+    currency?: SortOrder
+    exchangeRateUsed?: SortOrder
+    ipAddress?: SortOrder
     isReversing?: SortOrder
     reversedById?: SortOrder
     sourceType?: SortOrder
@@ -259032,6 +266585,9 @@ export namespace Prisma {
     date?: SortOrder
     description?: SortOrder
     status?: SortOrder
+    currency?: SortOrder
+    exchangeRateUsed?: SortOrder
+    ipAddress?: SortOrder
     isReversing?: SortOrder
     reversedById?: SortOrder
     sourceType?: SortOrder
@@ -259041,6 +266597,10 @@ export namespace Prisma {
     createdByUserId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+  }
+
+  export type JournalEntrySumOrderByAggregateInput = {
+    exchangeRateUsed?: SortOrder
   }
 
   export type JournalEntryRelationFilter = {
@@ -259058,9 +266618,12 @@ export namespace Prisma {
     journalEntryId?: SortOrder
     accountId?: SortOrder
     schoolId?: SortOrder
+    coaCode?: SortOrder
     description?: SortOrder
     debit?: SortOrder
     credit?: SortOrder
+    baseAmount?: SortOrder
+    taxCode?: SortOrder
     currency?: SortOrder
     exchangeRate?: SortOrder
     debitForeign?: SortOrder
@@ -259076,6 +266639,7 @@ export namespace Prisma {
   export type JournalEntryLineAvgOrderByAggregateInput = {
     debit?: SortOrder
     credit?: SortOrder
+    baseAmount?: SortOrder
     exchangeRate?: SortOrder
     debitForeign?: SortOrder
     creditForeign?: SortOrder
@@ -259086,9 +266650,12 @@ export namespace Prisma {
     journalEntryId?: SortOrder
     accountId?: SortOrder
     schoolId?: SortOrder
+    coaCode?: SortOrder
     description?: SortOrder
     debit?: SortOrder
     credit?: SortOrder
+    baseAmount?: SortOrder
+    taxCode?: SortOrder
     currency?: SortOrder
     exchangeRate?: SortOrder
     debitForeign?: SortOrder
@@ -259106,9 +266673,12 @@ export namespace Prisma {
     journalEntryId?: SortOrder
     accountId?: SortOrder
     schoolId?: SortOrder
+    coaCode?: SortOrder
     description?: SortOrder
     debit?: SortOrder
     credit?: SortOrder
+    baseAmount?: SortOrder
+    taxCode?: SortOrder
     currency?: SortOrder
     exchangeRate?: SortOrder
     debitForeign?: SortOrder
@@ -259124,6 +266694,7 @@ export namespace Prisma {
   export type JournalEntryLineSumOrderByAggregateInput = {
     debit?: SortOrder
     credit?: SortOrder
+    baseAmount?: SortOrder
     exchangeRate?: SortOrder
     debitForeign?: SortOrder
     creditForeign?: SortOrder
@@ -259138,6 +266709,10 @@ export namespace Prisma {
     id?: SortOrder
     schoolId?: SortOrder
     period?: SortOrder
+    year?: SortOrder
+    term?: SortOrder
+    startDate?: SortOrder
+    endDate?: SortOrder
     status?: SortOrder
     closedBy?: SortOrder
     closedAt?: SortOrder
@@ -259146,10 +266721,18 @@ export namespace Prisma {
     updatedAt?: SortOrder
   }
 
+  export type AccountingPeriodAvgOrderByAggregateInput = {
+    year?: SortOrder
+  }
+
   export type AccountingPeriodMaxOrderByAggregateInput = {
     id?: SortOrder
     schoolId?: SortOrder
     period?: SortOrder
+    year?: SortOrder
+    term?: SortOrder
+    startDate?: SortOrder
+    endDate?: SortOrder
     status?: SortOrder
     closedBy?: SortOrder
     closedAt?: SortOrder
@@ -259162,12 +266745,315 @@ export namespace Prisma {
     id?: SortOrder
     schoolId?: SortOrder
     period?: SortOrder
+    year?: SortOrder
+    term?: SortOrder
+    startDate?: SortOrder
+    endDate?: SortOrder
     status?: SortOrder
     closedBy?: SortOrder
     closedAt?: SortOrder
     notes?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+  }
+
+  export type AccountingPeriodSumOrderByAggregateInput = {
+    year?: SortOrder
+  }
+
+  export type ExchangeRateCountOrderByAggregateInput = {
+    id?: SortOrder
+    schoolId?: SortOrder
+    date?: SortOrder
+    fromCurrency?: SortOrder
+    toCurrency?: SortOrder
+    rate?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ExchangeRateAvgOrderByAggregateInput = {
+    rate?: SortOrder
+  }
+
+  export type ExchangeRateMaxOrderByAggregateInput = {
+    id?: SortOrder
+    schoolId?: SortOrder
+    date?: SortOrder
+    fromCurrency?: SortOrder
+    toCurrency?: SortOrder
+    rate?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ExchangeRateMinOrderByAggregateInput = {
+    id?: SortOrder
+    schoolId?: SortOrder
+    date?: SortOrder
+    fromCurrency?: SortOrder
+    toCurrency?: SortOrder
+    rate?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ExchangeRateSumOrderByAggregateInput = {
+    rate?: SortOrder
+  }
+
+  export type ApprovalCountOrderByAggregateInput = {
+    id?: SortOrder
+    schoolId?: SortOrder
+    entityType?: SortOrder
+    entityId?: SortOrder
+    requestedBy?: SortOrder
+    amount?: SortOrder
+    currency?: SortOrder
+    status?: SortOrder
+    tier?: SortOrder
+    approverRole?: SortOrder
+    approvedBy?: SortOrder
+    approvedAt?: SortOrder
+    rejectionReason?: SortOrder
+    thresholdRule?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ApprovalAvgOrderByAggregateInput = {
+    amount?: SortOrder
+    tier?: SortOrder
+  }
+
+  export type ApprovalMaxOrderByAggregateInput = {
+    id?: SortOrder
+    schoolId?: SortOrder
+    entityType?: SortOrder
+    entityId?: SortOrder
+    requestedBy?: SortOrder
+    amount?: SortOrder
+    currency?: SortOrder
+    status?: SortOrder
+    tier?: SortOrder
+    approverRole?: SortOrder
+    approvedBy?: SortOrder
+    approvedAt?: SortOrder
+    rejectionReason?: SortOrder
+    thresholdRule?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ApprovalMinOrderByAggregateInput = {
+    id?: SortOrder
+    schoolId?: SortOrder
+    entityType?: SortOrder
+    entityId?: SortOrder
+    requestedBy?: SortOrder
+    amount?: SortOrder
+    currency?: SortOrder
+    status?: SortOrder
+    tier?: SortOrder
+    approverRole?: SortOrder
+    approvedBy?: SortOrder
+    approvedAt?: SortOrder
+    rejectionReason?: SortOrder
+    thresholdRule?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ApprovalSumOrderByAggregateInput = {
+    amount?: SortOrder
+    tier?: SortOrder
+  }
+
+  export type BudgetSchoolIdYearTermCoaCodeCompoundUniqueInput = {
+    schoolId: string
+    year: number
+    term: string
+    coaCode: string
+  }
+
+  export type BudgetCountOrderByAggregateInput = {
+    id?: SortOrder
+    schoolId?: SortOrder
+    year?: SortOrder
+    term?: SortOrder
+    coaCode?: SortOrder
+    amount?: SortOrder
+    currency?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type BudgetAvgOrderByAggregateInput = {
+    year?: SortOrder
+    amount?: SortOrder
+  }
+
+  export type BudgetMaxOrderByAggregateInput = {
+    id?: SortOrder
+    schoolId?: SortOrder
+    year?: SortOrder
+    term?: SortOrder
+    coaCode?: SortOrder
+    amount?: SortOrder
+    currency?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type BudgetMinOrderByAggregateInput = {
+    id?: SortOrder
+    schoolId?: SortOrder
+    year?: SortOrder
+    term?: SortOrder
+    coaCode?: SortOrder
+    amount?: SortOrder
+    currency?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type BudgetSumOrderByAggregateInput = {
+    year?: SortOrder
+    amount?: SortOrder
+  }
+
+  export type StockMovementCountOrderByAggregateInput = {
+    id?: SortOrder
+    schoolId?: SortOrder
+    module?: SortOrder
+    itemId?: SortOrder
+    itemName?: SortOrder
+    batchNumber?: SortOrder
+    direction?: SortOrder
+    quantity?: SortOrder
+    unitCost?: SortOrder
+    totalCost?: SortOrder
+    date?: SortOrder
+    reference?: SortOrder
+    journalEntryId?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type StockMovementAvgOrderByAggregateInput = {
+    quantity?: SortOrder
+    unitCost?: SortOrder
+    totalCost?: SortOrder
+  }
+
+  export type StockMovementMaxOrderByAggregateInput = {
+    id?: SortOrder
+    schoolId?: SortOrder
+    module?: SortOrder
+    itemId?: SortOrder
+    itemName?: SortOrder
+    batchNumber?: SortOrder
+    direction?: SortOrder
+    quantity?: SortOrder
+    unitCost?: SortOrder
+    totalCost?: SortOrder
+    date?: SortOrder
+    reference?: SortOrder
+    journalEntryId?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type StockMovementMinOrderByAggregateInput = {
+    id?: SortOrder
+    schoolId?: SortOrder
+    module?: SortOrder
+    itemId?: SortOrder
+    itemName?: SortOrder
+    batchNumber?: SortOrder
+    direction?: SortOrder
+    quantity?: SortOrder
+    unitCost?: SortOrder
+    totalCost?: SortOrder
+    date?: SortOrder
+    reference?: SortOrder
+    journalEntryId?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type StockMovementSumOrderByAggregateInput = {
+    quantity?: SortOrder
+    unitCost?: SortOrder
+    totalCost?: SortOrder
+  }
+
+  export type TaxBracketCountOrderByAggregateInput = {
+    id?: SortOrder
+    schoolId?: SortOrder
+    currency?: SortOrder
+    effectiveFrom?: SortOrder
+    effectiveTo?: SortOrder
+    minIncome?: SortOrder
+    maxIncome?: SortOrder
+    rate?: SortOrder
+    deduction?: SortOrder
+    aidsLevyRate?: SortOrder
+    nssaCeiling?: SortOrder
+    nssaRate?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type TaxBracketAvgOrderByAggregateInput = {
+    minIncome?: SortOrder
+    maxIncome?: SortOrder
+    rate?: SortOrder
+    deduction?: SortOrder
+    aidsLevyRate?: SortOrder
+    nssaCeiling?: SortOrder
+    nssaRate?: SortOrder
+  }
+
+  export type TaxBracketMaxOrderByAggregateInput = {
+    id?: SortOrder
+    schoolId?: SortOrder
+    currency?: SortOrder
+    effectiveFrom?: SortOrder
+    effectiveTo?: SortOrder
+    minIncome?: SortOrder
+    maxIncome?: SortOrder
+    rate?: SortOrder
+    deduction?: SortOrder
+    aidsLevyRate?: SortOrder
+    nssaCeiling?: SortOrder
+    nssaRate?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type TaxBracketMinOrderByAggregateInput = {
+    id?: SortOrder
+    schoolId?: SortOrder
+    currency?: SortOrder
+    effectiveFrom?: SortOrder
+    effectiveTo?: SortOrder
+    minIncome?: SortOrder
+    maxIncome?: SortOrder
+    rate?: SortOrder
+    deduction?: SortOrder
+    aidsLevyRate?: SortOrder
+    nssaCeiling?: SortOrder
+    nssaRate?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type TaxBracketSumOrderByAggregateInput = {
+    minIncome?: SortOrder
+    maxIncome?: SortOrder
+    rate?: SortOrder
+    deduction?: SortOrder
+    aidsLevyRate?: SortOrder
+    nssaCeiling?: SortOrder
+    nssaRate?: SortOrder
   }
 
   export type UniformStockMovementCountOrderByAggregateInput = {
@@ -260942,6 +268828,41 @@ export namespace Prisma {
     connect?: BankStatementWhereUniqueInput | BankStatementWhereUniqueInput[]
   }
 
+  export type ExchangeRateCreateNestedManyWithoutSchoolInput = {
+    create?: XOR<ExchangeRateCreateWithoutSchoolInput, ExchangeRateUncheckedCreateWithoutSchoolInput> | ExchangeRateCreateWithoutSchoolInput[] | ExchangeRateUncheckedCreateWithoutSchoolInput[]
+    connectOrCreate?: ExchangeRateCreateOrConnectWithoutSchoolInput | ExchangeRateCreateOrConnectWithoutSchoolInput[]
+    createMany?: ExchangeRateCreateManySchoolInputEnvelope
+    connect?: ExchangeRateWhereUniqueInput | ExchangeRateWhereUniqueInput[]
+  }
+
+  export type ApprovalCreateNestedManyWithoutSchoolInput = {
+    create?: XOR<ApprovalCreateWithoutSchoolInput, ApprovalUncheckedCreateWithoutSchoolInput> | ApprovalCreateWithoutSchoolInput[] | ApprovalUncheckedCreateWithoutSchoolInput[]
+    connectOrCreate?: ApprovalCreateOrConnectWithoutSchoolInput | ApprovalCreateOrConnectWithoutSchoolInput[]
+    createMany?: ApprovalCreateManySchoolInputEnvelope
+    connect?: ApprovalWhereUniqueInput | ApprovalWhereUniqueInput[]
+  }
+
+  export type BudgetCreateNestedManyWithoutSchoolInput = {
+    create?: XOR<BudgetCreateWithoutSchoolInput, BudgetUncheckedCreateWithoutSchoolInput> | BudgetCreateWithoutSchoolInput[] | BudgetUncheckedCreateWithoutSchoolInput[]
+    connectOrCreate?: BudgetCreateOrConnectWithoutSchoolInput | BudgetCreateOrConnectWithoutSchoolInput[]
+    createMany?: BudgetCreateManySchoolInputEnvelope
+    connect?: BudgetWhereUniqueInput | BudgetWhereUniqueInput[]
+  }
+
+  export type StockMovementCreateNestedManyWithoutSchoolInput = {
+    create?: XOR<StockMovementCreateWithoutSchoolInput, StockMovementUncheckedCreateWithoutSchoolInput> | StockMovementCreateWithoutSchoolInput[] | StockMovementUncheckedCreateWithoutSchoolInput[]
+    connectOrCreate?: StockMovementCreateOrConnectWithoutSchoolInput | StockMovementCreateOrConnectWithoutSchoolInput[]
+    createMany?: StockMovementCreateManySchoolInputEnvelope
+    connect?: StockMovementWhereUniqueInput | StockMovementWhereUniqueInput[]
+  }
+
+  export type TaxBracketCreateNestedManyWithoutSchoolInput = {
+    create?: XOR<TaxBracketCreateWithoutSchoolInput, TaxBracketUncheckedCreateWithoutSchoolInput> | TaxBracketCreateWithoutSchoolInput[] | TaxBracketUncheckedCreateWithoutSchoolInput[]
+    connectOrCreate?: TaxBracketCreateOrConnectWithoutSchoolInput | TaxBracketCreateOrConnectWithoutSchoolInput[]
+    createMany?: TaxBracketCreateManySchoolInputEnvelope
+    connect?: TaxBracketWhereUniqueInput | TaxBracketWhereUniqueInput[]
+  }
+
   export type UserUncheckedCreateNestedManyWithoutSchoolInput = {
     create?: XOR<UserCreateWithoutSchoolInput, UserUncheckedCreateWithoutSchoolInput> | UserCreateWithoutSchoolInput[] | UserUncheckedCreateWithoutSchoolInput[]
     connectOrCreate?: UserCreateOrConnectWithoutSchoolInput | UserCreateOrConnectWithoutSchoolInput[]
@@ -261768,6 +269689,41 @@ export namespace Prisma {
     connectOrCreate?: BankStatementCreateOrConnectWithoutSchoolInput | BankStatementCreateOrConnectWithoutSchoolInput[]
     createMany?: BankStatementCreateManySchoolInputEnvelope
     connect?: BankStatementWhereUniqueInput | BankStatementWhereUniqueInput[]
+  }
+
+  export type ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput = {
+    create?: XOR<ExchangeRateCreateWithoutSchoolInput, ExchangeRateUncheckedCreateWithoutSchoolInput> | ExchangeRateCreateWithoutSchoolInput[] | ExchangeRateUncheckedCreateWithoutSchoolInput[]
+    connectOrCreate?: ExchangeRateCreateOrConnectWithoutSchoolInput | ExchangeRateCreateOrConnectWithoutSchoolInput[]
+    createMany?: ExchangeRateCreateManySchoolInputEnvelope
+    connect?: ExchangeRateWhereUniqueInput | ExchangeRateWhereUniqueInput[]
+  }
+
+  export type ApprovalUncheckedCreateNestedManyWithoutSchoolInput = {
+    create?: XOR<ApprovalCreateWithoutSchoolInput, ApprovalUncheckedCreateWithoutSchoolInput> | ApprovalCreateWithoutSchoolInput[] | ApprovalUncheckedCreateWithoutSchoolInput[]
+    connectOrCreate?: ApprovalCreateOrConnectWithoutSchoolInput | ApprovalCreateOrConnectWithoutSchoolInput[]
+    createMany?: ApprovalCreateManySchoolInputEnvelope
+    connect?: ApprovalWhereUniqueInput | ApprovalWhereUniqueInput[]
+  }
+
+  export type BudgetUncheckedCreateNestedManyWithoutSchoolInput = {
+    create?: XOR<BudgetCreateWithoutSchoolInput, BudgetUncheckedCreateWithoutSchoolInput> | BudgetCreateWithoutSchoolInput[] | BudgetUncheckedCreateWithoutSchoolInput[]
+    connectOrCreate?: BudgetCreateOrConnectWithoutSchoolInput | BudgetCreateOrConnectWithoutSchoolInput[]
+    createMany?: BudgetCreateManySchoolInputEnvelope
+    connect?: BudgetWhereUniqueInput | BudgetWhereUniqueInput[]
+  }
+
+  export type StockMovementUncheckedCreateNestedManyWithoutSchoolInput = {
+    create?: XOR<StockMovementCreateWithoutSchoolInput, StockMovementUncheckedCreateWithoutSchoolInput> | StockMovementCreateWithoutSchoolInput[] | StockMovementUncheckedCreateWithoutSchoolInput[]
+    connectOrCreate?: StockMovementCreateOrConnectWithoutSchoolInput | StockMovementCreateOrConnectWithoutSchoolInput[]
+    createMany?: StockMovementCreateManySchoolInputEnvelope
+    connect?: StockMovementWhereUniqueInput | StockMovementWhereUniqueInput[]
+  }
+
+  export type TaxBracketUncheckedCreateNestedManyWithoutSchoolInput = {
+    create?: XOR<TaxBracketCreateWithoutSchoolInput, TaxBracketUncheckedCreateWithoutSchoolInput> | TaxBracketCreateWithoutSchoolInput[] | TaxBracketUncheckedCreateWithoutSchoolInput[]
+    connectOrCreate?: TaxBracketCreateOrConnectWithoutSchoolInput | TaxBracketCreateOrConnectWithoutSchoolInput[]
+    createMany?: TaxBracketCreateManySchoolInputEnvelope
+    connect?: TaxBracketWhereUniqueInput | TaxBracketWhereUniqueInput[]
   }
 
   export type BoolFieldUpdateOperationsInput = {
@@ -263437,6 +271393,76 @@ export namespace Prisma {
     deleteMany?: BankStatementScalarWhereInput | BankStatementScalarWhereInput[]
   }
 
+  export type ExchangeRateUpdateManyWithoutSchoolNestedInput = {
+    create?: XOR<ExchangeRateCreateWithoutSchoolInput, ExchangeRateUncheckedCreateWithoutSchoolInput> | ExchangeRateCreateWithoutSchoolInput[] | ExchangeRateUncheckedCreateWithoutSchoolInput[]
+    connectOrCreate?: ExchangeRateCreateOrConnectWithoutSchoolInput | ExchangeRateCreateOrConnectWithoutSchoolInput[]
+    upsert?: ExchangeRateUpsertWithWhereUniqueWithoutSchoolInput | ExchangeRateUpsertWithWhereUniqueWithoutSchoolInput[]
+    createMany?: ExchangeRateCreateManySchoolInputEnvelope
+    set?: ExchangeRateWhereUniqueInput | ExchangeRateWhereUniqueInput[]
+    disconnect?: ExchangeRateWhereUniqueInput | ExchangeRateWhereUniqueInput[]
+    delete?: ExchangeRateWhereUniqueInput | ExchangeRateWhereUniqueInput[]
+    connect?: ExchangeRateWhereUniqueInput | ExchangeRateWhereUniqueInput[]
+    update?: ExchangeRateUpdateWithWhereUniqueWithoutSchoolInput | ExchangeRateUpdateWithWhereUniqueWithoutSchoolInput[]
+    updateMany?: ExchangeRateUpdateManyWithWhereWithoutSchoolInput | ExchangeRateUpdateManyWithWhereWithoutSchoolInput[]
+    deleteMany?: ExchangeRateScalarWhereInput | ExchangeRateScalarWhereInput[]
+  }
+
+  export type ApprovalUpdateManyWithoutSchoolNestedInput = {
+    create?: XOR<ApprovalCreateWithoutSchoolInput, ApprovalUncheckedCreateWithoutSchoolInput> | ApprovalCreateWithoutSchoolInput[] | ApprovalUncheckedCreateWithoutSchoolInput[]
+    connectOrCreate?: ApprovalCreateOrConnectWithoutSchoolInput | ApprovalCreateOrConnectWithoutSchoolInput[]
+    upsert?: ApprovalUpsertWithWhereUniqueWithoutSchoolInput | ApprovalUpsertWithWhereUniqueWithoutSchoolInput[]
+    createMany?: ApprovalCreateManySchoolInputEnvelope
+    set?: ApprovalWhereUniqueInput | ApprovalWhereUniqueInput[]
+    disconnect?: ApprovalWhereUniqueInput | ApprovalWhereUniqueInput[]
+    delete?: ApprovalWhereUniqueInput | ApprovalWhereUniqueInput[]
+    connect?: ApprovalWhereUniqueInput | ApprovalWhereUniqueInput[]
+    update?: ApprovalUpdateWithWhereUniqueWithoutSchoolInput | ApprovalUpdateWithWhereUniqueWithoutSchoolInput[]
+    updateMany?: ApprovalUpdateManyWithWhereWithoutSchoolInput | ApprovalUpdateManyWithWhereWithoutSchoolInput[]
+    deleteMany?: ApprovalScalarWhereInput | ApprovalScalarWhereInput[]
+  }
+
+  export type BudgetUpdateManyWithoutSchoolNestedInput = {
+    create?: XOR<BudgetCreateWithoutSchoolInput, BudgetUncheckedCreateWithoutSchoolInput> | BudgetCreateWithoutSchoolInput[] | BudgetUncheckedCreateWithoutSchoolInput[]
+    connectOrCreate?: BudgetCreateOrConnectWithoutSchoolInput | BudgetCreateOrConnectWithoutSchoolInput[]
+    upsert?: BudgetUpsertWithWhereUniqueWithoutSchoolInput | BudgetUpsertWithWhereUniqueWithoutSchoolInput[]
+    createMany?: BudgetCreateManySchoolInputEnvelope
+    set?: BudgetWhereUniqueInput | BudgetWhereUniqueInput[]
+    disconnect?: BudgetWhereUniqueInput | BudgetWhereUniqueInput[]
+    delete?: BudgetWhereUniqueInput | BudgetWhereUniqueInput[]
+    connect?: BudgetWhereUniqueInput | BudgetWhereUniqueInput[]
+    update?: BudgetUpdateWithWhereUniqueWithoutSchoolInput | BudgetUpdateWithWhereUniqueWithoutSchoolInput[]
+    updateMany?: BudgetUpdateManyWithWhereWithoutSchoolInput | BudgetUpdateManyWithWhereWithoutSchoolInput[]
+    deleteMany?: BudgetScalarWhereInput | BudgetScalarWhereInput[]
+  }
+
+  export type StockMovementUpdateManyWithoutSchoolNestedInput = {
+    create?: XOR<StockMovementCreateWithoutSchoolInput, StockMovementUncheckedCreateWithoutSchoolInput> | StockMovementCreateWithoutSchoolInput[] | StockMovementUncheckedCreateWithoutSchoolInput[]
+    connectOrCreate?: StockMovementCreateOrConnectWithoutSchoolInput | StockMovementCreateOrConnectWithoutSchoolInput[]
+    upsert?: StockMovementUpsertWithWhereUniqueWithoutSchoolInput | StockMovementUpsertWithWhereUniqueWithoutSchoolInput[]
+    createMany?: StockMovementCreateManySchoolInputEnvelope
+    set?: StockMovementWhereUniqueInput | StockMovementWhereUniqueInput[]
+    disconnect?: StockMovementWhereUniqueInput | StockMovementWhereUniqueInput[]
+    delete?: StockMovementWhereUniqueInput | StockMovementWhereUniqueInput[]
+    connect?: StockMovementWhereUniqueInput | StockMovementWhereUniqueInput[]
+    update?: StockMovementUpdateWithWhereUniqueWithoutSchoolInput | StockMovementUpdateWithWhereUniqueWithoutSchoolInput[]
+    updateMany?: StockMovementUpdateManyWithWhereWithoutSchoolInput | StockMovementUpdateManyWithWhereWithoutSchoolInput[]
+    deleteMany?: StockMovementScalarWhereInput | StockMovementScalarWhereInput[]
+  }
+
+  export type TaxBracketUpdateManyWithoutSchoolNestedInput = {
+    create?: XOR<TaxBracketCreateWithoutSchoolInput, TaxBracketUncheckedCreateWithoutSchoolInput> | TaxBracketCreateWithoutSchoolInput[] | TaxBracketUncheckedCreateWithoutSchoolInput[]
+    connectOrCreate?: TaxBracketCreateOrConnectWithoutSchoolInput | TaxBracketCreateOrConnectWithoutSchoolInput[]
+    upsert?: TaxBracketUpsertWithWhereUniqueWithoutSchoolInput | TaxBracketUpsertWithWhereUniqueWithoutSchoolInput[]
+    createMany?: TaxBracketCreateManySchoolInputEnvelope
+    set?: TaxBracketWhereUniqueInput | TaxBracketWhereUniqueInput[]
+    disconnect?: TaxBracketWhereUniqueInput | TaxBracketWhereUniqueInput[]
+    delete?: TaxBracketWhereUniqueInput | TaxBracketWhereUniqueInput[]
+    connect?: TaxBracketWhereUniqueInput | TaxBracketWhereUniqueInput[]
+    update?: TaxBracketUpdateWithWhereUniqueWithoutSchoolInput | TaxBracketUpdateWithWhereUniqueWithoutSchoolInput[]
+    updateMany?: TaxBracketUpdateManyWithWhereWithoutSchoolInput | TaxBracketUpdateManyWithWhereWithoutSchoolInput[]
+    deleteMany?: TaxBracketScalarWhereInput | TaxBracketScalarWhereInput[]
+  }
+
   export type UserUncheckedUpdateManyWithoutSchoolNestedInput = {
     create?: XOR<UserCreateWithoutSchoolInput, UserUncheckedCreateWithoutSchoolInput> | UserCreateWithoutSchoolInput[] | UserUncheckedCreateWithoutSchoolInput[]
     connectOrCreate?: UserCreateOrConnectWithoutSchoolInput | UserCreateOrConnectWithoutSchoolInput[]
@@ -265081,6 +273107,76 @@ export namespace Prisma {
     update?: BankStatementUpdateWithWhereUniqueWithoutSchoolInput | BankStatementUpdateWithWhereUniqueWithoutSchoolInput[]
     updateMany?: BankStatementUpdateManyWithWhereWithoutSchoolInput | BankStatementUpdateManyWithWhereWithoutSchoolInput[]
     deleteMany?: BankStatementScalarWhereInput | BankStatementScalarWhereInput[]
+  }
+
+  export type ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput = {
+    create?: XOR<ExchangeRateCreateWithoutSchoolInput, ExchangeRateUncheckedCreateWithoutSchoolInput> | ExchangeRateCreateWithoutSchoolInput[] | ExchangeRateUncheckedCreateWithoutSchoolInput[]
+    connectOrCreate?: ExchangeRateCreateOrConnectWithoutSchoolInput | ExchangeRateCreateOrConnectWithoutSchoolInput[]
+    upsert?: ExchangeRateUpsertWithWhereUniqueWithoutSchoolInput | ExchangeRateUpsertWithWhereUniqueWithoutSchoolInput[]
+    createMany?: ExchangeRateCreateManySchoolInputEnvelope
+    set?: ExchangeRateWhereUniqueInput | ExchangeRateWhereUniqueInput[]
+    disconnect?: ExchangeRateWhereUniqueInput | ExchangeRateWhereUniqueInput[]
+    delete?: ExchangeRateWhereUniqueInput | ExchangeRateWhereUniqueInput[]
+    connect?: ExchangeRateWhereUniqueInput | ExchangeRateWhereUniqueInput[]
+    update?: ExchangeRateUpdateWithWhereUniqueWithoutSchoolInput | ExchangeRateUpdateWithWhereUniqueWithoutSchoolInput[]
+    updateMany?: ExchangeRateUpdateManyWithWhereWithoutSchoolInput | ExchangeRateUpdateManyWithWhereWithoutSchoolInput[]
+    deleteMany?: ExchangeRateScalarWhereInput | ExchangeRateScalarWhereInput[]
+  }
+
+  export type ApprovalUncheckedUpdateManyWithoutSchoolNestedInput = {
+    create?: XOR<ApprovalCreateWithoutSchoolInput, ApprovalUncheckedCreateWithoutSchoolInput> | ApprovalCreateWithoutSchoolInput[] | ApprovalUncheckedCreateWithoutSchoolInput[]
+    connectOrCreate?: ApprovalCreateOrConnectWithoutSchoolInput | ApprovalCreateOrConnectWithoutSchoolInput[]
+    upsert?: ApprovalUpsertWithWhereUniqueWithoutSchoolInput | ApprovalUpsertWithWhereUniqueWithoutSchoolInput[]
+    createMany?: ApprovalCreateManySchoolInputEnvelope
+    set?: ApprovalWhereUniqueInput | ApprovalWhereUniqueInput[]
+    disconnect?: ApprovalWhereUniqueInput | ApprovalWhereUniqueInput[]
+    delete?: ApprovalWhereUniqueInput | ApprovalWhereUniqueInput[]
+    connect?: ApprovalWhereUniqueInput | ApprovalWhereUniqueInput[]
+    update?: ApprovalUpdateWithWhereUniqueWithoutSchoolInput | ApprovalUpdateWithWhereUniqueWithoutSchoolInput[]
+    updateMany?: ApprovalUpdateManyWithWhereWithoutSchoolInput | ApprovalUpdateManyWithWhereWithoutSchoolInput[]
+    deleteMany?: ApprovalScalarWhereInput | ApprovalScalarWhereInput[]
+  }
+
+  export type BudgetUncheckedUpdateManyWithoutSchoolNestedInput = {
+    create?: XOR<BudgetCreateWithoutSchoolInput, BudgetUncheckedCreateWithoutSchoolInput> | BudgetCreateWithoutSchoolInput[] | BudgetUncheckedCreateWithoutSchoolInput[]
+    connectOrCreate?: BudgetCreateOrConnectWithoutSchoolInput | BudgetCreateOrConnectWithoutSchoolInput[]
+    upsert?: BudgetUpsertWithWhereUniqueWithoutSchoolInput | BudgetUpsertWithWhereUniqueWithoutSchoolInput[]
+    createMany?: BudgetCreateManySchoolInputEnvelope
+    set?: BudgetWhereUniqueInput | BudgetWhereUniqueInput[]
+    disconnect?: BudgetWhereUniqueInput | BudgetWhereUniqueInput[]
+    delete?: BudgetWhereUniqueInput | BudgetWhereUniqueInput[]
+    connect?: BudgetWhereUniqueInput | BudgetWhereUniqueInput[]
+    update?: BudgetUpdateWithWhereUniqueWithoutSchoolInput | BudgetUpdateWithWhereUniqueWithoutSchoolInput[]
+    updateMany?: BudgetUpdateManyWithWhereWithoutSchoolInput | BudgetUpdateManyWithWhereWithoutSchoolInput[]
+    deleteMany?: BudgetScalarWhereInput | BudgetScalarWhereInput[]
+  }
+
+  export type StockMovementUncheckedUpdateManyWithoutSchoolNestedInput = {
+    create?: XOR<StockMovementCreateWithoutSchoolInput, StockMovementUncheckedCreateWithoutSchoolInput> | StockMovementCreateWithoutSchoolInput[] | StockMovementUncheckedCreateWithoutSchoolInput[]
+    connectOrCreate?: StockMovementCreateOrConnectWithoutSchoolInput | StockMovementCreateOrConnectWithoutSchoolInput[]
+    upsert?: StockMovementUpsertWithWhereUniqueWithoutSchoolInput | StockMovementUpsertWithWhereUniqueWithoutSchoolInput[]
+    createMany?: StockMovementCreateManySchoolInputEnvelope
+    set?: StockMovementWhereUniqueInput | StockMovementWhereUniqueInput[]
+    disconnect?: StockMovementWhereUniqueInput | StockMovementWhereUniqueInput[]
+    delete?: StockMovementWhereUniqueInput | StockMovementWhereUniqueInput[]
+    connect?: StockMovementWhereUniqueInput | StockMovementWhereUniqueInput[]
+    update?: StockMovementUpdateWithWhereUniqueWithoutSchoolInput | StockMovementUpdateWithWhereUniqueWithoutSchoolInput[]
+    updateMany?: StockMovementUpdateManyWithWhereWithoutSchoolInput | StockMovementUpdateManyWithWhereWithoutSchoolInput[]
+    deleteMany?: StockMovementScalarWhereInput | StockMovementScalarWhereInput[]
+  }
+
+  export type TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput = {
+    create?: XOR<TaxBracketCreateWithoutSchoolInput, TaxBracketUncheckedCreateWithoutSchoolInput> | TaxBracketCreateWithoutSchoolInput[] | TaxBracketUncheckedCreateWithoutSchoolInput[]
+    connectOrCreate?: TaxBracketCreateOrConnectWithoutSchoolInput | TaxBracketCreateOrConnectWithoutSchoolInput[]
+    upsert?: TaxBracketUpsertWithWhereUniqueWithoutSchoolInput | TaxBracketUpsertWithWhereUniqueWithoutSchoolInput[]
+    createMany?: TaxBracketCreateManySchoolInputEnvelope
+    set?: TaxBracketWhereUniqueInput | TaxBracketWhereUniqueInput[]
+    disconnect?: TaxBracketWhereUniqueInput | TaxBracketWhereUniqueInput[]
+    delete?: TaxBracketWhereUniqueInput | TaxBracketWhereUniqueInput[]
+    connect?: TaxBracketWhereUniqueInput | TaxBracketWhereUniqueInput[]
+    update?: TaxBracketUpdateWithWhereUniqueWithoutSchoolInput | TaxBracketUpdateWithWhereUniqueWithoutSchoolInput[]
+    updateMany?: TaxBracketUpdateManyWithWhereWithoutSchoolInput | TaxBracketUpdateManyWithWhereWithoutSchoolInput[]
+    deleteMany?: TaxBracketScalarWhereInput | TaxBracketScalarWhereInput[]
   }
 
   export type SchoolCreateNestedOneWithoutGradingScalesInput = {
@@ -278185,6 +286281,76 @@ export namespace Prisma {
     update?: XOR<XOR<SchoolUpdateToOneWithWhereWithoutAccountingPeriodsInput, SchoolUpdateWithoutAccountingPeriodsInput>, SchoolUncheckedUpdateWithoutAccountingPeriodsInput>
   }
 
+  export type SchoolCreateNestedOneWithoutExchangeRatesInput = {
+    create?: XOR<SchoolCreateWithoutExchangeRatesInput, SchoolUncheckedCreateWithoutExchangeRatesInput>
+    connectOrCreate?: SchoolCreateOrConnectWithoutExchangeRatesInput
+    connect?: SchoolWhereUniqueInput
+  }
+
+  export type SchoolUpdateOneRequiredWithoutExchangeRatesNestedInput = {
+    create?: XOR<SchoolCreateWithoutExchangeRatesInput, SchoolUncheckedCreateWithoutExchangeRatesInput>
+    connectOrCreate?: SchoolCreateOrConnectWithoutExchangeRatesInput
+    upsert?: SchoolUpsertWithoutExchangeRatesInput
+    connect?: SchoolWhereUniqueInput
+    update?: XOR<XOR<SchoolUpdateToOneWithWhereWithoutExchangeRatesInput, SchoolUpdateWithoutExchangeRatesInput>, SchoolUncheckedUpdateWithoutExchangeRatesInput>
+  }
+
+  export type SchoolCreateNestedOneWithoutApprovalsInput = {
+    create?: XOR<SchoolCreateWithoutApprovalsInput, SchoolUncheckedCreateWithoutApprovalsInput>
+    connectOrCreate?: SchoolCreateOrConnectWithoutApprovalsInput
+    connect?: SchoolWhereUniqueInput
+  }
+
+  export type SchoolUpdateOneRequiredWithoutApprovalsNestedInput = {
+    create?: XOR<SchoolCreateWithoutApprovalsInput, SchoolUncheckedCreateWithoutApprovalsInput>
+    connectOrCreate?: SchoolCreateOrConnectWithoutApprovalsInput
+    upsert?: SchoolUpsertWithoutApprovalsInput
+    connect?: SchoolWhereUniqueInput
+    update?: XOR<XOR<SchoolUpdateToOneWithWhereWithoutApprovalsInput, SchoolUpdateWithoutApprovalsInput>, SchoolUncheckedUpdateWithoutApprovalsInput>
+  }
+
+  export type SchoolCreateNestedOneWithoutBudgetsInput = {
+    create?: XOR<SchoolCreateWithoutBudgetsInput, SchoolUncheckedCreateWithoutBudgetsInput>
+    connectOrCreate?: SchoolCreateOrConnectWithoutBudgetsInput
+    connect?: SchoolWhereUniqueInput
+  }
+
+  export type SchoolUpdateOneRequiredWithoutBudgetsNestedInput = {
+    create?: XOR<SchoolCreateWithoutBudgetsInput, SchoolUncheckedCreateWithoutBudgetsInput>
+    connectOrCreate?: SchoolCreateOrConnectWithoutBudgetsInput
+    upsert?: SchoolUpsertWithoutBudgetsInput
+    connect?: SchoolWhereUniqueInput
+    update?: XOR<XOR<SchoolUpdateToOneWithWhereWithoutBudgetsInput, SchoolUpdateWithoutBudgetsInput>, SchoolUncheckedUpdateWithoutBudgetsInput>
+  }
+
+  export type SchoolCreateNestedOneWithoutStockMovementsInput = {
+    create?: XOR<SchoolCreateWithoutStockMovementsInput, SchoolUncheckedCreateWithoutStockMovementsInput>
+    connectOrCreate?: SchoolCreateOrConnectWithoutStockMovementsInput
+    connect?: SchoolWhereUniqueInput
+  }
+
+  export type SchoolUpdateOneRequiredWithoutStockMovementsNestedInput = {
+    create?: XOR<SchoolCreateWithoutStockMovementsInput, SchoolUncheckedCreateWithoutStockMovementsInput>
+    connectOrCreate?: SchoolCreateOrConnectWithoutStockMovementsInput
+    upsert?: SchoolUpsertWithoutStockMovementsInput
+    connect?: SchoolWhereUniqueInput
+    update?: XOR<XOR<SchoolUpdateToOneWithWhereWithoutStockMovementsInput, SchoolUpdateWithoutStockMovementsInput>, SchoolUncheckedUpdateWithoutStockMovementsInput>
+  }
+
+  export type SchoolCreateNestedOneWithoutTaxBracketsInput = {
+    create?: XOR<SchoolCreateWithoutTaxBracketsInput, SchoolUncheckedCreateWithoutTaxBracketsInput>
+    connectOrCreate?: SchoolCreateOrConnectWithoutTaxBracketsInput
+    connect?: SchoolWhereUniqueInput
+  }
+
+  export type SchoolUpdateOneRequiredWithoutTaxBracketsNestedInput = {
+    create?: XOR<SchoolCreateWithoutTaxBracketsInput, SchoolUncheckedCreateWithoutTaxBracketsInput>
+    connectOrCreate?: SchoolCreateOrConnectWithoutTaxBracketsInput
+    upsert?: SchoolUpsertWithoutTaxBracketsInput
+    connect?: SchoolWhereUniqueInput
+    update?: XOR<XOR<SchoolUpdateToOneWithWhereWithoutTaxBracketsInput, SchoolUpdateWithoutTaxBracketsInput>, SchoolUncheckedUpdateWithoutTaxBracketsInput>
+  }
+
   export type SchoolCreateNestedOneWithoutUniformStockMovementsInput = {
     create?: XOR<SchoolCreateWithoutUniformStockMovementsInput, SchoolUncheckedCreateWithoutUniformStockMovementsInput>
     connectOrCreate?: SchoolCreateOrConnectWithoutUniformStockMovementsInput
@@ -279527,6 +287693,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutPlanInput = {
@@ -279668,6 +287839,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutPlanInput = {
@@ -283807,6 +291983,9 @@ export namespace Prisma {
     mandatoryReceipts?: boolean
     showBalanceOnReceipts?: boolean
     showUniformsModule?: boolean
+    financialApprovalThreshold?: number | null
+    tier1ApprovalRole?: string | null
+    tier2ApprovalRole?: string | null
     smtpEmail?: string | null
     smtpHost?: string | null
     smtpPort?: number | null
@@ -283881,6 +292060,9 @@ export namespace Prisma {
     mandatoryReceipts?: boolean
     showBalanceOnReceipts?: boolean
     showUniformsModule?: boolean
+    financialApprovalThreshold?: number | null
+    tier1ApprovalRole?: string | null
+    tier2ApprovalRole?: string | null
     smtpEmail?: string | null
     smtpHost?: string | null
     smtpPort?: number | null
@@ -284602,6 +292784,8 @@ export namespace Prisma {
     name: string
     type: $Enums.AccountType
     isSystemAccount?: boolean
+    isBank?: boolean
+    isTemplate?: boolean
     isActive?: boolean
     description?: string | null
     createdAt?: Date | string
@@ -284619,6 +292803,8 @@ export namespace Prisma {
     type: $Enums.AccountType
     parentId?: string | null
     isSystemAccount?: boolean
+    isBank?: boolean
+    isTemplate?: boolean
     isActive?: boolean
     description?: string | null
     createdAt?: Date | string
@@ -284644,6 +292830,9 @@ export namespace Prisma {
     date: Date | string
     description: string
     status?: string
+    currency?: string
+    exchangeRateUsed?: number
+    ipAddress?: string | null
     isReversing?: boolean
     sourceType: string
     sourceId: string
@@ -284663,6 +292852,9 @@ export namespace Prisma {
     date: Date | string
     description: string
     status?: string
+    currency?: string
+    exchangeRateUsed?: number
+    ipAddress?: string | null
     isReversing?: boolean
     reversedById?: string | null
     sourceType: string
@@ -284689,6 +292881,10 @@ export namespace Prisma {
   export type AccountingPeriodCreateWithoutSchoolInput = {
     id?: string
     period: string
+    year?: number | null
+    term?: string | null
+    startDate?: Date | string | null
+    endDate?: Date | string | null
     status?: string
     closedBy?: string | null
     closedAt?: Date | string | null
@@ -284700,6 +292896,10 @@ export namespace Prisma {
   export type AccountingPeriodUncheckedCreateWithoutSchoolInput = {
     id?: string
     period: string
+    year?: number | null
+    term?: string | null
+    startDate?: Date | string | null
+    endDate?: Date | string | null
     status?: string
     closedBy?: string | null
     closedAt?: Date | string | null
@@ -284781,6 +292981,198 @@ export namespace Prisma {
 
   export type BankStatementCreateManySchoolInputEnvelope = {
     data: BankStatementCreateManySchoolInput | BankStatementCreateManySchoolInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type ExchangeRateCreateWithoutSchoolInput = {
+    id?: string
+    date: Date | string
+    fromCurrency?: string
+    toCurrency?: string
+    rate: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ExchangeRateUncheckedCreateWithoutSchoolInput = {
+    id?: string
+    date: Date | string
+    fromCurrency?: string
+    toCurrency?: string
+    rate: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ExchangeRateCreateOrConnectWithoutSchoolInput = {
+    where: ExchangeRateWhereUniqueInput
+    create: XOR<ExchangeRateCreateWithoutSchoolInput, ExchangeRateUncheckedCreateWithoutSchoolInput>
+  }
+
+  export type ExchangeRateCreateManySchoolInputEnvelope = {
+    data: ExchangeRateCreateManySchoolInput | ExchangeRateCreateManySchoolInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type ApprovalCreateWithoutSchoolInput = {
+    id?: string
+    entityType: string
+    entityId: string
+    requestedBy: string
+    amount: number
+    currency?: string
+    status?: string
+    tier?: number
+    approverRole: string
+    approvedBy?: string | null
+    approvedAt?: Date | string | null
+    rejectionReason?: string | null
+    thresholdRule?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ApprovalUncheckedCreateWithoutSchoolInput = {
+    id?: string
+    entityType: string
+    entityId: string
+    requestedBy: string
+    amount: number
+    currency?: string
+    status?: string
+    tier?: number
+    approverRole: string
+    approvedBy?: string | null
+    approvedAt?: Date | string | null
+    rejectionReason?: string | null
+    thresholdRule?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ApprovalCreateOrConnectWithoutSchoolInput = {
+    where: ApprovalWhereUniqueInput
+    create: XOR<ApprovalCreateWithoutSchoolInput, ApprovalUncheckedCreateWithoutSchoolInput>
+  }
+
+  export type ApprovalCreateManySchoolInputEnvelope = {
+    data: ApprovalCreateManySchoolInput | ApprovalCreateManySchoolInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type BudgetCreateWithoutSchoolInput = {
+    id?: string
+    year: number
+    term?: string | null
+    coaCode: string
+    amount: number
+    currency?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type BudgetUncheckedCreateWithoutSchoolInput = {
+    id?: string
+    year: number
+    term?: string | null
+    coaCode: string
+    amount: number
+    currency?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type BudgetCreateOrConnectWithoutSchoolInput = {
+    where: BudgetWhereUniqueInput
+    create: XOR<BudgetCreateWithoutSchoolInput, BudgetUncheckedCreateWithoutSchoolInput>
+  }
+
+  export type BudgetCreateManySchoolInputEnvelope = {
+    data: BudgetCreateManySchoolInput | BudgetCreateManySchoolInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type StockMovementCreateWithoutSchoolInput = {
+    id?: string
+    module: string
+    itemId: string
+    itemName: string
+    batchNumber?: string | null
+    direction: string
+    quantity: number
+    unitCost?: number
+    totalCost?: number
+    date?: Date | string
+    reference?: string | null
+    journalEntryId?: string | null
+    createdAt?: Date | string
+  }
+
+  export type StockMovementUncheckedCreateWithoutSchoolInput = {
+    id?: string
+    module: string
+    itemId: string
+    itemName: string
+    batchNumber?: string | null
+    direction: string
+    quantity: number
+    unitCost?: number
+    totalCost?: number
+    date?: Date | string
+    reference?: string | null
+    journalEntryId?: string | null
+    createdAt?: Date | string
+  }
+
+  export type StockMovementCreateOrConnectWithoutSchoolInput = {
+    where: StockMovementWhereUniqueInput
+    create: XOR<StockMovementCreateWithoutSchoolInput, StockMovementUncheckedCreateWithoutSchoolInput>
+  }
+
+  export type StockMovementCreateManySchoolInputEnvelope = {
+    data: StockMovementCreateManySchoolInput | StockMovementCreateManySchoolInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type TaxBracketCreateWithoutSchoolInput = {
+    id?: string
+    currency?: string
+    effectiveFrom: Date | string
+    effectiveTo?: Date | string | null
+    minIncome: number
+    maxIncome?: number | null
+    rate: number
+    deduction?: number
+    aidsLevyRate?: number
+    nssaCeiling?: number
+    nssaRate?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type TaxBracketUncheckedCreateWithoutSchoolInput = {
+    id?: string
+    currency?: string
+    effectiveFrom: Date | string
+    effectiveTo?: Date | string | null
+    minIncome: number
+    maxIncome?: number | null
+    rate: number
+    deduction?: number
+    aidsLevyRate?: number
+    nssaCeiling?: number
+    nssaRate?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type TaxBracketCreateOrConnectWithoutSchoolInput = {
+    where: TaxBracketWhereUniqueInput
+    create: XOR<TaxBracketCreateWithoutSchoolInput, TaxBracketUncheckedCreateWithoutSchoolInput>
+  }
+
+  export type TaxBracketCreateManySchoolInputEnvelope = {
+    data: TaxBracketCreateManySchoolInput | TaxBracketCreateManySchoolInput[]
     skipDuplicates?: boolean
   }
 
@@ -288144,6 +296536,9 @@ export namespace Prisma {
     mandatoryReceipts?: BoolFieldUpdateOperationsInput | boolean
     showBalanceOnReceipts?: BoolFieldUpdateOperationsInput | boolean
     showUniformsModule?: BoolFieldUpdateOperationsInput | boolean
+    financialApprovalThreshold?: NullableFloatFieldUpdateOperationsInput | number | null
+    tier1ApprovalRole?: NullableStringFieldUpdateOperationsInput | string | null
+    tier2ApprovalRole?: NullableStringFieldUpdateOperationsInput | string | null
     smtpEmail?: NullableStringFieldUpdateOperationsInput | string | null
     smtpHost?: NullableStringFieldUpdateOperationsInput | string | null
     smtpPort?: NullableIntFieldUpdateOperationsInput | number | null
@@ -288218,6 +296613,9 @@ export namespace Prisma {
     mandatoryReceipts?: BoolFieldUpdateOperationsInput | boolean
     showBalanceOnReceipts?: BoolFieldUpdateOperationsInput | boolean
     showUniformsModule?: BoolFieldUpdateOperationsInput | boolean
+    financialApprovalThreshold?: NullableFloatFieldUpdateOperationsInput | number | null
+    tier1ApprovalRole?: NullableStringFieldUpdateOperationsInput | string | null
+    tier2ApprovalRole?: NullableStringFieldUpdateOperationsInput | string | null
     smtpEmail?: NullableStringFieldUpdateOperationsInput | string | null
     smtpHost?: NullableStringFieldUpdateOperationsInput | string | null
     smtpPort?: NullableIntFieldUpdateOperationsInput | number | null
@@ -288870,6 +297268,8 @@ export namespace Prisma {
     type?: EnumAccountTypeFilter<"ChartOfAccount"> | $Enums.AccountType
     parentId?: StringNullableFilter<"ChartOfAccount"> | string | null
     isSystemAccount?: BoolFilter<"ChartOfAccount"> | boolean
+    isBank?: BoolFilter<"ChartOfAccount"> | boolean
+    isTemplate?: BoolFilter<"ChartOfAccount"> | boolean
     isActive?: BoolFilter<"ChartOfAccount"> | boolean
     description?: StringNullableFilter<"ChartOfAccount"> | string | null
     createdAt?: DateTimeFilter<"ChartOfAccount"> | Date | string
@@ -288902,6 +297302,9 @@ export namespace Prisma {
     date?: DateTimeFilter<"JournalEntry"> | Date | string
     description?: StringFilter<"JournalEntry"> | string
     status?: StringFilter<"JournalEntry"> | string
+    currency?: StringFilter<"JournalEntry"> | string
+    exchangeRateUsed?: FloatFilter<"JournalEntry"> | number
+    ipAddress?: StringNullableFilter<"JournalEntry"> | string | null
     isReversing?: BoolFilter<"JournalEntry"> | boolean
     reversedById?: StringNullableFilter<"JournalEntry"> | string | null
     sourceType?: StringFilter<"JournalEntry"> | string
@@ -288936,6 +297339,10 @@ export namespace Prisma {
     id?: StringFilter<"AccountingPeriod"> | string
     schoolId?: StringFilter<"AccountingPeriod"> | string
     period?: StringFilter<"AccountingPeriod"> | string
+    year?: IntNullableFilter<"AccountingPeriod"> | number | null
+    term?: StringNullableFilter<"AccountingPeriod"> | string | null
+    startDate?: DateTimeNullableFilter<"AccountingPeriod"> | Date | string | null
+    endDate?: DateTimeNullableFilter<"AccountingPeriod"> | Date | string | null
     status?: StringFilter<"AccountingPeriod"> | string
     closedBy?: StringNullableFilter<"AccountingPeriod"> | string | null
     closedAt?: DateTimeNullableFilter<"AccountingPeriod"> | Date | string | null
@@ -289004,6 +297411,177 @@ export namespace Prisma {
     period?: StringFilter<"BankStatement"> | string
     reference?: StringNullableFilter<"BankStatement"> | string | null
     uploadedAt?: DateTimeFilter<"BankStatement"> | Date | string
+  }
+
+  export type ExchangeRateUpsertWithWhereUniqueWithoutSchoolInput = {
+    where: ExchangeRateWhereUniqueInput
+    update: XOR<ExchangeRateUpdateWithoutSchoolInput, ExchangeRateUncheckedUpdateWithoutSchoolInput>
+    create: XOR<ExchangeRateCreateWithoutSchoolInput, ExchangeRateUncheckedCreateWithoutSchoolInput>
+  }
+
+  export type ExchangeRateUpdateWithWhereUniqueWithoutSchoolInput = {
+    where: ExchangeRateWhereUniqueInput
+    data: XOR<ExchangeRateUpdateWithoutSchoolInput, ExchangeRateUncheckedUpdateWithoutSchoolInput>
+  }
+
+  export type ExchangeRateUpdateManyWithWhereWithoutSchoolInput = {
+    where: ExchangeRateScalarWhereInput
+    data: XOR<ExchangeRateUpdateManyMutationInput, ExchangeRateUncheckedUpdateManyWithoutSchoolInput>
+  }
+
+  export type ExchangeRateScalarWhereInput = {
+    AND?: ExchangeRateScalarWhereInput | ExchangeRateScalarWhereInput[]
+    OR?: ExchangeRateScalarWhereInput[]
+    NOT?: ExchangeRateScalarWhereInput | ExchangeRateScalarWhereInput[]
+    id?: StringFilter<"ExchangeRate"> | string
+    schoolId?: StringFilter<"ExchangeRate"> | string
+    date?: DateTimeFilter<"ExchangeRate"> | Date | string
+    fromCurrency?: StringFilter<"ExchangeRate"> | string
+    toCurrency?: StringFilter<"ExchangeRate"> | string
+    rate?: FloatFilter<"ExchangeRate"> | number
+    createdAt?: DateTimeFilter<"ExchangeRate"> | Date | string
+    updatedAt?: DateTimeFilter<"ExchangeRate"> | Date | string
+  }
+
+  export type ApprovalUpsertWithWhereUniqueWithoutSchoolInput = {
+    where: ApprovalWhereUniqueInput
+    update: XOR<ApprovalUpdateWithoutSchoolInput, ApprovalUncheckedUpdateWithoutSchoolInput>
+    create: XOR<ApprovalCreateWithoutSchoolInput, ApprovalUncheckedCreateWithoutSchoolInput>
+  }
+
+  export type ApprovalUpdateWithWhereUniqueWithoutSchoolInput = {
+    where: ApprovalWhereUniqueInput
+    data: XOR<ApprovalUpdateWithoutSchoolInput, ApprovalUncheckedUpdateWithoutSchoolInput>
+  }
+
+  export type ApprovalUpdateManyWithWhereWithoutSchoolInput = {
+    where: ApprovalScalarWhereInput
+    data: XOR<ApprovalUpdateManyMutationInput, ApprovalUncheckedUpdateManyWithoutSchoolInput>
+  }
+
+  export type ApprovalScalarWhereInput = {
+    AND?: ApprovalScalarWhereInput | ApprovalScalarWhereInput[]
+    OR?: ApprovalScalarWhereInput[]
+    NOT?: ApprovalScalarWhereInput | ApprovalScalarWhereInput[]
+    id?: StringFilter<"Approval"> | string
+    schoolId?: StringFilter<"Approval"> | string
+    entityType?: StringFilter<"Approval"> | string
+    entityId?: StringFilter<"Approval"> | string
+    requestedBy?: StringFilter<"Approval"> | string
+    amount?: FloatFilter<"Approval"> | number
+    currency?: StringFilter<"Approval"> | string
+    status?: StringFilter<"Approval"> | string
+    tier?: IntFilter<"Approval"> | number
+    approverRole?: StringFilter<"Approval"> | string
+    approvedBy?: StringNullableFilter<"Approval"> | string | null
+    approvedAt?: DateTimeNullableFilter<"Approval"> | Date | string | null
+    rejectionReason?: StringNullableFilter<"Approval"> | string | null
+    thresholdRule?: StringNullableFilter<"Approval"> | string | null
+    createdAt?: DateTimeFilter<"Approval"> | Date | string
+    updatedAt?: DateTimeFilter<"Approval"> | Date | string
+  }
+
+  export type BudgetUpsertWithWhereUniqueWithoutSchoolInput = {
+    where: BudgetWhereUniqueInput
+    update: XOR<BudgetUpdateWithoutSchoolInput, BudgetUncheckedUpdateWithoutSchoolInput>
+    create: XOR<BudgetCreateWithoutSchoolInput, BudgetUncheckedCreateWithoutSchoolInput>
+  }
+
+  export type BudgetUpdateWithWhereUniqueWithoutSchoolInput = {
+    where: BudgetWhereUniqueInput
+    data: XOR<BudgetUpdateWithoutSchoolInput, BudgetUncheckedUpdateWithoutSchoolInput>
+  }
+
+  export type BudgetUpdateManyWithWhereWithoutSchoolInput = {
+    where: BudgetScalarWhereInput
+    data: XOR<BudgetUpdateManyMutationInput, BudgetUncheckedUpdateManyWithoutSchoolInput>
+  }
+
+  export type BudgetScalarWhereInput = {
+    AND?: BudgetScalarWhereInput | BudgetScalarWhereInput[]
+    OR?: BudgetScalarWhereInput[]
+    NOT?: BudgetScalarWhereInput | BudgetScalarWhereInput[]
+    id?: StringFilter<"Budget"> | string
+    schoolId?: StringFilter<"Budget"> | string
+    year?: IntFilter<"Budget"> | number
+    term?: StringNullableFilter<"Budget"> | string | null
+    coaCode?: StringFilter<"Budget"> | string
+    amount?: FloatFilter<"Budget"> | number
+    currency?: StringFilter<"Budget"> | string
+    createdAt?: DateTimeFilter<"Budget"> | Date | string
+    updatedAt?: DateTimeFilter<"Budget"> | Date | string
+  }
+
+  export type StockMovementUpsertWithWhereUniqueWithoutSchoolInput = {
+    where: StockMovementWhereUniqueInput
+    update: XOR<StockMovementUpdateWithoutSchoolInput, StockMovementUncheckedUpdateWithoutSchoolInput>
+    create: XOR<StockMovementCreateWithoutSchoolInput, StockMovementUncheckedCreateWithoutSchoolInput>
+  }
+
+  export type StockMovementUpdateWithWhereUniqueWithoutSchoolInput = {
+    where: StockMovementWhereUniqueInput
+    data: XOR<StockMovementUpdateWithoutSchoolInput, StockMovementUncheckedUpdateWithoutSchoolInput>
+  }
+
+  export type StockMovementUpdateManyWithWhereWithoutSchoolInput = {
+    where: StockMovementScalarWhereInput
+    data: XOR<StockMovementUpdateManyMutationInput, StockMovementUncheckedUpdateManyWithoutSchoolInput>
+  }
+
+  export type StockMovementScalarWhereInput = {
+    AND?: StockMovementScalarWhereInput | StockMovementScalarWhereInput[]
+    OR?: StockMovementScalarWhereInput[]
+    NOT?: StockMovementScalarWhereInput | StockMovementScalarWhereInput[]
+    id?: StringFilter<"StockMovement"> | string
+    schoolId?: StringFilter<"StockMovement"> | string
+    module?: StringFilter<"StockMovement"> | string
+    itemId?: StringFilter<"StockMovement"> | string
+    itemName?: StringFilter<"StockMovement"> | string
+    batchNumber?: StringNullableFilter<"StockMovement"> | string | null
+    direction?: StringFilter<"StockMovement"> | string
+    quantity?: FloatFilter<"StockMovement"> | number
+    unitCost?: FloatFilter<"StockMovement"> | number
+    totalCost?: FloatFilter<"StockMovement"> | number
+    date?: DateTimeFilter<"StockMovement"> | Date | string
+    reference?: StringNullableFilter<"StockMovement"> | string | null
+    journalEntryId?: StringNullableFilter<"StockMovement"> | string | null
+    createdAt?: DateTimeFilter<"StockMovement"> | Date | string
+  }
+
+  export type TaxBracketUpsertWithWhereUniqueWithoutSchoolInput = {
+    where: TaxBracketWhereUniqueInput
+    update: XOR<TaxBracketUpdateWithoutSchoolInput, TaxBracketUncheckedUpdateWithoutSchoolInput>
+    create: XOR<TaxBracketCreateWithoutSchoolInput, TaxBracketUncheckedCreateWithoutSchoolInput>
+  }
+
+  export type TaxBracketUpdateWithWhereUniqueWithoutSchoolInput = {
+    where: TaxBracketWhereUniqueInput
+    data: XOR<TaxBracketUpdateWithoutSchoolInput, TaxBracketUncheckedUpdateWithoutSchoolInput>
+  }
+
+  export type TaxBracketUpdateManyWithWhereWithoutSchoolInput = {
+    where: TaxBracketScalarWhereInput
+    data: XOR<TaxBracketUpdateManyMutationInput, TaxBracketUncheckedUpdateManyWithoutSchoolInput>
+  }
+
+  export type TaxBracketScalarWhereInput = {
+    AND?: TaxBracketScalarWhereInput | TaxBracketScalarWhereInput[]
+    OR?: TaxBracketScalarWhereInput[]
+    NOT?: TaxBracketScalarWhereInput | TaxBracketScalarWhereInput[]
+    id?: StringFilter<"TaxBracket"> | string
+    schoolId?: StringFilter<"TaxBracket"> | string
+    currency?: StringFilter<"TaxBracket"> | string
+    effectiveFrom?: DateTimeFilter<"TaxBracket"> | Date | string
+    effectiveTo?: DateTimeNullableFilter<"TaxBracket"> | Date | string | null
+    minIncome?: FloatFilter<"TaxBracket"> | number
+    maxIncome?: FloatNullableFilter<"TaxBracket"> | number | null
+    rate?: FloatFilter<"TaxBracket"> | number
+    deduction?: FloatFilter<"TaxBracket"> | number
+    aidsLevyRate?: FloatFilter<"TaxBracket"> | number
+    nssaCeiling?: FloatFilter<"TaxBracket"> | number
+    nssaRate?: FloatFilter<"TaxBracket"> | number
+    createdAt?: DateTimeFilter<"TaxBracket"> | Date | string
+    updatedAt?: DateTimeFilter<"TaxBracket"> | Date | string
   }
 
   export type SchoolCreateWithoutGradingScalesInput = {
@@ -289145,6 +297723,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutGradingScalesInput = {
@@ -289286,6 +297869,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutGradingScalesInput = {
@@ -289443,6 +298031,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutGradingScalesInput = {
@@ -289584,6 +298177,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolCreateWithoutHostelCategoriesInput = {
@@ -289725,6 +298323,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutHostelCategoriesInput = {
@@ -289866,6 +298469,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutHostelCategoriesInput = {
@@ -290067,6 +298675,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutHostelCategoriesInput = {
@@ -290208,6 +298821,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type HostelUpsertWithWhereUniqueWithoutCategoryInput = {
@@ -290365,6 +298983,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutHostelRoomsInput = {
@@ -290506,6 +299129,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutHostelRoomsInput = {
@@ -290707,6 +299335,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutHostelRoomsInput = {
@@ -290848,6 +299481,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type HostelUpsertWithWhereUniqueWithoutRoomTypeInput = {
@@ -291005,6 +299643,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutLeadershipAssignmentsInput = {
@@ -291146,6 +299789,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutLeadershipAssignmentsInput = {
@@ -291670,6 +300318,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutLeadershipAssignmentsInput = {
@@ -291811,6 +300464,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type StudentUpsertWithoutLeadershipAssignmentsInput = {
@@ -292337,6 +300995,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutStudentAllowedItemsInput = {
@@ -292478,6 +301141,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutStudentAllowedItemsInput = {
@@ -292635,6 +301303,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutStudentAllowedItemsInput = {
@@ -292776,6 +301449,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolCreateWithoutUniformItemsInput = {
@@ -292917,6 +301595,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutUniformItemsInput = {
@@ -293058,6 +301741,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutUniformItemsInput = {
@@ -293309,6 +301997,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutUniformItemsInput = {
@@ -293450,6 +302143,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type UniformStockOrderItemUpsertWithWhereUniqueWithoutItemInput = {
@@ -293712,6 +302410,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutUniformStockOrdersInput = {
@@ -293853,6 +302556,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutUniformStockOrdersInput = {
@@ -294091,6 +302799,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutUniformStockOrdersInput = {
@@ -294232,6 +302945,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type UniformStockOrderItemUpsertWithWhereUniqueWithoutOrderInput = {
@@ -294723,6 +303441,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutUniformSalesInput = {
@@ -294864,6 +303587,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutUniformSalesInput = {
@@ -295259,6 +303987,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutUniformSalesInput = {
@@ -295400,6 +304133,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type UniformSaleItemUpsertWithWhereUniqueWithoutSaleInput = {
@@ -295740,6 +304478,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutUniformSupplierPaymentsInput = {
@@ -295881,6 +304624,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutUniformSupplierPaymentsInput = {
@@ -296091,6 +304839,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutUniformSupplierPaymentsInput = {
@@ -296232,6 +304985,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolCreateWithoutAccountCategoriesInput = {
@@ -296373,6 +305131,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutAccountCategoriesInput = {
@@ -296514,6 +305277,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutAccountCategoriesInput = {
@@ -296773,6 +305541,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutAccountCategoriesInput = {
@@ -296914,6 +305687,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type IncomeUpsertWithWhereUniqueWithoutCategoryInput = {
@@ -297130,6 +305908,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutLiabilitiesInput = {
@@ -297271,6 +306054,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutLiabilitiesInput = {
@@ -297461,6 +306249,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutLiabilitiesInput = {
@@ -297602,6 +306395,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type AccountCategoryCreateWithoutIncomesInput = {
@@ -297770,6 +306568,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutIncomesInput = {
@@ -297911,6 +306714,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutIncomesInput = {
@@ -298101,6 +306909,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutIncomesInput = {
@@ -298242,6 +307055,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type AccountCategoryCreateWithoutExpensesInput = {
@@ -298410,6 +307228,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutExpensesInput = {
@@ -298551,6 +307374,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutExpensesInput = {
@@ -298741,6 +307569,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutExpensesInput = {
@@ -298882,6 +307715,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type VacancyCreateWithoutRecruiterInput = {
@@ -299121,6 +307959,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutUsersInput = {
@@ -299262,6 +308105,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutUsersInput = {
@@ -302320,6 +311168,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutUsersInput = {
@@ -302461,6 +311314,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type TeacherUpsertWithoutUserInput = {
@@ -304615,6 +313473,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutTeachersInput = {
@@ -304756,6 +313619,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutTeachersInput = {
@@ -305621,6 +314489,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutTeachersInput = {
@@ -305762,6 +314635,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type DepartmentUpsertWithoutTeachersInput = {
@@ -306395,6 +315273,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutStudentsInput = {
@@ -306536,6 +315419,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutStudentsInput = {
@@ -308017,6 +316905,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutStudentsInput = {
@@ -308158,6 +317051,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type GradeUpsertWithWhereUniqueWithoutStudentInput = {
@@ -308999,6 +317897,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutClassesInput = {
@@ -309140,6 +318043,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutClassesInput = {
@@ -310081,6 +318989,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutClassesInput = {
@@ -310222,6 +319135,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type StudentUpsertWithWhereUniqueWithoutClassInput = {
@@ -310613,6 +319531,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutSectionsInput = {
@@ -310754,6 +319677,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutSectionsInput = {
@@ -311017,6 +319945,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutSectionsInput = {
@@ -311158,6 +320091,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolClassUpsertWithWhereUniqueWithoutSectionInput = {
@@ -311376,6 +320314,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutSubjectsInput = {
@@ -311517,6 +320460,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutSubjectsInput = {
@@ -312444,6 +321392,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutSubjectsInput = {
@@ -312585,6 +321538,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type UserUpsertWithoutCreatedSubjectsInput = {
@@ -313990,6 +322948,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutGradesInput = {
@@ -314131,6 +323094,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutGradesInput = {
@@ -314589,6 +323557,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutGradesInput = {
@@ -314730,6 +323703,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolCreateWithoutFacultiesInput = {
@@ -314871,6 +323849,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutFacultiesInput = {
@@ -315012,6 +323995,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutFacultiesInput = {
@@ -315219,6 +324207,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutFacultiesInput = {
@@ -315360,6 +324353,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type DepartmentUpsertWithWhereUniqueWithoutFacultyInput = {
@@ -315581,6 +324579,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutDepartmentsInput = {
@@ -315722,6 +324725,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutDepartmentsInput = {
@@ -316447,6 +325455,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutDepartmentsInput = {
@@ -316588,6 +325601,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type FacultyUpsertWithoutDeptsInput = {
@@ -317258,6 +326276,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutAttendanceInput = {
@@ -317399,6 +326422,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutAttendanceInput = {
@@ -317843,6 +326871,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutAttendanceInput = {
@@ -317984,6 +327017,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type UserCreateWithoutStaffAttendancesInput = {
@@ -318288,6 +327326,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutStaffAttendancesInput = {
@@ -318429,6 +327472,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutStaffAttendancesInput = {
@@ -318755,6 +327803,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutStaffAttendancesInput = {
@@ -318896,6 +327949,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type StudentCreateWithoutFeesInput = {
@@ -319303,6 +328361,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutFeesInput = {
@@ -319444,6 +328507,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutFeesInput = {
@@ -319860,6 +328928,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutFeesInput = {
@@ -320001,6 +329074,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type FeeCreateWithoutLineItemsInput = {
@@ -320453,6 +329531,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutAssignmentsInput = {
@@ -320594,6 +329677,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutAssignmentsInput = {
@@ -320954,6 +330042,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutAssignmentsInput = {
@@ -321095,6 +330188,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type SubjectCreateWithoutQuestionPapersInput = {
@@ -321354,6 +330452,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutQuestionPapersInput = {
@@ -321495,6 +330598,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutQuestionPapersInput = {
@@ -321782,6 +330890,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutQuestionPapersInput = {
@@ -321923,6 +331036,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolClassCreateWithoutTimetableSlotsInput = {
@@ -322180,6 +331298,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutTimetableSlotsInput = {
@@ -322321,6 +331444,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutTimetableSlotsInput = {
@@ -322606,6 +331734,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutTimetableSlotsInput = {
@@ -322747,6 +331880,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolCreateWithoutAnnouncementsInput = {
@@ -322888,6 +332026,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutAnnouncementsInput = {
@@ -323029,6 +332172,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutAnnouncementsInput = {
@@ -323186,6 +332334,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutAnnouncementsInput = {
@@ -323327,6 +332480,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type UserCreateWithoutAuditLogsInput = {
@@ -323631,6 +332789,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutAuditLogsInput = {
@@ -323772,6 +332935,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutAuditLogsInput = {
@@ -324098,6 +333266,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutAuditLogsInput = {
@@ -324239,6 +333412,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type LibraryCategoryCreateWithoutBooksInput = {
@@ -324660,6 +333838,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutBooksInput = {
@@ -324801,6 +333984,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutBooksInput = {
@@ -325206,6 +334394,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutBooksInput = {
@@ -325347,6 +334540,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolCreateWithoutStudentHousesInput = {
@@ -325488,6 +334686,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutStudentHousesInput = {
@@ -325629,6 +334832,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutStudentHousesInput = {
@@ -326174,6 +335382,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutStudentHousesInput = {
@@ -326315,6 +335528,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type StudentUpsertWithWhereUniqueWithoutHouseInput = {
@@ -326702,6 +335920,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutChaplaincyEventsInput = {
@@ -326843,6 +336066,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutChaplaincyEventsInput = {
@@ -327000,6 +336228,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutChaplaincyEventsInput = {
@@ -327141,6 +336374,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolCreateWithoutHolidaysInput = {
@@ -327282,6 +336520,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutHolidaysInput = {
@@ -327423,6 +336666,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutHolidaysInput = {
@@ -327580,6 +336828,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutHolidaysInput = {
@@ -327721,6 +336974,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolCreateWithoutLibraryCategoriesInput = {
@@ -327862,6 +337120,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutLibraryCategoriesInput = {
@@ -328003,6 +337266,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutLibraryCategoriesInput = {
@@ -328306,6 +337574,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutLibraryCategoriesInput = {
@@ -328447,6 +337720,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type BookUpsertWithWhereUniqueWithoutCategoryInput = {
@@ -329023,6 +338301,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutBookLoansInput = {
@@ -329164,6 +338447,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutBookLoansInput = {
@@ -329742,6 +339030,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutBookLoansInput = {
@@ -329883,6 +339176,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolCreateWithoutLibrarySettingInput = {
@@ -330024,6 +339322,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutLibrarySettingInput = {
@@ -330165,6 +339468,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutLibrarySettingInput = {
@@ -330322,6 +339630,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutLibrarySettingInput = {
@@ -330463,6 +339776,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type BookCreateWithoutReservationsInput = {
@@ -331007,6 +340325,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutBookReservationsInput = {
@@ -331148,6 +340471,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutBookReservationsInput = {
@@ -331726,6 +341054,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutBookReservationsInput = {
@@ -331867,6 +341200,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolCreateWithoutLibraryDigitalResourcesInput = {
@@ -332008,6 +341346,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutLibraryDigitalResourcesInput = {
@@ -332149,6 +341492,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutLibraryDigitalResourcesInput = {
@@ -332557,6 +341905,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutLibraryDigitalResourcesInput = {
@@ -332698,6 +342051,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type LibraryCategoryUpsertWithoutDigitalResourcesInput = {
@@ -333318,6 +342676,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutAssignmentSubmissionsInput = {
@@ -333459,6 +342822,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutAssignmentSubmissionsInput = {
@@ -333838,6 +343206,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutAssignmentSubmissionsInput = {
@@ -333979,6 +343352,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolCreateWithoutNewsInput = {
@@ -334120,6 +343498,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutNewsInput = {
@@ -334261,6 +343644,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutNewsInput = {
@@ -334418,6 +343806,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutNewsInput = {
@@ -334559,6 +343952,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolCreateWithoutSchoolSettingInput = {
@@ -334700,6 +344098,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutSchoolSettingInput = {
@@ -334841,6 +344244,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutSchoolSettingInput = {
@@ -334998,6 +344406,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutSchoolSettingInput = {
@@ -335139,6 +344552,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolCreateWithoutPaymentPlansInput = {
@@ -335280,6 +344698,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutPaymentPlansInput = {
@@ -335421,6 +344844,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutPaymentPlansInput = {
@@ -335906,6 +345334,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutPaymentPlansInput = {
@@ -336047,6 +345480,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type StudentUpsertWithoutPaymentPlansInput = {
@@ -336528,6 +345966,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutGalleryInput = {
@@ -336669,6 +346112,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutGalleryInput = {
@@ -336826,6 +346274,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutGalleryInput = {
@@ -336967,6 +346420,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolCreateWithoutClubsInput = {
@@ -337108,6 +346566,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutClubsInput = {
@@ -337249,6 +346712,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutClubsInput = {
@@ -337576,6 +347044,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutClubsInput = {
@@ -337717,6 +347190,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type StudentUpsertWithWhereUniqueWithoutClubInput = {
@@ -337874,6 +347352,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutSportsInput = {
@@ -338015,6 +347498,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutSportsInput = {
@@ -338204,6 +347692,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutSportsInput = {
@@ -338345,6 +347838,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type SportingEquipmentUpsertWithWhereUniqueWithoutSportInput = {
@@ -338702,6 +348200,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutSportingEquipmentInput = {
@@ -338843,6 +348346,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutSportingEquipmentInput = {
@@ -339212,6 +348720,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutSportingEquipmentInput = {
@@ -339353,6 +348866,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolCreateWithoutApplicationsInput = {
@@ -339494,6 +349012,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutApplicationsInput = {
@@ -339635,6 +349158,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutApplicationsInput = {
@@ -339842,6 +349370,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutApplicationsInput = {
@@ -339983,6 +349516,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type ApplicantDocumentUpsertWithWhereUniqueWithoutApplicationInput = {
@@ -340845,6 +350383,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutSuppliersInput = {
@@ -340986,6 +350529,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutSuppliersInput = {
@@ -341190,6 +350738,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutSuppliersInput = {
@@ -341331,6 +350884,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type SupplierUpsertWithoutSchoolsInput = {
@@ -343577,6 +353135,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutAssetsInput = {
@@ -343718,6 +353281,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutAssetsInput = {
@@ -344287,6 +353855,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutAssetsInput = {
@@ -344428,6 +354001,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type AssetIncidentUpsertWithWhereUniqueWithoutAssetInput = {
@@ -345332,6 +354910,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutTuckshopItemsInput = {
@@ -345473,6 +355056,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutTuckshopItemsInput = {
@@ -345658,6 +355246,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutTuckshopItemsInput = {
@@ -345799,6 +355392,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type TuckshopSaleUpsertWithWhereUniqueWithoutItemInput = {
@@ -346393,6 +355991,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutSyllabusInput = {
@@ -346534,6 +356137,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutSyllabusInput = {
@@ -346855,6 +356463,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutSyllabusInput = {
@@ -346996,6 +356609,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type LessonPlanUpsertWithWhereUniqueWithoutSyllabusInput = {
@@ -347349,6 +356967,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutLessonPlanInput = {
@@ -347490,6 +357113,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutLessonPlanInput = {
@@ -347867,6 +357495,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutLessonPlanInput = {
@@ -348008,6 +357641,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type UserCreateWithoutSalaryStubsInput = {
@@ -349425,6 +359063,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutReportTemplateInput = {
@@ -349566,6 +359209,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutReportTemplateInput = {
@@ -349723,6 +359371,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutReportTemplateInput = {
@@ -349864,6 +359517,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type DepartmentCreateWithoutRequisitionsInput = {
@@ -350702,6 +360360,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutRequisitionsInput = {
@@ -350843,6 +360506,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutRequisitionsInput = {
@@ -352288,6 +361956,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutRequisitionsInput = {
@@ -352429,6 +362102,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type PurchaseOrderUpsertWithoutRequisitionInput = {
@@ -353209,6 +362887,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutHostelsInput = {
@@ -353350,6 +363033,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutHostelsInput = {
@@ -354034,6 +363722,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutHostelsInput = {
@@ -354175,6 +363868,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type RoomUpsertWithWhereUniqueWithoutHostelInput = {
@@ -356270,6 +365968,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutWeeklyMenusInput = {
@@ -356411,6 +366114,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutWeeklyMenusInput = {
@@ -356568,6 +366276,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutWeeklyMenusInput = {
@@ -356709,6 +366422,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type UserCreateWithoutTransfersInput = {
@@ -357013,6 +366731,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutOriginTransfersInput = {
@@ -357154,6 +366877,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutOriginTransfersInput = {
@@ -357300,6 +367028,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutTargetTransfersInput = {
@@ -357441,6 +367174,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutTargetTransfersInput = {
@@ -357767,6 +367505,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutOriginTransfersInput = {
@@ -357908,6 +367651,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUpsertWithoutTargetTransfersInput = {
@@ -358060,6 +367808,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutTargetTransfersInput = {
@@ -358201,6 +367954,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type StudentCreateWithoutSupervisorsInput = {
@@ -358594,6 +368352,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutSupervisorAssignmentsInput = {
@@ -358735,6 +368498,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutSupervisorAssignmentsInput = {
@@ -359138,6 +368906,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutSupervisorAssignmentsInput = {
@@ -359279,6 +369052,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type StudentCreateWithoutExtensionRequestsInput = {
@@ -359585,6 +369363,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutExtensionRequestsInput = {
@@ -359726,6 +369509,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutExtensionRequestsInput = {
@@ -360054,6 +369842,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutExtensionRequestsInput = {
@@ -360195,6 +369988,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type StudentCreateWithoutProgressReportsInput = {
@@ -360524,6 +370322,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutProgressReportsInput = {
@@ -360665,6 +370468,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutProgressReportsInput = {
@@ -361022,6 +370830,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutProgressReportsInput = {
@@ -361163,6 +370976,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolCreateWithoutPaymentMethodsInput = {
@@ -361304,6 +371122,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutPaymentMethodsInput = {
@@ -361445,6 +371268,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutPaymentMethodsInput = {
@@ -361602,6 +371430,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutPaymentMethodsInput = {
@@ -361743,6 +371576,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolCreateWithoutFeeGroupsInput = {
@@ -361884,6 +371722,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutFeeGroupsInput = {
@@ -362025,6 +371868,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutFeeGroupsInput = {
@@ -362287,6 +372135,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutFeeGroupsInput = {
@@ -362428,6 +372281,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type FeeUpsertWithWhereUniqueWithoutFeeGroupInput = {
@@ -362809,6 +372667,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutPhysicalProductsInput = {
@@ -362950,6 +372813,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutPhysicalProductsInput = {
@@ -363141,6 +373009,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutPhysicalProductsInput = {
@@ -363282,6 +373155,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type PhysicalProductConsumptionUpsertWithWhereUniqueWithoutProductInput = {
@@ -363466,6 +373344,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutPhysicalProductConsumptionsInput = {
@@ -363607,6 +373490,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutPhysicalProductConsumptionsInput = {
@@ -363797,6 +373685,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutPhysicalProductConsumptionsInput = {
@@ -363938,6 +373831,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type StudentCreateWithoutFeeReminderLogsInput = {
@@ -364244,6 +374142,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutFeeReminderLogsInput = {
@@ -364385,6 +374288,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutFeeReminderLogsInput = {
@@ -364713,6 +374621,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutFeeReminderLogsInput = {
@@ -364854,6 +374767,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type StudentCreateWithoutPaymentsInput = {
@@ -365209,6 +375127,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutStudentPaymentsInput = {
@@ -365350,6 +375273,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutStudentPaymentsInput = {
@@ -365733,6 +375661,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutStudentPaymentsInput = {
@@ -365874,6 +375807,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type UserCreateWithoutCommunicationLogsInput = {
@@ -366343,6 +376281,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutCommunicationLogsInput = {
@@ -366484,6 +376427,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutCommunicationLogsInput = {
@@ -366981,6 +376929,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutCommunicationLogsInput = {
@@ -367122,6 +377075,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolCreateWithoutRevenueAllocationsInput = {
@@ -367263,6 +377221,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutRevenueAllocationsInput = {
@@ -367404,6 +377367,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutRevenueAllocationsInput = {
@@ -367600,6 +377568,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutRevenueAllocationsInput = {
@@ -367741,6 +377714,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type FeeGroupUpsertWithWhereUniqueWithoutRevenueAllocationsInput = {
@@ -367898,6 +377876,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutAllowanceTypesInput = {
@@ -368039,6 +378022,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutAllowanceTypesInput = {
@@ -368196,6 +378184,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutAllowanceTypesInput = {
@@ -368337,6 +378330,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolCreateWithoutDeductionTypesInput = {
@@ -368478,6 +378476,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutDeductionTypesInput = {
@@ -368619,6 +378622,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutDeductionTypesInput = {
@@ -368776,6 +378784,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutDeductionTypesInput = {
@@ -368917,6 +378930,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolCreateWithoutTaxTablesInput = {
@@ -369058,6 +379076,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutTaxTablesInput = {
@@ -369199,6 +379222,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutTaxTablesInput = {
@@ -369388,6 +379416,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutTaxTablesInput = {
@@ -369529,6 +379562,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type TaxBandUpsertWithWhereUniqueWithoutTaxTableInput = {
@@ -369928,6 +379966,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutEmployeeProfilesInput = {
@@ -370069,6 +380112,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutEmployeeProfilesInput = {
@@ -370395,6 +380443,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutEmployeeProfilesInput = {
@@ -370536,6 +380589,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type StudentCreateWithoutTermlyCommentsInput = {
@@ -370842,6 +380900,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutTermlyCommentsInput = {
@@ -370983,6 +381046,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutTermlyCommentsInput = {
@@ -371311,6 +381379,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutTermlyCommentsInput = {
@@ -371452,6 +381525,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolCreateWithoutPayrollRunsInput = {
@@ -371593,6 +381671,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutPayrollRunsInput = {
@@ -371734,6 +381817,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutPayrollRunsInput = {
@@ -371935,6 +382023,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutPayrollRunsInput = {
@@ -372076,6 +382169,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type PayrollEntryUpsertWithWhereUniqueWithoutPayrollRunInput = {
@@ -372433,6 +382531,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutPayrollEntriesInput = {
@@ -372574,6 +382677,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutPayrollEntriesInput = {
@@ -372943,6 +383051,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutPayrollEntriesInput = {
@@ -373084,6 +383197,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolClassCreateWithoutCBTExamInput = {
@@ -373364,6 +383482,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutCBTExamInput = {
@@ -373505,6 +383628,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutCBTExamInput = {
@@ -373887,6 +384015,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutCBTExamInput = {
@@ -374028,6 +384161,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type CBTQuestionUpsertWithWhereUniqueWithoutExamInput = {
@@ -374425,6 +384563,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutLiveClassInput = {
@@ -374566,6 +384709,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutLiveClassInput = {
@@ -374937,6 +385085,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutLiveClassInput = {
@@ -375078,6 +385231,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type UserUpsertWithoutLiveClassInput = {
@@ -375445,6 +385603,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutAwardInput = {
@@ -375586,6 +385749,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutAwardInput = {
@@ -375906,6 +386074,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutAwardInput = {
@@ -376047,6 +386220,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type UserUpsertWithoutAwardsInput = {
@@ -376357,6 +386535,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutCourseInput = {
@@ -376498,6 +386681,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutCourseInput = {
@@ -376891,6 +387079,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutCourseInput = {
@@ -377032,6 +387225,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type UserUpsertWithoutCoursesInput = {
@@ -377843,6 +388041,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutStudyMaterialInput = {
@@ -377984,6 +388187,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutStudyMaterialInput = {
@@ -378420,6 +388628,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutStudyMaterialInput = {
@@ -378561,6 +388774,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolClassUpsertWithoutStudyMaterialInput = {
@@ -378999,6 +389217,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutWebsiteSettingsInput = {
@@ -379140,6 +389363,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutWebsiteSettingsInput = {
@@ -379297,6 +389525,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutWebsiteSettingsInput = {
@@ -379438,6 +389671,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolCreateWithoutWebsiteInquiriesInput = {
@@ -379579,6 +389817,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutWebsiteInquiriesInput = {
@@ -379720,6 +389963,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutWebsiteInquiriesInput = {
@@ -379877,6 +390125,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutWebsiteInquiriesInput = {
@@ -380018,6 +390271,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolCreateWithoutNoticeboardsInput = {
@@ -380159,6 +390417,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutNoticeboardsInput = {
@@ -380300,6 +390563,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutNoticeboardsInput = {
@@ -380457,6 +390725,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutNoticeboardsInput = {
@@ -380598,6 +390871,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolCreateWithoutVacanciesInput = {
@@ -380739,6 +391017,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutVacanciesInput = {
@@ -380880,6 +391163,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutVacanciesInput = {
@@ -381293,6 +391581,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutVacanciesInput = {
@@ -381434,6 +391727,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type DepartmentUpsertWithoutVacanciesInput = {
@@ -381811,6 +392109,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutJobApplicationsInput = {
@@ -381952,6 +392255,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutJobApplicationsInput = {
@@ -382168,6 +392476,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutJobApplicationsInput = {
@@ -382309,6 +392622,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type VacancyUpsertWithoutApplicationsInput = {
@@ -382515,6 +392833,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutSchoolVehicleInput = {
@@ -382656,6 +392979,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutSchoolVehicleInput = {
@@ -382843,6 +393171,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutSchoolVehicleInput = {
@@ -382984,6 +393317,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolTransportUpsertWithWhereUniqueWithoutVehicleInput = {
@@ -383141,6 +393479,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutSchoolTransportInput = {
@@ -383282,6 +393625,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutSchoolTransportInput = {
@@ -383505,6 +393853,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutSchoolTransportInput = {
@@ -383646,6 +393999,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type TransportRouteUpsertWithoutSchoolTransportsInput = {
@@ -383865,6 +394223,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutMeetingMinutesInput = {
@@ -384006,6 +394369,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutMeetingMinutesInput = {
@@ -384163,6 +394531,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutMeetingMinutesInput = {
@@ -384304,6 +394677,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolCreateWithoutProjectFundingsInput = {
@@ -384445,6 +394823,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutProjectFundingsInput = {
@@ -384586,6 +394969,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutProjectFundingsInput = {
@@ -384743,6 +395131,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutProjectFundingsInput = {
@@ -384884,6 +395277,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolCreateWithoutClinicPatientInput = {
@@ -385025,6 +395423,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutClinicPatientInput = {
@@ -385166,6 +395569,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutClinicPatientInput = {
@@ -385830,6 +396238,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutClinicPatientInput = {
@@ -385971,6 +396384,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type UserUpsertWithoutClinicPatientInput = {
@@ -388633,6 +399051,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutClinicVisitsInput = {
@@ -388774,6 +399197,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutClinicVisitsInput = {
@@ -389734,6 +400162,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutClinicVisitsInput = {
@@ -389875,6 +400308,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type ClinicDispensingLogUpsertWithWhereUniqueWithoutVisitInput = {
@@ -390487,6 +400925,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutClinicInventoryItemsInput = {
@@ -390628,6 +401071,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutClinicInventoryItemsInput = {
@@ -390821,6 +401269,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutClinicInventoryItemsInput = {
@@ -390962,6 +401415,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type ClinicDispensingLogUpsertWithWhereUniqueWithoutItemInput = {
@@ -391731,6 +402189,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutClinicHospitalizationsInput = {
@@ -391872,6 +402335,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutClinicHospitalizationsInput = {
@@ -392265,6 +402733,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutClinicHospitalizationsInput = {
@@ -392406,6 +402879,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolCreateWithoutFarmLivestockBatchesInput = {
@@ -392547,6 +403025,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutFarmLivestockBatchesInput = {
@@ -392688,6 +403171,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutFarmLivestockBatchesInput = {
@@ -392845,6 +403333,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutFarmLivestockBatchesInput = {
@@ -392986,6 +403479,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolCreateWithoutFarmCropCyclesInput = {
@@ -393127,6 +403625,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutFarmCropCyclesInput = {
@@ -393268,6 +403771,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutFarmCropCyclesInput = {
@@ -393425,6 +403933,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutFarmCropCyclesInput = {
@@ -393566,6 +404079,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolCreateWithoutFarmInventoryItemsInput = {
@@ -393707,6 +404225,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutFarmInventoryItemsInput = {
@@ -393848,6 +404371,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutFarmInventoryItemsInput = {
@@ -394005,6 +404533,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutFarmInventoryItemsInput = {
@@ -394146,6 +404679,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type UserCreateWithoutDiningHallReportsInput = {
@@ -394450,6 +404988,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutDiningHallReportsInput = {
@@ -394591,6 +405134,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutDiningHallReportsInput = {
@@ -394917,6 +405465,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutDiningHallReportsInput = {
@@ -395058,6 +405611,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolCreateWithoutPrefectDutiesInput = {
@@ -395199,6 +405757,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutPrefectDutiesInput = {
@@ -395340,6 +405903,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutPrefectDutiesInput = {
@@ -395497,6 +406065,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutPrefectDutiesInput = {
@@ -395638,6 +406211,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolCreateWithoutPrefectMeetingsInput = {
@@ -395779,6 +406357,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutPrefectMeetingsInput = {
@@ -395920,6 +406503,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutPrefectMeetingsInput = {
@@ -396077,6 +406665,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutPrefectMeetingsInput = {
@@ -396218,6 +406811,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type UserCreateWithoutPrefectReportsInput = {
@@ -396522,6 +407120,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutPrefectReportsInput = {
@@ -396663,6 +407266,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutPrefectReportsInput = {
@@ -396989,6 +407597,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutPrefectReportsInput = {
@@ -397130,6 +407743,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type StudentCreateWithoutWalletInput = {
@@ -397795,6 +408413,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutChartOfAccountsInput = {
@@ -397936,6 +408559,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutChartOfAccountsInput = {
@@ -397949,6 +408577,8 @@ export namespace Prisma {
     name: string
     type: $Enums.AccountType
     isSystemAccount?: boolean
+    isBank?: boolean
+    isTemplate?: boolean
     isActive?: boolean
     description?: string | null
     createdAt?: Date | string
@@ -397967,6 +408597,8 @@ export namespace Prisma {
     type: $Enums.AccountType
     parentId?: string | null
     isSystemAccount?: boolean
+    isBank?: boolean
+    isTemplate?: boolean
     isActive?: boolean
     description?: string | null
     createdAt?: Date | string
@@ -397986,6 +408618,8 @@ export namespace Prisma {
     name: string
     type: $Enums.AccountType
     isSystemAccount?: boolean
+    isBank?: boolean
+    isTemplate?: boolean
     isActive?: boolean
     description?: string | null
     createdAt?: Date | string
@@ -398003,6 +408637,8 @@ export namespace Prisma {
     name: string
     type: $Enums.AccountType
     isSystemAccount?: boolean
+    isBank?: boolean
+    isTemplate?: boolean
     isActive?: boolean
     description?: string | null
     createdAt?: Date | string
@@ -398025,9 +408661,12 @@ export namespace Prisma {
   export type JournalEntryLineCreateWithoutAccountInput = {
     id?: string
     schoolId: string
+    coaCode?: string | null
     description?: string | null
     debit?: number
     credit?: number
+    baseAmount?: number
+    taxCode?: string | null
     currency?: string
     exchangeRate?: number
     debitForeign?: number
@@ -398045,9 +408684,12 @@ export namespace Prisma {
     id?: string
     journalEntryId: string
     schoolId: string
+    coaCode?: string | null
     description?: string | null
     debit?: number
     credit?: number
+    baseAmount?: number
+    taxCode?: string | null
     currency?: string
     exchangeRate?: number
     debitForeign?: number
@@ -398248,6 +408890,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutChartOfAccountsInput = {
@@ -398389,6 +409036,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type ChartOfAccountUpsertWithoutChildrenInput = {
@@ -398408,6 +409060,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumAccountTypeFieldUpdateOperationsInput | $Enums.AccountType
     isSystemAccount?: BoolFieldUpdateOperationsInput | boolean
+    isBank?: BoolFieldUpdateOperationsInput | boolean
+    isTemplate?: BoolFieldUpdateOperationsInput | boolean
     isActive?: BoolFieldUpdateOperationsInput | boolean
     description?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -398426,6 +409080,8 @@ export namespace Prisma {
     type?: EnumAccountTypeFieldUpdateOperationsInput | $Enums.AccountType
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
     isSystemAccount?: BoolFieldUpdateOperationsInput | boolean
+    isBank?: BoolFieldUpdateOperationsInput | boolean
+    isTemplate?: BoolFieldUpdateOperationsInput | boolean
     isActive?: BoolFieldUpdateOperationsInput | boolean
     description?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -398474,9 +409130,12 @@ export namespace Prisma {
     journalEntryId?: StringFilter<"JournalEntryLine"> | string
     accountId?: StringFilter<"JournalEntryLine"> | string
     schoolId?: StringFilter<"JournalEntryLine"> | string
+    coaCode?: StringNullableFilter<"JournalEntryLine"> | string | null
     description?: StringNullableFilter<"JournalEntryLine"> | string | null
     debit?: FloatFilter<"JournalEntryLine"> | number
     credit?: FloatFilter<"JournalEntryLine"> | number
+    baseAmount?: FloatFilter<"JournalEntryLine"> | number
+    taxCode?: StringNullableFilter<"JournalEntryLine"> | string | null
     currency?: StringFilter<"JournalEntryLine"> | string
     exchangeRate?: FloatFilter<"JournalEntryLine"> | number
     debitForeign?: FloatFilter<"JournalEntryLine"> | number
@@ -398644,6 +409303,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutJournalEntriesInput = {
@@ -398785,6 +409449,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutJournalEntriesInput = {
@@ -398798,6 +409467,9 @@ export namespace Prisma {
     date: Date | string
     description: string
     status?: string
+    currency?: string
+    exchangeRateUsed?: number
+    ipAddress?: string | null
     isReversing?: boolean
     sourceType: string
     sourceId: string
@@ -398818,6 +409490,9 @@ export namespace Prisma {
     date: Date | string
     description: string
     status?: string
+    currency?: string
+    exchangeRateUsed?: number
+    ipAddress?: string | null
     isReversing?: boolean
     reversedById?: string | null
     sourceType: string
@@ -398841,6 +409516,9 @@ export namespace Prisma {
     date: Date | string
     description: string
     status?: string
+    currency?: string
+    exchangeRateUsed?: number
+    ipAddress?: string | null
     isReversing?: boolean
     sourceType: string
     sourceId: string
@@ -398861,6 +409539,9 @@ export namespace Prisma {
     date: Date | string
     description: string
     status?: string
+    currency?: string
+    exchangeRateUsed?: number
+    ipAddress?: string | null
     isReversing?: boolean
     sourceType: string
     sourceId: string
@@ -398886,9 +409567,12 @@ export namespace Prisma {
   export type JournalEntryLineCreateWithoutJournalEntryInput = {
     id?: string
     schoolId: string
+    coaCode?: string | null
     description?: string | null
     debit?: number
     credit?: number
+    baseAmount?: number
+    taxCode?: string | null
     currency?: string
     exchangeRate?: number
     debitForeign?: number
@@ -398906,9 +409590,12 @@ export namespace Prisma {
     id?: string
     accountId: string
     schoolId: string
+    coaCode?: string | null
     description?: string | null
     debit?: number
     credit?: number
+    baseAmount?: number
+    taxCode?: string | null
     currency?: string
     exchangeRate?: number
     debitForeign?: number
@@ -399081,6 +409768,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutJournalEntriesInput = {
@@ -399222,6 +409914,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type JournalEntryUpsertWithoutReversalOfInput = {
@@ -399241,6 +409938,9 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     description?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    currency?: StringFieldUpdateOperationsInput | string
+    exchangeRateUsed?: FloatFieldUpdateOperationsInput | number
+    ipAddress?: NullableStringFieldUpdateOperationsInput | string | null
     isReversing?: BoolFieldUpdateOperationsInput | boolean
     sourceType?: StringFieldUpdateOperationsInput | string
     sourceId?: StringFieldUpdateOperationsInput | string
@@ -399261,6 +409961,9 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     description?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    currency?: StringFieldUpdateOperationsInput | string
+    exchangeRateUsed?: FloatFieldUpdateOperationsInput | number
+    ipAddress?: NullableStringFieldUpdateOperationsInput | string | null
     isReversing?: BoolFieldUpdateOperationsInput | boolean
     reversedById?: NullableStringFieldUpdateOperationsInput | string | null
     sourceType?: StringFieldUpdateOperationsInput | string
@@ -399311,6 +410014,9 @@ export namespace Prisma {
     date: Date | string
     description: string
     status?: string
+    currency?: string
+    exchangeRateUsed?: number
+    ipAddress?: string | null
     isReversing?: boolean
     sourceType: string
     sourceId: string
@@ -399331,6 +410037,9 @@ export namespace Prisma {
     date: Date | string
     description: string
     status?: string
+    currency?: string
+    exchangeRateUsed?: number
+    ipAddress?: string | null
     isReversing?: boolean
     reversedById?: string | null
     sourceType: string
@@ -399354,6 +410063,8 @@ export namespace Prisma {
     name: string
     type: $Enums.AccountType
     isSystemAccount?: boolean
+    isBank?: boolean
+    isTemplate?: boolean
     isActive?: boolean
     description?: string | null
     createdAt?: Date | string
@@ -399372,6 +410083,8 @@ export namespace Prisma {
     type: $Enums.AccountType
     parentId?: string | null
     isSystemAccount?: boolean
+    isBank?: boolean
+    isTemplate?: boolean
     isActive?: boolean
     description?: string | null
     createdAt?: Date | string
@@ -399402,6 +410115,9 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     description?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    currency?: StringFieldUpdateOperationsInput | string
+    exchangeRateUsed?: FloatFieldUpdateOperationsInput | number
+    ipAddress?: NullableStringFieldUpdateOperationsInput | string | null
     isReversing?: BoolFieldUpdateOperationsInput | boolean
     sourceType?: StringFieldUpdateOperationsInput | string
     sourceId?: StringFieldUpdateOperationsInput | string
@@ -399422,6 +410138,9 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     description?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    currency?: StringFieldUpdateOperationsInput | string
+    exchangeRateUsed?: FloatFieldUpdateOperationsInput | number
+    ipAddress?: NullableStringFieldUpdateOperationsInput | string | null
     isReversing?: BoolFieldUpdateOperationsInput | boolean
     reversedById?: NullableStringFieldUpdateOperationsInput | string | null
     sourceType?: StringFieldUpdateOperationsInput | string
@@ -399451,6 +410170,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumAccountTypeFieldUpdateOperationsInput | $Enums.AccountType
     isSystemAccount?: BoolFieldUpdateOperationsInput | boolean
+    isBank?: BoolFieldUpdateOperationsInput | boolean
+    isTemplate?: BoolFieldUpdateOperationsInput | boolean
     isActive?: BoolFieldUpdateOperationsInput | boolean
     description?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -399469,6 +410190,8 @@ export namespace Prisma {
     type?: EnumAccountTypeFieldUpdateOperationsInput | $Enums.AccountType
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
     isSystemAccount?: BoolFieldUpdateOperationsInput | boolean
+    isBank?: BoolFieldUpdateOperationsInput | boolean
+    isTemplate?: BoolFieldUpdateOperationsInput | boolean
     isActive?: BoolFieldUpdateOperationsInput | boolean
     description?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -399616,6 +410339,11 @@ export namespace Prisma {
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutAccountingPeriodsInput = {
@@ -399757,6 +410485,11 @@ export namespace Prisma {
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutAccountingPeriodsInput = {
@@ -399914,6 +410647,11 @@ export namespace Prisma {
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutAccountingPeriodsInput = {
@@ -400055,6 +410793,3011 @@ export namespace Prisma {
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
+  }
+
+  export type SchoolCreateWithoutExchangeRatesInput = {
+    id?: string
+    code: string
+    name: string
+    type: string
+    isCombined?: boolean
+    levels?: SchoolCreatelevelsInput | string[]
+    address?: string | null
+    country?: string | null
+    email: string
+    phone?: string | null
+    website?: string | null
+    status?: string
+    branding?: NullableJsonNullValueInput | InputJsonValue
+    customContent?: NullableJsonNullValueInput | InputJsonValue
+    hexcoCenterNumber?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    idCardTemplate?: string | null
+    settings?: NullableJsonNullValueInput | InputJsonValue
+    plan: PlanCreateNestedOneWithoutSchoolsInput
+    users?: UserCreateNestedManyWithoutSchoolInput
+    students?: StudentCreateNestedManyWithoutSchoolInput
+    teachers?: TeacherCreateNestedManyWithoutSchoolInput
+    news?: NewsCreateNestedManyWithoutSchoolInput
+    websiteInquiries?: WebsiteInquiryCreateNestedManyWithoutSchoolInput
+    noticeboards?: NoticeboardCreateNestedManyWithoutSchoolInput
+    clinicVisits?: ClinicVisitCreateNestedManyWithoutSchoolInput
+    clinicHospitalizations?: ClinicHospitalizationCreateNestedManyWithoutSchoolInput
+    vacancies?: VacancyCreateNestedManyWithoutSchoolInput
+    jobApplications?: JobApplicationCreateNestedManyWithoutSchoolInput
+    gallery?: GalleryCreateNestedManyWithoutSchoolInput
+    clubs?: ClubCreateNestedManyWithoutSchoolInput
+    sports?: SportCreateNestedManyWithoutSchoolInput
+    applications?: ApplicationCreateNestedManyWithoutSchoolInput
+    announcements?: AnnouncementCreateNestedManyWithoutSchoolInput
+    chaplaincyEvents?: ChaplaincyEventCreateNestedManyWithoutSchoolInput
+    diningHallReports?: DiningHallReportCreateNestedManyWithoutSchoolInput
+    farmLivestockBatches?: FarmLivestockBatchCreateNestedManyWithoutSchoolInput
+    farmCropCycles?: FarmCropCycleCreateNestedManyWithoutSchoolInput
+    farmInventoryItems?: FarmInventoryItemCreateNestedManyWithoutSchoolInput
+    prefectDuties?: PrefectDutyCreateNestedManyWithoutSchoolInput
+    prefectMeetings?: PrefectMeetingCreateNestedManyWithoutSchoolInput
+    prefectReports?: PrefectReportCreateNestedManyWithoutSchoolInput
+    staffAttendances?: StaffAttendanceCreateNestedManyWithoutSchoolInput
+    timetableSlots?: TimetableSlotCreateNestedManyWithoutSchoolInput
+    classes?: SchoolClassCreateNestedManyWithoutSchoolInput
+    subjects?: SubjectCreateNestedManyWithoutSchoolInput
+    books?: BookCreateNestedManyWithoutSchoolInput
+    grades?: GradeCreateNestedManyWithoutSchoolInput
+    attendance?: AttendanceCreateNestedManyWithoutSchoolInput
+    fees?: FeeCreateNestedManyWithoutSchoolInput
+    assignments?: AssignmentCreateNestedManyWithoutSchoolInput
+    bookLoans?: BookLoanCreateNestedManyWithoutSchoolInput
+    bookReservations?: BookReservationCreateNestedManyWithoutSchoolInput
+    librarySetting?: LibrarySettingCreateNestedOneWithoutSchoolInput
+    libraryDigitalResources?: LibraryDigitalResourceCreateNestedManyWithoutSchoolInput
+    assignmentSubmissions?: AssignmentSubmissionCreateNestedManyWithoutSchoolInput
+    supervisorAssignments?: SupervisorAssignmentCreateNestedManyWithoutSchoolInput
+    extensionRequests?: ExtensionRequestCreateNestedManyWithoutSchoolInput
+    progressReports?: ProgressReportCreateNestedManyWithoutSchoolInput
+    tuckshopItems?: TuckshopItemCreateNestedManyWithoutSchoolInput
+    suppliers?: SchoolSupplierCreateNestedManyWithoutSchoolInput
+    assets?: AssetCreateNestedManyWithoutSchoolInput
+    reportTemplate?: ReportTemplateCreateNestedOneWithoutSchoolInput
+    websiteSettings?: WebsiteSettingsCreateNestedOneWithoutSchoolInput
+    requisitions?: RequisitionCreateNestedManyWithoutSchoolInput
+    auditLogs?: AuditLogCreateNestedManyWithoutSchoolInput
+    leadershipAssignments?: LeadershipAssignmentCreateNestedManyWithoutSchoolInput
+    studentAllowedItems?: StudentAllowedItemCreateNestedManyWithoutSchoolInput
+    departments?: DepartmentCreateNestedManyWithoutSchoolInput
+    hostels?: HostelCreateNestedManyWithoutSchoolInput
+    weeklyMenus?: WeeklyMenuCreateNestedManyWithoutSchoolInput
+    clinicSettings?: ClinicSettingCreateNestedOneWithoutSchoolInput
+    clinicBeds?: ClinicBedCreateNestedManyWithoutSchoolInput
+    clinicAdmissions?: ClinicAdmissionCreateNestedManyWithoutSchoolInput
+    pharmacyStocks?: PharmacyStockCreateNestedManyWithoutSchoolInput
+    studentHealthProfiles?: StudentHealthProfileCreateNestedManyWithoutSchoolInput
+    clinicAccessAudits?: ClinicAccessAuditCreateNestedManyWithoutSchoolInput
+    clinicEmergencyLogs?: ClinicEmergencyLogCreateNestedManyWithoutSchoolInput
+    clinicDiagnoses?: ClinicDiagnosisCreateNestedManyWithoutSchoolInput
+    clinicPrescriptions?: ClinicPrescriptionCreateNestedManyWithoutSchoolInput
+    pharmacyDispensings?: PharmacyDispenseCreateNestedManyWithoutSchoolInput
+    clinicMonitoringLogs?: ClinicMonitoringLogCreateNestedManyWithoutSchoolInput
+    clinicVitals?: ClinicVitalCreateNestedManyWithoutSchoolInput
+    originTransfers?: TransferAuthorizationCreateNestedManyWithoutOriginSchoolInput
+    targetTransfers?: TransferAuthorizationCreateNestedManyWithoutTargetSchoolInput
+    faculties?: FacultyCreateNestedManyWithoutSchoolInput
+    paymentMethods?: PaymentMethodCreateNestedManyWithoutSchoolInput
+    feeGroups?: FeeGroupCreateNestedManyWithoutSchoolInput
+    revenueAllocations?: RevenueAllocationCreateNestedManyWithoutSchoolInput
+    allowanceTypes?: PayrollAllowanceCreateNestedManyWithoutSchoolInput
+    deductionTypes?: PayrollDeductionCreateNestedManyWithoutSchoolInput
+    taxTables?: TaxTableCreateNestedManyWithoutSchoolInput
+    employeeProfiles?: EmployeeProfileCreateNestedManyWithoutSchoolInput
+    accountCategories?: AccountCategoryCreateNestedManyWithoutSchoolInput
+    liabilities?: LiabilityCreateNestedManyWithoutSchoolInput
+    incomes?: IncomeCreateNestedManyWithoutSchoolInput
+    expenses?: ExpenseCreateNestedManyWithoutSchoolInput
+    uniformItems?: UniformItemCreateNestedManyWithoutSchoolInput
+    uniformStockOrders?: UniformStockOrderCreateNestedManyWithoutSchoolInput
+    uniformSales?: UniformSaleCreateNestedManyWithoutSchoolInput
+    uniformSupplierPayments?: UniformSupplierPaymentCreateNestedManyWithoutSchoolInput
+    physicalProducts?: PhysicalProductCreateNestedManyWithoutSchoolInput
+    physicalProductConsumptions?: PhysicalProductConsumptionCreateNestedManyWithoutSchoolInput
+    feeReminderLogs?: FeeReminderLogCreateNestedManyWithoutSchoolInput
+    termlyComments?: TermlyCommentCreateNestedManyWithoutSchoolInput
+    payrollRuns?: PayrollRunCreateNestedManyWithoutSchoolInput
+    questionPapers?: QuestionPaperCreateNestedManyWithoutSchoolInput
+    payrollEntries?: PayrollEntryCreateNestedManyWithoutSchoolInput
+    gradingScales?: GradingScaleCreateNestedManyWithoutSchoolInput
+    studentPayments?: StudentPaymentCreateNestedManyWithoutSchoolInput
+    communicationLogs?: CommunicationLogCreateNestedManyWithoutSchoolInput
+    libraryCategories?: LibraryCategoryCreateNestedManyWithoutSchoolInput
+    sections?: SectionCreateNestedManyWithoutSchoolInput
+    studentHouses?: StudentHouseCreateNestedManyWithoutSchoolInput
+    holidays?: HolidayCreateNestedManyWithoutSchoolInput
+    schoolSetting?: SchoolSettingCreateNestedOneWithoutSchoolInput
+    CBTExam?: CBTExamCreateNestedManyWithoutSchoolInput
+    Syllabus?: SyllabusCreateNestedManyWithoutSchoolInput
+    LessonPlan?: LessonPlanCreateNestedManyWithoutSchoolInput
+    LiveClass?: LiveClassCreateNestedManyWithoutSchoolInput
+    Award?: AwardCreateNestedManyWithoutSchoolInput
+    Course?: CourseCreateNestedManyWithoutSchoolInput
+    StudyMaterial?: StudyMaterialCreateNestedManyWithoutSchoolInput
+    hostelCategories?: HostelCategoryCreateNestedManyWithoutSchoolInput
+    hostelRooms?: HostelRoomCreateNestedManyWithoutSchoolInput
+    SchoolVehicle?: SchoolVehicleCreateNestedManyWithoutSchoolInput
+    SchoolTransport?: SchoolTransportCreateNestedManyWithoutSchoolInput
+    paymentPlans?: PaymentPlanCreateNestedManyWithoutSchoolInput
+    meetingMinutes?: MeetingMinutesCreateNestedManyWithoutSchoolInput
+    projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
+    sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
+    ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
+    chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
+    journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
+    accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
+    uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
+    bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
+  }
+
+  export type SchoolUncheckedCreateWithoutExchangeRatesInput = {
+    id?: string
+    code: string
+    name: string
+    type: string
+    isCombined?: boolean
+    levels?: SchoolCreatelevelsInput | string[]
+    address?: string | null
+    country?: string | null
+    email: string
+    phone?: string | null
+    website?: string | null
+    status?: string
+    planId: string
+    branding?: NullableJsonNullValueInput | InputJsonValue
+    customContent?: NullableJsonNullValueInput | InputJsonValue
+    hexcoCenterNumber?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    idCardTemplate?: string | null
+    settings?: NullableJsonNullValueInput | InputJsonValue
+    users?: UserUncheckedCreateNestedManyWithoutSchoolInput
+    students?: StudentUncheckedCreateNestedManyWithoutSchoolInput
+    teachers?: TeacherUncheckedCreateNestedManyWithoutSchoolInput
+    news?: NewsUncheckedCreateNestedManyWithoutSchoolInput
+    websiteInquiries?: WebsiteInquiryUncheckedCreateNestedManyWithoutSchoolInput
+    noticeboards?: NoticeboardUncheckedCreateNestedManyWithoutSchoolInput
+    clinicVisits?: ClinicVisitUncheckedCreateNestedManyWithoutSchoolInput
+    clinicHospitalizations?: ClinicHospitalizationUncheckedCreateNestedManyWithoutSchoolInput
+    vacancies?: VacancyUncheckedCreateNestedManyWithoutSchoolInput
+    jobApplications?: JobApplicationUncheckedCreateNestedManyWithoutSchoolInput
+    gallery?: GalleryUncheckedCreateNestedManyWithoutSchoolInput
+    clubs?: ClubUncheckedCreateNestedManyWithoutSchoolInput
+    sports?: SportUncheckedCreateNestedManyWithoutSchoolInput
+    applications?: ApplicationUncheckedCreateNestedManyWithoutSchoolInput
+    announcements?: AnnouncementUncheckedCreateNestedManyWithoutSchoolInput
+    chaplaincyEvents?: ChaplaincyEventUncheckedCreateNestedManyWithoutSchoolInput
+    diningHallReports?: DiningHallReportUncheckedCreateNestedManyWithoutSchoolInput
+    farmLivestockBatches?: FarmLivestockBatchUncheckedCreateNestedManyWithoutSchoolInput
+    farmCropCycles?: FarmCropCycleUncheckedCreateNestedManyWithoutSchoolInput
+    farmInventoryItems?: FarmInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
+    prefectDuties?: PrefectDutyUncheckedCreateNestedManyWithoutSchoolInput
+    prefectMeetings?: PrefectMeetingUncheckedCreateNestedManyWithoutSchoolInput
+    prefectReports?: PrefectReportUncheckedCreateNestedManyWithoutSchoolInput
+    staffAttendances?: StaffAttendanceUncheckedCreateNestedManyWithoutSchoolInput
+    timetableSlots?: TimetableSlotUncheckedCreateNestedManyWithoutSchoolInput
+    classes?: SchoolClassUncheckedCreateNestedManyWithoutSchoolInput
+    subjects?: SubjectUncheckedCreateNestedManyWithoutSchoolInput
+    books?: BookUncheckedCreateNestedManyWithoutSchoolInput
+    grades?: GradeUncheckedCreateNestedManyWithoutSchoolInput
+    attendance?: AttendanceUncheckedCreateNestedManyWithoutSchoolInput
+    fees?: FeeUncheckedCreateNestedManyWithoutSchoolInput
+    assignments?: AssignmentUncheckedCreateNestedManyWithoutSchoolInput
+    bookLoans?: BookLoanUncheckedCreateNestedManyWithoutSchoolInput
+    bookReservations?: BookReservationUncheckedCreateNestedManyWithoutSchoolInput
+    librarySetting?: LibrarySettingUncheckedCreateNestedOneWithoutSchoolInput
+    libraryDigitalResources?: LibraryDigitalResourceUncheckedCreateNestedManyWithoutSchoolInput
+    assignmentSubmissions?: AssignmentSubmissionUncheckedCreateNestedManyWithoutSchoolInput
+    supervisorAssignments?: SupervisorAssignmentUncheckedCreateNestedManyWithoutSchoolInput
+    extensionRequests?: ExtensionRequestUncheckedCreateNestedManyWithoutSchoolInput
+    progressReports?: ProgressReportUncheckedCreateNestedManyWithoutSchoolInput
+    tuckshopItems?: TuckshopItemUncheckedCreateNestedManyWithoutSchoolInput
+    suppliers?: SchoolSupplierUncheckedCreateNestedManyWithoutSchoolInput
+    assets?: AssetUncheckedCreateNestedManyWithoutSchoolInput
+    reportTemplate?: ReportTemplateUncheckedCreateNestedOneWithoutSchoolInput
+    websiteSettings?: WebsiteSettingsUncheckedCreateNestedOneWithoutSchoolInput
+    requisitions?: RequisitionUncheckedCreateNestedManyWithoutSchoolInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutSchoolInput
+    leadershipAssignments?: LeadershipAssignmentUncheckedCreateNestedManyWithoutSchoolInput
+    studentAllowedItems?: StudentAllowedItemUncheckedCreateNestedManyWithoutSchoolInput
+    departments?: DepartmentUncheckedCreateNestedManyWithoutSchoolInput
+    hostels?: HostelUncheckedCreateNestedManyWithoutSchoolInput
+    weeklyMenus?: WeeklyMenuUncheckedCreateNestedManyWithoutSchoolInput
+    clinicSettings?: ClinicSettingUncheckedCreateNestedOneWithoutSchoolInput
+    clinicBeds?: ClinicBedUncheckedCreateNestedManyWithoutSchoolInput
+    clinicAdmissions?: ClinicAdmissionUncheckedCreateNestedManyWithoutSchoolInput
+    pharmacyStocks?: PharmacyStockUncheckedCreateNestedManyWithoutSchoolInput
+    studentHealthProfiles?: StudentHealthProfileUncheckedCreateNestedManyWithoutSchoolInput
+    clinicAccessAudits?: ClinicAccessAuditUncheckedCreateNestedManyWithoutSchoolInput
+    clinicEmergencyLogs?: ClinicEmergencyLogUncheckedCreateNestedManyWithoutSchoolInput
+    clinicDiagnoses?: ClinicDiagnosisUncheckedCreateNestedManyWithoutSchoolInput
+    clinicPrescriptions?: ClinicPrescriptionUncheckedCreateNestedManyWithoutSchoolInput
+    pharmacyDispensings?: PharmacyDispenseUncheckedCreateNestedManyWithoutSchoolInput
+    clinicMonitoringLogs?: ClinicMonitoringLogUncheckedCreateNestedManyWithoutSchoolInput
+    clinicVitals?: ClinicVitalUncheckedCreateNestedManyWithoutSchoolInput
+    originTransfers?: TransferAuthorizationUncheckedCreateNestedManyWithoutOriginSchoolInput
+    targetTransfers?: TransferAuthorizationUncheckedCreateNestedManyWithoutTargetSchoolInput
+    faculties?: FacultyUncheckedCreateNestedManyWithoutSchoolInput
+    paymentMethods?: PaymentMethodUncheckedCreateNestedManyWithoutSchoolInput
+    feeGroups?: FeeGroupUncheckedCreateNestedManyWithoutSchoolInput
+    revenueAllocations?: RevenueAllocationUncheckedCreateNestedManyWithoutSchoolInput
+    allowanceTypes?: PayrollAllowanceUncheckedCreateNestedManyWithoutSchoolInput
+    deductionTypes?: PayrollDeductionUncheckedCreateNestedManyWithoutSchoolInput
+    taxTables?: TaxTableUncheckedCreateNestedManyWithoutSchoolInput
+    employeeProfiles?: EmployeeProfileUncheckedCreateNestedManyWithoutSchoolInput
+    accountCategories?: AccountCategoryUncheckedCreateNestedManyWithoutSchoolInput
+    liabilities?: LiabilityUncheckedCreateNestedManyWithoutSchoolInput
+    incomes?: IncomeUncheckedCreateNestedManyWithoutSchoolInput
+    expenses?: ExpenseUncheckedCreateNestedManyWithoutSchoolInput
+    uniformItems?: UniformItemUncheckedCreateNestedManyWithoutSchoolInput
+    uniformStockOrders?: UniformStockOrderUncheckedCreateNestedManyWithoutSchoolInput
+    uniformSales?: UniformSaleUncheckedCreateNestedManyWithoutSchoolInput
+    uniformSupplierPayments?: UniformSupplierPaymentUncheckedCreateNestedManyWithoutSchoolInput
+    physicalProducts?: PhysicalProductUncheckedCreateNestedManyWithoutSchoolInput
+    physicalProductConsumptions?: PhysicalProductConsumptionUncheckedCreateNestedManyWithoutSchoolInput
+    feeReminderLogs?: FeeReminderLogUncheckedCreateNestedManyWithoutSchoolInput
+    termlyComments?: TermlyCommentUncheckedCreateNestedManyWithoutSchoolInput
+    payrollRuns?: PayrollRunUncheckedCreateNestedManyWithoutSchoolInput
+    questionPapers?: QuestionPaperUncheckedCreateNestedManyWithoutSchoolInput
+    payrollEntries?: PayrollEntryUncheckedCreateNestedManyWithoutSchoolInput
+    gradingScales?: GradingScaleUncheckedCreateNestedManyWithoutSchoolInput
+    studentPayments?: StudentPaymentUncheckedCreateNestedManyWithoutSchoolInput
+    communicationLogs?: CommunicationLogUncheckedCreateNestedManyWithoutSchoolInput
+    libraryCategories?: LibraryCategoryUncheckedCreateNestedManyWithoutSchoolInput
+    sections?: SectionUncheckedCreateNestedManyWithoutSchoolInput
+    studentHouses?: StudentHouseUncheckedCreateNestedManyWithoutSchoolInput
+    holidays?: HolidayUncheckedCreateNestedManyWithoutSchoolInput
+    schoolSetting?: SchoolSettingUncheckedCreateNestedOneWithoutSchoolInput
+    CBTExam?: CBTExamUncheckedCreateNestedManyWithoutSchoolInput
+    Syllabus?: SyllabusUncheckedCreateNestedManyWithoutSchoolInput
+    LessonPlan?: LessonPlanUncheckedCreateNestedManyWithoutSchoolInput
+    LiveClass?: LiveClassUncheckedCreateNestedManyWithoutSchoolInput
+    Award?: AwardUncheckedCreateNestedManyWithoutSchoolInput
+    Course?: CourseUncheckedCreateNestedManyWithoutSchoolInput
+    StudyMaterial?: StudyMaterialUncheckedCreateNestedManyWithoutSchoolInput
+    hostelCategories?: HostelCategoryUncheckedCreateNestedManyWithoutSchoolInput
+    hostelRooms?: HostelRoomUncheckedCreateNestedManyWithoutSchoolInput
+    SchoolVehicle?: SchoolVehicleUncheckedCreateNestedManyWithoutSchoolInput
+    SchoolTransport?: SchoolTransportUncheckedCreateNestedManyWithoutSchoolInput
+    paymentPlans?: PaymentPlanUncheckedCreateNestedManyWithoutSchoolInput
+    meetingMinutes?: MeetingMinutesUncheckedCreateNestedManyWithoutSchoolInput
+    projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
+    sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
+    ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
+    chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
+    journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
+    accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
+    uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
+  }
+
+  export type SchoolCreateOrConnectWithoutExchangeRatesInput = {
+    where: SchoolWhereUniqueInput
+    create: XOR<SchoolCreateWithoutExchangeRatesInput, SchoolUncheckedCreateWithoutExchangeRatesInput>
+  }
+
+  export type SchoolUpsertWithoutExchangeRatesInput = {
+    update: XOR<SchoolUpdateWithoutExchangeRatesInput, SchoolUncheckedUpdateWithoutExchangeRatesInput>
+    create: XOR<SchoolCreateWithoutExchangeRatesInput, SchoolUncheckedCreateWithoutExchangeRatesInput>
+    where?: SchoolWhereInput
+  }
+
+  export type SchoolUpdateToOneWithWhereWithoutExchangeRatesInput = {
+    where?: SchoolWhereInput
+    data: XOR<SchoolUpdateWithoutExchangeRatesInput, SchoolUncheckedUpdateWithoutExchangeRatesInput>
+  }
+
+  export type SchoolUpdateWithoutExchangeRatesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    isCombined?: BoolFieldUpdateOperationsInput | boolean
+    levels?: SchoolUpdatelevelsInput | string[]
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    branding?: NullableJsonNullValueInput | InputJsonValue
+    customContent?: NullableJsonNullValueInput | InputJsonValue
+    hexcoCenterNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    idCardTemplate?: NullableStringFieldUpdateOperationsInput | string | null
+    settings?: NullableJsonNullValueInput | InputJsonValue
+    plan?: PlanUpdateOneRequiredWithoutSchoolsNestedInput
+    users?: UserUpdateManyWithoutSchoolNestedInput
+    students?: StudentUpdateManyWithoutSchoolNestedInput
+    teachers?: TeacherUpdateManyWithoutSchoolNestedInput
+    news?: NewsUpdateManyWithoutSchoolNestedInput
+    websiteInquiries?: WebsiteInquiryUpdateManyWithoutSchoolNestedInput
+    noticeboards?: NoticeboardUpdateManyWithoutSchoolNestedInput
+    clinicVisits?: ClinicVisitUpdateManyWithoutSchoolNestedInput
+    clinicHospitalizations?: ClinicHospitalizationUpdateManyWithoutSchoolNestedInput
+    vacancies?: VacancyUpdateManyWithoutSchoolNestedInput
+    jobApplications?: JobApplicationUpdateManyWithoutSchoolNestedInput
+    gallery?: GalleryUpdateManyWithoutSchoolNestedInput
+    clubs?: ClubUpdateManyWithoutSchoolNestedInput
+    sports?: SportUpdateManyWithoutSchoolNestedInput
+    applications?: ApplicationUpdateManyWithoutSchoolNestedInput
+    announcements?: AnnouncementUpdateManyWithoutSchoolNestedInput
+    chaplaincyEvents?: ChaplaincyEventUpdateManyWithoutSchoolNestedInput
+    diningHallReports?: DiningHallReportUpdateManyWithoutSchoolNestedInput
+    farmLivestockBatches?: FarmLivestockBatchUpdateManyWithoutSchoolNestedInput
+    farmCropCycles?: FarmCropCycleUpdateManyWithoutSchoolNestedInput
+    farmInventoryItems?: FarmInventoryItemUpdateManyWithoutSchoolNestedInput
+    prefectDuties?: PrefectDutyUpdateManyWithoutSchoolNestedInput
+    prefectMeetings?: PrefectMeetingUpdateManyWithoutSchoolNestedInput
+    prefectReports?: PrefectReportUpdateManyWithoutSchoolNestedInput
+    staffAttendances?: StaffAttendanceUpdateManyWithoutSchoolNestedInput
+    timetableSlots?: TimetableSlotUpdateManyWithoutSchoolNestedInput
+    classes?: SchoolClassUpdateManyWithoutSchoolNestedInput
+    subjects?: SubjectUpdateManyWithoutSchoolNestedInput
+    books?: BookUpdateManyWithoutSchoolNestedInput
+    grades?: GradeUpdateManyWithoutSchoolNestedInput
+    attendance?: AttendanceUpdateManyWithoutSchoolNestedInput
+    fees?: FeeUpdateManyWithoutSchoolNestedInput
+    assignments?: AssignmentUpdateManyWithoutSchoolNestedInput
+    bookLoans?: BookLoanUpdateManyWithoutSchoolNestedInput
+    bookReservations?: BookReservationUpdateManyWithoutSchoolNestedInput
+    librarySetting?: LibrarySettingUpdateOneWithoutSchoolNestedInput
+    libraryDigitalResources?: LibraryDigitalResourceUpdateManyWithoutSchoolNestedInput
+    assignmentSubmissions?: AssignmentSubmissionUpdateManyWithoutSchoolNestedInput
+    supervisorAssignments?: SupervisorAssignmentUpdateManyWithoutSchoolNestedInput
+    extensionRequests?: ExtensionRequestUpdateManyWithoutSchoolNestedInput
+    progressReports?: ProgressReportUpdateManyWithoutSchoolNestedInput
+    tuckshopItems?: TuckshopItemUpdateManyWithoutSchoolNestedInput
+    suppliers?: SchoolSupplierUpdateManyWithoutSchoolNestedInput
+    assets?: AssetUpdateManyWithoutSchoolNestedInput
+    reportTemplate?: ReportTemplateUpdateOneWithoutSchoolNestedInput
+    websiteSettings?: WebsiteSettingsUpdateOneWithoutSchoolNestedInput
+    requisitions?: RequisitionUpdateManyWithoutSchoolNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutSchoolNestedInput
+    leadershipAssignments?: LeadershipAssignmentUpdateManyWithoutSchoolNestedInput
+    studentAllowedItems?: StudentAllowedItemUpdateManyWithoutSchoolNestedInput
+    departments?: DepartmentUpdateManyWithoutSchoolNestedInput
+    hostels?: HostelUpdateManyWithoutSchoolNestedInput
+    weeklyMenus?: WeeklyMenuUpdateManyWithoutSchoolNestedInput
+    clinicSettings?: ClinicSettingUpdateOneWithoutSchoolNestedInput
+    clinicBeds?: ClinicBedUpdateManyWithoutSchoolNestedInput
+    clinicAdmissions?: ClinicAdmissionUpdateManyWithoutSchoolNestedInput
+    pharmacyStocks?: PharmacyStockUpdateManyWithoutSchoolNestedInput
+    studentHealthProfiles?: StudentHealthProfileUpdateManyWithoutSchoolNestedInput
+    clinicAccessAudits?: ClinicAccessAuditUpdateManyWithoutSchoolNestedInput
+    clinicEmergencyLogs?: ClinicEmergencyLogUpdateManyWithoutSchoolNestedInput
+    clinicDiagnoses?: ClinicDiagnosisUpdateManyWithoutSchoolNestedInput
+    clinicPrescriptions?: ClinicPrescriptionUpdateManyWithoutSchoolNestedInput
+    pharmacyDispensings?: PharmacyDispenseUpdateManyWithoutSchoolNestedInput
+    clinicMonitoringLogs?: ClinicMonitoringLogUpdateManyWithoutSchoolNestedInput
+    clinicVitals?: ClinicVitalUpdateManyWithoutSchoolNestedInput
+    originTransfers?: TransferAuthorizationUpdateManyWithoutOriginSchoolNestedInput
+    targetTransfers?: TransferAuthorizationUpdateManyWithoutTargetSchoolNestedInput
+    faculties?: FacultyUpdateManyWithoutSchoolNestedInput
+    paymentMethods?: PaymentMethodUpdateManyWithoutSchoolNestedInput
+    feeGroups?: FeeGroupUpdateManyWithoutSchoolNestedInput
+    revenueAllocations?: RevenueAllocationUpdateManyWithoutSchoolNestedInput
+    allowanceTypes?: PayrollAllowanceUpdateManyWithoutSchoolNestedInput
+    deductionTypes?: PayrollDeductionUpdateManyWithoutSchoolNestedInput
+    taxTables?: TaxTableUpdateManyWithoutSchoolNestedInput
+    employeeProfiles?: EmployeeProfileUpdateManyWithoutSchoolNestedInput
+    accountCategories?: AccountCategoryUpdateManyWithoutSchoolNestedInput
+    liabilities?: LiabilityUpdateManyWithoutSchoolNestedInput
+    incomes?: IncomeUpdateManyWithoutSchoolNestedInput
+    expenses?: ExpenseUpdateManyWithoutSchoolNestedInput
+    uniformItems?: UniformItemUpdateManyWithoutSchoolNestedInput
+    uniformStockOrders?: UniformStockOrderUpdateManyWithoutSchoolNestedInput
+    uniformSales?: UniformSaleUpdateManyWithoutSchoolNestedInput
+    uniformSupplierPayments?: UniformSupplierPaymentUpdateManyWithoutSchoolNestedInput
+    physicalProducts?: PhysicalProductUpdateManyWithoutSchoolNestedInput
+    physicalProductConsumptions?: PhysicalProductConsumptionUpdateManyWithoutSchoolNestedInput
+    feeReminderLogs?: FeeReminderLogUpdateManyWithoutSchoolNestedInput
+    termlyComments?: TermlyCommentUpdateManyWithoutSchoolNestedInput
+    payrollRuns?: PayrollRunUpdateManyWithoutSchoolNestedInput
+    questionPapers?: QuestionPaperUpdateManyWithoutSchoolNestedInput
+    payrollEntries?: PayrollEntryUpdateManyWithoutSchoolNestedInput
+    gradingScales?: GradingScaleUpdateManyWithoutSchoolNestedInput
+    studentPayments?: StudentPaymentUpdateManyWithoutSchoolNestedInput
+    communicationLogs?: CommunicationLogUpdateManyWithoutSchoolNestedInput
+    libraryCategories?: LibraryCategoryUpdateManyWithoutSchoolNestedInput
+    sections?: SectionUpdateManyWithoutSchoolNestedInput
+    studentHouses?: StudentHouseUpdateManyWithoutSchoolNestedInput
+    holidays?: HolidayUpdateManyWithoutSchoolNestedInput
+    schoolSetting?: SchoolSettingUpdateOneWithoutSchoolNestedInput
+    CBTExam?: CBTExamUpdateManyWithoutSchoolNestedInput
+    Syllabus?: SyllabusUpdateManyWithoutSchoolNestedInput
+    LessonPlan?: LessonPlanUpdateManyWithoutSchoolNestedInput
+    LiveClass?: LiveClassUpdateManyWithoutSchoolNestedInput
+    Award?: AwardUpdateManyWithoutSchoolNestedInput
+    Course?: CourseUpdateManyWithoutSchoolNestedInput
+    StudyMaterial?: StudyMaterialUpdateManyWithoutSchoolNestedInput
+    hostelCategories?: HostelCategoryUpdateManyWithoutSchoolNestedInput
+    hostelRooms?: HostelRoomUpdateManyWithoutSchoolNestedInput
+    SchoolVehicle?: SchoolVehicleUpdateManyWithoutSchoolNestedInput
+    SchoolTransport?: SchoolTransportUpdateManyWithoutSchoolNestedInput
+    paymentPlans?: PaymentPlanUpdateManyWithoutSchoolNestedInput
+    meetingMinutes?: MeetingMinutesUpdateManyWithoutSchoolNestedInput
+    projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
+    sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
+    ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
+    chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
+    journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
+    accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
+    uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
+    bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
+  }
+
+  export type SchoolUncheckedUpdateWithoutExchangeRatesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    isCombined?: BoolFieldUpdateOperationsInput | boolean
+    levels?: SchoolUpdatelevelsInput | string[]
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    planId?: StringFieldUpdateOperationsInput | string
+    branding?: NullableJsonNullValueInput | InputJsonValue
+    customContent?: NullableJsonNullValueInput | InputJsonValue
+    hexcoCenterNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    idCardTemplate?: NullableStringFieldUpdateOperationsInput | string | null
+    settings?: NullableJsonNullValueInput | InputJsonValue
+    users?: UserUncheckedUpdateManyWithoutSchoolNestedInput
+    students?: StudentUncheckedUpdateManyWithoutSchoolNestedInput
+    teachers?: TeacherUncheckedUpdateManyWithoutSchoolNestedInput
+    news?: NewsUncheckedUpdateManyWithoutSchoolNestedInput
+    websiteInquiries?: WebsiteInquiryUncheckedUpdateManyWithoutSchoolNestedInput
+    noticeboards?: NoticeboardUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicVisits?: ClinicVisitUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicHospitalizations?: ClinicHospitalizationUncheckedUpdateManyWithoutSchoolNestedInput
+    vacancies?: VacancyUncheckedUpdateManyWithoutSchoolNestedInput
+    jobApplications?: JobApplicationUncheckedUpdateManyWithoutSchoolNestedInput
+    gallery?: GalleryUncheckedUpdateManyWithoutSchoolNestedInput
+    clubs?: ClubUncheckedUpdateManyWithoutSchoolNestedInput
+    sports?: SportUncheckedUpdateManyWithoutSchoolNestedInput
+    applications?: ApplicationUncheckedUpdateManyWithoutSchoolNestedInput
+    announcements?: AnnouncementUncheckedUpdateManyWithoutSchoolNestedInput
+    chaplaincyEvents?: ChaplaincyEventUncheckedUpdateManyWithoutSchoolNestedInput
+    diningHallReports?: DiningHallReportUncheckedUpdateManyWithoutSchoolNestedInput
+    farmLivestockBatches?: FarmLivestockBatchUncheckedUpdateManyWithoutSchoolNestedInput
+    farmCropCycles?: FarmCropCycleUncheckedUpdateManyWithoutSchoolNestedInput
+    farmInventoryItems?: FarmInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
+    prefectDuties?: PrefectDutyUncheckedUpdateManyWithoutSchoolNestedInput
+    prefectMeetings?: PrefectMeetingUncheckedUpdateManyWithoutSchoolNestedInput
+    prefectReports?: PrefectReportUncheckedUpdateManyWithoutSchoolNestedInput
+    staffAttendances?: StaffAttendanceUncheckedUpdateManyWithoutSchoolNestedInput
+    timetableSlots?: TimetableSlotUncheckedUpdateManyWithoutSchoolNestedInput
+    classes?: SchoolClassUncheckedUpdateManyWithoutSchoolNestedInput
+    subjects?: SubjectUncheckedUpdateManyWithoutSchoolNestedInput
+    books?: BookUncheckedUpdateManyWithoutSchoolNestedInput
+    grades?: GradeUncheckedUpdateManyWithoutSchoolNestedInput
+    attendance?: AttendanceUncheckedUpdateManyWithoutSchoolNestedInput
+    fees?: FeeUncheckedUpdateManyWithoutSchoolNestedInput
+    assignments?: AssignmentUncheckedUpdateManyWithoutSchoolNestedInput
+    bookLoans?: BookLoanUncheckedUpdateManyWithoutSchoolNestedInput
+    bookReservations?: BookReservationUncheckedUpdateManyWithoutSchoolNestedInput
+    librarySetting?: LibrarySettingUncheckedUpdateOneWithoutSchoolNestedInput
+    libraryDigitalResources?: LibraryDigitalResourceUncheckedUpdateManyWithoutSchoolNestedInput
+    assignmentSubmissions?: AssignmentSubmissionUncheckedUpdateManyWithoutSchoolNestedInput
+    supervisorAssignments?: SupervisorAssignmentUncheckedUpdateManyWithoutSchoolNestedInput
+    extensionRequests?: ExtensionRequestUncheckedUpdateManyWithoutSchoolNestedInput
+    progressReports?: ProgressReportUncheckedUpdateManyWithoutSchoolNestedInput
+    tuckshopItems?: TuckshopItemUncheckedUpdateManyWithoutSchoolNestedInput
+    suppliers?: SchoolSupplierUncheckedUpdateManyWithoutSchoolNestedInput
+    assets?: AssetUncheckedUpdateManyWithoutSchoolNestedInput
+    reportTemplate?: ReportTemplateUncheckedUpdateOneWithoutSchoolNestedInput
+    websiteSettings?: WebsiteSettingsUncheckedUpdateOneWithoutSchoolNestedInput
+    requisitions?: RequisitionUncheckedUpdateManyWithoutSchoolNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutSchoolNestedInput
+    leadershipAssignments?: LeadershipAssignmentUncheckedUpdateManyWithoutSchoolNestedInput
+    studentAllowedItems?: StudentAllowedItemUncheckedUpdateManyWithoutSchoolNestedInput
+    departments?: DepartmentUncheckedUpdateManyWithoutSchoolNestedInput
+    hostels?: HostelUncheckedUpdateManyWithoutSchoolNestedInput
+    weeklyMenus?: WeeklyMenuUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicSettings?: ClinicSettingUncheckedUpdateOneWithoutSchoolNestedInput
+    clinicBeds?: ClinicBedUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicAdmissions?: ClinicAdmissionUncheckedUpdateManyWithoutSchoolNestedInput
+    pharmacyStocks?: PharmacyStockUncheckedUpdateManyWithoutSchoolNestedInput
+    studentHealthProfiles?: StudentHealthProfileUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicAccessAudits?: ClinicAccessAuditUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicEmergencyLogs?: ClinicEmergencyLogUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicDiagnoses?: ClinicDiagnosisUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicPrescriptions?: ClinicPrescriptionUncheckedUpdateManyWithoutSchoolNestedInput
+    pharmacyDispensings?: PharmacyDispenseUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicMonitoringLogs?: ClinicMonitoringLogUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicVitals?: ClinicVitalUncheckedUpdateManyWithoutSchoolNestedInput
+    originTransfers?: TransferAuthorizationUncheckedUpdateManyWithoutOriginSchoolNestedInput
+    targetTransfers?: TransferAuthorizationUncheckedUpdateManyWithoutTargetSchoolNestedInput
+    faculties?: FacultyUncheckedUpdateManyWithoutSchoolNestedInput
+    paymentMethods?: PaymentMethodUncheckedUpdateManyWithoutSchoolNestedInput
+    feeGroups?: FeeGroupUncheckedUpdateManyWithoutSchoolNestedInput
+    revenueAllocations?: RevenueAllocationUncheckedUpdateManyWithoutSchoolNestedInput
+    allowanceTypes?: PayrollAllowanceUncheckedUpdateManyWithoutSchoolNestedInput
+    deductionTypes?: PayrollDeductionUncheckedUpdateManyWithoutSchoolNestedInput
+    taxTables?: TaxTableUncheckedUpdateManyWithoutSchoolNestedInput
+    employeeProfiles?: EmployeeProfileUncheckedUpdateManyWithoutSchoolNestedInput
+    accountCategories?: AccountCategoryUncheckedUpdateManyWithoutSchoolNestedInput
+    liabilities?: LiabilityUncheckedUpdateManyWithoutSchoolNestedInput
+    incomes?: IncomeUncheckedUpdateManyWithoutSchoolNestedInput
+    expenses?: ExpenseUncheckedUpdateManyWithoutSchoolNestedInput
+    uniformItems?: UniformItemUncheckedUpdateManyWithoutSchoolNestedInput
+    uniformStockOrders?: UniformStockOrderUncheckedUpdateManyWithoutSchoolNestedInput
+    uniformSales?: UniformSaleUncheckedUpdateManyWithoutSchoolNestedInput
+    uniformSupplierPayments?: UniformSupplierPaymentUncheckedUpdateManyWithoutSchoolNestedInput
+    physicalProducts?: PhysicalProductUncheckedUpdateManyWithoutSchoolNestedInput
+    physicalProductConsumptions?: PhysicalProductConsumptionUncheckedUpdateManyWithoutSchoolNestedInput
+    feeReminderLogs?: FeeReminderLogUncheckedUpdateManyWithoutSchoolNestedInput
+    termlyComments?: TermlyCommentUncheckedUpdateManyWithoutSchoolNestedInput
+    payrollRuns?: PayrollRunUncheckedUpdateManyWithoutSchoolNestedInput
+    questionPapers?: QuestionPaperUncheckedUpdateManyWithoutSchoolNestedInput
+    payrollEntries?: PayrollEntryUncheckedUpdateManyWithoutSchoolNestedInput
+    gradingScales?: GradingScaleUncheckedUpdateManyWithoutSchoolNestedInput
+    studentPayments?: StudentPaymentUncheckedUpdateManyWithoutSchoolNestedInput
+    communicationLogs?: CommunicationLogUncheckedUpdateManyWithoutSchoolNestedInput
+    libraryCategories?: LibraryCategoryUncheckedUpdateManyWithoutSchoolNestedInput
+    sections?: SectionUncheckedUpdateManyWithoutSchoolNestedInput
+    studentHouses?: StudentHouseUncheckedUpdateManyWithoutSchoolNestedInput
+    holidays?: HolidayUncheckedUpdateManyWithoutSchoolNestedInput
+    schoolSetting?: SchoolSettingUncheckedUpdateOneWithoutSchoolNestedInput
+    CBTExam?: CBTExamUncheckedUpdateManyWithoutSchoolNestedInput
+    Syllabus?: SyllabusUncheckedUpdateManyWithoutSchoolNestedInput
+    LessonPlan?: LessonPlanUncheckedUpdateManyWithoutSchoolNestedInput
+    LiveClass?: LiveClassUncheckedUpdateManyWithoutSchoolNestedInput
+    Award?: AwardUncheckedUpdateManyWithoutSchoolNestedInput
+    Course?: CourseUncheckedUpdateManyWithoutSchoolNestedInput
+    StudyMaterial?: StudyMaterialUncheckedUpdateManyWithoutSchoolNestedInput
+    hostelCategories?: HostelCategoryUncheckedUpdateManyWithoutSchoolNestedInput
+    hostelRooms?: HostelRoomUncheckedUpdateManyWithoutSchoolNestedInput
+    SchoolVehicle?: SchoolVehicleUncheckedUpdateManyWithoutSchoolNestedInput
+    SchoolTransport?: SchoolTransportUncheckedUpdateManyWithoutSchoolNestedInput
+    paymentPlans?: PaymentPlanUncheckedUpdateManyWithoutSchoolNestedInput
+    meetingMinutes?: MeetingMinutesUncheckedUpdateManyWithoutSchoolNestedInput
+    projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
+    sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
+    ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
+    chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
+    journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
+    accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
+    uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
+  }
+
+  export type SchoolCreateWithoutApprovalsInput = {
+    id?: string
+    code: string
+    name: string
+    type: string
+    isCombined?: boolean
+    levels?: SchoolCreatelevelsInput | string[]
+    address?: string | null
+    country?: string | null
+    email: string
+    phone?: string | null
+    website?: string | null
+    status?: string
+    branding?: NullableJsonNullValueInput | InputJsonValue
+    customContent?: NullableJsonNullValueInput | InputJsonValue
+    hexcoCenterNumber?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    idCardTemplate?: string | null
+    settings?: NullableJsonNullValueInput | InputJsonValue
+    plan: PlanCreateNestedOneWithoutSchoolsInput
+    users?: UserCreateNestedManyWithoutSchoolInput
+    students?: StudentCreateNestedManyWithoutSchoolInput
+    teachers?: TeacherCreateNestedManyWithoutSchoolInput
+    news?: NewsCreateNestedManyWithoutSchoolInput
+    websiteInquiries?: WebsiteInquiryCreateNestedManyWithoutSchoolInput
+    noticeboards?: NoticeboardCreateNestedManyWithoutSchoolInput
+    clinicVisits?: ClinicVisitCreateNestedManyWithoutSchoolInput
+    clinicHospitalizations?: ClinicHospitalizationCreateNestedManyWithoutSchoolInput
+    vacancies?: VacancyCreateNestedManyWithoutSchoolInput
+    jobApplications?: JobApplicationCreateNestedManyWithoutSchoolInput
+    gallery?: GalleryCreateNestedManyWithoutSchoolInput
+    clubs?: ClubCreateNestedManyWithoutSchoolInput
+    sports?: SportCreateNestedManyWithoutSchoolInput
+    applications?: ApplicationCreateNestedManyWithoutSchoolInput
+    announcements?: AnnouncementCreateNestedManyWithoutSchoolInput
+    chaplaincyEvents?: ChaplaincyEventCreateNestedManyWithoutSchoolInput
+    diningHallReports?: DiningHallReportCreateNestedManyWithoutSchoolInput
+    farmLivestockBatches?: FarmLivestockBatchCreateNestedManyWithoutSchoolInput
+    farmCropCycles?: FarmCropCycleCreateNestedManyWithoutSchoolInput
+    farmInventoryItems?: FarmInventoryItemCreateNestedManyWithoutSchoolInput
+    prefectDuties?: PrefectDutyCreateNestedManyWithoutSchoolInput
+    prefectMeetings?: PrefectMeetingCreateNestedManyWithoutSchoolInput
+    prefectReports?: PrefectReportCreateNestedManyWithoutSchoolInput
+    staffAttendances?: StaffAttendanceCreateNestedManyWithoutSchoolInput
+    timetableSlots?: TimetableSlotCreateNestedManyWithoutSchoolInput
+    classes?: SchoolClassCreateNestedManyWithoutSchoolInput
+    subjects?: SubjectCreateNestedManyWithoutSchoolInput
+    books?: BookCreateNestedManyWithoutSchoolInput
+    grades?: GradeCreateNestedManyWithoutSchoolInput
+    attendance?: AttendanceCreateNestedManyWithoutSchoolInput
+    fees?: FeeCreateNestedManyWithoutSchoolInput
+    assignments?: AssignmentCreateNestedManyWithoutSchoolInput
+    bookLoans?: BookLoanCreateNestedManyWithoutSchoolInput
+    bookReservations?: BookReservationCreateNestedManyWithoutSchoolInput
+    librarySetting?: LibrarySettingCreateNestedOneWithoutSchoolInput
+    libraryDigitalResources?: LibraryDigitalResourceCreateNestedManyWithoutSchoolInput
+    assignmentSubmissions?: AssignmentSubmissionCreateNestedManyWithoutSchoolInput
+    supervisorAssignments?: SupervisorAssignmentCreateNestedManyWithoutSchoolInput
+    extensionRequests?: ExtensionRequestCreateNestedManyWithoutSchoolInput
+    progressReports?: ProgressReportCreateNestedManyWithoutSchoolInput
+    tuckshopItems?: TuckshopItemCreateNestedManyWithoutSchoolInput
+    suppliers?: SchoolSupplierCreateNestedManyWithoutSchoolInput
+    assets?: AssetCreateNestedManyWithoutSchoolInput
+    reportTemplate?: ReportTemplateCreateNestedOneWithoutSchoolInput
+    websiteSettings?: WebsiteSettingsCreateNestedOneWithoutSchoolInput
+    requisitions?: RequisitionCreateNestedManyWithoutSchoolInput
+    auditLogs?: AuditLogCreateNestedManyWithoutSchoolInput
+    leadershipAssignments?: LeadershipAssignmentCreateNestedManyWithoutSchoolInput
+    studentAllowedItems?: StudentAllowedItemCreateNestedManyWithoutSchoolInput
+    departments?: DepartmentCreateNestedManyWithoutSchoolInput
+    hostels?: HostelCreateNestedManyWithoutSchoolInput
+    weeklyMenus?: WeeklyMenuCreateNestedManyWithoutSchoolInput
+    clinicSettings?: ClinicSettingCreateNestedOneWithoutSchoolInput
+    clinicBeds?: ClinicBedCreateNestedManyWithoutSchoolInput
+    clinicAdmissions?: ClinicAdmissionCreateNestedManyWithoutSchoolInput
+    pharmacyStocks?: PharmacyStockCreateNestedManyWithoutSchoolInput
+    studentHealthProfiles?: StudentHealthProfileCreateNestedManyWithoutSchoolInput
+    clinicAccessAudits?: ClinicAccessAuditCreateNestedManyWithoutSchoolInput
+    clinicEmergencyLogs?: ClinicEmergencyLogCreateNestedManyWithoutSchoolInput
+    clinicDiagnoses?: ClinicDiagnosisCreateNestedManyWithoutSchoolInput
+    clinicPrescriptions?: ClinicPrescriptionCreateNestedManyWithoutSchoolInput
+    pharmacyDispensings?: PharmacyDispenseCreateNestedManyWithoutSchoolInput
+    clinicMonitoringLogs?: ClinicMonitoringLogCreateNestedManyWithoutSchoolInput
+    clinicVitals?: ClinicVitalCreateNestedManyWithoutSchoolInput
+    originTransfers?: TransferAuthorizationCreateNestedManyWithoutOriginSchoolInput
+    targetTransfers?: TransferAuthorizationCreateNestedManyWithoutTargetSchoolInput
+    faculties?: FacultyCreateNestedManyWithoutSchoolInput
+    paymentMethods?: PaymentMethodCreateNestedManyWithoutSchoolInput
+    feeGroups?: FeeGroupCreateNestedManyWithoutSchoolInput
+    revenueAllocations?: RevenueAllocationCreateNestedManyWithoutSchoolInput
+    allowanceTypes?: PayrollAllowanceCreateNestedManyWithoutSchoolInput
+    deductionTypes?: PayrollDeductionCreateNestedManyWithoutSchoolInput
+    taxTables?: TaxTableCreateNestedManyWithoutSchoolInput
+    employeeProfiles?: EmployeeProfileCreateNestedManyWithoutSchoolInput
+    accountCategories?: AccountCategoryCreateNestedManyWithoutSchoolInput
+    liabilities?: LiabilityCreateNestedManyWithoutSchoolInput
+    incomes?: IncomeCreateNestedManyWithoutSchoolInput
+    expenses?: ExpenseCreateNestedManyWithoutSchoolInput
+    uniformItems?: UniformItemCreateNestedManyWithoutSchoolInput
+    uniformStockOrders?: UniformStockOrderCreateNestedManyWithoutSchoolInput
+    uniformSales?: UniformSaleCreateNestedManyWithoutSchoolInput
+    uniformSupplierPayments?: UniformSupplierPaymentCreateNestedManyWithoutSchoolInput
+    physicalProducts?: PhysicalProductCreateNestedManyWithoutSchoolInput
+    physicalProductConsumptions?: PhysicalProductConsumptionCreateNestedManyWithoutSchoolInput
+    feeReminderLogs?: FeeReminderLogCreateNestedManyWithoutSchoolInput
+    termlyComments?: TermlyCommentCreateNestedManyWithoutSchoolInput
+    payrollRuns?: PayrollRunCreateNestedManyWithoutSchoolInput
+    questionPapers?: QuestionPaperCreateNestedManyWithoutSchoolInput
+    payrollEntries?: PayrollEntryCreateNestedManyWithoutSchoolInput
+    gradingScales?: GradingScaleCreateNestedManyWithoutSchoolInput
+    studentPayments?: StudentPaymentCreateNestedManyWithoutSchoolInput
+    communicationLogs?: CommunicationLogCreateNestedManyWithoutSchoolInput
+    libraryCategories?: LibraryCategoryCreateNestedManyWithoutSchoolInput
+    sections?: SectionCreateNestedManyWithoutSchoolInput
+    studentHouses?: StudentHouseCreateNestedManyWithoutSchoolInput
+    holidays?: HolidayCreateNestedManyWithoutSchoolInput
+    schoolSetting?: SchoolSettingCreateNestedOneWithoutSchoolInput
+    CBTExam?: CBTExamCreateNestedManyWithoutSchoolInput
+    Syllabus?: SyllabusCreateNestedManyWithoutSchoolInput
+    LessonPlan?: LessonPlanCreateNestedManyWithoutSchoolInput
+    LiveClass?: LiveClassCreateNestedManyWithoutSchoolInput
+    Award?: AwardCreateNestedManyWithoutSchoolInput
+    Course?: CourseCreateNestedManyWithoutSchoolInput
+    StudyMaterial?: StudyMaterialCreateNestedManyWithoutSchoolInput
+    hostelCategories?: HostelCategoryCreateNestedManyWithoutSchoolInput
+    hostelRooms?: HostelRoomCreateNestedManyWithoutSchoolInput
+    SchoolVehicle?: SchoolVehicleCreateNestedManyWithoutSchoolInput
+    SchoolTransport?: SchoolTransportCreateNestedManyWithoutSchoolInput
+    paymentPlans?: PaymentPlanCreateNestedManyWithoutSchoolInput
+    meetingMinutes?: MeetingMinutesCreateNestedManyWithoutSchoolInput
+    projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
+    sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
+    ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
+    chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
+    journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
+    accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
+    uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
+    bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
+  }
+
+  export type SchoolUncheckedCreateWithoutApprovalsInput = {
+    id?: string
+    code: string
+    name: string
+    type: string
+    isCombined?: boolean
+    levels?: SchoolCreatelevelsInput | string[]
+    address?: string | null
+    country?: string | null
+    email: string
+    phone?: string | null
+    website?: string | null
+    status?: string
+    planId: string
+    branding?: NullableJsonNullValueInput | InputJsonValue
+    customContent?: NullableJsonNullValueInput | InputJsonValue
+    hexcoCenterNumber?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    idCardTemplate?: string | null
+    settings?: NullableJsonNullValueInput | InputJsonValue
+    users?: UserUncheckedCreateNestedManyWithoutSchoolInput
+    students?: StudentUncheckedCreateNestedManyWithoutSchoolInput
+    teachers?: TeacherUncheckedCreateNestedManyWithoutSchoolInput
+    news?: NewsUncheckedCreateNestedManyWithoutSchoolInput
+    websiteInquiries?: WebsiteInquiryUncheckedCreateNestedManyWithoutSchoolInput
+    noticeboards?: NoticeboardUncheckedCreateNestedManyWithoutSchoolInput
+    clinicVisits?: ClinicVisitUncheckedCreateNestedManyWithoutSchoolInput
+    clinicHospitalizations?: ClinicHospitalizationUncheckedCreateNestedManyWithoutSchoolInput
+    vacancies?: VacancyUncheckedCreateNestedManyWithoutSchoolInput
+    jobApplications?: JobApplicationUncheckedCreateNestedManyWithoutSchoolInput
+    gallery?: GalleryUncheckedCreateNestedManyWithoutSchoolInput
+    clubs?: ClubUncheckedCreateNestedManyWithoutSchoolInput
+    sports?: SportUncheckedCreateNestedManyWithoutSchoolInput
+    applications?: ApplicationUncheckedCreateNestedManyWithoutSchoolInput
+    announcements?: AnnouncementUncheckedCreateNestedManyWithoutSchoolInput
+    chaplaincyEvents?: ChaplaincyEventUncheckedCreateNestedManyWithoutSchoolInput
+    diningHallReports?: DiningHallReportUncheckedCreateNestedManyWithoutSchoolInput
+    farmLivestockBatches?: FarmLivestockBatchUncheckedCreateNestedManyWithoutSchoolInput
+    farmCropCycles?: FarmCropCycleUncheckedCreateNestedManyWithoutSchoolInput
+    farmInventoryItems?: FarmInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
+    prefectDuties?: PrefectDutyUncheckedCreateNestedManyWithoutSchoolInput
+    prefectMeetings?: PrefectMeetingUncheckedCreateNestedManyWithoutSchoolInput
+    prefectReports?: PrefectReportUncheckedCreateNestedManyWithoutSchoolInput
+    staffAttendances?: StaffAttendanceUncheckedCreateNestedManyWithoutSchoolInput
+    timetableSlots?: TimetableSlotUncheckedCreateNestedManyWithoutSchoolInput
+    classes?: SchoolClassUncheckedCreateNestedManyWithoutSchoolInput
+    subjects?: SubjectUncheckedCreateNestedManyWithoutSchoolInput
+    books?: BookUncheckedCreateNestedManyWithoutSchoolInput
+    grades?: GradeUncheckedCreateNestedManyWithoutSchoolInput
+    attendance?: AttendanceUncheckedCreateNestedManyWithoutSchoolInput
+    fees?: FeeUncheckedCreateNestedManyWithoutSchoolInput
+    assignments?: AssignmentUncheckedCreateNestedManyWithoutSchoolInput
+    bookLoans?: BookLoanUncheckedCreateNestedManyWithoutSchoolInput
+    bookReservations?: BookReservationUncheckedCreateNestedManyWithoutSchoolInput
+    librarySetting?: LibrarySettingUncheckedCreateNestedOneWithoutSchoolInput
+    libraryDigitalResources?: LibraryDigitalResourceUncheckedCreateNestedManyWithoutSchoolInput
+    assignmentSubmissions?: AssignmentSubmissionUncheckedCreateNestedManyWithoutSchoolInput
+    supervisorAssignments?: SupervisorAssignmentUncheckedCreateNestedManyWithoutSchoolInput
+    extensionRequests?: ExtensionRequestUncheckedCreateNestedManyWithoutSchoolInput
+    progressReports?: ProgressReportUncheckedCreateNestedManyWithoutSchoolInput
+    tuckshopItems?: TuckshopItemUncheckedCreateNestedManyWithoutSchoolInput
+    suppliers?: SchoolSupplierUncheckedCreateNestedManyWithoutSchoolInput
+    assets?: AssetUncheckedCreateNestedManyWithoutSchoolInput
+    reportTemplate?: ReportTemplateUncheckedCreateNestedOneWithoutSchoolInput
+    websiteSettings?: WebsiteSettingsUncheckedCreateNestedOneWithoutSchoolInput
+    requisitions?: RequisitionUncheckedCreateNestedManyWithoutSchoolInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutSchoolInput
+    leadershipAssignments?: LeadershipAssignmentUncheckedCreateNestedManyWithoutSchoolInput
+    studentAllowedItems?: StudentAllowedItemUncheckedCreateNestedManyWithoutSchoolInput
+    departments?: DepartmentUncheckedCreateNestedManyWithoutSchoolInput
+    hostels?: HostelUncheckedCreateNestedManyWithoutSchoolInput
+    weeklyMenus?: WeeklyMenuUncheckedCreateNestedManyWithoutSchoolInput
+    clinicSettings?: ClinicSettingUncheckedCreateNestedOneWithoutSchoolInput
+    clinicBeds?: ClinicBedUncheckedCreateNestedManyWithoutSchoolInput
+    clinicAdmissions?: ClinicAdmissionUncheckedCreateNestedManyWithoutSchoolInput
+    pharmacyStocks?: PharmacyStockUncheckedCreateNestedManyWithoutSchoolInput
+    studentHealthProfiles?: StudentHealthProfileUncheckedCreateNestedManyWithoutSchoolInput
+    clinicAccessAudits?: ClinicAccessAuditUncheckedCreateNestedManyWithoutSchoolInput
+    clinicEmergencyLogs?: ClinicEmergencyLogUncheckedCreateNestedManyWithoutSchoolInput
+    clinicDiagnoses?: ClinicDiagnosisUncheckedCreateNestedManyWithoutSchoolInput
+    clinicPrescriptions?: ClinicPrescriptionUncheckedCreateNestedManyWithoutSchoolInput
+    pharmacyDispensings?: PharmacyDispenseUncheckedCreateNestedManyWithoutSchoolInput
+    clinicMonitoringLogs?: ClinicMonitoringLogUncheckedCreateNestedManyWithoutSchoolInput
+    clinicVitals?: ClinicVitalUncheckedCreateNestedManyWithoutSchoolInput
+    originTransfers?: TransferAuthorizationUncheckedCreateNestedManyWithoutOriginSchoolInput
+    targetTransfers?: TransferAuthorizationUncheckedCreateNestedManyWithoutTargetSchoolInput
+    faculties?: FacultyUncheckedCreateNestedManyWithoutSchoolInput
+    paymentMethods?: PaymentMethodUncheckedCreateNestedManyWithoutSchoolInput
+    feeGroups?: FeeGroupUncheckedCreateNestedManyWithoutSchoolInput
+    revenueAllocations?: RevenueAllocationUncheckedCreateNestedManyWithoutSchoolInput
+    allowanceTypes?: PayrollAllowanceUncheckedCreateNestedManyWithoutSchoolInput
+    deductionTypes?: PayrollDeductionUncheckedCreateNestedManyWithoutSchoolInput
+    taxTables?: TaxTableUncheckedCreateNestedManyWithoutSchoolInput
+    employeeProfiles?: EmployeeProfileUncheckedCreateNestedManyWithoutSchoolInput
+    accountCategories?: AccountCategoryUncheckedCreateNestedManyWithoutSchoolInput
+    liabilities?: LiabilityUncheckedCreateNestedManyWithoutSchoolInput
+    incomes?: IncomeUncheckedCreateNestedManyWithoutSchoolInput
+    expenses?: ExpenseUncheckedCreateNestedManyWithoutSchoolInput
+    uniformItems?: UniformItemUncheckedCreateNestedManyWithoutSchoolInput
+    uniformStockOrders?: UniformStockOrderUncheckedCreateNestedManyWithoutSchoolInput
+    uniformSales?: UniformSaleUncheckedCreateNestedManyWithoutSchoolInput
+    uniformSupplierPayments?: UniformSupplierPaymentUncheckedCreateNestedManyWithoutSchoolInput
+    physicalProducts?: PhysicalProductUncheckedCreateNestedManyWithoutSchoolInput
+    physicalProductConsumptions?: PhysicalProductConsumptionUncheckedCreateNestedManyWithoutSchoolInput
+    feeReminderLogs?: FeeReminderLogUncheckedCreateNestedManyWithoutSchoolInput
+    termlyComments?: TermlyCommentUncheckedCreateNestedManyWithoutSchoolInput
+    payrollRuns?: PayrollRunUncheckedCreateNestedManyWithoutSchoolInput
+    questionPapers?: QuestionPaperUncheckedCreateNestedManyWithoutSchoolInput
+    payrollEntries?: PayrollEntryUncheckedCreateNestedManyWithoutSchoolInput
+    gradingScales?: GradingScaleUncheckedCreateNestedManyWithoutSchoolInput
+    studentPayments?: StudentPaymentUncheckedCreateNestedManyWithoutSchoolInput
+    communicationLogs?: CommunicationLogUncheckedCreateNestedManyWithoutSchoolInput
+    libraryCategories?: LibraryCategoryUncheckedCreateNestedManyWithoutSchoolInput
+    sections?: SectionUncheckedCreateNestedManyWithoutSchoolInput
+    studentHouses?: StudentHouseUncheckedCreateNestedManyWithoutSchoolInput
+    holidays?: HolidayUncheckedCreateNestedManyWithoutSchoolInput
+    schoolSetting?: SchoolSettingUncheckedCreateNestedOneWithoutSchoolInput
+    CBTExam?: CBTExamUncheckedCreateNestedManyWithoutSchoolInput
+    Syllabus?: SyllabusUncheckedCreateNestedManyWithoutSchoolInput
+    LessonPlan?: LessonPlanUncheckedCreateNestedManyWithoutSchoolInput
+    LiveClass?: LiveClassUncheckedCreateNestedManyWithoutSchoolInput
+    Award?: AwardUncheckedCreateNestedManyWithoutSchoolInput
+    Course?: CourseUncheckedCreateNestedManyWithoutSchoolInput
+    StudyMaterial?: StudyMaterialUncheckedCreateNestedManyWithoutSchoolInput
+    hostelCategories?: HostelCategoryUncheckedCreateNestedManyWithoutSchoolInput
+    hostelRooms?: HostelRoomUncheckedCreateNestedManyWithoutSchoolInput
+    SchoolVehicle?: SchoolVehicleUncheckedCreateNestedManyWithoutSchoolInput
+    SchoolTransport?: SchoolTransportUncheckedCreateNestedManyWithoutSchoolInput
+    paymentPlans?: PaymentPlanUncheckedCreateNestedManyWithoutSchoolInput
+    meetingMinutes?: MeetingMinutesUncheckedCreateNestedManyWithoutSchoolInput
+    projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
+    sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
+    ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
+    chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
+    journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
+    accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
+    uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
+  }
+
+  export type SchoolCreateOrConnectWithoutApprovalsInput = {
+    where: SchoolWhereUniqueInput
+    create: XOR<SchoolCreateWithoutApprovalsInput, SchoolUncheckedCreateWithoutApprovalsInput>
+  }
+
+  export type SchoolUpsertWithoutApprovalsInput = {
+    update: XOR<SchoolUpdateWithoutApprovalsInput, SchoolUncheckedUpdateWithoutApprovalsInput>
+    create: XOR<SchoolCreateWithoutApprovalsInput, SchoolUncheckedCreateWithoutApprovalsInput>
+    where?: SchoolWhereInput
+  }
+
+  export type SchoolUpdateToOneWithWhereWithoutApprovalsInput = {
+    where?: SchoolWhereInput
+    data: XOR<SchoolUpdateWithoutApprovalsInput, SchoolUncheckedUpdateWithoutApprovalsInput>
+  }
+
+  export type SchoolUpdateWithoutApprovalsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    isCombined?: BoolFieldUpdateOperationsInput | boolean
+    levels?: SchoolUpdatelevelsInput | string[]
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    branding?: NullableJsonNullValueInput | InputJsonValue
+    customContent?: NullableJsonNullValueInput | InputJsonValue
+    hexcoCenterNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    idCardTemplate?: NullableStringFieldUpdateOperationsInput | string | null
+    settings?: NullableJsonNullValueInput | InputJsonValue
+    plan?: PlanUpdateOneRequiredWithoutSchoolsNestedInput
+    users?: UserUpdateManyWithoutSchoolNestedInput
+    students?: StudentUpdateManyWithoutSchoolNestedInput
+    teachers?: TeacherUpdateManyWithoutSchoolNestedInput
+    news?: NewsUpdateManyWithoutSchoolNestedInput
+    websiteInquiries?: WebsiteInquiryUpdateManyWithoutSchoolNestedInput
+    noticeboards?: NoticeboardUpdateManyWithoutSchoolNestedInput
+    clinicVisits?: ClinicVisitUpdateManyWithoutSchoolNestedInput
+    clinicHospitalizations?: ClinicHospitalizationUpdateManyWithoutSchoolNestedInput
+    vacancies?: VacancyUpdateManyWithoutSchoolNestedInput
+    jobApplications?: JobApplicationUpdateManyWithoutSchoolNestedInput
+    gallery?: GalleryUpdateManyWithoutSchoolNestedInput
+    clubs?: ClubUpdateManyWithoutSchoolNestedInput
+    sports?: SportUpdateManyWithoutSchoolNestedInput
+    applications?: ApplicationUpdateManyWithoutSchoolNestedInput
+    announcements?: AnnouncementUpdateManyWithoutSchoolNestedInput
+    chaplaincyEvents?: ChaplaincyEventUpdateManyWithoutSchoolNestedInput
+    diningHallReports?: DiningHallReportUpdateManyWithoutSchoolNestedInput
+    farmLivestockBatches?: FarmLivestockBatchUpdateManyWithoutSchoolNestedInput
+    farmCropCycles?: FarmCropCycleUpdateManyWithoutSchoolNestedInput
+    farmInventoryItems?: FarmInventoryItemUpdateManyWithoutSchoolNestedInput
+    prefectDuties?: PrefectDutyUpdateManyWithoutSchoolNestedInput
+    prefectMeetings?: PrefectMeetingUpdateManyWithoutSchoolNestedInput
+    prefectReports?: PrefectReportUpdateManyWithoutSchoolNestedInput
+    staffAttendances?: StaffAttendanceUpdateManyWithoutSchoolNestedInput
+    timetableSlots?: TimetableSlotUpdateManyWithoutSchoolNestedInput
+    classes?: SchoolClassUpdateManyWithoutSchoolNestedInput
+    subjects?: SubjectUpdateManyWithoutSchoolNestedInput
+    books?: BookUpdateManyWithoutSchoolNestedInput
+    grades?: GradeUpdateManyWithoutSchoolNestedInput
+    attendance?: AttendanceUpdateManyWithoutSchoolNestedInput
+    fees?: FeeUpdateManyWithoutSchoolNestedInput
+    assignments?: AssignmentUpdateManyWithoutSchoolNestedInput
+    bookLoans?: BookLoanUpdateManyWithoutSchoolNestedInput
+    bookReservations?: BookReservationUpdateManyWithoutSchoolNestedInput
+    librarySetting?: LibrarySettingUpdateOneWithoutSchoolNestedInput
+    libraryDigitalResources?: LibraryDigitalResourceUpdateManyWithoutSchoolNestedInput
+    assignmentSubmissions?: AssignmentSubmissionUpdateManyWithoutSchoolNestedInput
+    supervisorAssignments?: SupervisorAssignmentUpdateManyWithoutSchoolNestedInput
+    extensionRequests?: ExtensionRequestUpdateManyWithoutSchoolNestedInput
+    progressReports?: ProgressReportUpdateManyWithoutSchoolNestedInput
+    tuckshopItems?: TuckshopItemUpdateManyWithoutSchoolNestedInput
+    suppliers?: SchoolSupplierUpdateManyWithoutSchoolNestedInput
+    assets?: AssetUpdateManyWithoutSchoolNestedInput
+    reportTemplate?: ReportTemplateUpdateOneWithoutSchoolNestedInput
+    websiteSettings?: WebsiteSettingsUpdateOneWithoutSchoolNestedInput
+    requisitions?: RequisitionUpdateManyWithoutSchoolNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutSchoolNestedInput
+    leadershipAssignments?: LeadershipAssignmentUpdateManyWithoutSchoolNestedInput
+    studentAllowedItems?: StudentAllowedItemUpdateManyWithoutSchoolNestedInput
+    departments?: DepartmentUpdateManyWithoutSchoolNestedInput
+    hostels?: HostelUpdateManyWithoutSchoolNestedInput
+    weeklyMenus?: WeeklyMenuUpdateManyWithoutSchoolNestedInput
+    clinicSettings?: ClinicSettingUpdateOneWithoutSchoolNestedInput
+    clinicBeds?: ClinicBedUpdateManyWithoutSchoolNestedInput
+    clinicAdmissions?: ClinicAdmissionUpdateManyWithoutSchoolNestedInput
+    pharmacyStocks?: PharmacyStockUpdateManyWithoutSchoolNestedInput
+    studentHealthProfiles?: StudentHealthProfileUpdateManyWithoutSchoolNestedInput
+    clinicAccessAudits?: ClinicAccessAuditUpdateManyWithoutSchoolNestedInput
+    clinicEmergencyLogs?: ClinicEmergencyLogUpdateManyWithoutSchoolNestedInput
+    clinicDiagnoses?: ClinicDiagnosisUpdateManyWithoutSchoolNestedInput
+    clinicPrescriptions?: ClinicPrescriptionUpdateManyWithoutSchoolNestedInput
+    pharmacyDispensings?: PharmacyDispenseUpdateManyWithoutSchoolNestedInput
+    clinicMonitoringLogs?: ClinicMonitoringLogUpdateManyWithoutSchoolNestedInput
+    clinicVitals?: ClinicVitalUpdateManyWithoutSchoolNestedInput
+    originTransfers?: TransferAuthorizationUpdateManyWithoutOriginSchoolNestedInput
+    targetTransfers?: TransferAuthorizationUpdateManyWithoutTargetSchoolNestedInput
+    faculties?: FacultyUpdateManyWithoutSchoolNestedInput
+    paymentMethods?: PaymentMethodUpdateManyWithoutSchoolNestedInput
+    feeGroups?: FeeGroupUpdateManyWithoutSchoolNestedInput
+    revenueAllocations?: RevenueAllocationUpdateManyWithoutSchoolNestedInput
+    allowanceTypes?: PayrollAllowanceUpdateManyWithoutSchoolNestedInput
+    deductionTypes?: PayrollDeductionUpdateManyWithoutSchoolNestedInput
+    taxTables?: TaxTableUpdateManyWithoutSchoolNestedInput
+    employeeProfiles?: EmployeeProfileUpdateManyWithoutSchoolNestedInput
+    accountCategories?: AccountCategoryUpdateManyWithoutSchoolNestedInput
+    liabilities?: LiabilityUpdateManyWithoutSchoolNestedInput
+    incomes?: IncomeUpdateManyWithoutSchoolNestedInput
+    expenses?: ExpenseUpdateManyWithoutSchoolNestedInput
+    uniformItems?: UniformItemUpdateManyWithoutSchoolNestedInput
+    uniformStockOrders?: UniformStockOrderUpdateManyWithoutSchoolNestedInput
+    uniformSales?: UniformSaleUpdateManyWithoutSchoolNestedInput
+    uniformSupplierPayments?: UniformSupplierPaymentUpdateManyWithoutSchoolNestedInput
+    physicalProducts?: PhysicalProductUpdateManyWithoutSchoolNestedInput
+    physicalProductConsumptions?: PhysicalProductConsumptionUpdateManyWithoutSchoolNestedInput
+    feeReminderLogs?: FeeReminderLogUpdateManyWithoutSchoolNestedInput
+    termlyComments?: TermlyCommentUpdateManyWithoutSchoolNestedInput
+    payrollRuns?: PayrollRunUpdateManyWithoutSchoolNestedInput
+    questionPapers?: QuestionPaperUpdateManyWithoutSchoolNestedInput
+    payrollEntries?: PayrollEntryUpdateManyWithoutSchoolNestedInput
+    gradingScales?: GradingScaleUpdateManyWithoutSchoolNestedInput
+    studentPayments?: StudentPaymentUpdateManyWithoutSchoolNestedInput
+    communicationLogs?: CommunicationLogUpdateManyWithoutSchoolNestedInput
+    libraryCategories?: LibraryCategoryUpdateManyWithoutSchoolNestedInput
+    sections?: SectionUpdateManyWithoutSchoolNestedInput
+    studentHouses?: StudentHouseUpdateManyWithoutSchoolNestedInput
+    holidays?: HolidayUpdateManyWithoutSchoolNestedInput
+    schoolSetting?: SchoolSettingUpdateOneWithoutSchoolNestedInput
+    CBTExam?: CBTExamUpdateManyWithoutSchoolNestedInput
+    Syllabus?: SyllabusUpdateManyWithoutSchoolNestedInput
+    LessonPlan?: LessonPlanUpdateManyWithoutSchoolNestedInput
+    LiveClass?: LiveClassUpdateManyWithoutSchoolNestedInput
+    Award?: AwardUpdateManyWithoutSchoolNestedInput
+    Course?: CourseUpdateManyWithoutSchoolNestedInput
+    StudyMaterial?: StudyMaterialUpdateManyWithoutSchoolNestedInput
+    hostelCategories?: HostelCategoryUpdateManyWithoutSchoolNestedInput
+    hostelRooms?: HostelRoomUpdateManyWithoutSchoolNestedInput
+    SchoolVehicle?: SchoolVehicleUpdateManyWithoutSchoolNestedInput
+    SchoolTransport?: SchoolTransportUpdateManyWithoutSchoolNestedInput
+    paymentPlans?: PaymentPlanUpdateManyWithoutSchoolNestedInput
+    meetingMinutes?: MeetingMinutesUpdateManyWithoutSchoolNestedInput
+    projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
+    sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
+    ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
+    chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
+    journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
+    accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
+    uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
+    bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
+  }
+
+  export type SchoolUncheckedUpdateWithoutApprovalsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    isCombined?: BoolFieldUpdateOperationsInput | boolean
+    levels?: SchoolUpdatelevelsInput | string[]
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    planId?: StringFieldUpdateOperationsInput | string
+    branding?: NullableJsonNullValueInput | InputJsonValue
+    customContent?: NullableJsonNullValueInput | InputJsonValue
+    hexcoCenterNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    idCardTemplate?: NullableStringFieldUpdateOperationsInput | string | null
+    settings?: NullableJsonNullValueInput | InputJsonValue
+    users?: UserUncheckedUpdateManyWithoutSchoolNestedInput
+    students?: StudentUncheckedUpdateManyWithoutSchoolNestedInput
+    teachers?: TeacherUncheckedUpdateManyWithoutSchoolNestedInput
+    news?: NewsUncheckedUpdateManyWithoutSchoolNestedInput
+    websiteInquiries?: WebsiteInquiryUncheckedUpdateManyWithoutSchoolNestedInput
+    noticeboards?: NoticeboardUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicVisits?: ClinicVisitUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicHospitalizations?: ClinicHospitalizationUncheckedUpdateManyWithoutSchoolNestedInput
+    vacancies?: VacancyUncheckedUpdateManyWithoutSchoolNestedInput
+    jobApplications?: JobApplicationUncheckedUpdateManyWithoutSchoolNestedInput
+    gallery?: GalleryUncheckedUpdateManyWithoutSchoolNestedInput
+    clubs?: ClubUncheckedUpdateManyWithoutSchoolNestedInput
+    sports?: SportUncheckedUpdateManyWithoutSchoolNestedInput
+    applications?: ApplicationUncheckedUpdateManyWithoutSchoolNestedInput
+    announcements?: AnnouncementUncheckedUpdateManyWithoutSchoolNestedInput
+    chaplaincyEvents?: ChaplaincyEventUncheckedUpdateManyWithoutSchoolNestedInput
+    diningHallReports?: DiningHallReportUncheckedUpdateManyWithoutSchoolNestedInput
+    farmLivestockBatches?: FarmLivestockBatchUncheckedUpdateManyWithoutSchoolNestedInput
+    farmCropCycles?: FarmCropCycleUncheckedUpdateManyWithoutSchoolNestedInput
+    farmInventoryItems?: FarmInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
+    prefectDuties?: PrefectDutyUncheckedUpdateManyWithoutSchoolNestedInput
+    prefectMeetings?: PrefectMeetingUncheckedUpdateManyWithoutSchoolNestedInput
+    prefectReports?: PrefectReportUncheckedUpdateManyWithoutSchoolNestedInput
+    staffAttendances?: StaffAttendanceUncheckedUpdateManyWithoutSchoolNestedInput
+    timetableSlots?: TimetableSlotUncheckedUpdateManyWithoutSchoolNestedInput
+    classes?: SchoolClassUncheckedUpdateManyWithoutSchoolNestedInput
+    subjects?: SubjectUncheckedUpdateManyWithoutSchoolNestedInput
+    books?: BookUncheckedUpdateManyWithoutSchoolNestedInput
+    grades?: GradeUncheckedUpdateManyWithoutSchoolNestedInput
+    attendance?: AttendanceUncheckedUpdateManyWithoutSchoolNestedInput
+    fees?: FeeUncheckedUpdateManyWithoutSchoolNestedInput
+    assignments?: AssignmentUncheckedUpdateManyWithoutSchoolNestedInput
+    bookLoans?: BookLoanUncheckedUpdateManyWithoutSchoolNestedInput
+    bookReservations?: BookReservationUncheckedUpdateManyWithoutSchoolNestedInput
+    librarySetting?: LibrarySettingUncheckedUpdateOneWithoutSchoolNestedInput
+    libraryDigitalResources?: LibraryDigitalResourceUncheckedUpdateManyWithoutSchoolNestedInput
+    assignmentSubmissions?: AssignmentSubmissionUncheckedUpdateManyWithoutSchoolNestedInput
+    supervisorAssignments?: SupervisorAssignmentUncheckedUpdateManyWithoutSchoolNestedInput
+    extensionRequests?: ExtensionRequestUncheckedUpdateManyWithoutSchoolNestedInput
+    progressReports?: ProgressReportUncheckedUpdateManyWithoutSchoolNestedInput
+    tuckshopItems?: TuckshopItemUncheckedUpdateManyWithoutSchoolNestedInput
+    suppliers?: SchoolSupplierUncheckedUpdateManyWithoutSchoolNestedInput
+    assets?: AssetUncheckedUpdateManyWithoutSchoolNestedInput
+    reportTemplate?: ReportTemplateUncheckedUpdateOneWithoutSchoolNestedInput
+    websiteSettings?: WebsiteSettingsUncheckedUpdateOneWithoutSchoolNestedInput
+    requisitions?: RequisitionUncheckedUpdateManyWithoutSchoolNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutSchoolNestedInput
+    leadershipAssignments?: LeadershipAssignmentUncheckedUpdateManyWithoutSchoolNestedInput
+    studentAllowedItems?: StudentAllowedItemUncheckedUpdateManyWithoutSchoolNestedInput
+    departments?: DepartmentUncheckedUpdateManyWithoutSchoolNestedInput
+    hostels?: HostelUncheckedUpdateManyWithoutSchoolNestedInput
+    weeklyMenus?: WeeklyMenuUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicSettings?: ClinicSettingUncheckedUpdateOneWithoutSchoolNestedInput
+    clinicBeds?: ClinicBedUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicAdmissions?: ClinicAdmissionUncheckedUpdateManyWithoutSchoolNestedInput
+    pharmacyStocks?: PharmacyStockUncheckedUpdateManyWithoutSchoolNestedInput
+    studentHealthProfiles?: StudentHealthProfileUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicAccessAudits?: ClinicAccessAuditUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicEmergencyLogs?: ClinicEmergencyLogUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicDiagnoses?: ClinicDiagnosisUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicPrescriptions?: ClinicPrescriptionUncheckedUpdateManyWithoutSchoolNestedInput
+    pharmacyDispensings?: PharmacyDispenseUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicMonitoringLogs?: ClinicMonitoringLogUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicVitals?: ClinicVitalUncheckedUpdateManyWithoutSchoolNestedInput
+    originTransfers?: TransferAuthorizationUncheckedUpdateManyWithoutOriginSchoolNestedInput
+    targetTransfers?: TransferAuthorizationUncheckedUpdateManyWithoutTargetSchoolNestedInput
+    faculties?: FacultyUncheckedUpdateManyWithoutSchoolNestedInput
+    paymentMethods?: PaymentMethodUncheckedUpdateManyWithoutSchoolNestedInput
+    feeGroups?: FeeGroupUncheckedUpdateManyWithoutSchoolNestedInput
+    revenueAllocations?: RevenueAllocationUncheckedUpdateManyWithoutSchoolNestedInput
+    allowanceTypes?: PayrollAllowanceUncheckedUpdateManyWithoutSchoolNestedInput
+    deductionTypes?: PayrollDeductionUncheckedUpdateManyWithoutSchoolNestedInput
+    taxTables?: TaxTableUncheckedUpdateManyWithoutSchoolNestedInput
+    employeeProfiles?: EmployeeProfileUncheckedUpdateManyWithoutSchoolNestedInput
+    accountCategories?: AccountCategoryUncheckedUpdateManyWithoutSchoolNestedInput
+    liabilities?: LiabilityUncheckedUpdateManyWithoutSchoolNestedInput
+    incomes?: IncomeUncheckedUpdateManyWithoutSchoolNestedInput
+    expenses?: ExpenseUncheckedUpdateManyWithoutSchoolNestedInput
+    uniformItems?: UniformItemUncheckedUpdateManyWithoutSchoolNestedInput
+    uniformStockOrders?: UniformStockOrderUncheckedUpdateManyWithoutSchoolNestedInput
+    uniformSales?: UniformSaleUncheckedUpdateManyWithoutSchoolNestedInput
+    uniformSupplierPayments?: UniformSupplierPaymentUncheckedUpdateManyWithoutSchoolNestedInput
+    physicalProducts?: PhysicalProductUncheckedUpdateManyWithoutSchoolNestedInput
+    physicalProductConsumptions?: PhysicalProductConsumptionUncheckedUpdateManyWithoutSchoolNestedInput
+    feeReminderLogs?: FeeReminderLogUncheckedUpdateManyWithoutSchoolNestedInput
+    termlyComments?: TermlyCommentUncheckedUpdateManyWithoutSchoolNestedInput
+    payrollRuns?: PayrollRunUncheckedUpdateManyWithoutSchoolNestedInput
+    questionPapers?: QuestionPaperUncheckedUpdateManyWithoutSchoolNestedInput
+    payrollEntries?: PayrollEntryUncheckedUpdateManyWithoutSchoolNestedInput
+    gradingScales?: GradingScaleUncheckedUpdateManyWithoutSchoolNestedInput
+    studentPayments?: StudentPaymentUncheckedUpdateManyWithoutSchoolNestedInput
+    communicationLogs?: CommunicationLogUncheckedUpdateManyWithoutSchoolNestedInput
+    libraryCategories?: LibraryCategoryUncheckedUpdateManyWithoutSchoolNestedInput
+    sections?: SectionUncheckedUpdateManyWithoutSchoolNestedInput
+    studentHouses?: StudentHouseUncheckedUpdateManyWithoutSchoolNestedInput
+    holidays?: HolidayUncheckedUpdateManyWithoutSchoolNestedInput
+    schoolSetting?: SchoolSettingUncheckedUpdateOneWithoutSchoolNestedInput
+    CBTExam?: CBTExamUncheckedUpdateManyWithoutSchoolNestedInput
+    Syllabus?: SyllabusUncheckedUpdateManyWithoutSchoolNestedInput
+    LessonPlan?: LessonPlanUncheckedUpdateManyWithoutSchoolNestedInput
+    LiveClass?: LiveClassUncheckedUpdateManyWithoutSchoolNestedInput
+    Award?: AwardUncheckedUpdateManyWithoutSchoolNestedInput
+    Course?: CourseUncheckedUpdateManyWithoutSchoolNestedInput
+    StudyMaterial?: StudyMaterialUncheckedUpdateManyWithoutSchoolNestedInput
+    hostelCategories?: HostelCategoryUncheckedUpdateManyWithoutSchoolNestedInput
+    hostelRooms?: HostelRoomUncheckedUpdateManyWithoutSchoolNestedInput
+    SchoolVehicle?: SchoolVehicleUncheckedUpdateManyWithoutSchoolNestedInput
+    SchoolTransport?: SchoolTransportUncheckedUpdateManyWithoutSchoolNestedInput
+    paymentPlans?: PaymentPlanUncheckedUpdateManyWithoutSchoolNestedInput
+    meetingMinutes?: MeetingMinutesUncheckedUpdateManyWithoutSchoolNestedInput
+    projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
+    sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
+    ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
+    chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
+    journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
+    accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
+    uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
+  }
+
+  export type SchoolCreateWithoutBudgetsInput = {
+    id?: string
+    code: string
+    name: string
+    type: string
+    isCombined?: boolean
+    levels?: SchoolCreatelevelsInput | string[]
+    address?: string | null
+    country?: string | null
+    email: string
+    phone?: string | null
+    website?: string | null
+    status?: string
+    branding?: NullableJsonNullValueInput | InputJsonValue
+    customContent?: NullableJsonNullValueInput | InputJsonValue
+    hexcoCenterNumber?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    idCardTemplate?: string | null
+    settings?: NullableJsonNullValueInput | InputJsonValue
+    plan: PlanCreateNestedOneWithoutSchoolsInput
+    users?: UserCreateNestedManyWithoutSchoolInput
+    students?: StudentCreateNestedManyWithoutSchoolInput
+    teachers?: TeacherCreateNestedManyWithoutSchoolInput
+    news?: NewsCreateNestedManyWithoutSchoolInput
+    websiteInquiries?: WebsiteInquiryCreateNestedManyWithoutSchoolInput
+    noticeboards?: NoticeboardCreateNestedManyWithoutSchoolInput
+    clinicVisits?: ClinicVisitCreateNestedManyWithoutSchoolInput
+    clinicHospitalizations?: ClinicHospitalizationCreateNestedManyWithoutSchoolInput
+    vacancies?: VacancyCreateNestedManyWithoutSchoolInput
+    jobApplications?: JobApplicationCreateNestedManyWithoutSchoolInput
+    gallery?: GalleryCreateNestedManyWithoutSchoolInput
+    clubs?: ClubCreateNestedManyWithoutSchoolInput
+    sports?: SportCreateNestedManyWithoutSchoolInput
+    applications?: ApplicationCreateNestedManyWithoutSchoolInput
+    announcements?: AnnouncementCreateNestedManyWithoutSchoolInput
+    chaplaincyEvents?: ChaplaincyEventCreateNestedManyWithoutSchoolInput
+    diningHallReports?: DiningHallReportCreateNestedManyWithoutSchoolInput
+    farmLivestockBatches?: FarmLivestockBatchCreateNestedManyWithoutSchoolInput
+    farmCropCycles?: FarmCropCycleCreateNestedManyWithoutSchoolInput
+    farmInventoryItems?: FarmInventoryItemCreateNestedManyWithoutSchoolInput
+    prefectDuties?: PrefectDutyCreateNestedManyWithoutSchoolInput
+    prefectMeetings?: PrefectMeetingCreateNestedManyWithoutSchoolInput
+    prefectReports?: PrefectReportCreateNestedManyWithoutSchoolInput
+    staffAttendances?: StaffAttendanceCreateNestedManyWithoutSchoolInput
+    timetableSlots?: TimetableSlotCreateNestedManyWithoutSchoolInput
+    classes?: SchoolClassCreateNestedManyWithoutSchoolInput
+    subjects?: SubjectCreateNestedManyWithoutSchoolInput
+    books?: BookCreateNestedManyWithoutSchoolInput
+    grades?: GradeCreateNestedManyWithoutSchoolInput
+    attendance?: AttendanceCreateNestedManyWithoutSchoolInput
+    fees?: FeeCreateNestedManyWithoutSchoolInput
+    assignments?: AssignmentCreateNestedManyWithoutSchoolInput
+    bookLoans?: BookLoanCreateNestedManyWithoutSchoolInput
+    bookReservations?: BookReservationCreateNestedManyWithoutSchoolInput
+    librarySetting?: LibrarySettingCreateNestedOneWithoutSchoolInput
+    libraryDigitalResources?: LibraryDigitalResourceCreateNestedManyWithoutSchoolInput
+    assignmentSubmissions?: AssignmentSubmissionCreateNestedManyWithoutSchoolInput
+    supervisorAssignments?: SupervisorAssignmentCreateNestedManyWithoutSchoolInput
+    extensionRequests?: ExtensionRequestCreateNestedManyWithoutSchoolInput
+    progressReports?: ProgressReportCreateNestedManyWithoutSchoolInput
+    tuckshopItems?: TuckshopItemCreateNestedManyWithoutSchoolInput
+    suppliers?: SchoolSupplierCreateNestedManyWithoutSchoolInput
+    assets?: AssetCreateNestedManyWithoutSchoolInput
+    reportTemplate?: ReportTemplateCreateNestedOneWithoutSchoolInput
+    websiteSettings?: WebsiteSettingsCreateNestedOneWithoutSchoolInput
+    requisitions?: RequisitionCreateNestedManyWithoutSchoolInput
+    auditLogs?: AuditLogCreateNestedManyWithoutSchoolInput
+    leadershipAssignments?: LeadershipAssignmentCreateNestedManyWithoutSchoolInput
+    studentAllowedItems?: StudentAllowedItemCreateNestedManyWithoutSchoolInput
+    departments?: DepartmentCreateNestedManyWithoutSchoolInput
+    hostels?: HostelCreateNestedManyWithoutSchoolInput
+    weeklyMenus?: WeeklyMenuCreateNestedManyWithoutSchoolInput
+    clinicSettings?: ClinicSettingCreateNestedOneWithoutSchoolInput
+    clinicBeds?: ClinicBedCreateNestedManyWithoutSchoolInput
+    clinicAdmissions?: ClinicAdmissionCreateNestedManyWithoutSchoolInput
+    pharmacyStocks?: PharmacyStockCreateNestedManyWithoutSchoolInput
+    studentHealthProfiles?: StudentHealthProfileCreateNestedManyWithoutSchoolInput
+    clinicAccessAudits?: ClinicAccessAuditCreateNestedManyWithoutSchoolInput
+    clinicEmergencyLogs?: ClinicEmergencyLogCreateNestedManyWithoutSchoolInput
+    clinicDiagnoses?: ClinicDiagnosisCreateNestedManyWithoutSchoolInput
+    clinicPrescriptions?: ClinicPrescriptionCreateNestedManyWithoutSchoolInput
+    pharmacyDispensings?: PharmacyDispenseCreateNestedManyWithoutSchoolInput
+    clinicMonitoringLogs?: ClinicMonitoringLogCreateNestedManyWithoutSchoolInput
+    clinicVitals?: ClinicVitalCreateNestedManyWithoutSchoolInput
+    originTransfers?: TransferAuthorizationCreateNestedManyWithoutOriginSchoolInput
+    targetTransfers?: TransferAuthorizationCreateNestedManyWithoutTargetSchoolInput
+    faculties?: FacultyCreateNestedManyWithoutSchoolInput
+    paymentMethods?: PaymentMethodCreateNestedManyWithoutSchoolInput
+    feeGroups?: FeeGroupCreateNestedManyWithoutSchoolInput
+    revenueAllocations?: RevenueAllocationCreateNestedManyWithoutSchoolInput
+    allowanceTypes?: PayrollAllowanceCreateNestedManyWithoutSchoolInput
+    deductionTypes?: PayrollDeductionCreateNestedManyWithoutSchoolInput
+    taxTables?: TaxTableCreateNestedManyWithoutSchoolInput
+    employeeProfiles?: EmployeeProfileCreateNestedManyWithoutSchoolInput
+    accountCategories?: AccountCategoryCreateNestedManyWithoutSchoolInput
+    liabilities?: LiabilityCreateNestedManyWithoutSchoolInput
+    incomes?: IncomeCreateNestedManyWithoutSchoolInput
+    expenses?: ExpenseCreateNestedManyWithoutSchoolInput
+    uniformItems?: UniformItemCreateNestedManyWithoutSchoolInput
+    uniformStockOrders?: UniformStockOrderCreateNestedManyWithoutSchoolInput
+    uniformSales?: UniformSaleCreateNestedManyWithoutSchoolInput
+    uniformSupplierPayments?: UniformSupplierPaymentCreateNestedManyWithoutSchoolInput
+    physicalProducts?: PhysicalProductCreateNestedManyWithoutSchoolInput
+    physicalProductConsumptions?: PhysicalProductConsumptionCreateNestedManyWithoutSchoolInput
+    feeReminderLogs?: FeeReminderLogCreateNestedManyWithoutSchoolInput
+    termlyComments?: TermlyCommentCreateNestedManyWithoutSchoolInput
+    payrollRuns?: PayrollRunCreateNestedManyWithoutSchoolInput
+    questionPapers?: QuestionPaperCreateNestedManyWithoutSchoolInput
+    payrollEntries?: PayrollEntryCreateNestedManyWithoutSchoolInput
+    gradingScales?: GradingScaleCreateNestedManyWithoutSchoolInput
+    studentPayments?: StudentPaymentCreateNestedManyWithoutSchoolInput
+    communicationLogs?: CommunicationLogCreateNestedManyWithoutSchoolInput
+    libraryCategories?: LibraryCategoryCreateNestedManyWithoutSchoolInput
+    sections?: SectionCreateNestedManyWithoutSchoolInput
+    studentHouses?: StudentHouseCreateNestedManyWithoutSchoolInput
+    holidays?: HolidayCreateNestedManyWithoutSchoolInput
+    schoolSetting?: SchoolSettingCreateNestedOneWithoutSchoolInput
+    CBTExam?: CBTExamCreateNestedManyWithoutSchoolInput
+    Syllabus?: SyllabusCreateNestedManyWithoutSchoolInput
+    LessonPlan?: LessonPlanCreateNestedManyWithoutSchoolInput
+    LiveClass?: LiveClassCreateNestedManyWithoutSchoolInput
+    Award?: AwardCreateNestedManyWithoutSchoolInput
+    Course?: CourseCreateNestedManyWithoutSchoolInput
+    StudyMaterial?: StudyMaterialCreateNestedManyWithoutSchoolInput
+    hostelCategories?: HostelCategoryCreateNestedManyWithoutSchoolInput
+    hostelRooms?: HostelRoomCreateNestedManyWithoutSchoolInput
+    SchoolVehicle?: SchoolVehicleCreateNestedManyWithoutSchoolInput
+    SchoolTransport?: SchoolTransportCreateNestedManyWithoutSchoolInput
+    paymentPlans?: PaymentPlanCreateNestedManyWithoutSchoolInput
+    meetingMinutes?: MeetingMinutesCreateNestedManyWithoutSchoolInput
+    projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
+    sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
+    ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
+    chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
+    journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
+    accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
+    uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
+    bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
+  }
+
+  export type SchoolUncheckedCreateWithoutBudgetsInput = {
+    id?: string
+    code: string
+    name: string
+    type: string
+    isCombined?: boolean
+    levels?: SchoolCreatelevelsInput | string[]
+    address?: string | null
+    country?: string | null
+    email: string
+    phone?: string | null
+    website?: string | null
+    status?: string
+    planId: string
+    branding?: NullableJsonNullValueInput | InputJsonValue
+    customContent?: NullableJsonNullValueInput | InputJsonValue
+    hexcoCenterNumber?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    idCardTemplate?: string | null
+    settings?: NullableJsonNullValueInput | InputJsonValue
+    users?: UserUncheckedCreateNestedManyWithoutSchoolInput
+    students?: StudentUncheckedCreateNestedManyWithoutSchoolInput
+    teachers?: TeacherUncheckedCreateNestedManyWithoutSchoolInput
+    news?: NewsUncheckedCreateNestedManyWithoutSchoolInput
+    websiteInquiries?: WebsiteInquiryUncheckedCreateNestedManyWithoutSchoolInput
+    noticeboards?: NoticeboardUncheckedCreateNestedManyWithoutSchoolInput
+    clinicVisits?: ClinicVisitUncheckedCreateNestedManyWithoutSchoolInput
+    clinicHospitalizations?: ClinicHospitalizationUncheckedCreateNestedManyWithoutSchoolInput
+    vacancies?: VacancyUncheckedCreateNestedManyWithoutSchoolInput
+    jobApplications?: JobApplicationUncheckedCreateNestedManyWithoutSchoolInput
+    gallery?: GalleryUncheckedCreateNestedManyWithoutSchoolInput
+    clubs?: ClubUncheckedCreateNestedManyWithoutSchoolInput
+    sports?: SportUncheckedCreateNestedManyWithoutSchoolInput
+    applications?: ApplicationUncheckedCreateNestedManyWithoutSchoolInput
+    announcements?: AnnouncementUncheckedCreateNestedManyWithoutSchoolInput
+    chaplaincyEvents?: ChaplaincyEventUncheckedCreateNestedManyWithoutSchoolInput
+    diningHallReports?: DiningHallReportUncheckedCreateNestedManyWithoutSchoolInput
+    farmLivestockBatches?: FarmLivestockBatchUncheckedCreateNestedManyWithoutSchoolInput
+    farmCropCycles?: FarmCropCycleUncheckedCreateNestedManyWithoutSchoolInput
+    farmInventoryItems?: FarmInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
+    prefectDuties?: PrefectDutyUncheckedCreateNestedManyWithoutSchoolInput
+    prefectMeetings?: PrefectMeetingUncheckedCreateNestedManyWithoutSchoolInput
+    prefectReports?: PrefectReportUncheckedCreateNestedManyWithoutSchoolInput
+    staffAttendances?: StaffAttendanceUncheckedCreateNestedManyWithoutSchoolInput
+    timetableSlots?: TimetableSlotUncheckedCreateNestedManyWithoutSchoolInput
+    classes?: SchoolClassUncheckedCreateNestedManyWithoutSchoolInput
+    subjects?: SubjectUncheckedCreateNestedManyWithoutSchoolInput
+    books?: BookUncheckedCreateNestedManyWithoutSchoolInput
+    grades?: GradeUncheckedCreateNestedManyWithoutSchoolInput
+    attendance?: AttendanceUncheckedCreateNestedManyWithoutSchoolInput
+    fees?: FeeUncheckedCreateNestedManyWithoutSchoolInput
+    assignments?: AssignmentUncheckedCreateNestedManyWithoutSchoolInput
+    bookLoans?: BookLoanUncheckedCreateNestedManyWithoutSchoolInput
+    bookReservations?: BookReservationUncheckedCreateNestedManyWithoutSchoolInput
+    librarySetting?: LibrarySettingUncheckedCreateNestedOneWithoutSchoolInput
+    libraryDigitalResources?: LibraryDigitalResourceUncheckedCreateNestedManyWithoutSchoolInput
+    assignmentSubmissions?: AssignmentSubmissionUncheckedCreateNestedManyWithoutSchoolInput
+    supervisorAssignments?: SupervisorAssignmentUncheckedCreateNestedManyWithoutSchoolInput
+    extensionRequests?: ExtensionRequestUncheckedCreateNestedManyWithoutSchoolInput
+    progressReports?: ProgressReportUncheckedCreateNestedManyWithoutSchoolInput
+    tuckshopItems?: TuckshopItemUncheckedCreateNestedManyWithoutSchoolInput
+    suppliers?: SchoolSupplierUncheckedCreateNestedManyWithoutSchoolInput
+    assets?: AssetUncheckedCreateNestedManyWithoutSchoolInput
+    reportTemplate?: ReportTemplateUncheckedCreateNestedOneWithoutSchoolInput
+    websiteSettings?: WebsiteSettingsUncheckedCreateNestedOneWithoutSchoolInput
+    requisitions?: RequisitionUncheckedCreateNestedManyWithoutSchoolInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutSchoolInput
+    leadershipAssignments?: LeadershipAssignmentUncheckedCreateNestedManyWithoutSchoolInput
+    studentAllowedItems?: StudentAllowedItemUncheckedCreateNestedManyWithoutSchoolInput
+    departments?: DepartmentUncheckedCreateNestedManyWithoutSchoolInput
+    hostels?: HostelUncheckedCreateNestedManyWithoutSchoolInput
+    weeklyMenus?: WeeklyMenuUncheckedCreateNestedManyWithoutSchoolInput
+    clinicSettings?: ClinicSettingUncheckedCreateNestedOneWithoutSchoolInput
+    clinicBeds?: ClinicBedUncheckedCreateNestedManyWithoutSchoolInput
+    clinicAdmissions?: ClinicAdmissionUncheckedCreateNestedManyWithoutSchoolInput
+    pharmacyStocks?: PharmacyStockUncheckedCreateNestedManyWithoutSchoolInput
+    studentHealthProfiles?: StudentHealthProfileUncheckedCreateNestedManyWithoutSchoolInput
+    clinicAccessAudits?: ClinicAccessAuditUncheckedCreateNestedManyWithoutSchoolInput
+    clinicEmergencyLogs?: ClinicEmergencyLogUncheckedCreateNestedManyWithoutSchoolInput
+    clinicDiagnoses?: ClinicDiagnosisUncheckedCreateNestedManyWithoutSchoolInput
+    clinicPrescriptions?: ClinicPrescriptionUncheckedCreateNestedManyWithoutSchoolInput
+    pharmacyDispensings?: PharmacyDispenseUncheckedCreateNestedManyWithoutSchoolInput
+    clinicMonitoringLogs?: ClinicMonitoringLogUncheckedCreateNestedManyWithoutSchoolInput
+    clinicVitals?: ClinicVitalUncheckedCreateNestedManyWithoutSchoolInput
+    originTransfers?: TransferAuthorizationUncheckedCreateNestedManyWithoutOriginSchoolInput
+    targetTransfers?: TransferAuthorizationUncheckedCreateNestedManyWithoutTargetSchoolInput
+    faculties?: FacultyUncheckedCreateNestedManyWithoutSchoolInput
+    paymentMethods?: PaymentMethodUncheckedCreateNestedManyWithoutSchoolInput
+    feeGroups?: FeeGroupUncheckedCreateNestedManyWithoutSchoolInput
+    revenueAllocations?: RevenueAllocationUncheckedCreateNestedManyWithoutSchoolInput
+    allowanceTypes?: PayrollAllowanceUncheckedCreateNestedManyWithoutSchoolInput
+    deductionTypes?: PayrollDeductionUncheckedCreateNestedManyWithoutSchoolInput
+    taxTables?: TaxTableUncheckedCreateNestedManyWithoutSchoolInput
+    employeeProfiles?: EmployeeProfileUncheckedCreateNestedManyWithoutSchoolInput
+    accountCategories?: AccountCategoryUncheckedCreateNestedManyWithoutSchoolInput
+    liabilities?: LiabilityUncheckedCreateNestedManyWithoutSchoolInput
+    incomes?: IncomeUncheckedCreateNestedManyWithoutSchoolInput
+    expenses?: ExpenseUncheckedCreateNestedManyWithoutSchoolInput
+    uniformItems?: UniformItemUncheckedCreateNestedManyWithoutSchoolInput
+    uniformStockOrders?: UniformStockOrderUncheckedCreateNestedManyWithoutSchoolInput
+    uniformSales?: UniformSaleUncheckedCreateNestedManyWithoutSchoolInput
+    uniformSupplierPayments?: UniformSupplierPaymentUncheckedCreateNestedManyWithoutSchoolInput
+    physicalProducts?: PhysicalProductUncheckedCreateNestedManyWithoutSchoolInput
+    physicalProductConsumptions?: PhysicalProductConsumptionUncheckedCreateNestedManyWithoutSchoolInput
+    feeReminderLogs?: FeeReminderLogUncheckedCreateNestedManyWithoutSchoolInput
+    termlyComments?: TermlyCommentUncheckedCreateNestedManyWithoutSchoolInput
+    payrollRuns?: PayrollRunUncheckedCreateNestedManyWithoutSchoolInput
+    questionPapers?: QuestionPaperUncheckedCreateNestedManyWithoutSchoolInput
+    payrollEntries?: PayrollEntryUncheckedCreateNestedManyWithoutSchoolInput
+    gradingScales?: GradingScaleUncheckedCreateNestedManyWithoutSchoolInput
+    studentPayments?: StudentPaymentUncheckedCreateNestedManyWithoutSchoolInput
+    communicationLogs?: CommunicationLogUncheckedCreateNestedManyWithoutSchoolInput
+    libraryCategories?: LibraryCategoryUncheckedCreateNestedManyWithoutSchoolInput
+    sections?: SectionUncheckedCreateNestedManyWithoutSchoolInput
+    studentHouses?: StudentHouseUncheckedCreateNestedManyWithoutSchoolInput
+    holidays?: HolidayUncheckedCreateNestedManyWithoutSchoolInput
+    schoolSetting?: SchoolSettingUncheckedCreateNestedOneWithoutSchoolInput
+    CBTExam?: CBTExamUncheckedCreateNestedManyWithoutSchoolInput
+    Syllabus?: SyllabusUncheckedCreateNestedManyWithoutSchoolInput
+    LessonPlan?: LessonPlanUncheckedCreateNestedManyWithoutSchoolInput
+    LiveClass?: LiveClassUncheckedCreateNestedManyWithoutSchoolInput
+    Award?: AwardUncheckedCreateNestedManyWithoutSchoolInput
+    Course?: CourseUncheckedCreateNestedManyWithoutSchoolInput
+    StudyMaterial?: StudyMaterialUncheckedCreateNestedManyWithoutSchoolInput
+    hostelCategories?: HostelCategoryUncheckedCreateNestedManyWithoutSchoolInput
+    hostelRooms?: HostelRoomUncheckedCreateNestedManyWithoutSchoolInput
+    SchoolVehicle?: SchoolVehicleUncheckedCreateNestedManyWithoutSchoolInput
+    SchoolTransport?: SchoolTransportUncheckedCreateNestedManyWithoutSchoolInput
+    paymentPlans?: PaymentPlanUncheckedCreateNestedManyWithoutSchoolInput
+    meetingMinutes?: MeetingMinutesUncheckedCreateNestedManyWithoutSchoolInput
+    projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
+    sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
+    ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
+    chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
+    journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
+    accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
+    uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
+  }
+
+  export type SchoolCreateOrConnectWithoutBudgetsInput = {
+    where: SchoolWhereUniqueInput
+    create: XOR<SchoolCreateWithoutBudgetsInput, SchoolUncheckedCreateWithoutBudgetsInput>
+  }
+
+  export type SchoolUpsertWithoutBudgetsInput = {
+    update: XOR<SchoolUpdateWithoutBudgetsInput, SchoolUncheckedUpdateWithoutBudgetsInput>
+    create: XOR<SchoolCreateWithoutBudgetsInput, SchoolUncheckedCreateWithoutBudgetsInput>
+    where?: SchoolWhereInput
+  }
+
+  export type SchoolUpdateToOneWithWhereWithoutBudgetsInput = {
+    where?: SchoolWhereInput
+    data: XOR<SchoolUpdateWithoutBudgetsInput, SchoolUncheckedUpdateWithoutBudgetsInput>
+  }
+
+  export type SchoolUpdateWithoutBudgetsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    isCombined?: BoolFieldUpdateOperationsInput | boolean
+    levels?: SchoolUpdatelevelsInput | string[]
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    branding?: NullableJsonNullValueInput | InputJsonValue
+    customContent?: NullableJsonNullValueInput | InputJsonValue
+    hexcoCenterNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    idCardTemplate?: NullableStringFieldUpdateOperationsInput | string | null
+    settings?: NullableJsonNullValueInput | InputJsonValue
+    plan?: PlanUpdateOneRequiredWithoutSchoolsNestedInput
+    users?: UserUpdateManyWithoutSchoolNestedInput
+    students?: StudentUpdateManyWithoutSchoolNestedInput
+    teachers?: TeacherUpdateManyWithoutSchoolNestedInput
+    news?: NewsUpdateManyWithoutSchoolNestedInput
+    websiteInquiries?: WebsiteInquiryUpdateManyWithoutSchoolNestedInput
+    noticeboards?: NoticeboardUpdateManyWithoutSchoolNestedInput
+    clinicVisits?: ClinicVisitUpdateManyWithoutSchoolNestedInput
+    clinicHospitalizations?: ClinicHospitalizationUpdateManyWithoutSchoolNestedInput
+    vacancies?: VacancyUpdateManyWithoutSchoolNestedInput
+    jobApplications?: JobApplicationUpdateManyWithoutSchoolNestedInput
+    gallery?: GalleryUpdateManyWithoutSchoolNestedInput
+    clubs?: ClubUpdateManyWithoutSchoolNestedInput
+    sports?: SportUpdateManyWithoutSchoolNestedInput
+    applications?: ApplicationUpdateManyWithoutSchoolNestedInput
+    announcements?: AnnouncementUpdateManyWithoutSchoolNestedInput
+    chaplaincyEvents?: ChaplaincyEventUpdateManyWithoutSchoolNestedInput
+    diningHallReports?: DiningHallReportUpdateManyWithoutSchoolNestedInput
+    farmLivestockBatches?: FarmLivestockBatchUpdateManyWithoutSchoolNestedInput
+    farmCropCycles?: FarmCropCycleUpdateManyWithoutSchoolNestedInput
+    farmInventoryItems?: FarmInventoryItemUpdateManyWithoutSchoolNestedInput
+    prefectDuties?: PrefectDutyUpdateManyWithoutSchoolNestedInput
+    prefectMeetings?: PrefectMeetingUpdateManyWithoutSchoolNestedInput
+    prefectReports?: PrefectReportUpdateManyWithoutSchoolNestedInput
+    staffAttendances?: StaffAttendanceUpdateManyWithoutSchoolNestedInput
+    timetableSlots?: TimetableSlotUpdateManyWithoutSchoolNestedInput
+    classes?: SchoolClassUpdateManyWithoutSchoolNestedInput
+    subjects?: SubjectUpdateManyWithoutSchoolNestedInput
+    books?: BookUpdateManyWithoutSchoolNestedInput
+    grades?: GradeUpdateManyWithoutSchoolNestedInput
+    attendance?: AttendanceUpdateManyWithoutSchoolNestedInput
+    fees?: FeeUpdateManyWithoutSchoolNestedInput
+    assignments?: AssignmentUpdateManyWithoutSchoolNestedInput
+    bookLoans?: BookLoanUpdateManyWithoutSchoolNestedInput
+    bookReservations?: BookReservationUpdateManyWithoutSchoolNestedInput
+    librarySetting?: LibrarySettingUpdateOneWithoutSchoolNestedInput
+    libraryDigitalResources?: LibraryDigitalResourceUpdateManyWithoutSchoolNestedInput
+    assignmentSubmissions?: AssignmentSubmissionUpdateManyWithoutSchoolNestedInput
+    supervisorAssignments?: SupervisorAssignmentUpdateManyWithoutSchoolNestedInput
+    extensionRequests?: ExtensionRequestUpdateManyWithoutSchoolNestedInput
+    progressReports?: ProgressReportUpdateManyWithoutSchoolNestedInput
+    tuckshopItems?: TuckshopItemUpdateManyWithoutSchoolNestedInput
+    suppliers?: SchoolSupplierUpdateManyWithoutSchoolNestedInput
+    assets?: AssetUpdateManyWithoutSchoolNestedInput
+    reportTemplate?: ReportTemplateUpdateOneWithoutSchoolNestedInput
+    websiteSettings?: WebsiteSettingsUpdateOneWithoutSchoolNestedInput
+    requisitions?: RequisitionUpdateManyWithoutSchoolNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutSchoolNestedInput
+    leadershipAssignments?: LeadershipAssignmentUpdateManyWithoutSchoolNestedInput
+    studentAllowedItems?: StudentAllowedItemUpdateManyWithoutSchoolNestedInput
+    departments?: DepartmentUpdateManyWithoutSchoolNestedInput
+    hostels?: HostelUpdateManyWithoutSchoolNestedInput
+    weeklyMenus?: WeeklyMenuUpdateManyWithoutSchoolNestedInput
+    clinicSettings?: ClinicSettingUpdateOneWithoutSchoolNestedInput
+    clinicBeds?: ClinicBedUpdateManyWithoutSchoolNestedInput
+    clinicAdmissions?: ClinicAdmissionUpdateManyWithoutSchoolNestedInput
+    pharmacyStocks?: PharmacyStockUpdateManyWithoutSchoolNestedInput
+    studentHealthProfiles?: StudentHealthProfileUpdateManyWithoutSchoolNestedInput
+    clinicAccessAudits?: ClinicAccessAuditUpdateManyWithoutSchoolNestedInput
+    clinicEmergencyLogs?: ClinicEmergencyLogUpdateManyWithoutSchoolNestedInput
+    clinicDiagnoses?: ClinicDiagnosisUpdateManyWithoutSchoolNestedInput
+    clinicPrescriptions?: ClinicPrescriptionUpdateManyWithoutSchoolNestedInput
+    pharmacyDispensings?: PharmacyDispenseUpdateManyWithoutSchoolNestedInput
+    clinicMonitoringLogs?: ClinicMonitoringLogUpdateManyWithoutSchoolNestedInput
+    clinicVitals?: ClinicVitalUpdateManyWithoutSchoolNestedInput
+    originTransfers?: TransferAuthorizationUpdateManyWithoutOriginSchoolNestedInput
+    targetTransfers?: TransferAuthorizationUpdateManyWithoutTargetSchoolNestedInput
+    faculties?: FacultyUpdateManyWithoutSchoolNestedInput
+    paymentMethods?: PaymentMethodUpdateManyWithoutSchoolNestedInput
+    feeGroups?: FeeGroupUpdateManyWithoutSchoolNestedInput
+    revenueAllocations?: RevenueAllocationUpdateManyWithoutSchoolNestedInput
+    allowanceTypes?: PayrollAllowanceUpdateManyWithoutSchoolNestedInput
+    deductionTypes?: PayrollDeductionUpdateManyWithoutSchoolNestedInput
+    taxTables?: TaxTableUpdateManyWithoutSchoolNestedInput
+    employeeProfiles?: EmployeeProfileUpdateManyWithoutSchoolNestedInput
+    accountCategories?: AccountCategoryUpdateManyWithoutSchoolNestedInput
+    liabilities?: LiabilityUpdateManyWithoutSchoolNestedInput
+    incomes?: IncomeUpdateManyWithoutSchoolNestedInput
+    expenses?: ExpenseUpdateManyWithoutSchoolNestedInput
+    uniformItems?: UniformItemUpdateManyWithoutSchoolNestedInput
+    uniformStockOrders?: UniformStockOrderUpdateManyWithoutSchoolNestedInput
+    uniformSales?: UniformSaleUpdateManyWithoutSchoolNestedInput
+    uniformSupplierPayments?: UniformSupplierPaymentUpdateManyWithoutSchoolNestedInput
+    physicalProducts?: PhysicalProductUpdateManyWithoutSchoolNestedInput
+    physicalProductConsumptions?: PhysicalProductConsumptionUpdateManyWithoutSchoolNestedInput
+    feeReminderLogs?: FeeReminderLogUpdateManyWithoutSchoolNestedInput
+    termlyComments?: TermlyCommentUpdateManyWithoutSchoolNestedInput
+    payrollRuns?: PayrollRunUpdateManyWithoutSchoolNestedInput
+    questionPapers?: QuestionPaperUpdateManyWithoutSchoolNestedInput
+    payrollEntries?: PayrollEntryUpdateManyWithoutSchoolNestedInput
+    gradingScales?: GradingScaleUpdateManyWithoutSchoolNestedInput
+    studentPayments?: StudentPaymentUpdateManyWithoutSchoolNestedInput
+    communicationLogs?: CommunicationLogUpdateManyWithoutSchoolNestedInput
+    libraryCategories?: LibraryCategoryUpdateManyWithoutSchoolNestedInput
+    sections?: SectionUpdateManyWithoutSchoolNestedInput
+    studentHouses?: StudentHouseUpdateManyWithoutSchoolNestedInput
+    holidays?: HolidayUpdateManyWithoutSchoolNestedInput
+    schoolSetting?: SchoolSettingUpdateOneWithoutSchoolNestedInput
+    CBTExam?: CBTExamUpdateManyWithoutSchoolNestedInput
+    Syllabus?: SyllabusUpdateManyWithoutSchoolNestedInput
+    LessonPlan?: LessonPlanUpdateManyWithoutSchoolNestedInput
+    LiveClass?: LiveClassUpdateManyWithoutSchoolNestedInput
+    Award?: AwardUpdateManyWithoutSchoolNestedInput
+    Course?: CourseUpdateManyWithoutSchoolNestedInput
+    StudyMaterial?: StudyMaterialUpdateManyWithoutSchoolNestedInput
+    hostelCategories?: HostelCategoryUpdateManyWithoutSchoolNestedInput
+    hostelRooms?: HostelRoomUpdateManyWithoutSchoolNestedInput
+    SchoolVehicle?: SchoolVehicleUpdateManyWithoutSchoolNestedInput
+    SchoolTransport?: SchoolTransportUpdateManyWithoutSchoolNestedInput
+    paymentPlans?: PaymentPlanUpdateManyWithoutSchoolNestedInput
+    meetingMinutes?: MeetingMinutesUpdateManyWithoutSchoolNestedInput
+    projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
+    sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
+    ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
+    chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
+    journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
+    accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
+    uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
+    bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
+  }
+
+  export type SchoolUncheckedUpdateWithoutBudgetsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    isCombined?: BoolFieldUpdateOperationsInput | boolean
+    levels?: SchoolUpdatelevelsInput | string[]
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    planId?: StringFieldUpdateOperationsInput | string
+    branding?: NullableJsonNullValueInput | InputJsonValue
+    customContent?: NullableJsonNullValueInput | InputJsonValue
+    hexcoCenterNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    idCardTemplate?: NullableStringFieldUpdateOperationsInput | string | null
+    settings?: NullableJsonNullValueInput | InputJsonValue
+    users?: UserUncheckedUpdateManyWithoutSchoolNestedInput
+    students?: StudentUncheckedUpdateManyWithoutSchoolNestedInput
+    teachers?: TeacherUncheckedUpdateManyWithoutSchoolNestedInput
+    news?: NewsUncheckedUpdateManyWithoutSchoolNestedInput
+    websiteInquiries?: WebsiteInquiryUncheckedUpdateManyWithoutSchoolNestedInput
+    noticeboards?: NoticeboardUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicVisits?: ClinicVisitUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicHospitalizations?: ClinicHospitalizationUncheckedUpdateManyWithoutSchoolNestedInput
+    vacancies?: VacancyUncheckedUpdateManyWithoutSchoolNestedInput
+    jobApplications?: JobApplicationUncheckedUpdateManyWithoutSchoolNestedInput
+    gallery?: GalleryUncheckedUpdateManyWithoutSchoolNestedInput
+    clubs?: ClubUncheckedUpdateManyWithoutSchoolNestedInput
+    sports?: SportUncheckedUpdateManyWithoutSchoolNestedInput
+    applications?: ApplicationUncheckedUpdateManyWithoutSchoolNestedInput
+    announcements?: AnnouncementUncheckedUpdateManyWithoutSchoolNestedInput
+    chaplaincyEvents?: ChaplaincyEventUncheckedUpdateManyWithoutSchoolNestedInput
+    diningHallReports?: DiningHallReportUncheckedUpdateManyWithoutSchoolNestedInput
+    farmLivestockBatches?: FarmLivestockBatchUncheckedUpdateManyWithoutSchoolNestedInput
+    farmCropCycles?: FarmCropCycleUncheckedUpdateManyWithoutSchoolNestedInput
+    farmInventoryItems?: FarmInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
+    prefectDuties?: PrefectDutyUncheckedUpdateManyWithoutSchoolNestedInput
+    prefectMeetings?: PrefectMeetingUncheckedUpdateManyWithoutSchoolNestedInput
+    prefectReports?: PrefectReportUncheckedUpdateManyWithoutSchoolNestedInput
+    staffAttendances?: StaffAttendanceUncheckedUpdateManyWithoutSchoolNestedInput
+    timetableSlots?: TimetableSlotUncheckedUpdateManyWithoutSchoolNestedInput
+    classes?: SchoolClassUncheckedUpdateManyWithoutSchoolNestedInput
+    subjects?: SubjectUncheckedUpdateManyWithoutSchoolNestedInput
+    books?: BookUncheckedUpdateManyWithoutSchoolNestedInput
+    grades?: GradeUncheckedUpdateManyWithoutSchoolNestedInput
+    attendance?: AttendanceUncheckedUpdateManyWithoutSchoolNestedInput
+    fees?: FeeUncheckedUpdateManyWithoutSchoolNestedInput
+    assignments?: AssignmentUncheckedUpdateManyWithoutSchoolNestedInput
+    bookLoans?: BookLoanUncheckedUpdateManyWithoutSchoolNestedInput
+    bookReservations?: BookReservationUncheckedUpdateManyWithoutSchoolNestedInput
+    librarySetting?: LibrarySettingUncheckedUpdateOneWithoutSchoolNestedInput
+    libraryDigitalResources?: LibraryDigitalResourceUncheckedUpdateManyWithoutSchoolNestedInput
+    assignmentSubmissions?: AssignmentSubmissionUncheckedUpdateManyWithoutSchoolNestedInput
+    supervisorAssignments?: SupervisorAssignmentUncheckedUpdateManyWithoutSchoolNestedInput
+    extensionRequests?: ExtensionRequestUncheckedUpdateManyWithoutSchoolNestedInput
+    progressReports?: ProgressReportUncheckedUpdateManyWithoutSchoolNestedInput
+    tuckshopItems?: TuckshopItemUncheckedUpdateManyWithoutSchoolNestedInput
+    suppliers?: SchoolSupplierUncheckedUpdateManyWithoutSchoolNestedInput
+    assets?: AssetUncheckedUpdateManyWithoutSchoolNestedInput
+    reportTemplate?: ReportTemplateUncheckedUpdateOneWithoutSchoolNestedInput
+    websiteSettings?: WebsiteSettingsUncheckedUpdateOneWithoutSchoolNestedInput
+    requisitions?: RequisitionUncheckedUpdateManyWithoutSchoolNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutSchoolNestedInput
+    leadershipAssignments?: LeadershipAssignmentUncheckedUpdateManyWithoutSchoolNestedInput
+    studentAllowedItems?: StudentAllowedItemUncheckedUpdateManyWithoutSchoolNestedInput
+    departments?: DepartmentUncheckedUpdateManyWithoutSchoolNestedInput
+    hostels?: HostelUncheckedUpdateManyWithoutSchoolNestedInput
+    weeklyMenus?: WeeklyMenuUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicSettings?: ClinicSettingUncheckedUpdateOneWithoutSchoolNestedInput
+    clinicBeds?: ClinicBedUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicAdmissions?: ClinicAdmissionUncheckedUpdateManyWithoutSchoolNestedInput
+    pharmacyStocks?: PharmacyStockUncheckedUpdateManyWithoutSchoolNestedInput
+    studentHealthProfiles?: StudentHealthProfileUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicAccessAudits?: ClinicAccessAuditUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicEmergencyLogs?: ClinicEmergencyLogUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicDiagnoses?: ClinicDiagnosisUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicPrescriptions?: ClinicPrescriptionUncheckedUpdateManyWithoutSchoolNestedInput
+    pharmacyDispensings?: PharmacyDispenseUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicMonitoringLogs?: ClinicMonitoringLogUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicVitals?: ClinicVitalUncheckedUpdateManyWithoutSchoolNestedInput
+    originTransfers?: TransferAuthorizationUncheckedUpdateManyWithoutOriginSchoolNestedInput
+    targetTransfers?: TransferAuthorizationUncheckedUpdateManyWithoutTargetSchoolNestedInput
+    faculties?: FacultyUncheckedUpdateManyWithoutSchoolNestedInput
+    paymentMethods?: PaymentMethodUncheckedUpdateManyWithoutSchoolNestedInput
+    feeGroups?: FeeGroupUncheckedUpdateManyWithoutSchoolNestedInput
+    revenueAllocations?: RevenueAllocationUncheckedUpdateManyWithoutSchoolNestedInput
+    allowanceTypes?: PayrollAllowanceUncheckedUpdateManyWithoutSchoolNestedInput
+    deductionTypes?: PayrollDeductionUncheckedUpdateManyWithoutSchoolNestedInput
+    taxTables?: TaxTableUncheckedUpdateManyWithoutSchoolNestedInput
+    employeeProfiles?: EmployeeProfileUncheckedUpdateManyWithoutSchoolNestedInput
+    accountCategories?: AccountCategoryUncheckedUpdateManyWithoutSchoolNestedInput
+    liabilities?: LiabilityUncheckedUpdateManyWithoutSchoolNestedInput
+    incomes?: IncomeUncheckedUpdateManyWithoutSchoolNestedInput
+    expenses?: ExpenseUncheckedUpdateManyWithoutSchoolNestedInput
+    uniformItems?: UniformItemUncheckedUpdateManyWithoutSchoolNestedInput
+    uniformStockOrders?: UniformStockOrderUncheckedUpdateManyWithoutSchoolNestedInput
+    uniformSales?: UniformSaleUncheckedUpdateManyWithoutSchoolNestedInput
+    uniformSupplierPayments?: UniformSupplierPaymentUncheckedUpdateManyWithoutSchoolNestedInput
+    physicalProducts?: PhysicalProductUncheckedUpdateManyWithoutSchoolNestedInput
+    physicalProductConsumptions?: PhysicalProductConsumptionUncheckedUpdateManyWithoutSchoolNestedInput
+    feeReminderLogs?: FeeReminderLogUncheckedUpdateManyWithoutSchoolNestedInput
+    termlyComments?: TermlyCommentUncheckedUpdateManyWithoutSchoolNestedInput
+    payrollRuns?: PayrollRunUncheckedUpdateManyWithoutSchoolNestedInput
+    questionPapers?: QuestionPaperUncheckedUpdateManyWithoutSchoolNestedInput
+    payrollEntries?: PayrollEntryUncheckedUpdateManyWithoutSchoolNestedInput
+    gradingScales?: GradingScaleUncheckedUpdateManyWithoutSchoolNestedInput
+    studentPayments?: StudentPaymentUncheckedUpdateManyWithoutSchoolNestedInput
+    communicationLogs?: CommunicationLogUncheckedUpdateManyWithoutSchoolNestedInput
+    libraryCategories?: LibraryCategoryUncheckedUpdateManyWithoutSchoolNestedInput
+    sections?: SectionUncheckedUpdateManyWithoutSchoolNestedInput
+    studentHouses?: StudentHouseUncheckedUpdateManyWithoutSchoolNestedInput
+    holidays?: HolidayUncheckedUpdateManyWithoutSchoolNestedInput
+    schoolSetting?: SchoolSettingUncheckedUpdateOneWithoutSchoolNestedInput
+    CBTExam?: CBTExamUncheckedUpdateManyWithoutSchoolNestedInput
+    Syllabus?: SyllabusUncheckedUpdateManyWithoutSchoolNestedInput
+    LessonPlan?: LessonPlanUncheckedUpdateManyWithoutSchoolNestedInput
+    LiveClass?: LiveClassUncheckedUpdateManyWithoutSchoolNestedInput
+    Award?: AwardUncheckedUpdateManyWithoutSchoolNestedInput
+    Course?: CourseUncheckedUpdateManyWithoutSchoolNestedInput
+    StudyMaterial?: StudyMaterialUncheckedUpdateManyWithoutSchoolNestedInput
+    hostelCategories?: HostelCategoryUncheckedUpdateManyWithoutSchoolNestedInput
+    hostelRooms?: HostelRoomUncheckedUpdateManyWithoutSchoolNestedInput
+    SchoolVehicle?: SchoolVehicleUncheckedUpdateManyWithoutSchoolNestedInput
+    SchoolTransport?: SchoolTransportUncheckedUpdateManyWithoutSchoolNestedInput
+    paymentPlans?: PaymentPlanUncheckedUpdateManyWithoutSchoolNestedInput
+    meetingMinutes?: MeetingMinutesUncheckedUpdateManyWithoutSchoolNestedInput
+    projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
+    sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
+    ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
+    chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
+    journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
+    accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
+    uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
+  }
+
+  export type SchoolCreateWithoutStockMovementsInput = {
+    id?: string
+    code: string
+    name: string
+    type: string
+    isCombined?: boolean
+    levels?: SchoolCreatelevelsInput | string[]
+    address?: string | null
+    country?: string | null
+    email: string
+    phone?: string | null
+    website?: string | null
+    status?: string
+    branding?: NullableJsonNullValueInput | InputJsonValue
+    customContent?: NullableJsonNullValueInput | InputJsonValue
+    hexcoCenterNumber?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    idCardTemplate?: string | null
+    settings?: NullableJsonNullValueInput | InputJsonValue
+    plan: PlanCreateNestedOneWithoutSchoolsInput
+    users?: UserCreateNestedManyWithoutSchoolInput
+    students?: StudentCreateNestedManyWithoutSchoolInput
+    teachers?: TeacherCreateNestedManyWithoutSchoolInput
+    news?: NewsCreateNestedManyWithoutSchoolInput
+    websiteInquiries?: WebsiteInquiryCreateNestedManyWithoutSchoolInput
+    noticeboards?: NoticeboardCreateNestedManyWithoutSchoolInput
+    clinicVisits?: ClinicVisitCreateNestedManyWithoutSchoolInput
+    clinicHospitalizations?: ClinicHospitalizationCreateNestedManyWithoutSchoolInput
+    vacancies?: VacancyCreateNestedManyWithoutSchoolInput
+    jobApplications?: JobApplicationCreateNestedManyWithoutSchoolInput
+    gallery?: GalleryCreateNestedManyWithoutSchoolInput
+    clubs?: ClubCreateNestedManyWithoutSchoolInput
+    sports?: SportCreateNestedManyWithoutSchoolInput
+    applications?: ApplicationCreateNestedManyWithoutSchoolInput
+    announcements?: AnnouncementCreateNestedManyWithoutSchoolInput
+    chaplaincyEvents?: ChaplaincyEventCreateNestedManyWithoutSchoolInput
+    diningHallReports?: DiningHallReportCreateNestedManyWithoutSchoolInput
+    farmLivestockBatches?: FarmLivestockBatchCreateNestedManyWithoutSchoolInput
+    farmCropCycles?: FarmCropCycleCreateNestedManyWithoutSchoolInput
+    farmInventoryItems?: FarmInventoryItemCreateNestedManyWithoutSchoolInput
+    prefectDuties?: PrefectDutyCreateNestedManyWithoutSchoolInput
+    prefectMeetings?: PrefectMeetingCreateNestedManyWithoutSchoolInput
+    prefectReports?: PrefectReportCreateNestedManyWithoutSchoolInput
+    staffAttendances?: StaffAttendanceCreateNestedManyWithoutSchoolInput
+    timetableSlots?: TimetableSlotCreateNestedManyWithoutSchoolInput
+    classes?: SchoolClassCreateNestedManyWithoutSchoolInput
+    subjects?: SubjectCreateNestedManyWithoutSchoolInput
+    books?: BookCreateNestedManyWithoutSchoolInput
+    grades?: GradeCreateNestedManyWithoutSchoolInput
+    attendance?: AttendanceCreateNestedManyWithoutSchoolInput
+    fees?: FeeCreateNestedManyWithoutSchoolInput
+    assignments?: AssignmentCreateNestedManyWithoutSchoolInput
+    bookLoans?: BookLoanCreateNestedManyWithoutSchoolInput
+    bookReservations?: BookReservationCreateNestedManyWithoutSchoolInput
+    librarySetting?: LibrarySettingCreateNestedOneWithoutSchoolInput
+    libraryDigitalResources?: LibraryDigitalResourceCreateNestedManyWithoutSchoolInput
+    assignmentSubmissions?: AssignmentSubmissionCreateNestedManyWithoutSchoolInput
+    supervisorAssignments?: SupervisorAssignmentCreateNestedManyWithoutSchoolInput
+    extensionRequests?: ExtensionRequestCreateNestedManyWithoutSchoolInput
+    progressReports?: ProgressReportCreateNestedManyWithoutSchoolInput
+    tuckshopItems?: TuckshopItemCreateNestedManyWithoutSchoolInput
+    suppliers?: SchoolSupplierCreateNestedManyWithoutSchoolInput
+    assets?: AssetCreateNestedManyWithoutSchoolInput
+    reportTemplate?: ReportTemplateCreateNestedOneWithoutSchoolInput
+    websiteSettings?: WebsiteSettingsCreateNestedOneWithoutSchoolInput
+    requisitions?: RequisitionCreateNestedManyWithoutSchoolInput
+    auditLogs?: AuditLogCreateNestedManyWithoutSchoolInput
+    leadershipAssignments?: LeadershipAssignmentCreateNestedManyWithoutSchoolInput
+    studentAllowedItems?: StudentAllowedItemCreateNestedManyWithoutSchoolInput
+    departments?: DepartmentCreateNestedManyWithoutSchoolInput
+    hostels?: HostelCreateNestedManyWithoutSchoolInput
+    weeklyMenus?: WeeklyMenuCreateNestedManyWithoutSchoolInput
+    clinicSettings?: ClinicSettingCreateNestedOneWithoutSchoolInput
+    clinicBeds?: ClinicBedCreateNestedManyWithoutSchoolInput
+    clinicAdmissions?: ClinicAdmissionCreateNestedManyWithoutSchoolInput
+    pharmacyStocks?: PharmacyStockCreateNestedManyWithoutSchoolInput
+    studentHealthProfiles?: StudentHealthProfileCreateNestedManyWithoutSchoolInput
+    clinicAccessAudits?: ClinicAccessAuditCreateNestedManyWithoutSchoolInput
+    clinicEmergencyLogs?: ClinicEmergencyLogCreateNestedManyWithoutSchoolInput
+    clinicDiagnoses?: ClinicDiagnosisCreateNestedManyWithoutSchoolInput
+    clinicPrescriptions?: ClinicPrescriptionCreateNestedManyWithoutSchoolInput
+    pharmacyDispensings?: PharmacyDispenseCreateNestedManyWithoutSchoolInput
+    clinicMonitoringLogs?: ClinicMonitoringLogCreateNestedManyWithoutSchoolInput
+    clinicVitals?: ClinicVitalCreateNestedManyWithoutSchoolInput
+    originTransfers?: TransferAuthorizationCreateNestedManyWithoutOriginSchoolInput
+    targetTransfers?: TransferAuthorizationCreateNestedManyWithoutTargetSchoolInput
+    faculties?: FacultyCreateNestedManyWithoutSchoolInput
+    paymentMethods?: PaymentMethodCreateNestedManyWithoutSchoolInput
+    feeGroups?: FeeGroupCreateNestedManyWithoutSchoolInput
+    revenueAllocations?: RevenueAllocationCreateNestedManyWithoutSchoolInput
+    allowanceTypes?: PayrollAllowanceCreateNestedManyWithoutSchoolInput
+    deductionTypes?: PayrollDeductionCreateNestedManyWithoutSchoolInput
+    taxTables?: TaxTableCreateNestedManyWithoutSchoolInput
+    employeeProfiles?: EmployeeProfileCreateNestedManyWithoutSchoolInput
+    accountCategories?: AccountCategoryCreateNestedManyWithoutSchoolInput
+    liabilities?: LiabilityCreateNestedManyWithoutSchoolInput
+    incomes?: IncomeCreateNestedManyWithoutSchoolInput
+    expenses?: ExpenseCreateNestedManyWithoutSchoolInput
+    uniformItems?: UniformItemCreateNestedManyWithoutSchoolInput
+    uniformStockOrders?: UniformStockOrderCreateNestedManyWithoutSchoolInput
+    uniformSales?: UniformSaleCreateNestedManyWithoutSchoolInput
+    uniformSupplierPayments?: UniformSupplierPaymentCreateNestedManyWithoutSchoolInput
+    physicalProducts?: PhysicalProductCreateNestedManyWithoutSchoolInput
+    physicalProductConsumptions?: PhysicalProductConsumptionCreateNestedManyWithoutSchoolInput
+    feeReminderLogs?: FeeReminderLogCreateNestedManyWithoutSchoolInput
+    termlyComments?: TermlyCommentCreateNestedManyWithoutSchoolInput
+    payrollRuns?: PayrollRunCreateNestedManyWithoutSchoolInput
+    questionPapers?: QuestionPaperCreateNestedManyWithoutSchoolInput
+    payrollEntries?: PayrollEntryCreateNestedManyWithoutSchoolInput
+    gradingScales?: GradingScaleCreateNestedManyWithoutSchoolInput
+    studentPayments?: StudentPaymentCreateNestedManyWithoutSchoolInput
+    communicationLogs?: CommunicationLogCreateNestedManyWithoutSchoolInput
+    libraryCategories?: LibraryCategoryCreateNestedManyWithoutSchoolInput
+    sections?: SectionCreateNestedManyWithoutSchoolInput
+    studentHouses?: StudentHouseCreateNestedManyWithoutSchoolInput
+    holidays?: HolidayCreateNestedManyWithoutSchoolInput
+    schoolSetting?: SchoolSettingCreateNestedOneWithoutSchoolInput
+    CBTExam?: CBTExamCreateNestedManyWithoutSchoolInput
+    Syllabus?: SyllabusCreateNestedManyWithoutSchoolInput
+    LessonPlan?: LessonPlanCreateNestedManyWithoutSchoolInput
+    LiveClass?: LiveClassCreateNestedManyWithoutSchoolInput
+    Award?: AwardCreateNestedManyWithoutSchoolInput
+    Course?: CourseCreateNestedManyWithoutSchoolInput
+    StudyMaterial?: StudyMaterialCreateNestedManyWithoutSchoolInput
+    hostelCategories?: HostelCategoryCreateNestedManyWithoutSchoolInput
+    hostelRooms?: HostelRoomCreateNestedManyWithoutSchoolInput
+    SchoolVehicle?: SchoolVehicleCreateNestedManyWithoutSchoolInput
+    SchoolTransport?: SchoolTransportCreateNestedManyWithoutSchoolInput
+    paymentPlans?: PaymentPlanCreateNestedManyWithoutSchoolInput
+    meetingMinutes?: MeetingMinutesCreateNestedManyWithoutSchoolInput
+    projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
+    sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
+    ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
+    chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
+    journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
+    accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
+    uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
+    bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
+  }
+
+  export type SchoolUncheckedCreateWithoutStockMovementsInput = {
+    id?: string
+    code: string
+    name: string
+    type: string
+    isCombined?: boolean
+    levels?: SchoolCreatelevelsInput | string[]
+    address?: string | null
+    country?: string | null
+    email: string
+    phone?: string | null
+    website?: string | null
+    status?: string
+    planId: string
+    branding?: NullableJsonNullValueInput | InputJsonValue
+    customContent?: NullableJsonNullValueInput | InputJsonValue
+    hexcoCenterNumber?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    idCardTemplate?: string | null
+    settings?: NullableJsonNullValueInput | InputJsonValue
+    users?: UserUncheckedCreateNestedManyWithoutSchoolInput
+    students?: StudentUncheckedCreateNestedManyWithoutSchoolInput
+    teachers?: TeacherUncheckedCreateNestedManyWithoutSchoolInput
+    news?: NewsUncheckedCreateNestedManyWithoutSchoolInput
+    websiteInquiries?: WebsiteInquiryUncheckedCreateNestedManyWithoutSchoolInput
+    noticeboards?: NoticeboardUncheckedCreateNestedManyWithoutSchoolInput
+    clinicVisits?: ClinicVisitUncheckedCreateNestedManyWithoutSchoolInput
+    clinicHospitalizations?: ClinicHospitalizationUncheckedCreateNestedManyWithoutSchoolInput
+    vacancies?: VacancyUncheckedCreateNestedManyWithoutSchoolInput
+    jobApplications?: JobApplicationUncheckedCreateNestedManyWithoutSchoolInput
+    gallery?: GalleryUncheckedCreateNestedManyWithoutSchoolInput
+    clubs?: ClubUncheckedCreateNestedManyWithoutSchoolInput
+    sports?: SportUncheckedCreateNestedManyWithoutSchoolInput
+    applications?: ApplicationUncheckedCreateNestedManyWithoutSchoolInput
+    announcements?: AnnouncementUncheckedCreateNestedManyWithoutSchoolInput
+    chaplaincyEvents?: ChaplaincyEventUncheckedCreateNestedManyWithoutSchoolInput
+    diningHallReports?: DiningHallReportUncheckedCreateNestedManyWithoutSchoolInput
+    farmLivestockBatches?: FarmLivestockBatchUncheckedCreateNestedManyWithoutSchoolInput
+    farmCropCycles?: FarmCropCycleUncheckedCreateNestedManyWithoutSchoolInput
+    farmInventoryItems?: FarmInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
+    prefectDuties?: PrefectDutyUncheckedCreateNestedManyWithoutSchoolInput
+    prefectMeetings?: PrefectMeetingUncheckedCreateNestedManyWithoutSchoolInput
+    prefectReports?: PrefectReportUncheckedCreateNestedManyWithoutSchoolInput
+    staffAttendances?: StaffAttendanceUncheckedCreateNestedManyWithoutSchoolInput
+    timetableSlots?: TimetableSlotUncheckedCreateNestedManyWithoutSchoolInput
+    classes?: SchoolClassUncheckedCreateNestedManyWithoutSchoolInput
+    subjects?: SubjectUncheckedCreateNestedManyWithoutSchoolInput
+    books?: BookUncheckedCreateNestedManyWithoutSchoolInput
+    grades?: GradeUncheckedCreateNestedManyWithoutSchoolInput
+    attendance?: AttendanceUncheckedCreateNestedManyWithoutSchoolInput
+    fees?: FeeUncheckedCreateNestedManyWithoutSchoolInput
+    assignments?: AssignmentUncheckedCreateNestedManyWithoutSchoolInput
+    bookLoans?: BookLoanUncheckedCreateNestedManyWithoutSchoolInput
+    bookReservations?: BookReservationUncheckedCreateNestedManyWithoutSchoolInput
+    librarySetting?: LibrarySettingUncheckedCreateNestedOneWithoutSchoolInput
+    libraryDigitalResources?: LibraryDigitalResourceUncheckedCreateNestedManyWithoutSchoolInput
+    assignmentSubmissions?: AssignmentSubmissionUncheckedCreateNestedManyWithoutSchoolInput
+    supervisorAssignments?: SupervisorAssignmentUncheckedCreateNestedManyWithoutSchoolInput
+    extensionRequests?: ExtensionRequestUncheckedCreateNestedManyWithoutSchoolInput
+    progressReports?: ProgressReportUncheckedCreateNestedManyWithoutSchoolInput
+    tuckshopItems?: TuckshopItemUncheckedCreateNestedManyWithoutSchoolInput
+    suppliers?: SchoolSupplierUncheckedCreateNestedManyWithoutSchoolInput
+    assets?: AssetUncheckedCreateNestedManyWithoutSchoolInput
+    reportTemplate?: ReportTemplateUncheckedCreateNestedOneWithoutSchoolInput
+    websiteSettings?: WebsiteSettingsUncheckedCreateNestedOneWithoutSchoolInput
+    requisitions?: RequisitionUncheckedCreateNestedManyWithoutSchoolInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutSchoolInput
+    leadershipAssignments?: LeadershipAssignmentUncheckedCreateNestedManyWithoutSchoolInput
+    studentAllowedItems?: StudentAllowedItemUncheckedCreateNestedManyWithoutSchoolInput
+    departments?: DepartmentUncheckedCreateNestedManyWithoutSchoolInput
+    hostels?: HostelUncheckedCreateNestedManyWithoutSchoolInput
+    weeklyMenus?: WeeklyMenuUncheckedCreateNestedManyWithoutSchoolInput
+    clinicSettings?: ClinicSettingUncheckedCreateNestedOneWithoutSchoolInput
+    clinicBeds?: ClinicBedUncheckedCreateNestedManyWithoutSchoolInput
+    clinicAdmissions?: ClinicAdmissionUncheckedCreateNestedManyWithoutSchoolInput
+    pharmacyStocks?: PharmacyStockUncheckedCreateNestedManyWithoutSchoolInput
+    studentHealthProfiles?: StudentHealthProfileUncheckedCreateNestedManyWithoutSchoolInput
+    clinicAccessAudits?: ClinicAccessAuditUncheckedCreateNestedManyWithoutSchoolInput
+    clinicEmergencyLogs?: ClinicEmergencyLogUncheckedCreateNestedManyWithoutSchoolInput
+    clinicDiagnoses?: ClinicDiagnosisUncheckedCreateNestedManyWithoutSchoolInput
+    clinicPrescriptions?: ClinicPrescriptionUncheckedCreateNestedManyWithoutSchoolInput
+    pharmacyDispensings?: PharmacyDispenseUncheckedCreateNestedManyWithoutSchoolInput
+    clinicMonitoringLogs?: ClinicMonitoringLogUncheckedCreateNestedManyWithoutSchoolInput
+    clinicVitals?: ClinicVitalUncheckedCreateNestedManyWithoutSchoolInput
+    originTransfers?: TransferAuthorizationUncheckedCreateNestedManyWithoutOriginSchoolInput
+    targetTransfers?: TransferAuthorizationUncheckedCreateNestedManyWithoutTargetSchoolInput
+    faculties?: FacultyUncheckedCreateNestedManyWithoutSchoolInput
+    paymentMethods?: PaymentMethodUncheckedCreateNestedManyWithoutSchoolInput
+    feeGroups?: FeeGroupUncheckedCreateNestedManyWithoutSchoolInput
+    revenueAllocations?: RevenueAllocationUncheckedCreateNestedManyWithoutSchoolInput
+    allowanceTypes?: PayrollAllowanceUncheckedCreateNestedManyWithoutSchoolInput
+    deductionTypes?: PayrollDeductionUncheckedCreateNestedManyWithoutSchoolInput
+    taxTables?: TaxTableUncheckedCreateNestedManyWithoutSchoolInput
+    employeeProfiles?: EmployeeProfileUncheckedCreateNestedManyWithoutSchoolInput
+    accountCategories?: AccountCategoryUncheckedCreateNestedManyWithoutSchoolInput
+    liabilities?: LiabilityUncheckedCreateNestedManyWithoutSchoolInput
+    incomes?: IncomeUncheckedCreateNestedManyWithoutSchoolInput
+    expenses?: ExpenseUncheckedCreateNestedManyWithoutSchoolInput
+    uniformItems?: UniformItemUncheckedCreateNestedManyWithoutSchoolInput
+    uniformStockOrders?: UniformStockOrderUncheckedCreateNestedManyWithoutSchoolInput
+    uniformSales?: UniformSaleUncheckedCreateNestedManyWithoutSchoolInput
+    uniformSupplierPayments?: UniformSupplierPaymentUncheckedCreateNestedManyWithoutSchoolInput
+    physicalProducts?: PhysicalProductUncheckedCreateNestedManyWithoutSchoolInput
+    physicalProductConsumptions?: PhysicalProductConsumptionUncheckedCreateNestedManyWithoutSchoolInput
+    feeReminderLogs?: FeeReminderLogUncheckedCreateNestedManyWithoutSchoolInput
+    termlyComments?: TermlyCommentUncheckedCreateNestedManyWithoutSchoolInput
+    payrollRuns?: PayrollRunUncheckedCreateNestedManyWithoutSchoolInput
+    questionPapers?: QuestionPaperUncheckedCreateNestedManyWithoutSchoolInput
+    payrollEntries?: PayrollEntryUncheckedCreateNestedManyWithoutSchoolInput
+    gradingScales?: GradingScaleUncheckedCreateNestedManyWithoutSchoolInput
+    studentPayments?: StudentPaymentUncheckedCreateNestedManyWithoutSchoolInput
+    communicationLogs?: CommunicationLogUncheckedCreateNestedManyWithoutSchoolInput
+    libraryCategories?: LibraryCategoryUncheckedCreateNestedManyWithoutSchoolInput
+    sections?: SectionUncheckedCreateNestedManyWithoutSchoolInput
+    studentHouses?: StudentHouseUncheckedCreateNestedManyWithoutSchoolInput
+    holidays?: HolidayUncheckedCreateNestedManyWithoutSchoolInput
+    schoolSetting?: SchoolSettingUncheckedCreateNestedOneWithoutSchoolInput
+    CBTExam?: CBTExamUncheckedCreateNestedManyWithoutSchoolInput
+    Syllabus?: SyllabusUncheckedCreateNestedManyWithoutSchoolInput
+    LessonPlan?: LessonPlanUncheckedCreateNestedManyWithoutSchoolInput
+    LiveClass?: LiveClassUncheckedCreateNestedManyWithoutSchoolInput
+    Award?: AwardUncheckedCreateNestedManyWithoutSchoolInput
+    Course?: CourseUncheckedCreateNestedManyWithoutSchoolInput
+    StudyMaterial?: StudyMaterialUncheckedCreateNestedManyWithoutSchoolInput
+    hostelCategories?: HostelCategoryUncheckedCreateNestedManyWithoutSchoolInput
+    hostelRooms?: HostelRoomUncheckedCreateNestedManyWithoutSchoolInput
+    SchoolVehicle?: SchoolVehicleUncheckedCreateNestedManyWithoutSchoolInput
+    SchoolTransport?: SchoolTransportUncheckedCreateNestedManyWithoutSchoolInput
+    paymentPlans?: PaymentPlanUncheckedCreateNestedManyWithoutSchoolInput
+    meetingMinutes?: MeetingMinutesUncheckedCreateNestedManyWithoutSchoolInput
+    projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
+    sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
+    ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
+    chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
+    journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
+    accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
+    uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
+  }
+
+  export type SchoolCreateOrConnectWithoutStockMovementsInput = {
+    where: SchoolWhereUniqueInput
+    create: XOR<SchoolCreateWithoutStockMovementsInput, SchoolUncheckedCreateWithoutStockMovementsInput>
+  }
+
+  export type SchoolUpsertWithoutStockMovementsInput = {
+    update: XOR<SchoolUpdateWithoutStockMovementsInput, SchoolUncheckedUpdateWithoutStockMovementsInput>
+    create: XOR<SchoolCreateWithoutStockMovementsInput, SchoolUncheckedCreateWithoutStockMovementsInput>
+    where?: SchoolWhereInput
+  }
+
+  export type SchoolUpdateToOneWithWhereWithoutStockMovementsInput = {
+    where?: SchoolWhereInput
+    data: XOR<SchoolUpdateWithoutStockMovementsInput, SchoolUncheckedUpdateWithoutStockMovementsInput>
+  }
+
+  export type SchoolUpdateWithoutStockMovementsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    isCombined?: BoolFieldUpdateOperationsInput | boolean
+    levels?: SchoolUpdatelevelsInput | string[]
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    branding?: NullableJsonNullValueInput | InputJsonValue
+    customContent?: NullableJsonNullValueInput | InputJsonValue
+    hexcoCenterNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    idCardTemplate?: NullableStringFieldUpdateOperationsInput | string | null
+    settings?: NullableJsonNullValueInput | InputJsonValue
+    plan?: PlanUpdateOneRequiredWithoutSchoolsNestedInput
+    users?: UserUpdateManyWithoutSchoolNestedInput
+    students?: StudentUpdateManyWithoutSchoolNestedInput
+    teachers?: TeacherUpdateManyWithoutSchoolNestedInput
+    news?: NewsUpdateManyWithoutSchoolNestedInput
+    websiteInquiries?: WebsiteInquiryUpdateManyWithoutSchoolNestedInput
+    noticeboards?: NoticeboardUpdateManyWithoutSchoolNestedInput
+    clinicVisits?: ClinicVisitUpdateManyWithoutSchoolNestedInput
+    clinicHospitalizations?: ClinicHospitalizationUpdateManyWithoutSchoolNestedInput
+    vacancies?: VacancyUpdateManyWithoutSchoolNestedInput
+    jobApplications?: JobApplicationUpdateManyWithoutSchoolNestedInput
+    gallery?: GalleryUpdateManyWithoutSchoolNestedInput
+    clubs?: ClubUpdateManyWithoutSchoolNestedInput
+    sports?: SportUpdateManyWithoutSchoolNestedInput
+    applications?: ApplicationUpdateManyWithoutSchoolNestedInput
+    announcements?: AnnouncementUpdateManyWithoutSchoolNestedInput
+    chaplaincyEvents?: ChaplaincyEventUpdateManyWithoutSchoolNestedInput
+    diningHallReports?: DiningHallReportUpdateManyWithoutSchoolNestedInput
+    farmLivestockBatches?: FarmLivestockBatchUpdateManyWithoutSchoolNestedInput
+    farmCropCycles?: FarmCropCycleUpdateManyWithoutSchoolNestedInput
+    farmInventoryItems?: FarmInventoryItemUpdateManyWithoutSchoolNestedInput
+    prefectDuties?: PrefectDutyUpdateManyWithoutSchoolNestedInput
+    prefectMeetings?: PrefectMeetingUpdateManyWithoutSchoolNestedInput
+    prefectReports?: PrefectReportUpdateManyWithoutSchoolNestedInput
+    staffAttendances?: StaffAttendanceUpdateManyWithoutSchoolNestedInput
+    timetableSlots?: TimetableSlotUpdateManyWithoutSchoolNestedInput
+    classes?: SchoolClassUpdateManyWithoutSchoolNestedInput
+    subjects?: SubjectUpdateManyWithoutSchoolNestedInput
+    books?: BookUpdateManyWithoutSchoolNestedInput
+    grades?: GradeUpdateManyWithoutSchoolNestedInput
+    attendance?: AttendanceUpdateManyWithoutSchoolNestedInput
+    fees?: FeeUpdateManyWithoutSchoolNestedInput
+    assignments?: AssignmentUpdateManyWithoutSchoolNestedInput
+    bookLoans?: BookLoanUpdateManyWithoutSchoolNestedInput
+    bookReservations?: BookReservationUpdateManyWithoutSchoolNestedInput
+    librarySetting?: LibrarySettingUpdateOneWithoutSchoolNestedInput
+    libraryDigitalResources?: LibraryDigitalResourceUpdateManyWithoutSchoolNestedInput
+    assignmentSubmissions?: AssignmentSubmissionUpdateManyWithoutSchoolNestedInput
+    supervisorAssignments?: SupervisorAssignmentUpdateManyWithoutSchoolNestedInput
+    extensionRequests?: ExtensionRequestUpdateManyWithoutSchoolNestedInput
+    progressReports?: ProgressReportUpdateManyWithoutSchoolNestedInput
+    tuckshopItems?: TuckshopItemUpdateManyWithoutSchoolNestedInput
+    suppliers?: SchoolSupplierUpdateManyWithoutSchoolNestedInput
+    assets?: AssetUpdateManyWithoutSchoolNestedInput
+    reportTemplate?: ReportTemplateUpdateOneWithoutSchoolNestedInput
+    websiteSettings?: WebsiteSettingsUpdateOneWithoutSchoolNestedInput
+    requisitions?: RequisitionUpdateManyWithoutSchoolNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutSchoolNestedInput
+    leadershipAssignments?: LeadershipAssignmentUpdateManyWithoutSchoolNestedInput
+    studentAllowedItems?: StudentAllowedItemUpdateManyWithoutSchoolNestedInput
+    departments?: DepartmentUpdateManyWithoutSchoolNestedInput
+    hostels?: HostelUpdateManyWithoutSchoolNestedInput
+    weeklyMenus?: WeeklyMenuUpdateManyWithoutSchoolNestedInput
+    clinicSettings?: ClinicSettingUpdateOneWithoutSchoolNestedInput
+    clinicBeds?: ClinicBedUpdateManyWithoutSchoolNestedInput
+    clinicAdmissions?: ClinicAdmissionUpdateManyWithoutSchoolNestedInput
+    pharmacyStocks?: PharmacyStockUpdateManyWithoutSchoolNestedInput
+    studentHealthProfiles?: StudentHealthProfileUpdateManyWithoutSchoolNestedInput
+    clinicAccessAudits?: ClinicAccessAuditUpdateManyWithoutSchoolNestedInput
+    clinicEmergencyLogs?: ClinicEmergencyLogUpdateManyWithoutSchoolNestedInput
+    clinicDiagnoses?: ClinicDiagnosisUpdateManyWithoutSchoolNestedInput
+    clinicPrescriptions?: ClinicPrescriptionUpdateManyWithoutSchoolNestedInput
+    pharmacyDispensings?: PharmacyDispenseUpdateManyWithoutSchoolNestedInput
+    clinicMonitoringLogs?: ClinicMonitoringLogUpdateManyWithoutSchoolNestedInput
+    clinicVitals?: ClinicVitalUpdateManyWithoutSchoolNestedInput
+    originTransfers?: TransferAuthorizationUpdateManyWithoutOriginSchoolNestedInput
+    targetTransfers?: TransferAuthorizationUpdateManyWithoutTargetSchoolNestedInput
+    faculties?: FacultyUpdateManyWithoutSchoolNestedInput
+    paymentMethods?: PaymentMethodUpdateManyWithoutSchoolNestedInput
+    feeGroups?: FeeGroupUpdateManyWithoutSchoolNestedInput
+    revenueAllocations?: RevenueAllocationUpdateManyWithoutSchoolNestedInput
+    allowanceTypes?: PayrollAllowanceUpdateManyWithoutSchoolNestedInput
+    deductionTypes?: PayrollDeductionUpdateManyWithoutSchoolNestedInput
+    taxTables?: TaxTableUpdateManyWithoutSchoolNestedInput
+    employeeProfiles?: EmployeeProfileUpdateManyWithoutSchoolNestedInput
+    accountCategories?: AccountCategoryUpdateManyWithoutSchoolNestedInput
+    liabilities?: LiabilityUpdateManyWithoutSchoolNestedInput
+    incomes?: IncomeUpdateManyWithoutSchoolNestedInput
+    expenses?: ExpenseUpdateManyWithoutSchoolNestedInput
+    uniformItems?: UniformItemUpdateManyWithoutSchoolNestedInput
+    uniformStockOrders?: UniformStockOrderUpdateManyWithoutSchoolNestedInput
+    uniformSales?: UniformSaleUpdateManyWithoutSchoolNestedInput
+    uniformSupplierPayments?: UniformSupplierPaymentUpdateManyWithoutSchoolNestedInput
+    physicalProducts?: PhysicalProductUpdateManyWithoutSchoolNestedInput
+    physicalProductConsumptions?: PhysicalProductConsumptionUpdateManyWithoutSchoolNestedInput
+    feeReminderLogs?: FeeReminderLogUpdateManyWithoutSchoolNestedInput
+    termlyComments?: TermlyCommentUpdateManyWithoutSchoolNestedInput
+    payrollRuns?: PayrollRunUpdateManyWithoutSchoolNestedInput
+    questionPapers?: QuestionPaperUpdateManyWithoutSchoolNestedInput
+    payrollEntries?: PayrollEntryUpdateManyWithoutSchoolNestedInput
+    gradingScales?: GradingScaleUpdateManyWithoutSchoolNestedInput
+    studentPayments?: StudentPaymentUpdateManyWithoutSchoolNestedInput
+    communicationLogs?: CommunicationLogUpdateManyWithoutSchoolNestedInput
+    libraryCategories?: LibraryCategoryUpdateManyWithoutSchoolNestedInput
+    sections?: SectionUpdateManyWithoutSchoolNestedInput
+    studentHouses?: StudentHouseUpdateManyWithoutSchoolNestedInput
+    holidays?: HolidayUpdateManyWithoutSchoolNestedInput
+    schoolSetting?: SchoolSettingUpdateOneWithoutSchoolNestedInput
+    CBTExam?: CBTExamUpdateManyWithoutSchoolNestedInput
+    Syllabus?: SyllabusUpdateManyWithoutSchoolNestedInput
+    LessonPlan?: LessonPlanUpdateManyWithoutSchoolNestedInput
+    LiveClass?: LiveClassUpdateManyWithoutSchoolNestedInput
+    Award?: AwardUpdateManyWithoutSchoolNestedInput
+    Course?: CourseUpdateManyWithoutSchoolNestedInput
+    StudyMaterial?: StudyMaterialUpdateManyWithoutSchoolNestedInput
+    hostelCategories?: HostelCategoryUpdateManyWithoutSchoolNestedInput
+    hostelRooms?: HostelRoomUpdateManyWithoutSchoolNestedInput
+    SchoolVehicle?: SchoolVehicleUpdateManyWithoutSchoolNestedInput
+    SchoolTransport?: SchoolTransportUpdateManyWithoutSchoolNestedInput
+    paymentPlans?: PaymentPlanUpdateManyWithoutSchoolNestedInput
+    meetingMinutes?: MeetingMinutesUpdateManyWithoutSchoolNestedInput
+    projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
+    sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
+    ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
+    chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
+    journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
+    accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
+    uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
+    bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
+  }
+
+  export type SchoolUncheckedUpdateWithoutStockMovementsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    isCombined?: BoolFieldUpdateOperationsInput | boolean
+    levels?: SchoolUpdatelevelsInput | string[]
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    planId?: StringFieldUpdateOperationsInput | string
+    branding?: NullableJsonNullValueInput | InputJsonValue
+    customContent?: NullableJsonNullValueInput | InputJsonValue
+    hexcoCenterNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    idCardTemplate?: NullableStringFieldUpdateOperationsInput | string | null
+    settings?: NullableJsonNullValueInput | InputJsonValue
+    users?: UserUncheckedUpdateManyWithoutSchoolNestedInput
+    students?: StudentUncheckedUpdateManyWithoutSchoolNestedInput
+    teachers?: TeacherUncheckedUpdateManyWithoutSchoolNestedInput
+    news?: NewsUncheckedUpdateManyWithoutSchoolNestedInput
+    websiteInquiries?: WebsiteInquiryUncheckedUpdateManyWithoutSchoolNestedInput
+    noticeboards?: NoticeboardUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicVisits?: ClinicVisitUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicHospitalizations?: ClinicHospitalizationUncheckedUpdateManyWithoutSchoolNestedInput
+    vacancies?: VacancyUncheckedUpdateManyWithoutSchoolNestedInput
+    jobApplications?: JobApplicationUncheckedUpdateManyWithoutSchoolNestedInput
+    gallery?: GalleryUncheckedUpdateManyWithoutSchoolNestedInput
+    clubs?: ClubUncheckedUpdateManyWithoutSchoolNestedInput
+    sports?: SportUncheckedUpdateManyWithoutSchoolNestedInput
+    applications?: ApplicationUncheckedUpdateManyWithoutSchoolNestedInput
+    announcements?: AnnouncementUncheckedUpdateManyWithoutSchoolNestedInput
+    chaplaincyEvents?: ChaplaincyEventUncheckedUpdateManyWithoutSchoolNestedInput
+    diningHallReports?: DiningHallReportUncheckedUpdateManyWithoutSchoolNestedInput
+    farmLivestockBatches?: FarmLivestockBatchUncheckedUpdateManyWithoutSchoolNestedInput
+    farmCropCycles?: FarmCropCycleUncheckedUpdateManyWithoutSchoolNestedInput
+    farmInventoryItems?: FarmInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
+    prefectDuties?: PrefectDutyUncheckedUpdateManyWithoutSchoolNestedInput
+    prefectMeetings?: PrefectMeetingUncheckedUpdateManyWithoutSchoolNestedInput
+    prefectReports?: PrefectReportUncheckedUpdateManyWithoutSchoolNestedInput
+    staffAttendances?: StaffAttendanceUncheckedUpdateManyWithoutSchoolNestedInput
+    timetableSlots?: TimetableSlotUncheckedUpdateManyWithoutSchoolNestedInput
+    classes?: SchoolClassUncheckedUpdateManyWithoutSchoolNestedInput
+    subjects?: SubjectUncheckedUpdateManyWithoutSchoolNestedInput
+    books?: BookUncheckedUpdateManyWithoutSchoolNestedInput
+    grades?: GradeUncheckedUpdateManyWithoutSchoolNestedInput
+    attendance?: AttendanceUncheckedUpdateManyWithoutSchoolNestedInput
+    fees?: FeeUncheckedUpdateManyWithoutSchoolNestedInput
+    assignments?: AssignmentUncheckedUpdateManyWithoutSchoolNestedInput
+    bookLoans?: BookLoanUncheckedUpdateManyWithoutSchoolNestedInput
+    bookReservations?: BookReservationUncheckedUpdateManyWithoutSchoolNestedInput
+    librarySetting?: LibrarySettingUncheckedUpdateOneWithoutSchoolNestedInput
+    libraryDigitalResources?: LibraryDigitalResourceUncheckedUpdateManyWithoutSchoolNestedInput
+    assignmentSubmissions?: AssignmentSubmissionUncheckedUpdateManyWithoutSchoolNestedInput
+    supervisorAssignments?: SupervisorAssignmentUncheckedUpdateManyWithoutSchoolNestedInput
+    extensionRequests?: ExtensionRequestUncheckedUpdateManyWithoutSchoolNestedInput
+    progressReports?: ProgressReportUncheckedUpdateManyWithoutSchoolNestedInput
+    tuckshopItems?: TuckshopItemUncheckedUpdateManyWithoutSchoolNestedInput
+    suppliers?: SchoolSupplierUncheckedUpdateManyWithoutSchoolNestedInput
+    assets?: AssetUncheckedUpdateManyWithoutSchoolNestedInput
+    reportTemplate?: ReportTemplateUncheckedUpdateOneWithoutSchoolNestedInput
+    websiteSettings?: WebsiteSettingsUncheckedUpdateOneWithoutSchoolNestedInput
+    requisitions?: RequisitionUncheckedUpdateManyWithoutSchoolNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutSchoolNestedInput
+    leadershipAssignments?: LeadershipAssignmentUncheckedUpdateManyWithoutSchoolNestedInput
+    studentAllowedItems?: StudentAllowedItemUncheckedUpdateManyWithoutSchoolNestedInput
+    departments?: DepartmentUncheckedUpdateManyWithoutSchoolNestedInput
+    hostels?: HostelUncheckedUpdateManyWithoutSchoolNestedInput
+    weeklyMenus?: WeeklyMenuUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicSettings?: ClinicSettingUncheckedUpdateOneWithoutSchoolNestedInput
+    clinicBeds?: ClinicBedUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicAdmissions?: ClinicAdmissionUncheckedUpdateManyWithoutSchoolNestedInput
+    pharmacyStocks?: PharmacyStockUncheckedUpdateManyWithoutSchoolNestedInput
+    studentHealthProfiles?: StudentHealthProfileUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicAccessAudits?: ClinicAccessAuditUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicEmergencyLogs?: ClinicEmergencyLogUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicDiagnoses?: ClinicDiagnosisUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicPrescriptions?: ClinicPrescriptionUncheckedUpdateManyWithoutSchoolNestedInput
+    pharmacyDispensings?: PharmacyDispenseUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicMonitoringLogs?: ClinicMonitoringLogUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicVitals?: ClinicVitalUncheckedUpdateManyWithoutSchoolNestedInput
+    originTransfers?: TransferAuthorizationUncheckedUpdateManyWithoutOriginSchoolNestedInput
+    targetTransfers?: TransferAuthorizationUncheckedUpdateManyWithoutTargetSchoolNestedInput
+    faculties?: FacultyUncheckedUpdateManyWithoutSchoolNestedInput
+    paymentMethods?: PaymentMethodUncheckedUpdateManyWithoutSchoolNestedInput
+    feeGroups?: FeeGroupUncheckedUpdateManyWithoutSchoolNestedInput
+    revenueAllocations?: RevenueAllocationUncheckedUpdateManyWithoutSchoolNestedInput
+    allowanceTypes?: PayrollAllowanceUncheckedUpdateManyWithoutSchoolNestedInput
+    deductionTypes?: PayrollDeductionUncheckedUpdateManyWithoutSchoolNestedInput
+    taxTables?: TaxTableUncheckedUpdateManyWithoutSchoolNestedInput
+    employeeProfiles?: EmployeeProfileUncheckedUpdateManyWithoutSchoolNestedInput
+    accountCategories?: AccountCategoryUncheckedUpdateManyWithoutSchoolNestedInput
+    liabilities?: LiabilityUncheckedUpdateManyWithoutSchoolNestedInput
+    incomes?: IncomeUncheckedUpdateManyWithoutSchoolNestedInput
+    expenses?: ExpenseUncheckedUpdateManyWithoutSchoolNestedInput
+    uniformItems?: UniformItemUncheckedUpdateManyWithoutSchoolNestedInput
+    uniformStockOrders?: UniformStockOrderUncheckedUpdateManyWithoutSchoolNestedInput
+    uniformSales?: UniformSaleUncheckedUpdateManyWithoutSchoolNestedInput
+    uniformSupplierPayments?: UniformSupplierPaymentUncheckedUpdateManyWithoutSchoolNestedInput
+    physicalProducts?: PhysicalProductUncheckedUpdateManyWithoutSchoolNestedInput
+    physicalProductConsumptions?: PhysicalProductConsumptionUncheckedUpdateManyWithoutSchoolNestedInput
+    feeReminderLogs?: FeeReminderLogUncheckedUpdateManyWithoutSchoolNestedInput
+    termlyComments?: TermlyCommentUncheckedUpdateManyWithoutSchoolNestedInput
+    payrollRuns?: PayrollRunUncheckedUpdateManyWithoutSchoolNestedInput
+    questionPapers?: QuestionPaperUncheckedUpdateManyWithoutSchoolNestedInput
+    payrollEntries?: PayrollEntryUncheckedUpdateManyWithoutSchoolNestedInput
+    gradingScales?: GradingScaleUncheckedUpdateManyWithoutSchoolNestedInput
+    studentPayments?: StudentPaymentUncheckedUpdateManyWithoutSchoolNestedInput
+    communicationLogs?: CommunicationLogUncheckedUpdateManyWithoutSchoolNestedInput
+    libraryCategories?: LibraryCategoryUncheckedUpdateManyWithoutSchoolNestedInput
+    sections?: SectionUncheckedUpdateManyWithoutSchoolNestedInput
+    studentHouses?: StudentHouseUncheckedUpdateManyWithoutSchoolNestedInput
+    holidays?: HolidayUncheckedUpdateManyWithoutSchoolNestedInput
+    schoolSetting?: SchoolSettingUncheckedUpdateOneWithoutSchoolNestedInput
+    CBTExam?: CBTExamUncheckedUpdateManyWithoutSchoolNestedInput
+    Syllabus?: SyllabusUncheckedUpdateManyWithoutSchoolNestedInput
+    LessonPlan?: LessonPlanUncheckedUpdateManyWithoutSchoolNestedInput
+    LiveClass?: LiveClassUncheckedUpdateManyWithoutSchoolNestedInput
+    Award?: AwardUncheckedUpdateManyWithoutSchoolNestedInput
+    Course?: CourseUncheckedUpdateManyWithoutSchoolNestedInput
+    StudyMaterial?: StudyMaterialUncheckedUpdateManyWithoutSchoolNestedInput
+    hostelCategories?: HostelCategoryUncheckedUpdateManyWithoutSchoolNestedInput
+    hostelRooms?: HostelRoomUncheckedUpdateManyWithoutSchoolNestedInput
+    SchoolVehicle?: SchoolVehicleUncheckedUpdateManyWithoutSchoolNestedInput
+    SchoolTransport?: SchoolTransportUncheckedUpdateManyWithoutSchoolNestedInput
+    paymentPlans?: PaymentPlanUncheckedUpdateManyWithoutSchoolNestedInput
+    meetingMinutes?: MeetingMinutesUncheckedUpdateManyWithoutSchoolNestedInput
+    projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
+    sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
+    ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
+    chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
+    journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
+    accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
+    uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
+  }
+
+  export type SchoolCreateWithoutTaxBracketsInput = {
+    id?: string
+    code: string
+    name: string
+    type: string
+    isCombined?: boolean
+    levels?: SchoolCreatelevelsInput | string[]
+    address?: string | null
+    country?: string | null
+    email: string
+    phone?: string | null
+    website?: string | null
+    status?: string
+    branding?: NullableJsonNullValueInput | InputJsonValue
+    customContent?: NullableJsonNullValueInput | InputJsonValue
+    hexcoCenterNumber?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    idCardTemplate?: string | null
+    settings?: NullableJsonNullValueInput | InputJsonValue
+    plan: PlanCreateNestedOneWithoutSchoolsInput
+    users?: UserCreateNestedManyWithoutSchoolInput
+    students?: StudentCreateNestedManyWithoutSchoolInput
+    teachers?: TeacherCreateNestedManyWithoutSchoolInput
+    news?: NewsCreateNestedManyWithoutSchoolInput
+    websiteInquiries?: WebsiteInquiryCreateNestedManyWithoutSchoolInput
+    noticeboards?: NoticeboardCreateNestedManyWithoutSchoolInput
+    clinicVisits?: ClinicVisitCreateNestedManyWithoutSchoolInput
+    clinicHospitalizations?: ClinicHospitalizationCreateNestedManyWithoutSchoolInput
+    vacancies?: VacancyCreateNestedManyWithoutSchoolInput
+    jobApplications?: JobApplicationCreateNestedManyWithoutSchoolInput
+    gallery?: GalleryCreateNestedManyWithoutSchoolInput
+    clubs?: ClubCreateNestedManyWithoutSchoolInput
+    sports?: SportCreateNestedManyWithoutSchoolInput
+    applications?: ApplicationCreateNestedManyWithoutSchoolInput
+    announcements?: AnnouncementCreateNestedManyWithoutSchoolInput
+    chaplaincyEvents?: ChaplaincyEventCreateNestedManyWithoutSchoolInput
+    diningHallReports?: DiningHallReportCreateNestedManyWithoutSchoolInput
+    farmLivestockBatches?: FarmLivestockBatchCreateNestedManyWithoutSchoolInput
+    farmCropCycles?: FarmCropCycleCreateNestedManyWithoutSchoolInput
+    farmInventoryItems?: FarmInventoryItemCreateNestedManyWithoutSchoolInput
+    prefectDuties?: PrefectDutyCreateNestedManyWithoutSchoolInput
+    prefectMeetings?: PrefectMeetingCreateNestedManyWithoutSchoolInput
+    prefectReports?: PrefectReportCreateNestedManyWithoutSchoolInput
+    staffAttendances?: StaffAttendanceCreateNestedManyWithoutSchoolInput
+    timetableSlots?: TimetableSlotCreateNestedManyWithoutSchoolInput
+    classes?: SchoolClassCreateNestedManyWithoutSchoolInput
+    subjects?: SubjectCreateNestedManyWithoutSchoolInput
+    books?: BookCreateNestedManyWithoutSchoolInput
+    grades?: GradeCreateNestedManyWithoutSchoolInput
+    attendance?: AttendanceCreateNestedManyWithoutSchoolInput
+    fees?: FeeCreateNestedManyWithoutSchoolInput
+    assignments?: AssignmentCreateNestedManyWithoutSchoolInput
+    bookLoans?: BookLoanCreateNestedManyWithoutSchoolInput
+    bookReservations?: BookReservationCreateNestedManyWithoutSchoolInput
+    librarySetting?: LibrarySettingCreateNestedOneWithoutSchoolInput
+    libraryDigitalResources?: LibraryDigitalResourceCreateNestedManyWithoutSchoolInput
+    assignmentSubmissions?: AssignmentSubmissionCreateNestedManyWithoutSchoolInput
+    supervisorAssignments?: SupervisorAssignmentCreateNestedManyWithoutSchoolInput
+    extensionRequests?: ExtensionRequestCreateNestedManyWithoutSchoolInput
+    progressReports?: ProgressReportCreateNestedManyWithoutSchoolInput
+    tuckshopItems?: TuckshopItemCreateNestedManyWithoutSchoolInput
+    suppliers?: SchoolSupplierCreateNestedManyWithoutSchoolInput
+    assets?: AssetCreateNestedManyWithoutSchoolInput
+    reportTemplate?: ReportTemplateCreateNestedOneWithoutSchoolInput
+    websiteSettings?: WebsiteSettingsCreateNestedOneWithoutSchoolInput
+    requisitions?: RequisitionCreateNestedManyWithoutSchoolInput
+    auditLogs?: AuditLogCreateNestedManyWithoutSchoolInput
+    leadershipAssignments?: LeadershipAssignmentCreateNestedManyWithoutSchoolInput
+    studentAllowedItems?: StudentAllowedItemCreateNestedManyWithoutSchoolInput
+    departments?: DepartmentCreateNestedManyWithoutSchoolInput
+    hostels?: HostelCreateNestedManyWithoutSchoolInput
+    weeklyMenus?: WeeklyMenuCreateNestedManyWithoutSchoolInput
+    clinicSettings?: ClinicSettingCreateNestedOneWithoutSchoolInput
+    clinicBeds?: ClinicBedCreateNestedManyWithoutSchoolInput
+    clinicAdmissions?: ClinicAdmissionCreateNestedManyWithoutSchoolInput
+    pharmacyStocks?: PharmacyStockCreateNestedManyWithoutSchoolInput
+    studentHealthProfiles?: StudentHealthProfileCreateNestedManyWithoutSchoolInput
+    clinicAccessAudits?: ClinicAccessAuditCreateNestedManyWithoutSchoolInput
+    clinicEmergencyLogs?: ClinicEmergencyLogCreateNestedManyWithoutSchoolInput
+    clinicDiagnoses?: ClinicDiagnosisCreateNestedManyWithoutSchoolInput
+    clinicPrescriptions?: ClinicPrescriptionCreateNestedManyWithoutSchoolInput
+    pharmacyDispensings?: PharmacyDispenseCreateNestedManyWithoutSchoolInput
+    clinicMonitoringLogs?: ClinicMonitoringLogCreateNestedManyWithoutSchoolInput
+    clinicVitals?: ClinicVitalCreateNestedManyWithoutSchoolInput
+    originTransfers?: TransferAuthorizationCreateNestedManyWithoutOriginSchoolInput
+    targetTransfers?: TransferAuthorizationCreateNestedManyWithoutTargetSchoolInput
+    faculties?: FacultyCreateNestedManyWithoutSchoolInput
+    paymentMethods?: PaymentMethodCreateNestedManyWithoutSchoolInput
+    feeGroups?: FeeGroupCreateNestedManyWithoutSchoolInput
+    revenueAllocations?: RevenueAllocationCreateNestedManyWithoutSchoolInput
+    allowanceTypes?: PayrollAllowanceCreateNestedManyWithoutSchoolInput
+    deductionTypes?: PayrollDeductionCreateNestedManyWithoutSchoolInput
+    taxTables?: TaxTableCreateNestedManyWithoutSchoolInput
+    employeeProfiles?: EmployeeProfileCreateNestedManyWithoutSchoolInput
+    accountCategories?: AccountCategoryCreateNestedManyWithoutSchoolInput
+    liabilities?: LiabilityCreateNestedManyWithoutSchoolInput
+    incomes?: IncomeCreateNestedManyWithoutSchoolInput
+    expenses?: ExpenseCreateNestedManyWithoutSchoolInput
+    uniformItems?: UniformItemCreateNestedManyWithoutSchoolInput
+    uniformStockOrders?: UniformStockOrderCreateNestedManyWithoutSchoolInput
+    uniformSales?: UniformSaleCreateNestedManyWithoutSchoolInput
+    uniformSupplierPayments?: UniformSupplierPaymentCreateNestedManyWithoutSchoolInput
+    physicalProducts?: PhysicalProductCreateNestedManyWithoutSchoolInput
+    physicalProductConsumptions?: PhysicalProductConsumptionCreateNestedManyWithoutSchoolInput
+    feeReminderLogs?: FeeReminderLogCreateNestedManyWithoutSchoolInput
+    termlyComments?: TermlyCommentCreateNestedManyWithoutSchoolInput
+    payrollRuns?: PayrollRunCreateNestedManyWithoutSchoolInput
+    questionPapers?: QuestionPaperCreateNestedManyWithoutSchoolInput
+    payrollEntries?: PayrollEntryCreateNestedManyWithoutSchoolInput
+    gradingScales?: GradingScaleCreateNestedManyWithoutSchoolInput
+    studentPayments?: StudentPaymentCreateNestedManyWithoutSchoolInput
+    communicationLogs?: CommunicationLogCreateNestedManyWithoutSchoolInput
+    libraryCategories?: LibraryCategoryCreateNestedManyWithoutSchoolInput
+    sections?: SectionCreateNestedManyWithoutSchoolInput
+    studentHouses?: StudentHouseCreateNestedManyWithoutSchoolInput
+    holidays?: HolidayCreateNestedManyWithoutSchoolInput
+    schoolSetting?: SchoolSettingCreateNestedOneWithoutSchoolInput
+    CBTExam?: CBTExamCreateNestedManyWithoutSchoolInput
+    Syllabus?: SyllabusCreateNestedManyWithoutSchoolInput
+    LessonPlan?: LessonPlanCreateNestedManyWithoutSchoolInput
+    LiveClass?: LiveClassCreateNestedManyWithoutSchoolInput
+    Award?: AwardCreateNestedManyWithoutSchoolInput
+    Course?: CourseCreateNestedManyWithoutSchoolInput
+    StudyMaterial?: StudyMaterialCreateNestedManyWithoutSchoolInput
+    hostelCategories?: HostelCategoryCreateNestedManyWithoutSchoolInput
+    hostelRooms?: HostelRoomCreateNestedManyWithoutSchoolInput
+    SchoolVehicle?: SchoolVehicleCreateNestedManyWithoutSchoolInput
+    SchoolTransport?: SchoolTransportCreateNestedManyWithoutSchoolInput
+    paymentPlans?: PaymentPlanCreateNestedManyWithoutSchoolInput
+    meetingMinutes?: MeetingMinutesCreateNestedManyWithoutSchoolInput
+    projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
+    sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
+    ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
+    chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
+    journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
+    accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
+    uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
+    bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+  }
+
+  export type SchoolUncheckedCreateWithoutTaxBracketsInput = {
+    id?: string
+    code: string
+    name: string
+    type: string
+    isCombined?: boolean
+    levels?: SchoolCreatelevelsInput | string[]
+    address?: string | null
+    country?: string | null
+    email: string
+    phone?: string | null
+    website?: string | null
+    status?: string
+    planId: string
+    branding?: NullableJsonNullValueInput | InputJsonValue
+    customContent?: NullableJsonNullValueInput | InputJsonValue
+    hexcoCenterNumber?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    idCardTemplate?: string | null
+    settings?: NullableJsonNullValueInput | InputJsonValue
+    users?: UserUncheckedCreateNestedManyWithoutSchoolInput
+    students?: StudentUncheckedCreateNestedManyWithoutSchoolInput
+    teachers?: TeacherUncheckedCreateNestedManyWithoutSchoolInput
+    news?: NewsUncheckedCreateNestedManyWithoutSchoolInput
+    websiteInquiries?: WebsiteInquiryUncheckedCreateNestedManyWithoutSchoolInput
+    noticeboards?: NoticeboardUncheckedCreateNestedManyWithoutSchoolInput
+    clinicVisits?: ClinicVisitUncheckedCreateNestedManyWithoutSchoolInput
+    clinicHospitalizations?: ClinicHospitalizationUncheckedCreateNestedManyWithoutSchoolInput
+    vacancies?: VacancyUncheckedCreateNestedManyWithoutSchoolInput
+    jobApplications?: JobApplicationUncheckedCreateNestedManyWithoutSchoolInput
+    gallery?: GalleryUncheckedCreateNestedManyWithoutSchoolInput
+    clubs?: ClubUncheckedCreateNestedManyWithoutSchoolInput
+    sports?: SportUncheckedCreateNestedManyWithoutSchoolInput
+    applications?: ApplicationUncheckedCreateNestedManyWithoutSchoolInput
+    announcements?: AnnouncementUncheckedCreateNestedManyWithoutSchoolInput
+    chaplaincyEvents?: ChaplaincyEventUncheckedCreateNestedManyWithoutSchoolInput
+    diningHallReports?: DiningHallReportUncheckedCreateNestedManyWithoutSchoolInput
+    farmLivestockBatches?: FarmLivestockBatchUncheckedCreateNestedManyWithoutSchoolInput
+    farmCropCycles?: FarmCropCycleUncheckedCreateNestedManyWithoutSchoolInput
+    farmInventoryItems?: FarmInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
+    prefectDuties?: PrefectDutyUncheckedCreateNestedManyWithoutSchoolInput
+    prefectMeetings?: PrefectMeetingUncheckedCreateNestedManyWithoutSchoolInput
+    prefectReports?: PrefectReportUncheckedCreateNestedManyWithoutSchoolInput
+    staffAttendances?: StaffAttendanceUncheckedCreateNestedManyWithoutSchoolInput
+    timetableSlots?: TimetableSlotUncheckedCreateNestedManyWithoutSchoolInput
+    classes?: SchoolClassUncheckedCreateNestedManyWithoutSchoolInput
+    subjects?: SubjectUncheckedCreateNestedManyWithoutSchoolInput
+    books?: BookUncheckedCreateNestedManyWithoutSchoolInput
+    grades?: GradeUncheckedCreateNestedManyWithoutSchoolInput
+    attendance?: AttendanceUncheckedCreateNestedManyWithoutSchoolInput
+    fees?: FeeUncheckedCreateNestedManyWithoutSchoolInput
+    assignments?: AssignmentUncheckedCreateNestedManyWithoutSchoolInput
+    bookLoans?: BookLoanUncheckedCreateNestedManyWithoutSchoolInput
+    bookReservations?: BookReservationUncheckedCreateNestedManyWithoutSchoolInput
+    librarySetting?: LibrarySettingUncheckedCreateNestedOneWithoutSchoolInput
+    libraryDigitalResources?: LibraryDigitalResourceUncheckedCreateNestedManyWithoutSchoolInput
+    assignmentSubmissions?: AssignmentSubmissionUncheckedCreateNestedManyWithoutSchoolInput
+    supervisorAssignments?: SupervisorAssignmentUncheckedCreateNestedManyWithoutSchoolInput
+    extensionRequests?: ExtensionRequestUncheckedCreateNestedManyWithoutSchoolInput
+    progressReports?: ProgressReportUncheckedCreateNestedManyWithoutSchoolInput
+    tuckshopItems?: TuckshopItemUncheckedCreateNestedManyWithoutSchoolInput
+    suppliers?: SchoolSupplierUncheckedCreateNestedManyWithoutSchoolInput
+    assets?: AssetUncheckedCreateNestedManyWithoutSchoolInput
+    reportTemplate?: ReportTemplateUncheckedCreateNestedOneWithoutSchoolInput
+    websiteSettings?: WebsiteSettingsUncheckedCreateNestedOneWithoutSchoolInput
+    requisitions?: RequisitionUncheckedCreateNestedManyWithoutSchoolInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutSchoolInput
+    leadershipAssignments?: LeadershipAssignmentUncheckedCreateNestedManyWithoutSchoolInput
+    studentAllowedItems?: StudentAllowedItemUncheckedCreateNestedManyWithoutSchoolInput
+    departments?: DepartmentUncheckedCreateNestedManyWithoutSchoolInput
+    hostels?: HostelUncheckedCreateNestedManyWithoutSchoolInput
+    weeklyMenus?: WeeklyMenuUncheckedCreateNestedManyWithoutSchoolInput
+    clinicSettings?: ClinicSettingUncheckedCreateNestedOneWithoutSchoolInput
+    clinicBeds?: ClinicBedUncheckedCreateNestedManyWithoutSchoolInput
+    clinicAdmissions?: ClinicAdmissionUncheckedCreateNestedManyWithoutSchoolInput
+    pharmacyStocks?: PharmacyStockUncheckedCreateNestedManyWithoutSchoolInput
+    studentHealthProfiles?: StudentHealthProfileUncheckedCreateNestedManyWithoutSchoolInput
+    clinicAccessAudits?: ClinicAccessAuditUncheckedCreateNestedManyWithoutSchoolInput
+    clinicEmergencyLogs?: ClinicEmergencyLogUncheckedCreateNestedManyWithoutSchoolInput
+    clinicDiagnoses?: ClinicDiagnosisUncheckedCreateNestedManyWithoutSchoolInput
+    clinicPrescriptions?: ClinicPrescriptionUncheckedCreateNestedManyWithoutSchoolInput
+    pharmacyDispensings?: PharmacyDispenseUncheckedCreateNestedManyWithoutSchoolInput
+    clinicMonitoringLogs?: ClinicMonitoringLogUncheckedCreateNestedManyWithoutSchoolInput
+    clinicVitals?: ClinicVitalUncheckedCreateNestedManyWithoutSchoolInput
+    originTransfers?: TransferAuthorizationUncheckedCreateNestedManyWithoutOriginSchoolInput
+    targetTransfers?: TransferAuthorizationUncheckedCreateNestedManyWithoutTargetSchoolInput
+    faculties?: FacultyUncheckedCreateNestedManyWithoutSchoolInput
+    paymentMethods?: PaymentMethodUncheckedCreateNestedManyWithoutSchoolInput
+    feeGroups?: FeeGroupUncheckedCreateNestedManyWithoutSchoolInput
+    revenueAllocations?: RevenueAllocationUncheckedCreateNestedManyWithoutSchoolInput
+    allowanceTypes?: PayrollAllowanceUncheckedCreateNestedManyWithoutSchoolInput
+    deductionTypes?: PayrollDeductionUncheckedCreateNestedManyWithoutSchoolInput
+    taxTables?: TaxTableUncheckedCreateNestedManyWithoutSchoolInput
+    employeeProfiles?: EmployeeProfileUncheckedCreateNestedManyWithoutSchoolInput
+    accountCategories?: AccountCategoryUncheckedCreateNestedManyWithoutSchoolInput
+    liabilities?: LiabilityUncheckedCreateNestedManyWithoutSchoolInput
+    incomes?: IncomeUncheckedCreateNestedManyWithoutSchoolInput
+    expenses?: ExpenseUncheckedCreateNestedManyWithoutSchoolInput
+    uniformItems?: UniformItemUncheckedCreateNestedManyWithoutSchoolInput
+    uniformStockOrders?: UniformStockOrderUncheckedCreateNestedManyWithoutSchoolInput
+    uniformSales?: UniformSaleUncheckedCreateNestedManyWithoutSchoolInput
+    uniformSupplierPayments?: UniformSupplierPaymentUncheckedCreateNestedManyWithoutSchoolInput
+    physicalProducts?: PhysicalProductUncheckedCreateNestedManyWithoutSchoolInput
+    physicalProductConsumptions?: PhysicalProductConsumptionUncheckedCreateNestedManyWithoutSchoolInput
+    feeReminderLogs?: FeeReminderLogUncheckedCreateNestedManyWithoutSchoolInput
+    termlyComments?: TermlyCommentUncheckedCreateNestedManyWithoutSchoolInput
+    payrollRuns?: PayrollRunUncheckedCreateNestedManyWithoutSchoolInput
+    questionPapers?: QuestionPaperUncheckedCreateNestedManyWithoutSchoolInput
+    payrollEntries?: PayrollEntryUncheckedCreateNestedManyWithoutSchoolInput
+    gradingScales?: GradingScaleUncheckedCreateNestedManyWithoutSchoolInput
+    studentPayments?: StudentPaymentUncheckedCreateNestedManyWithoutSchoolInput
+    communicationLogs?: CommunicationLogUncheckedCreateNestedManyWithoutSchoolInput
+    libraryCategories?: LibraryCategoryUncheckedCreateNestedManyWithoutSchoolInput
+    sections?: SectionUncheckedCreateNestedManyWithoutSchoolInput
+    studentHouses?: StudentHouseUncheckedCreateNestedManyWithoutSchoolInput
+    holidays?: HolidayUncheckedCreateNestedManyWithoutSchoolInput
+    schoolSetting?: SchoolSettingUncheckedCreateNestedOneWithoutSchoolInput
+    CBTExam?: CBTExamUncheckedCreateNestedManyWithoutSchoolInput
+    Syllabus?: SyllabusUncheckedCreateNestedManyWithoutSchoolInput
+    LessonPlan?: LessonPlanUncheckedCreateNestedManyWithoutSchoolInput
+    LiveClass?: LiveClassUncheckedCreateNestedManyWithoutSchoolInput
+    Award?: AwardUncheckedCreateNestedManyWithoutSchoolInput
+    Course?: CourseUncheckedCreateNestedManyWithoutSchoolInput
+    StudyMaterial?: StudyMaterialUncheckedCreateNestedManyWithoutSchoolInput
+    hostelCategories?: HostelCategoryUncheckedCreateNestedManyWithoutSchoolInput
+    hostelRooms?: HostelRoomUncheckedCreateNestedManyWithoutSchoolInput
+    SchoolVehicle?: SchoolVehicleUncheckedCreateNestedManyWithoutSchoolInput
+    SchoolTransport?: SchoolTransportUncheckedCreateNestedManyWithoutSchoolInput
+    paymentPlans?: PaymentPlanUncheckedCreateNestedManyWithoutSchoolInput
+    meetingMinutes?: MeetingMinutesUncheckedCreateNestedManyWithoutSchoolInput
+    projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
+    sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
+    ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
+    chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
+    journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
+    accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
+    uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+  }
+
+  export type SchoolCreateOrConnectWithoutTaxBracketsInput = {
+    where: SchoolWhereUniqueInput
+    create: XOR<SchoolCreateWithoutTaxBracketsInput, SchoolUncheckedCreateWithoutTaxBracketsInput>
+  }
+
+  export type SchoolUpsertWithoutTaxBracketsInput = {
+    update: XOR<SchoolUpdateWithoutTaxBracketsInput, SchoolUncheckedUpdateWithoutTaxBracketsInput>
+    create: XOR<SchoolCreateWithoutTaxBracketsInput, SchoolUncheckedCreateWithoutTaxBracketsInput>
+    where?: SchoolWhereInput
+  }
+
+  export type SchoolUpdateToOneWithWhereWithoutTaxBracketsInput = {
+    where?: SchoolWhereInput
+    data: XOR<SchoolUpdateWithoutTaxBracketsInput, SchoolUncheckedUpdateWithoutTaxBracketsInput>
+  }
+
+  export type SchoolUpdateWithoutTaxBracketsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    isCombined?: BoolFieldUpdateOperationsInput | boolean
+    levels?: SchoolUpdatelevelsInput | string[]
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    branding?: NullableJsonNullValueInput | InputJsonValue
+    customContent?: NullableJsonNullValueInput | InputJsonValue
+    hexcoCenterNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    idCardTemplate?: NullableStringFieldUpdateOperationsInput | string | null
+    settings?: NullableJsonNullValueInput | InputJsonValue
+    plan?: PlanUpdateOneRequiredWithoutSchoolsNestedInput
+    users?: UserUpdateManyWithoutSchoolNestedInput
+    students?: StudentUpdateManyWithoutSchoolNestedInput
+    teachers?: TeacherUpdateManyWithoutSchoolNestedInput
+    news?: NewsUpdateManyWithoutSchoolNestedInput
+    websiteInquiries?: WebsiteInquiryUpdateManyWithoutSchoolNestedInput
+    noticeboards?: NoticeboardUpdateManyWithoutSchoolNestedInput
+    clinicVisits?: ClinicVisitUpdateManyWithoutSchoolNestedInput
+    clinicHospitalizations?: ClinicHospitalizationUpdateManyWithoutSchoolNestedInput
+    vacancies?: VacancyUpdateManyWithoutSchoolNestedInput
+    jobApplications?: JobApplicationUpdateManyWithoutSchoolNestedInput
+    gallery?: GalleryUpdateManyWithoutSchoolNestedInput
+    clubs?: ClubUpdateManyWithoutSchoolNestedInput
+    sports?: SportUpdateManyWithoutSchoolNestedInput
+    applications?: ApplicationUpdateManyWithoutSchoolNestedInput
+    announcements?: AnnouncementUpdateManyWithoutSchoolNestedInput
+    chaplaincyEvents?: ChaplaincyEventUpdateManyWithoutSchoolNestedInput
+    diningHallReports?: DiningHallReportUpdateManyWithoutSchoolNestedInput
+    farmLivestockBatches?: FarmLivestockBatchUpdateManyWithoutSchoolNestedInput
+    farmCropCycles?: FarmCropCycleUpdateManyWithoutSchoolNestedInput
+    farmInventoryItems?: FarmInventoryItemUpdateManyWithoutSchoolNestedInput
+    prefectDuties?: PrefectDutyUpdateManyWithoutSchoolNestedInput
+    prefectMeetings?: PrefectMeetingUpdateManyWithoutSchoolNestedInput
+    prefectReports?: PrefectReportUpdateManyWithoutSchoolNestedInput
+    staffAttendances?: StaffAttendanceUpdateManyWithoutSchoolNestedInput
+    timetableSlots?: TimetableSlotUpdateManyWithoutSchoolNestedInput
+    classes?: SchoolClassUpdateManyWithoutSchoolNestedInput
+    subjects?: SubjectUpdateManyWithoutSchoolNestedInput
+    books?: BookUpdateManyWithoutSchoolNestedInput
+    grades?: GradeUpdateManyWithoutSchoolNestedInput
+    attendance?: AttendanceUpdateManyWithoutSchoolNestedInput
+    fees?: FeeUpdateManyWithoutSchoolNestedInput
+    assignments?: AssignmentUpdateManyWithoutSchoolNestedInput
+    bookLoans?: BookLoanUpdateManyWithoutSchoolNestedInput
+    bookReservations?: BookReservationUpdateManyWithoutSchoolNestedInput
+    librarySetting?: LibrarySettingUpdateOneWithoutSchoolNestedInput
+    libraryDigitalResources?: LibraryDigitalResourceUpdateManyWithoutSchoolNestedInput
+    assignmentSubmissions?: AssignmentSubmissionUpdateManyWithoutSchoolNestedInput
+    supervisorAssignments?: SupervisorAssignmentUpdateManyWithoutSchoolNestedInput
+    extensionRequests?: ExtensionRequestUpdateManyWithoutSchoolNestedInput
+    progressReports?: ProgressReportUpdateManyWithoutSchoolNestedInput
+    tuckshopItems?: TuckshopItemUpdateManyWithoutSchoolNestedInput
+    suppliers?: SchoolSupplierUpdateManyWithoutSchoolNestedInput
+    assets?: AssetUpdateManyWithoutSchoolNestedInput
+    reportTemplate?: ReportTemplateUpdateOneWithoutSchoolNestedInput
+    websiteSettings?: WebsiteSettingsUpdateOneWithoutSchoolNestedInput
+    requisitions?: RequisitionUpdateManyWithoutSchoolNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutSchoolNestedInput
+    leadershipAssignments?: LeadershipAssignmentUpdateManyWithoutSchoolNestedInput
+    studentAllowedItems?: StudentAllowedItemUpdateManyWithoutSchoolNestedInput
+    departments?: DepartmentUpdateManyWithoutSchoolNestedInput
+    hostels?: HostelUpdateManyWithoutSchoolNestedInput
+    weeklyMenus?: WeeklyMenuUpdateManyWithoutSchoolNestedInput
+    clinicSettings?: ClinicSettingUpdateOneWithoutSchoolNestedInput
+    clinicBeds?: ClinicBedUpdateManyWithoutSchoolNestedInput
+    clinicAdmissions?: ClinicAdmissionUpdateManyWithoutSchoolNestedInput
+    pharmacyStocks?: PharmacyStockUpdateManyWithoutSchoolNestedInput
+    studentHealthProfiles?: StudentHealthProfileUpdateManyWithoutSchoolNestedInput
+    clinicAccessAudits?: ClinicAccessAuditUpdateManyWithoutSchoolNestedInput
+    clinicEmergencyLogs?: ClinicEmergencyLogUpdateManyWithoutSchoolNestedInput
+    clinicDiagnoses?: ClinicDiagnosisUpdateManyWithoutSchoolNestedInput
+    clinicPrescriptions?: ClinicPrescriptionUpdateManyWithoutSchoolNestedInput
+    pharmacyDispensings?: PharmacyDispenseUpdateManyWithoutSchoolNestedInput
+    clinicMonitoringLogs?: ClinicMonitoringLogUpdateManyWithoutSchoolNestedInput
+    clinicVitals?: ClinicVitalUpdateManyWithoutSchoolNestedInput
+    originTransfers?: TransferAuthorizationUpdateManyWithoutOriginSchoolNestedInput
+    targetTransfers?: TransferAuthorizationUpdateManyWithoutTargetSchoolNestedInput
+    faculties?: FacultyUpdateManyWithoutSchoolNestedInput
+    paymentMethods?: PaymentMethodUpdateManyWithoutSchoolNestedInput
+    feeGroups?: FeeGroupUpdateManyWithoutSchoolNestedInput
+    revenueAllocations?: RevenueAllocationUpdateManyWithoutSchoolNestedInput
+    allowanceTypes?: PayrollAllowanceUpdateManyWithoutSchoolNestedInput
+    deductionTypes?: PayrollDeductionUpdateManyWithoutSchoolNestedInput
+    taxTables?: TaxTableUpdateManyWithoutSchoolNestedInput
+    employeeProfiles?: EmployeeProfileUpdateManyWithoutSchoolNestedInput
+    accountCategories?: AccountCategoryUpdateManyWithoutSchoolNestedInput
+    liabilities?: LiabilityUpdateManyWithoutSchoolNestedInput
+    incomes?: IncomeUpdateManyWithoutSchoolNestedInput
+    expenses?: ExpenseUpdateManyWithoutSchoolNestedInput
+    uniformItems?: UniformItemUpdateManyWithoutSchoolNestedInput
+    uniformStockOrders?: UniformStockOrderUpdateManyWithoutSchoolNestedInput
+    uniformSales?: UniformSaleUpdateManyWithoutSchoolNestedInput
+    uniformSupplierPayments?: UniformSupplierPaymentUpdateManyWithoutSchoolNestedInput
+    physicalProducts?: PhysicalProductUpdateManyWithoutSchoolNestedInput
+    physicalProductConsumptions?: PhysicalProductConsumptionUpdateManyWithoutSchoolNestedInput
+    feeReminderLogs?: FeeReminderLogUpdateManyWithoutSchoolNestedInput
+    termlyComments?: TermlyCommentUpdateManyWithoutSchoolNestedInput
+    payrollRuns?: PayrollRunUpdateManyWithoutSchoolNestedInput
+    questionPapers?: QuestionPaperUpdateManyWithoutSchoolNestedInput
+    payrollEntries?: PayrollEntryUpdateManyWithoutSchoolNestedInput
+    gradingScales?: GradingScaleUpdateManyWithoutSchoolNestedInput
+    studentPayments?: StudentPaymentUpdateManyWithoutSchoolNestedInput
+    communicationLogs?: CommunicationLogUpdateManyWithoutSchoolNestedInput
+    libraryCategories?: LibraryCategoryUpdateManyWithoutSchoolNestedInput
+    sections?: SectionUpdateManyWithoutSchoolNestedInput
+    studentHouses?: StudentHouseUpdateManyWithoutSchoolNestedInput
+    holidays?: HolidayUpdateManyWithoutSchoolNestedInput
+    schoolSetting?: SchoolSettingUpdateOneWithoutSchoolNestedInput
+    CBTExam?: CBTExamUpdateManyWithoutSchoolNestedInput
+    Syllabus?: SyllabusUpdateManyWithoutSchoolNestedInput
+    LessonPlan?: LessonPlanUpdateManyWithoutSchoolNestedInput
+    LiveClass?: LiveClassUpdateManyWithoutSchoolNestedInput
+    Award?: AwardUpdateManyWithoutSchoolNestedInput
+    Course?: CourseUpdateManyWithoutSchoolNestedInput
+    StudyMaterial?: StudyMaterialUpdateManyWithoutSchoolNestedInput
+    hostelCategories?: HostelCategoryUpdateManyWithoutSchoolNestedInput
+    hostelRooms?: HostelRoomUpdateManyWithoutSchoolNestedInput
+    SchoolVehicle?: SchoolVehicleUpdateManyWithoutSchoolNestedInput
+    SchoolTransport?: SchoolTransportUpdateManyWithoutSchoolNestedInput
+    paymentPlans?: PaymentPlanUpdateManyWithoutSchoolNestedInput
+    meetingMinutes?: MeetingMinutesUpdateManyWithoutSchoolNestedInput
+    projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
+    sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
+    ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
+    chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
+    journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
+    accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
+    uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
+    bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+  }
+
+  export type SchoolUncheckedUpdateWithoutTaxBracketsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    isCombined?: BoolFieldUpdateOperationsInput | boolean
+    levels?: SchoolUpdatelevelsInput | string[]
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    planId?: StringFieldUpdateOperationsInput | string
+    branding?: NullableJsonNullValueInput | InputJsonValue
+    customContent?: NullableJsonNullValueInput | InputJsonValue
+    hexcoCenterNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    idCardTemplate?: NullableStringFieldUpdateOperationsInput | string | null
+    settings?: NullableJsonNullValueInput | InputJsonValue
+    users?: UserUncheckedUpdateManyWithoutSchoolNestedInput
+    students?: StudentUncheckedUpdateManyWithoutSchoolNestedInput
+    teachers?: TeacherUncheckedUpdateManyWithoutSchoolNestedInput
+    news?: NewsUncheckedUpdateManyWithoutSchoolNestedInput
+    websiteInquiries?: WebsiteInquiryUncheckedUpdateManyWithoutSchoolNestedInput
+    noticeboards?: NoticeboardUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicVisits?: ClinicVisitUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicHospitalizations?: ClinicHospitalizationUncheckedUpdateManyWithoutSchoolNestedInput
+    vacancies?: VacancyUncheckedUpdateManyWithoutSchoolNestedInput
+    jobApplications?: JobApplicationUncheckedUpdateManyWithoutSchoolNestedInput
+    gallery?: GalleryUncheckedUpdateManyWithoutSchoolNestedInput
+    clubs?: ClubUncheckedUpdateManyWithoutSchoolNestedInput
+    sports?: SportUncheckedUpdateManyWithoutSchoolNestedInput
+    applications?: ApplicationUncheckedUpdateManyWithoutSchoolNestedInput
+    announcements?: AnnouncementUncheckedUpdateManyWithoutSchoolNestedInput
+    chaplaincyEvents?: ChaplaincyEventUncheckedUpdateManyWithoutSchoolNestedInput
+    diningHallReports?: DiningHallReportUncheckedUpdateManyWithoutSchoolNestedInput
+    farmLivestockBatches?: FarmLivestockBatchUncheckedUpdateManyWithoutSchoolNestedInput
+    farmCropCycles?: FarmCropCycleUncheckedUpdateManyWithoutSchoolNestedInput
+    farmInventoryItems?: FarmInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
+    prefectDuties?: PrefectDutyUncheckedUpdateManyWithoutSchoolNestedInput
+    prefectMeetings?: PrefectMeetingUncheckedUpdateManyWithoutSchoolNestedInput
+    prefectReports?: PrefectReportUncheckedUpdateManyWithoutSchoolNestedInput
+    staffAttendances?: StaffAttendanceUncheckedUpdateManyWithoutSchoolNestedInput
+    timetableSlots?: TimetableSlotUncheckedUpdateManyWithoutSchoolNestedInput
+    classes?: SchoolClassUncheckedUpdateManyWithoutSchoolNestedInput
+    subjects?: SubjectUncheckedUpdateManyWithoutSchoolNestedInput
+    books?: BookUncheckedUpdateManyWithoutSchoolNestedInput
+    grades?: GradeUncheckedUpdateManyWithoutSchoolNestedInput
+    attendance?: AttendanceUncheckedUpdateManyWithoutSchoolNestedInput
+    fees?: FeeUncheckedUpdateManyWithoutSchoolNestedInput
+    assignments?: AssignmentUncheckedUpdateManyWithoutSchoolNestedInput
+    bookLoans?: BookLoanUncheckedUpdateManyWithoutSchoolNestedInput
+    bookReservations?: BookReservationUncheckedUpdateManyWithoutSchoolNestedInput
+    librarySetting?: LibrarySettingUncheckedUpdateOneWithoutSchoolNestedInput
+    libraryDigitalResources?: LibraryDigitalResourceUncheckedUpdateManyWithoutSchoolNestedInput
+    assignmentSubmissions?: AssignmentSubmissionUncheckedUpdateManyWithoutSchoolNestedInput
+    supervisorAssignments?: SupervisorAssignmentUncheckedUpdateManyWithoutSchoolNestedInput
+    extensionRequests?: ExtensionRequestUncheckedUpdateManyWithoutSchoolNestedInput
+    progressReports?: ProgressReportUncheckedUpdateManyWithoutSchoolNestedInput
+    tuckshopItems?: TuckshopItemUncheckedUpdateManyWithoutSchoolNestedInput
+    suppliers?: SchoolSupplierUncheckedUpdateManyWithoutSchoolNestedInput
+    assets?: AssetUncheckedUpdateManyWithoutSchoolNestedInput
+    reportTemplate?: ReportTemplateUncheckedUpdateOneWithoutSchoolNestedInput
+    websiteSettings?: WebsiteSettingsUncheckedUpdateOneWithoutSchoolNestedInput
+    requisitions?: RequisitionUncheckedUpdateManyWithoutSchoolNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutSchoolNestedInput
+    leadershipAssignments?: LeadershipAssignmentUncheckedUpdateManyWithoutSchoolNestedInput
+    studentAllowedItems?: StudentAllowedItemUncheckedUpdateManyWithoutSchoolNestedInput
+    departments?: DepartmentUncheckedUpdateManyWithoutSchoolNestedInput
+    hostels?: HostelUncheckedUpdateManyWithoutSchoolNestedInput
+    weeklyMenus?: WeeklyMenuUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicSettings?: ClinicSettingUncheckedUpdateOneWithoutSchoolNestedInput
+    clinicBeds?: ClinicBedUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicAdmissions?: ClinicAdmissionUncheckedUpdateManyWithoutSchoolNestedInput
+    pharmacyStocks?: PharmacyStockUncheckedUpdateManyWithoutSchoolNestedInput
+    studentHealthProfiles?: StudentHealthProfileUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicAccessAudits?: ClinicAccessAuditUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicEmergencyLogs?: ClinicEmergencyLogUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicDiagnoses?: ClinicDiagnosisUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicPrescriptions?: ClinicPrescriptionUncheckedUpdateManyWithoutSchoolNestedInput
+    pharmacyDispensings?: PharmacyDispenseUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicMonitoringLogs?: ClinicMonitoringLogUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicVitals?: ClinicVitalUncheckedUpdateManyWithoutSchoolNestedInput
+    originTransfers?: TransferAuthorizationUncheckedUpdateManyWithoutOriginSchoolNestedInput
+    targetTransfers?: TransferAuthorizationUncheckedUpdateManyWithoutTargetSchoolNestedInput
+    faculties?: FacultyUncheckedUpdateManyWithoutSchoolNestedInput
+    paymentMethods?: PaymentMethodUncheckedUpdateManyWithoutSchoolNestedInput
+    feeGroups?: FeeGroupUncheckedUpdateManyWithoutSchoolNestedInput
+    revenueAllocations?: RevenueAllocationUncheckedUpdateManyWithoutSchoolNestedInput
+    allowanceTypes?: PayrollAllowanceUncheckedUpdateManyWithoutSchoolNestedInput
+    deductionTypes?: PayrollDeductionUncheckedUpdateManyWithoutSchoolNestedInput
+    taxTables?: TaxTableUncheckedUpdateManyWithoutSchoolNestedInput
+    employeeProfiles?: EmployeeProfileUncheckedUpdateManyWithoutSchoolNestedInput
+    accountCategories?: AccountCategoryUncheckedUpdateManyWithoutSchoolNestedInput
+    liabilities?: LiabilityUncheckedUpdateManyWithoutSchoolNestedInput
+    incomes?: IncomeUncheckedUpdateManyWithoutSchoolNestedInput
+    expenses?: ExpenseUncheckedUpdateManyWithoutSchoolNestedInput
+    uniformItems?: UniformItemUncheckedUpdateManyWithoutSchoolNestedInput
+    uniformStockOrders?: UniformStockOrderUncheckedUpdateManyWithoutSchoolNestedInput
+    uniformSales?: UniformSaleUncheckedUpdateManyWithoutSchoolNestedInput
+    uniformSupplierPayments?: UniformSupplierPaymentUncheckedUpdateManyWithoutSchoolNestedInput
+    physicalProducts?: PhysicalProductUncheckedUpdateManyWithoutSchoolNestedInput
+    physicalProductConsumptions?: PhysicalProductConsumptionUncheckedUpdateManyWithoutSchoolNestedInput
+    feeReminderLogs?: FeeReminderLogUncheckedUpdateManyWithoutSchoolNestedInput
+    termlyComments?: TermlyCommentUncheckedUpdateManyWithoutSchoolNestedInput
+    payrollRuns?: PayrollRunUncheckedUpdateManyWithoutSchoolNestedInput
+    questionPapers?: QuestionPaperUncheckedUpdateManyWithoutSchoolNestedInput
+    payrollEntries?: PayrollEntryUncheckedUpdateManyWithoutSchoolNestedInput
+    gradingScales?: GradingScaleUncheckedUpdateManyWithoutSchoolNestedInput
+    studentPayments?: StudentPaymentUncheckedUpdateManyWithoutSchoolNestedInput
+    communicationLogs?: CommunicationLogUncheckedUpdateManyWithoutSchoolNestedInput
+    libraryCategories?: LibraryCategoryUncheckedUpdateManyWithoutSchoolNestedInput
+    sections?: SectionUncheckedUpdateManyWithoutSchoolNestedInput
+    studentHouses?: StudentHouseUncheckedUpdateManyWithoutSchoolNestedInput
+    holidays?: HolidayUncheckedUpdateManyWithoutSchoolNestedInput
+    schoolSetting?: SchoolSettingUncheckedUpdateOneWithoutSchoolNestedInput
+    CBTExam?: CBTExamUncheckedUpdateManyWithoutSchoolNestedInput
+    Syllabus?: SyllabusUncheckedUpdateManyWithoutSchoolNestedInput
+    LessonPlan?: LessonPlanUncheckedUpdateManyWithoutSchoolNestedInput
+    LiveClass?: LiveClassUncheckedUpdateManyWithoutSchoolNestedInput
+    Award?: AwardUncheckedUpdateManyWithoutSchoolNestedInput
+    Course?: CourseUncheckedUpdateManyWithoutSchoolNestedInput
+    StudyMaterial?: StudyMaterialUncheckedUpdateManyWithoutSchoolNestedInput
+    hostelCategories?: HostelCategoryUncheckedUpdateManyWithoutSchoolNestedInput
+    hostelRooms?: HostelRoomUncheckedUpdateManyWithoutSchoolNestedInput
+    SchoolVehicle?: SchoolVehicleUncheckedUpdateManyWithoutSchoolNestedInput
+    SchoolTransport?: SchoolTransportUncheckedUpdateManyWithoutSchoolNestedInput
+    paymentPlans?: PaymentPlanUncheckedUpdateManyWithoutSchoolNestedInput
+    meetingMinutes?: MeetingMinutesUncheckedUpdateManyWithoutSchoolNestedInput
+    projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
+    sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
+    ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
+    chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
+    journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
+    accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
+    uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolCreateWithoutUniformStockMovementsInput = {
@@ -400196,6 +413939,11 @@ export namespace Prisma {
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutUniformStockMovementsInput = {
@@ -400337,6 +414085,11 @@ export namespace Prisma {
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutUniformStockMovementsInput = {
@@ -400525,6 +414278,11 @@ export namespace Prisma {
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutUniformStockMovementsInput = {
@@ -400666,6 +414424,11 @@ export namespace Prisma {
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type UniformItemUpsertWithoutStockMovementsInput = {
@@ -400844,6 +414607,11 @@ export namespace Prisma {
     journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutBankStatementsInput = {
@@ -400985,6 +414753,11 @@ export namespace Prisma {
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutBankStatementsInput = {
@@ -400998,6 +414771,8 @@ export namespace Prisma {
     name: string
     type: $Enums.AccountType
     isSystemAccount?: boolean
+    isBank?: boolean
+    isTemplate?: boolean
     isActive?: boolean
     description?: string | null
     createdAt?: Date | string
@@ -401016,6 +414791,8 @@ export namespace Prisma {
     type: $Enums.AccountType
     parentId?: string | null
     isSystemAccount?: boolean
+    isBank?: boolean
+    isTemplate?: boolean
     isActive?: boolean
     description?: string | null
     createdAt?: Date | string
@@ -401215,6 +414992,11 @@ export namespace Prisma {
     journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutBankStatementsInput = {
@@ -401356,6 +415138,11 @@ export namespace Prisma {
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type ChartOfAccountUpsertWithoutBankStatementsInput = {
@@ -401375,6 +415162,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumAccountTypeFieldUpdateOperationsInput | $Enums.AccountType
     isSystemAccount?: BoolFieldUpdateOperationsInput | boolean
+    isBank?: BoolFieldUpdateOperationsInput | boolean
+    isTemplate?: BoolFieldUpdateOperationsInput | boolean
     isActive?: BoolFieldUpdateOperationsInput | boolean
     description?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -401393,6 +415182,8 @@ export namespace Prisma {
     type?: EnumAccountTypeFieldUpdateOperationsInput | $Enums.AccountType
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
     isSystemAccount?: BoolFieldUpdateOperationsInput | boolean
+    isBank?: BoolFieldUpdateOperationsInput | boolean
+    isTemplate?: BoolFieldUpdateOperationsInput | boolean
     isActive?: BoolFieldUpdateOperationsInput | boolean
     description?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -401681,6 +415472,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutStudentHealthProfilesInput = {
@@ -401822,6 +415618,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutStudentHealthProfilesInput = {
@@ -402144,6 +415945,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutStudentHealthProfilesInput = {
@@ -402285,6 +416091,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type StudentUpsertWithoutHealthProfileInput = {
@@ -402597,6 +416408,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutClinicVitalsInput = {
@@ -402738,6 +416554,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutClinicVitalsInput = {
@@ -403143,6 +416964,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutClinicVitalsInput = {
@@ -403284,6 +417110,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type ClinicVisitUpsertWithoutVitalsRecordInput = {
@@ -403685,6 +417516,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutClinicDiagnosesInput = {
@@ -403826,6 +417662,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutClinicDiagnosesInput = {
@@ -404093,6 +417934,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutClinicDiagnosesInput = {
@@ -404234,6 +418080,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type ClinicVisitUpsertWithoutDiagnosesListInput = {
@@ -404497,6 +418348,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutClinicPrescriptionsInput = {
@@ -404638,6 +418494,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutClinicPrescriptionsInput = {
@@ -405043,6 +418904,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutClinicPrescriptionsInput = {
@@ -405184,6 +419050,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type ClinicVisitUpsertWithoutPrescriptionsListInput = {
@@ -405585,6 +419456,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutPharmacyStocksInput = {
@@ -405726,6 +419602,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutPharmacyStocksInput = {
@@ -405943,6 +419824,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutPharmacyStocksInput = {
@@ -406084,6 +419970,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type PharmacyBatchUpsertWithWhereUniqueWithoutStockInput = {
@@ -406384,6 +420275,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutPharmacyDispensingsInput = {
@@ -406525,6 +420421,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutPharmacyDispensingsInput = {
@@ -406986,6 +420887,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutPharmacyDispensingsInput = {
@@ -407127,6 +421033,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type ClinicVisitUpsertWithoutPharmacyDispensingsInput = {
@@ -407596,6 +421507,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutClinicBedsInput = {
@@ -407737,6 +421653,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutClinicBedsInput = {
@@ -407934,6 +421855,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutClinicBedsInput = {
@@ -408075,6 +422001,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type ClinicAdmissionUpsertWithWhereUniqueWithoutBedInput = {
@@ -408232,6 +422163,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutClinicAdmissionsInput = {
@@ -408373,6 +422309,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutClinicAdmissionsInput = {
@@ -408841,6 +422782,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutClinicAdmissionsInput = {
@@ -408982,6 +422928,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type ClinicBedUpsertWithoutAdmissionsInput = {
@@ -409434,6 +423385,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutClinicMonitoringLogsInput = {
@@ -409575,6 +423531,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutClinicMonitoringLogsInput = {
@@ -409930,6 +423891,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutClinicMonitoringLogsInput = {
@@ -410071,6 +424037,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type ClinicAdmissionUpsertWithoutLogsInput = {
@@ -410422,6 +424393,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutClinicAccessAuditsInput = {
@@ -410563,6 +424539,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutClinicAccessAuditsInput = {
@@ -411048,6 +425029,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutClinicAccessAuditsInput = {
@@ -411189,6 +425175,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type StudentUpsertWithoutClinicAccessAuditsInput = {
@@ -411670,6 +425661,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutClinicEmergencyLogsInput = {
@@ -411811,6 +425807,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutClinicEmergencyLogsInput = {
@@ -412381,6 +426382,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutClinicEmergencyLogsInput = {
@@ -412522,6 +426528,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type ClinicVisitUpsertWithoutEmergencyLogsListInput = {
@@ -413094,6 +427105,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolUncheckedCreateWithoutClinicSettingsInput = {
@@ -413235,6 +427251,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
     uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
     bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type SchoolCreateOrConnectWithoutClinicSettingsInput = {
@@ -413392,6 +427413,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutClinicSettingsInput = {
@@ -413533,6 +427559,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolCreateManyPlanInput = {
@@ -413696,6 +427727,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutPlanInput = {
@@ -413837,6 +427873,11 @@ export namespace Prisma {
     accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
     uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
     bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type SchoolUncheckedUpdateManyWithoutPlanInput = {
@@ -415404,6 +429445,8 @@ export namespace Prisma {
     type: $Enums.AccountType
     parentId?: string | null
     isSystemAccount?: boolean
+    isBank?: boolean
+    isTemplate?: boolean
     isActive?: boolean
     description?: string | null
     createdAt?: Date | string
@@ -415416,6 +429459,9 @@ export namespace Prisma {
     date: Date | string
     description: string
     status?: string
+    currency?: string
+    exchangeRateUsed?: number
+    ipAddress?: string | null
     isReversing?: boolean
     reversedById?: string | null
     sourceType: string
@@ -415430,6 +429476,10 @@ export namespace Prisma {
   export type AccountingPeriodCreateManySchoolInput = {
     id?: string
     period: string
+    year?: number | null
+    term?: string | null
+    startDate?: Date | string | null
+    endDate?: Date | string | null
     status?: string
     closedBy?: string | null
     closedAt?: Date | string | null
@@ -415458,6 +429508,77 @@ export namespace Prisma {
     period: string
     reference?: string | null
     uploadedAt?: Date | string
+  }
+
+  export type ExchangeRateCreateManySchoolInput = {
+    id?: string
+    date: Date | string
+    fromCurrency?: string
+    toCurrency?: string
+    rate: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ApprovalCreateManySchoolInput = {
+    id?: string
+    entityType: string
+    entityId: string
+    requestedBy: string
+    amount: number
+    currency?: string
+    status?: string
+    tier?: number
+    approverRole: string
+    approvedBy?: string | null
+    approvedAt?: Date | string | null
+    rejectionReason?: string | null
+    thresholdRule?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type BudgetCreateManySchoolInput = {
+    id?: string
+    year: number
+    term?: string | null
+    coaCode: string
+    amount: number
+    currency?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type StockMovementCreateManySchoolInput = {
+    id?: string
+    module: string
+    itemId: string
+    itemName: string
+    batchNumber?: string | null
+    direction: string
+    quantity: number
+    unitCost?: number
+    totalCost?: number
+    date?: Date | string
+    reference?: string | null
+    journalEntryId?: string | null
+    createdAt?: Date | string
+  }
+
+  export type TaxBracketCreateManySchoolInput = {
+    id?: string
+    currency?: string
+    effectiveFrom: Date | string
+    effectiveTo?: Date | string | null
+    minIncome: number
+    maxIncome?: number | null
+    rate: number
+    deduction?: number
+    aidsLevyRate?: number
+    nssaCeiling?: number
+    nssaRate?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type UserUpdateWithoutSchoolInput = {
@@ -420462,6 +434583,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumAccountTypeFieldUpdateOperationsInput | $Enums.AccountType
     isSystemAccount?: BoolFieldUpdateOperationsInput | boolean
+    isBank?: BoolFieldUpdateOperationsInput | boolean
+    isTemplate?: BoolFieldUpdateOperationsInput | boolean
     isActive?: BoolFieldUpdateOperationsInput | boolean
     description?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -420479,6 +434602,8 @@ export namespace Prisma {
     type?: EnumAccountTypeFieldUpdateOperationsInput | $Enums.AccountType
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
     isSystemAccount?: BoolFieldUpdateOperationsInput | boolean
+    isBank?: BoolFieldUpdateOperationsInput | boolean
+    isTemplate?: BoolFieldUpdateOperationsInput | boolean
     isActive?: BoolFieldUpdateOperationsInput | boolean
     description?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -420495,6 +434620,8 @@ export namespace Prisma {
     type?: EnumAccountTypeFieldUpdateOperationsInput | $Enums.AccountType
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
     isSystemAccount?: BoolFieldUpdateOperationsInput | boolean
+    isBank?: BoolFieldUpdateOperationsInput | boolean
+    isTemplate?: BoolFieldUpdateOperationsInput | boolean
     isActive?: BoolFieldUpdateOperationsInput | boolean
     description?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -420507,6 +434634,9 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     description?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    currency?: StringFieldUpdateOperationsInput | string
+    exchangeRateUsed?: FloatFieldUpdateOperationsInput | number
+    ipAddress?: NullableStringFieldUpdateOperationsInput | string | null
     isReversing?: BoolFieldUpdateOperationsInput | boolean
     sourceType?: StringFieldUpdateOperationsInput | string
     sourceId?: StringFieldUpdateOperationsInput | string
@@ -420526,6 +434656,9 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     description?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    currency?: StringFieldUpdateOperationsInput | string
+    exchangeRateUsed?: FloatFieldUpdateOperationsInput | number
+    ipAddress?: NullableStringFieldUpdateOperationsInput | string | null
     isReversing?: BoolFieldUpdateOperationsInput | boolean
     reversedById?: NullableStringFieldUpdateOperationsInput | string | null
     sourceType?: StringFieldUpdateOperationsInput | string
@@ -420545,6 +434678,9 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     description?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    currency?: StringFieldUpdateOperationsInput | string
+    exchangeRateUsed?: FloatFieldUpdateOperationsInput | number
+    ipAddress?: NullableStringFieldUpdateOperationsInput | string | null
     isReversing?: BoolFieldUpdateOperationsInput | boolean
     reversedById?: NullableStringFieldUpdateOperationsInput | string | null
     sourceType?: StringFieldUpdateOperationsInput | string
@@ -420559,6 +434695,10 @@ export namespace Prisma {
   export type AccountingPeriodUpdateWithoutSchoolInput = {
     id?: StringFieldUpdateOperationsInput | string
     period?: StringFieldUpdateOperationsInput | string
+    year?: NullableIntFieldUpdateOperationsInput | number | null
+    term?: NullableStringFieldUpdateOperationsInput | string | null
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
     closedBy?: NullableStringFieldUpdateOperationsInput | string | null
     closedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -420570,6 +434710,10 @@ export namespace Prisma {
   export type AccountingPeriodUncheckedUpdateWithoutSchoolInput = {
     id?: StringFieldUpdateOperationsInput | string
     period?: StringFieldUpdateOperationsInput | string
+    year?: NullableIntFieldUpdateOperationsInput | number | null
+    term?: NullableStringFieldUpdateOperationsInput | string | null
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
     closedBy?: NullableStringFieldUpdateOperationsInput | string | null
     closedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -420581,6 +434725,10 @@ export namespace Prisma {
   export type AccountingPeriodUncheckedUpdateManyWithoutSchoolInput = {
     id?: StringFieldUpdateOperationsInput | string
     period?: StringFieldUpdateOperationsInput | string
+    year?: NullableIntFieldUpdateOperationsInput | number | null
+    term?: NullableStringFieldUpdateOperationsInput | string | null
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
     closedBy?: NullableStringFieldUpdateOperationsInput | string | null
     closedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -420655,6 +434803,219 @@ export namespace Prisma {
     period?: StringFieldUpdateOperationsInput | string
     reference?: NullableStringFieldUpdateOperationsInput | string | null
     uploadedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ExchangeRateUpdateWithoutSchoolInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    fromCurrency?: StringFieldUpdateOperationsInput | string
+    toCurrency?: StringFieldUpdateOperationsInput | string
+    rate?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ExchangeRateUncheckedUpdateWithoutSchoolInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    fromCurrency?: StringFieldUpdateOperationsInput | string
+    toCurrency?: StringFieldUpdateOperationsInput | string
+    rate?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ExchangeRateUncheckedUpdateManyWithoutSchoolInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    fromCurrency?: StringFieldUpdateOperationsInput | string
+    toCurrency?: StringFieldUpdateOperationsInput | string
+    rate?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ApprovalUpdateWithoutSchoolInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    entityType?: StringFieldUpdateOperationsInput | string
+    entityId?: StringFieldUpdateOperationsInput | string
+    requestedBy?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    tier?: IntFieldUpdateOperationsInput | number
+    approverRole?: StringFieldUpdateOperationsInput | string
+    approvedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    thresholdRule?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ApprovalUncheckedUpdateWithoutSchoolInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    entityType?: StringFieldUpdateOperationsInput | string
+    entityId?: StringFieldUpdateOperationsInput | string
+    requestedBy?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    tier?: IntFieldUpdateOperationsInput | number
+    approverRole?: StringFieldUpdateOperationsInput | string
+    approvedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    thresholdRule?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ApprovalUncheckedUpdateManyWithoutSchoolInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    entityType?: StringFieldUpdateOperationsInput | string
+    entityId?: StringFieldUpdateOperationsInput | string
+    requestedBy?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    tier?: IntFieldUpdateOperationsInput | number
+    approverRole?: StringFieldUpdateOperationsInput | string
+    approvedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    thresholdRule?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BudgetUpdateWithoutSchoolInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    year?: IntFieldUpdateOperationsInput | number
+    term?: NullableStringFieldUpdateOperationsInput | string | null
+    coaCode?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BudgetUncheckedUpdateWithoutSchoolInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    year?: IntFieldUpdateOperationsInput | number
+    term?: NullableStringFieldUpdateOperationsInput | string | null
+    coaCode?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BudgetUncheckedUpdateManyWithoutSchoolInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    year?: IntFieldUpdateOperationsInput | number
+    term?: NullableStringFieldUpdateOperationsInput | string | null
+    coaCode?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type StockMovementUpdateWithoutSchoolInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    module?: StringFieldUpdateOperationsInput | string
+    itemId?: StringFieldUpdateOperationsInput | string
+    itemName?: StringFieldUpdateOperationsInput | string
+    batchNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    direction?: StringFieldUpdateOperationsInput | string
+    quantity?: FloatFieldUpdateOperationsInput | number
+    unitCost?: FloatFieldUpdateOperationsInput | number
+    totalCost?: FloatFieldUpdateOperationsInput | number
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    reference?: NullableStringFieldUpdateOperationsInput | string | null
+    journalEntryId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type StockMovementUncheckedUpdateWithoutSchoolInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    module?: StringFieldUpdateOperationsInput | string
+    itemId?: StringFieldUpdateOperationsInput | string
+    itemName?: StringFieldUpdateOperationsInput | string
+    batchNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    direction?: StringFieldUpdateOperationsInput | string
+    quantity?: FloatFieldUpdateOperationsInput | number
+    unitCost?: FloatFieldUpdateOperationsInput | number
+    totalCost?: FloatFieldUpdateOperationsInput | number
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    reference?: NullableStringFieldUpdateOperationsInput | string | null
+    journalEntryId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type StockMovementUncheckedUpdateManyWithoutSchoolInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    module?: StringFieldUpdateOperationsInput | string
+    itemId?: StringFieldUpdateOperationsInput | string
+    itemName?: StringFieldUpdateOperationsInput | string
+    batchNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    direction?: StringFieldUpdateOperationsInput | string
+    quantity?: FloatFieldUpdateOperationsInput | number
+    unitCost?: FloatFieldUpdateOperationsInput | number
+    totalCost?: FloatFieldUpdateOperationsInput | number
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    reference?: NullableStringFieldUpdateOperationsInput | string | null
+    journalEntryId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TaxBracketUpdateWithoutSchoolInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    currency?: StringFieldUpdateOperationsInput | string
+    effectiveFrom?: DateTimeFieldUpdateOperationsInput | Date | string
+    effectiveTo?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    minIncome?: FloatFieldUpdateOperationsInput | number
+    maxIncome?: NullableFloatFieldUpdateOperationsInput | number | null
+    rate?: FloatFieldUpdateOperationsInput | number
+    deduction?: FloatFieldUpdateOperationsInput | number
+    aidsLevyRate?: FloatFieldUpdateOperationsInput | number
+    nssaCeiling?: FloatFieldUpdateOperationsInput | number
+    nssaRate?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TaxBracketUncheckedUpdateWithoutSchoolInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    currency?: StringFieldUpdateOperationsInput | string
+    effectiveFrom?: DateTimeFieldUpdateOperationsInput | Date | string
+    effectiveTo?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    minIncome?: FloatFieldUpdateOperationsInput | number
+    maxIncome?: NullableFloatFieldUpdateOperationsInput | number | null
+    rate?: FloatFieldUpdateOperationsInput | number
+    deduction?: FloatFieldUpdateOperationsInput | number
+    aidsLevyRate?: FloatFieldUpdateOperationsInput | number
+    nssaCeiling?: FloatFieldUpdateOperationsInput | number
+    nssaRate?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TaxBracketUncheckedUpdateManyWithoutSchoolInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    currency?: StringFieldUpdateOperationsInput | string
+    effectiveFrom?: DateTimeFieldUpdateOperationsInput | Date | string
+    effectiveTo?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    minIncome?: FloatFieldUpdateOperationsInput | number
+    maxIncome?: NullableFloatFieldUpdateOperationsInput | number | null
+    rate?: FloatFieldUpdateOperationsInput | number
+    deduction?: FloatFieldUpdateOperationsInput | number
+    aidsLevyRate?: FloatFieldUpdateOperationsInput | number
+    nssaCeiling?: FloatFieldUpdateOperationsInput | number
+    nssaRate?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type HostelCreateManyCategoryInput = {
@@ -433797,6 +448158,8 @@ export namespace Prisma {
     name: string
     type: $Enums.AccountType
     isSystemAccount?: boolean
+    isBank?: boolean
+    isTemplate?: boolean
     isActive?: boolean
     description?: string | null
     createdAt?: Date | string
@@ -433807,9 +448170,12 @@ export namespace Prisma {
     id?: string
     journalEntryId: string
     schoolId: string
+    coaCode?: string | null
     description?: string | null
     debit?: number
     credit?: number
+    baseAmount?: number
+    taxCode?: string | null
     currency?: string
     exchangeRate?: number
     debitForeign?: number
@@ -433836,6 +448202,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumAccountTypeFieldUpdateOperationsInput | $Enums.AccountType
     isSystemAccount?: BoolFieldUpdateOperationsInput | boolean
+    isBank?: BoolFieldUpdateOperationsInput | boolean
+    isTemplate?: BoolFieldUpdateOperationsInput | boolean
     isActive?: BoolFieldUpdateOperationsInput | boolean
     description?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -433853,6 +448221,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumAccountTypeFieldUpdateOperationsInput | $Enums.AccountType
     isSystemAccount?: BoolFieldUpdateOperationsInput | boolean
+    isBank?: BoolFieldUpdateOperationsInput | boolean
+    isTemplate?: BoolFieldUpdateOperationsInput | boolean
     isActive?: BoolFieldUpdateOperationsInput | boolean
     description?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -433869,6 +448239,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumAccountTypeFieldUpdateOperationsInput | $Enums.AccountType
     isSystemAccount?: BoolFieldUpdateOperationsInput | boolean
+    isBank?: BoolFieldUpdateOperationsInput | boolean
+    isTemplate?: BoolFieldUpdateOperationsInput | boolean
     isActive?: BoolFieldUpdateOperationsInput | boolean
     description?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -433878,9 +448250,12 @@ export namespace Prisma {
   export type JournalEntryLineUpdateWithoutAccountInput = {
     id?: StringFieldUpdateOperationsInput | string
     schoolId?: StringFieldUpdateOperationsInput | string
+    coaCode?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     debit?: FloatFieldUpdateOperationsInput | number
     credit?: FloatFieldUpdateOperationsInput | number
+    baseAmount?: FloatFieldUpdateOperationsInput | number
+    taxCode?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: StringFieldUpdateOperationsInput | string
     exchangeRate?: FloatFieldUpdateOperationsInput | number
     debitForeign?: FloatFieldUpdateOperationsInput | number
@@ -433898,9 +448273,12 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     journalEntryId?: StringFieldUpdateOperationsInput | string
     schoolId?: StringFieldUpdateOperationsInput | string
+    coaCode?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     debit?: FloatFieldUpdateOperationsInput | number
     credit?: FloatFieldUpdateOperationsInput | number
+    baseAmount?: FloatFieldUpdateOperationsInput | number
+    taxCode?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: StringFieldUpdateOperationsInput | string
     exchangeRate?: FloatFieldUpdateOperationsInput | number
     debitForeign?: FloatFieldUpdateOperationsInput | number
@@ -433917,9 +448295,12 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     journalEntryId?: StringFieldUpdateOperationsInput | string
     schoolId?: StringFieldUpdateOperationsInput | string
+    coaCode?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     debit?: FloatFieldUpdateOperationsInput | number
     credit?: FloatFieldUpdateOperationsInput | number
+    baseAmount?: FloatFieldUpdateOperationsInput | number
+    taxCode?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: StringFieldUpdateOperationsInput | string
     exchangeRate?: FloatFieldUpdateOperationsInput | number
     debitForeign?: FloatFieldUpdateOperationsInput | number
@@ -433965,6 +448346,9 @@ export namespace Prisma {
     date: Date | string
     description: string
     status?: string
+    currency?: string
+    exchangeRateUsed?: number
+    ipAddress?: string | null
     isReversing?: boolean
     sourceType: string
     sourceId: string
@@ -433979,9 +448363,12 @@ export namespace Prisma {
     id?: string
     accountId: string
     schoolId: string
+    coaCode?: string | null
     description?: string | null
     debit?: number
     credit?: number
+    baseAmount?: number
+    taxCode?: string | null
     currency?: string
     exchangeRate?: number
     debitForeign?: number
@@ -434000,6 +448387,9 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     description?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    currency?: StringFieldUpdateOperationsInput | string
+    exchangeRateUsed?: FloatFieldUpdateOperationsInput | number
+    ipAddress?: NullableStringFieldUpdateOperationsInput | string | null
     isReversing?: BoolFieldUpdateOperationsInput | boolean
     sourceType?: StringFieldUpdateOperationsInput | string
     sourceId?: StringFieldUpdateOperationsInput | string
@@ -434020,6 +448410,9 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     description?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    currency?: StringFieldUpdateOperationsInput | string
+    exchangeRateUsed?: FloatFieldUpdateOperationsInput | number
+    ipAddress?: NullableStringFieldUpdateOperationsInput | string | null
     isReversing?: BoolFieldUpdateOperationsInput | boolean
     sourceType?: StringFieldUpdateOperationsInput | string
     sourceId?: StringFieldUpdateOperationsInput | string
@@ -434039,6 +448432,9 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     description?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    currency?: StringFieldUpdateOperationsInput | string
+    exchangeRateUsed?: FloatFieldUpdateOperationsInput | number
+    ipAddress?: NullableStringFieldUpdateOperationsInput | string | null
     isReversing?: BoolFieldUpdateOperationsInput | boolean
     sourceType?: StringFieldUpdateOperationsInput | string
     sourceId?: StringFieldUpdateOperationsInput | string
@@ -434052,9 +448448,12 @@ export namespace Prisma {
   export type JournalEntryLineUpdateWithoutJournalEntryInput = {
     id?: StringFieldUpdateOperationsInput | string
     schoolId?: StringFieldUpdateOperationsInput | string
+    coaCode?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     debit?: FloatFieldUpdateOperationsInput | number
     credit?: FloatFieldUpdateOperationsInput | number
+    baseAmount?: FloatFieldUpdateOperationsInput | number
+    taxCode?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: StringFieldUpdateOperationsInput | string
     exchangeRate?: FloatFieldUpdateOperationsInput | number
     debitForeign?: FloatFieldUpdateOperationsInput | number
@@ -434072,9 +448471,12 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     accountId?: StringFieldUpdateOperationsInput | string
     schoolId?: StringFieldUpdateOperationsInput | string
+    coaCode?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     debit?: FloatFieldUpdateOperationsInput | number
     credit?: FloatFieldUpdateOperationsInput | number
+    baseAmount?: FloatFieldUpdateOperationsInput | number
+    taxCode?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: StringFieldUpdateOperationsInput | string
     exchangeRate?: FloatFieldUpdateOperationsInput | number
     debitForeign?: FloatFieldUpdateOperationsInput | number
@@ -434091,9 +448493,12 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     accountId?: StringFieldUpdateOperationsInput | string
     schoolId?: StringFieldUpdateOperationsInput | string
+    coaCode?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     debit?: FloatFieldUpdateOperationsInput | number
     credit?: FloatFieldUpdateOperationsInput | number
+    baseAmount?: FloatFieldUpdateOperationsInput | number
+    taxCode?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: StringFieldUpdateOperationsInput | string
     exchangeRate?: FloatFieldUpdateOperationsInput | number
     debitForeign?: FloatFieldUpdateOperationsInput | number
@@ -435235,6 +449640,26 @@ export namespace Prisma {
      * @deprecated Use AccountingPeriodDefaultArgs instead
      */
     export type AccountingPeriodArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = AccountingPeriodDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use ExchangeRateDefaultArgs instead
+     */
+    export type ExchangeRateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = ExchangeRateDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use ApprovalDefaultArgs instead
+     */
+    export type ApprovalArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = ApprovalDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use BudgetDefaultArgs instead
+     */
+    export type BudgetArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = BudgetDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use StockMovementDefaultArgs instead
+     */
+    export type StockMovementArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = StockMovementDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use TaxBracketDefaultArgs instead
+     */
+    export type TaxBracketArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = TaxBracketDefaultArgs<ExtArgs>
     /**
      * @deprecated Use UniformStockMovementDefaultArgs instead
      */

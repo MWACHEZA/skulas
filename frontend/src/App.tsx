@@ -151,6 +151,10 @@ import ManagePaymentPlans from './portals/shared/pages/human-resources/ManagePay
 import ChartOfAccountsPage from './portals/shared/pages/ChartOfAccountsPage';
 import FinancialReportsPage from './portals/shared/pages/FinancialReportsPage';
 import BankReconciliationPage from './portals/shared/pages/BankReconciliationPage';
+import GeneralLedgerPage from './portals/bursar/pages/GeneralLedgerPage';
+import BudgetsPage from './portals/bursar/pages/BudgetsPage';
+import AnalyticsEnginesPage from './portals/shared/pages/AnalyticsEnginesPage';
+
 
 //  Bursar pages 
 import BursarDashboard from './portals/bursar/pages/Dashboard';
@@ -694,10 +698,11 @@ export default function App() {
               <Route path="lesson-plan" element={<Navigate to="/admin/academics/setup?tab=subjects" replace />} />
               <Route path="assessments/grading" element={<Navigate to="/admin/academics/setup?tab=grading" replace />} />
               <Route path="assessments/marks-entry" element={<Navigate to="/admin/academics/marks?tab=marks" replace />} />
-              <Route path="assessments/principal-comments" element={<Navigate to="/admin/academics/marks?tab=reports" replace />} />
-              <Route path="reports" element={<Navigate to="/admin/academics/marks?tab=reports" replace />} />
-              <Route path="reports/*" element={<Navigate to="/admin/academics/marks?tab=reports" replace />} />
-              <Route path="admin-reports" element={<Navigate to="/admin/academics/marks?tab=reports" replace />} />
+              <Route path="reports" element={<AnalyticsEnginesPage />} />
+              <Route path="reports/analytics" element={<AnalyticsEnginesPage />} />
+              <Route path="reports/academics" element={<Navigate to="/admin/academics/marks?tab=reports" replace />} />
+              <Route path="admin-reports" element={<AnalyticsEnginesPage />} />
+
               <Route path="timetable" element={<Navigate to="/admin/academics/timetable?tab=schedule" replace />} />
               <Route path="calendar" element={<Navigate to="/admin/academics/timetable?tab=calendar" replace />} />
 
@@ -770,6 +775,7 @@ export default function App() {
               <Route path="reconcile" element={<BursarFinancialReconciliation />} />
               <Route path="accounts">
                 <Route path="coa" element={<ChartOfAccountsPage />} />
+                <Route path="gl" element={<GeneralLedgerPage />} />
                 <Route path="financial-reports" element={<FinancialReportsPage />} />
                 <Route path="bank-reconciliation" element={<BankReconciliationPage />} />
                 <Route path="liabilities" element={<LiabilitiesPage />} />
@@ -777,6 +783,7 @@ export default function App() {
                 <Route path="expenses" element={<ExpensesPage />} />
                 <Route path="uniforms" element={<UniformsPage />} />
               </Route>
+              <Route path="budgets" element={<BudgetsPage />} />
               <Route path="payroll">
                 <Route index element={<PayrollList />} />
                 <Route path="run" element={<BursarPayrollRun />} />
@@ -807,9 +814,13 @@ export default function App() {
                 <Route path="directory" element={<EmployeeManagementPage />} />
               </Route>
               <Route path="reports">
-                <Route index element={<ReportsDashboardPage />} />
+                <Route index element={<AnalyticsEnginesPage />} />
+                <Route path="analytics" element={<AnalyticsEnginesPage />} />
+                <Route path="financial" element={<FinancialReportsPage />} />
+                <Route path="wizard" element={<ReportsDashboardPage />} />
                 <Route path="view/:type" element={<ReportViewerPage />} />
               </Route>
+
               <Route path="website-settings" element={<SettingsPage />} />
               <Route path="settings" element={<SettingsPage />} />
               <Route path="payment-methods" element={<PaymentMethodsPage />} />
