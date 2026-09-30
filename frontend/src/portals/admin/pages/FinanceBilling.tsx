@@ -1,8 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { formatCurrency } from '../../../utils/formatters';
+import { SearchInput, ExportButton } from '../../../components/shared';
+import type { ExportColumn } from '../../../utils/exportService';
 import '../../../styles/portal.css';
 
 type BillingTab = 'invoices' | 'receipts' | 'ledgers';
@@ -22,9 +24,17 @@ export default function FinanceBilling() {
 
   // Filter states
   const [searchTerm, setSearchTerm] = useState(initialSearch);
+  const [debouncedSearch, setDebouncedSearch] = useState(initialSearch);
   const [statusFilter, setStatusFilter] = useState('ALL');
   const [methodFilter, setMethodFilter] = useState('ALL');
   const [dateFilter, setDateFilter] = useState('ALL');
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchTerm);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
 
   useEffect(() => {
     fetchData();
@@ -58,36 +68,65 @@ export default function FinanceBilling() {
     setSearchParams({ tab, search: searchTerm });
   };
 
-  // Filtered datasets
+  // Filtered datasets with debounced search
+  const q = (debouncedSearch || '').trim().toLowerCase();
+
   const filteredInvoices = invoices.filter(inv => {
-    const studentName = inv.student?.user?.name || inv.student?.name || '';
-    const studentId = inv.student?.studentId || '';
-    const invId = inv.id || inv.invoiceNumber || '';
-    const matchesSearch = studentName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          studentId.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          invId.toLowerCase().includes(searchTerm.toLowerCase());
+    const studentName = (inv.student?.user?.name || inv.student?.name || '').toLowerCase();
+    const studentId = (inv.student?.studentId || '').toLowerCase();
+    const invId = (inv.id || inv.invoiceNumber || '').toLowerCase();
+    const matchesSearch = !q || studentName.includes(q) || studentId.includes(q) || invId.includes(q);
     const matchesStatus = statusFilter === 'ALL' || (inv.status || '').toUpperCase() === statusFilter;
     return matchesSearch && matchesStatus;
   });
 
   const filteredReceipts = receipts.filter(rec => {
-    const studentName = rec.student?.user?.name || rec.student?.name || '';
-    const studentId = rec.student?.studentId || '';
-    const ref = rec.reference || rec.receiptNumber || '';
-    const matchesSearch = studentName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          studentId.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          ref.toLowerCase().includes(searchTerm.toLowerCase());
+    const studentName = (rec.student?.user?.name || rec.student?.name || '').toLowerCase();
+    const studentId = (rec.student?.studentId || '').toLowerCase();
+    const ref = (rec.reference || rec.receiptNumber || '').toLowerCase();
+    const matchesSearch = !q || studentName.includes(q) || studentId.includes(q) || ref.includes(q);
     const matchesMethod = methodFilter === 'ALL' || (rec.paymentMode || rec.method || '').toLowerCase().includes(methodFilter.toLowerCase());
     return matchesSearch && matchesMethod;
   });
 
   const filteredLedgers = ledgers.filter(led => {
-    const studentName = led.studentName || led.name || '';
-    const studentId = led.studentId || '';
-    const matchesSearch = studentName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          studentId.toLowerCase().includes(searchTerm.toLowerCase());
+    const studentName = (led.studentName || led.name || '').toLowerCase();
+    const studentId = (led.studentId || '').toLowerCase();
+    const matchesSearch = !q || studentName.includes(q) || studentId.includes(q);
     return matchesSearch;
   });
+
+  // Export Columns
+  const invoiceExportColumns: ExportColumn[] = useMemo(() => [
+    { header: 'Invoice Number', formatter: inv => inv.invoiceNumber || inv.id?.slice(0, 8) },
+    { header: 'Student Name', formatter: inv => inv.student?.user?.name || inv.student?.name || 'Student' },
+    { header: 'Student ID', formatter: inv => inv.student?.studentId || '—' },
+    { header: 'Class', formatter: inv => inv.student?.class?.name || '—' },
+    { header: 'Due Date', formatter: inv => inv.dueDate ? new Date(inv.dueDate).toLocaleDateString() : '—' },
+    { header: 'Billed Amount', formatter: inv => formatCurrency(inv.amount || 0) },
+    { header: 'Amount Paid', formatter: inv => formatCurrency(inv.paid || 0) },
+    { header: 'Balance Due', formatter: inv => formatCurrency((inv.amount || 0) - (inv.paid || 0)) },
+    { header: 'Status', formatter: inv => (inv.status || ((inv.amount || 0) - (inv.paid || 0) <= 0 ? 'PAID' : (inv.paid || 0) > 0 ? 'PARTIAL' : 'UNPAID')).toUpperCase() },
+  ], []);
+
+  const receiptExportColumns: ExportColumn[] = useMemo(() => [
+    { header: 'Receipt / Ref #', formatter: rec => rec.reference || rec.receiptNumber || '—' },
+    { header: 'Student Name', formatter: rec => rec.student?.user?.name || rec.student?.name || 'Student' },
+    { header: 'Student ID', formatter: rec => rec.student?.studentId || '—' },
+    { header: 'Payment Date', formatter: rec => rec.date ? new Date(rec.date).toLocaleDateString() : rec.createdAt ? new Date(rec.createdAt).toLocaleDateString() : '—' },
+    { header: 'Amount Received', formatter: rec => formatCurrency(rec.amount || 0) },
+    { header: 'Payment Method', formatter: rec => rec.paymentMode || rec.method || 'Cash / Deposit' },
+    { header: 'Cashier / Recorded By', formatter: rec => rec.recordedBy || 'Bursar Office' },
+  ], []);
+
+  const ledgerExportColumns: ExportColumn[] = useMemo(() => [
+    { header: 'Student ID / STN', formatter: led => led.studentId || '—' },
+    { header: 'Student Name', formatter: led => led.studentName || led.name || 'Student' },
+    { header: 'Class', formatter: led => led.className || led.class?.name || '—' },
+    { header: 'Total Invoiced', formatter: led => formatCurrency(led.totalInvoiced || led.billed || 0) },
+    { header: 'Total Paid', formatter: led => formatCurrency(led.totalPaid || led.paid || 0) },
+    { header: 'Current Balance', formatter: led => formatCurrency(led.balance || ((led.totalInvoiced || 0) - (led.totalPaid || 0))) },
+  ], []);
 
   return (
     <>
@@ -138,19 +177,16 @@ export default function FinanceBilling() {
       {/* Search & Cross-Cutting Filters */}
       <div className="portal-card" style={{ padding: '16px 20px', marginBottom: 20 }}>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16, alignItems: 'center', justifyContent: 'space-between' }}>
-          <div style={{ position: 'relative', flex: '1 1 280px', maxWidth: 450 }}>
-            <i className="fas fa-search" style={{ position: 'absolute', left: 14, top: 13, color: '#94a3b8' }}></i>
-            <input
-              type="text"
+          <div style={{ flex: '1 1 280px', maxWidth: 450 }}>
+            <SearchInput
               placeholder="Search by student name, ID, or receipt/invoice ref..."
-              className="portal-input"
               value={searchTerm}
-              onChange={e => setSearchTerm(e.target.value)}
-              style={{ paddingLeft: 38 }}
+              onChange={setSearchTerm}
+              loading={loading}
             />
           </div>
 
-          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
             {activeTab === 'invoices' && (
               <select
                 className="portal-input"
@@ -181,9 +217,46 @@ export default function FinanceBilling() {
               </select>
             )}
 
-            <button className="portal-btn-ghost" onClick={() => { setSearchTerm(''); setStatusFilter('ALL'); setMethodFilter('ALL'); }}>
-              Reset Filters
-            </button>
+            {(searchTerm || statusFilter !== 'ALL' || methodFilter !== 'ALL') && (
+              <button
+                type="button"
+                className="portal-btn-ghost"
+                onClick={() => { setSearchTerm(''); setStatusFilter('ALL'); setMethodFilter('ALL'); }}
+              >
+                Reset Filters
+              </button>
+            )}
+
+            {activeTab === 'invoices' && (
+              <ExportButton
+                filename="fee_invoices_report"
+                title="Student Fee Invoices Report"
+                subtitle={`Filtered: ${filteredInvoices.length} of ${invoices.length} records`}
+                columns={invoiceExportColumns}
+                data={filteredInvoices}
+                orientation="landscape"
+              />
+            )}
+            {activeTab === 'receipts' && (
+              <ExportButton
+                filename="fee_receipts_report"
+                title="Fee Payment Receipts Audit Report"
+                subtitle={`Filtered: ${filteredReceipts.length} of ${receipts.length} records`}
+                columns={receiptExportColumns}
+                data={filteredReceipts}
+                orientation="landscape"
+              />
+            )}
+            {activeTab === 'ledgers' && (
+              <ExportButton
+                filename="student_ledgers_report"
+                title="Student Balance Ledgers Report"
+                subtitle={`Filtered: ${filteredLedgers.length} of ${ledgers.length} accounts`}
+                columns={ledgerExportColumns}
+                data={filteredLedgers}
+                orientation="portrait"
+              />
+            )}
           </div>
         </div>
       </div>

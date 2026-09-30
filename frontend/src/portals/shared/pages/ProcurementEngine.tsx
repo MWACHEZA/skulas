@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import api from '../../../lib/api';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
 import { formatCurrency } from '../../../utils/formatters';
+import { SearchInput, ExportButton } from '../../../components/shared';
+import type { ExportColumn } from '../../../utils/exportService';
 
 export type ProcurementMode = 'REQUEST_ONLY' | 'ADMIN_APPROVE' | 'BURSAR_APPROVE' | 'STORE_ISSUE' | 'FULL';
 
@@ -71,7 +73,13 @@ export default function ProcurementEngine({ mode: initialMode }: Props) {
   const [requisitions, setRequisitions] = useState<Requisition[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('ALL');
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearch(search), 300);
+    return () => clearTimeout(timer);
+  }, [search]);
 
   // Modal State for New Request
   const [showModal, setShowModal] = useState(false);
@@ -180,13 +188,15 @@ export default function ProcurementEngine({ mode: initialMode }: Props) {
     }
   };
 
-  // Filtered requisitions
+  // Filtered requisitions with debounced search
   const filtered = requisitions.filter(r => {
+    const q = debouncedSearch.trim().toLowerCase();
     const matchesSearch = 
-      (r.refNumber || '').toLowerCase().includes(search.toLowerCase()) ||
-      (r.title || '').toLowerCase().includes(search.toLowerCase()) ||
-      (r.requester?.name || '').toLowerCase().includes(search.toLowerCase()) ||
-      (r.requestedByStudent?.name || '').toLowerCase().includes(search.toLowerCase());
+      !q ||
+      (r.refNumber || '').toLowerCase().includes(q) ||
+      (r.title || '').toLowerCase().includes(q) ||
+      (r.requester?.name || '').toLowerCase().includes(q) ||
+      (r.requestedByStudent?.name || '').toLowerCase().includes(q);
 
     const matchesStatus = statusFilter === 'ALL' || r.status === statusFilter;
 
@@ -204,6 +214,15 @@ export default function ProcurementEngine({ mode: initialMode }: Props) {
 
     return matchesSearch && matchesStatus;
   });
+
+  const requisitionExportColumns: ExportColumn<Requisition>[] = useMemo(() => [
+    { header: 'Requisition Ref', key: 'refNumber' },
+    { header: 'Title & Scope', key: 'title' },
+    { header: 'Requester', formatter: r => r.requestedByStudent?.name ? `${r.requestedByStudent.name} (Student Leader)` : r.requester?.name ? `${r.requester.name} (${r.requester.role})` : 'Staff' },
+    { header: 'Estimated Amount ($)', formatter: r => formatCurrency(r.estimatedAmount || 0) },
+    { header: 'Status', formatter: r => STATUS_CONFIG[r.status]?.label || r.status },
+    { header: 'Created Date', formatter: r => r.createdAt ? new Date(r.createdAt).toLocaleDateString() : '—' },
+  ], []);
 
   const canApprove = user?.role === 'SCHOOL_ADMIN' || user?.role === 'SUPER_ADMIN';
   const canReleaseFunds = user?.role === 'BURSAR' || user?.role === 'SCHOOL_ADMIN';
@@ -278,32 +297,41 @@ export default function ProcurementEngine({ mode: initialMode }: Props) {
         )}
       </div>
 
-      {/* Filters */}
-      <div style={{ display: 'flex', gap: 12, marginBottom: 20, flexWrap: 'wrap', alignItems: 'center', background: '#fff', padding: '14px 18px', borderRadius: 8, border: '1px solid #e2e8f0' }}>
-        <div style={{ position: 'relative', flex: 1, minWidth: 260 }}>
-          <i className="fas fa-search" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
-          <input
-            type="text"
+      {/* Filters & Export */}
+      <div style={{ display: 'flex', gap: 12, marginBottom: 20, flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', background: '#fff', padding: '14px 18px', borderRadius: 8, border: '1px solid #e2e8f0' }}>
+        <div style={{ flex: 1, minWidth: 260, maxWidth: 440 }}>
+          <SearchInput
             placeholder="Search ref #, title, or requester..."
             value={search}
-            onChange={e => setSearch(e.target.value)}
-            style={{ width: '100%', padding: '9px 12px 9px 36px', borderRadius: 6, border: '1px solid #cbd5e1', fontSize: '0.9rem' }}
+            onChange={setSearch}
+            loading={loading}
           />
         </div>
 
-        <select
-          value={statusFilter}
-          onChange={e => setStatusFilter(e.target.value)}
-          style={{ padding: '9px 14px', borderRadius: 6, border: '1px solid #cbd5e1', background: '#fff', fontSize: '0.9rem', color: '#334155' }}
-        >
-          <option value="ALL">All Statuses</option>
-          <option value="PENDING_ADMIN">Waiting for Admin</option>
-          <option value="PENDING_BURSAR">Waiting for Bursar</option>
-          <option value="APPROVED">Approved (Ready to Issue)</option>
-          <option value="ISSUED">Issued</option>
-          <option value="RECEIVED">Received</option>
-          <option value="REJECTED">Declined</option>
-        </select>
+        <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
+          <select
+            value={statusFilter}
+            onChange={e => setStatusFilter(e.target.value)}
+            style={{ padding: '9px 14px', borderRadius: 6, border: '1px solid #cbd5e1', background: '#fff', fontSize: '0.9rem', color: '#334155' }}
+          >
+            <option value="ALL">All Statuses</option>
+            <option value="PENDING_ADMIN">Waiting for Admin</option>
+            <option value="PENDING_BURSAR">Waiting for Bursar</option>
+            <option value="APPROVED">Approved (Ready to Issue)</option>
+            <option value="ISSUED">Issued</option>
+            <option value="RECEIVED">Received</option>
+            <option value="REJECTED">Declined</option>
+          </select>
+
+          <ExportButton
+            filename="procurement_requisitions"
+            title="Procurement & Requisitions Audit Log"
+            subtitle={`Filtered: ${filtered.length} of ${requisitions.length} records`}
+            columns={requisitionExportColumns}
+            data={filtered}
+            orientation="landscape"
+          />
+        </div>
       </div>
 
       {/* Requisitions Table */}

@@ -14,6 +14,8 @@ import {
   ArrowRight
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
+import { SearchInput, ExportButton } from '../../../components/shared';
+import type { ExportColumn } from '../../../utils/exportService';
 
 export default function GeneralLedgerPage() {
   const [entries, setEntries] = useState<any[]>([]);
@@ -25,6 +27,7 @@ export default function GeneralLedgerPage() {
   const [coaCode, setCoaCode] = useState('');
   const [sourceType, setSourceType] = useState('');
   const [search, setSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
   const [minAmount, setMinAmount] = useState('');
   const [maxAmount, setMaxAmount] = useState('');
   const [fromDate, setFromDate] = useState(`${new Date().getFullYear()}-01-01`);
@@ -44,8 +47,16 @@ export default function GeneralLedgerPage() {
   }, []);
 
   useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(search);
+      setPage(1);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [search]);
+
+  useEffect(() => {
     fetchLedger();
-  }, [accountId, coaCode, sourceType, fromDate, toDate, page]);
+  }, [accountId, coaCode, sourceType, fromDate, toDate, debouncedSearch, page]);
 
   const fetchAccounts = async () => {
     try {
@@ -63,7 +74,7 @@ export default function GeneralLedgerPage() {
       if (accountId) params.append('accountId', accountId);
       if (coaCode) params.append('coaCode', coaCode);
       if (sourceType) params.append('sourceType', sourceType);
-      if (search) params.append('search', search);
+      if (debouncedSearch) params.append('search', debouncedSearch);
       if (minAmount) params.append('minAmount', minAmount);
       if (maxAmount) params.append('maxAmount', maxAmount);
       if (fromDate) params.append('from', fromDate);
@@ -143,6 +154,19 @@ export default function GeneralLedgerPage() {
     toast.success('General Ledger exported to CSV');
   };
 
+  const ledgerExportColumns: ExportColumn[] = [
+    { header: 'Date', formatter: e => new Date(e.date).toLocaleDateString() },
+    { header: 'Entry #', key: 'entryNumber' },
+    { header: 'Account Code', key: 'accountCode' },
+    { header: 'Account Name', key: 'accountName' },
+    { header: 'Type', key: 'accountType' },
+    { header: 'Description', key: 'description' },
+    { header: 'Source', key: 'sourceType' },
+    { header: 'Debit ($)', formatter: e => (e.debit || 0).toLocaleString(undefined, { minimumFractionDigits: 2 }) },
+    { header: 'Credit ($)', formatter: e => (e.credit || 0).toLocaleString(undefined, { minimumFractionDigits: 2 }) },
+    { header: 'Currency', formatter: e => e.currency || 'USD' },
+  ];
+
   return (
     <div style={{ padding: '24px', maxWidth: '1400px', margin: '0 auto' }}>
       {/* Header */}
@@ -155,24 +179,15 @@ export default function GeneralLedgerPage() {
             Complete immutable transaction audit trail across all Chart of Accounts
           </p>
         </div>
-        <div style={{ display: 'flex', gap: '10px' }}>
-          <button
-            onClick={exportCsv}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '6px',
-              padding: '8px 16px',
-              borderRadius: '6px',
-              border: '1px solid #cbd5e1',
-              backgroundColor: '#fff',
-              fontSize: '13px',
-              fontWeight: 600,
-              cursor: 'pointer'
-            }}
-          >
-            <Download size={14} /> Export CSV
-          </button>
+        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+          <ExportButton
+            filename="general_ledger_audit"
+            title="General Ledger (GL) Transaction Report"
+            subtitle={`Period: ${fromDate} to ${toDate}   |   Total Debit: $${totalDebit.toFixed(2)}   |   Total Credit: $${totalCredit.toFixed(2)}`}
+            columns={ledgerExportColumns}
+            data={entries}
+            orientation="landscape"
+          />
           <button
             onClick={() => fetchLedger()}
             style={{
@@ -229,14 +244,12 @@ export default function GeneralLedgerPage() {
       {/* Filter Toolbar */}
       <form onSubmit={handleSearchSubmit} style={{ backgroundColor: '#fff', padding: '16px', borderRadius: '8px', border: '1px solid #e2e8f0', marginBottom: '20px', display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'center' }}>
         {/* Search */}
-        <div style={{ position: 'relative', minWidth: '220px', flex: 1 }}>
-          <Search size={15} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
-          <input
-            type="text"
+        <div style={{ minWidth: '220px', flex: 1 }}>
+          <SearchInput
             placeholder="Search entry # or description..."
             value={search}
-            onChange={e => setSearch(e.target.value)}
-            style={{ width: '100%', padding: '7px 10px 7px 32px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '13px' }}
+            onChange={setSearch}
+            loading={loading}
           />
         </div>
 
