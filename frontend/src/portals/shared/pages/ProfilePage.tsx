@@ -265,7 +265,7 @@ export default function ProfilePage() {
                 <InfoRow label="Date of Birth" value={formatDate(targetStudent?.dob || profileData?.student?.dob || profileData?.metadata?.dob)} />
                 <InfoRow label="Religion" value={profileData?.metadata?.religion} />
                 {(targetStudent || profileData?.student) && <InfoRow label="Student ID" value={(targetStudent || profileData?.student)?.studentId} />}
-                {(targetStudent?.hexcoId || profileData?.student?.hexcoId) && <InfoRow label="HEXCO ID" value={(targetStudent || profileData?.student)?.hexcoId} icon="fas fa-id-card-alt" />}
+                {(targetStudent?.nationalId || profileData?.student?.nationalId) && <InfoRow label="National ID / Birth Cert" value={(targetStudent || profileData?.student)?.nationalId} icon="fas fa-id-card" />}
                 {!isParent && profileData?.staffId && <InfoRow label="Staff ID" value={profileData.staffId} />}
             </div>
           </div>
@@ -500,7 +500,7 @@ export default function ProfilePage() {
                         name: formData.get('name'),
                         dob: formData.get('dob'),
                         gender: formData.get('gender'),
-                        hexcoId: formData.get('hexcoId'),
+                        nationalId: formData.get('nationalId'),
                         metadata: { ...(profileData?.metadata || {}), religion: formData.get('religion') }
                     });
                 }}>
@@ -527,8 +527,8 @@ export default function ProfilePage() {
                             </div>
                             {profileData?.role === 'STUDENT' && (
                                 <div className="form-group">
-                                    <label className="portal-label">HEXCO Student ID</label>
-                                    <input name="hexcoId" className="portal-input" defaultValue={profileData?.student?.hexcoId} placeholder="e.g., 2024-H-1234" />
+                                    <label className="portal-label">National ID / Birth Cert No.</label>
+                                    <input name="nationalId" className="portal-input" defaultValue={profileData?.student?.nationalId} placeholder="e.g., 63-1234567-X-42 or BC-98765" />
                                 </div>
                             )}
                         </div>

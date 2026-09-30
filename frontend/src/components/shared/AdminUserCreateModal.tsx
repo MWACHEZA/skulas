@@ -838,6 +838,16 @@ export default function AdminUserCreateModal({
                   <>
                     <div className="form-section-header mt-6">Identity & Background</div>
                     <div className="modal-form-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}>
+                      <div className="form-group">
+                        <label>National ID / Birth Cert No.</label>
+                        <input 
+                          name="nationalId" 
+                          value={formData.nationalId || ''} 
+                          onChange={handleInputChange} 
+                          className="form-control" 
+                          placeholder="e.g. 63-1234567-X-42 or BC-98765" 
+                        />
+                      </div>
                       <div className="form-group"><label>Date of Birth</label><input type="date" name="dob" value={formData.dob || ''} onChange={handleInputChange} className="form-control" /></div>
                       <div className="form-group">
                         <label>Gender</label>

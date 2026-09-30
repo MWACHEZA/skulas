@@ -180,7 +180,8 @@ export default function StudentDetail() {
 
       {/* Tab 1: Profile */}
       {activeTab === 'profile' && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 20 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 20 }}>
+          {/* Card 1: Personal & Identity Details */}
           <div className="portal-card">
             <h3 style={{ fontSize: '1rem', fontWeight: 800, marginBottom: 16, color: '#1e293b' }}>Personal & Identity Details</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12, fontSize: '0.9rem' }}>
@@ -190,11 +191,55 @@ export default function StudentDetail() {
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: 8 }}>
                 <span style={{ color: '#64748b' }}>Student Registration ID:</span>
-                <span style={{ fontWeight: 700 }}>{student.studentId}</span>
+                <span style={{ fontWeight: 700, fontFamily: 'monospace' }}>{student.studentId}</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: 8 }}>
                 <span style={{ color: '#64748b' }}>National ID / Birth Cert:</span>
-                <span style={{ fontWeight: 700 }}>{student.nationalId || student.birthCertNumber || '—'}</span>
+                <span style={{ fontWeight: 700 }}>{student.nationalId || student.birthCertNumber || student.user?.metadata?.nationalId || '—'}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: 8 }}>
+                <span style={{ color: '#64748b' }}>Date of Birth:</span>
+                <span style={{ fontWeight: 700 }}>{student.dob ? new Date(student.dob).toLocaleDateString() : (student.user?.metadata?.dob ? new Date(student.user.metadata.dob).toLocaleDateString() : '—')}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: 8 }}>
+                <span style={{ color: '#64748b' }}>Age / Gender:</span>
+                <span style={{ fontWeight: 700 }}>
+                  {student.age ? `${student.age} yrs` : '—'} {student.gender ? `• ${student.gender}` : ''}
+                </span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: 8 }}>
+                <span style={{ color: '#64748b' }}>Nationality:</span>
+                <span style={{ fontWeight: 700 }}>{student.nationality || student.user?.metadata?.nationality || 'Zimbabwean'}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: 8 }}>
+                <span style={{ color: '#64748b' }}>Mother Tongue:</span>
+                <span style={{ fontWeight: 700 }}>{student.motherTongue || student.user?.metadata?.motherTongue || '—'}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: 8 }}>
+                <span style={{ color: '#64748b' }}>Religion:</span>
+                <span style={{ fontWeight: 700 }}>{student.user?.religion || student.religion || student.user?.metadata?.religion || '—'}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: 8 }}>
+                <span style={{ color: '#64748b' }}>Blood Group:</span>
+                <span style={{ fontWeight: 700 }}>{student.user?.metadata?.bloodGroup || student.bloodGroup || student.healthProfile?.bloodGroup || '—'}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: 8 }}>
+                <span style={{ color: '#64748b' }}>Physical Handicap:</span>
+                <span style={{ fontWeight: 700, color: (student.isPhysicallyHandicapped || student.user?.metadata?.isPhysicallyHandicapped) ? '#d97706' : '#1e293b' }}>
+                  {(student.isPhysicallyHandicapped || student.user?.metadata?.isPhysicallyHandicapped)
+                    ? (student.handicapDetails || student.user?.metadata?.handicapDetails || 'Yes') 
+                    : 'None'}
+                </span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: 8 }}>
+                <span style={{ color: '#64748b' }}>City / State:</span>
+                <span style={{ fontWeight: 700 }}>
+                  {[student.city || student.user?.metadata?.city, student.state || student.user?.metadata?.state].filter(Boolean).join(', ') || '—'}
+                </span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: 8 }}>
+                <span style={{ color: '#64748b' }}>Residential Address:</span>
+                <span style={{ fontWeight: 700, maxWidth: 220, textAlign: 'right' }}>{student.address || student.user?.metadata?.address || '—'}</span>
               </div>
               {student.birthCertificateUrl && (
                 <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: 8, alignItems: 'center' }}>
@@ -210,7 +255,7 @@ export default function StudentDetail() {
                 </div>
               )}
               {student.transferCertificateUrl && (
-                <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: 8, alignItems: 'center' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: 8, alignItems: 'center' }}>
                   <span style={{ color: '#64748b' }}>Transfer Certificate:</span>
                   <a 
                     href={`${BASE_URL}/api/storage/file/${student.transferCertificateUrl}?token=${localStorage.getItem('acadex_token')}`} 
@@ -222,25 +267,10 @@ export default function StudentDetail() {
                   </a>
                 </div>
               )}
-              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: 8 }}>
-                <span style={{ color: '#64748b' }}>HEXCO Student ID:</span>
-                <span style={{ fontWeight: 700 }}>{student.hexcoId || '—'}</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: 8 }}>
-                <span style={{ color: '#64748b' }}>Date of Birth:</span>
-                <span style={{ fontWeight: 700 }}>{student.dob ? new Date(student.dob).toLocaleDateString() : '—'}</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: 8 }}>
-                <span style={{ color: '#64748b' }}>Gender:</span>
-                <span style={{ fontWeight: 700 }}>{student.gender || '—'}</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: '#64748b' }}>Residential Address:</span>
-                <span style={{ fontWeight: 700, maxWidth: 220, textAlign: 'right' }}>{student.address || student.user?.metadata?.address || '—'}</span>
-              </div>
             </div>
           </div>
 
+          {/* Card 2: Academic Enrollment Record */}
           <div className="portal-card">
             <h3 style={{ fontSize: '1rem', fontWeight: 800, marginBottom: 16, color: '#1e293b' }}>Academic Enrollment Record</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12, fontSize: '0.9rem' }}>
@@ -253,20 +283,73 @@ export default function StudentDetail() {
                 <span style={{ fontWeight: 700 }}>{student.class?.level || 'Grade Level'}</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: 8 }}>
-                <span style={{ color: '#64748b' }}>House / Dorm:</span>
-                <span style={{ fontWeight: 700 }}>{student.house?.name || 'Day Scholar'}</span>
+                <span style={{ color: '#64748b' }}>Section:</span>
+                <span style={{ fontWeight: 700 }}>{student.section || student.user?.metadata?.section || '—'}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: 8 }}>
+                <span style={{ color: '#64748b' }}>House:</span>
+                <span style={{ fontWeight: 700 }}>{student.house?.name || student.user?.metadata?.houseName || 'Day Scholar'}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: 8 }}>
+                <span style={{ color: '#64748b' }}>Club:</span>
+                <span style={{ fontWeight: 700 }}>{student.club?.name || student.user?.metadata?.clubName || 'None'}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: 8 }}>
+                <span style={{ color: '#64748b' }}>Boarding Status:</span>
+                <span style={{ fontWeight: 700, color: student.boardingStatus === 'Boarder' ? '#0284c7' : '#475569' }}>
+                  {student.boardingStatus === 'Boarder' ? 'Boarder' : 'Day Student'}
+                </span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: 8 }}>
+                <span style={{ color: '#64748b' }}>Dormitory / Hostel:</span>
+                <span style={{ fontWeight: 700 }}>{student.hostel?.name || student.dormitory || 'Day Scholar'}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: 8 }}>
+                <span style={{ color: '#64748b' }}>Room:</span>
+                <span style={{ fontWeight: 700 }}>{student.room?.roomNumber || '—'}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: 8 }}>
+                <span style={{ color: '#64748b' }}>Student Category:</span>
+                <span style={{ fontWeight: 700 }}>{student.category || student.user?.metadata?.category || 'General'}</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: 8 }}>
                 <span style={{ color: '#64748b' }}>Enrollment Date:</span>
-                <span style={{ fontWeight: 700 }}>{student.createdAt ? new Date(student.createdAt).toLocaleDateString() : '—'}</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: 8 }}>
-                <span style={{ color: '#64748b' }}>Previous School:</span>
-                <span style={{ fontWeight: 700 }}>{student.prevSchool || '—'}</span>
+                <span style={{ fontWeight: 700 }}>{student.enrollmentDate ? new Date(student.enrollmentDate).toLocaleDateString() : (student.createdAt ? new Date(student.createdAt).toLocaleDateString() : '—')}</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span style={{ color: '#64748b' }}>Enrollment Status:</span>
                 <span className="portal-badge success">{student.status || 'Enrolled'}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Card 3: Previous Academic History */}
+          <div className="portal-card">
+            <h3 style={{ fontSize: '1rem', fontWeight: 800, marginBottom: 16, color: '#1e293b' }}>Previous Academic History</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12, fontSize: '0.9rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: 8 }}>
+                <span style={{ color: '#64748b' }}>Previous School:</span>
+                <span style={{ fontWeight: 700 }}>{student.prevSchool || student.user?.metadata?.prevSchoolName || '—'}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: 8 }}>
+                <span style={{ color: '#64748b' }}>Previous Class:</span>
+                <span style={{ fontWeight: 700 }}>{student.prevSchoolClass || student.user?.metadata?.prevSchoolClass || '—'}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: 8 }}>
+                <span style={{ color: '#64748b' }}>Previous School Address:</span>
+                <span style={{ fontWeight: 700, maxWidth: 220, textAlign: 'right' }}>{student.prevSchoolAddress || student.user?.metadata?.prevSchoolAddress || '—'}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: 8 }}>
+                <span style={{ color: '#64748b' }}>Reason for Transfer:</span>
+                <span style={{ fontWeight: 700, maxWidth: 220, textAlign: 'right' }}>{student.reasonForTransfer || student.user?.metadata?.purposeForLeaving || '—'}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: 8 }}>
+                <span style={{ color: '#64748b' }}>Last Grade Achieved:</span>
+                <span style={{ fontWeight: 700 }}>{student.lastGradeAchieved || '—'}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ color: '#64748b' }}>Admissions Notes:</span>
+                <span style={{ fontWeight: 700, maxWidth: 220, textAlign: 'right' }}>{student.admissionsNotes || '—'}</span>
               </div>
             </div>
           </div>
@@ -395,9 +478,9 @@ export default function StudentDetail() {
           <div className="portal-card-body portal-card-body-flat">
             <div style={{ padding: '16px 20px', borderBottom: '1px solid #e2e8f0', background: '#f8fafc' }}>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 16 }}>
-                <div><span style={{ color: '#64748b', fontSize: '0.8rem' }}>Blood Group:</span> <strong style={{ display: 'block' }}>{student.bloodGroup || 'O+'}</strong></div>
-                <div><span style={{ color: '#64748b', fontSize: '0.8rem' }}>Allergies:</span> <strong style={{ display: 'block', color: student.allergies ? '#dc2626' : '#1e293b' }}>{student.allergies || 'None reported'}</strong></div>
-                <div><span style={{ color: '#64748b', fontSize: '0.8rem' }}>Medical Conditions:</span> <strong style={{ display: 'block' }}>{student.medicalConditions || 'None'}</strong></div>
+                <div><span style={{ color: '#64748b', fontSize: '0.8rem' }}>Blood Group:</span> <strong style={{ display: 'block' }}>{student.user?.metadata?.bloodGroup || student.bloodGroup || student.healthProfile?.bloodGroup || '—'}</strong></div>
+                <div><span style={{ color: '#64748b', fontSize: '0.8rem' }}>Allergies:</span> <strong style={{ display: 'block', color: (student.user?.metadata?.allergies || student.allergies) ? '#dc2626' : '#1e293b' }}>{student.user?.metadata?.allergies || student.allergies || student.healthProfile?.allergies || 'None reported'}</strong></div>
+                <div><span style={{ color: '#64748b', fontSize: '0.8rem' }}>Chronic Conditions & Regular Meds:</span> <strong style={{ display: 'block' }}>{student.user?.metadata?.medications || student.medicalConditions || student.healthProfile?.chronicConditions || 'None reported'}</strong></div>
               </div>
             </div>
             <div style={{ padding: 24, textAlign: 'center', color: '#64748b' }}>

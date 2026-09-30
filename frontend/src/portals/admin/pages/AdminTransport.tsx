@@ -4,44 +4,61 @@ import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { formatCurrency } from '../../../utils/formatters';
 import { useAuth } from '../../../contexts/AuthContext';
+import ErrorBoundary from '../../../components/shared/ErrorBoundary';
 import '../../../styles/portal.css';
 
 type TransportTab = 'buses' | 'routes' | 'map' | 'fees';
 
-interface Vehicle {
+export interface Vehicle {
   id: string;
-  vehicleNumber: string;
-  vehicleModel: string;
+  name?: string;
+  number?: string;
+  model?: string;
+  vehicleNumber?: string;
+  vehicleModel?: string;
   yearMade?: string;
   registrationNumber?: string;
-  seatingCapacity: number;
+  seatingCapacity?: number;
+  quantity?: number;
   driverName?: string;
   driverLicense?: string;
   driverContact?: string;
   note?: string;
+  description?: string;
+  status?: string;
 }
 
-interface TransportRoute {
+export interface TransportRoute {
   id: string;
-  title: string;
-  fare: number;
+  name?: string;
+  title?: string;
+  fare?: number;
   startPlace?: string;
   stopPlace?: string;
   description?: string;
+  driverName?: string;
+  driverPhone?: string;
+  vehicle?: string;
 }
 
-interface TransportAssignment {
+export interface TransportAssignment {
   id: string;
-  name: string;
+  name?: string;
   routeId: string;
   vehicleId: string;
   routeFare: number;
+  description?: string;
   route?: TransportRoute;
   vehicle?: Vehicle;
   studentsCount?: number;
 }
 
-export default function AdminTransport() {
+export const getVehicleNumber = (v?: Vehicle | null) => v?.number || v?.vehicleNumber || v?.name || 'Bus';
+export const getVehicleModel = (v?: Vehicle | null) => v?.model || v?.vehicleModel || '';
+export const getRouteTitle = (r?: TransportRoute | null) => r?.name || r?.title || 'Route';
+export const getRouteFare = (r?: TransportRoute | null) => typeof r?.fare === 'number' ? r.fare : 0;
+
+function AdminTransportContent() {
   const { showToast } = useToast();
   const { user } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -141,6 +158,10 @@ export default function AdminTransport() {
     try {
       const res = await api.post('/api/vehicles', {
         ...vehicleForm,
+        name: vehicleForm.vehicleNumber,
+        number: vehicleForm.vehicleNumber,
+        model: vehicleForm.vehicleModel,
+        description: vehicleForm.note,
         seatingCapacity: Number(vehicleForm.seatingCapacity)
       });
       showToast('Bus added successfully', 'success');
@@ -171,6 +192,7 @@ export default function AdminTransport() {
     try {
       const res = await api.post('/api/transport-routes', {
         ...routeForm,
+        name: routeForm.title,
         fare: parseFloat(routeForm.fare) || 0
       });
       showToast('Route created successfully', 'success');
@@ -215,24 +237,30 @@ export default function AdminTransport() {
     }
   };
 
-  // Filtered lists
-  const filteredVehicles = vehicles.filter(v =>
-    v.vehicleNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    v.vehicleModel.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (v.driverName || '').toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Filtered lists with safe null/undefined handling
+  const q = (searchTerm || '').trim().toLowerCase();
 
-  const filteredRoutes = routes.filter(r =>
-    r.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (r.startPlace || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (r.stopPlace || '').toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredVehicles = vehicles.filter(v => {
+    const num = getVehicleNumber(v).toLowerCase();
+    const mdl = getVehicleModel(v).toLowerCase();
+    const drv = (v.driverName || '').toLowerCase();
+    return !q || num.includes(q) || mdl.includes(q) || drv.includes(q);
+  });
 
-  const filteredAssignments = assignments.filter(a =>
-    a.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (a.route?.title || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (a.vehicle?.vehicleNumber || '').toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredRoutes = routes.filter(r => {
+    const title = getRouteTitle(r).toLowerCase();
+    const start = (r.startPlace || '').toLowerCase();
+    const stop = (r.stopPlace || '').toLowerCase();
+    const desc = (r.description || '').toLowerCase();
+    return !q || title.includes(q) || start.includes(q) || stop.includes(q) || desc.includes(q);
+  });
+
+  const filteredAssignments = assignments.filter(a => {
+    const name = (a.name || '').toLowerCase();
+    const rTitle = (a.route?.name || a.route?.title || '').toLowerCase();
+    const vNum = (a.vehicle?.number || a.vehicle?.vehicleNumber || a.vehicle?.name || '').toLowerCase();
+    return !q || name.includes(q) || rTitle.includes(q) || vNum.includes(q);
+  });
 
   return (
     <div className="portal-container" style={{ padding: '24px', maxWidth: '1400px', margin: '0 auto' }}>
@@ -455,13 +483,13 @@ export default function AdminTransport() {
                   <tr key={v.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
                     <td style={{ padding: '12px 16px', fontWeight: 600, color: '#1e293b' }}>
                       <i className="fas fa-bus" style={{ color: '#d97706', marginRight: 8 }}></i>
-                      {v.vehicleNumber} ({v.vehicleModel})
+                      {getVehicleNumber(v)} {getVehicleModel(v) ? `(${getVehicleModel(v)})` : ''}
                     </td>
                     <td style={{ padding: '12px 16px', color: '#475569', fontSize: '0.9rem' }}>
                       {v.registrationNumber || 'N/A'}
                     </td>
                     <td style={{ padding: '12px 16px', fontWeight: 600, color: '#1e293b' }}>
-                      {v.seatingCapacity} Seats
+                      {v.seatingCapacity || v.quantity || 30} Seats
                     </td>
                     <td style={{ padding: '12px 16px' }}>
                       <div style={{ fontWeight: 600, color: '#1e293b', fontSize: '0.9rem' }}>
@@ -478,7 +506,7 @@ export default function AdminTransport() {
                       {v.driverLicense || 'Verified'}
                     </td>
                     <td style={{ padding: '12px 16px', color: '#94a3b8', fontSize: '0.85rem' }}>
-                      {v.note || 'Active in fleet'}
+                      {v.description || v.note || 'Active in fleet'}
                     </td>
                   </tr>
                 ))}
@@ -511,7 +539,7 @@ export default function AdminTransport() {
                   <tr key={r.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
                     <td style={{ padding: '12px 16px', fontWeight: 600, color: '#1e293b' }}>
                       <i className="fas fa-map-pin" style={{ color: '#ef4444', marginRight: 8 }}></i>
-                      {r.title}
+                      {getRouteTitle(r)}
                     </td>
                     <td style={{ padding: '12px 16px', color: '#475569', fontSize: '0.9rem' }}>
                       {r.startPlace || 'Campus Main Gate'}
@@ -520,7 +548,7 @@ export default function AdminTransport() {
                       {r.stopPlace || 'Designated Suburbs'}
                     </td>
                     <td style={{ padding: '12px 16px', fontWeight: 600, color: '#059669' }}>
-                      {formatCurrency(r.fare)}
+                      {formatCurrency(getRouteFare(r))}
                     </td>
                     <td style={{ padding: '12px 16px', color: '#64748b', fontSize: '0.85rem' }}>
                       {r.description || 'Standard daily pickup and drop-off schedule'}
@@ -571,13 +599,13 @@ export default function AdminTransport() {
             {vehicles.map((v, idx) => (
               <div key={v.id} style={{ border: '1px solid #e2e8f0', borderRadius: '8px', padding: '16px', background: '#f8fafc' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                  <span style={{ fontWeight: 700, color: '#1e293b' }}>{v.vehicleNumber}</span>
+                  <span style={{ fontWeight: 700, color: '#1e293b' }}>{getVehicleNumber(v)}</span>
                   <span style={{ background: idx % 2 === 0 ? '#dcfce7' : '#fef3c7', color: idx % 2 === 0 ? '#15803d' : '#b45309', padding: '2px 8px', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 600 }}>
                     {idx % 2 === 0 ? 'On Route' : 'Idle at Base'}
                   </span>
                 </div>
                 <div style={{ fontSize: '0.85rem', color: '#64748b', marginBottom: '4px' }}>
-                  Model: {v.vehicleModel} ({v.seatingCapacity} seats)
+                  Model: {getVehicleModel(v) || 'School Vehicle'} ({v.seatingCapacity || v.quantity || 30} seats)
                 </div>
                 <div style={{ fontSize: '0.85rem', color: '#64748b' }}>
                   Driver: {v.driverName || 'School Driver'}
@@ -612,13 +640,13 @@ export default function AdminTransport() {
                       {a.name}
                     </td>
                     <td style={{ padding: '12px 16px', color: '#475569', fontSize: '0.9rem' }}>
-                      {a.route?.title || 'Route Details'}
+                      {a.route?.name || a.route?.title || 'Route Details'}
                     </td>
                     <td style={{ padding: '12px 16px', color: '#475569', fontSize: '0.9rem' }}>
-                      {a.vehicle?.vehicleNumber || 'Assigned Bus'}
+                      {a.vehicle ? `${getVehicleNumber(a.vehicle)} ${getVehicleModel(a.vehicle) ? `(${getVehicleModel(a.vehicle)})` : ''}` : 'Assigned Bus'}
                     </td>
                     <td style={{ padding: '12px 16px', fontWeight: 600, color: '#059669' }}>
-                      {formatCurrency(a.routeFare)}
+                      {formatCurrency(a.routeFare || 0)}
                     </td>
                   </tr>
                 ))}
@@ -859,7 +887,7 @@ export default function AdminTransport() {
                   >
                     <option value="">-- Choose Route --</option>
                     {routes.map(r => (
-                      <option key={r.id} value={r.id}>{r.title} ({formatCurrency(r.fare)})</option>
+                      <option key={r.id} value={r.id}>{getRouteTitle(r)} ({formatCurrency(getRouteFare(r))})</option>
                     ))}
                   </select>
                 </div>
@@ -874,7 +902,7 @@ export default function AdminTransport() {
                   >
                     <option value="">-- Choose Vehicle --</option>
                     {vehicles.map(v => (
-                      <option key={v.id} value={v.id}>{v.vehicleNumber} ({v.vehicleModel})</option>
+                      <option key={v.id} value={v.id}>{getVehicleNumber(v)} {getVehicleModel(v) ? `(${getVehicleModel(v)})` : ''}</option>
                     ))}
                   </select>
                 </div>
@@ -914,5 +942,13 @@ export default function AdminTransport() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function AdminTransport() {
+  return (
+    <ErrorBoundary fallbackTitle="Transportation & Fleet Error">
+      <AdminTransportContent />
+    </ErrorBoundary>
   );
 }

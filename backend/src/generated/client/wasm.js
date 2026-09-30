@@ -406,6 +406,7 @@ exports.Prisma.StudentScalarFieldEnum = {
   admissionsNotes: 'admissionsNotes',
   academicHistory: 'academicHistory',
   enrollmentDate: 'enrollmentDate',
+  nationalId: 'nationalId',
   hexcoId: 'hexcoId',
   houseId: 'houseId',
   motherTongue: 'motherTongue',

@@ -247,7 +247,7 @@ router.post('/', requireAuth, staffDocumentUpload.fields([
     // Teacher specific
     staffId, department, qualification,
     // Student specific
-    studentId, dob, gender, address, classId,
+    studentId, dob, gender, address, classId, nationalId,
     // Supplier specific
     companyName, contactName, taxClearance, prazCert, vendorNo,
     // Global fields
@@ -358,6 +358,7 @@ router.post('/', requireAuth, staffDocumentUpload.fields([
             student: {
               create: {
                 studentId: studentId || generatedId,
+                nationalId: nationalId || null,
                 name,
                 email: normalizedEmail,
                 phone,
@@ -519,6 +520,7 @@ router.put('/me', requireAuth, uploadLimiter, upload.single('avatar'), validate(
              gender,
              address,
              hexcoId: req.body.hexcoId,
+             nationalId: req.body.nationalId !== undefined ? req.body.nationalId : undefined,
              prevSchool: prevSchool !== undefined ? prevSchool : undefined,
              reasonForTransfer: reasonForTransfer !== undefined ? reasonForTransfer : undefined,
              lastGradeAchieved: lastGradeAchieved !== undefined ? lastGradeAchieved : undefined,
@@ -678,7 +680,8 @@ router.put('/:id', requireAuth, requireRole('SCHOOL_ADMIN'), staffDocumentUpload
             studyMode: req.body.studyMode !== undefined ? req.body.studyMode : undefined,
             researchTitle: req.body.researchTitle !== undefined ? req.body.researchTitle : undefined,
             guardianName: req.body.guardianName !== undefined ? req.body.guardianName : undefined,
-            hostelId: req.body.hostelId !== undefined ? (req.body.hostelId || null) : undefined
+            hostelId: req.body.hostelId !== undefined ? (req.body.hostelId || null) : undefined,
+            nationalId: req.body.nationalId !== undefined ? req.body.nationalId : undefined
           }
         }).catch((err) => {
           console.error('Failed to sync student update:', err);

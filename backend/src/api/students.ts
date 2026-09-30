@@ -153,23 +153,51 @@ router.post('/import', requireAuth, requireRole('SCHOOL_ADMIN'), upload.single('
  * @desc    List students in the current user's school (paginated)
  */
 router.get('/', requireAuth, requireRole('SCHOOL_ADMIN', 'TEACHER', 'BURSAR', 'LIBRARIAN'), async (req: AuthRequest, res: Response) => {
-  const { page = '1', limit = '20', search = '', leadersOnly = 'false' } = req.query as Record<string, string>;
+  const { 
+    page = '1', 
+    limit = '50', 
+    search = '', 
+    leadersOnly = 'false',
+    classId,
+    status,
+    boardingStatus,
+    gender,
+    hostelId
+  } = req.query as Record<string, string>;
   const schoolId = req.user!.schoolId;
   const skip = (parseInt(page) - 1) * parseInt(limit);
 
   try {
     const whereCondition: any = {
       schoolId: schoolId!,
-      ...(search ? { name: { contains: String(search), mode: 'insensitive' as const } } : {}),
       ...(leadersOnly === 'true' ? { leadershipAssignments: { some: { isActive: true } } } : {})
     };
+
+    if (classId) whereCondition.classId = classId;
+    if (status) whereCondition.status = status;
+    if (boardingStatus) whereCondition.boardingStatus = boardingStatus;
+    if (gender) whereCondition.gender = gender;
+    if (hostelId) whereCondition.hostelId = hostelId;
+
+    if (search && search.trim()) {
+      const q = search.trim();
+      whereCondition.OR = [
+        { studentId: { contains: q, mode: 'insensitive' as const } },
+        { name: { contains: q, mode: 'insensitive' as const } },
+        { nationalId: { contains: q, mode: 'insensitive' as const } },
+        { email: { contains: q, mode: 'insensitive' as const } },
+        { phone: { contains: q, mode: 'insensitive' as const } },
+      ];
+    }
 
     const [students, total] = await Promise.all([
       prisma.student.findMany({
         where: whereCondition,
         include: {
-          class: { select: { name: true, level: true } },
+          class: { select: { id: true, name: true, level: true } },
           hostel: { select: { id: true, name: true } },
+          house: { select: { id: true, name: true } },
+          fees: { select: { id: true, amount: true, paid: true, dueDate: true, status: true } },
           leadershipAssignments: {
             where: { isActive: true },
             include: { hostel: { select: { id: true, name: true } } }
@@ -487,6 +515,9 @@ router.get('/:id', requireAuth, async (req: AuthRequest, res: Response) => {
         class: true,
         house: true,
         club: true,
+        hostel: true,
+        room: true,
+        healthProfile: true,
         grades: { include: { subject: { select: { name: true, code: true } } }, orderBy: { createdAt: 'desc' } },
         fees: { orderBy: { term: 'asc' } },
         attendance: { orderBy: { date: 'desc' }, take: 30 },

@@ -662,7 +662,8 @@ model Student {
   academicHistory   Json?
   enrollmentDate    DateTime? @default(now())
 
-  hexcoId         String? // National HEXCO ID for Polytechnic students
+  nationalId      String? // National ID or Birth Certificate Number
+  hexcoId         String? // DEPRECATED: Retained for schema backwards compatibility. Not used in UI.
   uniformSales    UniformSale[]
   feeReminderLogs FeeReminderLog[]
   termlyComments  TermlyComment[]
