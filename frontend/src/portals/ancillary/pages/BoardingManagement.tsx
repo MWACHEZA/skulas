@@ -28,6 +28,27 @@ export default function BoardingManagement() {
   const [alertData, setAlertData] = useState({ studentId: '', notes: '', acuity: 'YELLOW' });
   const [alertSubmitting, setAlertSubmitting] = useState(false);
 
+  // Boarding Movement & Exeat logs state
+  const [boardingLogs, setBoardingLogs] = useState<any[]>([]);
+  const [exeatFilter, setExeatFilter] = useState<'ALL' | 'ACTIVE'>('ACTIVE');
+  const [returningLogId, setReturningLogId] = useState<string | null>(null);
+
+  // Roll Call state
+  const [rollCallHostelId, setRollCallHostelId] = useState<string>('ALL');
+  const [rollCallSession, setRollCallSession] = useState<'MORNING' | 'EVENING' | 'LIGHTS_OUT'>('EVENING');
+  const [rollCallDate, setRollCallDate] = useState<string>(new Date().toISOString().split('T')[0]);
+  const [studentRollStatuses, setStudentRollStatuses] = useState<Record<string, 'PRESENT' | 'SICK_BAY' | 'EXEAT' | 'ABSENT'>>({});
+
+  // Meal Deduction Modal state
+  const [isMealDeductionModalOpen, setIsMealDeductionModalOpen] = useState(false);
+  const [mealDeductionData, setMealDeductionData] = useState({
+    mealType: 'DINNER',
+    costPerMeal: 1.5,
+    actualServedCount: 0,
+    notes: ''
+  });
+  const [isPostingDeduction, setIsPostingDeduction] = useState(false);
+
   const { showToast } = useToast();
 
   useEffect(() => {
@@ -35,16 +56,27 @@ export default function BoardingManagement() {
     fetchRequisitions();
   }, []);
 
+  const fetchBoardingLogs = async () => {
+    try {
+      const res = await api.get('/api/ancillary/boarding/logs');
+      setBoardingLogs(res.data || []);
+    } catch (e) {
+      console.error('Failed to refresh boarding logs', e);
+    }
+  };
+
   const fetchData = async () => {
     try {
-      const [hostelRes, studentRes, clinicRes] = await Promise.all([
+      const [hostelRes, studentRes, clinicRes, logsRes] = await Promise.all([
         api.get('/api/ancillary/hostels'),
         api.get('/api/students'),
-        api.get('/clinic/matron/boarders').catch(() => ({ data: [] }))
+        api.get('/clinic/matron/boarders').catch(() => ({ data: [] })),
+        api.get('/api/ancillary/boarding/logs').catch(() => ({ data: [] }))
       ]);
       setHostels(hostelRes.data || []);
       setStudents(studentRes.data?.students || []);
       setBoardersInSickBay(clinicRes.data || []);
+      setBoardingLogs(logsRes.data || []);
     } catch (err) {
       showToast('Failed to load boarding data', 'error');
     } finally {
@@ -76,11 +108,46 @@ export default function BoardingManagement() {
     e.preventDefault();
     try {
       await api.post('/api/ancillary/boarding/log', signOutData);
-      showToast('Boarding log recorded', 'success');
+      showToast('Boarding movement recorded successfully', 'success');
       setIsSignOutModalOpen(false);
       setSignOutData({ studentId: '', type: 'SIGN_OUT', reason: '' });
+      fetchBoardingLogs();
     } catch (err) {
-      showToast('Failed to record sign-out', 'error');
+      showToast('Failed to record movement', 'error');
+    }
+  };
+
+  const handleMarkReturned = async (logId: string) => {
+    try {
+      setReturningLogId(logId);
+      await api.patch(`/api/ancillary/boarding/logs/${logId}/return`);
+      showToast('Student marked as returned to hostel', 'success');
+      fetchBoardingLogs();
+    } catch (err: any) {
+      showToast(err.response?.data?.error || 'Failed to update return status', 'error');
+    } finally {
+      setReturningLogId(null);
+    }
+  };
+
+  const handlePostMealDeduction = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      setIsPostingDeduction(true);
+      const res = await api.post('/api/dining-hall/meal-deduction', {
+        mealType: mealDeductionData.mealType,
+        date: rollCallDate,
+        rollCallCount: rollCallSummary.present,
+        actualServedCount: mealDeductionData.actualServedCount,
+        costPerMeal: mealDeductionData.costPerMeal,
+        notes: mealDeductionData.notes
+      });
+      showToast(`Meal deduction posted! Journal Entry #${res.data.entryNumber || 'posted'} (Variance: ${res.data.variance > 0 ? '+' : ''}${res.data.variance})`, 'success');
+      setIsMealDeductionModalOpen(false);
+    } catch (err: any) {
+      showToast(err.response?.data?.error || 'Failed to post meal deduction to ledger', 'error');
+    } finally {
+      setIsPostingDeduction(false);
     }
   };
 
@@ -124,6 +191,37 @@ export default function BoardingManagement() {
   };
 
   const pendingStudentRequests = studentLeaderRequests.filter(r => r.status === 'PENDING_HOD_BOARDING');
+
+  // Filtered boarders for roll call based on selected hostel
+  const boarderStudents = students.filter(s => s.boardingStatus === 'Boarder' || s.hostelId);
+  const rollCallStudents = rollCallHostelId === 'ALL'
+    ? boarderStudents
+    : boarderStudents.filter(s => s.hostelId === rollCallHostelId);
+
+  // Compute roll call counts
+  const rollCallSummary = rollCallStudents.reduce((acc, s) => {
+    const status = studentRollStatuses[s.id] || 'PRESENT';
+    if (status === 'PRESENT') acc.present++;
+    else if (status === 'SICK_BAY') acc.sickBay++;
+    else if (status === 'EXEAT') acc.exeat++;
+    else if (status === 'ABSENT') acc.absent++;
+    return acc;
+  }, { present: 0, sickBay: 0, exeat: 0, absent: 0 });
+
+  const activeExeats = boardingLogs.filter(l => l.type === 'SIGN_OUT' && !l.returnedAt);
+
+  const handleMarkAllPresent = () => {
+    const newStatuses = { ...studentRollStatuses };
+    rollCallStudents.forEach(s => {
+      // Don't override if student is already in sick bay or on known exeat
+      const current = newStatuses[s.id];
+      if (current !== 'SICK_BAY' && current !== 'EXEAT') {
+        newStatuses[s.id] = 'PRESENT';
+      }
+    });
+    setStudentRollStatuses(newStatuses);
+    showToast(`Marked ${rollCallStudents.length} boarders present for this session`, 'info');
+  };
 
   // --- TAB 1: Hostels & Occupancy ---
   const occupancyContent = (
@@ -464,8 +562,324 @@ export default function BoardingManagement() {
     </div>
   );
 
+  // --- TAB: Dorm Roll Call ---
+  const rollCallContent = (
+    <div>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+        <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
+          <div>
+            <label style={{ fontSize: '0.8rem', fontWeight: 600, display: 'block', color: '#4a5568' }}>Hostel</label>
+            <select
+              className="portal-input"
+              value={rollCallHostelId}
+              onChange={e => setRollCallHostelId(e.target.value)}
+              style={{ minWidth: 160 }}
+            >
+              <option value="ALL">All Hostels ({boarderStudents.length})</option>
+              {hostels.map(h => (
+                <option key={h.id} value={h.id}>{h.name}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label style={{ fontSize: '0.8rem', fontWeight: 600, display: 'block', color: '#4a5568' }}>Session</label>
+            <select
+              className="portal-input"
+              value={rollCallSession}
+              onChange={e => setRollCallSession(e.target.value as any)}
+              style={{ minWidth: 150 }}
+            >
+              <option value="MORNING">Morning Check</option>
+              <option value="EVENING">Evening Roll Call</option>
+              <option value="LIGHTS_OUT">Lights Out / Night Inspection</option>
+            </select>
+          </div>
+          <div>
+            <label style={{ fontSize: '0.8rem', fontWeight: 600, display: 'block', color: '#4a5568' }}>Date</label>
+            <input
+              type="date"
+              className="portal-input"
+              value={rollCallDate}
+              onChange={e => setRollCallDate(e.target.value)}
+            />
+          </div>
+        </div>
+
+        <div style={{ display: 'flex', gap: 10 }}>
+          <button
+            onClick={handleMarkAllPresent}
+            className="portal-btn-secondary"
+            style={{ display: 'flex', alignItems: 'center', gap: 6 }}
+          >
+            <i className="fas fa-check-double text-success"></i> Mark All Present
+          </button>
+          <button
+            onClick={() => {
+              setMealDeductionData(prev => ({
+                ...prev,
+                actualServedCount: rollCallSummary.present
+              }));
+              setIsMealDeductionModalOpen(true);
+            }}
+            className="portal-btn-primary"
+            style={{ display: 'flex', alignItems: 'center', gap: 6 }}
+          >
+            <i className="fas fa-utensils"></i> Sync Dining Meal Deduction
+          </button>
+        </div>
+      </div>
+
+      {/* Summary KPI Cards */}
+      <div className="portal-grid-4" style={{ marginBottom: 20 }}>
+        <div className="portal-card" style={{ background: '#f0fff4', border: '1px solid #c6f6d5', padding: '16px' }}>
+          <div style={{ fontSize: '0.85rem', color: '#276749', fontWeight: 600 }}>Present in Dorms</div>
+          <div style={{ fontSize: '1.8rem', fontWeight: 700, color: '#22543d' }}>{rollCallSummary.present}</div>
+          <div style={{ fontSize: '0.75rem', color: '#38a169' }}>Headcount present</div>
+        </div>
+        <div className="portal-card" style={{ background: '#fffaf0', border: '1px solid #feebc8', padding: '16px' }}>
+          <div style={{ fontSize: '0.85rem', color: '#9c4221', fontWeight: 600 }}>In Sick Bay</div>
+          <div style={{ fontSize: '1.8rem', fontWeight: 700, color: '#7b341e' }}>{rollCallSummary.sickBay}</div>
+          <div style={{ fontSize: '0.75rem', color: '#dd6b20' }}>Under observation</div>
+        </div>
+        <div className="portal-card" style={{ background: '#ebf8ff', border: '1px solid #bee3f8', padding: '16px' }}>
+          <div style={{ fontSize: '0.85rem', color: '#2b6cb0', fontWeight: 600 }}>On Approved Exeat</div>
+          <div style={{ fontSize: '1.8rem', fontWeight: 700, color: '#2c5282' }}>{rollCallSummary.exeat}</div>
+          <div style={{ fontSize: '0.75rem', color: '#3182ce' }}>Outside campus</div>
+        </div>
+        <div className="portal-card" style={{ background: '#fff5f5', border: '1px solid #fed7d7', padding: '16px' }}>
+          <div style={{ fontSize: '0.85rem', color: '#9b2c2c', fontWeight: 600 }}>Unaccounted / Absent</div>
+          <div style={{ fontSize: '1.8rem', fontWeight: 700, color: '#742a2a' }}>{rollCallSummary.absent}</div>
+          <div style={{ fontSize: '0.75rem', color: '#e53e3e' }}>Requires check</div>
+        </div>
+      </div>
+
+      {/* Roster Table */}
+      <div className="portal-card">
+        <div className="portal-card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <h3 style={{ margin: 0, fontSize: '1.1rem' }}>
+            <i className="fas fa-list-ol mr-2" style={{ color: 'var(--school-primary, #3182ce)' }}></i>
+            Boarder Roll Call Roster ({rollCallStudents.length} Students)
+          </h3>
+          <span style={{ fontSize: '0.85rem', color: '#718096' }}>
+            Session: <strong>{rollCallSession}</strong> | Date: <strong>{rollCallDate}</strong>
+          </span>
+        </div>
+        <div className="table-responsive">
+          <table className="portal-table">
+            <thead>
+              <tr>
+                <th>Student</th>
+                <th>Admission #</th>
+                <th>Hostel / Dorm</th>
+                <th>Status</th>
+                <th>Action / Quick Toggle</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rollCallStudents.map(student => {
+                const currentStatus = studentRollStatuses[student.id] || 'PRESENT';
+                return (
+                  <tr key={student.id}>
+                    <td><strong>{student.name}</strong></td>
+                    <td><code style={{ fontSize: '0.85rem' }}>{student.studentId}</code></td>
+                    <td>{student.hostel?.name || 'Assigned Boarder'}</td>
+                    <td>
+                      <span className={`portal-badge ${
+                        currentStatus === 'PRESENT' ? 'success' :
+                        currentStatus === 'SICK_BAY' ? 'warning' :
+                        currentStatus === 'EXEAT' ? 'info' : 'error'
+                      }`}>
+                        {currentStatus === 'PRESENT' ? 'Present' :
+                         currentStatus === 'SICK_BAY' ? 'Sick Bay' :
+                         currentStatus === 'EXEAT' ? 'Exeat' : 'Unaccounted'}
+                      </span>
+                    </td>
+                    <td>
+                      <div style={{ display: 'flex', gap: 6 }}>
+                        <button
+                          type="button"
+                          className={`portal-btn-sm ${currentStatus === 'PRESENT' ? 'portal-btn-primary' : 'portal-btn-secondary'}`}
+                          style={{ fontSize: '0.75rem', padding: '3px 8px' }}
+                          onClick={() => setStudentRollStatuses({ ...studentRollStatuses, [student.id]: 'PRESENT' })}
+                        >
+                          Present
+                        </button>
+                        <button
+                          type="button"
+                          className={`portal-btn-sm ${currentStatus === 'SICK_BAY' ? 'portal-btn-warning' : 'portal-btn-secondary'}`}
+                          style={{ fontSize: '0.75rem', padding: '3px 8px' }}
+                          onClick={() => setStudentRollStatuses({ ...studentRollStatuses, [student.id]: 'SICK_BAY' })}
+                        >
+                          Sick Bay
+                        </button>
+                        <button
+                          type="button"
+                          className={`portal-btn-sm ${currentStatus === 'EXEAT' ? 'portal-btn-info' : 'portal-btn-secondary'}`}
+                          style={{ fontSize: '0.75rem', padding: '3px 8px' }}
+                          onClick={() => setStudentRollStatuses({ ...studentRollStatuses, [student.id]: 'EXEAT' })}
+                        >
+                          Exeat
+                        </button>
+                        <button
+                          type="button"
+                          className={`portal-btn-sm ${currentStatus === 'ABSENT' ? 'portal-btn-danger' : 'portal-btn-secondary'}`}
+                          style={{ fontSize: '0.75rem', padding: '3px 8px' }}
+                          onClick={() => setStudentRollStatuses({ ...studentRollStatuses, [student.id]: 'ABSENT' })}
+                        >
+                          Absent
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+              {rollCallStudents.length === 0 && (
+                <tr>
+                  <td colSpan={5} style={{ textAlign: 'center', padding: '30px', color: '#718096' }}>
+                    No boarders found for the selected hostel.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+
+  // --- TAB: Exeat & Movements ---
+  const displayedLogs = exeatFilter === 'ACTIVE'
+    ? boardingLogs.filter(l => l.type === 'SIGN_OUT' && !l.returnedAt)
+    : boardingLogs;
+
+  const exeatContent = (
+    <div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+        <div>
+          <h3 style={{ margin: 0, fontSize: '1.2rem', color: '#2d3748' }}>Exeat & Student Movements Register</h3>
+          <p style={{ margin: '4px 0 0', color: '#718096', fontSize: '0.9rem' }}>
+            Gate pass authorization, sign-out tracking, and real-time campus departure status.
+          </p>
+        </div>
+        <div style={{ display: 'flex', gap: 10 }}>
+          <div style={{ display: 'flex', border: '1px solid #cbd5e0', borderRadius: 6, overflow: 'hidden' }}>
+            <button
+              onClick={() => setExeatFilter('ACTIVE')}
+              className={`portal-btn-sm ${exeatFilter === 'ACTIVE' ? 'portal-btn-primary' : 'portal-btn-secondary'}`}
+              style={{ borderRadius: 0, border: 'none' }}
+            >
+              Active Exeats ({activeExeats.length})
+            </button>
+            <button
+              onClick={() => setExeatFilter('ALL')}
+              className={`portal-btn-sm ${exeatFilter === 'ALL' ? 'portal-btn-primary' : 'portal-btn-secondary'}`}
+              style={{ borderRadius: 0, border: 'none' }}
+            >
+              Full History ({boardingLogs.length})
+            </button>
+          </div>
+          <button
+            onClick={() => setIsSignOutModalOpen(true)}
+            className="portal-btn-primary"
+            style={{ display: 'flex', alignItems: 'center', gap: 6 }}
+          >
+            <i className="fas fa-sign-out-alt"></i> Issue Exeat / Movement Pass
+          </button>
+        </div>
+      </div>
+
+      <div className="table-responsive">
+        <table className="portal-table">
+          <thead>
+            <tr>
+              <th>Student</th>
+              <th>Hostel</th>
+              <th>Movement Type</th>
+              <th>Reason / Destination</th>
+              <th>Departed At</th>
+              <th>Return Status</th>
+              <th>Authorized By</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {displayedLogs.map((log: any) => {
+              const isReturned = !!log.returnedAt;
+              return (
+                <tr key={log.id}>
+                  <td><strong>{log.student?.name || 'Student'}</strong></td>
+                  <td>{log.student?.hostel?.name || 'Boarder'}</td>
+                  <td>
+                    <span className={`portal-badge ${
+                      log.type === 'SIGN_OUT' ? 'warning' :
+                      log.type === 'SIGN_IN' ? 'success' :
+                      log.type === 'SICK_BAY' ? 'info' : 'secondary'
+                    }`}>
+                      {log.type}
+                    </span>
+                  </td>
+                  <td>{log.reason || 'No reason provided'}</td>
+                  <td>{new Date(log.timestamp).toLocaleString()}</td>
+                  <td>
+                    {isReturned ? (
+                      <span className="portal-badge success" style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                        <i className="fas fa-check-circle"></i> Returned ({new Date(log.returnedAt).toLocaleTimeString()})
+                      </span>
+                    ) : (
+                      <span className="portal-badge error" style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                        <i className="fas fa-clock"></i> Outside Campus
+                      </span>
+                    )}
+                  </td>
+                  <td>{log.authorizedBy?.name || 'Staff'}</td>
+                  <td>
+                    {!isReturned && log.type === 'SIGN_OUT' ? (
+                      <button
+                        onClick={() => handleMarkReturned(log.id)}
+                        disabled={returningLogId === log.id}
+                        className="portal-btn-secondary portal-btn-sm text-success"
+                        style={{ display: 'flex', alignItems: 'center', gap: 4 }}
+                      >
+                        <i className="fas fa-check"></i>
+                        {returningLogId === log.id ? 'Updating...' : 'Mark Returned'}
+                      </button>
+                    ) : (
+                      <span className="text-muted" style={{ fontSize: '0.8rem' }}>Closed</span>
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
+            {displayedLogs.length === 0 && (
+              <tr>
+                <td colSpan={8} style={{ textAlign: 'center', padding: '30px', color: '#718096' }}>
+                  {exeatFilter === 'ACTIVE'
+                    ? 'No students currently outside campus on exeat.'
+                    : 'No movement logs found.'}
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+
   const tabs: TabItem[] = [
     { id: 'occupancy', label: 'Hostel Occupancy & Welfare', icon: 'fas fa-hotel', content: occupancyContent },
+    { 
+      id: 'rollcall', 
+      label: 'Dorm Roll Call', 
+      icon: 'fas fa-clipboard-check', 
+      content: rollCallContent 
+    },
+    { 
+      id: 'exeat', 
+      label: 'Exeat & Movements', 
+      icon: 'fas fa-id-badge', 
+      badge: activeExeats.length > 0 ? activeExeats.length : undefined, 
+      content: exeatContent 
+    },
     { 
       id: 'approvals', 
       label: 'Supplies Approvals', 
@@ -638,6 +1052,115 @@ export default function BoardingManagement() {
                 <button type="button" onClick={() => setIsAlertModalOpen(false)} className="portal-btn-secondary">Cancel</button>
                 <button type="submit" className="portal-btn-primary" style={{ background: '#e53e3e' }} disabled={alertSubmitting}>
                   {alertSubmitting ? 'Transmitting...' : 'Send Alert to Clinic'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Meal Deduction & Headcount Sync Modal */}
+      {isMealDeductionModalOpen && (
+        <div className="portal-modal-overlay">
+          <div className="portal-modal" style={{ maxWidth: 500 }}>
+            <div className="modal-header">
+              <h2><i className="fas fa-utensils text-primary mr-2"></i>Dining Hall Meal Deduction</h2>
+              <button onClick={() => setIsMealDeductionModalOpen(false)} className="close-modal">&times;</button>
+            </div>
+            <form onSubmit={handlePostMealDeduction} style={{ padding: 20 }}>
+              <div style={{ background: '#f7fafc', border: '1px solid #e2e8f0', borderRadius: 6, padding: '12px 16px', marginBottom: 16 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+                  <span style={{ fontSize: '0.85rem', color: '#718096' }}>Roll Call Present Headcount:</span>
+                  <strong>{rollCallSummary.present} students</strong>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+                  <span style={{ fontSize: '0.85rem', color: '#718096' }}>Active Hostels Included:</span>
+                  <strong>{rollCallHostelId === 'ALL' ? 'All Hostels' : hostels.find(h => h.id === rollCallHostelId)?.name || 'Hostel'}</strong>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span style={{ fontSize: '0.85rem', color: '#718096' }}>General Ledger Posting:</span>
+                  <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#2b6cb0' }}>DR 5030 / CR 1220</span>
+                </div>
+              </div>
+
+              <div className="form-group" style={{ marginBottom: 15 }}>
+                <label className="form-label" style={{ fontWeight: 600 }}>Meal Service</label>
+                <select
+                  className="portal-input"
+                  value={mealDeductionData.mealType}
+                  onChange={e => setMealDeductionData({ ...mealDeductionData, mealType: e.target.value })}
+                >
+                  <option value="BREAKFAST">Breakfast</option>
+                  <option value="LUNCH">Lunch</option>
+                  <option value="DINNER">Dinner / Supper</option>
+                </select>
+              </div>
+
+              <div className="portal-grid-2" style={{ marginBottom: 15 }}>
+                <div className="form-group">
+                  <label className="form-label" style={{ fontWeight: 600 }}>Actual Meals Served</label>
+                  <input
+                    type="number"
+                    min="0"
+                    className="portal-input"
+                    value={mealDeductionData.actualServedCount}
+                    onChange={e => setMealDeductionData({ ...mealDeductionData, actualServedCount: parseInt(e.target.value) || 0 })}
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label className="form-label" style={{ fontWeight: 600 }}>Unit Cost ($)</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    min="0.1"
+                    className="portal-input"
+                    value={mealDeductionData.costPerMeal}
+                    onChange={e => setMealDeductionData({ ...mealDeductionData, costPerMeal: parseFloat(e.target.value) || 1.5 })}
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Headcount Variance Calculation Box */}
+              {(() => {
+                const variance = mealDeductionData.actualServedCount - rollCallSummary.present;
+                const totalCost = (mealDeductionData.actualServedCount * mealDeductionData.costPerMeal).toFixed(2);
+                return (
+                  <div style={{
+                    padding: '10px 14px',
+                    borderRadius: 6,
+                    marginBottom: 16,
+                    background: variance === 0 ? '#f0fff4' : variance > 0 ? '#fffaf0' : '#fff5f5',
+                    border: `1px solid ${variance === 0 ? '#c6f6d5' : variance > 0 ? '#feebc8' : '#fed7d7'}`
+                  }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>
+                        {variance === 0 ? '✓ Headcount Matches Roll Call' :
+                         variance > 0 ? `⚠ Variance: +${variance} Extra Meals Served` :
+                         `⚠ Variance: ${variance} Fewer Meals Served`}
+                      </span>
+                      <strong style={{ fontSize: '1rem', color: '#2d3748' }}>${totalCost}</strong>
+                    </div>
+                  </div>
+                );
+              })()}
+
+              <div className="form-group" style={{ marginBottom: 20 }}>
+                <label className="form-label" style={{ fontWeight: 600 }}>Kitchen / Service Notes</label>
+                <textarea
+                  className="portal-input"
+                  rows={2}
+                  placeholder="e.g. Extra portions served to sports team..."
+                  value={mealDeductionData.notes}
+                  onChange={e => setMealDeductionData({ ...mealDeductionData, notes: e.target.value })}
+                />
+              </div>
+
+              <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
+                <button type="button" onClick={() => setIsMealDeductionModalOpen(false)} className="portal-btn-secondary">Cancel</button>
+                <button type="submit" className="portal-btn-primary" disabled={isPostingDeduction}>
+                  {isPostingDeduction ? 'Posting Journal...' : 'Post Inventory Deduction'}
                 </button>
               </div>
             </form>

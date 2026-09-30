@@ -4,6 +4,8 @@ import { requireAuth, AuthRequest } from '../middleware/auth';
 import { LedgerService } from '../services/ledger.service';
 import { getAccountId } from '../../prisma/seeders/coa.seeder';
 import { LedgerEvents } from '../services/ledger-events';
+import { TillService } from '../services/till.service';
+import { FiscalService } from '../services/fiscal.service';
 
 const router = Router();
 
@@ -138,6 +140,9 @@ router.post('/sales', async (req: AuthRequest, res) => {
       0
     );
 
+    // ── GUARD: Till session MUST be open to process sales ───────────────────
+    const tillSession = await TillService.requireOpenTill(schoolId);
+
     // ── STEP 1: Wallet balance check (before the DB transaction) ────────────
     if (paymentMethod === 'WALLET') {
       if (!studentId) {
@@ -202,59 +207,60 @@ router.post('/sales', async (req: AuthRequest, res) => {
       return { createdSales, walletId };
     });
 
-    // ── STEP 3: Post journal entries AFTER the transaction commits ───────────
-    //
-    // A) Revenue entry (one entry for the whole basket):
-    //    DR  payment account (Cash/Card/Wallet Deposits)   [totalAmount]
-    //    CR  5210 Tuckshop / Canteen Sales                 [totalAmount]
-    //
-    // B) COGS entry per item (or batched — we batch here for simplicity):
-    //    DR  6110 COGS — Tuckshop                          [cost amount]
-    //    CR  1310 Inventory — Tuckshop                     [cost amount]
+    // ── STEP 3: Post journal entries & Fiscalise AFTER the transaction commits ───
+    const saleSourceId = createdSales[0]?.id ?? schoolId;
+    let revEntry: any = null;
+    let fiscalResult: any = null;
 
     try {
       const payCode = paymentAccountCode(paymentMethod);
-      const [payAccountId, salesIncomeId, cogsId, inventoryId] = await Promise.all([
-        getAccountId(schoolId, payCode, prisma),
-        getAccountId(schoolId, '5210', prisma),
-        getAccountId(schoolId, '6110', prisma),
-        getAccountId(schoolId, '1310', prisma)
-      ]);
+      const vatAmount = Math.round((totalAmount * 15 / 115) * 100) / 100;
 
-      const saleSourceId = createdSales[0]?.id ?? schoolId;
-
-      // A) Revenue journal entry
-      await LedgerService.postEntry({
-        schoolId,
-        date: new Date(),
+      // A) Revenue journal entry with 15% inclusive VAT split
+      revEntry = await LedgerService.postDoubleEntry({
+        tenantId: schoolId,
+        debitCode: payCode,
+        creditCode: '4042', // Tuckshop & Canteen Sales
+        amount: totalAmount,
+        taxCode: 'STANDARD_VAT_15',
+        vatCreditCode: '2021', // VAT Output Tax
+        vatAmount,
         description: `Tuckshop POS Sale — ${items.length} item(s) via ${paymentMethod || 'Cash'}`,
-        sourceType: 'tuckshop_sale',
-        sourceId: saleSourceId,
-        createdByUserId: req.user?.id,
-        lines: [
-          {
-            accountId: payAccountId,
-            debit: totalAmount,
-            description: `Payment via ${paymentMethod || 'Cash'}`,
-            studentId: studentId || undefined
-          },
-          {
-            accountId: salesIncomeId,
-            credit: totalAmount,
-            description: 'Tuckshop sales revenue'
-          }
-        ]
+        sourceModule: 'tuckshop_sale',
+        reference: saleSourceId,
+        studentId: studentId || undefined,
+        userId: req.user?.id,
+        ipAddress: req.ip
       });
 
-      // B) COGS journal entry — compute total cost from item.cost (if provided) or price as proxy
-      //    Best practice: tuckshop items should store a costPrice. We use it if available,
-      //    otherwise fall back to 70% of selling price as a default cost estimate.
+      // B) Fiscalise with ZIMRA Virtual Fiscal Device
+      fiscalResult = await FiscalService.fiscaliseSale({
+        schoolId,
+        deviceId: tillSession.deviceId,
+        grossAmount: totalAmount,
+        paymentMethod: paymentMethod || 'CASH',
+        items: items.map((it: any) => ({
+          name: it.name || 'Tuckshop Item',
+          quantity: it.quantity,
+          unitPrice: it.price,
+          totalAmount: it.price * it.quantity,
+          taxCode: 'A'
+        })),
+        glTransactionId: revEntry?.id
+      });
+
+      // C) COGS journal entry
       const totalCost: number = items.reduce((sum: number, item: any) => {
         const costPerUnit = item.costPrice ?? item.price * 0.7;
         return sum + costPerUnit * item.quantity;
       }, 0);
 
       if (totalCost > 0) {
+        const [cogsId, inventoryId] = await Promise.all([
+          getAccountId(schoolId, '5020', prisma).catch(() => getAccountId(schoolId, '5070', prisma)),
+          getAccountId(schoolId, '1200', prisma)
+        ]);
+
         await LedgerService.postEntry({
           schoolId,
           date: new Date(),
@@ -287,7 +293,6 @@ router.post('/sales', async (req: AuthRequest, res) => {
         timestamp: new Date().toISOString()
       });
 
-      // Also broadcast wallet update if paid by wallet
       if (paymentMethod === 'WALLET' && studentId) {
         LedgerEvents.broadcast({
           type: 'WALLET_UPDATED',
@@ -299,12 +304,15 @@ router.post('/sales', async (req: AuthRequest, res) => {
         });
       }
     } catch (ledgerErr) {
-      // Ledger failure is logged but does NOT roll back the sale (sale already committed).
-      // An admin can post a correcting JE manually via the Accounts module.
-      console.error('[Ledger] Tuckshop sale JE failed — sale committed, JE pending:', ledgerErr);
+      console.error('[Ledger/Fiscal] Tuckshop sale post failed:', ledgerErr);
     }
 
-    res.json({ success: true, sales: createdSales });
+    res.json({
+      success: true,
+      sales: createdSales,
+      journalEntry: revEntry ? { id: revEntry.id, entryNumber: revEntry.entryNumber } : null,
+      fiscalInvoice: fiscalResult
+    });
   } catch (error: any) {
     console.error('POS Sale error:', error);
     res.status(400).json({ error: error.message || 'Failed to process sale' });

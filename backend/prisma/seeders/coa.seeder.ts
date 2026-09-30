@@ -117,8 +117,10 @@ export const ZIMBABWE_BOARDING_COA_TEMPLATE: AccountTemplate[] = [
   { code: '4046', name: 'School Facilities Hire (Hall/Bus/Grounds)', type: 'INCOME', parentCode: '4040', description: 'Community rental of school venues' },
   { code: '4050', name: 'Donations, Grants & Alumni Gifts', type: 'INCOME', parentCode: '4040', description: 'Philanthropic support and government grants' },
   { code: '4060', name: 'Late Payment Fines & Penalties', type: 'INCOME', parentCode: '4040', description: 'Admin fees on overdue student accounts' },
+  { code: '4065', name: 'Library Fines & Overdue Book Charges', type: 'INCOME', parentCode: '4040', description: 'Fines for overdue or unreturned library books' },
   { code: '4070', name: 'Bank Interest Received', type: 'INCOME', parentCode: '4040', description: 'Interest on call and deposit accounts' },
   { code: '4090', name: 'Miscellaneous Income', type: 'INCOME', parentCode: '4040', description: 'Sundry non-fee operational income' },
+  { code: '4910', name: 'Till Cash Surplus / Overage', type: 'INCOME', parentCode: '4040', description: 'Cash drawer surplus on till session reconciliation' },
 
   // ═══════════════════════════════════════════════════════════════════════════
   // 5000–5999: OPERATIONAL EXPENDITURE
@@ -169,7 +171,8 @@ export const ZIMBABWE_BOARDING_COA_TEMPLATE: AccountTemplate[] = [
   { code: '5076', name: 'Depreciation — Vehicles & Buses', type: 'EXPENSE', parentCode: '5070', description: 'Annual vehicular depreciation charge' },
   { code: '5077', name: 'Depreciation — Equipment & ICT', type: 'EXPENSE', parentCode: '5070', description: 'Annual machinery and computer depreciation' },
   { code: '5078', name: 'Bad Debts Expense / Fee Write-Offs', type: 'EXPENSE', parentCode: '5070', description: 'Authorized student arrears write-offs' },
-  { code: '5090', name: 'General Office & Sundry Administrative Costs', type: 'EXPENSE', parentCode: '5070', description: 'Printing, postage, and administrative sundries' }
+  { code: '5090', name: 'General Office & Sundry Administrative Costs', type: 'EXPENSE', parentCode: '5070', description: 'Printing, postage, and administrative sundries' },
+  { code: '5910', name: 'Till Cash Shortage / Deficit', type: 'EXPENSE', parentCode: '5070', description: 'Cash drawer shortage on till session reconciliation' }
 ];
 
 // Alias for backwards compatibility

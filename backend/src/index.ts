@@ -79,6 +79,10 @@ import setupRoutes from './api/setup';
 import acadexRoutes from './api/acadex';
 import studentRequestsRoutes from './api/student-requests';
 import adminLeadershipRoutes from './api/admin-leadership';
+import fiscalRoutes from './api/fiscal';
+import tillsRoutes from './api/tills';
+import creditNotesRoutes from './api/credit-notes';
+import complianceRoutes from './api/compliance';
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -190,6 +194,10 @@ app.use('/api/icd10', icd10Routes);
 app.use('/api/setup', setupRoutes);
 app.use('/api/student-requests', studentRequestsRoutes);
 app.use('/api/admin/leadership', adminLeadershipRoutes);
+app.use('/api/fiscal', fiscalRoutes);
+app.use('/api/tills', tillsRoutes);
+app.use('/api/credit-notes', creditNotesRoutes);
+app.use('/api/compliance', complianceRoutes);
 app.use('/public', publicRoutes);
 app.use('/api/public', publicRoutes);
 

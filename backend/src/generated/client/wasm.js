@@ -861,6 +861,11 @@ exports.Prisma.SchoolSettingScalarFieldEnum = {
   financialApprovalThreshold: 'financialApprovalThreshold',
   tier1ApprovalRole: 'tier1ApprovalRole',
   tier2ApprovalRole: 'tier2ApprovalRole',
+  debtorLimit: 'debtorLimit',
+  tillVarianceThreshold: 'tillVarianceThreshold',
+  allowNegativeStock: 'allowNegativeStock',
+  vatNumber: 'vatNumber',
+  vatRate: 'vatRate',
   smtpEmail: 'smtpEmail',
   smtpHost: 'smtpHost',
   smtpPort: 'smtpPort',
@@ -2390,6 +2395,8 @@ exports.Prisma.JournalEntryScalarFieldEnum = {
   ipAddress: 'ipAddress',
   isReversing: 'isReversing',
   reversedById: 'reversedById',
+  isReversed: 'isReversed',
+  reversedByCnId: 'reversedByCnId',
   sourceType: 'sourceType',
   sourceId: 'sourceId',
   period: 'period',
@@ -2747,6 +2754,160 @@ exports.Prisma.ClinicSettingScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.FiscalDeviceScalarFieldEnum = {
+  id: 'id',
+  schoolId: 'schoolId',
+  serialNo: 'serialNo',
+  deviceModel: 'deviceModel',
+  location: 'location',
+  apiUrl: 'apiUrl',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.FiscalDeviceSecretScalarFieldEnum = {
+  id: 'id',
+  deviceId: 'deviceId',
+  schoolId: 'schoolId',
+  activationKey: 'activationKey',
+  apiToken: 'apiToken',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.FiscalInvoiceScalarFieldEnum = {
+  id: 'id',
+  schoolId: 'schoolId',
+  glTransactionId: 'glTransactionId',
+  deviceId: 'deviceId',
+  receiptNo: 'receiptNo',
+  fiscalCode: 'fiscalCode',
+  fiscalDayNo: 'fiscalDayNo',
+  qrCode: 'qrCode',
+  receiptHash: 'receiptHash',
+  payload: 'payload',
+  response: 'response',
+  status: 'status',
+  amount: 'amount',
+  vatAmount: 'vatAmount',
+  currency: 'currency',
+  paymentMethod: 'paymentMethod',
+  isCreditNote: 'isCreditNote',
+  originalFiscalId: 'originalFiscalId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.DocumentSequenceScalarFieldEnum = {
+  id: 'id',
+  schoolId: 'schoolId',
+  prefix: 'prefix',
+  description: 'description',
+  lastNumber: 'lastNumber',
+  year: 'year',
+  format: 'format',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.CreditNoteScalarFieldEnum = {
+  id: 'id',
+  schoolId: 'schoolId',
+  creditNoteNumber: 'creditNoteNumber',
+  originalJournalEntryId: 'originalJournalEntryId',
+  reversalJournalEntryId: 'reversalJournalEntryId',
+  fiscalInvoiceId: 'fiscalInvoiceId',
+  reason: 'reason',
+  totalAmount: 'totalAmount',
+  totalVat: 'totalVat',
+  currency: 'currency',
+  issuedByUserId: 'issuedByUserId',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.CreditNoteLineScalarFieldEnum = {
+  id: 'id',
+  creditNoteId: 'creditNoteId',
+  schoolId: 'schoolId',
+  coaCode: 'coaCode',
+  amount: 'amount',
+  vatAmount: 'vatAmount',
+  description: 'description',
+  studentId: 'studentId',
+  supplierId: 'supplierId',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.TillSessionScalarFieldEnum = {
+  id: 'id',
+  schoolId: 'schoolId',
+  deviceId: 'deviceId',
+  sessionNumber: 'sessionNumber',
+  openedByUserId: 'openedByUserId',
+  openedAt: 'openedAt',
+  closedByUserId: 'closedByUserId',
+  closedAt: 'closedAt',
+  openingFloat: 'openingFloat',
+  closingCounted: 'closingCounted',
+  expectedSales: 'expectedSales',
+  variance: 'variance',
+  status: 'status',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.CashupDenominationScalarFieldEnum = {
+  id: 'id',
+  schoolId: 'schoolId',
+  tillSessionId: 'tillSessionId',
+  currency: 'currency',
+  denomination: 'denomination',
+  count: 'count',
+  total: 'total',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.CashupPaymentScalarFieldEnum = {
+  id: 'id',
+  schoolId: 'schoolId',
+  tillSessionId: 'tillSessionId',
+  paymentMethod: 'paymentMethod',
+  expectedAmount: 'expectedAmount',
+  countedAmount: 'countedAmount',
+  variance: 'variance',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.StudentClearanceScalarFieldEnum = {
+  id: 'id',
+  schoolId: 'schoolId',
+  studentId: 'studentId',
+  status: 'status',
+  libraryCleared: 'libraryCleared',
+  libraryNotes: 'libraryNotes',
+  librarySignedBy: 'librarySignedBy',
+  librarySignedAt: 'librarySignedAt',
+  feesCleared: 'feesCleared',
+  feesBalance: 'feesBalance',
+  feesNotes: 'feesNotes',
+  feesSignedBy: 'feesSignedBy',
+  feesSignedAt: 'feesSignedAt',
+  hostelCleared: 'hostelCleared',
+  hostelNotes: 'hostelNotes',
+  hostelSignedBy: 'hostelSignedBy',
+  hostelSignedAt: 'hostelSignedAt',
+  finalCleared: 'finalCleared',
+  finalSignedBy: 'finalSignedBy',
+  finalSignedAt: 'finalSignedAt',
+  certificateNo: 'certificateNo',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -2981,7 +3142,17 @@ exports.Prisma.ModelName = {
   ClinicMonitoringLog: 'ClinicMonitoringLog',
   ClinicAccessAudit: 'ClinicAccessAudit',
   ClinicEmergencyLog: 'ClinicEmergencyLog',
-  ClinicSetting: 'ClinicSetting'
+  ClinicSetting: 'ClinicSetting',
+  FiscalDevice: 'FiscalDevice',
+  FiscalDeviceSecret: 'FiscalDeviceSecret',
+  FiscalInvoice: 'FiscalInvoice',
+  DocumentSequence: 'DocumentSequence',
+  CreditNote: 'CreditNote',
+  CreditNoteLine: 'CreditNoteLine',
+  TillSession: 'TillSession',
+  CashupDenomination: 'CashupDenomination',
+  CashupPayment: 'CashupPayment',
+  StudentClearance: 'StudentClearance'
 };
 
 /**

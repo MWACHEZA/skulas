@@ -3,8 +3,9 @@ import { useSearchParams } from 'react-router-dom';
 import BursarTuckshopSales from './TuckshopSales';
 import BursarTuckshopInventory from './TuckshopInventory';
 import BursarTuckshopReports from './TuckshopReports';
+import TillCashupComponent from './TillCashupComponent';
 
-export type TuckshopTab = 'sales' | 'inventory' | 'reports';
+export type TuckshopTab = 'sales' | 'cashup' | 'inventory' | 'reports';
 
 export default function BursarTuckshopUnified() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -13,7 +14,7 @@ export default function BursarTuckshopUnified() {
 
   useEffect(() => {
     const tabParam = searchParams.get('tab') as TuckshopTab;
-    if (tabParam && ['sales', 'inventory', 'reports'].includes(tabParam)) {
+    if (tabParam && ['sales', 'cashup', 'inventory', 'reports'].includes(tabParam)) {
       setActiveTab(tabParam);
     }
   }, [searchParams]);
@@ -72,6 +73,28 @@ export default function BursarTuckshopUnified() {
 
         <button
           type="button"
+          onClick={() => handleTabChange('cashup')}
+          style={{
+            padding: '10px 18px',
+            border: 'none',
+            background: 'none',
+            cursor: 'pointer',
+            fontWeight: activeTab === 'cashup' ? 700 : 500,
+            color: activeTab === 'cashup' ? '#0284c7' : '#64748b',
+            borderBottom: activeTab === 'cashup' ? '3px solid #0284c7' : '3px solid transparent',
+            marginBottom: -2,
+            fontSize: '0.95rem',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8
+          }}
+        >
+          <i className="fas fa-calculator" />
+          Till Cash-Up & Drawer
+        </button>
+
+        <button
+          type="button"
           onClick={() => handleTabChange('inventory')}
           style={{
             padding: '10px 18px',
@@ -117,6 +140,7 @@ export default function BursarTuckshopUnified() {
 
       <div>
         {activeTab === 'sales' && <BursarTuckshopSales />}
+        {activeTab === 'cashup' && <TillCashupComponent />}
         {activeTab === 'inventory' && <BursarTuckshopInventory />}
         {activeTab === 'reports' && <BursarTuckshopReports />}
       </div>

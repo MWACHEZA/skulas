@@ -893,6 +893,26 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     portalVisibility: ['bursar', 'admin'],
     searchKeywords: ['budget', 'approvals', 'threshold', 'governance', 'tier']
   },
+  {
+    id: 'bursar-fiscal',
+    label: 'ZIMRA Fiscalisation',
+    route: '/bursar/fiscal',
+    group: 'FINANCE_BILLING',
+    icon: 'fas fa-shield-alt',
+    permissionKey: PERMISSIONS.FINANCE_REPORTS_VIEW,
+    portalVisibility: ['bursar', 'admin'],
+    searchKeywords: ['fiscal', 'zimra', 'vfd', 'fdms', 'receipt', 'tax invoice', 'hardware']
+  },
+  {
+    id: 'bursar-zimra-returns',
+    label: 'Statutory & EMIS Returns',
+    route: '/bursar/zimra/returns',
+    group: 'FINANCE_BILLING',
+    icon: 'fas fa-landmark',
+    permissionKey: PERMISSIONS.FINANCE_REPORTS_VIEW,
+    portalVisibility: ['bursar', 'admin'],
+    searchKeywords: ['zimra', 'vat2', 'p2', 'nssa', 'emis', 'clearance', 'statutory']
+  },
 
   // ==========================================
   // 5. PROCUREMENT & ASSETS

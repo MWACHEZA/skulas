@@ -2,6 +2,7 @@ import { Router, Response } from 'express';
 import prisma from '../lib/prisma';
 import { requireAuth, AuthRequest } from '../middleware/auth';
 import { logAction } from '../utils/audit';
+import { LedgerService } from '../services/ledger.service';
 
 const router = Router();
 
@@ -132,6 +133,102 @@ router.post('/reports', async (req: AuthRequest, res: Response) => {
   } catch (error) {
     console.error('Submit report error:', error);
     res.status(500).json({ error: 'Failed to submit dining hall report' });
+  }
+});
+
+/**
+ * @route   POST /api/dining-hall/meal-deduction
+ * @desc    Record meal deduction from inventory (1220 -> 5030) and record variance against roll call
+ */
+router.post('/meal-deduction', async (req: AuthRequest, res: Response) => {
+  if (!canManageMenu(req.user)) {
+    return res.status(403).json({ error: 'Unauthorized to post meal deductions' });
+  }
+
+  const schoolId = req.user!.schoolId!;
+  const { mealType, date, rollCallCount, actualServedCount, costPerMeal = 1.5, notes } = req.body;
+
+  if (!mealType || rollCallCount === undefined || actualServedCount === undefined) {
+    return res.status(400).json({ error: 'mealType, rollCallCount, and actualServedCount are required' });
+  }
+
+  const rollCall = parseInt(rollCallCount);
+  const served = parseInt(actualServedCount);
+  const unitCost = parseFloat(costPerMeal);
+  const variance = served - rollCall; // positive means more served than counted
+  const totalCost = Math.round(served * unitCost * 100) / 100;
+
+  try {
+    // Post double entry: DR 5030 (Food Provisions Expense) / CR 1220 (Inventory - Dining Hall Provisions)
+    const journalEntry = await LedgerService.postDoubleEntry({
+      tenantId: schoolId,
+      debitCode: '5030', // Food Provisions & Kitchen Groceries
+      creditCode: '1220', // Inventory - Dining Hall Provisions
+      amount: totalCost,
+      description: `Dining meal inventory deduction: ${mealType} on ${date || new Date().toISOString().split('T')[0]} (${served} meals served, roll call: ${rollCall}, variance: ${variance > 0 ? '+' : ''}${variance})`,
+      sourceModule: 'dining_deduction',
+      reference: `MEAL-${mealType.toUpperCase()}-${Date.now()}`,
+      userId: req.user!.id,
+      ipAddress: req.ip
+    });
+
+    await logAction(req, 'MEAL_DEDUCTION_POSTED', 'JournalEntry', journalEntry.id, {
+      mealType,
+      rollCall,
+      served,
+      variance,
+      totalCost,
+      notes
+    });
+
+    res.json({
+      success: true,
+      journalEntryId: journalEntry.id,
+      entryNumber: journalEntry.entryNumber,
+      mealType,
+      rollCallCount: rollCall,
+      actualServedCount: served,
+      variance,
+      varianceFlag: variance !== 0,
+      totalCost,
+      postedAt: journalEntry.entryDate
+    });
+  } catch (error: any) {
+    console.error('Meal deduction error:', error);
+    res.status(500).json({ error: error.message || 'Failed to post meal deduction' });
+  }
+});
+
+/**
+ * @route   GET /api/dining-hall/meal-deductions
+ * @desc    Fetch recent meal deductions posted to the general ledger
+ */
+router.get('/meal-deductions', async (req: AuthRequest, res: Response) => {
+  const schoolId = req.user!.schoolId!;
+  try {
+    const deductions = await prisma.journalEntry.findMany({
+      where: {
+        schoolId,
+        sourceModule: 'dining_deduction'
+      },
+      include: {
+        lines: {
+          include: {
+            account: true
+          }
+        },
+        postedBy: {
+          select: { name: true, role: true }
+        }
+      },
+      orderBy: { createdAt: 'desc' },
+      take: 50
+    });
+
+    res.json(deductions);
+  } catch (error) {
+    console.error('Fetch meal deductions error:', error);
+    res.status(500).json({ error: 'Failed to fetch meal deductions' });
   }
 });
 

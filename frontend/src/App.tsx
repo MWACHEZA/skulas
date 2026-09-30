@@ -164,6 +164,8 @@ import BursarSDC from './portals/bursar/pages/SDCPortal';
 import BursarSDCMinutes from './portals/bursar/pages/SDCMinutes';
 import BursarSDCFunding from './portals/bursar/pages/SDCFunding';
 import BursarProcurement from './portals/bursar/pages/Procurement';
+import FiscalManagementPage from './portals/bursar/pages/FiscalManagementPage';
+import ZimraReturnsPage from './portals/bursar/pages/ZimraReturnsPage';
 
 //  Library pages 
 import LibraryDashboard from './portals/library/pages/Dashboard';
@@ -784,6 +786,11 @@ export default function App() {
                 <Route path="uniforms" element={<UniformsPage />} />
               </Route>
               <Route path="budgets" element={<BudgetsPage />} />
+              <Route path="fiscal" element={<FiscalManagementPage />} />
+              <Route path="fiscal/*" element={<FiscalManagementPage />} />
+              <Route path="zimra/returns" element={<ZimraReturnsPage />} />
+              <Route path="tuckshop/cashup" element={<Navigate to="/bursar/tuckshop?tab=cashup" replace />} />
+              <Route path="reports/till-variance" element={<Navigate to="/bursar/tuckshop?tab=cashup" replace />} />
               <Route path="payroll">
                 <Route index element={<PayrollList />} />
                 <Route path="run" element={<BursarPayrollRun />} />

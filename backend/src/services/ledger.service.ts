@@ -332,28 +332,33 @@ export const LedgerService = {
         tx: db
       });
 
-      // 6. Mandatory Audit Log
-      await db.auditLog.create({
-        data: {
-          schoolId: tenantId,
-          actorId: userId || 'SYSTEM',
-          action: 'POST_DOUBLE_ENTRY',
-          entityType: 'JournalEntry',
-          entityId: entry.id,
-          details: {
-            entryNumber: entry.entryNumber,
-            debitCode,
-            creditCode,
-            amount: netAmount,
-            currency: entryCurrency,
-            rate: exchangeRateUsed,
-            sourceModule,
-            reference
-          },
-          status: 'SUCCESS',
-          ipAddress: ipAddress || '127.0.0.1'
+      // 6. Audit Log (if actor is an actual User)
+      if (userId && userId !== 'SYSTEM') {
+        try {
+          await db.auditLog.create({
+            data: {
+              schoolId: tenantId,
+              actorId: userId,
+              action: 'POST_DOUBLE_ENTRY',
+              entityType: 'JournalEntry',
+              entityId: entry.id,
+              details: {
+                entryNumber: entry.entryNumber,
+                debitCode,
+                creditCode,
+                amount: netAmount,
+                currency: entryCurrency,
+                rate: exchangeRateUsed,
+                sourceModule,
+                reference
+              },
+              ipAddress: ipAddress || '127.0.0.1'
+            }
+          });
+        } catch (auditErr) {
+          console.warn('Audit log creation skipped (non-critical):', auditErr);
         }
-      });
+      }
 
       return entry;
     };

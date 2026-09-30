@@ -205,6 +205,12 @@ model School {
   budgets               Budget[]
   stockMovements        StockMovement[]
   taxBrackets           TaxBracket[]
+  fiscalDevices         FiscalDevice[]
+  fiscalInvoices        FiscalInvoice[]
+  documentSequences     DocumentSequence[]
+  creditNotes           CreditNote[]
+  tillSessions          TillSession[]
+  studentClearances     StudentClearance[]
 
   @@index([code])
 }
@@ -689,6 +695,7 @@ model Student {
   paymentPlans      PaymentPlan[]
   houseCaptained    StudentHouse[]     @relation("HouseCaptain")
   wallet            StudentWallet?
+  clearances        StudentClearance[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -1358,6 +1365,11 @@ model SchoolSetting {
   financialApprovalThreshold Float? @default(50.0)
   tier1ApprovalRole     String? @default("BURSAR")
   tier2ApprovalRole     String? @default("SCHOOL_ADMIN")
+  debtorLimit           Float?  @default(500.0)
+  tillVarianceThreshold Float?  @default(5.0)
+  allowNegativeStock    Boolean @default(false)
+  vatNumber             String?
+  vatRate               Float?  @default(15.0)
   smtpEmail             String?
   smtpHost              String?
   smtpPort              Int?    @default(465)
@@ -3603,10 +3615,15 @@ model JournalEntry {
   ipAddress        String?
 
   // Reversal chain — never delete; always reverse
-  isReversing  Boolean  @default(false)   // true if this entry was created to reverse another
-  reversedById String?  // ID of the original entry this reverses
-  reversedBy   JournalEntry?  @relation("Reversal", fields: [reversedById], references: [id])
-  reversalOf   JournalEntry[] @relation("Reversal")
+  isReversing    Boolean  @default(false)   // true if this entry was created to reverse another
+  reversedById   String?  // ID of the original entry this reverses
+  reversedBy     JournalEntry?  @relation("Reversal", fields: [reversedById], references: [id])
+  reversalOf     JournalEntry[] @relation("Reversal")
+  isReversed     Boolean  @default(false)   // true if this transaction has been reversed
+  reversedByCnId String?  // Reference to credit note or reversal transaction
+
+  // Fiscalisation relation
+  fiscalInvoices FiscalInvoice[]
 
   // Source traceability — mandatory: every JE must link back to what caused it
   sourceType   String   // fee_payment | uniform_sale | uniform_purchase | payroll
@@ -4149,4 +4166,252 @@ model ClinicSetting {
   createdAt              DateTime @default(now())
   updatedAt              DateTime @updatedAt
 }
+
+// ═══════════════════════════════════════════════════════════════════
+// ●●● FISCALISATION, SEQUENCES, CREDIT NOTES & CASH-UP (PHASE 0/A/B/C/D) ●●●
+// ═══════════════════════════════════════════════════════════════════
+
+/// Tenant-scoped hardware / virtual fiscal devices registered with ZIMRA FDMS.
+/// Sensitive credentials (activationKey, apiToken) are stored in server-only secrets (FiscalDeviceSecret).
+model FiscalDevice {
+  id          String   @id @default(cuid())
+  schoolId    String
+  school      School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  serialNo    String   // Device serial e.g. "REV-00123"
+  deviceModel String   // e.g. "VIRTUAL_FDMS_V1", "FISCAL_BOX_202"
+  location    String   // e.g. "Tuckshop Till 1", "Uniform Shop", "Main Bursar Office"
+  apiUrl      String   // VFD / FDMS endpoint
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  invoices     FiscalInvoice[]
+  tillSessions TillSession[]
+  secret       FiscalDeviceSecret?
+
+  @@unique([schoolId, serialNo])
+  @@index([schoolId])
+  @@index([schoolId, isActive])
+}
+
+/// Server-only secret store for fiscal device credentials (activation key, API tokens).
+/// Kept strictly separated from FiscalDevice and excluded from API serializers.
+model FiscalDeviceSecret {
+  id             String       @id @default(cuid())
+  deviceId       String       @unique
+  device         FiscalDevice @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+  schoolId       String
+  activationKey  String       // Server-side encrypted or raw key
+  apiToken       String?      // Provider bearer token if applicable
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@index([schoolId])
+}
+
+/// Fiscal invoices emitted to ZIMRA FDMS.
+model FiscalInvoice {
+  id               String        @id @default(cuid())
+  schoolId         String
+  school           School        @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  glTransactionId  String?
+  glTransaction    JournalEntry? @relation(fields: [glTransactionId], references: [id], onDelete: SetNull)
+  deviceId         String
+  device           FiscalDevice  @relation(fields: [deviceId], references: [id], onDelete: Restrict)
+  receiptNo        String        // Tenant-scoped sequence e.g. "RCPT-2026-00042"
+  fiscalCode       String?       // ZIMRA verification signature / fiscal day code
+  fiscalDayNo      Int?
+  qrCode           String?       // ZIMRA verification QR code URL / raw string
+  receiptHash      String?
+  payload          Json?         // Exact JSON payload dispatched to provider
+  response         Json?         // Exact response from provider
+  status           String        @default("pending") // 'pending', 'fiscalised', 'failed'
+  amount           Float         // Gross amount (VAT inclusive)
+  vatAmount        Float         // Extracted VAT (15/115)
+  currency         String        @default("USD")
+  paymentMethod    String        // 'CASH', 'ECOCASH', 'INNBUCKS', 'CARD', 'BANK'
+  isCreditNote     Boolean       @default(false)
+  originalFiscalId String?       // Link to original invoice if this is a FiscalCreditNote
+  originalFiscal   FiscalInvoice?  @relation("FiscalReversal", fields: [originalFiscalId], references: [id])
+  creditNoteInvoices FiscalInvoice[] @relation("FiscalReversal")
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  creditNotes CreditNote[]
+
+  @@unique([schoolId, receiptNo])
+  @@index([schoolId])
+  @@index([schoolId, deviceId])
+  @@index([schoolId, status])
+  @@index([schoolId, createdAt])
+}
+
+/// Atomic tenant-scoped document sequence generator.
+/// Primary key / compound unique: (schoolId, prefix).
+/// Guarantees that two schools never collide on invoice, receipt, or credit note numbers.
+model DocumentSequence {
+  id          String   @id @default(cuid())
+  schoolId    String
+  school      School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  prefix      String   // 'INV', 'PAY', 'CN', 'DN', 'FISCAL', 'EXP', 'RCPT', 'TILL'
+  description String?
+  lastNumber  Int      @default(0)
+  year        Int      // e.g. 2026
+  format      String   @default("{PREFIX}-{YEAR}-{NUMBER}") // e.g. "CN-2026-00001"
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([schoolId, prefix])
+  @@index([schoolId])
+}
+
+/// Generalized credit notes for reversing posted transactions.
+/// Strictly immutable; deletes are blocked on posted transactions.
+model CreditNote {
+  id                     String           @id @default(cuid())
+  schoolId               String
+  school                 School           @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  creditNoteNumber       String           // CN-2026-00001
+  originalJournalEntryId String           // Original JournalEntry.id
+  reversalJournalEntryId String?          // New reversing JournalEntry.id
+  fiscalInvoiceId        String?          // If original sale was fiscalised, links to new FiscalInvoice (CN)
+  fiscalInvoice          FiscalInvoice?   @relation(fields: [fiscalInvoiceId], references: [id], onDelete: SetNull)
+  reason                 String           // e.g. "Item returned", "Billing error", "Customer refund"
+  totalAmount            Float            // Gross amount reversed
+  totalVat               Float            @default(0)
+  currency               String           @default("USD")
+  issuedByUserId         String?
+  status                 String           @default("ISSUED") // ISSUED | VOID
+  lines                  CreditNoteLine[]
+  createdAt              DateTime         @default(now())
+  updatedAt              DateTime         @updatedAt
+
+  @@unique([schoolId, creditNoteNumber])
+  @@index([schoolId])
+  @@index([schoolId, originalJournalEntryId])
+}
+
+/// Line items in a generalized credit note (mirrors the original journal/sales lines).
+model CreditNoteLine {
+  id           String     @id @default(cuid())
+  creditNoteId String
+  creditNote   CreditNote @relation(fields: [creditNoteId], references: [id], onDelete: Cascade)
+  schoolId     String
+  coaCode      String
+  amount       Float
+  vatAmount    Float      @default(0)
+  description  String?
+  studentId    String?
+  supplierId   String?
+  createdAt    DateTime   @default(now())
+
+  @@index([schoolId])
+  @@index([creditNoteId])
+}
+
+/// Cash-up and till management sessions per device.
+/// A device cannot perform sales without an OPEN till session.
+model TillSession {
+  id             String                @id @default(cuid())
+  schoolId       String
+  school         School                @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  deviceId       String
+  device         FiscalDevice          @relation(fields: [deviceId], references: [id], onDelete: Restrict)
+  sessionNumber  String                // TILL-2026-00001
+  openedByUserId String
+  openedAt       DateTime              @default(now())
+  closedByUserId String?
+  closedAt       DateTime?
+  openingFloat   Float                 @default(0)
+  closingCounted Float?
+  expectedSales  Float?
+  variance       Float?
+  status         String                @default("OPEN") // 'OPEN', 'CLOSED', 'VARIANCE_REVIEW'
+  notes          String?
+  createdAt      DateTime              @default(now())
+  updatedAt      DateTime              @updatedAt
+
+  denominations CashupDenomination[]
+  payments      CashupPayment[]
+
+  @@unique([schoolId, sessionNumber])
+  @@index([schoolId])
+  @@index([schoolId, deviceId, status])
+  @@index([schoolId, openedAt])
+}
+
+/// Cash counted denomination breakdown during cash-up.
+model CashupDenomination {
+  id            String      @id @default(cuid())
+  schoolId      String
+  tillSessionId String
+  tillSession   TillSession @relation(fields: [tillSessionId], references: [id], onDelete: Cascade)
+  currency      String      @default("USD")
+  denomination  Float       // 100, 50, 20, 10, 5, 2, 1, 0.5, 0.25, 0.1, 0.05
+  count         Int
+  total         Float
+  createdAt     DateTime    @default(now())
+
+  @@index([schoolId])
+  @@index([tillSessionId])
+}
+
+/// Payment method summary and variance during cash-up.
+model CashupPayment {
+  id             String      @id @default(cuid())
+  schoolId       String
+  tillSessionId  String
+  tillSession    TillSession @relation(fields: [tillSessionId], references: [id], onDelete: Cascade)
+  paymentMethod  String      // 'CASH', 'ECOCASH', 'INNBUCKS', 'CARD', 'BANK'
+  expectedAmount Float       // Sum from sales / fiscal_invoices
+  countedAmount  Float       // Physically counted / e-wallet balance confirmed
+  variance       Float       // counted - expected
+  createdAt      DateTime    @default(now())
+
+  @@index([schoolId])
+  @@index([tillSessionId])
+}
+
+/// Cross-module student clearance checklist (Library, Fees, Hostel).
+model StudentClearance {
+  id              String    @id @default(cuid())
+  schoolId        String
+  school          School    @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  studentId       String
+  student         Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  status          String    @default("PENDING") // 'PENDING', 'APPROVED', 'REJECTED'
+  
+  // Library sign-off
+  libraryCleared  Boolean   @default(false)
+  libraryNotes    String?
+  librarySignedBy String?
+  librarySignedAt DateTime?
+
+  // Fees / Finance sign-off
+  feesCleared     Boolean   @default(false)
+  feesBalance     Float     @default(0)
+  feesNotes       String?
+  feesSignedBy    String?
+  feesSignedAt    DateTime?
+
+  // Hostel / Boarding sign-off
+  hostelCleared   Boolean   @default(false)
+  hostelNotes     String?
+  hostelSignedBy  String?
+  hostelSignedAt  DateTime?
+
+  // Final Admin / Bursar Clearance
+  finalCleared    Boolean   @default(false)
+  finalSignedBy   String?
+  finalSignedAt   DateTime?
+  certificateNo   String?
+
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@unique([schoolId, studentId])
+  @@index([schoolId])
+  @@index([schoolId, status])
+}
+
 
