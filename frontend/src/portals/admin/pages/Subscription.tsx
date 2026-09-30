@@ -2,9 +2,11 @@ import { useEffect, useState } from 'react';
 import api from '../../../lib/api';
 import { useAuth } from '../../../contexts/AuthContext';
 import { DEFAULT_PLANS } from '../../acadex/pages/Subscriptions';
+import { useToast } from '../../../context/ToastContext';
 
 export default function AdminSubscription() {
   const { user } = useAuth();
+  const { showToast, toastConfirm } = useToast();
   const [schoolData, setSchoolData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   
@@ -39,16 +41,16 @@ export default function AdminSubscription() {
 
   const handleUpdatePlan = async (targetPlanName: string) => {
     const action = targetPlanName === 'Enterprise' || DEFAULT_PLANS.find(p => p.name === targetPlanName)!.id > plan.id ? 'upgrade' : 'downgrade';
-    if (!confirm(`Are you sure you want to ${action} your plan to ${targetPlanName}?`)) return;
+    if (!(await toastConfirm(`Are you sure you want to ${action} your plan to ${targetPlanName}?`))) return;
     
     setLoading(true);
     try {
       await api.patch('/api/schools/me/plan', { planName: targetPlanName });
-      alert(`Successfully updated your subscription to ${targetPlanName}!`);
+      showToast(`Successfully updated your subscription to ${targetPlanName}!`, 'success');
       fetchSchoolData();
     } catch (err: any) {
       console.error(err);
-      alert(err.response?.data?.error || 'Failed to update subscription plan.');
+      showToast(err.response?.data?.error || 'Failed to update subscription plan.', 'error');
       setLoading(false);
     }
   };
@@ -61,7 +63,7 @@ export default function AdminSubscription() {
   const handleUpdatePayment = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newCardNumber || !newExpiry || !newCvv) {
-      alert('Please fill in all card details');
+      showToast('Please fill in all card details', 'warning');
       return;
     }
     setUpdatingPayment(true);
@@ -79,7 +81,7 @@ export default function AdminSubscription() {
       setCardBrand(brand);
       setUpdatingPayment(false);
       setShowPaymentModal(false);
-      alert('Payment details updated successfully!');
+      showToast('Payment details updated successfully!', 'success');
     }, 1000);
   };
 
@@ -88,7 +90,7 @@ export default function AdminSubscription() {
   const calculatedMonthly = activeStudents * ratePerStudent;
 
   const handleDownloadInvoice = (invNo: string) => {
-    alert(`Generating invoice receipt for ${invNo}...`);
+    showToast(`Generating invoice receipt for ${invNo}...`, 'info');
     const invoiceContent = `
 =============================================
                ACADEX INVOICE

@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useForm } from 'react-hook-form';
-import { toast } from 'react-hot-toast';
+import { toast } from '../../../../context/ToastContext';
 import api from '../../../../lib/api';
 import { useAuth } from '../../../../contexts/AuthContext';
 

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '../../../lib/api';
 import { formatCurrency } from '../../../utils/formatters';
-import toast from 'react-hot-toast';
+import toast from '../../../context/ToastContext';
 
 interface MonthRow {
   period: string;

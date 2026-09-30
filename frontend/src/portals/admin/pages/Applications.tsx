@@ -62,12 +62,12 @@ export default function AdminApplications() {
 
   const handleUpdateStatus = async (id: string, newStatus: string, extraData: any = {}) => {
     if (newStatus === 'accepted' && !selectedClassId) {
-      alert('Please select a class for this student before approving.');
+      showToast('Please select a class for this student before approving.', 'warning');
       return;
     }
 
     if (newStatus === 'interview' && (!intDate || !intVenue)) {
-      alert('Please provide interview date and venue.');
+      showToast('Please provide interview date and venue.', 'warning');
       return;
     }
 
@@ -81,12 +81,13 @@ export default function AdminApplications() {
         classId: newStatus === 'accepted' ? selectedClassId : undefined,
         ...extraData
       });
+      showToast(`Application successfully updated to ${newStatus}`, 'success');
       fetchApplications();
       setSelectedApp(null);
       setSelectedClassId('');
       setShowInterviewForm(false);
     } catch (err: any) {
-      alert(err.response?.data?.error || 'Failed to update status');
+      showToast(err.response?.data?.error || 'Failed to update status', 'error');
     } finally {
       setUpdating(false);
     }
@@ -217,7 +218,7 @@ export default function AdminApplications() {
       setSelectedApp(data);
       showToast(`Document ${status} successfully`, 'success');
     } catch (err) {
-      alert('Failed to update document status');
+      showToast('Failed to update document status', 'error');
     }
   };
 

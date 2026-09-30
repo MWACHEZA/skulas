@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import api from '../../../lib/api';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
@@ -162,7 +162,7 @@ export default function ProgressReports() {
               <div>
                 <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 900 }}>Academic Report Preview</h3>
                 <p style={{ margin: '4px 0 0 0', fontSize: '0.85rem', color: '#64748b', fontWeight: 600 }}>
-                  {selectedReport.term} {selectedReport.year} — {selectedReport.student?.name || 'Student'}
+                  {selectedReport.term} {selectedReport.year} � {selectedReport.student?.name || 'Student'}
                 </p>
               </div>
               <div style={{ display: 'flex', gap: '12px' }}>

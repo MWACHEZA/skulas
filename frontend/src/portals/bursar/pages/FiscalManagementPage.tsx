@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../../lib/api';
+import { useToast } from '../../../context/ToastContext';
 import FiscalReceiptModal, { type FiscalReceiptData } from '../../../components/shared/FiscalReceiptModal';
 
 interface FiscalDevice {
@@ -30,6 +31,7 @@ interface FiscalInvoice {
 }
 
 export default function FiscalManagementPage() {
+  const { showToast } = useToast();
   const [activeTab, setActiveTab] = useState<'dashboard' | 'devices' | 'reports'>('dashboard');
   const [loading, setLoading] = useState(false);
   const [dashboardData, setDashboardData] = useState<any>(null);
@@ -89,17 +91,19 @@ export default function FiscalManagementPage() {
         apiToken: ''
       });
       fetchData();
+      showToast('Fiscal device registered successfully', 'success');
     } catch (err: any) {
-      alert(err.response?.data?.error || 'Failed to register device');
+      showToast(err.response?.data?.error || 'Failed to register device', 'error');
     }
   };
 
   const handleRetry = async (invoiceId: string) => {
     try {
       await api.post(`/fiscal/retry/${invoiceId}`);
+      showToast('Invoice transmission retried', 'success');
       fetchData();
     } catch (err: any) {
-      alert(err.response?.data?.error || 'Failed to retry invoice');
+      showToast(err.response?.data?.error || 'Failed to retry invoice', 'error');
     }
   };
 

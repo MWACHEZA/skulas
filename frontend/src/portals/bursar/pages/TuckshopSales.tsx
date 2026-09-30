@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import api from '../../../lib/api';
+import { toast } from '../../../context/ToastContext';
 
 interface TuckshopItem {
   id: string;
@@ -57,13 +58,13 @@ export default function TuckshopSales() {
 
   const addToCart = (item: TuckshopItem) => {
     if (item.stock <= 0) {
-      alert('Item is out of stock!');
+      toast.warning('Item is out of stock!');
       return;
     }
     const existing = cart.find(c => c.id === item.id);
     if (existing) {
       if (existing.quantity >= item.stock) {
-        alert('Not enough stock available!');
+        toast.warning('Not enough stock available!');
         return;
       }
       setCart(cart.map(c => c.id === item.id ? { ...c, quantity: c.quantity + 1 } : c));
@@ -77,8 +78,14 @@ export default function TuckshopSales() {
   };
 
   const handleCheckout = async () => {
-    if (cart.length === 0) return alert('Cart is empty');
-    if (paymentMethod === 'WALLET' && !studentId) return alert('Student ID is required for Wallet payments');
+    if (cart.length === 0) {
+      toast.warning('Cart is empty');
+      return;
+    }
+    if (paymentMethod === 'WALLET' && !studentId) {
+      toast.warning('Student ID is required for Wallet payments');
+      return;
+    }
 
     setIsProcessing(true);
     try {
@@ -87,14 +94,14 @@ export default function TuckshopSales() {
         paymentMethod,
         studentId: studentId || null
       });
-      alert('Sale processed successfully!');
+      toast.success('Sale processed successfully!');
       setCart([]);
       setStudentId('');
       fetchItems();
       fetchRecentSales();
     } catch (e: any) {
       console.error('Checkout error:', e);
-      alert(e.response?.data?.error || 'Failed to process sale');
+      toast.error(e.response?.data?.error || 'Failed to process sale');
     } finally {
       setIsProcessing(false);
     }

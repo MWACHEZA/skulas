@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import api from '../../../lib/api';
 import { useTerminology } from '../../../hooks/useTerminology';
 import { formatCurrency } from '../../../utils/formatters';
+import { useToast } from '../../../context/ToastContext';
 
 interface ProjectFunding {
   id: string;
@@ -14,6 +15,7 @@ interface ProjectFunding {
 
 export default function BursarSDCFunding() {
   const { t } = useTerminology();
+  const { showToast } = useToast();
   const [funding, setFunding] = useState<ProjectFunding[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -63,7 +65,7 @@ export default function BursarSDCFunding() {
 
     const amount = parseFloat(disburseAmount || '0');
     if (amount <= 0) {
-      alert('Please enter a valid disbursement amount');
+      showToast('Please enter a valid disbursement amount', 'warning');
       return;
     }
 
@@ -73,7 +75,7 @@ export default function BursarSDCFunding() {
       if (disburseMode === 'existing') {
         const proj = funding.find(p => p.id === selectedProjectId);
         if (!proj) {
-          alert('Select a valid project');
+          showToast('Select a valid project', 'warning');
           setSubmitting(false);
           return;
         }
@@ -82,10 +84,10 @@ export default function BursarSDCFunding() {
         await api.patch(`/api/funding/${selectedProjectId}`, {
           spent: updatedSpent
         });
-        alert('Disbursement logged successfully!');
+        showToast('Disbursement logged successfully!', 'success');
       } else {
         if (!projectName || !budgetAmount) {
-          alert('Missing required fields');
+          showToast('Missing required fields', 'warning');
           setSubmitting(false);
           return;
         }
@@ -96,14 +98,14 @@ export default function BursarSDCFunding() {
           spent: amount,
           status: 'Ongoing'
         });
-        alert('New project and disbursement logged successfully!');
+        showToast('New project and disbursement logged successfully!', 'success');
       }
 
       setShowModal(false);
       fetchFunding();
     } catch (err) {
       console.error('Failed to process disbursement', err);
-      alert('Failed to process disbursement');
+      showToast('Failed to process disbursement', 'error');
     } finally {
       setSubmitting(false);
     }

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../../lib/api';
-import { toast } from 'react-hot-toast';
+import { toast } from '../../../context/ToastContext';
 import { useTerminology } from '../../../hooks/useTerminology';
 import '../../../styles/portal.css';
 

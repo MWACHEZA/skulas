@@ -123,21 +123,23 @@ const ProcurementUI: React.FC<Props> = ({ mode }) => {
     e.preventDefault();
     try {
       await api.post('/api/procurement/requisitions', formData);
+      showToast('Requisition submitted successfully', 'success');
       setShowModal(false);
       setFormData({ title: '', description: '', estimatedAmount: '', department: user?.dept?.name || 'Central Administration' });
       fetchData();
     } catch (err) {
-      alert('Failed to submit requisition');
+      showToast('Failed to submit requisition', 'error');
     }
   };
 
   const handleAction = async (id: string, action: 'APPROVE' | 'REJECT') => {
     try {
       await api.patch(`/api/procurement/requisitions/${id}/approve`, { action });
+      showToast(`Requisition ${action.toLowerCase()}d successfully`, 'success');
       setSelectedReq(null);
       fetchData();
     } catch (err: any) {
-      alert(err.response?.data?.error || 'Action failed');
+      showToast(err.response?.data?.error || 'Action failed', 'error');
     }
   };
 

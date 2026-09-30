@@ -220,7 +220,7 @@ export default function ManageCBT() {
     if (!previewData) return;
     const html = buildExamHtml(true);
     const printWin = window.open('', '_blank', 'width=900,height=700');
-    if (!printWin) { alert('Pop-up blocked. Please allow pop-ups for this site.'); return; }
+    if (!printWin) { showToast('Pop-up blocked. Please allow pop-ups for this site.', 'warning'); return; }
     printWin.document.write(html);
     printWin.document.close();
     printWin.focus();
@@ -234,7 +234,7 @@ export default function ManageCBT() {
     if (!previewData || generatingPdf) return;
     const html = buildExamHtml(false);
     const printWin = window.open('', '_blank', 'width=900,height=700');
-    if (!printWin) { alert('Pop-up blocked. Please allow pop-ups for this site.'); return; }
+    if (!printWin) { showToast('Pop-up blocked. Please allow pop-ups for this site.', 'warning'); return; }
     setGeneratingPdf(true);
     printWin.document.write(html);
     printWin.document.close();
@@ -385,7 +385,7 @@ export default function ManageCBT() {
       saveAs(blob, `${(previewData.title || 'exam').replace(/\s+/g, '_')}.docx`);
     } catch (err) {
       console.error('Word export error:', err);
-      alert('Failed to generate Word document. Please try again.');
+      showToast('Failed to generate Word document. Please try again.', 'error');
     } finally {
       setGeneratingWord(false);
     }

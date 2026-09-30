@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../../../lib/api';
+import { useToast } from '../../../../context/ToastContext';
 
 export default function MyPaymentSlip() {
   const [payslips, setPayslips] = useState<any[]>([]);
+  const { showToast } = useToast();
 
   useEffect(() => {
     fetchPayslips();
@@ -19,7 +21,7 @@ export default function MyPaymentSlip() {
   };
 
   const handleDownload = (slip: any) => {
-    alert(`Downloading payslip for ${slip.period}`);
+    showToast(`Downloading payslip for ${slip.period}...`, 'info');
   };
 
   return (

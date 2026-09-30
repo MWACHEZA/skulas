@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
-import { toast } from 'react-hot-toast';
+import { toast } from '../../../../context/ToastContext';
 import api from '../../../../lib/api';
 
 interface CampusFormValues {

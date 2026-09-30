@@ -14,7 +14,7 @@ import {
   Clock,
   Layers
 } from 'lucide-react';
-import { toast } from 'react-hot-toast';
+import { toast } from '../../../context/ToastContext';
 
 export default function BudgetsPage() {
   const [activeTab, setActiveTab] = useState<'BUDGETS' | 'APPROVALS' | 'SETTINGS'>('BUDGETS');

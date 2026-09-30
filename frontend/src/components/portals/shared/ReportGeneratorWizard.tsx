@@ -8,6 +8,7 @@ import { createRoot } from 'react-dom/client';
 import { flushSync } from 'react-dom';
 import ReportDocument from './ReportDocument';
 import { useTerminology } from '../../../hooks/useTerminology';
+import { useToast } from '../../../context/ToastContext';
 
 interface Props {
   role: 'ADMIN' | 'TEACHER';
@@ -17,6 +18,7 @@ interface Props {
 const ReportGeneratorWizard: React.FC<Props> = ({ role: _role, allowedTypes }) => {
   const [step, setStep] = useState(1);
   const { t, isMedical, isPoly } = useTerminology();
+  const { showToast } = useToast();
   const [loading, setLoading] = useState(false);
   const [classes, setClasses] = useState<any[]>([]);
   const [reportType, setReportType] = useState('ACADEMIC');
@@ -96,7 +98,7 @@ const ReportGeneratorWizard: React.FC<Props> = ({ role: _role, allowedTypes }) =
       let endpoint = `/api/reports/preview?type=${reportType}&term=${filters.term}&year=${filters.year}`;
       if (['ACADEMIC', 'ATTENDANCE'].includes(reportType)) {
         if (!filters.classId) {
-          alert('Please select a class for this report type.');
+          showToast('Please select a class for this report type.', 'warning');
           setLoading(false);
           return;
         }
@@ -107,7 +109,7 @@ const ReportGeneratorWizard: React.FC<Props> = ({ role: _role, allowedTypes }) =
       setDataList(Array.isArray(res.data) ? res.data : []);
       setStep(2);
     } catch (err) {
-      alert('Failed to fetch data for report. Ensure all filters are set.');
+      showToast('Failed to fetch data for report. Ensure all filters are set.', 'error');
     } finally {
       setLoading(false);
     }
@@ -206,7 +208,7 @@ const ReportGeneratorWizard: React.FC<Props> = ({ role: _role, allowedTypes }) =
       setSelectedIds([]);
     } catch (err) {
       console.error(err);
-      alert('Error during generation');
+      showToast('Error during generation', 'error');
     } finally {
       if (document.body.contains(container)) {
         document.body.removeChild(container);
@@ -218,7 +220,7 @@ const ReportGeneratorWizard: React.FC<Props> = ({ role: _role, allowedTypes }) =
   const publishSnapshots = async () => {
     if (selectedIds.length === 0) return;
     if (reportType !== 'ACADEMIC') {
-      alert('Publication is currently only supported for Academic Reports');
+      showToast('Publication is currently only supported for Academic Reports', 'warning');
       return;
     }
 
@@ -231,9 +233,10 @@ const ReportGeneratorWizard: React.FC<Props> = ({ role: _role, allowedTypes }) =
         publishStudent: publishConfig.toStudent,
         publishParent: publishConfig.toParent
       });
+      showToast(`Successfully published ${selectedIds.length} report snapshot(s)`, 'success');
       setSummary({ count: selectedIds.length, type: 'PUBLISH' });
     } catch (err) {
-      alert('Failed to publish snapshots');
+      showToast('Failed to publish snapshots', 'error');
     } finally {
       setLoading(false);
     }

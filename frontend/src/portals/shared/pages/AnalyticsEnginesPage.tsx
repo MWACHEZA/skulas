@@ -28,7 +28,7 @@ import {
   CartesianGrid,
   Legend
 } from 'recharts';
-import { toast } from 'react-hot-toast';
+import { toast } from '../../../context/ToastContext';
 
 export default function AnalyticsEnginesPage() {
   const [activeEngine, setActiveEngine] = useState<'finance' | 'academics' | 'attendance' | 'operations' | 'engagement'>('finance');

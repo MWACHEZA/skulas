@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import api from '../../../lib/api';
+import { toast } from '../../../context/ToastContext';
 
 interface TuckshopItem {
   id: string;
@@ -41,14 +42,16 @@ export default function TuckshopInventory() {
     try {
       if (selectedItem) {
         await api.put(`/api/tuckshop/items/${selectedItem.id}`, formData);
+        toast.success('Item updated successfully');
       } else {
         await api.post('/api/tuckshop/items', formData);
+        toast.success('Item created successfully');
       }
       setShowItemModal(false);
       fetchItems();
     } catch (e) {
       console.error('Failed to save item', e);
-      alert('Failed to save item');
+      toast.error('Failed to save item');
     }
   };
 
@@ -57,12 +60,13 @@ export default function TuckshopInventory() {
     if (!selectedItem) return;
     try {
       await api.put(`/api/tuckshop/items/${selectedItem.id}`, { addStock: restockAmount });
+      toast.success('Stock updated successfully');
       setShowRestockModal(false);
       setRestockAmount('');
       fetchItems();
     } catch (e) {
       console.error('Failed to restock item', e);
-      alert('Failed to restock item');
+      toast.error('Failed to restock item');
     }
   };
 

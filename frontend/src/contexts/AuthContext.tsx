@@ -217,7 +217,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         warningModal = null;
       }
       logout();
-      alert('Your session has timed out due to inactivity.');
+      try {
+        sessionStorage.setItem(
+          'acadex_flash_toast',
+          JSON.stringify({ message: 'Your session has timed out due to inactivity.', type: 'warning' })
+        );
+      } catch {
+        // Ignore
+      }
       window.location.reload();
     };
 

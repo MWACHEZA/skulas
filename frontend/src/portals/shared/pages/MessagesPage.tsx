@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import api from '../../../lib/api';
 import { useTerminology } from '../../../hooks/useTerminology';
 import { useAuth } from '../../../contexts/AuthContext';
+import { useToast } from '../../../context/ToastContext';
 import '../../../styles/portal.css';
 
 interface MessageItem {
@@ -23,6 +24,7 @@ interface MessageItem {
 export default function MessagesPage() {
   const { t } = useTerminology();
   const { user } = useAuth();
+  const { showToast, toastConfirm } = useToast();
   
   const [messages, setMessages] = useState<MessageItem[]>([]);
   const [recipients, setRecipients] = useState<any[]>([]);
@@ -86,7 +88,7 @@ export default function MessagesPage() {
         subject: newSubject,
         body: newBody
       });
-      alert('Message sent successfully!');
+      showToast('Message sent successfully!', 'success');
       setShowNewModal(false);
       setNewRecipientId('');
       setNewSubject('');
@@ -94,20 +96,22 @@ export default function MessagesPage() {
       fetchMessages();
     } catch (error) {
       console.error('Error sending message:', error);
-      alert('Failed to send message.');
+      showToast('Failed to send message.', 'error');
     } finally {
       setSubmitting(false);
     }
   };
 
   const handleDeleteMessage = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this message audit?')) return;
+    if (!(await toastConfirm('Are you sure you want to delete this message audit?'))) return;
     try {
       await api.delete(`/api/messages/${id}`);
+      showToast('Message deleted successfully', 'success');
       setSelected(null);
       fetchMessages();
     } catch (error) {
       console.error('Error deleting message:', error);
+      showToast('Failed to delete message', 'error');
     }
   };
 

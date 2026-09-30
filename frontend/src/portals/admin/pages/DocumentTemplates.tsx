@@ -938,10 +938,10 @@ export default function AdminDocumentTemplates() {
 
     try {
       await api.post('/api/reports/template', formData);
-      alert('Document branding updated successfully!');
+      showToast('Document branding updated successfully!', 'success');
       fetchTemplate();
     } catch (err) {
-      alert('Failed to update template');
+      showToast('Failed to update template', 'error');
     } finally {
       setLoading(false);
     }

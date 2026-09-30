@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../../lib/api';
+import { useToast } from '../../../context/ToastContext';
 
 const DENOMINATIONS = [100, 50, 20, 10, 5, 2, 1, 0.5, 0.25, 0.1, 0.05];
 
 export default function TillCashupComponent() {
+  const { showToast } = useToast();
   const [devices, setDevices] = useState<any[]>([]);
   const [selectedDeviceId, setSelectedDeviceId] = useState<string>('');
   const [activeSession, setActiveSession] = useState<any>(null);
@@ -84,10 +86,11 @@ export default function TillCashupComponent() {
         openingFloat: parseFloat(openingFloat) || 0
       });
       setIsOpenModal(false);
+      showToast('Till opened successfully', 'success');
       checkActiveSession(selectedDeviceId);
       fetchVariances();
     } catch (err: any) {
-      alert(err.response?.data?.error || 'Failed to open till');
+      showToast(err.response?.data?.error || 'Failed to open till', 'error');
     }
   };
 
@@ -121,10 +124,11 @@ export default function TillCashupComponent() {
       setIsCloseModal(false);
       setDenomCounts({});
       setCloseNotes('');
+      showToast('Till closed and cash-up recorded', 'success');
       checkActiveSession(selectedDeviceId);
       fetchVariances();
     } catch (err: any) {
-      alert(err.response?.data?.error || 'Failed to close till');
+      showToast(err.response?.data?.error || 'Failed to close till', 'error');
     }
   };
 

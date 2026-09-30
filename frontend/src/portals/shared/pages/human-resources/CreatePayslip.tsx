@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import api from '../../../../lib/api';
+import { useToast } from '../../../../context/ToastContext';
 
 export default function CreatePayslip() {
+  const { showToast } = useToast();
   const [departments, setDepartments] = useState<{ id: string; name: string }[]>([]);
   const [employees, setEmployees] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
@@ -101,10 +103,10 @@ export default function CreatePayslip() {
       };
       
       await api.post('/api/payroll/entry', payload);
-      alert('Payslip generated and saved successfully!');
+      showToast('Payslip generated and saved successfully!', 'success');
     } catch (error) {
       console.error('Failed to save payslip', error);
-      alert('Failed to save payslip.');
+      showToast('Failed to save payslip.', 'error');
     } finally {
       setLoading(false);
     }

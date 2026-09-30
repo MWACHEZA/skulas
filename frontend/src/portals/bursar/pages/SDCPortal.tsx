@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '../../../lib/api';
 import { useTerminology } from '../../../hooks/useTerminology';
+import { useToast } from '../../../context/ToastContext';
 
 interface ProjectFunding {
   id: string;
@@ -21,6 +22,7 @@ interface MeetingMinute {
 
 export default function BursarSDCPortal() {
   const { t } = useTerminology();
+  const { showToast } = useToast();
   const [minutes, setMinutes] = useState<MeetingMinute[]>([]);
   const [funding, setFunding] = useState<ProjectFunding[]>([]);
   const [loading, setLoading] = useState(true);
@@ -58,7 +60,7 @@ export default function BursarSDCPortal() {
       link.remove();
     } catch (error) {
       console.error('Failed to download file', error);
-      alert('Failed to download file');
+      showToast('Failed to download file', 'error');
     }
   };
 

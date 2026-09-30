@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import api from '../../../lib/api';
 import { useAccountingQuery, useOptimisticAccountingMutation } from '../../../hooks/useAccountingQuery';
-import toast from 'react-hot-toast';
+import toast from '../../../context/ToastContext';
 import { RefreshCw, CheckCircle2, Link, Unlink, FileSpreadsheet } from 'lucide-react';
 
 export default function BankReconciliationPage() {

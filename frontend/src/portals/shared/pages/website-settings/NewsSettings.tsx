@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { format } from 'date-fns';
-import { toast } from 'react-hot-toast';
+import { toast } from '../../../../context/ToastContext';
 import api from '../../../../lib/api';
 
 interface NewsItem {

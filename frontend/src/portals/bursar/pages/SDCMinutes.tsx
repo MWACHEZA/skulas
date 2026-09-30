@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '../../../lib/api';
 import { useTerminology } from '../../../hooks/useTerminology';
+import { useToast } from '../../../context/ToastContext';
 
 interface MeetingMinute {
   id: string;
@@ -13,6 +14,7 @@ interface MeetingMinute {
 
 export default function BursarSDCMinutes() {
   const { t } = useTerminology();
+  const { showToast } = useToast();
   const [meetings, setMeetings] = useState<MeetingMinute[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -45,7 +47,7 @@ export default function BursarSDCMinutes() {
       link.remove();
     } catch (error) {
       console.error('Failed to download file', error);
-      alert('Failed to download file');
+      showToast('Failed to download file', 'error');
     }
   };
 

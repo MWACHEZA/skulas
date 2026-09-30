@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { exportData, type ExportColumn, type ExportOptions } from '../../utils/exportService';
 import { useAuth } from '../../contexts/AuthContext';
+import { toast } from '../../context/ToastContext';
 
 export interface ExportButtonProps<T = any> {
   filename?: string;
@@ -83,7 +84,7 @@ export const ExportButton = <T extends any = any>({
       }
     } catch (err) {
       console.error(`Export failed for format ${format}:`, err);
-      alert(`Failed to export document as ${format.toUpperCase()}. Please check browser permissions and try again.`);
+      toast.error(`Failed to export document as ${format.toUpperCase()}. Please check browser permissions and try again.`);
     } finally {
       setExportingFormat(null);
     }

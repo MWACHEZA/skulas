@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '../../../lib/api';
 import { useTerminology } from '../../../hooks/useTerminology';
+import { useToast } from '../../../context/ToastContext';
 
 interface MeetingMinute {
   id: string;
@@ -13,6 +14,7 @@ interface MeetingMinute {
 
 export default function AdminSDCMinutes() {
   const { t } = useTerminology();
+  const { showToast, toastConfirm } = useToast();
   const [meetings, setMeetings] = useState<MeetingMinute[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -60,7 +62,7 @@ export default function AdminSDCMinutes() {
       await api.post('/api/meeting-minutes', formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
-      alert('Meeting minutes uploaded successfully!');
+      showToast('Meeting minutes uploaded successfully!', 'success');
       setShowModal(false);
       setDate('');
       setTitle('');
@@ -70,20 +72,21 @@ export default function AdminSDCMinutes() {
       fetchMinutes();
     } catch (err) {
       console.error('Failed to upload minutes', err);
-      alert('Failed to upload minutes');
+      showToast('Failed to upload minutes', 'error');
     } finally {
       setSubmitting(false);
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this meeting minutes record?')) return;
+    if (!(await toastConfirm('Are you sure you want to delete this meeting minutes record?'))) return;
     try {
       await api.delete(`/api/meeting-minutes/${id}`);
+      showToast('Meeting minutes record deleted successfully', 'success');
       fetchMinutes();
     } catch (err) {
       console.error('Failed to delete meeting minutes', err);
-    
+      showToast('Failed to delete meeting minutes', 'error');
     }
   };
 
@@ -99,7 +102,7 @@ export default function AdminSDCMinutes() {
       link.remove();
     } catch (error) {
       console.error('Failed to download file', error);
-      alert('Failed to download file');
+      showToast('Failed to download file', 'error');
     }
   };
 

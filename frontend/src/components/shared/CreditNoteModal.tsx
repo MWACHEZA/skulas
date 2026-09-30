@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import api from '../../lib/api';
 import FiscalReceiptModal, { type FiscalReceiptData } from './FiscalReceiptModal';
+import { useToast } from '../../context/ToastContext';
 
 interface Props {
   isOpen: boolean;
@@ -24,6 +25,7 @@ export default function CreditNoteModal({
   const [submitting, setSubmitting] = useState(false);
   const [receiptData, setReceiptData] = useState<FiscalReceiptData | null>(null);
   const [showReceipt, setShowReceipt] = useState(false);
+  const { showToast } = useToast();
 
   if (!isOpen) return null;
 
@@ -67,10 +69,11 @@ export default function CreditNoteModal({
         originalFiscalCode: fiscalCreditNote?.originalFiscalCode
       });
 
+      showToast('Credit note issued successfully', 'success');
       setShowReceipt(true);
       if (onSuccess) onSuccess();
     } catch (err: any) {
-      alert(err.response?.data?.error || 'Failed to issue credit note');
+      showToast(err.response?.data?.error || 'Failed to issue credit note', 'error');
     } finally {
       setSubmitting(false);
     }

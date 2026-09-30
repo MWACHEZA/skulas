@@ -15,7 +15,7 @@ import {
   ArrowUpRight,
   ArrowDownRight
 } from 'lucide-react';
-import { toast } from 'react-hot-toast';
+import { toast } from '../../../context/ToastContext';
 
 export default function FinancialReportsPage() {
   const [activeReport, setActiveReport] = useState<

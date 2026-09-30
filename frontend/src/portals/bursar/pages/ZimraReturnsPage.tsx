@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../../lib/api';
+import { useToast } from '../../../context/ToastContext';
 
 export default function ZimraReturnsPage() {
+  const { showToast } = useToast();
   const currentMonth = `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}`;
   const [period, setPeriod] = useState(currentMonth);
   const [activeTab, setActiveTab] = useState<'vat2' | 'p2' | 'emis' | 'clearance'>('vat2');
@@ -50,7 +52,7 @@ export default function ZimraReturnsPage() {
       const res = await api.get(`/compliance/clearance/${studentSearchId}`);
       setClearanceData(res.data);
     } catch (err: any) {
-      alert(err.response?.data?.error || 'Student clearance not found');
+      showToast(err.response?.data?.error || 'Student clearance not found', 'error');
     }
   };
 
@@ -60,8 +62,9 @@ export default function ZimraReturnsPage() {
       await api.post(`/compliance/clearance/${studentSearchId}/signoff`, { section });
       const res = await api.get(`/compliance/clearance/${studentSearchId}`);
       setClearanceData(res.data);
+      showToast(`Clearance for ${section.toLowerCase()} recorded successfully`, 'success');
     } catch (err: any) {
-      alert(err.response?.data?.error || 'Failed to signoff clearance');
+      showToast(err.response?.data?.error || 'Failed to signoff clearance', 'error');
     }
   };
 

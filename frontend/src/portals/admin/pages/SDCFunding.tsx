@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import api from '../../../lib/api';
 import { useTerminology } from '../../../hooks/useTerminology';
 import { formatCurrency } from '../../../utils/formatters';
+import { useToast } from '../../../context/ToastContext';
 
 interface ProjectFunding {
   id: string;
@@ -14,6 +15,7 @@ interface ProjectFunding {
 
 export default function AdminSDCFunding() {
   const { t } = useTerminology();
+  const { showToast, toastConfirm } = useToast();
   const [funding, setFunding] = useState<ProjectFunding[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -76,29 +78,30 @@ export default function AdminSDCFunding() {
     try {
       if (editingProject) {
         await api.patch(`/api/funding/${editingProject.id}`, data);
-        alert('Project updated successfully!');
+        showToast('Project updated successfully!', 'success');
       } else {
         await api.post('/api/funding', data);
-        alert('Project created successfully!');
+        showToast('Project created successfully!', 'success');
       }
       setShowModal(false);
       fetchFunding();
     } catch (err) {
       console.error('Failed to save project funding', err);
-      alert('Failed to save project funding');
+      showToast('Failed to save project funding', 'error');
     } finally {
       setSubmitting(false);
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this project?')) return;
+    if (!(await toastConfirm('Are you sure you want to delete this project?'))) return;
     try {
       await api.delete(`/api/funding/${id}`);
+      showToast('Project deleted successfully', 'success');
       fetchFunding();
     } catch (err) {
       console.error('Failed to delete project funding', err);
-      alert('Failed to delete project funding');
+      showToast('Failed to delete project funding', 'error');
     }
   };
 

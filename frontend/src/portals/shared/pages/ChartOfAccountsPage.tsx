@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import api from '../../../lib/api';
 import { useAccountingQuery, useOptimisticAccountingMutation } from '../../../hooks/useAccountingQuery';
-import toast from 'react-hot-toast';
+import toast from '../../../context/ToastContext';
 import { Plus, Shield, CheckCircle, XCircle, Search, RefreshCw, Layers } from 'lucide-react';
 import { EmptyState } from '../../../components/common/EmptyState';
 import '../../../styles/portal.css';

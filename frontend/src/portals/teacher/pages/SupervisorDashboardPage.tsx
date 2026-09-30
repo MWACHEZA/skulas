@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import api from '../../../lib/api';
 import { useTerminology } from '../../../hooks/useTerminology';
+import { useToast } from '../../../context/ToastContext';
 
 interface SupervisionAssignment {
   id: string;
@@ -21,6 +22,7 @@ interface SupervisionAssignment {
 
 export default function SupervisorDashboard() {
   const { t } = useTerminology();
+  const { showToast } = useToast();
   const [assignments, setAssignments] = useState<SupervisionAssignment[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedStudent, setSelectedStudent] = useState<SupervisionAssignment | null>(null);
@@ -51,9 +53,10 @@ export default function SupervisorDashboard() {
       });
       setReportFeedback('');
       setSelectedStudent(null);
+      showToast(`Report ${status.toLowerCase()}ed successfully`, 'success');
       fetchAssignments();
     } catch (err) {
-      alert('Failed to review report');
+      showToast('Failed to review report', 'error');
     }
   };
 

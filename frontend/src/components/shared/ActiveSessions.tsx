@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../lib/api';
+import { useToast } from '../../context/ToastContext';
 
 interface Session {
   id: string;
@@ -10,6 +11,7 @@ interface Session {
 }
 
 export default function ActiveSessions() {
+  const { showToast, toastConfirm } = useToast();
   const [sessions, setSessions] = useState<Session[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -32,14 +34,15 @@ export default function ActiveSessions() {
   }, []);
 
   const handleRevoke = async (id: string) => {
-    if (!window.confirm('Are you sure you want to log out this device?')) return;
+    if (!(await toastConfirm('Are you sure you want to log out this device?'))) return;
     
     try {
       setRevoking(id);
       await api.delete(`/api/auth/sessions/${id}`);
       setSessions(sessions.filter(s => s.id !== id));
+      showToast('Device session revoked successfully', 'success');
     } catch (err: any) {
-      alert(err.response?.data?.error || 'Failed to revoke session');
+      showToast(err.response?.data?.error || 'Failed to revoke session', 'error');
     } finally {
       setRevoking(null);
     }
