@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import api from '../../../lib/api';
 import ManagementDetailPanel from '../../../components/shared/ManagementDetailPanel';
 import UserEditModal from '../../../components/shared/UserEditModal';
@@ -6,14 +6,25 @@ import AdminUserCreateModal from '../../../components/shared/AdminUserCreateModa
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
 import { getAvatarUrl } from '../../../utils/formatters';
+import { SearchInput, ExportButton } from '../../../components/shared';
+import type { ExportColumn } from '../../../utils/exportService';
 import '../../../styles/portal.css';
 
 export default function AdminSystem() {
   const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
   const [roleFilter, setRoleFilter] = useState('ALL');
   const [statusFilter, setStatusFilter] = useState('ALL');
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchTerm);
+      setCurrentPage(1);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
 
   // Modals & Panels
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -228,11 +239,13 @@ export default function AdminSystem() {
 
   // Filter users
   const filteredUsers = users.filter(u => {
+    const q = debouncedSearch.trim().toLowerCase();
     const matchesSearch =
-      (u.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (u.email || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (u.staffId || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (u.studentId || '').toLowerCase().includes(searchTerm.toLowerCase());
+      !q ||
+      (u.name || '').toLowerCase().includes(q) ||
+      (u.email || '').toLowerCase().includes(q) ||
+      (u.staffId || '').toLowerCase().includes(q) ||
+      (u.studentId || '').toLowerCase().includes(q);
 
     const matchesRole =
       roleFilter === 'ALL' ||
@@ -246,6 +259,17 @@ export default function AdminSystem() {
 
     return matchesSearch && matchesRole && matchesStatus;
   });
+
+  const userExportColumns: ExportColumn[] = useMemo(() => [
+    { header: 'Full Name', formatter: u => u.name || `${u.firstName || ''} ${u.lastName || ''}`.trim() },
+    { header: 'Email Address', key: 'email' },
+    { header: 'Staff / Student ID', formatter: u => u.staffId || u.studentId || '—' },
+    { header: 'Primary Role', formatter: u => (u.role || '').replace(/_/g, ' ') },
+    { header: 'Secondary Roles', formatter: u => Array.isArray(u.secondaryRoles) ? u.secondaryRoles.join(', ') : 'None' },
+    { header: 'Phone / Contact', formatter: u => u.phone || u.phoneNumber || '—' },
+    { header: 'Account Status', formatter: u => u.isLocked ? 'Locked' : 'Active' },
+    { header: 'Created Date', formatter: u => u.createdAt ? new Date(u.createdAt).toLocaleDateString() : '—' },
+  ], []);
 
   const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
   const paginatedUsers = filteredUsers.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
@@ -412,62 +436,63 @@ export default function AdminSystem() {
           marginBottom: '20px',
           flexWrap: 'wrap',
           alignItems: 'center',
+          justifyContent: 'space-between',
           background: '#fff',
           padding: '14px 18px',
           borderRadius: '8px',
           boxShadow: '0 1px 3px rgba(0,0,0,0.05)'
         }}
       >
-        <div style={{ flex: 1, minWidth: '240px', position: 'relative' }}>
-          <i
-            className="fas fa-search"
-            style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }}
-          ></i>
-          <input
-            type="text"
+        <div style={{ flex: 1, minWidth: '240px', maxWidth: '420px' }}>
+          <SearchInput
             placeholder="Search by name, email, or staff/student ID..."
             value={searchTerm}
-            onChange={e => { setSearchTerm(e.target.value); setCurrentPage(1); }}
-            style={{
-              width: '100%',
-              padding: '9px 12px 9px 36px',
-              borderRadius: '6px',
-              border: '1px solid #cbd5e1',
-              fontSize: '0.9rem'
-            }}
+            onChange={setSearchTerm}
+            loading={loading}
           />
         </div>
 
-        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-          <span style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: 600 }}>Role Filter:</span>
-          <select
-            value={roleFilter}
-            onChange={e => { setRoleFilter(e.target.value); setCurrentPage(1); }}
-            style={{ padding: '9px 12px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.9rem' }}
-          >
-            <option value="ALL">All Roles</option>
-            <option value="TEACHER">Teacher</option>
-            <option value="BURSAR">Bursar / Finance</option>
-            <option value="LIBRARIAN">Librarian</option>
-            <option value="ANCILLARY">Ancillary Staff</option>
-            <option value="CLINIC">Clinic Nurse</option>
-            <option value="SCHOOL_ADMIN">School Administrator</option>
-            <option value="PARENT">Parent</option>
-            <option value="STUDENT">Student</option>
-          </select>
-        </div>
+        <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+            <span style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: 600 }}>Role:</span>
+            <select
+              value={roleFilter}
+              onChange={e => { setRoleFilter(e.target.value); setCurrentPage(1); }}
+              style={{ padding: '8px 12px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.875rem' }}
+            >
+              <option value="ALL">All Roles</option>
+              <option value="TEACHER">Teacher</option>
+              <option value="BURSAR">Bursar / Finance</option>
+              <option value="LIBRARIAN">Librarian</option>
+              <option value="ANCILLARY">Ancillary Staff</option>
+              <option value="CLINIC">Clinic Nurse</option>
+              <option value="SCHOOL_ADMIN">School Administrator</option>
+              <option value="PARENT">Parent</option>
+              <option value="STUDENT">Student</option>
+            </select>
+          </div>
 
-        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-          <span style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: 600 }}>Status:</span>
-          <select
-            value={statusFilter}
-            onChange={e => { setStatusFilter(e.target.value); setCurrentPage(1); }}
-            style={{ padding: '9px 12px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.9rem' }}
-          >
-            <option value="ALL">All Statuses</option>
-            <option value="ACTIVE">Active Only</option>
-            <option value="LOCKED">Locked / Suspended</option>
-          </select>
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+            <span style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: 600 }}>Status:</span>
+            <select
+              value={statusFilter}
+              onChange={e => { setStatusFilter(e.target.value); setCurrentPage(1); }}
+              style={{ padding: '8px 12px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.875rem' }}
+            >
+              <option value="ALL">All Statuses</option>
+              <option value="ACTIVE">Active Only</option>
+              <option value="LOCKED">Locked / Suspended</option>
+            </select>
+          </div>
+
+          <ExportButton
+            filename="system_users_directory"
+            title="School Staff & System Users Directory"
+            subtitle={`Filtered: ${filteredUsers.length} of ${users.length} accounts`}
+            columns={userExportColumns}
+            data={filteredUsers}
+            orientation="landscape"
+          />
         </div>
       </div>
 

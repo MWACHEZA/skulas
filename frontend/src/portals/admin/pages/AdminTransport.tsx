@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { formatCurrency } from '../../../utils/formatters';
 import { useAuth } from '../../../contexts/AuthContext';
 import ErrorBoundary from '../../../components/shared/ErrorBoundary';
+import { SearchInput, ExportButton } from '../../../components/shared';
+import type { ExportColumn } from '../../../utils/exportService';
 import '../../../styles/portal.css';
 
 type TransportTab = 'buses' | 'routes' | 'map' | 'fees';
@@ -106,8 +108,14 @@ function AdminTransportContent() {
     routeFare: ''
   });
 
-  // Search
+  // Search & Debounce
   const [searchTerm, setSearchTerm] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearch(searchTerm), 300);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
 
   useEffect(() => {
     fetchData();
@@ -237,8 +245,8 @@ function AdminTransportContent() {
     }
   };
 
-  // Filtered lists with safe null/undefined handling
-  const q = (searchTerm || '').trim().toLowerCase();
+  // Filtered lists with debounced search query
+  const q = (debouncedSearch || '').trim().toLowerCase();
 
   const filteredVehicles = vehicles.filter(v => {
     const num = getVehicleNumber(v).toLowerCase();
@@ -261,6 +269,37 @@ function AdminTransportContent() {
     const vNum = (a.vehicle?.number || a.vehicle?.vehicleNumber || a.vehicle?.name || '').toLowerCase();
     return !q || name.includes(q) || rTitle.includes(q) || vNum.includes(q);
   });
+
+  // Export Columns configurations
+  const busExportColumns: ExportColumn<Vehicle>[] = useMemo(() => [
+    { header: 'Vehicle Number', formatter: v => getVehicleNumber(v) },
+    { header: 'Model', formatter: v => getVehicleModel(v) || '—' },
+    { header: 'Registration No', formatter: v => v.registrationNumber || '—' },
+    { header: 'Seating Capacity', formatter: v => v.seatingCapacity || v.quantity || '—' },
+    { header: 'Driver Name', formatter: v => v.driverName || '—' },
+    { header: 'Driver Contact', formatter: v => v.driverContact || '—' },
+    { header: 'Driver License', formatter: v => v.driverLicense || '—' },
+    { header: 'Status', formatter: v => v.status || 'Active' },
+  ], []);
+
+  const routeExportColumns: ExportColumn<TransportRoute>[] = useMemo(() => [
+    { header: 'Route Name / Title', formatter: r => getRouteTitle(r) },
+    { header: 'Starting Point', formatter: r => r.startPlace || '—' },
+    { header: 'Stop / Destination', formatter: r => r.stopPlace || '—' },
+    { header: 'Term Fare', formatter: r => formatCurrency(getRouteFare(r)) },
+    { header: 'Assigned Driver', formatter: r => r.driverName || '—' },
+    { header: 'Driver Phone', formatter: r => r.driverPhone || '—' },
+    { header: 'Assigned Bus', formatter: r => r.vehicle || '—' },
+    { header: 'Description', formatter: r => r.description || '—' },
+  ], []);
+
+  const feeExportColumns: ExportColumn<TransportAssignment>[] = useMemo(() => [
+    { header: 'Allocation Name', formatter: a => a.name || '—' },
+    { header: 'Transit Route', formatter: a => a.route?.name || a.route?.title || '—' },
+    { header: 'Assigned Vehicle', formatter: a => a.vehicle?.number || a.vehicle?.name || '—' },
+    { header: 'Term Route Fare', formatter: a => formatCurrency(a.routeFare || a.route?.fare || 0) },
+    { header: 'Enrolled Students', formatter: a => a.studentsCount || 0 },
+  ], []);
 
   return (
     <div className="portal-container" style={{ padding: '24px', maxWidth: '1400px', margin: '0 auto' }}>
@@ -413,41 +452,64 @@ function AdminTransportContent() {
         </button>
       </div>
 
-      {/* Search Input for tabular views */}
+      {/* Search & Export Action Bar for tabular views */}
       {activeTab !== 'map' && (
         <div
           style={{
             marginBottom: '20px',
-            background: '#fff',
-            padding: '12px 16px',
-            borderRadius: '8px',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
-            position: 'relative'
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            gap: '12px',
           }}
         >
-          <i
-            className="fas fa-search"
-            style={{ position: 'absolute', left: '26px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }}
-          ></i>
-          <input
-            type="text"
-            placeholder={
-              activeTab === 'buses'
-                ? 'Search bus number, model, driver...'
-                : activeTab === 'routes'
-                ? 'Search route title, start place, destination...'
-                : 'Search allocation, route, vehicle...'
-            }
-            value={searchTerm}
-            onChange={e => setSearchTerm(e.target.value)}
-            style={{
-              width: '100%',
-              padding: '9px 12px 9px 36px',
-              borderRadius: '6px',
-              border: '1px solid #cbd5e1',
-              fontSize: '0.9rem'
-            }}
-          />
+          <div style={{ flex: 1, minWidth: '280px', maxWidth: '480px' }}>
+            <SearchInput
+              placeholder={
+                activeTab === 'buses'
+                  ? 'Search bus number, model, driver...'
+                  : activeTab === 'routes'
+                  ? 'Search route title, start place, destination...'
+                  : 'Search allocation, route, vehicle...'
+              }
+              value={searchTerm}
+              onChange={setSearchTerm}
+            />
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            {activeTab === 'buses' && (
+              <ExportButton
+                filename="fleet_vehicles"
+                title="School Bus Fleet & Vehicles Directory"
+                subtitle={`Total: ${filteredVehicles.length} vehicles`}
+                columns={busExportColumns}
+                data={filteredVehicles}
+                orientation="landscape"
+              />
+            )}
+            {activeTab === 'routes' && (
+              <ExportButton
+                filename="transit_routes"
+                title="School Transportation & Transit Routes"
+                subtitle={`Total: ${filteredRoutes.length} routes`}
+                columns={routeExportColumns}
+                data={filteredRoutes}
+                orientation="landscape"
+              />
+            )}
+            {activeTab === 'fees' && (
+              <ExportButton
+                filename="transport_allocations"
+                title="Transport Allocations & Route Fares"
+                subtitle={`Total: ${filteredAssignments.length} allocations`}
+                columns={feeExportColumns}
+                data={filteredAssignments}
+                orientation="portrait"
+              />
+            )}
+          </div>
         </div>
       )}
 

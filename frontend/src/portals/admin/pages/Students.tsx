@@ -7,6 +7,8 @@ import AdminUserCreateModal from '../../../components/shared/AdminUserCreateModa
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
 import { getAvatarUrl, formatCurrency } from '../../../utils/formatters';
+import { SearchInput, FilterBar, ExportButton } from '../../../components/shared';
+import type { ExportColumn } from '../../../utils/exportService';
 import '../../../styles/portal.css';
 
 export default function AdminStudents() {
@@ -288,6 +290,22 @@ export default function AdminStudents() {
     setCurrentPage(1);
   };
 
+  const studentExportColumns: ExportColumn[] = useMemo(() => [
+    { header: 'STN / Student ID', formatter: s => s.studentId || s.admissionNumber || s.id },
+    { header: 'Full Name', formatter: s => s.name || `${s.firstName || ''} ${s.lastName || ''}`.trim() },
+    { header: 'National ID', formatter: s => s.nationalId || '—' },
+    { header: 'Admission No', formatter: s => s.admissionNumber || '—' },
+    { header: 'Class / Form', formatter: s => s.class?.name ? `${s.class.name} (${s.class.level || ''})` : 'Unassigned' },
+    { header: 'Status', formatter: s => s.status || 'Active' },
+    { header: 'Boarding', formatter: s => s.boardingStatus || (s.isBoarding ? 'Boarder' : 'Day') },
+    { header: 'Gender', formatter: s => s.gender || '—' },
+    { header: 'Hostel / Dorm', formatter: s => s.hostel?.name || '—' },
+    { header: 'Transport Route', formatter: s => s.route?.name || '—' },
+    { header: 'Fee Status', formatter: s => getStudentFeeAging(s) },
+    { header: 'Leadership', formatter: s => s.leadershipAssignments?.[0]?.leadershipRole?.replace(/_/g, ' ') || 'None' },
+    { header: 'Phone / Contact', formatter: s => s.phone || s.emergencyContact || '—' },
+  ], []);
+
   return (
     <>
       <div className="portal-page-header">
@@ -298,26 +316,13 @@ export default function AdminStudents() {
       <div className="portal-card" style={{ marginBottom: '24px' }}>
         {/* Top Action Bar */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12, marginBottom: '16px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12, flex: 1, minWidth: '280px', maxWidth: '480px', position: 'relative' }}>
-            <input 
-              type="text" 
-              placeholder="Search by STN, Name, National ID, Phone, Email..." 
-              className="portal-input"
+          <div style={{ flex: 1, minWidth: '280px', maxWidth: '480px' }}>
+            <SearchInput
               value={searchInput}
-              onChange={e => setSearchInput(e.target.value)}
-              style={{ width: '100%', paddingLeft: '40px', paddingRight: searchInput ? '36px' : '12px' }}
+              onChange={setSearchInput}
+              loading={loading}
+              placeholder="Search by STN, Name, National ID, Phone, Email..."
             />
-            <i className="fas fa-search" style={{ position: 'absolute', left: 14, top: 14, color: '#94a3b8' }}></i>
-            {searchInput && (
-              <button
-                type="button"
-                onClick={() => setSearchInput('')}
-                style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer' }}
-                title="Clear search"
-              >
-                ✕
-              </button>
-            )}
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap' }}>
@@ -345,10 +350,19 @@ export default function AdminStudents() {
               Leaders Only
             </label>
 
+            <ExportButton
+              filename="students_directory"
+              title="Student Directory & Enrollment Report"
+              subtitle={`Filtered: ${filteredStudents.length} of ${students.length} students`}
+              columns={studentExportColumns}
+              data={filteredStudents}
+              orientation="landscape"
+            />
+
             <button 
               className="portal-btn-primary" 
               onClick={() => setIsCreateModalOpen(true)} 
-              style={{ padding: '0 24px', fontWeight: 800, height: '44px', borderRadius: '10px', display: 'flex', alignItems: 'center', gap: '8px' }}
+              style={{ padding: '0 24px', fontWeight: 800, height: '40px', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}
             >
               <i className="fas fa-user-plus"></i> New Student
             </button>
@@ -356,22 +370,11 @@ export default function AdminStudents() {
         </div>
 
         {/* Combinable Filters Bar */}
-        <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '10px', padding: '14px 16px', marginBottom: '16px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
-            <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-              <i className="fas fa-filter mr-1" style={{ color: '#2563eb' }}></i> Refine Directory Filters
-            </span>
-            {hasActiveFilters && (
-              <button
-                type="button"
-                onClick={handleResetFilters}
-                style={{ border: 'none', background: 'none', color: '#dc2626', fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
-              >
-                <i className="fas fa-undo"></i> Reset All Filters
-              </button>
-            )}
-          </div>
-
+        <FilterBar
+          title="Refine Directory Filters"
+          hasActiveFilters={hasActiveFilters}
+          onReset={handleResetFilters}
+        >
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '10px' }}>
             {/* Class Filter */}
             <div>
@@ -485,7 +488,7 @@ export default function AdminStudents() {
               </select>
             </div>
           </div>
-        </div>
+        </FilterBar>
 
         {/* Results Counter */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', fontSize: '0.85rem', color: '#64748b' }}>
