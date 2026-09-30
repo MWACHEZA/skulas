@@ -3,6 +3,7 @@ import api, { BASE_URL } from '../../../lib/api';
 import ManagementDetailPanel from '../../../components/shared/ManagementDetailPanel';
 import UserEditModal from '../../../components/shared/UserEditModal';
 import AdminUserCreateModal from '../../../components/shared/AdminUserCreateModal';
+import { SearchInput, ExportButton } from '../../../components/shared';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
 import { getAvatarUrl } from '../../../utils/formatters';
@@ -87,7 +88,9 @@ export default function AdminTeachers() {
 
   const filteredTeachers = teachers.filter(t => 
     (t.user?.name || t.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (t.staffId || '').toLowerCase().includes(searchTerm.toLowerCase())
+    (t.staffId || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (t.department || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (t.user?.email || t.email || '').toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -98,21 +101,40 @@ export default function AdminTeachers() {
       </div>
 
       <div className="portal-card">
-        <div className="portal-card-header">
-          <div style={{ position: 'relative', width: '300px' }}>
-            <input 
-              type="text" 
-              placeholder="Search faculty..." 
-              className="portal-input"
+        <div className="portal-card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
+          <div style={{ width: '320px' }}>
+            <SearchInput
               value={searchTerm}
-              onChange={e => setSearchTerm(e.target.value)}
-              style={{ paddingLeft: '40px' }}
+              onChange={setSearchTerm}
+              placeholder="Search faculty by name, ID, department..."
             />
-            <i className="fas fa-search" style={{ position: 'absolute', left: 14, top: 14, color: '#a0aec0' }}></i>
           </div>
-          <button className="portal-btn-primary" onClick={() => setIsCreateModalOpen(true)} style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <i className="fas fa-plus-circle"></i> ADD TEACHER
-          </button>
+          <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+            <ExportButton
+              data={filteredTeachers.map(t => ({
+                staffId: t.staffId || 'N/A',
+                name: t.user?.name || t.name || 'N/A',
+                department: t.department || 'General',
+                email: t.user?.email || t.email || 'N/A',
+                phone: t.user?.phone || t.phone || 'N/A',
+                status: t.user?.isLocked ? 'Locked' : 'Active'
+              }))}
+              columns={[
+                { header: 'Employee ID', key: 'staffId', width: 16 },
+                { header: 'Faculty Name', key: 'name', width: 25 },
+                { header: 'Department', key: 'department', width: 20 },
+                { header: 'Email', key: 'email', width: 25 },
+                { header: 'Phone', key: 'phone', width: 18 },
+                { header: 'Status', key: 'status', width: 12 }
+              ]}
+              filename="faculty_roster"
+              title="Faculty Roster"
+              subtitle="Academic Staff Directory"
+            />
+            <button className="portal-btn-primary" onClick={() => setIsCreateModalOpen(true)} style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <i className="fas fa-plus-circle"></i> ADD TEACHER
+            </button>
+          </div>
         </div>
 
         <div className="management-table-card">

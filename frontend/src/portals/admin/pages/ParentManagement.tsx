@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import api, { BASE_URL } from '../../../lib/api';
 import ManagementDetailPanel from '../../../components/shared/ManagementDetailPanel';
 import UserEditModal from '../../../components/shared/UserEditModal';
+import { SearchInput, ExportButton } from '../../../components/shared';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
 import { getAvatarUrl } from '../../../utils/formatters';
@@ -87,7 +88,8 @@ export default function ParentManagement() {
 
   const filteredParents = parents.filter(s => 
     (s.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (s.email || '').toLowerCase().includes(searchTerm.toLowerCase())
+    (s.email || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (s.phone || '').toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -121,21 +123,40 @@ export default function ParentManagement() {
           </div>
         </div>
 
-        <div className="portal-card-header">
-          <div style={{ position: 'relative', width: '300px' }}>
-            <input 
-              type="text" 
-              placeholder="Search parents..." 
-              className="portal-input"
+        <div className="portal-card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
+          <div style={{ width: '320px' }}>
+            <SearchInput
               value={searchTerm}
-              onChange={e => setSearchTerm(e.target.value)}
-              style={{ paddingLeft: '40px' }}
+              onChange={setSearchTerm}
+              placeholder="Search parents by name, email, phone..."
             />
-            <i className="fas fa-search" style={{ position: 'absolute', left: 14, top: 14, color: '#a0aec0' }}></i>
           </div>
-          <button className="portal-btn-primary" onClick={() => window.location.href = '/register/parent'}>
-            <i className="fas fa-user-plus" style={{ marginRight: 8 }}></i>Add Parent
-          </button>
+          <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+            <ExportButton
+              data={filteredParents.map(p => ({
+                name: p.name,
+                email: p.email || 'N/A',
+                phone: p.phone || 'N/A',
+                students: (p.students || []).map((st: any) => st.name).join(', ') || 'None linked',
+                isSDC: p.isSDC ? 'Yes' : 'No',
+                status: p.isLocked ? 'Locked' : 'Active'
+              }))}
+              columns={[
+                { header: 'Guardian Name', key: 'name', width: 25 },
+                { header: 'Email Address', key: 'email', width: 25 },
+                { header: 'Phone Number', key: 'phone', width: 18 },
+                { header: 'Linked Students', key: 'students', width: 30 },
+                { header: 'SDC Member', key: 'isSDC', width: 14 },
+                { header: 'Account Status', key: 'status', width: 14 }
+              ]}
+              filename="parent_guardian_directory"
+              title="Parent & Guardian Directory"
+              subtitle="Family Accounts & Student Links"
+            />
+            <button className="portal-btn-primary" onClick={() => window.location.href = '/register/parent'}>
+              <i className="fas fa-user-plus" style={{ marginRight: 8 }}></i>Add Parent
+            </button>
+          </div>
         </div>
 
         <div className="management-table-card">

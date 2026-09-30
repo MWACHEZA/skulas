@@ -3,57 +3,7 @@ import api from '../../../../lib/api';
 import { useToast } from '../../../../context/ToastContext';
 import { format } from 'date-fns';
 import { useTerminology } from '../../../../hooks/useTerminology';
-
-const exportToCSV = (title: string, headers: string[], dataRows: string[][]) => {
-  const content = [
-    headers.map(h => `"${h.replace(/"/g, '""')}"`).join(','),
-    ...dataRows.map(row => row.map(cell => `"${(cell || '').toString().replace(/"/g, '""')}"`).join(','))
-  ].join('\n');
-  const blob = new Blob(['\ufeff' + content], { type: 'text/csv;charset=utf-8;' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `${title.toLowerCase().replace(/\s+/g, '_')}_${new Date().toISOString().slice(0, 10)}.csv`;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-};
-
-const exportToWord = (title: string, headers: string[], dataRows: string[][]) => {
-  let html = `
-    <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
-    <head>
-      <title>${title}</title>
-      <style>
-        table { border-collapse: collapse; width: 100%; }
-        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
-        th { background-color: #f2f2f2; }
-      </style>
-    </head>
-    <body>
-      <h2>${title}</h2>
-      <table>
-        <thead>
-          <tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr>
-        </thead>
-        <tbody>
-          ${dataRows.map(row => `<tr>${row.map(cell => `<td>${cell}</td>`).join('')}</tr>`).join('')}
-        </tbody>
-      </table>
-    </body>
-    </html>
-  `;
-  const blob = new Blob(['\ufeff' + html], { type: 'application/msword' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `${title.toLowerCase().replace(/\s+/g, '_')}_${new Date().toISOString().slice(0, 10)}.doc`;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-};
+import { SearchInput, ExportButton } from '../../../../components/shared';
 
 interface PaymentPlan {
   id: string;
@@ -374,14 +324,11 @@ export default function ManagePaymentPlans() {
           {/* Filters */}
           <div className="portal-card no-print" style={{ marginBottom: 20 }}>
             <div className="portal-card-body" style={{ display: 'flex', gap: 16, alignItems: 'center', flexWrap: 'wrap', padding: '16px 20px' }}>
-              <div style={{ flex: 1, minWidth: 200 }}>
-                <input
-                  type="text"
-                  className="portal-input"
-                  placeholder={`Search by ${t('student').toLowerCase()} name, ID, or ${t('parent').toLowerCase()}...`}
+              <div style={{ flex: 1, minWidth: 260 }}>
+                <SearchInput
                   value={searchTerm}
-                  onChange={e => setSearchTerm(e.target.value)}
-                  style={{ margin: 0 }}
+                  onChange={setSearchTerm}
+                  placeholder={`Search by ${t('student').toLowerCase()} name, ID, or ${t('parent').toLowerCase()}...`}
                 />
               </div>
               <select
@@ -405,52 +352,39 @@ export default function ManagePaymentPlans() {
                 <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 900 }}>Payment Plan Applications</h2>
                 <span style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: 600 }}>{filtered.length} result(s)</span>
               </div>
-              <div style={{ display: 'flex', gap: '8px' }} className="no-print">
-                <button 
-                  onClick={() => {
-                    const headers = [`${t('student')}`, `${t('parent')}`, 'Amount', 'Promised Date', 'Applied Date', 'Status'];
-                    const rows = filtered.map(plan => [
-                      `${plan.student.name} (${plan.student.studentId})`,
-                      `${plan.parentUser.name} (${plan.parentUser.email})`,
-                      `$${Number(plan.amount).toFixed(2)}`,
-                      format(new Date(plan.dueDate), 'dd MMM yyyy'),
-                      format(new Date(plan.createdAt), 'dd MMM yyyy'),
-                      plan.status
-                    ]);
-                    exportToCSV('Payment_Plan_Applications', headers, rows);
-                  }}
-                  className="portal-btn-secondary"
-                  style={{ padding: '8px 16px', fontSize: '0.85rem' }}
-                  title="Export to CSV"
-                >
-                  <i className="fas fa-file-csv mr-1"></i> CSV
-                </button>
-                <button 
-                  onClick={() => {
-                    const headers = [`${t('student')}`, `${t('parent')}`, 'Amount', 'Promised Date', 'Applied Date', 'Status'];
-                    const rows = filtered.map(plan => [
-                      `${plan.student.name} (${plan.student.studentId})`,
-                      `${plan.parentUser.name} (${plan.parentUser.email})`,
-                      `$${Number(plan.amount).toFixed(2)}`,
-                      format(new Date(plan.dueDate), 'dd MMM yyyy'),
-                      format(new Date(plan.createdAt), 'dd MMM yyyy'),
-                      plan.status
-                    ]);
-                    exportToWord('Payment_Plan_Applications', headers, rows);
-                  }}
-                  className="portal-btn-secondary"
-                  style={{ padding: '8px 16px', fontSize: '0.85rem' }}
-                  title="Export to Word"
-                >
-                  <i className="fas fa-file-word mr-1"></i> Word
-                </button>
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }} className="no-print">
+                <ExportButton
+                  data={filtered.map(plan => ({
+                    studentName: plan.student?.name || 'N/A',
+                    studentId: plan.student?.studentId || 'N/A',
+                    parentName: plan.parentUser?.name || 'N/A',
+                    parentEmail: plan.parentUser?.email || 'N/A',
+                    amount: `$${Number(plan.amount).toFixed(2)}`,
+                    dueDate: format(new Date(plan.dueDate), 'dd MMM yyyy'),
+                    createdAt: format(new Date(plan.createdAt), 'dd MMM yyyy'),
+                    status: plan.status
+                  }))}
+                  columns={[
+                    { header: `${t('student')} Name`, key: 'studentName', width: 25 },
+                    { header: 'Student ID', key: 'studentId', width: 16 },
+                    { header: `${t('parent')} Name`, key: 'parentName', width: 25 },
+                    { header: 'Parent Email', key: 'parentEmail', width: 25 },
+                    { header: 'Amount ($)', key: 'amount', width: 15 },
+                    { header: 'Promised Date', key: 'dueDate', width: 16 },
+                    { header: 'Applied Date', key: 'createdAt', width: 16 },
+                    { header: 'Status', key: 'status', width: 14 }
+                  ]}
+                  filename="payment-plan-applications"
+                  title="Payment Plan Applications Register"
+                  subtitle={`Total Applications: ${filtered.length}`}
+                />
                 <button 
                   onClick={() => window.print()}
                   className="portal-btn-secondary"
                   style={{ padding: '8px 16px', fontSize: '0.85rem' }}
                   title="Print / PDF"
                 >
-                  <i className="fas fa-print mr-1"></i> Print/PDF
+                  <i className="fas fa-print mr-1"></i> Print
                 </button>
               </div>
             </div>

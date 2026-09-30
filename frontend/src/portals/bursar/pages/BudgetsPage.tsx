@@ -15,9 +15,11 @@ import {
   Layers
 } from 'lucide-react';
 import { toast } from '../../../context/ToastContext';
+import { SearchInput, ExportButton } from '../../../components/shared';
 
 export default function BudgetsPage() {
   const [activeTab, setActiveTab] = useState<'BUDGETS' | 'APPROVALS' | 'SETTINGS'>('BUDGETS');
+  const [searchTerm, setSearchTerm] = useState('');
 
   // Budget state
   const [year, setYear] = useState<number>(new Date().getFullYear());
@@ -365,6 +367,45 @@ export default function BudgetsPage() {
 
           {/* Budget List Table */}
           <div style={{ backgroundColor: '#fff', borderRadius: '8px', border: '1px solid #e2e8f0', overflow: 'hidden' }}>
+            <div style={{ padding: '14px 20px', borderBottom: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
+              <div style={{ flex: 1, minWidth: 240, maxWidth: 380 }}>
+                <SearchInput
+                  value={searchTerm}
+                  onChange={setSearchTerm}
+                  placeholder="Search budgets by code, account, category..."
+                />
+              </div>
+              <ExportButton
+                data={budgets.filter(b => {
+                  const t = searchTerm.toLowerCase();
+                  return (
+                    (b.coaCode || '').toLowerCase().includes(t) ||
+                    (b.accountName || '').toLowerCase().includes(t) ||
+                    (b.accountType || '').toLowerCase().includes(t) ||
+                    (b.term || '').toLowerCase().includes(t)
+                  );
+                }).map(b => ({
+                  coaCode: b.coaCode,
+                  accountName: b.accountName,
+                  category: b.accountType,
+                  amount: `$${Number(b.amount).toFixed(2)}`,
+                  term: b.term,
+                  fiscalYear: year
+                }))}
+                columns={[
+                  { header: 'Account Code', key: 'coaCode', width: 16 },
+                  { header: 'Account Name', key: 'accountName', width: 28 },
+                  { header: 'Category', key: 'category', width: 16 },
+                  { header: 'Target Amount', key: 'amount', width: 16 },
+                  { header: 'Term', key: 'term', width: 14 },
+                  { header: 'Fiscal Year', key: 'fiscalYear', width: 14 }
+                ]}
+                filename={`budget-targets-${year}-${term}`}
+                title={`Budget Target Allocations - ${year} (${term})`}
+                subtitle={`Generated on ${new Date().toLocaleDateString()}`}
+              />
+            </div>
+
             {loadingBudgets ? (
               <div style={{ padding: '40px', textAlign: 'center', color: '#64748b' }}>Loading budget targets...</div>
             ) : budgets.length === 0 ? (
@@ -382,7 +423,15 @@ export default function BudgetsPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {budgets.map(b => (
+                  {budgets.filter(b => {
+                    const t = searchTerm.toLowerCase();
+                    return (
+                      (b.coaCode || '').toLowerCase().includes(t) ||
+                      (b.accountName || '').toLowerCase().includes(t) ||
+                      (b.accountType || '').toLowerCase().includes(t) ||
+                      (b.term || '').toLowerCase().includes(t)
+                    );
+                  }).map(b => (
                     <tr key={b.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
                       <td style={{ padding: '12px 16px', fontFamily: 'monospace', fontWeight: 600 }}>{b.coaCode}</td>
                       <td style={{ padding: '12px 16px', color: '#0f172a', fontWeight: 500 }}>{b.accountName}</td>
@@ -436,6 +485,45 @@ export default function BudgetsPage() {
               </button>
             </div>
 
+            <div style={{ padding: '14px 20px', borderBottom: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
+              <div style={{ flex: 1, minWidth: 240, maxWidth: 380 }}>
+                <SearchInput
+                  value={searchTerm}
+                  onChange={setSearchTerm}
+                  placeholder="Search approvals by type, requester, status..."
+                />
+              </div>
+              <ExportButton
+                data={approvals.filter(a => {
+                  const t = searchTerm.toLowerCase();
+                  return (
+                    (a.entityType || '').toLowerCase().includes(t) ||
+                    (a.requester?.name || a.requestedBy || '').toLowerCase().includes(t) ||
+                    (a.status || '').toLowerCase().includes(t) ||
+                    (a.approverRole || '').toLowerCase().includes(t)
+                  );
+                }).map(a => ({
+                  date: new Date(a.createdAt).toLocaleDateString(),
+                  type: a.entityType,
+                  requester: a.requester?.name || a.requestedBy,
+                  amount: `$${Number(a.amount).toFixed(2)}`,
+                  tier: `Tier ${a.tier} (${a.approverRole})`,
+                  status: a.status
+                }))}
+                columns={[
+                  { header: 'Date', key: 'date', width: 14 },
+                  { header: 'Type / Entity', key: 'type', width: 18 },
+                  { header: 'Requested By', key: 'requester', width: 24 },
+                  { header: 'Amount', key: 'amount', width: 16 },
+                  { header: 'Tier / Role', key: 'tier', width: 22 },
+                  { header: 'Status', key: 'status', width: 14 }
+                ]}
+                filename={`financial-approvals-${new Date().toISOString().slice(0, 10)}`}
+                title="Financial Approvals & Authorization Register"
+                subtitle={`Generated on ${new Date().toLocaleDateString()}`}
+              />
+            </div>
+
             {loadingApprovals ? (
               <div style={{ padding: '40px', textAlign: 'center', color: '#64748b' }}>Loading authorization queues...</div>
             ) : approvals.length === 0 ? (
@@ -454,7 +542,15 @@ export default function BudgetsPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {approvals.map(a => (
+                  {approvals.filter(a => {
+                    const t = searchTerm.toLowerCase();
+                    return (
+                      (a.entityType || '').toLowerCase().includes(t) ||
+                      (a.requester?.name || a.requestedBy || '').toLowerCase().includes(t) ||
+                      (a.status || '').toLowerCase().includes(t) ||
+                      (a.approverRole || '').toLowerCase().includes(t)
+                    );
+                  }).map(a => (
                     <tr key={a.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
                       <td style={{ padding: '12px 16px', color: '#64748b' }}>
                         {new Date(a.createdAt).toLocaleDateString()}

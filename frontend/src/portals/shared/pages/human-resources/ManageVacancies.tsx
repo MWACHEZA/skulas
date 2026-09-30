@@ -4,6 +4,7 @@ import { format } from 'date-fns';
 import api from '../../../../lib/api';
 import { useTerminology } from '../../../../hooks/useTerminology';
 import { useToast } from '../../../../context/ToastContext';
+import { SearchInput, ExportButton } from '../../../../components/shared';
 
 interface Vacancy {
   id: string;
@@ -40,11 +41,21 @@ export default function ManageVacancies() {
   const [departments, setDepartments] = useState<{ id: string; name: string }[]>([]);
   const [recruiters, setRecruiters] = useState<any[]>([]);
 
-  // Pagination state
+  // Search & Pagination state
+  const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
-  const totalPages = Math.ceil(vacancies.length / itemsPerPage);
-  const paginatedVacancies = vacancies.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+  const filteredVacancies = vacancies.filter(v => {
+    const term = searchTerm.toLowerCase();
+    const recruiterName = (v.recruiter?.name || `${v.recruiter?.firstName || ''} ${v.recruiter?.lastName || ''}`.trim() || v.recruiter?.email || '').toLowerCase();
+    return (
+      (v.jobTitle || '').toLowerCase().includes(term) ||
+      recruiterName.includes(term) ||
+      (v.status || '').toLowerCase().includes(term)
+    );
+  });
+  const totalPages = Math.ceil(filteredVacancies.length / itemsPerPage);
+  const paginatedVacancies = filteredVacancies.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   const { register, handleSubmit, reset, setValue, watch } = useForm();
 
@@ -286,20 +297,36 @@ export default function ManageVacancies() {
       
       <div style={{ marginTop: '20px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '15px', marginBottom: '20px' }}>
-          <div style={{ display: 'flex', gap: '10px' }}>
-            <button onClick={handleExportExcel} className="portal-btn-neutral" style={{ padding: '8px 16px', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <i className="fas fa-file-excel"></i> Excel
-            </button>
-            <button onClick={handleExportWord} className="portal-btn-neutral" style={{ padding: '8px 16px', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <i className="fas fa-file-word"></i> Word
-            </button>
+          <div style={{ flex: 1, minWidth: 260, maxWidth: 400 }}>
+            <SearchInput
+              value={searchTerm}
+              onChange={(val) => { setSearchTerm(val); setCurrentPage(1); }}
+              placeholder="Search vacancies by title, recruiter, status..."
+            />
+          </div>
+          <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+            <ExportButton
+              data={filteredVacancies.map(v => ({
+                jobTitle: v.jobTitle || 'N/A',
+                recruiter: v.recruiter?.name || `${v.recruiter?.firstName || ''} ${v.recruiter?.lastName || ''}`.trim() || v.recruiter?.email || 'Unassigned',
+                startDate: v.startDate ? format(new Date(v.startDate), 'dd/MM/yyyy') : 'N/A',
+                endDate: v.endDate ? format(new Date(v.endDate), 'dd/MM/yyyy') : 'N/A',
+                status: v.status || 'Active'
+              }))}
+              columns={[
+                { header: 'Job Title', key: 'jobTitle', width: 28 },
+                { header: 'Recruiter', key: 'recruiter', width: 25 },
+                { header: 'Start Date', key: 'startDate', width: 16 },
+                { header: 'End Date', key: 'endDate', width: 16 },
+                { header: 'Status', key: 'status', width: 14 }
+              ]}
+              filename="vacancies-register"
+              title="Staff Recruitment & Job Openings Register"
+              subtitle={`Total Openings: ${filteredVacancies.length}`}
+            />
             <button onClick={handlePrint} className="portal-btn-neutral" style={{ padding: '8px 16px', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
               <i className="fas fa-print"></i> Print
             </button>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <span style={{ fontSize: '0.9rem', color: '#64748b', fontWeight: 500 }}>Search:</span>
-            <input type="text" className="portal-input" style={{ width: '200px', padding: '8px 12px' }} placeholder="Search vacancies..." />
           </div>
         </div>
 

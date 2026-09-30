@@ -3,6 +3,7 @@ import api, { BASE_URL } from '../../../lib/api';
 import ManagementDetailPanel from '../../../components/shared/ManagementDetailPanel';
 import UserEditModal from '../../../components/shared/UserEditModal';
 import AdminUserCreateModal from '../../../components/shared/AdminUserCreateModal';
+import { SearchInput, ExportButton } from '../../../components/shared';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
 import { getAvatarUrl } from '../../../utils/formatters';
@@ -74,7 +75,9 @@ export default function LibrarianManagement() {
 
   const filteredLibrarians = librarians.filter(s => 
     (s.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (s.staffId || '').toLowerCase().includes(searchTerm.toLowerCase())
+    (s.email || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (s.staffId || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (s.department || '').toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -84,21 +87,42 @@ export default function LibrarianManagement() {
         <p>Manage library staff, access permissions, and cataloging oversight</p>
       </div>
 
-      <div className="animate-in fade-in slide-in-from-top-4 duration-500" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
-        <div style={{ position: 'relative', width: '300px' }}>
-          <input 
-            type="text" 
-            placeholder="Search library staff..." 
-            className="portal-input"
+      <div className="animate-in fade-in slide-in-from-top-4 duration-500" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px', flexWrap: 'wrap', gap: 12 }}>
+        <div style={{ width: '320px' }}>
+          <SearchInput
             value={searchTerm}
-            onChange={e => { setSearchTerm(e.target.value); setCurrentPage(1); }}
-            style={{ paddingLeft: '48px', fontWeight: 700, height: '52px', borderRadius: '16px', background: '#fff', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)' }}
+            onChange={(val) => { setSearchTerm(val); setCurrentPage(1); }}
+            placeholder="Search library staff by name, ID, email..."
           />
-          <i className="fas fa-search" style={{ position: 'absolute', left: 18, top: 18, color: '#94a3b8', fontSize: '1rem' }}></i>
         </div>
-        <button className="portal-btn-primary" onClick={() => setIsCreateModalOpen(true)} style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <i className="fas fa-user-plus"></i>New Librarian
-        </button>
+        <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+          <ExportButton
+            data={filteredLibrarians.map(s => ({
+              staffId: s.staffId || 'N/A',
+              name: s.name,
+              role: s.role || 'LIBRARIAN',
+              department: s.department || 'Library & Learning Media',
+              email: s.email || 'N/A',
+              phone: s.phone || 'N/A',
+              status: s.isLocked ? 'Locked' : 'Active'
+            }))}
+            columns={[
+              { header: 'Staff ID', key: 'staffId', width: 16 },
+              { header: 'Full Name', key: 'name', width: 25 },
+              { header: 'Role Scope', key: 'role', width: 16 },
+              { header: 'Department', key: 'department', width: 20 },
+              { header: 'Email Address', key: 'email', width: 25 },
+              { header: 'Phone Number', key: 'phone', width: 18 },
+              { header: 'Status', key: 'status', width: 12 }
+            ]}
+            filename="librarian_staff_roster"
+            title="Institutional Librarian Staff Roster"
+            subtitle="Library Administration & Cataloging Accounts"
+          />
+          <button className="portal-btn-primary" onClick={() => setIsCreateModalOpen(true)} style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <i className="fas fa-user-plus"></i>New Librarian
+          </button>
+        </div>
       </div>
 
       <div className="management-table-card">

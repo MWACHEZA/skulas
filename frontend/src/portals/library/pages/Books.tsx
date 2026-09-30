@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
+import { SearchInput, ExportButton } from '../../../components/shared';
 import '../../../styles/portal.css';
 
 interface AuthorEntry {
@@ -491,58 +492,28 @@ export default function LibraryBooks() {
         </div>
 
         <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }} className="no-print">
-          <button 
-            onClick={() => {
-              const headers = ['Title', 'Authors', 'ISBN-10', 'ISBN-13', 'Shelf Location', 'Barcode', 'Category', 'Total Copies', 'Available'];
-              const rows = books.map(b => [
-                b.title,
-                (b.authors && b.authors.length > 0) ? b.authors.join('; ') : b.author,
-                b.isbn10 || '',
-                b.isbn13 || b.isbn || '',
-                b.shelfLocation || '',
-                b.barcode || '',
-                b.categoryName,
-                (b.totalCopies ?? 0).toString(),
-                (b.available ?? 0).toString()
-              ]);
-              exportToCSV('Book_Catalog', headers, rows);
-            }}
-            className="portal-btn-secondary"
-            style={{ padding: '8px 16px', fontSize: '0.85rem' }}
-            title="Export to CSV"
-          >
-            <i className="fas fa-file-csv mr-1"></i> CSV
-          </button>
-          <button 
-            onClick={() => {
-              const headers = ['Title', 'Authors', 'ISBN-10', 'ISBN-13', 'Shelf Location', 'Barcode', 'Category', 'Total Copies', 'Available'];
-              const rows = books.map(b => [
-                b.title,
-                (b.authors && b.authors.length > 0) ? b.authors.join('; ') : b.author,
-                b.isbn10 || '',
-                b.isbn13 || b.isbn || '',
-                b.shelfLocation || '',
-                b.barcode || '',
-                b.categoryName,
-                (b.totalCopies ?? 0).toString(),
-                (b.available ?? 0).toString()
-              ]);
-              exportToWord('Book_Catalog', headers, rows);
-            }}
-            className="portal-btn-secondary"
-            style={{ padding: '8px 16px', fontSize: '0.85rem' }}
-            title="Export to Word"
-          >
-            <i className="fas fa-file-word mr-1"></i> Word
-          </button>
-          <button 
-            onClick={() => window.print()}
-            className="portal-btn-secondary"
-            style={{ padding: '8px 16px', fontSize: '0.85rem' }}
-            title="Print / PDF"
-          >
-            <i className="fas fa-print mr-1"></i> Print/PDF
-          </button>
+          <ExportButton
+            title="Library Books Catalog"
+            subtitle="Official catalog inventory of school library books"
+            filename={`Library_Catalog_${new Date().toISOString().slice(0, 10)}`}
+            columns={[
+              { header: 'Title', key: 'title', width: 28 },
+              { header: 'Authors', key: 'authorsStr', width: 22 },
+              { header: 'ISBN-10', key: 'isbn10', width: 14 },
+              { header: 'ISBN-13', key: 'isbn13', width: 16 },
+              { header: 'Category', key: 'categoryName', width: 16 },
+              { header: 'Shelf Location', key: 'shelfLocation', width: 14 },
+              { header: 'Barcode', key: 'barcode', width: 14 },
+              { header: 'Total Copies', key: 'totalCopies', width: 10 },
+              { header: 'Available', key: 'available', width: 10 },
+            ]}
+            data={books.map(b => ({
+              ...b,
+              authorsStr: (b.authors && b.authors.length > 0) ? b.authors.join('; ') : b.author,
+              isbn13: b.isbn13 || b.isbn || '',
+              isbn10: b.isbn10 || '',
+            }))}
+          />
           <button 
             onClick={handleOpenAddModal}
             className="portal-btn-primary" 
@@ -558,28 +529,20 @@ export default function LibraryBooks() {
         <div style={{ display: 'flex', gap: '16px', alignItems: 'center', flexWrap: 'wrap' }}>
           {/* Autocomplete Fuzzy Input */}
           <div style={{ position: 'relative', flex: 1, minWidth: '280px' }}>
-            <i className="fas fa-search" style={{ position: 'absolute', left: 16, top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }}></i>
-            <input 
-              type="text" 
-              placeholder="Search by title, author, ISBN-10/13, barcode, or shelf..." 
-              className="portal-input"
-              style={{ width: '100%', paddingLeft: 44, paddingRight: 32, height: 46, borderRadius: 10, fontSize: '0.95rem' }}
+            <SearchInput
               value={searchTerm}
-              onChange={e => {
-                setSearchTerm(e.target.value);
+              onChange={val => {
+                setSearchTerm(val);
                 setShowSuggestions(true);
               }}
-              onFocus={() => setShowSuggestions(true)}
-              onBlur={() => setTimeout(() => setShowSuggestions(false), 250)}
+              placeholder="Search by title, author, ISBN-10/13, barcode, or shelf..."
+              loading={loading}
+              onClear={() => {
+                setSearchTerm('');
+                setDidYouMean(null);
+              }}
+              width="100%"
             />
-            {searchTerm && (
-              <button 
-                onClick={() => { setSearchTerm(''); setDidYouMean(null); }} 
-                style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer' }}
-              >
-                &times;
-              </button>
-            )}
 
             {/* Autocomplete Suggestions Box */}
             {showSuggestions && suggestions.length > 0 && (

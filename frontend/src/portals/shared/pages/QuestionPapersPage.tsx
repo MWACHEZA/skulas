@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
+import { SearchInput, ExportButton } from '../../../components/shared';
 
 interface QuestionPaper {
   id: string;
@@ -14,7 +15,7 @@ interface QuestionPaper {
 
 export default function QuestionPapersPage() {
   const navigate = useNavigate();
-  const { showToast } = useToast();
+  const { showToast, toastConfirm } = useToast();
   const [papers, setPapers] = useState<QuestionPaper[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -47,10 +48,16 @@ export default function QuestionPapersPage() {
     }
   };
 
-  const filteredPapers = papers.filter(p => 
-    p.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    p.subject.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredPapers = papers.filter(p => {
+    const term = searchTerm.toLowerCase();
+    return (
+      (p.title || '').toLowerCase().includes(term) ||
+      (p.subject?.name || '').toLowerCase().includes(term) ||
+      (p.subject?.code || '').toLowerCase().includes(term) ||
+      (p.teacher?.name || '').toLowerCase().includes(term) ||
+      (p.description || '').toLowerCase().includes(term)
+    );
+  });
 
   return (
     <div className="portal-content">
@@ -64,17 +71,34 @@ export default function QuestionPapersPage() {
         </button>
       </div>
 
-      <div className="filters-bar glass" style={{ marginBottom: '2rem', padding: '1rem', borderRadius: '12px' }}>
-        <div className="search-input" style={{ maxWidth: '400px', position: 'relative' }}>
-          <i className="fas fa-search" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--gray-400)' }}></i>
-          <input 
-            type="text" 
-            placeholder="Search by title or subject..." 
+      <div className="filters-bar glass" style={{ marginBottom: '2rem', padding: '1rem', borderRadius: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+        <div style={{ flex: 1, minWidth: '260px', maxWidth: '420px' }}>
+          <SearchInput
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            style={{ paddingLeft: '40px', width: '100%' }}
+            onChange={setSearchTerm}
+            placeholder="Search by title, subject, code, teacher..."
           />
         </div>
+        <ExportButton
+          data={filteredPapers.map(p => ({
+            code: p.subject?.code || 'N/A',
+            subject: p.subject?.name || 'N/A',
+            title: p.title,
+            teacher: p.teacher?.name || 'Staff',
+            date: new Date(p.createdAt).toLocaleDateString(),
+            description: p.description || ''
+          }))}
+          columns={[
+            { header: 'Subject Code', key: 'code', width: 16 },
+            { header: 'Subject Name', key: 'subject', width: 22 },
+            { header: 'Paper Title', key: 'title', width: 28 },
+            { header: 'Examiner / Author', key: 'teacher', width: 22 },
+            { header: 'Created Date', key: 'date', width: 14 }
+          ]}
+          filename="question-papers-register"
+          title="Institutional Examination Question Papers"
+          subtitle={`Total Papers: ${filteredPapers.length}`}
+        />
       </div>
 
       {loading ? (

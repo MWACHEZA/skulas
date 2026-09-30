@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { useAuth } from '../../../contexts/AuthContext';
+import { SearchInput, ExportButton } from '../../../components/shared';
 import '../../../styles/portal.css';
 
 type CommunicationTab = 'messages' | 'announcements' | 'approvals';
@@ -351,7 +352,7 @@ export default function AdminCommunication() {
         </button>
       </div>
 
-      {/* Search Input */}
+      {/* Search & Export Toolbar */}
       <div
         style={{
           marginBottom: '20px',
@@ -359,25 +360,70 @@ export default function AdminCommunication() {
           padding: '12px 16px',
           borderRadius: '8px',
           boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
-          position: 'relative'
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          gap: '16px',
+          flexWrap: 'wrap'
         }}
       >
-        <i
-          className="fas fa-search"
-          style={{ position: 'absolute', left: '26px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }}
-        ></i>
-        <input
-          type="text"
-          placeholder="Search by keywords, subject, author, or recipient..."
-          value={searchTerm}
-          onChange={e => setSearchTerm(e.target.value)}
-          style={{
-            width: '100%',
-            padding: '9px 12px 9px 36px',
-            borderRadius: '6px',
-            border: '1px solid #cbd5e1',
-            fontSize: '0.9rem'
-          }}
+        <div style={{ flex: 1, minWidth: '280px' }}>
+          <SearchInput
+            value={searchTerm}
+            onChange={setSearchTerm}
+            placeholder="Search by keywords, subject, author, or recipient..."
+          />
+        </div>
+        <ExportButton
+          data={
+            activeTab === 'messages' ? filteredMessages.map(m => ({
+              sender: m.sender?.name || 'Unknown',
+              email: m.sender?.email || 'N/A',
+              subject: m.subject || 'No Subject',
+              date: m.createdAt ? new Date(m.createdAt).toLocaleDateString() : '—',
+              status: m.isRead ? 'Read' : 'Unread'
+            })) : activeTab === 'announcements' ? filteredAnnouncements.map(a => ({
+              title: a.title,
+              category: a.category,
+              portals: (a.visiblePortals || []).join(', ') || 'All',
+              scope: a.isPublic ? 'Public' : 'Internal',
+              date: a.createdAt ? new Date(a.createdAt).toLocaleDateString() : '—'
+            })) : filteredApprovals.map(ap => ({
+              category: ap.category,
+              title: ap.title,
+              requester: ap.requesterName,
+              role: ap.requesterRole,
+              details: ap.details,
+              date: ap.date,
+              status: ap.status
+            }))
+          }
+          columns={
+            activeTab === 'messages' ? [
+              { header: 'Sender', key: 'sender', width: 22 },
+              { header: 'Email', key: 'email', width: 24 },
+              { header: 'Subject', key: 'subject', width: 30 },
+              { header: 'Date', key: 'date', width: 14 },
+              { header: 'Status', key: 'status', width: 12 }
+            ] : activeTab === 'announcements' ? [
+              { header: 'Title', key: 'title', width: 30 },
+              { header: 'Category', key: 'category', width: 18 },
+              { header: 'Target Portals', key: 'portals', width: 22 },
+              { header: 'Scope', key: 'scope', width: 14 },
+              { header: 'Published Date', key: 'date', width: 16 }
+            ] : [
+              { header: 'Category', key: 'category', width: 18 },
+              { header: 'Title', key: 'title', width: 26 },
+              { header: 'Requester', key: 'requester', width: 22 },
+              { header: 'Role', key: 'role', width: 16 },
+              { header: 'Details', key: 'details', width: 30 },
+              { header: 'Date', key: 'date', width: 14 },
+              { header: 'Status', key: 'status', width: 14 }
+            ]
+          }
+          filename={`communication-${activeTab}-${new Date().toISOString().slice(0, 10)}`}
+          title={`School Communications: ${activeTab.toUpperCase()}`}
+          subtitle={`Generated on ${new Date().toLocaleDateString()}`}
         />
       </div>
 

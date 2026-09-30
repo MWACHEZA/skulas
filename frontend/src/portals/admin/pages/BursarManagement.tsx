@@ -3,6 +3,7 @@ import api, { BASE_URL } from '../../../lib/api';
 import ManagementDetailPanel from '../../../components/shared/ManagementDetailPanel';
 import UserEditModal from '../../../components/shared/UserEditModal';
 import AdminUserCreateModal from '../../../components/shared/AdminUserCreateModal';
+import { SearchInput, ExportButton } from '../../../components/shared';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
 import { getAvatarUrl } from '../../../utils/formatters';
@@ -74,7 +75,9 @@ export default function BursarManagement() {
 
   const filteredBursars = bursars.filter(s => 
     (s.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (s.staffId || '').toLowerCase().includes(searchTerm.toLowerCase())
+    (s.email || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (s.staffId || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (s.department || '').toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -84,21 +87,42 @@ export default function BursarManagement() {
         <p>Manage financial staff, accounting permissions, and treasury oversight</p>
       </div>
 
-      <div className="animate-in fade-in slide-in-from-top-4 duration-500" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
-        <div style={{ position: 'relative', width: '300px' }}>
-          <input 
-            type="text" 
-            placeholder="Search financial staff..." 
-            className="portal-input"
+      <div className="animate-in fade-in slide-in-from-top-4 duration-500" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px', flexWrap: 'wrap', gap: 12 }}>
+        <div style={{ width: '320px' }}>
+          <SearchInput
             value={searchTerm}
-            onChange={e => { setSearchTerm(e.target.value); setCurrentPage(1); }}
-            style={{ paddingLeft: '48px', fontWeight: 700, height: '52px', borderRadius: '16px', background: '#fff', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)' }}
+            onChange={(val) => { setSearchTerm(val); setCurrentPage(1); }}
+            placeholder="Search financial staff by name, ID, email..."
           />
-          <i className="fas fa-search" style={{ position: 'absolute', left: 18, top: 18, color: '#94a3b8', fontSize: '1rem' }}></i>
         </div>
-        <button className="portal-btn-primary" onClick={() => setIsCreateModalOpen(true)} style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <i className="fas fa-user-plus"></i>New Bursar
-        </button>
+        <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+          <ExportButton
+            data={filteredBursars.map(s => ({
+              staffId: s.staffId || 'N/A',
+              name: s.name,
+              designation: s.role || 'Bursar',
+              department: s.department || 'Finance & Accounts',
+              email: s.email || 'N/A',
+              phone: s.phone || 'N/A',
+              status: s.isLocked ? 'Locked' : 'Active'
+            }))}
+            columns={[
+              { header: 'Staff ID', key: 'staffId', width: 16 },
+              { header: 'Full Name', key: 'name', width: 25 },
+              { header: 'Designation', key: 'designation', width: 18 },
+              { header: 'Department', key: 'department', width: 20 },
+              { header: 'Email', key: 'email', width: 25 },
+              { header: 'Phone', key: 'phone', width: 18 },
+              { header: 'Status', key: 'status', width: 12 }
+            ]}
+            filename="bursar_finance_roster"
+            title="Bursar & Treasury Management Roster"
+            subtitle="Financial Accounting & Bursar Accounts"
+          />
+          <button className="portal-btn-primary" onClick={() => setIsCreateModalOpen(true)} style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <i className="fas fa-user-plus"></i>New Bursar
+          </button>
+        </div>
       </div>
 
       <div className="management-table-card">

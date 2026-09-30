@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import api from '../../../lib/api';
+import SearchInput from '../../../components/shared/SearchInput';
 
 export default function ClinicTriagePage() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -28,19 +29,25 @@ export default function ClinicTriagePage() {
 
   const quickSymptoms = ['Headache', 'Fever', 'Upset stomach', 'Sore throat', 'Ankle sprain', 'Minor abrasion', 'Cough', 'Fatigue'];
 
-  const handleSearch = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!searchQuery.trim()) return;
-    try {
-      setSearching(true);
-      const res = await api.get(`/clinic/reports/patients-search?q=${encodeURIComponent(searchQuery.trim())}`);
-      setSearchResults(res.data);
-    } catch (err) {
-      console.error('Search failed:', err);
-    } finally {
+  useEffect(() => {
+    if (!searchQuery.trim() || searchQuery.trim().length < 2) {
+      setSearchResults([]);
       setSearching(false);
+      return;
     }
-  };
+    const timer = setTimeout(async () => {
+      try {
+        setSearching(true);
+        const res = await api.get(`/clinic/reports/patients-search?q=${encodeURIComponent(searchQuery.trim())}`);
+        setSearchResults(res.data);
+      } catch (err) {
+        console.error('Search failed:', err);
+      } finally {
+        setSearching(false);
+      }
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
   const handleSelectStudent = async (student: any) => {
     setSelectedStudent(student);
@@ -144,23 +151,16 @@ export default function ClinicTriagePage() {
       {/* Patient Search Section */}
       <div style={{ background: '#fff', padding: 20, borderRadius: 8, border: '1px solid #e2e8f0', marginBottom: 24 }}>
         <h3 style={{ fontSize: '1.05rem', fontWeight: 600, color: '#0f172a', marginBottom: 12 }}>1. Search &amp; Identify Patient</h3>
-        <form onSubmit={handleSearch} style={{ display: 'flex', gap: 12 }}>
-          <input
-            type="text"
+        <div style={{ display: 'flex', gap: 12 }}>
+          <SearchInput
             placeholder="Search by student name or admission number (e.g. STU-001)..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            style={{ flex: 1, padding: '10px 14px', borderRadius: 6, border: '1px solid #cbd5e1', fontSize: '0.95rem' }}
+            onChange={setSearchQuery}
+            loading={searching}
+            onClear={() => setSearchResults([])}
+            width="100%"
           />
-          <button
-            type="submit"
-            disabled={searching}
-            style={{ padding: '10px 20px', background: '#0284c7', color: '#fff', border: 'none', borderRadius: 6, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}
-          >
-            {searching ? <i className="fas fa-spinner fa-spin" /> : <i className="fas fa-search" />}
-            Find Student
-          </button>
-        </form>
+        </div>
 
         {searchResults.length > 0 && (
           <div style={{ marginTop: 14, border: '1px solid #e2e8f0', borderRadius: 6, maxHeight: 200, overflowY: 'auto' }}>

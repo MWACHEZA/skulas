@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
+import { SearchInput, ExportButton } from '../../../components/shared';
 import '../../../styles/portal.css';
 
 interface ReservationRecord {
@@ -144,13 +145,34 @@ export default function LibraryReservations() {
           </p>
         </div>
 
-        <button 
-          onClick={() => setShowAddModal(true)}
-          className="portal-btn-primary" 
-          style={{ padding: '10px 20px', fontSize: '0.9rem', background: '#2563eb', borderRadius: '10px', display: 'flex', alignItems: 'center', gap: 8 }}
-        >
-          <i className="fas fa-plus"></i> Place New Hold
-        </button>
+        <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+          <ExportButton
+            title="Library Hold Queue & Reservations"
+            subtitle="Queue of student and staff book reservation requests"
+            filename={`Library_Reservations_${new Date().toISOString().slice(0, 10)}`}
+            columns={[
+              { header: 'Book Title', key: 'bookTitle', width: 28 },
+              { header: 'Borrower', key: 'borrowerName', width: 22 },
+              { header: 'Identifier', key: 'borrowerIdentifier', width: 14 },
+              { header: 'Phone', key: 'borrowerPhone', width: 14 },
+              { header: 'Request Date', key: 'reqDateFormatted', width: 14 },
+              { header: 'Status', key: 'status', width: 16 },
+              { header: 'Available In Stock', key: 'availableStr', width: 16 },
+            ]}
+            data={filteredReservations.map(r => ({
+              ...r,
+              reqDateFormatted: new Date(r.requestDate).toLocaleDateString(),
+              availableStr: r.availableCopy ? 'Yes' : 'No',
+            }))}
+          />
+          <button 
+            onClick={() => setShowAddModal(true)}
+            className="portal-btn-primary" 
+            style={{ padding: '10px 20px', fontSize: '0.9rem', background: '#2563eb', borderRadius: '10px', display: 'flex', alignItems: 'center', gap: 8 }}
+          >
+            <i className="fas fa-plus"></i> Place New Hold
+          </button>
+        </div>
       </div>
 
       {/* Top Counters */}
@@ -175,15 +197,14 @@ export default function LibraryReservations() {
 
       {/* Filter and Search Bar */}
       <div style={{ background: '#ffffff', padding: '14px 20px', borderRadius: 12, border: '1px solid #e2e8f0', marginBottom: 20, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 14 }}>
-        <div style={{ position: 'relative', width: 320 }}>
-          <i className="fas fa-search" style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }}></i>
-          <input 
-            type="text" 
-            placeholder="Search patron or book title..." 
-            className="portal-input"
-            style={{ width: '100%', paddingLeft: 40, height: 40, borderRadius: 8, fontSize: '0.85rem' }}
+        <div style={{ width: 320 }}>
+          <SearchInput
             value={searchTerm}
-            onChange={e => setSearchTerm(e.target.value)}
+            onChange={setSearchTerm}
+            placeholder="Search patron or book title..."
+            loading={loading}
+            onClear={() => setSearchTerm('')}
+            width="100%"
           />
         </div>
 

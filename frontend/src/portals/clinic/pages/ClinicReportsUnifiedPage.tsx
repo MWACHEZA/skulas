@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import api from '../../../lib/api';
+import { SearchInput, ExportButton } from '../../../components/shared';
 
 export type ReportsTab = 'patients' | 'analytics' | 'billing';
 
@@ -32,19 +33,25 @@ export default function ClinicReportsUnifiedPage() {
     setSearchParams({ tab });
   };
 
-  const handleSearchPatients = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!patientQuery.trim()) return;
-    try {
-      setSearchingPatients(true);
-      const res = await api.get(`/clinic/reports/patients-search?q=${encodeURIComponent(patientQuery.trim())}`);
-      setPatientResults(res.data || []);
-    } catch (err) {
-      console.error('Failed to search patients:', err);
-    } finally {
+  useEffect(() => {
+    if (!patientQuery.trim() || patientQuery.trim().length < 2) {
+      setPatientResults([]);
       setSearchingPatients(false);
+      return;
     }
-  };
+    const timer = setTimeout(async () => {
+      try {
+        setSearchingPatients(true);
+        const res = await api.get(`/clinic/reports/patients-search?q=${encodeURIComponent(patientQuery.trim())}`);
+        setPatientResults(res.data || []);
+      } catch (err) {
+        console.error('Failed to search patients:', err);
+      } finally {
+        setSearchingPatients(false);
+      }
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [patientQuery]);
 
   const handleOpenPatientFile = async (student: any) => {
     try {
@@ -160,22 +167,16 @@ export default function ClinicReportsUnifiedPage() {
               All views of individual medical dossiers are recorded in the clinic security audit log.
             </p>
 
-            <form onSubmit={handleSearchPatients} style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
-              <input
-                type="text"
+            <div style={{ marginBottom: 16 }}>
+              <SearchInput
                 placeholder="Search student name or admission number..."
                 value={patientQuery}
-                onChange={(e) => setPatientQuery(e.target.value)}
-                style={{ flex: 1, padding: '8px 12px', border: '1px solid #cbd5e1', borderRadius: 6, fontSize: '0.9rem' }}
+                onChange={setPatientQuery}
+                loading={searchingPatients}
+                onClear={() => setPatientResults([])}
+                width="100%"
               />
-              <button
-                type="submit"
-                disabled={searchingPatients}
-                style={{ padding: '8px 16px', background: '#4f46e5', color: '#fff', border: 'none', borderRadius: 6, cursor: 'pointer', fontWeight: 600 }}
-              >
-                {searchingPatients ? <i className="fas fa-spinner fa-spin" /> : 'Search'}
-              </button>
-            </form>
+            </div>
 
             {patientResults.length > 0 && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -305,12 +306,26 @@ export default function ClinicReportsUnifiedPage() {
           ) : !analyticsData ? (
             <p>No analytics data available.</p>
           ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
-              {/* Top Diagnoses */}
-              <div style={{ border: '1px solid #e2e8f0', borderRadius: 10, padding: 16 }}>
-                <h3 style={{ fontSize: '1rem', fontWeight: 600, color: '#1e293b', marginBottom: 12 }}>
-                  Top Morbidities & Chief Complaints
-                </h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+              <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                <ExportButton
+                  title="Clinic Morbidity & Health Analytics"
+                  subtitle="Summary of institutional clinic diagnoses, visits, and patient morbidity"
+                  filename={`Clinic_Analytics_${new Date().toISOString().slice(0, 10)}`}
+                  columns={[
+                    { header: 'Diagnosis / Chief Complaint', key: 'name', width: 30 },
+                    { header: 'Case Count', key: 'count', width: 15 },
+                  ]}
+                  data={analyticsData.topAilments || []}
+                />
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
+                {/* Top Diagnoses */}
+                <div style={{ border: '1px solid #e2e8f0', borderRadius: 10, padding: 16 }}>
+                  <h3 style={{ fontSize: '1rem', fontWeight: 600, color: '#1e293b', marginBottom: 12 }}>
+                    Top Morbidities & Chief Complaints
+                  </h3>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                   {analyticsData.topAilments?.map((a: any, idx: number) => (
                     <div key={idx} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.9rem' }}>

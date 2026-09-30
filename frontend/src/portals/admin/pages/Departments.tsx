@@ -4,6 +4,7 @@ import { useToast } from '../../../context/ToastContext';
 import { generateShortCode } from '../../../lib/utils';
 import { useTerminology } from '../../../hooks/useTerminology';
 import { useAuth } from '../../../contexts/AuthContext';
+import { SearchInput, ExportButton } from '../../../components/shared';
 
 export interface Department {
   id: string;
@@ -201,19 +202,58 @@ export default function AdminDepartments() {
         <p>Organize your school into departments for better management of subjects and faculty.</p>
       </div>
 
-      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 20 }}>
-        <div style={{ position: 'relative', width: 400 }}>
-          <i className="fas fa-search" style={{ position: 'absolute', left: 14, top: 14, color: '#94a3b8' }}></i>
-          <input
-            type="text"
-            className="portal-input"
-            placeholder="Search departments..."
-            value={searchQuery}
-            onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
-            style={{ paddingLeft: 40 }}
-          />
-        </div>
-      </div>
+      {(() => {
+        const filtered = departments.filter(d => {
+          const term = searchQuery.toLowerCase();
+          return (
+            d.name.toLowerCase().includes(term) || 
+            d.code.toLowerCase().includes(term) ||
+            (d.deptCode || '').toLowerCase().includes(term) ||
+            (d.head?.name || '').toLowerCase().includes(term)
+          );
+        });
+
+        const exportColumns = [
+          { header: 'Dept Code', key: 'code', width: 14 },
+          { header: 'Admin Prefix', key: 'deptCode', width: 16 },
+          { header: 'Department Name', key: 'name', width: 28 },
+          { header: 'Duration (Yrs)', key: 'duration', width: 14 },
+          { header: 'Department Head', key: 'headName', width: 24 },
+          { header: 'Subjects', key: 'subjectsCount', width: 12 },
+          { header: 'Teachers', key: 'teachersCount', width: 12 },
+          { header: 'Staff', key: 'staffCount', width: 12 },
+        ];
+
+        const exportData = filtered.map(d => ({
+          code: d.code,
+          deptCode: d.deptCode || '---',
+          name: d.name,
+          duration: `${d.duration || '---'} Years`,
+          headName: d.head?.name || 'Unassigned',
+          subjectsCount: d._count?.subjects || 0,
+          teachersCount: d._count?.teachers || 0,
+          staffCount: d._count?.users || 0,
+        }));
+
+        return (
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, gap: 16, flexWrap: 'wrap' }}>
+            <div style={{ flex: 1, minWidth: 260, maxWidth: 450 }}>
+              <SearchInput
+                value={searchQuery}
+                onChange={(val) => { setSearchQuery(val); setCurrentPage(1); }}
+                placeholder="Search departments by name, code, head..."
+              />
+            </div>
+            <ExportButton
+              data={exportData}
+              columns={exportColumns}
+              filename="departments-register"
+              title="Academic & Operational Departments Register"
+              subtitle={`Generated on ${new Date().toLocaleDateString()}`}
+            />
+          </div>
+        );
+      })()}
 
       <div className="portal-card">
         <div className="portal-card-header">
@@ -247,10 +287,15 @@ export default function AdminDepartments() {
               </thead>
               <tbody>
                 {(() => {
-                  const filtered = departments.filter(d => 
-                    d.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                    d.code.toLowerCase().includes(searchQuery.toLowerCase())
-                  );
+                  const filtered = departments.filter(d => {
+                    const term = searchQuery.toLowerCase();
+                    return (
+                      d.name.toLowerCase().includes(term) || 
+                      d.code.toLowerCase().includes(term) ||
+                      (d.deptCode || '').toLowerCase().includes(term) ||
+                      (d.head?.name || '').toLowerCase().includes(term)
+                    );
+                  });
                   const indexOfLastItem = currentPage * itemsPerPage;
                   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
                   const currentItems = filtered.slice(indexOfFirstItem, indexOfLastItem);
@@ -332,10 +377,15 @@ export default function AdminDepartments() {
           )}
           
           {(() => {
-            const filtered = departments.filter(d => 
-              d.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-              d.code.toLowerCase().includes(searchQuery.toLowerCase())
-            );
+            const filtered = departments.filter(d => {
+              const term = searchQuery.toLowerCase();
+              return (
+                d.name.toLowerCase().includes(term) || 
+                d.code.toLowerCase().includes(term) ||
+                (d.deptCode || '').toLowerCase().includes(term) ||
+                (d.head?.name || '').toLowerCase().includes(term)
+              );
+            });
             return filtered.length > 0 && !loading && (
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px', borderTop: '1px solid #e2e8f0' }}>
               <span style={{ fontSize: '0.85rem', color: '#64748b' }}>

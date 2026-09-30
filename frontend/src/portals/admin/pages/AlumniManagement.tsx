@@ -5,6 +5,7 @@ import UserEditModal from '../../../components/shared/UserEditModal';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
 import AdminUserCreateModal from '../../../components/shared/AdminUserCreateModal';
+import { SearchInput, ExportButton } from '../../../components/shared';
 import { getAvatarUrl } from '../../../utils/formatters';
 import '../../../styles/portal.css';
 
@@ -75,7 +76,9 @@ export default function AlumniManagement() {
 
   const filteredAlumni = alumni.filter(s => 
     (s.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (s.staffId || '').toLowerCase().includes(searchTerm.toLowerCase())
+    (s.email || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (s.staffId || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (s.graduationYear || '').toString().toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -85,21 +88,40 @@ export default function AlumniManagement() {
         <p>Maintain relationships with former students, track progress, and manage legacy records</p>
       </div>
 
-      <div className="animate-in fade-in slide-in-from-top-4 duration-500" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
-        <div style={{ position: 'relative', width: '300px' }}>
-          <input 
-            type="text" 
-            placeholder="Search alumni network..." 
-            className="portal-input"
+      <div className="animate-in fade-in slide-in-from-top-4 duration-500" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px', flexWrap: 'wrap', gap: 12 }}>
+        <div style={{ width: '320px' }}>
+          <SearchInput
             value={searchTerm}
-            onChange={e => { setSearchTerm(e.target.value); setCurrentPage(1); }}
-            style={{ paddingLeft: '48px', fontWeight: 700, height: '52px', borderRadius: '16px', background: '#fff', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)' }}
+            onChange={(val) => { setSearchTerm(val); setCurrentPage(1); }}
+            placeholder="Search alumni network by name, email, year..."
           />
-          <i className="fas fa-search" style={{ position: 'absolute', left: 18, top: 18, color: '#94a3b8', fontSize: '1rem' }}></i>
         </div>
-        <button className="portal-btn-primary" onClick={() => setIsCreateModalOpen(true)} style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <i className="fas fa-user-graduate"></i>Register Alumnus
-        </button>
+        <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+          <ExportButton
+            data={filteredAlumni.map(s => ({
+              staffId: s.staffId || 'N/A',
+              name: s.name,
+              graduationYear: s.graduationYear || 'N/A',
+              email: s.email || 'N/A',
+              phone: s.phone || 'N/A',
+              status: s.isLocked ? 'Inactive' : 'Active'
+            }))}
+            columns={[
+              { header: 'Alumnus ID', key: 'staffId', width: 16 },
+              { header: 'Full Name', key: 'name', width: 25 },
+              { header: 'Graduation Year', key: 'graduationYear', width: 18 },
+              { header: 'Email Address', key: 'email', width: 25 },
+              { header: 'Phone Number', key: 'phone', width: 18 },
+              { header: 'Network Status', key: 'status', width: 14 }
+            ]}
+            filename="alumni_network_roster"
+            title="Institutional Alumni Registry"
+            subtitle="Former Students & Legacy Network"
+          />
+          <button className="portal-btn-primary" onClick={() => setIsCreateModalOpen(true)} style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <i className="fas fa-user-graduate"></i>Register Alumnus
+          </button>
+        </div>
       </div>
 
       <div className="management-table-card">

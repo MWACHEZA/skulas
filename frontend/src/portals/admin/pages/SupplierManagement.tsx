@@ -6,6 +6,7 @@ import AdminUserCreateModal from '../../../components/shared/AdminUserCreateModa
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
 import { getAvatarUrl } from '../../../utils/formatters';
+import { SearchInput, ExportButton } from '../../../components/shared';
 import '../../../styles/portal.css';
 
 export default function SupplierManagement() {
@@ -90,10 +91,34 @@ export default function SupplierManagement() {
     setIsEditModalOpen(true);
   };
 
-  const filteredSuppliers = suppliers.filter(s => 
-    (s.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (s.companyName || '').toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredSuppliers = suppliers.filter(s => {
+    const term = searchTerm.toLowerCase();
+    return (
+      (s.name || '').toLowerCase().includes(term) ||
+      (s.companyName || '').toLowerCase().includes(term) ||
+      (s.email || '').toLowerCase().includes(term) ||
+      (s.phone || '').toLowerCase().includes(term) ||
+      (s.supplierCategory?.name || s.category || '').toLowerCase().includes(term)
+    );
+  });
+
+  const exportColumns = [
+    { header: 'Contact Person', key: 'name', width: 25 },
+    { header: 'Company Name', key: 'companyName', width: 25 },
+    { header: 'Email', key: 'email', width: 25 },
+    { header: 'Phone', key: 'phone', width: 18 },
+    { header: 'Category', key: 'categoryName', width: 20 },
+    { header: 'Status', key: 'status', width: 15 },
+  ];
+
+  const exportData = filteredSuppliers.map(s => ({
+    name: s.name || 'N/A',
+    companyName: s.companyName || 'N/A',
+    email: s.email || 'N/A',
+    phone: s.phone || 'N/A',
+    categoryName: s.supplierCategory?.name || s.category || 'General',
+    status: s.isLocked ? 'Locked' : 'Active',
+  }));
 
   return (
     <>
@@ -127,18 +152,21 @@ export default function SupplierManagement() {
         </div>
 
         <div className="portal-card-header">
-          <div style={{ position: 'relative', width: '300px' }}>
-            <input 
-              type="text" 
-              placeholder="Search vendors..." 
-              className="portal-input"
+          <div style={{ flex: 1, maxWidth: '400px' }}>
+            <SearchInput
               value={searchTerm}
-              onChange={e => setSearchTerm(e.target.value)}
-              style={{ paddingLeft: '40px' }}
+              onChange={setSearchTerm}
+              placeholder="Search vendors by name, company, email, category..."
             />
-            <i className="fas fa-search" style={{ position: 'absolute', left: 14, top: 14, color: '#a0aec0' }}></i>
           </div>
-          <div style={{ display: 'flex', gap: '12px' }}>
+          <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+            <ExportButton
+              data={exportData}
+              columns={exportColumns}
+              filename="suppliers-register"
+              title="Supplier Directory & Vendor Register"
+              subtitle={`Generated on ${new Date().toLocaleDateString()}`}
+            />
             <button className="portal-btn-secondary" onClick={() => setIsManageCategoriesOpen(true)}>
               <i className="fas fa-tags" style={{ marginRight: 8 }}></i>Manage Categories
             </button>

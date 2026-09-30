@@ -3,6 +3,7 @@ import api, { BASE_URL } from '../../../lib/api';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
 import { useTerminology } from '../../../hooks/useTerminology';
+import { SearchInput, ExportButton } from '../../../components/shared';
 import '../../../styles/portal.css';
 
 interface StaffLog {
@@ -203,7 +204,7 @@ export default function ClockInLogsPage() {
             )}
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
             {activeTab !== 'my' && (
               <input 
                 type="date" 
@@ -213,17 +214,84 @@ export default function ClockInLogsPage() {
                 style={{ width: '180px', height: '40px', fontSize: '0.9rem', fontWeight: 800 }}
               />
             )}
-            <div style={{ position: 'relative', width: '240px' }}>
-              <i className="fas fa-search" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }}></i>
-              <input 
-                type="text" 
-                placeholder="Search..."
-                className="portal-input"
+            <div style={{ width: '260px' }}>
+              <SearchInput
                 value={searchTerm}
-                onChange={e => setSearchTerm(e.target.value)}
-                style={{ paddingLeft: '36px', height: '40px', fontSize: '0.9rem' }}
+                onChange={setSearchTerm}
+                placeholder={activeTab === 'my' ? "Search by date or status..." : activeTab === 'staff' ? "Search staff by name or ID..." : "Search student by name, ID, class..."}
               />
             </div>
+            <ExportButton
+              data={
+                activeTab === 'staff'
+                  ? filteredStaff.map(l => ({
+                      name: l.staff?.name || 'N/A',
+                      staffId: l.staff?.staffId || 'N/A',
+                      role: l.staff?.role || 'Staff',
+                      date: l.date,
+                      timeIn: formatTime(l.timeIn),
+                      timeOut: formatTime(l.timeOut),
+                      hours: l.hoursPresent || '--',
+                      schoolHours: l.schoolHoursPresent || '--',
+                      status: l.status
+                    }))
+                  : activeTab === 'students'
+                  ? filteredStudents.map(l => ({
+                      name: l.student?.name || 'N/A',
+                      studentId: l.student?.studentId || 'N/A',
+                      class: l.student?.class || 'N/A',
+                      department: l.student?.department || 'N/A',
+                      date: l.date,
+                      timeIn: formatTime(l.timeIn),
+                      timeOut: formatTime(l.timeOut),
+                      status: l.status
+                    }))
+                  : filteredMyLogs.map(l => ({
+                      date: l.date,
+                      timeIn: formatTime(l.timeIn),
+                      timeOut: formatTime(l.timeOut),
+                      hours: l.hoursPresent || '--',
+                      schoolHours: l.schoolHoursPresent || '--',
+                      status: l.status
+                    }))
+              }
+              columns={
+                activeTab === 'staff'
+                  ? [
+                      { header: 'Staff Member', key: 'name', width: 22 },
+                      { header: 'Staff ID', key: 'staffId', width: 14 },
+                      { header: 'Role', key: 'role', width: 14 },
+                      { header: 'Date', key: 'date', width: 14 },
+                      { header: 'Clock In', key: 'timeIn', width: 12 },
+                      { header: 'Clock Out', key: 'timeOut', width: 12 },
+                      { header: 'Active Hours', key: 'hours', width: 12 },
+                      { header: 'School Hours', key: 'schoolHours', width: 12 },
+                      { header: 'Status', key: 'status', width: 14 }
+                    ]
+                  : activeTab === 'students'
+                  ? [
+                      { header: 'Student Name', key: 'name', width: 22 },
+                      { header: 'Student ID', key: 'studentId', width: 14 },
+                      { header: 'Class', key: 'class', width: 14 },
+                      { header: 'Department', key: 'department', width: 16 },
+                      { header: 'Date', key: 'date', width: 14 },
+                      { header: 'Clock In', key: 'timeIn', width: 12 },
+                      { header: 'Clock Out', key: 'timeOut', width: 12 },
+                      { header: 'Status', key: 'status', width: 14 }
+                    ]
+                  : [
+                      { header: 'Date', key: 'date', width: 16 },
+                      { header: 'Clock In', key: 'timeIn', width: 14 },
+                      { header: 'Clock Out', key: 'timeOut', width: 14 },
+                      { header: 'Active Hours', key: 'hours', width: 14 },
+                      { header: 'School Hours', key: 'schoolHours', width: 14 },
+                      { header: 'Status', key: 'status', width: 14 }
+                    ]
+              }
+              filename={`attendance_clock_in_${activeTab}_${selectedDate}`}
+              title={`Attendance Clock-in Register (${activeTab.toUpperCase()})`}
+              subtitle={`Date: ${selectedDate}`}
+            />
           </div>
         </div>
       </div>

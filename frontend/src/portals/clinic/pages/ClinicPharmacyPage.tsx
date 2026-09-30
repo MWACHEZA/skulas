@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import api from '../../../lib/api';
+import { SearchInput, ExportButton } from '../../../components/shared';
 
 export type PharmacyTab = 'stock' | 'dispense-log' | 'low-stock' | 'expiry';
 
@@ -134,7 +135,8 @@ export default function ClinicPharmacyPage() {
 
   const filteredCatalog = catalog.filter((item) =>
     item.drugName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    item.category.toLowerCase().includes(searchQuery.toLowerCase())
+    item.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (item.location || '').toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const lowStockItems = catalog.filter((item) => item.isLowStock);
@@ -273,17 +275,38 @@ export default function ClinicPharmacyPage() {
       {/* TAB 1: Stock Inventory */}
       {activeTab === 'stock' && (
         <div style={{ background: '#fff', borderRadius: 12, border: '1px solid #e2e8f0', padding: 24 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-            <div style={{ display: 'flex', gap: 12, flex: 1, maxWidth: 400 }}>
-              <input
-                type="text"
-                placeholder="Search medication name or category..."
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, flexWrap: 'wrap', gap: 12 }}>
+            <div style={{ width: '100%', maxWidth: 360 }}>
+              <SearchInput
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                style={{ width: '100%', padding: '8px 12px', border: '1px solid #cbd5e1', borderRadius: 6, fontSize: '0.9rem' }}
+                onChange={setSearchQuery}
+                placeholder="Search medication name, category, location..."
               />
             </div>
-            <div style={{ display: 'flex', gap: 10 }}>
+            <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+              <ExportButton
+                data={filteredCatalog.map(item => ({
+                  drugName: item.drugName,
+                  category: item.category,
+                  unit: item.unit,
+                  totalStock: item.totalStock || 0,
+                  minStock: item.minStock,
+                  location: item.location || 'N/A',
+                  status: item.isLowStock ? 'LOW STOCK' : 'Adequate'
+                }))}
+                columns={[
+                  { header: 'Medication Name', key: 'drugName', width: 25 },
+                  { header: 'Category', key: 'category', width: 16 },
+                  { header: 'Unit', key: 'unit', width: 12 },
+                  { header: 'Available Qty', key: 'totalStock', width: 14 },
+                  { header: 'Min Level', key: 'minStock', width: 12 },
+                  { header: 'Shelf Location', key: 'location', width: 16 },
+                  { header: 'Status', key: 'status', width: 14 }
+                ]}
+                filename="clinic_formulary_inventory"
+                title="Clinic Formulary & Dispensary Stock"
+                subtitle="Active Pharmaceutical Register"
+              />
               <button
                 onClick={() => setShowAddStockModal(true)}
                 style={{ padding: '8px 16px', background: '#4f46e5', color: '#fff', border: 'none', borderRadius: 6, cursor: 'pointer', fontWeight: 600, fontSize: '0.85rem' }}
@@ -490,10 +513,35 @@ export default function ClinicPharmacyPage() {
       {/* TAB 4: Dispense Log */}
       {activeTab === 'dispense-log' && (
         <div style={{ background: '#fff', borderRadius: 12, border: '1px solid #e2e8f0', padding: 24 }}>
-          <h2 style={{ fontSize: '1.2rem', fontWeight: 600, color: '#1e293b', marginBottom: 8 }}>Dispensing Transaction History</h2>
-          <p style={{ color: '#64748b', fontSize: '0.9rem', marginBottom: 20 }}>
-            Every dose deducted from batch inventory is logged with dispensing clinician credentials.
-          </p>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, flexWrap: 'wrap', gap: 12 }}>
+            <div>
+              <h2 style={{ fontSize: '1.2rem', fontWeight: 600, color: '#1e293b', margin: 0 }}>Dispensing Transaction History</h2>
+              <p style={{ color: '#64748b', fontSize: '0.9rem', margin: '4px 0 0 0' }}>
+                Every dose deducted from batch inventory is logged with dispensing clinician credentials.
+              </p>
+            </div>
+            <ExportButton
+              data={dispenseLogs.map(log => ({
+                drugName: log.stock?.drugName || 'N/A',
+                batchNumber: log.batch?.batchNumber || 'N/A',
+                quantity: log.quantity,
+                visitCode: log.visit?.visitCode || 'Direct Dispense',
+                dispensedBy: log.dispensedBy?.name || 'Staff',
+                timestamp: `${new Date(log.dispensedAt).toLocaleDateString()} ${new Date(log.dispensedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`
+              }))}
+              columns={[
+                { header: 'Medication', key: 'drugName', width: 22 },
+                { header: 'Batch Number', key: 'batchNumber', width: 16 },
+                { header: 'Quantity', key: 'quantity', width: 12 },
+                { header: 'Visit Code', key: 'visitCode', width: 16 },
+                { header: 'Dispensed By', key: 'dispensedBy', width: 20 },
+                { header: 'Date & Time', key: 'timestamp', width: 20 }
+              ]}
+              filename="dispensing_audit_trail"
+              title="Dispensing Audit Trail"
+              subtitle="Pharmaceutical Consumption Record"
+            />
+          </div>
 
           <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.9rem' }}>
             <thead>

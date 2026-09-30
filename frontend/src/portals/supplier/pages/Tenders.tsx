@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useToast } from '../../../context/ToastContext';
+import { SearchInput, ExportButton } from '../../../components/shared';
 
 export default function SupplierTenders() {
   const { showToast } = useToast();
@@ -23,36 +24,63 @@ export default function SupplierTenders() {
   };
 
   const filteredTenders = tenders.filter(t => {
-    const matchesSearch = t.title.toLowerCase().includes(search.toLowerCase()) || t.id.toLowerCase().includes(search.toLowerCase());
+    const term = search.toLowerCase();
+    const matchesSearch =
+      t.title.toLowerCase().includes(term) ||
+      t.id.toLowerCase().includes(term) ||
+      t.category.toLowerCase().includes(term) ||
+      t.desc.toLowerCase().includes(term);
     const matchesFilter = filter === 'all' || t.status === filter;
     return matchesSearch && matchesFilter;
   });
 
   return (
     <>
-      <div className="portal-page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <div className="portal-page-header">
         <div>
           <h1>Available Tenders</h1>
           <p>Browse and bid on open school procurement opportunities.</p>
         </div>
-        <div style={{ position: 'relative' }}>
-            <i className="fas fa-search" style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: '#a0aec0' }}></i>
-            <input 
-                type="text" 
-                className="portal-input" 
-                placeholder="Search by Title or ID..." 
-                style={{ paddingLeft: 40, width: 300 }}
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-            />
-        </div>
       </div>
 
       <div className="portal-card" style={{ marginBottom: 24 }}>
-        <div className="portal-card-body" style={{ padding: '12px 24px', display: 'flex', gap: 15 }}>
-            <button className={`portal-btn-${filter === 'all' ? 'primary' : 'secondary'}`} style={{ padding: '8px 16px', fontSize: '0.85rem' }} onClick={() => setFilter('all')}>All Tenders</button>
-            <button className={`portal-btn-${filter === 'open' ? 'primary' : 'secondary'}`} style={{ padding: '8px 16px', fontSize: '0.85rem' }} onClick={() => setFilter('open')}>Open</button>
-            <button className={`portal-btn-${filter === 'closed' ? 'primary' : 'secondary'}`} style={{ padding: '8px 16px', fontSize: '0.85rem' }} onClick={() => setFilter('closed')}>Closed</button>
+        <div className="portal-card-body" style={{ padding: '16px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
+          <div style={{ flex: 1, minWidth: 260, maxWidth: 380 }}>
+            <SearchInput
+              value={search}
+              onChange={setSearch}
+              placeholder="Search tenders by title, ID, category..."
+            />
+          </div>
+          <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+            <div style={{ display: 'flex', gap: 6 }}>
+              <button className={`portal-btn-${filter === 'all' ? 'primary' : 'secondary'}`} style={{ padding: '8px 16px', fontSize: '0.85rem' }} onClick={() => setFilter('all')}>All</button>
+              <button className={`portal-btn-${filter === 'open' ? 'primary' : 'secondary'}`} style={{ padding: '8px 16px', fontSize: '0.85rem' }} onClick={() => setFilter('open')}>Open</button>
+              <button className={`portal-btn-${filter === 'closed' ? 'primary' : 'secondary'}`} style={{ padding: '8px 16px', fontSize: '0.85rem' }} onClick={() => setFilter('closed')}>Closed</button>
+            </div>
+            <ExportButton
+              data={filteredTenders.map(t => ({
+                id: t.id,
+                title: t.title,
+                category: t.category,
+                budget: `$${t.budget.toLocaleString()}`,
+                closes: t.closes,
+                status: t.status.toUpperCase(),
+                description: t.desc
+              }))}
+              columns={[
+                { header: 'Tender ID', key: 'id', width: 18 },
+                { header: 'Title', key: 'title', width: 28 },
+                { header: 'Category', key: 'category', width: 18 },
+                { header: 'Budget Est.', key: 'budget', width: 16 },
+                { header: 'Closing Date', key: 'closes', width: 16 },
+                { header: 'Status', key: 'status', width: 14 }
+              ]}
+              filename="procurement-tenders"
+              title="Available Procurement Tenders Register"
+              subtitle={`Total Openings: ${filteredTenders.length}`}
+            />
+          </div>
         </div>
       </div>
 

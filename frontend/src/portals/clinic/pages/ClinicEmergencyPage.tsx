@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import api from '../../../lib/api';
+import { SearchInput, ExportButton } from '../../../components/shared';
 
 export type EmergencyTab = 'emergency-log' | 'referrals';
 
@@ -61,16 +62,21 @@ export default function ClinicEmergencyPage() {
     loadData();
   }, []);
 
-  const handleSearchStudent = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!searchStudentQuery.trim()) return;
-    try {
-      const res = await api.get(`/clinic/reports/patients-search?q=${encodeURIComponent(searchStudentQuery.trim())}`);
-      setStudentSearchResults(res.data || []);
-    } catch (err) {
-      console.error('Failed to search student for emergency:', err);
+  useEffect(() => {
+    if (!searchStudentQuery.trim()) {
+      setStudentSearchResults([]);
+      return;
     }
-  };
+    const timer = setTimeout(async () => {
+      try {
+        const res = await api.get(`/clinic/reports/patients-search?q=${encodeURIComponent(searchStudentQuery.trim())}`);
+        setStudentSearchResults(res.data || []);
+      } catch (err) {
+        console.error('Failed to search student for emergency:', err);
+      }
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchStudentQuery]);
 
   const handleCreateEmergency = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -188,31 +194,58 @@ export default function ClinicEmergencyPage() {
       {/* TAB 1: Emergency Log */}
       {activeTab === 'emergency-log' && (
         <div style={{ background: '#fff', borderRadius: 12, border: '1px solid #e2e8f0', padding: 24 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, flexWrap: 'wrap', gap: 12 }}>
             <div>
-              <h2 style={{ fontSize: '1.2rem', fontWeight: 600, color: '#1e293b' }}>Emergency Incidents & Parent Communications</h2>
-              <p style={{ color: '#64748b', fontSize: '0.85rem', marginTop: 4 }}>
+              <h2 style={{ fontSize: '1.2rem', fontWeight: 600, color: '#1e293b', margin: 0 }}>Emergency Incidents & Parent Communications</h2>
+              <p style={{ color: '#64748b', fontSize: '0.85rem', margin: '4px 0 0 0' }}>
                 All high-acuity interventions, ambulance alerts, and manual phone records with parents/guardians.
               </p>
             </div>
-            <button
-              onClick={() => setShowLogModal(true)}
-              style={{
-                padding: '8px 16px',
-                background: '#dc2626',
-                color: '#fff',
-                border: 'none',
-                borderRadius: 6,
-                cursor: 'pointer',
-                fontWeight: 600,
-                fontSize: '0.85rem',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 6
-              }}
-            >
-              <i className="fas fa-phone-alt" /> Log Emergency / Parent Call
-            </button>
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+              <ExportButton
+                data={emergencyLogs.map(log => ({
+                  title: log.title,
+                  studentName: log.student?.name || 'Walk-in Student',
+                  studentId: log.student?.studentId || 'N/A',
+                  acuity: log.acuity || 'RED',
+                  ambulance: log.ambulanceCalled ? `Dispatched (${log.ambulanceDetails || 'Paramedic'})` : 'No',
+                  parentContacted: log.parentContacted ? `Phoned (${log.parentContactPhone || 'Parent'})` : 'Pending',
+                  loggedBy: log.loggedBy?.name || 'Staff',
+                  date: `${new Date(log.createdAt).toLocaleDateString()} ${new Date(log.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`
+                }))}
+                columns={[
+                  { header: 'Incident Title', key: 'title', width: 22 },
+                  { header: 'Student Name', key: 'studentName', width: 20 },
+                  { header: 'Student ID', key: 'studentId', width: 14 },
+                  { header: 'Acuity', key: 'acuity', width: 10 },
+                  { header: 'Ambulance / EMT', key: 'ambulance', width: 20 },
+                  { header: 'Parent Contact', key: 'parentContacted', width: 20 },
+                  { header: 'Logged By', key: 'loggedBy', width: 18 },
+                  { header: 'Date', key: 'date', width: 18 }
+                ]}
+                filename="clinic_emergency_incidents"
+                title="Clinic Emergency Incident Register"
+                subtitle="High-Acuity Interventions & Parent Dispatch Logs"
+              />
+              <button
+                onClick={() => setShowLogModal(true)}
+                style={{
+                  padding: '8px 16px',
+                  background: '#dc2626',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: 6,
+                  cursor: 'pointer',
+                  fontWeight: 600,
+                  fontSize: '0.85rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 6
+                }}
+              >
+                <i className="fas fa-phone-alt" /> Log Emergency / Parent Call
+              </button>
+            </div>
           </div>
 
           {loading ? (
@@ -315,10 +348,37 @@ export default function ClinicEmergencyPage() {
       {/* TAB 2: Referrals */}
       {activeTab === 'referrals' && (
         <div style={{ background: '#fff', borderRadius: 12, border: '1px solid #e2e8f0', padding: 24 }}>
-          <h2 style={{ fontSize: '1.2rem', fontWeight: 600, color: '#1e293b', marginBottom: 8 }}>Hospital Referral Transfer Directory</h2>
-          <p style={{ color: '#64748b', fontSize: '0.9rem', marginBottom: 20 }}>
-            Cases referred to tertiary hospitals, orthopedic clinics, or pediatric emergency wards with clinical handover slips.
-          </p>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, flexWrap: 'wrap', gap: 12 }}>
+            <div>
+              <h2 style={{ fontSize: '1.2rem', fontWeight: 600, color: '#1e293b', margin: 0 }}>Hospital Referral Transfer Directory</h2>
+              <p style={{ color: '#64748b', fontSize: '0.9rem', margin: '4px 0 0 0' }}>
+                Cases referred to tertiary hospitals, orthopedic clinics, or pediatric emergency wards with clinical handover slips.
+              </p>
+            </div>
+            {referralsList.length > 0 && (
+              <ExportButton
+                data={referralsList.map(ref => ({
+                  studentName: ref.student?.name || 'Walk-in Student',
+                  studentId: ref.student?.studentId || 'N/A',
+                  title: ref.title,
+                  ambulanceDetails: ref.ambulanceDetails || 'Private school transport',
+                  hospital: ref.title.includes('Referral') ? ref.title : 'External Hospital',
+                  date: new Date(ref.createdAt).toLocaleDateString()
+                }))}
+                columns={[
+                  { header: 'Patient Name', key: 'studentName', width: 22 },
+                  { header: 'Student ID', key: 'studentId', width: 14 },
+                  { header: 'Referral Details', key: 'title', width: 28 },
+                  { header: 'EMT / Transport', key: 'ambulanceDetails', width: 22 },
+                  { header: 'Target Hospital', key: 'hospital', width: 22 },
+                  { header: 'Date', key: 'date', width: 14 }
+                ]}
+                filename="hospital_referrals_directory"
+                title="Hospital Referral Transfer Directory"
+                subtitle="Clinical Handover Register"
+              />
+            )}
+          </div>
 
           {referralsList.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '40px 0', color: '#64748b' }}>
@@ -365,18 +425,13 @@ export default function ClinicEmergencyPage() {
             {!selectedStudent ? (
               <div>
                 <label style={{ fontSize: '0.85rem', fontWeight: 600, color: '#475569', display: 'block', marginBottom: 4 }}>Find Student</label>
-                <form onSubmit={handleSearchStudent} style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
-                  <input
-                    type="text"
-                    placeholder="Search student name or admission number..."
+                <div style={{ marginBottom: 12 }}>
+                  <SearchInput
                     value={searchStudentQuery}
-                    onChange={(e) => setSearchStudentQuery(e.target.value)}
-                    style={{ flex: 1, padding: '8px 10px', border: '1px solid #cbd5e1', borderRadius: 6 }}
+                    onChange={setSearchStudentQuery}
+                    placeholder="Search student name or admission number..."
                   />
-                  <button type="submit" style={{ padding: '8px 16px', background: '#4f46e5', color: '#fff', border: 'none', borderRadius: 6, cursor: 'pointer' }}>
-                    Find
-                  </button>
-                </form>
+                </div>
                 {studentSearchResults.map((stud) => (
                   <div
                     key={stud.id}

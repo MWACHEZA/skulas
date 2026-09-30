@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
+import { SearchInput, ExportButton } from '../../../components/shared';
 
 interface BookItem {
   id: string;
@@ -278,15 +279,38 @@ export default function StudentLibraryAssistantPage() {
 
       {activeTab === 'books' && (
         <div className="portal-card">
-          <div className="portal-card-header portal-card-header-flex-between">
-            <h2><i className="fas fa-boxes portal-icon-primary"></i>Bay Shelf & Catalog Directory</h2>
-            <input 
-              type="text"
-              className="portal-input portal-input-w260"
-              placeholder="Search title, author, barcode..."
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-            />
+          <div className="portal-card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
+            <h2><i className="fas fa-boxes portal-icon-primary" style={{ marginRight: 8 }}></i>Bay Shelf & Catalog Directory</h2>
+            <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
+              <div style={{ width: 280 }}>
+                <SearchInput
+                  value={search}
+                  onChange={setSearch}
+                  placeholder="Search title, author, barcode..."
+                />
+              </div>
+              <ExportButton
+                data={filteredCatalog.map(b => ({
+                  title: b.title,
+                  author: b.author,
+                  identifier: b.barcode ? `Barcode: ${b.barcode}` : (b.isbn ? `ISBN: ${b.isbn}` : 'N/A'),
+                  shelfLocation: b.shelfLocation || b.shelf || 'Bay General',
+                  available: b.available,
+                  totalCopies: b.copies || b.available
+                }))}
+                columns={[
+                  { header: 'Book Title', key: 'title', width: 28 },
+                  { header: 'Author', key: 'author', width: 22 },
+                  { header: 'Barcode / ISBN', key: 'identifier', width: 18 },
+                  { header: 'Shelf Location', key: 'shelfLocation', width: 18 },
+                  { header: 'Available', key: 'available', width: 12 },
+                  { header: 'Total Copies', key: 'totalCopies', width: 14 }
+                ]}
+                filename="library-catalog-shelf-register"
+                title="Library Catalog & Shelf Directory"
+                subtitle={`Total Catalog Items: ${filteredCatalog.length}`}
+              />
+            </div>
           </div>
           <div className="portal-card-body portal-p-0">
             {loading ? (

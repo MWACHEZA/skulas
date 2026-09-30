@@ -3,6 +3,7 @@ import { useToast } from '../../../../context/ToastContext';
 import api from '../../../../lib/api';
 import AddNewCourse from './AddNewCourse';
 import EnrolStudent from './EnrolStudent';
+import { SearchInput, ExportButton } from '../../../../components/shared';
 
 export default function CoursesDashboard() {
   const { showToast } = useToast();
@@ -39,7 +40,11 @@ export default function CoursesDashboard() {
   const totalStudents = courses.reduce((acc, curr) => acc + (curr._count?.enrollments || 0), 0);
 
   const filteredCourses = courses.filter(c => {
-    const matchSearch = c.title.toLowerCase().includes(searchQuery.toLowerCase());
+    const term = searchQuery.toLowerCase();
+    const matchSearch =
+      (c.title || '').toLowerCase().includes(term) ||
+      (c.class?.name || '').toLowerCase().includes(term) ||
+      (c.category || '').toLowerCase().includes(term);
     const matchCat = filterCategory === 'All' || c.category === filterCategory;
     const matchStatus = filterStatus === 'All' || c.status === filterStatus;
     const matchClass = filterClass === 'All' || c.class?.name === filterClass;
@@ -140,19 +145,36 @@ export default function CoursesDashboard() {
             </div>
           </div>
 
-          {/* Search */}
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 20 }}>
-            <div style={{ position: 'relative', width: 400 }}>
-              <i className="fas fa-search" style={{ position: 'absolute', left: 14, top: 14, color: '#94a3b8' }}></i>
-              <input
-                type="text"
-                className="portal-input"
-                placeholder="Search courses..."
+          {/* Search & Export Toolbar */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, gap: 16, flexWrap: 'wrap' }}>
+            <div style={{ flex: 1, minWidth: 260, maxWidth: 420 }}>
+              <SearchInput
                 value={searchQuery}
-                onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
-                style={{ paddingLeft: 40 }}
+                onChange={(val) => { setSearchQuery(val); setCurrentPage(1); }}
+                placeholder="Search courses by title, class, category..."
               />
             </div>
+            <ExportButton
+              data={filteredCourses.map(c => ({
+                title: c.title,
+                class: c.class?.name || 'All Classes',
+                category: c.category || 'General',
+                status: c.status || 'Active',
+                price: c.isFree ? 'Free' : (c.price ? `$${c.price}` : 'Paid'),
+                students: c._count?.enrollments || 0
+              }))}
+              columns={[
+                { header: 'Course Title', key: 'title', width: 30 },
+                { header: 'Target Class', key: 'class', width: 20 },
+                { header: 'Category', key: 'category', width: 18 },
+                { header: 'Status', key: 'status', width: 14 },
+                { header: 'Price Tier', key: 'price', width: 14 },
+                { header: 'Enrolled Students', key: 'students', width: 18 }
+              ]}
+              filename="online-courses-register"
+              title="Online Learning Courses & Subject Dashboard"
+              subtitle={`Total Courses: ${filteredCourses.length} | Total Enrolled: ${totalStudents}`}
+            />
           </div>
 
           {/* Empty State */}

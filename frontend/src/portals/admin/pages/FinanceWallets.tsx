@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { formatCurrency } from '../../../utils/formatters';
+import { SearchInput, ExportButton } from '../../../components/shared';
 import '../../../styles/portal.css';
 
 type WalletTab = 'sales' | 'inventory' | 'topups';
@@ -119,19 +120,90 @@ export default function FinanceWallets() {
         ))}
       </div>
 
-      {/* Search Input */}
-      <div className="portal-card" style={{ padding: '14px 20px', marginBottom: 20 }}>
-        <div style={{ position: 'relative', maxWidth: 400 }}>
-          <i className="fas fa-search" style={{ position: 'absolute', left: 14, top: 13, color: '#94a3b8' }}></i>
-          <input
-            type="text"
-            placeholder="Search items, student names, or reference codes..."
-            className="portal-input"
+      {/* Search & Export Toolbar */}
+      <div className="portal-card" style={{ padding: '14px 20px', marginBottom: 20, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
+        <div style={{ flex: 1, minWidth: 280, maxWidth: 450 }}>
+          <SearchInput
             value={searchTerm}
-            onChange={e => setSearchTerm(e.target.value)}
-            style={{ paddingLeft: 38 }}
+            onChange={setSearchTerm}
+            placeholder={
+              activeTab === 'sales'
+                ? "Search sales by customer, items, receipt ID..."
+                : activeTab === 'inventory'
+                ? "Search items by name, category..."
+                : "Search wallets by student name, ID..."
+            }
           />
         </div>
+        <ExportButton
+          data={
+            activeTab === 'sales' ? sales.filter(s => {
+              const term = searchTerm.toLowerCase();
+              return (
+                (s.student?.user?.name || s.studentName || '').toLowerCase().includes(term) ||
+                (s.id || '').toLowerCase().includes(term) ||
+                (s.itemNames || '').toLowerCase().includes(term) ||
+                (s.paymentMethod || '').toLowerCase().includes(term)
+              );
+            }).map((s, idx) => ({
+              receiptId: s.id?.slice(0, 8) || `SALE-${idx + 1}`,
+              customer: s.student?.user?.name || s.studentName || 'Walk-in Student',
+              items: s.itemNames || `${s.quantity || 1} items`,
+              paymentMethod: s.paymentMethod || 'Wallet Debit',
+              amount: s.totalAmount || s.amount || 0,
+              date: s.createdAt ? new Date(s.createdAt).toLocaleString() : 'Today'
+            })) : activeTab === 'inventory' ? inventory.filter(item => {
+              const term = searchTerm.toLowerCase();
+              return (
+                (item.name || '').toLowerCase().includes(term) ||
+                (item.category || '').toLowerCase().includes(term)
+              );
+            }).map(item => ({
+              name: item.name,
+              category: item.category || 'Snack',
+              price: item.price || 0,
+              stock: item.stock || 0,
+              status: (item.stock || 0) <= 5 ? 'Critical Stock' : (item.stock || 0) <= 15 ? 'Low Stock' : 'Adequate'
+            })) : wallets.filter(w => {
+              const term = searchTerm.toLowerCase();
+              return (
+                (w.student?.user?.name || w.studentName || '').toLowerCase().includes(term) ||
+                (w.student?.studentId || w.studentId || '').toLowerCase().includes(term)
+              );
+            }).map(w => ({
+              studentName: w.student?.user?.name || w.studentName || 'Student',
+              studentId: w.student?.studentId || w.studentId || '—',
+              balance: w.balance || 0,
+              dailyLimit: w.dailyLimit || 'Unlimited',
+              status: w.status || 'Active'
+            }))
+          }
+          columns={
+            activeTab === 'sales' ? [
+              { header: 'Receipt ID', key: 'receiptId', width: 16 },
+              { header: 'Student / Customer', key: 'customer', width: 25 },
+              { header: 'Items Purchased', key: 'items', width: 28 },
+              { header: 'Payment Mode', key: 'paymentMethod', width: 16 },
+              { header: 'Amount ($)', key: 'amount', width: 14 },
+              { header: 'Date & Time', key: 'date', width: 20 }
+            ] : activeTab === 'inventory' ? [
+              { header: 'Item Name', key: 'name', width: 28 },
+              { header: 'Category', key: 'category', width: 18 },
+              { header: 'Selling Price ($)', key: 'price', width: 16 },
+              { header: 'Stock on Hand', key: 'stock', width: 16 },
+              { header: 'Stock Status', key: 'status', width: 16 }
+            ] : [
+              { header: 'Student Name', key: 'studentName', width: 26 },
+              { header: 'Student ID', key: 'studentId', width: 18 },
+              { header: 'Wallet Balance ($)', key: 'balance', width: 18 },
+              { header: 'Daily Limit ($)', key: 'dailyLimit', width: 16 },
+              { header: 'Status', key: 'status', width: 14 }
+            ]
+          }
+          filename={`tuckshop-${activeTab}-${new Date().toISOString().slice(0, 10)}`}
+          title={`Tuckshop & Wallets: ${activeTab.toUpperCase()}`}
+          subtitle={`Generated on ${new Date().toLocaleDateString()}`}
+        />
       </div>
 
       {/* Content */}
@@ -146,9 +218,9 @@ export default function FinanceWallets() {
             {/* View 1: Sales */}
             {activeTab === 'sales' && (
               <div className="portal-card-body portal-card-body-flat">
-                {sales.length === 0 ? (
+                {filteredSales.length === 0 ? (
                   <div style={{ padding: 40, textAlign: 'center', color: '#64748b' }}>
-                    No sales recorded for this period.
+                    No sales recorded for this period matching search.
                   </div>
                 ) : (
                   <table className="portal-table">
@@ -163,7 +235,7 @@ export default function FinanceWallets() {
                       </tr>
                     </thead>
                     <tbody>
-                      {sales.map((s, idx) => (
+                      {filteredSales.map((s, idx) => (
                         <tr key={s.id || idx}>
                           <td style={{ fontFamily: 'monospace', fontWeight: 600 }}>{s.id?.slice(0, 8) || `SALE-${idx + 1}`}</td>
                           <td><strong>{s.student?.user?.name || s.studentName || 'Walk-in Student'}</strong></td>
@@ -182,9 +254,9 @@ export default function FinanceWallets() {
             {/* View 2: Inventory */}
             {activeTab === 'inventory' && (
               <div className="portal-card-body portal-card-body-flat">
-                {inventory.length === 0 ? (
+                {filteredInventory.length === 0 ? (
                   <div style={{ padding: 40, textAlign: 'center', color: '#64748b' }}>
-                    No inventory items listed in canteen store.
+                    No inventory items listed matching search.
                   </div>
                 ) : (
                   <table className="portal-table">
@@ -198,7 +270,7 @@ export default function FinanceWallets() {
                       </tr>
                     </thead>
                     <tbody>
-                      {inventory.map((item, idx) => (
+                      {filteredInventory.map((item, idx) => (
                         <tr key={item.id || idx}>
                           <td style={{ fontWeight: 700 }}>{item.name}</td>
                           <td><span className="portal-badge neutral">{item.category || 'Snack'}</span></td>
@@ -220,9 +292,9 @@ export default function FinanceWallets() {
             {/* View 3: Top-ups & Wallets */}
             {activeTab === 'topups' && (
               <div className="portal-card-body portal-card-body-flat">
-                {wallets.length === 0 ? (
+                {filteredWallets.length === 0 ? (
                   <div style={{ padding: 40, textAlign: 'center', color: '#64748b' }}>
-                    No student wallets created yet.
+                    No student wallets found matching search.
                   </div>
                 ) : (
                   <table className="portal-table">
@@ -237,7 +309,7 @@ export default function FinanceWallets() {
                       </tr>
                     </thead>
                     <tbody>
-                      {wallets.map((w, idx) => (
+                      {filteredWallets.map((w, idx) => (
                         <tr key={w.id || idx}>
                           <td><strong>{w.student?.user?.name || w.studentName || 'Student'}</strong></td>
                           <td style={{ fontFamily: 'monospace' }}>{w.student?.studentId || w.studentId || '—'}</td>

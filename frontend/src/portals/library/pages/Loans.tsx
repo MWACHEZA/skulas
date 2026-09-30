@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
+import { SearchInput, ExportButton } from '../../../components/shared';
 import '../../../styles/portal.css';
 
 interface LoanRecord {
@@ -299,33 +300,32 @@ export default function LibraryLoans() {
         </div>
 
         <div style={{ display: 'flex', gap: 10, alignItems: 'center' }} className="no-print">
-          <button 
-            onClick={() => {
-              const headers = ['Borrower', 'Type', 'Class/Dept', 'Book Title', 'Accession #', 'Issue Date', 'Due Date', 'Status'];
-              const rows = filteredLoans.map(l => [
-                l.borrower?.name || 'N/A',
-                l.borrower?.type || 'N/A',
-                l.borrower?.departmentOrClass || 'N/A',
-                l.book?.title || 'N/A',
-                l.accessionNumber || l.book?.accessionNumber || 'N/A',
-                new Date(l.borrowedAt).toLocaleDateString(),
-                new Date(l.dueDate).toLocaleDateString(),
-                l.returnedAt ? 'Returned' : (l.daysOverdue > 0 ? 'Overdue' : 'Active')
-              ]);
-              exportToCSV('Library_Active_Loans', headers, rows);
-            }}
-            className="portal-btn-secondary"
-            style={{ padding: '8px 16px', fontSize: '0.85rem' }}
-          >
-            <i className="fas fa-file-csv mr-1"></i> CSV
-          </button>
-          <button 
-            onClick={() => window.print()}
-            className="portal-btn-secondary"
-            style={{ padding: '8px 16px', fontSize: '0.85rem' }}
-          >
-            <i className="fas fa-print mr-1"></i> Print
-          </button>
+          <ExportButton
+            title="Library Circulation Loans"
+            subtitle={`Records of library book loans (${statusFilter === 'borrowed' ? 'Active' : statusFilter === 'returned' ? 'Returned' : 'All'})`}
+            filename={`Library_Loans_${new Date().toISOString().slice(0, 10)}`}
+            columns={[
+              { header: 'Borrower', key: 'borrowerName', width: 22 },
+              { header: 'Type', key: 'borrowerType', width: 12 },
+              { header: 'Class/Dept', key: 'classDept', width: 16 },
+              { header: 'Book Title', key: 'bookTitle', width: 28 },
+              { header: 'Accession #', key: 'accessionNumber', width: 14 },
+              { header: 'Issue Date', key: 'issueDate', width: 14 },
+              { header: 'Due Date', key: 'dueDate', width: 14 },
+              { header: 'Status', key: 'loanStatus', width: 12 },
+            ]}
+            data={filteredLoans.map(l => ({
+              ...l,
+              borrowerName: l.borrower?.name || 'N/A',
+              borrowerType: l.borrower?.type || 'N/A',
+              classDept: l.borrower?.departmentOrClass || 'N/A',
+              bookTitle: l.book?.title || 'N/A',
+              accessionNumber: l.accessionNumber || l.book?.accessionNumber || 'N/A',
+              issueDate: new Date(l.borrowedAt).toLocaleDateString(),
+              dueDate: new Date(l.dueDate).toLocaleDateString(),
+              loanStatus: l.returnedAt ? 'Returned' : (l.daysOverdue > 0 ? 'Overdue' : 'Active'),
+            }))}
+          />
           <button 
             onClick={() => { resetIssueModal(); setShowIssueModal(true); }}
             className="portal-btn-primary" 
@@ -338,15 +338,14 @@ export default function LibraryLoans() {
 
       {/* Search & Tabs Filter */}
       <div style={{ background: '#ffffff', padding: '16px 20px', borderRadius: '16px', border: '1px solid #e2e8f0', marginBottom: 20, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16 }}>
-        <div style={{ position: 'relative', width: 340 }}>
-          <i className="fas fa-search" style={{ position: 'absolute', left: 16, top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }}></i>
-          <input 
-            type="text" 
-            placeholder="Search borrower, book title, or accession #..."
-            className="portal-input"
-            style={{ width: '100%', paddingLeft: 42, height: 42, borderRadius: 10, fontSize: '0.85rem' }}
+        <div style={{ width: 340 }}>
+          <SearchInput
             value={searchTerm}
-            onChange={e => setSearchTerm(e.target.value)}
+            onChange={setSearchTerm}
+            placeholder="Search borrower, book title, or accession #..."
+            loading={loading}
+            onClear={() => setSearchTerm('')}
+            width="100%"
           />
         </div>
 

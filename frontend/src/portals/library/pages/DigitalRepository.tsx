@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
+import { SearchInput, ExportButton } from '../../../components/shared';
 import '../../../styles/portal.css';
 
 interface DigitalResource {
@@ -72,10 +73,21 @@ export default function LibraryDigitalRepository() {
     keywords: ''
   });
 
+  const searchDebounceRef = useRef<any>(null);
+
   useEffect(() => {
-    fetchResources();
     fetchCategories();
-  }, [selectedCategory, selectedType]);
+  }, []);
+
+  useEffect(() => {
+    if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current);
+    searchDebounceRef.current = setTimeout(() => {
+      fetchResources();
+    }, 300);
+    return () => {
+      if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current);
+    };
+  }, [searchTerm, selectedCategory, selectedType]);
 
   const fetchResources = async () => {
     setLoading(true);
@@ -241,6 +253,27 @@ export default function LibraryDigitalRepository() {
           >
             <i className="fas fa-file-csv mr-1"></i> CSV
           </button>
+          <ExportButton
+            title="Digital Library Repository"
+            subtitle="Catalog of digital e-learning assets and academic resources"
+            filename={`Digital_Repository_${new Date().toISOString().slice(0, 10)}`}
+            columns={[
+              { header: 'Title', key: 'title', width: 28 },
+              { header: 'Author', key: 'author', width: 20 },
+              { header: 'Category', key: 'categoryName', width: 16 },
+              { header: 'Type', key: 'resourceType', width: 14 },
+              { header: 'Format', key: 'fileFormat', width: 12 },
+              { header: 'Access Level', key: 'accessLevel', width: 18 },
+              { header: 'License', key: 'licenseStatus', width: 16 },
+              { header: 'Status', key: 'statusStr', width: 12 },
+            ]}
+            data={resources.map(r => ({
+              ...r,
+              author: r.author || 'N/A',
+              categoryName: r.category?.name || r.categoryName || 'General',
+              statusStr: r.isExpired ? 'Expired' : r.status,
+            }))}
+          />
           <button 
             onClick={() => { resetModal(); setShowAddModal(true); }}
             className="portal-btn-primary" 
@@ -253,16 +286,14 @@ export default function LibraryDigitalRepository() {
 
       {/* Filter and Search Bar */}
       <div style={{ background: '#ffffff', padding: '16px 20px', borderRadius: 16, border: '1px solid #e2e8f0', marginBottom: 20, display: 'flex', gap: 14, alignItems: 'center', flexWrap: 'wrap' }}>
-        <div style={{ position: 'relative', flex: 1, minWidth: 260 }}>
-          <i className="fas fa-search" style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }}></i>
-          <input 
-            type="text" 
-            placeholder="Search digital assets by title or author..."
-            className="portal-input"
-            style={{ width: '100%', paddingLeft: 40, height: 42, borderRadius: 8, fontSize: '0.85rem' }}
+        <div style={{ flex: 1, minWidth: 260 }}>
+          <SearchInput
             value={searchTerm}
-            onChange={e => setSearchTerm(e.target.value)}
-            onKeyDown={e => { if (e.key === 'Enter') fetchResources(); }}
+            onChange={setSearchTerm}
+            placeholder="Search digital assets by title or author..."
+            loading={loading}
+            onClear={() => setSearchTerm('')}
+            width="100%"
           />
         </div>
 

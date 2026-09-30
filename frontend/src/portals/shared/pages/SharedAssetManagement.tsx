@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import api from '../../../lib/api';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
+import { SearchInput, ExportButton } from '../../../components/shared';
 import '../../../styles/portal.css';
 
 interface Asset {
@@ -493,21 +494,12 @@ export default function SharedAssetManagement() {
         marginBottom: 20
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, flex: 1, minWidth: 260 }}>
-          <div style={{ position: 'relative', width: '100%', maxWidth: 360 }}>
-            <input
-              type="text"
-              placeholder="Search by Asset No, Name, Category, Location, Custodian..."
+          <div style={{ width: '100%', maxWidth: 380 }}>
+            <SearchInput
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              style={{
-                width: '100%',
-                padding: '8px 14px 8px 36px',
-                borderRadius: 8,
-                border: '1px solid #cbd5e1',
-                fontSize: '0.85rem'
-              }}
+              onChange={setSearchQuery}
+              placeholder="Search by Asset No, Name, Category, Location, Custodian..."
             />
-            <i className="fas fa-search" style={{ position: 'absolute', left: 12, top: 11, color: '#94a3b8', fontSize: '0.85rem' }}></i>
           </div>
         </div>
 
@@ -550,6 +542,34 @@ export default function SharedAssetManagement() {
               <option value="DISPOSED">Disposed</option>
             </select>
           </div>
+
+          <ExportButton
+            data={filteredAssets.map(a => ({
+              assetNumber: a.assetNumber || 'N/A',
+              name: a.name,
+              category: a.category || 'General',
+              department: a.department || 'N/A',
+              location: a.location || 'N/A',
+              custodian: a.custodian?.name || 'Unassigned',
+              condition: a.condition || 'N/A',
+              status: a.status,
+              purchasePrice: a.purchasePrice ? `$${Number(a.purchasePrice).toFixed(2)}` : 'N/A'
+            }))}
+            columns={[
+              { header: 'Asset No', key: 'assetNumber', width: 15 },
+              { header: 'Asset Name', key: 'name', width: 25 },
+              { header: 'Category', key: 'category', width: 16 },
+              { header: 'Department', key: 'department', width: 16 },
+              { header: 'Location', key: 'location', width: 16 },
+              { header: 'Custodian', key: 'custodian', width: 20 },
+              { header: 'Condition', key: 'condition', width: 14 },
+              { header: 'Status', key: 'status', width: 14 },
+              { header: 'Valuation', key: 'purchasePrice', width: 14 }
+            ]}
+            filename="institutional_asset_register"
+            title="Institutional Asset Register"
+            subtitle="Fixed & Movable Asset Inventory"
+          />
         </div>
       </div>
 

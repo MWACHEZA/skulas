@@ -4,6 +4,7 @@ import { useAccountingQuery, useOptimisticAccountingMutation } from '../../../ho
 import toast from '../../../context/ToastContext';
 import { Plus, Shield, CheckCircle, XCircle, Search, RefreshCw, Layers } from 'lucide-react';
 import { EmptyState } from '../../../components/common/EmptyState';
+import { SearchInput, ExportButton } from '../../../components/shared';
 import '../../../styles/portal.css';
 
 interface Account {
@@ -101,7 +102,8 @@ export default function ChartOfAccountsPage() {
   const filteredAccounts = accounts.filter(acc => {
     const matchesTab = activeTab === 'ALL' || acc.type === activeTab;
     const matchesSearch = acc.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          acc.name.toLowerCase().includes(searchTerm.toLowerCase());
+                          acc.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          (acc.description || '').toLowerCase().includes(searchTerm.toLowerCase());
     return matchesTab && matchesSearch;
   });
 
@@ -117,7 +119,28 @@ export default function ChartOfAccountsPage() {
             Tenant General Ledger Foundation — 5-type accounting taxonomy with hierarchical controls
           </p>
         </div>
-        <div className="portal-coa-header-actions">
+        <div className="portal-coa-header-actions" style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+          <ExportButton
+            data={filteredAccounts.map(a => ({
+              code: a.code,
+              name: a.name,
+              type: a.type,
+              description: a.description || '—',
+              systemAccount: a.isSystemAccount ? 'Yes' : 'No',
+              status: a.isActive ? 'Active' : 'Inactive'
+            }))}
+            columns={[
+              { header: 'Account Code', key: 'code', width: 16 },
+              { header: 'Account Name', key: 'name', width: 28 },
+              { header: 'Account Type', key: 'type', width: 16 },
+              { header: 'Description', key: 'description', width: 30 },
+              { header: 'System Account', key: 'systemAccount', width: 16 },
+              { header: 'Status', key: 'status', width: 12 }
+            ]}
+            filename="chart_of_accounts"
+            title="Chart of Accounts"
+            subtitle="Tenant General Ledger Foundation"
+          />
           <button
             onClick={() => refetch()}
             className="portal-coa-btn-outline"
@@ -157,17 +180,11 @@ export default function ChartOfAccountsPage() {
       </div>
 
       {/* Search Input */}
-      <div className="portal-coa-search-wrapper">
-        <Search size={18} className="portal-coa-search-icon" />
-        <input
-          id="search-accounts"
-          type="text"
-          placeholder="Search by account code or name..."
-          title="Search Accounts"
-          aria-label="Search by account code or name"
+      <div style={{ marginBottom: '16px', maxWidth: '420px' }}>
+        <SearchInput
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="portal-coa-search-input"
+          onChange={setSearchTerm}
+          placeholder="Search by account code, name, or description..."
         />
       </div>
 

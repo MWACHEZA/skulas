@@ -3,6 +3,7 @@ import api, { BASE_URL } from '../../../lib/api';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useTerminology } from '../../../hooks/useTerminology';
 import { useToast } from '../../../context/ToastContext';
+import { SearchInput, ExportButton } from '../../../components/shared';
 
 export default function AdminApplications() {
   const [activeTab, setActiveTab] = useState('all');
@@ -251,42 +252,75 @@ export default function AdminApplications() {
         ))}
       </div>
 
-      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 20 }}>
-        <div style={{ position: 'relative', width: 400 }}>
-          <i className="fas fa-search" style={{ position: 'absolute', left: 14, top: 14, color: '#94a3b8' }}></i>
-          <input
-            type="text"
-            className="portal-input"
-            placeholder="Search applications..."
-            value={searchQuery}
-            onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
-            style={{ paddingLeft: 40 }}
-          />
-        </div>
-      </div>
+      {(() => {
+        const filteredApps = (Array.isArray(applications) ? applications : []).filter(a => {
+          const term = searchQuery.toLowerCase();
+          return (
+            (a.applicantName || '').toLowerCase().includes(term) ||
+            (a.applicationNumber || '').toLowerCase().includes(term) ||
+            (a.email || '').toLowerCase().includes(term) ||
+            (a.phone || '').toLowerCase().includes(term) ||
+            (a.appType || '').toLowerCase().includes(term) ||
+            (a.entryCategory || '').toLowerCase().includes(term) ||
+            (a.status || '').toLowerCase().includes(term)
+          );
+        });
 
-      <div className="portal-card">
-        <div className="portal-card-body" style={{ padding: 0 }}>
-          {loading ? (
-             <div style={{ padding: 40, textAlign: 'center' }}><i className="fas fa-spinner fa-spin"></i> Loading...</div>
-          ) : (
-            <>
-            <table className="portal-table">
-              <thead>
-                <tr><th>App ID</th><th>{t('applicant')} Name</th><th>Type</th><th>Submitted</th><th>Status</th><th>Actions</th></tr>
-              </thead>
-              <tbody>
-                {(() => {
-                  const apps = (Array.isArray(applications) ? applications : []).filter(a => 
-                    a.applicantName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                    a.applicationNumber?.toLowerCase().includes(searchQuery.toLowerCase())
-                  );
-                  const indexOfLastItem = currentPage * itemsPerPage;
-                  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-                  const currentItems = apps.slice(indexOfFirstItem, indexOfLastItem);
-                  if (currentItems.length === 0 && apps.length > 0) setCurrentPage(1);
-                  return apps.length > 0 ? currentItems.map(a => (
-                  <tr key={a.id}>
+        const exportColumns = [
+          { header: 'App ID', key: 'appId', width: 18 },
+          { header: 'Applicant Name', key: 'name', width: 25 },
+          { header: 'Type / Category', key: 'type', width: 20 },
+          { header: 'Submission Date', key: 'submitted', width: 18 },
+          { header: 'Status', key: 'status', width: 15 },
+        ];
+
+        const exportData = filteredApps.map(a => ({
+          appId: a.applicationNumber || a.id?.substring(0, 8) || 'N/A',
+          name: a.applicantName || 'N/A',
+          type: isUniversity ? a.entryCategory || 'N/A' : a.appType || 'N/A',
+          submitted: a.createdAt ? new Date(a.createdAt).toLocaleDateString() : 'N/A',
+          status: a.status || 'PENDING',
+        }));
+
+        const indexOfLastItem = currentPage * itemsPerPage;
+        const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+        const currentItems = filteredApps.slice(indexOfFirstItem, indexOfLastItem);
+        if (currentItems.length === 0 && filteredApps.length > 0 && currentPage !== 1) {
+          setCurrentPage(1);
+        }
+
+        return (
+          <>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, gap: 16 }}>
+              <div style={{ flex: 1, maxWidth: 450 }}>
+                <SearchInput
+                  value={searchQuery}
+                  onChange={(val) => { setSearchQuery(val); setCurrentPage(1); }}
+                  placeholder="Search applications by name, ID, type, email..."
+                />
+              </div>
+              <ExportButton
+                data={exportData}
+                columns={exportColumns}
+                filename="applications-register"
+                title="Student Admissions & Applications Register"
+                subtitle={`Generated on ${new Date().toLocaleDateString()}`}
+              />
+            </div>
+
+            <div className="portal-card">
+              <div className="portal-card-body" style={{ padding: 0 }}>
+                {loading ? (
+                   <div style={{ padding: 40, textAlign: 'center' }}><i className="fas fa-spinner fa-spin"></i> Loading...</div>
+                ) : (
+                  <>
+                  <table className="portal-table">
+                    <thead>
+                      <tr><th>App ID</th><th>{t('applicant')} Name</th><th>Type</th><th>Submitted</th><th>Status</th><th>Actions</th></tr>
+                    </thead>
+                    <tbody>
+                      {currentItems.length > 0 ? currentItems.map(a => (
+                        <tr key={a.id}>
                     <td style={{ color: '#2d3748', fontWeight: 600, fontSize: '0.85rem' }}>{a.applicationNumber || a.id.substring(0, 8)}</td>
                     <td style={{ fontWeight: 600 }}>{a.applicantName}</td>
                     <td>{isUniversity ? a.entryCategory || 'N/A' : a.appType}</td>
@@ -330,19 +364,13 @@ export default function AdminApplications() {
                   </tr>
                 )) : (
                   <tr><td colSpan={6} style={{ textAlign: 'center', padding: 30, color: '#a0aec0' }}>No applications found.</td></tr>
-                );
-                })()}
+                )}
               </tbody>
             </table>
-            {(() => {
-              const apps = (Array.isArray(applications) ? applications : []).filter(a => 
-                a.applicantName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                a.applicationNumber?.toLowerCase().includes(searchQuery.toLowerCase())
-              );
-              return apps.length > 0 && !loading && (
+            {filteredApps.length > 0 && !loading && (
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px', borderTop: '1px solid #e2e8f0' }}>
                 <span style={{ fontSize: '0.85rem', color: '#64748b' }}>
-                  Showing {(currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, apps.length)} of {apps.length} entries
+                  Showing {(currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, filteredApps.length)} of {filteredApps.length} entries
                 </span>
                 <div style={{ display: 'flex', gap: '8px' }}>
                   <button 
@@ -354,8 +382,8 @@ export default function AdminApplications() {
                     Previous
                   </button>
                   <button 
-                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, Math.ceil(apps.length / itemsPerPage)))}
-                    disabled={currentPage === Math.ceil(apps.length / itemsPerPage) || apps.length === 0}
+                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, Math.ceil(filteredApps.length / itemsPerPage)))}
+                    disabled={currentPage === Math.ceil(filteredApps.length / itemsPerPage) || filteredApps.length === 0}
                     className="portal-btn-ghost"
                     style={{ padding: '6px 12px', fontSize: '0.85rem' }}
                   >
@@ -363,12 +391,14 @@ export default function AdminApplications() {
                   </button>
                 </div>
               </div>
-            );
-            })()}
+            )}
             </>
           )}
         </div>
       </div>
+      </>
+    );
+  })()}
 
       {selectedApp && (
         <div className="portal-modal-overlay">

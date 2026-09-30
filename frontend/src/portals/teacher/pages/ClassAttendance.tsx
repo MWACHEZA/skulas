@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { useSearchParams } from 'react-router-dom';
+import { SearchInput, ExportButton } from '../../../components/shared';
 
 interface Student {
   id: string;
@@ -16,6 +17,7 @@ export default function TeacherClassAttendance() {
   const classId = searchParams.get('classId');
   const [students, setStudents] = useState<Student[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   
@@ -83,6 +85,15 @@ export default function TeacherClassAttendance() {
   const presentCount = students.filter(s => s.status === 'Present').length;
   const absentCount = students.filter(s => s.status === 'Absent').length;
 
+  const filteredStudents = students.filter(s => {
+    const term = searchTerm.toLowerCase();
+    return (
+      s.name.toLowerCase().includes(term) ||
+      s.studentId.toLowerCase().includes(term) ||
+      s.status.toLowerCase().includes(term)
+    );
+  });
+
   return (
     <>
       <div className="portal-page-header">
@@ -107,6 +118,36 @@ export default function TeacherClassAttendance() {
             <span className="portal-badge danger">Absent: {absentCount}</span>
           </div>
         </div>
+
+        <div style={{ padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, borderBottom: '1px solid #edf2f7', flexWrap: 'wrap' }}>
+          <div style={{ flex: 1, minWidth: 240, maxWidth: 380 }}>
+            <SearchInput
+              value={searchTerm}
+              onChange={setSearchTerm}
+              placeholder="Search students by name or ID..."
+            />
+          </div>
+          <ExportButton
+            data={filteredStudents.map(s => ({
+              studentId: s.studentId,
+              name: s.name,
+              status: s.status,
+              note: s.note || '—',
+              date: date
+            }))}
+            columns={[
+              { header: 'Student ID', key: 'studentId', width: 18 },
+              { header: 'Student Name', key: 'name', width: 25 },
+              { header: 'Status', key: 'status', width: 14 },
+              { header: 'Note / Remarks', key: 'note', width: 25 },
+              { header: 'Date', key: 'date', width: 14 }
+            ]}
+            filename={`class-attendance-${date}`}
+            title={`Class Attendance Register - ${date}`}
+            subtitle={`Present: ${presentCount} | Absent: ${absentCount}`}
+          />
+        </div>
+
         <div className="portal-card-body" style={{ padding: 0 }}>
           {loading ? (
              <div style={{ padding: 40, textAlign: 'center' }}><i className="fas fa-spinner fa-spin"></i> Loading roster...</div>
@@ -116,7 +157,9 @@ export default function TeacherClassAttendance() {
                 <tr><th>Student ID</th><th>Full Name</th><th>Status</th><th>Note</th></tr>
               </thead>
               <tbody>
-                {students.map((student) => (
+                {filteredStudents.length === 0 ? (
+                  <tr><td colSpan={4} style={{ textAlign: 'center', padding: 24, color: '#94a3b8' }}>No students found matching search.</td></tr>
+                ) : filteredStudents.map((student) => (
                   <tr key={student.id}>
                     <td style={{ fontSize: '0.85rem', color: '#718096' }}>{student.studentId}</td>
                     <td style={{ fontWeight: 600 }}>{student.name}</td>

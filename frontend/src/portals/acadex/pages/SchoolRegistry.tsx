@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
+import { SearchInput, ExportButton } from '../../../components/shared';
 import '../../../styles/portal.css';
 
 export default function AcadexSchools() {
@@ -97,14 +98,34 @@ export default function AcadexSchools() {
       <div className="portal-card" style={{ overflow: 'visible' }}>
         <div className="portal-card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 15 }}>
           <h2><i className="fas fa-university" style={{ marginRight: 8, color: 'var(--portal-primary)' }}></i>Registered Tenants ({schools.length})</h2>
-          <div style={{ display: 'flex', gap: 10 }}>
-            <input
-              type="text"
-              placeholder="Search schools..."
-              className="portal-input"
-              style={{ width: 260 }}
-              value={searchTerm}
-              onChange={e => setSearchTerm(e.target.value)}
+          <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
+            <div style={{ width: 280 }}>
+              <SearchInput
+                value={searchTerm}
+                onChange={setSearchTerm}
+                placeholder="Search schools..."
+              />
+            </div>
+            <ExportButton
+              data={filteredSchools.map(s => ({
+                code: s.code || s.id || 'N/A',
+                name: s.name || 'N/A',
+                country: s.country || 'Global',
+                plan: s.subscriptionPlan || s.plan || 'Standard',
+                students: s._count?.students || 0,
+                status: s.isActive ? 'Active' : 'Suspended'
+              }))}
+              columns={[
+                { header: 'License ID', key: 'code', width: 18 },
+                { header: 'School Name', key: 'name', width: 28 },
+                { header: 'Country', key: 'country', width: 16 },
+                { header: 'Plan', key: 'plan', width: 16 },
+                { header: 'Students', key: 'students', width: 12 },
+                { header: 'Status', key: 'status', width: 14 }
+              ]}
+              filename="school-registry"
+              title="Acadex Institutional School Registry"
+              subtitle={`Total Registered Tenants: ${filteredSchools.length}`}
             />
           </div>
         </div>

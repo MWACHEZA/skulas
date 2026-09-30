@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
+import { SearchInput, ExportButton } from '../../../components/shared';
 
 interface StaffMember {
   id: string;
@@ -61,23 +62,31 @@ export default function AncillaryDirectory() {
       </div>
 
       <div className="portal-card" style={{ marginBottom: 20 }}>
-        <div className="portal-card-body">
-          <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-            <i className="fas fa-search" style={{ color: '#a0aec0' }}></i>
-            <input
-              type="text"
-              className="portal-input"
-              placeholder="Search by name, email or role..."
+        <div className="portal-card-body" style={{ display: 'flex', gap: 16, alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', padding: '16px 20px' }}>
+          <div style={{ flex: 1, minWidth: 260, maxWidth: 420 }}>
+            <SearchInput
               value={search}
-              onChange={e => setSearch(e.target.value)}
-              style={{ flex: 1 }}
+              onChange={setSearch}
+              placeholder="Search by name, email, or role..."
             />
-            {search && (
-              <button className="portal-btn-ghost" onClick={() => setSearch('')} style={{ border: 'none', background: 'none', color: '#718096', cursor: 'pointer' }}>
-                <i className="fas fa-times"></i>
-              </button>
-            )}
           </div>
+          <ExportButton
+            data={filtered.map(s => ({
+              name: s.name,
+              role: ROLE_LABELS[s.role] || s.role || 'Support Staff',
+              email: s.email || 'N/A',
+              phone: s.phone || 'N/A'
+            }))}
+            columns={[
+              { header: 'Full Name', key: 'name', width: 26 },
+              { header: 'Role / Designation', key: 'role', width: 22 },
+              { header: 'Email Address', key: 'email', width: 26 },
+              { header: 'Phone Number', key: 'phone', width: 18 }
+            ]}
+            filename="ancillary-staff-directory"
+            title="Support Staff & Ancillary Directory"
+            subtitle={`Total Members: ${filtered.length}`}
+          />
         </div>
       </div>
 

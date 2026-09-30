@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { formatCurrency } from '../../../utils/formatters';
+import { SearchInput, ExportButton } from '../../../components/shared';
 import '../../../styles/portal.css';
 
 type DisciplineTab = 'conduct' | 'awards';
@@ -306,29 +307,11 @@ export default function AdminDiscipline() {
           boxShadow: '0 1px 3px rgba(0,0,0,0.05)'
         }}
       >
-        <div style={{ flex: 1, minWidth: '240px', position: 'relative' }}>
-          <i
-            className="fas fa-search"
-            style={{
-              position: 'absolute',
-              left: '12px',
-              top: '50%',
-              transform: 'translateY(-50%)',
-              color: '#94a3b8'
-            }}
-          ></i>
-          <input
-            type="text"
-            placeholder={activeTab === 'conduct' ? "Search student, category, narrative..." : "Search student, award, gift..."}
+        <div style={{ flex: 1, minWidth: '240px' }}>
+          <SearchInput
             value={searchTerm}
-            onChange={e => setSearchTerm(e.target.value)}
-            style={{
-              width: '100%',
-              padding: '9px 12px 9px 36px',
-              borderRadius: '6px',
-              border: '1px solid #cbd5e1',
-              fontSize: '0.9rem'
-            }}
+            onChange={setSearchTerm}
+            placeholder={activeTab === 'conduct' ? "Search student, category, narrative..." : "Search student, award, gift..."}
           />
         </div>
 
@@ -351,6 +334,47 @@ export default function AdminDiscipline() {
             </select>
           </div>
         )}
+
+        <ExportButton
+          data={
+            activeTab === 'conduct' ? filteredConduct.map(r => ({
+              studentName: r.studentName,
+              category: r.category,
+              narrative: r.narrative,
+              punishment: r.punishment || 'None',
+              punishmentLocation: r.punishmentLocation || 'N/A',
+              status: r.punishmentStatus || 'N/A',
+              reportedBy: r.reportedBy?.name || 'Staff',
+              date: r.createdAt ? new Date(r.createdAt).toLocaleDateString() : '—'
+            })) : filteredAwards.map(a => ({
+              recipient: a.user?.name || 'Unknown',
+              awardName: a.awardName,
+              gift: a.gift || 'None',
+              amount: a.amount ? formatCurrency(a.amount) : '—',
+              date: a.date ? new Date(a.date).toLocaleDateString() : '—'
+            }))
+          }
+          columns={
+            activeTab === 'conduct' ? [
+              { header: 'Student Name', key: 'studentName', width: 22 },
+              { header: 'Category', key: 'category', width: 18 },
+              { header: 'Narrative / Incident', key: 'narrative', width: 35 },
+              { header: 'Punishment', key: 'punishment', width: 20 },
+              { header: 'Status', key: 'status', width: 14 },
+              { header: 'Reported By', key: 'reportedBy', width: 18 },
+              { header: 'Date', key: 'date', width: 14 }
+            ] : [
+              { header: 'Student / Recipient', key: 'recipient', width: 25 },
+              { header: 'Award / Honor', key: 'awardName', width: 28 },
+              { header: 'Gift / Trophy', key: 'gift', width: 20 },
+              { header: 'Prize Amount', key: 'amount', width: 16 },
+              { header: 'Date Awarded', key: 'date', width: 16 }
+            ]
+          }
+          filename={`discipline-${activeTab}-${new Date().toISOString().slice(0, 10)}`}
+          title={`Student Discipline & Conduct: ${activeTab === 'conduct' ? 'Incident Log' : 'Merits & Awards'}`}
+          subtitle={`Total Records: ${activeTab === 'conduct' ? filteredConduct.length : filteredAwards.length}`}
+        />
       </div>
 
       {/* Content Table */}

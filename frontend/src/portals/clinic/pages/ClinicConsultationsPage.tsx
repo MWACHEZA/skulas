@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import api from '../../../lib/api';
+import { SearchInput, ExportButton } from '../../../components/shared';
 
 export type ConsultationTab = 'queue' | 'consultation' | 'icd10';
 
@@ -187,19 +188,24 @@ export default function ClinicConsultationsPage() {
     }
   };
 
-  const handleDirSearch = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!dirSearch.trim()) return;
-    try {
-      setLoadingDir(true);
-      const res = await api.get(`/clinic/icd10/search?q=${encodeURIComponent(dirSearch.trim())}`);
-      setDirResults(res.data);
-    } catch (err) {
-      console.error('ICD10 dir query failed:', err);
-    } finally {
-      setLoadingDir(false);
+  useEffect(() => {
+    if (!dirSearch.trim()) {
+      setDirResults([]);
+      return;
     }
-  };
+    const timer = setTimeout(async () => {
+      try {
+        setLoadingDir(true);
+        const res = await api.get(`/clinic/icd10/search?q=${encodeURIComponent(dirSearch.trim())}`);
+        setDirResults(res.data);
+      } catch (err) {
+        console.error('ICD10 dir query failed:', err);
+      } finally {
+        setLoadingDir(false);
+      }
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [dirSearch]);
 
   return (
     <div className="portal-container" style={{ padding: '24px', maxWidth: '1400px', margin: '0 auto' }}>
@@ -287,15 +293,42 @@ export default function ClinicConsultationsPage() {
       {/* TAB 1: Queue */}
       {activeTab === 'queue' && (
         <div style={{ background: '#fff', borderRadius: 12, border: '1px solid #e2e8f0', padding: 24, boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-            <h2 style={{ fontSize: '1.2rem', fontWeight: 600, color: '#1e293b' }}>Patients Awaiting Consultation</h2>
-            <button
-              onClick={loadQueue}
-              className="btn btn-outline"
-              style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px', fontSize: '0.85rem' }}
-            >
-              <i className="fas fa-sync-alt" /> Refresh
-            </button>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, flexWrap: 'wrap', gap: 12 }}>
+            <h2 style={{ fontSize: '1.2rem', fontWeight: 600, color: '#1e293b', margin: 0 }}>Patients Awaiting Consultation</h2>
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+              <ExportButton
+                data={queue.map(item => ({
+                  visitCode: item.visitCode,
+                  patientName: item.user?.name || 'Walk-in Student',
+                  confidential: item.isConfidential ? 'Yes' : 'No',
+                  acuity: item.acuity,
+                  vitals: item.vitalsRecord
+                    ? `T: ${item.vitalsRecord.temp || '-'}°C | BP: ${item.vitalsRecord.bp || '-'} | HR: ${item.vitalsRecord.pulse || '-'} bpm`
+                    : 'None logged',
+                  complaint: item.presentingComplaint,
+                  waitingSince: new Date(item.checkInTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                }))}
+                columns={[
+                  { header: 'Visit Code', key: 'visitCode', width: 15 },
+                  { header: 'Patient Name', key: 'patientName', width: 22 },
+                  { header: 'Confidential', key: 'confidential', width: 14 },
+                  { header: 'Acuity', key: 'acuity', width: 12 },
+                  { header: 'Vitals', key: 'vitals', width: 25 },
+                  { header: 'Chief Complaint', key: 'complaint', width: 25 },
+                  { header: 'Waiting Since', key: 'waitingSince', width: 16 }
+                ]}
+                filename="clinical_consultation_queue"
+                title="Clinical Consultation Waitlist"
+                subtitle="Doctor & Nurse Triage Queue"
+              />
+              <button
+                onClick={loadQueue}
+                className="btn btn-outline"
+                style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px', fontSize: '0.85rem' }}
+              >
+                <i className="fas fa-sync-alt" /> Refresh
+              </button>
+            </div>
           </div>
 
           {loadingQueue ? (
@@ -764,22 +797,35 @@ export default function ClinicConsultationsPage() {
             Standard medical codes are automatically mapped to plain-language parent notifications so that no clinical jargon leaks to parents.
           </p>
 
-          <form onSubmit={handleDirSearch} style={{ display: 'flex', gap: 10, maxWidth: 600, marginBottom: 20 }}>
-            <input
-              type="text"
-              placeholder="Search code or diagnosis (e.g. fever, headache, asthma, fracture)..."
-              value={dirSearch}
-              onChange={(e) => setDirSearch(e.target.value)}
-              style={{ flex: 1, padding: '10px 14px', border: '1px solid #cbd5e1', borderRadius: 6, fontSize: '0.9rem' }}
-            />
-            <button
-              type="submit"
-              disabled={loadingDir}
-              style={{ padding: '10px 20px', background: '#4f46e5', color: '#fff', border: 'none', borderRadius: 6, cursor: 'pointer', fontWeight: 600 }}
-            >
-              {loadingDir ? <i className="fas fa-spinner fa-spin" /> : <i className="fas fa-search" />} Search
-            </button>
-          </form>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, flexWrap: 'wrap', gap: 12 }}>
+            <div style={{ width: '100%', maxWidth: 450 }}>
+              <SearchInput
+                value={dirSearch}
+                onChange={setDirSearch}
+                placeholder="Search code or diagnosis (e.g. fever, headache, asthma, fracture)..."
+                loading={loadingDir}
+              />
+            </div>
+            {dirResults.length > 0 && (
+              <ExportButton
+                data={dirResults.map(r => ({
+                  code: r.code,
+                  description: r.description,
+                  parentTranslation: r.parentTranslation || r.description,
+                  status: 'Active'
+                }))}
+                columns={[
+                  { header: 'ICD-10 Code', key: 'code', width: 16 },
+                  { header: 'Clinical Term', key: 'description', width: 30 },
+                  { header: 'Plain-English Parent Translation', key: 'parentTranslation', width: 30 },
+                  { header: 'Status', key: 'status', width: 12 }
+                ]}
+                filename="icd10_translation_index"
+                title="ICD-10 Diagnostic & Parent Translation Index"
+                subtitle="Clinical Code Mapping"
+              />
+            )}
+          </div>
 
           {dirResults.length > 0 && (
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>

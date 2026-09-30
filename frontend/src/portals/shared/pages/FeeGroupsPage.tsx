@@ -4,57 +4,7 @@ import { useToast } from '../../../context/ToastContext';
 import { formatCurrency } from '../../../utils/formatters';
 import '../../../styles/portal.css';
 import { useTerminology } from '../../../hooks/useTerminology';
-
-const exportToCSV = (title: string, headers: string[], dataRows: string[][]) => {
-  const content = [
-    headers.map(h => `"${h.replace(/"/g, '""')}"`).join(','),
-    ...dataRows.map(row => row.map(cell => `"${(cell || '').toString().replace(/"/g, '""')}"`).join(','))
-  ].join('\n');
-  const blob = new Blob(['\ufeff' + content], { type: 'text/csv;charset=utf-8;' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `${title.toLowerCase().replace(/\s+/g, '_')}_${new Date().toISOString().slice(0, 10)}.csv`;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-};
-
-const exportToWord = (title: string, headers: string[], dataRows: string[][]) => {
-  let html = `
-    <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
-    <head>
-      <title>${title}</title>
-      <style>
-        table { border-collapse: collapse; width: 100%; }
-        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
-        th { background-color: #f2f2f2; }
-      </style>
-    </head>
-    <body>
-      <h2>${title}</h2>
-      <table>
-        <thead>
-          <tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr>
-        </thead>
-        <tbody>
-          ${dataRows.map(row => `<tr>${row.map(cell => `<td>${cell}</td>`).join('')}</tr>`).join('')}
-        </tbody>
-      </table>
-    </body>
-    </html>
-  `;
-  const blob = new Blob(['\ufeff' + html], { type: 'application/msword' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `${title.toLowerCase().replace(/\s+/g, '_')}_${new Date().toISOString().slice(0, 10)}.doc`;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-};
+import { SearchInput, ExportButton } from '../../../components/shared';
 
 interface FeeGroup {
   id: string;
@@ -435,66 +385,41 @@ export default function FeeGroupsPage() {
                 </button>
                 ))}
             </div>
-            <div style={{ position: 'relative', width: '300px' }}>
-                <i className="fas fa-search" style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }}></i>
-                <input
-                type="text"
-                placeholder="Search fees..."
-                className="portal-input"
-                style={{ paddingLeft: '44px', height: '44px', fontSize: '0.9rem' }}
+            <div style={{ width: '280px' }}>
+              <SearchInput
                 value={searchTerm}
-                onChange={e => setSearchTerm(e.target.value)}
-                />
+                onChange={setSearchTerm}
+                placeholder="Search fees by name or cycle..."
+              />
             </div>
-            <div style={{ display: 'flex', gap: '8px' }} className="no-print">
+            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }} className="no-print">
+              <ExportButton
+                data={filteredGroups.map(g => ({
+                  name: g.name,
+                  amount: `$${Number(g.amount).toFixed(2)}`,
+                  billingType: g.billingType,
+                  year: g.year.toString(),
+                  isRecurring: g.isRecurring ? 'Yes' : 'No',
+                  remindersEnabled: g.remindersEnabled ? 'Enabled' : 'Disabled'
+                }))}
+                columns={[
+                  { header: 'Fee Categorization', key: 'name', width: 25 },
+                  { header: 'Standard Cost', key: 'amount', width: 15 },
+                  { header: 'Billing Cycle', key: 'billingType', width: 16 },
+                  { header: 'Fiscal Year', key: 'year', width: 12 },
+                  { header: 'Recurring', key: 'isRecurring', width: 12 },
+                  { header: 'Arrears Reminder', key: 'remindersEnabled', width: 16 }
+                ]}
+                filename={`fee_structures_${activeYear}`}
+                title="Institutional Fee Registry"
+                subtitle={`Academic Year: ${activeYear}`}
+              />
               <button 
                   onClick={() => { handleReset(); setIsModalOpen(true); }}
                   className="portal-btn-primary"
-                  style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}
+                  style={{ padding: '0 24px', fontWeight: 900, height: '44px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}
               >
                 <i className="fas fa-plus"></i> DEFINE FEE GROUP
-              </button>
-              <button 
-                  onClick={() => {
-                    const headers = ['Fee Categorization', 'Standard Cost', 'Billing Cycle', 'Year'];
-                    const rows = filteredGroups.map(g => [
-                      g.name,
-                      g.amount.toString(),
-                      g.billingType,
-                      g.year.toString()
-                    ]);
-                    exportToCSV('Fee_Groups', headers, rows);
-                  }}
-                  className="portal-btn-secondary"
-                  style={{ padding: '8px 16px', fontSize: '0.85rem', height: '44px' }}
-                  title="Export to CSV"
-              >
-                <i className="fas fa-file-csv mr-1"></i> CSV
-              </button>
-              <button 
-                  onClick={() => {
-                    const headers = ['Fee Categorization', 'Standard Cost', 'Billing Cycle', 'Year'];
-                    const rows = filteredGroups.map(g => [
-                      g.name,
-                      g.amount.toString(),
-                      g.billingType,
-                      g.year.toString()
-                    ]);
-                    exportToWord('Fee_Groups', headers, rows);
-                  }}
-                  className="portal-btn-secondary"
-                  style={{ padding: '8px 16px', fontSize: '0.85rem', height: '44px' }}
-                  title="Export to Word"
-              >
-                <i className="fas fa-file-word mr-1"></i> Word
-              </button>
-              <button 
-                  onClick={() => window.print()}
-                  className="portal-btn-secondary"
-                  style={{ padding: '8px 16px', fontSize: '0.85rem', height: '44px' }}
-                  title="Print / PDF"
-              >
-                <i className="fas fa-print mr-1"></i> Print/PDF
               </button>
             </div>
           </div>

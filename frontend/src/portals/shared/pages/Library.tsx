@@ -4,6 +4,7 @@ import api from '../../../lib/api';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useTerminology } from '../../../hooks/useTerminology';
 import { useToast } from '../../../context/ToastContext';
+import SearchInput from '../../../components/shared/SearchInput';
 
 // Import full Library suite components
 import LibraryDashboard from '../../library/pages/Dashboard';
@@ -331,17 +332,14 @@ export default function Library() {
         <>
           {/* Discovery Controls */}
           <div style={{ display: 'flex', gap: 16, marginBottom: 20, flexWrap: 'wrap' }}>
-            <div style={{ position: 'relative', flex: 1, minWidth: 280 }}>
-              <i className="fas fa-search" style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: '#a0aec0' }}></i>
-              <input 
-                type="text" 
-                placeholder="Search by title, author, or ISBN..." 
+            <div style={{ flex: 1, minWidth: 280 }}>
+              <SearchInput
                 value={search}
-                onChange={e => setSearch(e.target.value)}
-                style={{ 
-                  width: '100%', padding: '12px 12px 12px 40px', borderRadius: 12, border: '1px solid #e2e8f0',
-                  fontFamily: 'inherit', fontSize: '1rem', outline: 'none', boxShadow: '0 2px 4px rgba(0,0,0,0.02)'
-                }}
+                onChange={setSearch}
+                placeholder="Search by title, author, or ISBN..."
+                loading={loadingCatalog}
+                onClear={() => setSearch('')}
+                width="100%"
               />
             </div>
           </div>

@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { useTerminology } from '../../../hooks/useTerminology';
+import { SearchInput, ExportButton } from '../../../components/shared';
 import '../../../styles/portal.css';
 
 type AudienceType = 'students' | 'staff';
@@ -158,15 +159,54 @@ export default function AdminAttendance() {
             </div>
           </div>
 
-          <div style={{ position: 'relative', minWidth: 260 }}>
-            <i className="fas fa-search" style={{ position: 'absolute', left: 14, top: 13, color: '#94a3b8' }}></i>
-            <input
-              type="text"
-              placeholder={`Search ${audience === 'students' ? t('students') : 'staff'}...`}
-              className="portal-input"
-              value={searchTerm}
-              onChange={e => setSearchTerm(e.target.value)}
-              style={{ paddingLeft: 38 }}
+          <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+            <div style={{ minWidth: 260 }}>
+              <SearchInput
+                value={searchTerm}
+                onChange={setSearchTerm}
+                placeholder={`Search ${audience === 'students' ? t('students') : 'staff'}...`}
+              />
+            </div>
+            <ExportButton
+              data={audience === 'students' ? filteredStudents.map(s => ({
+                studentId: s.student?.studentId || s.studentId || '—',
+                name: s.student?.name || s.name || 'Student',
+                class: s.student?.class || s.class || 'N/A',
+                direction: s.direction || 'IN (Gate)',
+                time: s.time || s.timeIn || '07:45 AM',
+                status: s.status || 'Present',
+                date: selectedDate
+              })) : filteredStaff.map(st => ({
+                name: st.staff?.name || st.name || 'Staff Member',
+                email: st.staff?.email || st.email || '—',
+                role: st.staff?.role || 'Staff',
+                timeIn: st.timeIn ? new Date(st.timeIn).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '—',
+                timeOut: st.timeOut ? new Date(st.timeOut).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '—',
+                hours: st.hoursPresent || '—',
+                status: st.status || 'FULL DAY',
+                date: selectedDate
+              }))}
+              columns={audience === 'students' ? [
+                { header: 'Student ID', key: 'studentId', width: 18 },
+                { header: 'Student Name', key: 'name', width: 25 },
+                { header: 'Class / Form', key: 'class', width: 16 },
+                { header: 'Direction', key: 'direction', width: 16 },
+                { header: 'Time', key: 'time', width: 16 },
+                { header: 'Status', key: 'status', width: 14 },
+                { header: 'Date', key: 'date', width: 14 }
+              ] : [
+                { header: 'Staff Name', key: 'name', width: 25 },
+                { header: 'Email', key: 'email', width: 25 },
+                { header: 'Role', key: 'role', width: 18 },
+                { header: 'Time In', key: 'timeIn', width: 15 },
+                { header: 'Time Out', key: 'timeOut', width: 15 },
+                { header: 'Hours', key: 'hours', width: 12 },
+                { header: 'Status', key: 'status', width: 14 },
+                { header: 'Date', key: 'date', width: 14 }
+              ]}
+              filename={`${audience}-attendance-${selectedDate}`}
+              title={`${audience === 'students' ? 'Student Attendance Register' : 'Staff Clock-In Log'} - ${selectedDate}`}
+              subtitle={`Attendance Rate: ${attendanceRate}% | Total: ${totalCount} | Present: ${presentCount} | Absent: ${absentCount}`}
             />
           </div>
         </div>

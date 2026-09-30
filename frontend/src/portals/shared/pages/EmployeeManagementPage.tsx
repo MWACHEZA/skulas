@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
+import { SearchInput, ExportButton } from '../../../components/shared';
+import { useSearchFilter } from '../../../hooks/useSearchFilter';
 import '../../../styles/portal.css';
 
 export default function EmployeeManagementPage() {
@@ -80,10 +82,26 @@ export default function EmployeeManagementPage() {
     }
   };
 
-  const filteredEmployees = (Array.isArray(employees) ? employees : []).filter(emp => 
-    emp.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (emp.employeeProfile?.jobTitle && emp.employeeProfile.jobTitle.toLowerCase().includes(searchTerm.toLowerCase()))
-  ).slice(0, entriesLimit);
+  const {
+    searchInput,
+    setSearchInput,
+    filteredData: filteredEmployeesAll,
+    clearSearch,
+  } = useSearchFilter({
+    data: Array.isArray(employees) ? employees : [],
+    searchFields: [
+      'name',
+      'email',
+      (emp: any) => emp.employeeProfile?.jobTitle,
+      (emp: any) => emp.employeeProfile?.contractType,
+      (emp: any) => emp.employeeProfile?.status,
+      (emp: any) => emp.employeeProfile?.payFrequency,
+      (emp: any) => emp.id,
+    ],
+    initialSearch: '',
+  });
+
+  const filteredEmployees = filteredEmployeesAll.slice(0, entriesLimit);
 
   return (
     <div className="portal-container">
@@ -92,10 +110,29 @@ export default function EmployeeManagementPage() {
           <h1>Employee Registry</h1>
           <p>Manage institutional staff details, payroll profiles, and active employment status.</p>
         </div>
-        <div style={{ display: 'flex', gap: '12px' }}>
-          <div className="status-badge" style={{ padding: '8px 24px', background: '#eff6ff', color: '#2563eb', border: '1px solid #dbeafe', fontWeight: 900 }}>
-            <i className="fas fa-users-cog mr-2"></i>PERSONNEL AUDIT
-          </div>
+        <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+          <ExportButton
+            title="Employee & Staff Registry"
+            subtitle="Institutional payroll and human resources directory"
+            filename={`Employee_Registry_${new Date().toISOString().slice(0, 10)}`}
+            columns={[
+              { header: 'Full Name', key: 'name', width: 25 },
+              { header: 'Email', key: 'email', width: 25 },
+              { header: 'Job Title', key: 'jobTitle', width: 20 },
+              { header: 'Base Pay', key: 'basePay', width: 14 },
+              { header: 'Pay Frequency', key: 'payFrequency', width: 16 },
+              { header: 'Contract', key: 'contractType', width: 16 },
+              { header: 'Status', key: 'status', width: 12 },
+            ]}
+            data={filteredEmployeesAll.map(emp => ({
+              ...emp,
+              jobTitle: emp.employeeProfile?.jobTitle || 'Staff',
+              basePay: `$${emp.employeeProfile?.basePay || 0}`,
+              payFrequency: emp.employeeProfile?.payFrequency || 'MONTHLY',
+              contractType: emp.employeeProfile?.contractType || 'Permanent',
+              status: emp.employeeProfile?.status || 'Active',
+            }))}
+          />
           <button className="portal-btn-primary" style={{ padding: '12px 32px', fontWeight: 900 }} onClick={() => showToast('Navigating to Onboarding Flow...', 'info')}>
             <i className="fas fa-user-plus mr-2"></i>Register New Employee
           </button>
@@ -118,15 +155,14 @@ export default function EmployeeManagementPage() {
             </select>
           </div>
           
-          <div style={{ position: 'relative', width: '380px' }}>
-            <i className="fas fa-search" style={{ position: 'absolute', left: '20px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8', fontSize: '1.1rem' }}></i>
-            <input 
-              type="text" 
-              placeholder="Search employee registry..." 
-              className="portal-input"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              style={{ paddingLeft: '56px', fontWeight: 700, height: '52px', borderRadius: '14px' }}
+          <div style={{ width: '380px' }}>
+            <SearchInput
+              value={searchInput}
+              onChange={setSearchInput}
+              placeholder="Search employee registry (name, title, status, email)..."
+              loading={loading}
+              onClear={clearSearch}
+              width="100%"
             />
           </div>
         </div>
