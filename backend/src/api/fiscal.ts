@@ -97,7 +97,8 @@ router.post('/retry/:id', async (req: AuthRequest, res) => {
     const schoolId = req.user?.schoolId;
     if (!schoolId) return res.status(400).json({ error: 'Missing schoolId' });
 
-    const result = await FiscalService.retryInvoice(schoolId, req.params.id);
+    const id = req.params.id as string;
+    const result = await FiscalService.retryInvoice(schoolId, id);
     res.json(result);
   } catch (err: any) {
     console.error('Fiscal retry error:', err);

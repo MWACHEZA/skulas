@@ -78,7 +78,8 @@ router.get('/clearance/:studentId', async (req: AuthRequest, res) => {
     const schoolId = req.user?.schoolId;
     if (!schoolId) return res.status(400).json({ error: 'Missing schoolId' });
 
-    const clearance = await ComplianceService.getStudentClearance(schoolId, req.params.studentId);
+    const studentId = req.params.studentId as string;
+    const clearance = await ComplianceService.getStudentClearance(schoolId, studentId);
     res.json(clearance);
   } catch (err: any) {
     console.error('Clearance status error:', err);
@@ -94,12 +95,13 @@ router.post('/clearance/:studentId/signoff', async (req: AuthRequest, res) => {
     const schoolId = req.user?.schoolId;
     if (!schoolId) return res.status(400).json({ error: 'Missing schoolId' });
 
+    const studentId = req.params.studentId as string;
     const { section, notes } = req.body; // LIBRARY | FEES | HOSTEL | FINAL
     if (!section) return res.status(400).json({ error: 'section is required' });
 
     const updated = await ComplianceService.signoffClearance(
       schoolId,
-      req.params.studentId,
+      studentId,
       section,
       req.user?.id || 'SYSTEM',
       notes

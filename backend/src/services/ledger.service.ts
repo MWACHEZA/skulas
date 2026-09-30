@@ -1154,7 +1154,7 @@ export const LedgerService = {
    */
   async getWalletBalance(studentId: string): Promise<number> {
     const txs = await prisma.walletTransaction.findMany({
-      where: { studentId },
+      where: { wallet: { studentId } },
       select: { type: true, amount: true }
     });
     return round2(txs.reduce((sum, t) => sum + (t.type === 'CREDIT' ? t.amount : -t.amount), 0));

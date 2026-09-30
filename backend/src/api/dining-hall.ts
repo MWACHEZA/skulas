@@ -191,7 +191,7 @@ router.post('/meal-deduction', async (req: AuthRequest, res: Response) => {
       variance,
       varianceFlag: variance !== 0,
       totalCost,
-      postedAt: journalEntry.entryDate
+      postedAt: journalEntry.createdAt
     });
   } catch (error: any) {
     console.error('Meal deduction error:', error);

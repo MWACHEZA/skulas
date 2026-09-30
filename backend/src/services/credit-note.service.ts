@@ -243,7 +243,7 @@ export class CreditNoteService {
         lines: true,
         fiscalInvoice: true,
         school: {
-          include: { schoolSettings: true }
+          include: { schoolSetting: true }
         }
       }
     });

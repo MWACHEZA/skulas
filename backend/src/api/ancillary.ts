@@ -47,11 +47,11 @@ router.get('/hostel-rooms', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCILLARY'
 router.post('/hostel-rooms', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCILLARY'), async (req: AuthRequest, res: Response) => {
   try {
     const room = await prisma.hostelRoom.create({
-      data: { 
+      data: {
         ...req.body,
         numberOfBeds: parseInt(req.body.numberOfBeds) || 0,
         cost: parseFloat(req.body.cost) || 0,
-        schoolId: req.user!.schoolId! 
+        schoolId: req.user!.schoolId!
       }
     });
     res.json(room);
@@ -88,14 +88,14 @@ router.get('/hostels', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCILLARY', 'TE
 router.post('/hostels', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCILLARY'), async (req: AuthRequest, res: Response) => {
   try {
     const hostel = await prisma.hostel.create({
-      data: { 
+      data: {
         name: req.body.name,
         categoryId: req.body.categoryId,
         roomId: req.body.roomId,
         capacity: parseInt(req.body.capacity) || 0,
         location: req.body.location,
         description: req.body.description,
-        schoolId: req.user!.schoolId! 
+        schoolId: req.user!.schoolId!
       }
     });
     res.json(hostel);
@@ -191,7 +191,7 @@ router.get('/boarding/logs', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCILLARY
  */
 router.patch('/boarding/logs/:id/return', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCILLARY', 'TEACHER'), async (req: AuthRequest, res: Response) => {
   const schoolId = req.user!.schoolId!;
-  const { id } = req.params;
+  const id = req.params.id as string;
   try {
     const log = await prisma.boardingLog.findFirst({
       where: { id, schoolId }
