@@ -26,94 +26,22 @@ export interface NavGroup {
  */
 const PORTAL_ROUTE_REWRITES: Record<string, Record<string, string>> = {
   teacher: {
-    '/admin/syllabus': '/teacher/curriculum',
-    '/admin/lesson-plan': '/teacher/curriculum?tab=lesson-plans',
-    '/admin/timetable': '/teacher/timetable',
-    '/admin/study-materials': '/teacher/study-materials',
-    '/admin/assessments/marks-entry': '/teacher/grades?tab=marks-entry',
-    '/admin/cbt/manage': '/teacher/cbt/manage',
-    '/admin/reports': '/teacher/reports',
-    '/admin/students': '/teacher/students',
-    '/admin/assessments/question-papers': '/teacher/question-papers',
-    '/admin/prefects': '/teacher/prefects',
-    '/admin/chaplaincy': '/teacher/chaplaincy',
-    '/admin/student-club': '/teacher/classes',
-    '/admin/sports-management': '/teacher/sports',
-    '/admin/hr/attendance': '/teacher/attendance',
-    '/admin/procurement': '/teacher/procurement',
-    '/admin/assets': '/teacher/assets',
-    '/admin/farm': '/teacher/farm',
-    '/admin/dining-hall': '/teacher/dining-hall',
     '/admin/leave': '/teacher/leave',
     '/admin/awards': '/teacher/awards',
-    '/admin/library/books': '/teacher/library',
-    '/admin/library/loans': '/teacher/library',
-    '/admin/library/digital': '/teacher/library',
-    '/admin/library/reports': '/teacher/library',
-    '/admin/clinic/complaints': '/teacher/clinic',
-    '/admin/clinic/appointments': '/teacher/clinic',
-    '/admin/clinic/emergencies': '/teacher/clinic',
-    '/admin/announcements': '/teacher/dashboard',
     '/admin/messages': '/teacher/messages',
     '/admin/helpdesk': '/teacher/support',
     '/admin/settings': '/teacher/settings',
     '/admin/profile': '/teacher/profile'
   },
   bursar: {
-    '/admin/students': '/bursar/students',
-    '/admin/class-migration': '/bursar/class-migration',
-    '/admin/accounts/uniforms': '/bursar/accounts/uniforms',
-    '/admin/uniforms': '/bursar/accounts/uniforms',
-    '/admin/fees': '/bursar/fees',
-    '/admin/fee-groups': '/bursar/fees?tab=billing',
-    '/admin/fees-management/billing': '/bursar/fees?tab=billing',
-    '/admin/finance/overview': '/bursar/fees?tab=billing',
-    '/admin/finance/billing': '/bursar/fees?tab=billing',
-    '/admin/finance/payment-plans': '/bursar/payment-plans',
-    '/admin/finance/wallets': '/bursar/tuckshop',
-    '/admin/fees-management/invoices': '/bursar/fees?tab=invoices',
-    '/admin/fees-management/bulk-invoices': '/bursar/fees?tab=bulk-invoices',
-    '/admin/fees-management/payment-history': '/bursar/fees?tab=invoices',
-    '/admin/fees-management/ledgers': '/bursar/fees?tab=ledgers',
-    '/admin/payment-plans': '/bursar/payment-plans',
-    '/admin/fees-management/reminder-logs': '/bursar/fees?tab=invoices',
-    '/admin/payment-methods': '/bursar/payment-methods',
-    '/admin/fees-management/groceries': '/bursar/tuckshop?tab=inventory',
-    '/admin/revenue-allocation': '/bursar/revenue-allocation',
-    '/admin/accounts/coa': '/bursar/accounts/coa',
-    '/admin/accounts/income': '/bursar/accounts/income',
-    '/admin/accounts/expenses': '/bursar/accounts/expenses',
-    '/admin/accounts/liabilities': '/bursar/accounts/liabilities',
-    '/admin/accounts/bank-reconciliation': '/bursar/accounts/bank-reconciliation',
-    '/admin/accounts/financial-reports': '/bursar/accounts/financial-reports',
-    '/admin/procurement': '/bursar/procurement',
-    '/admin/suppliers': '/bursar/procurement',
-    '/admin/assets': '/bursar/assets',
-    '/admin/hr/payroll/list': '/bursar/payroll',
     '/admin/leave': '/bursar/leave',
     '/admin/awards': '/bursar/awards',
-    '/admin/transportation/routes': '/bursar/transportation/routes',
-    '/admin/transportation/vehicles': '/bursar/transportation/vehicles',
-    '/admin/transportation/assignments': '/bursar/transportation/assignments',
-    '/admin/library/reports': '/bursar/library/reports',
     '/admin/messages': '/bursar/messages',
-    '/admin/sdc-minutes': '/bursar/sdc/minutes',
-    '/admin/sdc-funding': '/bursar/sdc/funding',
     '/admin/helpdesk': '/bursar/support',
-    '/admin/settings': '/bursar/website-settings',
+    '/admin/settings': '/bursar/settings',
     '/admin/profile': '/bursar/profile'
   },
   librarian: {
-    '/admin/library/dashboard': '/librarian/dashboard',
-    '/admin/library/books': '/librarian/books',
-    '/admin/library/categories': '/librarian/categories',
-    '/admin/library/loans': '/librarian/loans',
-    '/admin/library/overdue': '/librarian/overdue',
-    '/admin/library/reservations': '/librarian/reservations',
-    '/admin/library/digital': '/librarian/digital',
-    '/admin/library/reports': '/librarian/reports',
-    '/admin/assets': '/librarian/assets',
-    '/admin/schedules': '/librarian/schedules',
     '/admin/leave': '/librarian/leave',
     '/admin/awards': '/librarian/awards',
     '/admin/messages': '/librarian/messages',
@@ -122,56 +50,29 @@ const PORTAL_ROUTE_REWRITES: Record<string, Record<string, string>> = {
     '/admin/profile': '/librarian/profile'
   },
   ancillary: {
-    '/admin/house': '/ancillary/house',
-    '/admin/schedules': '/ancillary/schedules',
-    '/admin/sports-management': '/ancillary/sports',
-    '/admin/hr/attendance': '/ancillary/dashboard',
-    '/admin/dining-hall': '/ancillary/dining-hall',
-    '/admin/procurement': '/ancillary/procurement',
-    '/admin/assets': '/ancillary/assets',
-    '/admin/asset-maintenance': '/ancillary/assets',
-    '/admin/farm': '/ancillary/farm',
     '/admin/leave': '/ancillary/leave',
     '/admin/awards': '/ancillary/awards',
-    '/admin/transportation/routes': '/ancillary/transportation/routes',
-    '/admin/transportation/vehicles': '/ancillary/transportation/vehicles',
-    '/admin/transportation/assignments': '/ancillary/transportation/assignments',
-    '/admin/library/dashboard': '/ancillary/library/dashboard',
-    '/admin/library/books': '/ancillary/library/books',
-    '/admin/library/categories': '/ancillary/library/categories',
-    '/admin/library/loans': '/ancillary/library/loans',
-    '/admin/library/overdue': '/ancillary/library/overdue',
-    '/admin/library/reservations': '/ancillary/library/reservations',
-    '/admin/library/digital': '/ancillary/library/digital',
-    '/admin/library/reports': '/ancillary/library/reports',
-    '/admin/clinic/complaints': '/ancillary/clinic/complaints',
     '/admin/messages': '/ancillary/messages',
     '/admin/helpdesk': '/ancillary/it-support',
     '/admin/settings': '/ancillary/settings',
     '/admin/profile': '/ancillary/profile'
   },
   clinic: {
-    '/admin/clinic/dashboard': '/clinic/dashboard',
-    '/admin/clinic/triage': '/clinic/triage',
-    '/admin/clinic/consultations': '/clinic/consultations',
-    '/admin/clinic/hospitalization': '/clinic/hospitalization',
-    '/admin/clinic/pharmacy': '/clinic/pharmacy',
-    '/admin/clinic/wellness': '/clinic/wellness',
-    '/admin/clinic/emergency': '/clinic/emergency',
-    '/admin/clinic/reports': '/clinic/reports',
     '/admin/messages': '/clinic/messages',
     '/admin/helpdesk': '/clinic/support',
     '/admin/settings': '/clinic/settings',
     '/admin/profile': '/clinic/profile'
+  },
+  sdc: {
+    '/admin/messages': '/bursar/messages',
+    '/admin/settings': '/bursar/settings',
+    '/admin/profile': '/bursar/profile'
   },
   student: {
     '/admin/timetable': '/student/timetable',
     '/admin/study-materials': '/student/study-materials',
     '/admin/prefects': '/student/prefects',
     '/admin/library/digital': '/student/library',
-    '/admin/clinic/appointments': '/student/clinic/appointments',
-    '/admin/clinic/emergencies': '/student/clinic/emergencies',
-    '/admin/clinic/complaints': '/student/clinic/complaints',
     '/admin/announcements': '/student/events',
     '/admin/messages': '/student/messages',
     '/admin/helpdesk': '/student/support',
@@ -180,17 +81,11 @@ const PORTAL_ROUTE_REWRITES: Record<string, Record<string, string>> = {
   },
   parent: {
     '/admin/timetable': '/parent/timetable',
-    '/admin/payment-plans': '/parent/fees?tab=payment-plan',
-    '/admin/clinic/appointments': '/parent/clinic?tab=appointments',
-    '/admin/clinic/emergencies': '/parent/clinic?tab=emergencies',
-    '/admin/clinic/complaints': '/parent/clinic?tab=complaints',
     '/admin/announcements': '/parent/notices',
     '/admin/messages': '/parent/messages',
     '/admin/helpdesk': '/parent/support',
     '/admin/settings': '/parent/settings',
-    '/admin/profile': '/parent/profile',
-    '/admin/accounts/uniforms': '/parent/uniforms',
-    '/admin/transportation/routes': '/parent/transport'
+    '/admin/profile': '/parent/profile'
   }
 };
 
@@ -485,15 +380,22 @@ export function generatePortalNavigation(
       targetRoute = portalRewrites[page.route];
     }
 
-    groupedMap.get(page.group)!.push({
-      id: page.id,
-      label: page.label,
-      to: targetRoute,
-      icon: page.icon,
-      permissionKey: page.permissionKey,
-      badge: page.badge,
-      searchKeywords: page.searchKeywords
-    });
+    const groupList = groupedMap.get(page.group)!;
+    // Deduplicate by base route to guarantee no duplicate links appear in any sidebar
+    const baseTarget = targetRoute.split('?')[0];
+    const isDuplicate = groupList.some(item => item.to.split('?')[0] === baseTarget || item.to === targetRoute);
+    if (!isDuplicate) {
+      groupList.push({
+        id: page.id,
+        label: page.label,
+        to: targetRoute,
+        icon: page.icon,
+        permissionKey: page.permissionKey,
+        badge: page.badge,
+        searchKeywords: page.searchKeywords,
+        tabs: page.tabs
+      });
+    }
   }
 
   // 3. Assemble and sort groups in canonical order (1 to 12)
