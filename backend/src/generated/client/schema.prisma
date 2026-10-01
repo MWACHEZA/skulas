@@ -221,6 +221,11 @@ model School {
   FacilitiesRequest     FacilitiesRequest[]
   CateringRequest       CateringRequest[]
 
+  awardConfigs     AwardConfig[]
+  studentAwards    StudentAward[]
+  bursaryTypes     BursaryType[]
+  studentBursaries StudentBursary[]
+
   @@index([code])
 }
 
@@ -559,6 +564,10 @@ model User {
   createdQuestions        Question[]            @relation("QuestionCreatedBy")
   createdCbtExams         CbtExam[]             @relation("CbtExamCreatedBy")
 
+  nominatedAwards   StudentAward[]   @relation("AwardNominator")
+  approvedAwards    StudentAward[]   @relation("AwardApprover")
+  approvedBursaries StudentBursary[] @relation("BursaryApprover")
+
   @@index([schoolId])
 }
 
@@ -711,6 +720,8 @@ model Student {
   wallet            StudentWallet?
   clearances        StudentClearance[]
   cbtAttempts       CbtAttempt[]
+  awards            StudentAward[]
+  bursaries         StudentBursary[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -4739,4 +4750,80 @@ model CateringRequest {
   updatedAt DateTime @updatedAt
 
   @@index([schoolId])
+}
+
+// --- Phase 1: Teacher Awards ---
+
+model AwardConfig {
+  id                    String   @id @default(cuid())
+  schoolId              String
+  school                School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  category              String
+  title                 String
+  points                Int      @default(0)
+  requiresApprovalBy    String?
+  autoAddsToHousePoints Boolean  @default(false)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@index([schoolId])
+}
+
+model StudentAward {
+  id            String   @id @default(cuid())
+  schoolId      String
+  school        School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  studentId     String
+  student       Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  nominatedById String
+  nominator     User     @relation("AwardNominator", fields: [nominatedById], references: [id])
+  category      String
+  title         String
+  reason        String?
+  evidenceUrl   String?
+  points        Int      @default(0)
+  status        String   @default("pending") // pending, approved, rejected
+  approvedById  String?
+  approver      User?    @relation("AwardApprover", fields: [approvedById], references: [id])
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([schoolId])
+  @@index([studentId])
+}
+
+// --- Phase 5: Bursaries & Scholarships ---
+
+model BursaryType {
+  id                String   @id @default(cuid())
+  schoolId          String
+  school            School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  type              String // need, merit, staff, sibling, early
+  defaultPercentage Float
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([schoolId])
+}
+
+model StudentBursary {
+  id                   String    @id @default(cuid())
+  schoolId             String
+  school               School    @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  studentId            String
+  student              Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  type                 String
+  sponsor              String?
+  percentage           Float
+  validFrom            DateTime
+  validTo              DateTime?
+  status               String    @default("pending") // pending, approved, suggested, rejected
+  approvedById         String?
+  approver             User?     @relation("BursaryApprover", fields: [approvedById], references: [id])
+  suggestedFromAwardId String?
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+
+  @@index([schoolId])
+  @@index([studentId])
 }

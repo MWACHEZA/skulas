@@ -171,6 +171,8 @@ app.use('/api/attendance', attendanceRoutes);
 app.use('/api/live-class', liveClassRoutes);
 app.use('/api/leave', leaveRoutes);
 app.use('/api/awards', awardsRoutes);
+import bursariesRoutes from './api/bursaries';
+app.use('/api/bursaries', bursariesRoutes);
 app.use('/api/chaplaincy', chaplaincyRoutes);
 app.use('/api/courses', coursesRoutes);
 app.use('/api/study-materials', studyMaterialRoutes);

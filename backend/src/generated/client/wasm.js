@@ -3153,6 +3153,59 @@ exports.Prisma.CateringRequestScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.AwardConfigScalarFieldEnum = {
+  id: 'id',
+  schoolId: 'schoolId',
+  category: 'category',
+  title: 'title',
+  points: 'points',
+  requiresApprovalBy: 'requiresApprovalBy',
+  autoAddsToHousePoints: 'autoAddsToHousePoints',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.StudentAwardScalarFieldEnum = {
+  id: 'id',
+  schoolId: 'schoolId',
+  studentId: 'studentId',
+  nominatedById: 'nominatedById',
+  category: 'category',
+  title: 'title',
+  reason: 'reason',
+  evidenceUrl: 'evidenceUrl',
+  points: 'points',
+  status: 'status',
+  approvedById: 'approvedById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.BursaryTypeScalarFieldEnum = {
+  id: 'id',
+  schoolId: 'schoolId',
+  type: 'type',
+  defaultPercentage: 'defaultPercentage',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.StudentBursaryScalarFieldEnum = {
+  id: 'id',
+  schoolId: 'schoolId',
+  studentId: 'studentId',
+  type: 'type',
+  sponsor: 'sponsor',
+  percentage: 'percentage',
+  validFrom: 'validFrom',
+  validTo: 'validTo',
+  status: 'status',
+  approvedById: 'approvedById',
+  suggestedFromAwardId: 'suggestedFromAwardId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -3414,7 +3467,11 @@ exports.Prisma.ModelName = {
   SportsEvent: 'SportsEvent',
   TransportRequest: 'TransportRequest',
   FacilitiesRequest: 'FacilitiesRequest',
-  CateringRequest: 'CateringRequest'
+  CateringRequest: 'CateringRequest',
+  AwardConfig: 'AwardConfig',
+  StudentAward: 'StudentAward',
+  BursaryType: 'BursaryType',
+  StudentBursary: 'StudentBursary'
 };
 
 /**
