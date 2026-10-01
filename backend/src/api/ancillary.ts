@@ -47,11 +47,11 @@ router.get('/hostel-rooms', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCILLARY'
 router.post('/hostel-rooms', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCILLARY'), async (req: AuthRequest, res: Response) => {
   try {
     const room = await prisma.hostelRoom.create({
-      data: { 
+      data: {
         ...req.body,
         numberOfBeds: parseInt(req.body.numberOfBeds) || 0,
         cost: parseFloat(req.body.cost) || 0,
-        schoolId: req.user!.schoolId! 
+        schoolId: req.user!.schoolId!
       }
     });
     res.json(room);
@@ -88,14 +88,14 @@ router.get('/hostels', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCILLARY', 'TE
 router.post('/hostels', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCILLARY'), async (req: AuthRequest, res: Response) => {
   try {
     const hostel = await prisma.hostel.create({
-      data: { 
+      data: {
         name: req.body.name,
         categoryId: req.body.categoryId,
         roomId: req.body.roomId,
         capacity: parseInt(req.body.capacity) || 0,
         location: req.body.location,
         description: req.body.description,
-        schoolId: req.user!.schoolId! 
+        schoolId: req.user!.schoolId!
       }
     });
     res.json(hostel);
