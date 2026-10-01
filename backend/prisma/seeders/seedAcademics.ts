@@ -98,6 +98,32 @@ export async function seedAcademics(
   const classesToSeed = [schoolClass, classB];
   
   for (const cls of classesToSeed) {
+    for (const subj of dbSubjects) {
+      for (let i = 0; i < 5; i++) {
+        await prisma.timetableSlot.create({
+          data: { classId: cls.id, subjectId: subj.id, dayOfWeek: (i % 5) + 1, startTime: `08:0${i % 10}`, endTime: `09:0${i % 10}`, room: `Room 10${i}`, schoolId: school.id }
+        });
+
+        // const syllabus = await prisma.syllabus.create({
+        //   data: { topic: `Term 1 Topic ${i + 1}`, content: `Introduction to ${subj.name} topics.`, week: `Week ${i + 1}`, schoolId: school.id, classId: cls.id, subjectId: subj.id }
+        // });
+
+        // await prisma.lessonPlan.create({
+        //   data: { week: `Week ${i + 1}`, session: `Session 1`, content: 'Basics and Fundamentals', syllabusId: syllabus.id, schoolId: school.id, classId: cls.id, subjectId: subj.id, teacherId: teachers[0]?.id }
+        // });
+
+        await prisma.studyMaterial.create({
+          data: { title: `${subj.name} Lecture Notes ${i + 1}`, date: new Date(), description: `Notes for week ${i + 1}`, documentUrl: 'https://example.com/notes.pdf', schoolId: school.id, classId: cls.id, subjectId: subj.id, teacherId: teachers[0]?.userId }
+        });
+      }
+    }
+  }
+
+  // 4. Grades, Attendance, Progress Reports
+  let supervisorAssignment = await prisma.supervisorAssignment.findFirst({ where: { schoolId: school.id, studentId: students[0].id, teacherId: teachers[0].id } });
+  if (!supervisorAssignment) {
+    supervisorAssignment = await prisma.supervisorAssignment.create({
+      data: { teacherId: teachers[0].id, studentId: students[0].id, role: 'PRINCIPAL', schoolId: school.id }
     });
   }
   

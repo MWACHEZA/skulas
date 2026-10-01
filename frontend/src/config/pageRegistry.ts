@@ -606,18 +606,18 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     searchKeywords: ['grades', 'marks', 'assessments', 'scores', 'report cards']
   },
   {
-    id: 'teacher-question-papers',
-    label: 'Question Papers',
-    route: '/teacher/question-papers',
+    id: 'teacher-question-bank',
+    label: 'Question Bank',
+    route: '/teacher/question-bank',
     group: 'ACADEMICS',
-    icon: 'fas fa-file-signature',
+    icon: 'fas fa-database',
     permissionKey: PERMISSIONS.ACADEMICS_MARKS_ENTRY,
     portalVisibility: ['teacher'],
     searchKeywords: ['exam papers', 'tests', 'question builder', 'past papers']
   },
   {
     id: 'teacher-cbt',
-    label: 'Manage CBT',
+    label: 'Online Exams (CBT)',
     route: '/teacher/cbt/manage',
     group: 'ACADEMICS',
     icon: 'fas fa-laptop-code',

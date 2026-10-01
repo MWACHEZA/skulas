@@ -3027,6 +3027,58 @@ exports.Prisma.LessonPlanScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.QuestionScalarFieldEnum = {
+  id: 'id',
+  type: 'type',
+  text: 'text',
+  form: 'form',
+  subjectId: 'subjectId',
+  syllabusTopicId: 'syllabusTopicId',
+  difficulty: 'difficulty',
+  marks: 'marks',
+  options: 'options',
+  explanation: 'explanation',
+  isShared: 'isShared',
+  createdById: 'createdById',
+  schoolId: 'schoolId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.CbtExamScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  classId: 'classId',
+  subjectId: 'subjectId',
+  description: 'description',
+  instructions: 'instructions',
+  startTime: 'startTime',
+  endTime: 'endTime',
+  durationMinutes: 'durationMinutes',
+  passingPercentage: 'passingPercentage',
+  shuffleQuestions: 'shuffleQuestions',
+  shuffleOptions: 'shuffleOptions',
+  attemptLimit: 'attemptLimit',
+  createdById: 'createdById',
+  schoolId: 'schoolId',
+  status: 'status',
+  questions: 'questions',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.CbtAttemptScalarFieldEnum = {
+  id: 'id',
+  examId: 'examId',
+  studentId: 'studentId',
+  startTime: 'startTime',
+  submitTime: 'submitTime',
+  score: 'score',
+  isFlagged: 'isFlagged',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -3279,7 +3331,10 @@ exports.Prisma.ModelName = {
   Syllabus: 'Syllabus',
   SyllabusTopic: 'SyllabusTopic',
   SchemeOfWork: 'SchemeOfWork',
-  LessonPlan: 'LessonPlan'
+  LessonPlan: 'LessonPlan',
+  Question: 'Question',
+  CbtExam: 'CbtExam',
+  CbtAttempt: 'CbtAttempt'
 };
 
 /**

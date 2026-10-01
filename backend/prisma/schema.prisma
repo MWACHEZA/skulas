@@ -45,9 +45,9 @@ model Plan {
 }
 
 model School {
-  syllabuses Syllabus[]
-  schemesOfWork SchemeOfWork[]
-  lessonPlans LessonPlan[]
+  syllabuses              Syllabus[]
+  schemesOfWork           SchemeOfWork[]
+  lessonPlans             LessonPlan[]
   id                      String                   @id @default(cuid())
   code                    String                   @unique // AX-XXXXXX
   name                    String
@@ -212,6 +212,8 @@ model School {
   tillSessions          TillSession[]
   studentClearances     StudentClearance[]
   leaveBalances         LeaveBalance[]
+  questions             Question[]             @relation("SchoolQuestions")
+  cbtExams              CbtExam[]              @relation("SchoolCbtExams")
 
   @@index([code])
 }
@@ -452,15 +454,15 @@ model Expense {
 }
 
 model User {
-  uploadedSyllabuses Syllabus[] @relation("SyllabusUploader")
-  coveredTopics SyllabusTopic[] @relation("SyllabusCoveredBy")
+  uploadedSyllabuses Syllabus[]      @relation("SyllabusUploader")
+  coveredTopics      SyllabusTopic[] @relation("SyllabusCoveredBy")
   recruitedVacancies Vacancy[]
-  id                 String        @id @default(cuid())
-  email              String        @unique
+  id                 String          @id @default(cuid())
+  email              String          @unique
   password           String
   name               String
   role               String // SUPER_ADMIN, SCHOOL_ADMIN, TEACHER, BURSAR, LIBRARIAN, STUDENT, ALUMNI, ANCILLARY, PARENT, SUPPLIER
-  secondaryRoles     String[]      @default([])
+  secondaryRoles     String[]        @default([])
   sessions           UserSession[]
   avatar             String? // Stores filename or reference ID
   religion           String? // User's religious affiliation
@@ -548,6 +550,8 @@ model User {
   leaveBalances           LeaveBalance[]        @relation("LeaveBalances")
   announcementsCreated    Announcement[]        @relation("AnnouncementCreatedBy")
   announcementReads       AnnouncementRead[]    @relation("AnnouncementReads")
+  createdQuestions        Question[]            @relation("QuestionCreatedBy")
+  createdCbtExams         CbtExam[]             @relation("CbtExamCreatedBy")
 
   @@index([schoolId])
 }
@@ -569,7 +573,7 @@ model UserSession {
 }
 
 model Teacher {
-  schemesOfWork SchemeOfWork[]
+  schemesOfWork  SchemeOfWork[]
   id             String                 @id @default(cuid())
   staffId        String
   userId         String                 @unique
@@ -700,6 +704,7 @@ model Student {
   houseCaptained    StudentHouse[]     @relation("HouseCaptain")
   wallet            StudentWallet?
   clearances        StudentClearance[]
+  cbtAttempts       CbtAttempt[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -732,6 +737,7 @@ model SchoolClass {
   FeeGroupClassAmount FeeGroupClassAmount[]
   AdmissionInquiry    AdmissionInquiry[]
   announcements       Announcement[]
+  cbtExams            CbtExam[]
 
   @@unique([schoolId, name])
   @@index([schoolId])
@@ -752,8 +758,8 @@ model Section {
 }
 
 model Subject {
-  syllabuses Syllabus[]
-  schemesOfWork SchemeOfWork[]
+  syllabuses              Syllabus[]
+  schemesOfWork           SchemeOfWork[]
   id                      String                   @id @default(cuid())
   name                    String
   code                    String?
@@ -784,6 +790,8 @@ model Subject {
   examWeight     Float           @default(70)
   CBTExam        CBTExam[]
   StudyMaterial  StudyMaterial[]
+  questions      Question[]
+  cbtExams       CbtExam[]
 
   @@index([schoolId])
 }
@@ -2021,10 +2029,6 @@ model DigitalResource {
   @@index([teacherId])
   @@index([subjectId])
 }
-
-
-
-
 
 // ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚Â HR / PAYROLL / ROSTERS ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚Â
 
@@ -4486,72 +4490,75 @@ model QrCodeSession {
 }
 
 model Syllabus {
-  id        String   @id @default(cuid())
-  schoolId  String
-  school    School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
-  subjectId String
-  subject   Subject  @relation(fields: [subjectId], references: [id], onDelete: Cascade)
-  form      String
-  url       String?
+  id           String  @id @default(cuid())
+  schoolId     String
+  school       School  @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  subjectId    String
+  subject      Subject @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  form         String
+  url          String?
   uploadedById String?
-  uploadedBy User?   @relation("SyllabusUploader", fields: [uploadedById], references: [id])
-  
+  uploadedBy   User?   @relation("SyllabusUploader", fields: [uploadedById], references: [id])
+
   topics SyllabusTopic[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
   @@index([schoolId])
   @@index([subjectId])
 }
 
 model SyllabusTopic {
-  id            String   @id @default(cuid())
-  syllabusId    String
-  syllabus      Syllabus @relation(fields: [syllabusId], references: [id], onDelete: Cascade)
-  code          String?
-  topic         String
-  expectedWeek  Int?
-  objectives    String?
-  isCovered     Boolean  @default(false)
-  coveredAt     DateTime?
-  coveredById   String?
-  coveredBy     User?    @relation("SyllabusCoveredBy", fields: [coveredById], references: [id])
+  id           String    @id @default(cuid())
+  syllabusId   String
+  syllabus     Syllabus  @relation(fields: [syllabusId], references: [id], onDelete: Cascade)
+  code         String?
+  topic        String
+  expectedWeek Int?
+  objectives   String?
+  isCovered    Boolean   @default(false)
+  coveredAt    DateTime?
+  coveredById  String?
+  coveredBy    User?     @relation("SyllabusCoveredBy", fields: [coveredById], references: [id])
 
-  schemes       SchemeOfWork[]
+  schemes SchemeOfWork[]
 
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@index([syllabusId])
 }
 
 model SchemeOfWork {
-  lessonPlans LessonPlan[]
-  id            String   @id @default(cuid())
-  schoolId      String
-  school        School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
-  teacherId     String
-  teacher       Teacher  @relation(fields: [teacherId], references: [id], onDelete: Cascade)
-  subjectId     String
-  subject       Subject  @relation(fields: [subjectId], references: [id], onDelete: Cascade)
-  form          String
-  term          Int
-  year          Int
-  status        String   @default("draft") // draft/pending/approved/rejected
-  comments      String?
+  lessonPlans     LessonPlan[]
+  id              String        @id @default(cuid())
+  schoolId        String
+  school          School        @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  teacherId       String
+  teacher         Teacher       @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  subjectId       String
+  subject         Subject       @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  form            String
+  term            Int
+  year            Int
+  status          String        @default("draft") // draft/pending/approved/rejected
+  comments        String?
   syllabusTopicId String
-  syllabusTopic SyllabusTopic @relation(fields: [syllabusTopicId], references: [id])
+  syllabusTopic   SyllabusTopic @relation(fields: [syllabusTopicId], references: [id])
 
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@index([schoolId])
   @@index([teacherId])
   @@index([subjectId])
 }
 
 model LessonPlan {
-  id              String   @id @default(cuid())
+  id              String       @id @default(cuid())
   schoolId        String
-  school          School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  school          School       @relation(fields: [schoolId], references: [id], onDelete: Cascade)
   schemeId        String
   scheme          SchemeOfWork @relation(fields: [schemeId], references: [id], onDelete: Cascade)
   date            DateTime
@@ -4563,8 +4570,71 @@ model LessonPlan {
   differentiation String?
   reflection      String?
 
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@index([schoolId])
   @@index([schemeId])
+}
+
+model Question {
+  id              String   @id @default(cuid())
+  type            String
+  text            String   @db.Text
+  form            String?
+  subjectId       String
+  subject         Subject  @relation(fields: [subjectId], references: [id])
+  syllabusTopicId String?
+  difficulty      String?
+  marks           Float    @default(1)
+  options         Json?
+  explanation     String?  @db.Text
+  isShared        Boolean  @default(false)
+  createdById     String
+  createdBy       User     @relation("QuestionCreatedBy", fields: [createdById], references: [id])
+  schoolId        String
+  school          School   @relation("SchoolQuestions", fields: [schoolId], references: [id])
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model CbtExam {
+  id                String       @id @default(cuid())
+  title             String
+  classId           String?
+  schoolClass       SchoolClass? @relation(fields: [classId], references: [id])
+  subjectId         String
+  subject           Subject      @relation(fields: [subjectId], references: [id])
+  description       String?
+  instructions      String?      @db.Text
+  startTime         DateTime?
+  endTime           DateTime?
+  durationMinutes   Int?
+  passingPercentage Float        @default(50)
+  shuffleQuestions  Boolean      @default(false)
+  shuffleOptions    Boolean      @default(false)
+  attemptLimit      Int          @default(1)
+  createdById       String
+  createdBy         User         @relation("CbtExamCreatedBy", fields: [createdById], references: [id])
+  schoolId          String
+  school            School       @relation("SchoolCbtExams", fields: [schoolId], references: [id])
+  status            String       @default("Pending")
+  questions         Json?
+  attempts          CbtAttempt[]
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+}
+
+model CbtAttempt {
+  id         String    @id @default(cuid())
+  examId     String
+  exam       CbtExam   @relation(fields: [examId], references: [id], onDelete: Cascade)
+  studentId  String
+  student    Student   @relation(fields: [studentId], references: [id])
+  startTime  DateTime  @default(now())
+  submitTime DateTime?
+  score      Float?
+  isFlagged  Boolean   @default(false)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
 }

@@ -48,6 +48,8 @@ import AcadexLayout from './portals/acadex/AcadexLayout';
 
 // CBT Pages
 import ManageCBT from './portals/shared/pages/cbt/ManageCBT';
+import QuestionBank from './portals/teacher/pages/QuestionBank';
+import OnlineExamsCbt from './portals/teacher/pages/OnlineExamsCbt';
 import ManageQuestions from './portals/shared/pages/cbt/ManageQuestions';
 import TakeExam from './portals/shared/pages/cbt/TakeExam';
 
@@ -531,7 +533,8 @@ export default function App() {
               <Route path="add-new-course" element={<AddNewCourse />} />
               <Route path="enrol-student" element={<EnrolStudent />} />
 
-              <Route path="cbt/manage" element={<ManageCBT />} />
+              <Route path="cbt/manage" element={<OnlineExamsCbt />} />
+              <Route path="question-bank" element={<QuestionBank />} />
               <Route path="cbt/manage/:id/questions" element={<ManageQuestions />} />
               <Route path="cbt/manage/:id/results" element={<CBTResults />} />
               <Route path="cbt/take/:id" element={<TakeExam />} />
