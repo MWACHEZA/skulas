@@ -1,247 +1,76 @@
-import { Router, Response } from 'express';
-import prisma from '../lib/prisma';
-import { requireAuth, AuthRequest } from '../middleware/auth';
-import { logAction } from '../utils/audit';
+import { Router, Request, Response } from 'express';
+import prisma from '../lib/prisma'; // Ensure this matches actual db import
+import { requireModuleAccess } from '../middleware/moduleAccess'; // Ensure this is the right import path for auth middleware
 
 const router = Router();
 
-// All prefect council routes require authentication
-router.use(requireAuth);
+// Gating middleware
+router.use(requireModuleAccess('prefects'));
 
-/**
- * Helper to check if user has leadership council rights (modify duties/meetings)
- */
-const canManageCouncil = (user: any) => {
-  return user.role === 'SCHOOL_ADMIN' || 
-         user.secondaryRoles.includes('Head Boy') || 
-         user.secondaryRoles.includes('Head Girl') || 
-         user.secondaryRoles.includes('Vice Head Boy') || 
-         user.secondaryRoles.includes('Vice Head Girl') || 
-         user.secondaryRoles.includes('Senior Prefect') ||
-         user.secondaryRoles.includes('Senior Teacher');
-};
-
-/**
- * Helper to check if user can view student conduct reports
- */
-const canViewConductReports = (user: any) => {
-  return user.role === 'SCHOOL_ADMIN' || 
-         user.secondaryRoles.includes('Senior Teacher');
-};
-
-/**
- * Helper to check if user is allowed to file conduct reports
- */
-const canFileConductReport = (user: any) => {
-  return user.role === 'SCHOOL_ADMIN' || 
-         user.secondaryRoles.includes('Prefect') ||
-         user.secondaryRoles.includes('Head Boy') || 
-         user.secondaryRoles.includes('Head Girl') || 
-         user.secondaryRoles.includes('Vice Head Boy') || 
-         user.secondaryRoles.includes('Vice Head Girl') || 
-         user.secondaryRoles.includes('Senior Prefect') ||
-         user.secondaryRoles.includes('Class Monitor') ||
-         user.secondaryRoles.includes('Student Librarian');
-};
-
-// ── DUTY ASSIGNMENTS ──
-
-/**
- * @route   GET /api/prefects/duties
- * @desc    Fetch scheduled duty assignments
- */
-router.get('/duties', async (req: AuthRequest, res: Response) => {
-  const schoolId = req.user!.schoolId!;
-  try {
-    const duties = await prisma.prefectDuty.findMany({
-      where: { schoolId },
-      orderBy: { day: 'asc' }
-    });
-    res.json(duties);
-  } catch (error) {
-    console.error('Fetch duties error:', error);
-    res.status(500).json({ error: 'Failed to fetch duty assignments' });
-  }
+// Duty Roster
+router.get('/duty', async (req: Request, res: Response) => {
+  const { schoolId } = (req as any).user;
+  const duties = await prisma.prefectDuty.findMany({ where: { schoolId } });
+  res.json(duties);
 });
 
-/**
- * @route   POST /api/prefects/duties
- * @desc    Create a new duty assignment
- */
-router.post('/duties', async (req: AuthRequest, res: Response) => {
-  if (!canManageCouncil(req.user)) {
-    return res.status(403).json({ error: 'Unauthorized to manage duty assignments' });
-  }
-
-  const { prefectName, zone, timeSlot, day } = req.body;
-  if (!prefectName || !zone || !timeSlot || !day) {
-    return res.status(400).json({ error: 'Missing required duty fields' });
-  }
-
-  const schoolId = req.user!.schoolId!;
-  try {
-    const duty = await prisma.prefectDuty.create({
-      data: { prefectName, zone, timeSlot, day, schoolId }
-    });
-
-    await logAction(req, 'CREATE_DUTY_ASSIGNMENT', 'PrefectDuty', duty.id, { prefectName, zone });
-    res.json(duty);
-  } catch (error) {
-    console.error('Create duty error:', error);
-    res.status(500).json({ error: 'Failed to create duty assignment' });
-  }
+router.post('/duty', async (req: Request, res: Response) => {
+  const { schoolId } = (req as any).user;
+  const { studentId, date, role } = req.body;
+  const duty = await prisma.prefectDuty.create({
+    data: { studentId, date: new Date(date), role, schoolId }
+  });
+  res.json(duty);
 });
 
-// ── COUNCIL MEETINGS ──
-
-/**
- * @route   GET /api/prefects/meetings
- * @desc    Fetch scheduled council meetings
- */
-router.get('/meetings', async (req: AuthRequest, res: Response) => {
-  const schoolId = req.user!.schoolId!;
-  try {
-    const meetings = await prisma.prefectMeeting.findMany({
-      where: { schoolId },
-      orderBy: { date: 'desc' }
-    });
-    res.json(meetings);
-  } catch (error) {
-    console.error('Fetch meetings error:', error);
-    res.status(500).json({ error: 'Failed to fetch council meetings' });
-  }
+// Meeting Minutes
+router.get('/meetings', async (req: Request, res: Response) => {
+  const { schoolId } = (req as any).user;
+  const meetings = await prisma.prefectMeeting.findMany({ where: { schoolId } });
+  res.json(meetings);
 });
 
-/**
- * @route   POST /api/prefects/meetings
- * @desc    Record new council meeting minutes
- */
-router.post('/meetings', async (req: AuthRequest, res: Response) => {
-  if (!canManageCouncil(req.user)) {
-    return res.status(403).json({ error: 'Unauthorized to publish meeting minutes' });
-  }
-
-  const { title, date, chair, recordsText } = req.body;
-  if (!title || !date || !chair || !recordsText) {
-    return res.status(400).json({ error: 'Missing required meeting fields' });
-  }
-
-  const schoolId = req.user!.schoolId!;
-  try {
-    const meeting = await prisma.prefectMeeting.create({
-      data: {
-        title,
-        date: new Date(date),
-        chair,
-        recordsText,
-        schoolId
-      }
-    });
-
-    await logAction(req, 'CREATE_COUNCIL_MEETING', 'PrefectMeeting', meeting.id, { title });
-    res.json(meeting);
-  } catch (error) {
-    console.error('Create meeting error:', error);
-    res.status(500).json({ error: 'Failed to create council meeting minutes' });
-  }
+router.post('/meetings', async (req: Request, res: Response) => {
+  const { schoolId } = (req as any).user;
+  const { date, chairId, agenda, minutes } = req.body;
+  const meeting = await prisma.prefectMeeting.create({
+    data: { date: new Date(date), chairId, agenda, minutes, schoolId }
+  });
+  res.json(meeting);
 });
 
-// ── CONDUCT REPORTS ──
-
-/**
- * @route   GET /api/prefects/reports
- * @desc    Fetch student conduct reports
- */
-router.get('/reports', async (req: AuthRequest, res: Response) => {
-  if (!canViewConductReports(req.user)) {
-    return res.status(403).json({ error: 'Unauthorized to view conduct reports' });
-  }
-
-  const schoolId = req.user!.schoolId!;
-  try {
-    const reports = await prisma.prefectReport.findMany({
-      where: { schoolId },
-      include: {
-        reportedBy: {
-          select: { name: true, role: true }
-        }
-      },
-      orderBy: { createdAt: 'desc' }
-    });
-    res.json(reports);
-  } catch (error) {
-    console.error('Fetch reports error:', error);
-    res.status(500).json({ error: 'Failed to fetch conduct reports' });
-  }
+// Conduct Reports (DisciplineRecord)
+router.get('/conduct', async (req: Request, res: Response) => {
+  const { schoolId } = (req as any).user;
+  const reports = await prisma.disciplineRecord.findMany({ where: { schoolId } });
+  res.json(reports);
 });
 
-/**
- * @route   POST /api/prefects/reports
- * @desc    File a new conduct report
- */
-router.post('/reports', async (req: AuthRequest, res: Response) => {
-  if (!canFileConductReport(req.user)) {
-    return res.status(403).json({ error: 'Unauthorized to file conduct reports' });
-  }
-
-  const { studentName, category, narrative, hasPunishment, punishment, punishmentLocation } = req.body;
-  if (!studentName || !category || !narrative) {
-    return res.status(400).json({ error: 'Missing required report fields' });
-  }
-
-  const schoolId = req.user!.schoolId!;
-  const userId = req.user!.id;
-  try {
-    const report = await prisma.prefectReport.create({
-      data: {
-        studentName,
-        category,
-        narrative,
-        hasPunishment: Boolean(hasPunishment),
-        punishment: punishment || null,
-        punishmentLocation: punishmentLocation || null,
-        punishmentStatus: hasPunishment ? 'PENDING' : null,
-        reportedById: userId,
-        schoolId
-      }
-    });
-
-    await logAction(req, 'CREATE_CONDUCT_REPORT', 'PrefectReport', report.id, { studentName, category });
-    res.json(report);
-  } catch (error) {
-    console.error('Create report error:', error);
-    res.status(500).json({ error: 'Failed to file conduct report' });
-  }
+router.post('/conduct', async (req: Request, res: Response) => {
+  const { schoolId, id: reporterId } = (req as any).user;
+  const { studentId, date, offenceType, description, severity } = req.body;
+  const record = await prisma.disciplineRecord.create({
+    data: {
+      studentId,
+      reporterId,
+      date: new Date(date),
+      offenceType,
+      description,
+      severity,
+      schoolId
+    }
+  });
+  res.json(record);
 });
 
-/**
- * @route   PATCH /api/prefects/reports/:id/status
- * @desc    Update a conduct report's punishment status (e.g. mark as CLEARED)
- */
-router.patch('/reports/:id/status', async (req: AuthRequest, res: Response) => {
-  if (!canManageCouncil(req.user) && !canFileConductReport(req.user)) {
-    return res.status(403).json({ error: 'Unauthorized to update report status' });
-  }
-
-  const { id } = req.params;
-  const { punishmentStatus } = req.body;
-
-  if (!punishmentStatus || !['PENDING', 'CLEARED'].includes(punishmentStatus)) {
-    return res.status(400).json({ error: 'Invalid punishment status' });
-  }
-
-  try {
-    const report = await prisma.prefectReport.update({
-      where: { id: id as string },
-      data: { punishmentStatus }
-    });
-
-    await logAction(req, 'UPDATE_CONDUCT_REPORT_STATUS', 'PrefectReport', report.id, { punishmentStatus });
-    res.json(report);
-  } catch (error) {
-    console.error('Update report status error:', error);
-    res.status(500).json({ error: 'Failed to update report status' });
-  }
+// Prefects List
+router.get('/', async (req: Request, res: Response) => {
+  const { schoolId } = (req as any).user;
+  const prefects = await prisma.leadershipAssignment.findMany({
+    where: { schoolId, isActive: true },
+    include: { student: true }
+  });
+  res.json(prefects);
 });
 
 export default router;

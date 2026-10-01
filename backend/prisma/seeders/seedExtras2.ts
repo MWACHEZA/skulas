@@ -94,7 +94,7 @@ export async function seedExtras2(prisma: PrismaClient, school: School, admin: U
     try { await prisma.clinicImmunization.create({ data: { userId: student.userId!, title: `Polio ${i}`, details: 'Done', schoolId: school.id } }); } catch(e){}
     try { await prisma.clinicReferral.create({ data: { userId: student.userId!, title: `Eye Test ${i}`, details: 'Needs glasses', to: 'Hospital', address: 'City', schoolId: school.id } }); } catch(e){}
     try { await prisma.diningHallReport.create({ data: { category: `Lunch ${i}`, rating: 5, feedback: 'Good', reportedById: admin.id, schoolId: school.id } }); } catch(e){}
-    try { await prisma.prefectMeeting.create({ data: { title: `Discipline ${i}`, chair: 'Head Boy', recordsText: 'Done', date: new Date(), schoolId: school.id } }); } catch(e){}
+    try { await prisma.prefectMeeting.create({ data: { agenda: `Discipline ${i}`, chairId: 'dummy', minutes: 'Done', date: new Date(), schoolId: school.id } }); } catch(e){}
     try { await prisma.prefectReport.create({ data: { studentName: `John ${i}`, category: 'Late', narrative: 'Late to class', reportedById: admin.id, schoolId: school.id } }); } catch(e){}
     
     let wallet = await prisma.studentWallet.findFirst({ where: { studentId: student.userId! } });

@@ -96,10 +96,60 @@ export default function SportsModule() {
     </div>
   );
 
+  const EventsTab = () => {
+    const [events, setEvents] = useState<any[]>([]);
+    
+    useEffect(() => {
+      api.get('/api/sports-extended/events').then(res => setEvents(res.data)).catch(console.error);
+    }, []);
+
+    const handleCreate = (e: React.FormEvent) => {
+      e.preventDefault();
+      const form = e.target as HTMLFormElement;
+      const formData = new FormData(form);
+      const data = Object.fromEntries(formData.entries());
+      
+      api.post('/api/sports-extended/events', data)
+         .then(res => {
+           setEvents([...events, res.data]);
+           form.reset();
+         })
+         .catch(console.error);
+    };
+
+    return (
+      <div>
+        <form onSubmit={handleCreate} style={{ display: 'flex', gap: 10, marginBottom: 20 }}>
+          <input name="title" placeholder="Event Title" required className="portal-input" />
+          <input name="type" placeholder="Type (e.g. Fixture)" required className="portal-input" />
+          <input name="sport" placeholder="Sport" required className="portal-input" />
+          <input name="date" type="date" required className="portal-input" />
+          <button type="submit" className="portal-btn">Request Event</button>
+        </form>
+        <table className="portal-table">
+          <thead>
+            <tr><th>Title</th><th>Type</th><th>Sport</th><th>Date</th></tr>
+          </thead>
+          <tbody>
+            {events.map(ev => (
+              <tr key={ev.id}>
+                <td>{ev.title}</td>
+                <td>{ev.type}</td>
+                <td>{ev.sport}</td>
+                <td>{new Date(ev.date).toLocaleDateString()}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    );
+  };
+
   const tabs = [
     { id: 'teams', label: 'Teams', content: <TeamsTab /> },
     ...(access.actingAs !== 'sports_tech' ? [{ id: 'houses', label: 'Houses', content: <HousesTab /> }] : []),
-    { id: 'equipment', label: 'Equipment', content: <EquipmentTab /> }
+    { id: 'equipment', label: 'Equipment', content: <EquipmentTab /> },
+    { id: 'events', label: 'Fixtures & Events', content: <EventsTab /> }
   ];
 
   return (

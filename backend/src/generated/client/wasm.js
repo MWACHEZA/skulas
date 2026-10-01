@@ -2319,10 +2319,10 @@ exports.Prisma.DiningHallReportScalarFieldEnum = {
 
 exports.Prisma.PrefectDutyScalarFieldEnum = {
   id: 'id',
-  prefectName: 'prefectName',
-  zone: 'zone',
-  timeSlot: 'timeSlot',
-  day: 'day',
+  studentId: 'studentId',
+  date: 'date',
+  role: 'role',
+  status: 'status',
   schoolId: 'schoolId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -2330,10 +2330,11 @@ exports.Prisma.PrefectDutyScalarFieldEnum = {
 
 exports.Prisma.PrefectMeetingScalarFieldEnum = {
   id: 'id',
-  title: 'title',
   date: 'date',
-  chair: 'chair',
-  recordsText: 'recordsText',
+  chairId: 'chairId',
+  agenda: 'agenda',
+  minutes: 'minutes',
+  status: 'status',
   schoolId: 'schoolId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -3079,6 +3080,79 @@ exports.Prisma.CbtAttemptScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.DisciplineRecordScalarFieldEnum = {
+  id: 'id',
+  studentId: 'studentId',
+  reporterId: 'reporterId',
+  date: 'date',
+  offenceType: 'offenceType',
+  description: 'description',
+  severity: 'severity',
+  status: 'status',
+  actionTaken: 'actionTaken',
+  schoolId: 'schoolId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.CalendarEventScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  date: 'date',
+  endTime: 'endTime',
+  location: 'location',
+  type: 'type',
+  sourceModule: 'sourceModule',
+  sourceId: 'sourceId',
+  schoolId: 'schoolId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.SportsEventScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  type: 'type',
+  sport: 'sport',
+  date: 'date',
+  venue: 'venue',
+  opponent: 'opponent',
+  compulsory: 'compulsory',
+  schoolId: 'schoolId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.TransportRequestScalarFieldEnum = {
+  id: 'id',
+  eventId: 'eventId',
+  status: 'status',
+  details: 'details',
+  schoolId: 'schoolId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.FacilitiesRequestScalarFieldEnum = {
+  id: 'id',
+  eventId: 'eventId',
+  status: 'status',
+  details: 'details',
+  schoolId: 'schoolId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.CateringRequestScalarFieldEnum = {
+  id: 'id',
+  eventId: 'eventId',
+  status: 'status',
+  details: 'details',
+  schoolId: 'schoolId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -3334,7 +3408,13 @@ exports.Prisma.ModelName = {
   LessonPlan: 'LessonPlan',
   Question: 'Question',
   CbtExam: 'CbtExam',
-  CbtAttempt: 'CbtAttempt'
+  CbtAttempt: 'CbtAttempt',
+  DisciplineRecord: 'DisciplineRecord',
+  CalendarEvent: 'CalendarEvent',
+  SportsEvent: 'SportsEvent',
+  TransportRequest: 'TransportRequest',
+  FacilitiesRequest: 'FacilitiesRequest',
+  CateringRequest: 'CateringRequest'
 };
 
 /**

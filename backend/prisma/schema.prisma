@@ -214,6 +214,12 @@ model School {
   leaveBalances         LeaveBalance[]
   questions             Question[]             @relation("SchoolQuestions")
   cbtExams              CbtExam[]              @relation("SchoolCbtExams")
+  DisciplineRecord      DisciplineRecord[]
+  CalendarEvent         CalendarEvent[]
+  SportsEvent           SportsEvent[]
+  TransportRequest      TransportRequest[]
+  FacilitiesRequest     FacilitiesRequest[]
+  CateringRequest       CateringRequest[]
 
   @@index([code])
 }
@@ -3485,29 +3491,30 @@ model DiningHallReport {
 }
 
 model PrefectDuty {
-  id          String   @id @default(cuid())
-  prefectName String
-  zone        String
-  timeSlot    String
-  day         String
-  schoolId    String
-  school      School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id        String   @id @default(cuid())
+  studentId String
+  date      DateTime
+  role      String
+  status    String   @default("UPCOMING")
+  schoolId  String
+  school    School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([schoolId])
 }
 
 model PrefectMeeting {
-  id          String   @id @default(cuid())
-  title       String
-  date        DateTime
-  chair       String
-  recordsText String
-  schoolId    String
-  school      School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id        String   @id @default(cuid())
+  date      DateTime
+  chairId   String
+  agenda    String
+  minutes   String?
+  status    String   @default("SCHEDULED")
+  schoolId  String
+  school    School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([schoolId])
 }
@@ -4637,4 +4644,99 @@ model CbtAttempt {
   isFlagged  Boolean   @default(false)
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
+}
+
+// --- Phase 6: Prefect Board & Discipline ---
+
+model DisciplineRecord {
+  id          String   @id @default(cuid())
+  studentId   String
+  reporterId  String
+  date        DateTime
+  offenceType String
+  description String
+  severity    String
+  status      String   @default("PENDING")
+  actionTaken String?
+  schoolId    String
+  school      School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([schoolId])
+}
+
+// --- Phase 7: Sports & Calendar Sync ---
+
+model CalendarEvent {
+  id           String    @id @default(cuid())
+  title        String
+  date         DateTime
+  endTime      DateTime?
+  location     String?
+  type         String
+  sourceModule String
+  sourceId     String
+  schoolId     String
+  school       School    @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([schoolId])
+}
+
+model SportsEvent {
+  id         String   @id @default(cuid())
+  title      String
+  type       String
+  sport      String
+  date       DateTime
+  venue      String?
+  opponent   String?
+  compulsory Boolean  @default(false)
+  schoolId   String
+  school     School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([schoolId])
+}
+
+model TransportRequest {
+  id        String   @id @default(cuid())
+  eventId   String
+  status    String   @default("PENDING")
+  details   String?
+  schoolId  String
+  school    School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([schoolId])
+}
+
+model FacilitiesRequest {
+  id        String   @id @default(cuid())
+  eventId   String
+  status    String   @default("PENDING")
+  details   String?
+  schoolId  String
+  school    School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([schoolId])
+}
+
+model CateringRequest {
+  id        String   @id @default(cuid())
+  eventId   String
+  status    String   @default("PENDING")
+  details   String?
+  schoolId  String
+  school    School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([schoolId])
 }
