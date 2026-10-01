@@ -409,4 +409,157 @@ router.get('/student-clock-ins', requireAuth, async (req: AuthRequest, res) => {
   }
 });
 
+// --- Phase 1: Attendance & Roll Call (Register, QR, Period) ---
+
+// 1. Get Roll Call
+router.get('/roll-call', requireAuth, async (req: AuthRequest, res) => {
+  const { classId, date, session } = req.query;
+  const schoolId = req.user?.schoolId;
+
+  if (!schoolId || !classId || !date || !session) {
+    return res.status(400).json({ error: 'Missing required parameters' });
+  }
+
+  try {
+    const register = await prisma.attendanceRegister.findUnique({
+      where: {
+        schoolId_classId_date_session: {
+          schoolId,
+          classId: String(classId),
+          date: new Date(String(date)),
+          session: String(session),
+        },
+      },
+      include: { records: true },
+    });
+    res.json(register || { records: [] });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to fetch roll call' });
+  }
+});
+
+// 2. Submit Roll Call
+router.post('/roll-call', requireAuth, async (req: AuthRequest, res) => {
+  const { classId, date, session, records } = req.body;
+  const schoolId = req.user?.schoolId;
+
+  if (!schoolId) return res.status(401).json({ error: 'Unauthorized' });
+
+  try {
+    const parsedDate = new Date(date);
+    
+    const register = await prisma.attendanceRegister.upsert({
+      where: {
+        schoolId_classId_date_session: {
+          schoolId,
+          classId,
+          date: parsedDate,
+          session,
+        },
+      },
+      update: { submitted: true },
+      create: {
+        schoolId,
+        classId,
+        date: parsedDate,
+        session,
+        submitted: true,
+      },
+    });
+
+    for (const record of records) {
+      await prisma.attendanceRecord.upsert({
+        where: {
+          registerId_studentId: {
+            registerId: register.id,
+            studentId: record.studentId,
+          },
+        },
+        update: {
+          status: record.status,
+          notes: record.notes,
+        },
+        create: {
+          registerId: register.id,
+          studentId: record.studentId,
+          status: record.status,
+          notes: record.notes,
+        },
+      });
+    }
+
+    res.json({ success: true });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to submit roll call' });
+  }
+});
+
+// 3. Generate QR Code Session
+router.post('/qr/generate', requireAuth, async (req: AuthRequest, res) => {
+  const { classId, periodId, expiresMinutes } = req.body;
+  const teacherId = req.user?.id;
+
+  if (!teacherId) return res.status(401).json({ error: 'Unauthorized' });
+
+  try {
+    const code = Math.random().toString(36).substring(2, 10).toUpperCase();
+    const expiresAt = new Date();
+    expiresAt.setMinutes(expiresAt.getMinutes() + (expiresMinutes || 10));
+
+    const session = await prisma.qrCodeSession.create({
+      data: {
+        teacherId,
+        classId,
+        periodId,
+        date: new Date(),
+        code,
+        expiresAt,
+      },
+    });
+
+    res.json({ code: session.code, expiresAt: session.expiresAt });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to generate QR code' });
+  }
+});
+
+// 4. Scan QR Code
+router.post('/qr/scan', requireAuth, async (req: AuthRequest, res) => {
+  const { code, studentId, locationData } = req.body;
+
+  try {
+    const session = await prisma.qrCodeSession.findUnique({ where: { code } });
+    if (!session) return res.status(404).json({ error: 'Invalid QR code' });
+    if (new Date() > session.expiresAt) return res.status(400).json({ error: 'QR code expired' });
+
+    if (session.periodId) {
+      await prisma.periodAttendance.upsert({
+        where: {
+          studentId_timetablePeriodId_date: {
+            studentId,
+            timetablePeriodId: session.periodId,
+            date: session.date,
+          }
+        },
+        update: { status: 'Present', scannedAt: new Date() },
+        create: {
+          studentId,
+          timetablePeriodId: session.periodId,
+          date: session.date,
+          status: 'Present',
+          scannedAt: new Date(),
+        }
+      });
+    }
+
+    res.json({ success: true });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to record scan' });
+  }
+});
+
 export default router;

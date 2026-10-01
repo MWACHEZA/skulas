@@ -28,7 +28,6 @@ enum RequesterRole {
   CLINIC
 }
 
-
 generator client {
   provider      = "prisma-client-js"
   output        = "../src/generated/client"
@@ -46,63 +45,63 @@ model Plan {
 }
 
 model School {
-  id                    String                 @id @default(cuid())
-  code                  String                 @unique // AX-XXXXXX
-  name                  String
-  type                  String // primary, secondary, combined
-  isCombined            Boolean                @default(false)
-  levels                String[] // ["PRE_SCHOOL", "PRIMARY", "SECONDARY", "HIGH_SCHOOL", "TERTIARY"]
-  address               String?
-  country               String?
-  email                 String                 @unique
-  phone                 String?
-  website               String?
-  status                String                 @default("active")
-  planId                String
-  plan                  Plan                   @relation(fields: [planId], references: [id])
-  branding              Json? // { primaryColor, accentColor, logo }
-  customContent         Json? // { motto, welcomeTitle, ... }
-  users                 User[]
-  students              Student[]
-  teachers              Teacher[]
-  news                  News[]
-  websiteInquiries      WebsiteInquiry[]
-  noticeboards          Noticeboard[]
-  clinicVisits          ClinicVisit[]
-  clinicHospitalizations ClinicHospitalization[]
-  vacancies             Vacancy[]
-  jobApplications       JobApplication[]
-  gallery               Gallery[]
-  clubs                 Club[]
-  sports                Sport[]
-  applications          Application[]
-  announcements         Announcement[]
-  chaplaincyEvents      ChaplaincyEvent[]
-  diningHallReports     DiningHallReport[]
-  farmLivestockBatches  FarmLivestockBatch[]
-  farmCropCycles        FarmCropCycle[]
-  farmInventoryItems    FarmInventoryItem[]
-  prefectDuties         PrefectDuty[]
-  prefectMeetings       PrefectMeeting[]
-  prefectReports        PrefectReport[]
-  staffAttendances      StaffAttendance[]
-  timetableSlots        TimetableSlot[]
-  classes               SchoolClass[]
-  subjects              Subject[]
-  books                 Book[]
-  grades                Grade[]
-  attendance            Attendance[]
-  fees                  Fee[]
-  assignments           Assignment[]
-  bookLoans             BookLoan[]
-  bookReservations      BookReservation[]
-  librarySetting        LibrarySetting?
+  id                      String                   @id @default(cuid())
+  code                    String                   @unique // AX-XXXXXX
+  name                    String
+  type                    String // primary, secondary, combined
+  isCombined              Boolean                  @default(false)
+  levels                  String[] // ["PRE_SCHOOL", "PRIMARY", "SECONDARY", "HIGH_SCHOOL", "TERTIARY"]
+  address                 String?
+  country                 String?
+  email                   String                   @unique
+  phone                   String?
+  website                 String?
+  status                  String                   @default("active")
+  planId                  String
+  plan                    Plan                     @relation(fields: [planId], references: [id])
+  branding                Json? // { primaryColor, accentColor, logo }
+  customContent           Json? // { motto, welcomeTitle, ... }
+  users                   User[]
+  students                Student[]
+  teachers                Teacher[]
+  news                    News[]
+  websiteInquiries        WebsiteInquiry[]
+  noticeboards            Noticeboard[]
+  clinicVisits            ClinicVisit[]
+  clinicHospitalizations  ClinicHospitalization[]
+  vacancies               Vacancy[]
+  jobApplications         JobApplication[]
+  gallery                 Gallery[]
+  clubs                   Club[]
+  sports                  Sport[]
+  applications            Application[]
+  announcements           Announcement[]
+  chaplaincyEvents        ChaplaincyEvent[]
+  diningHallReports       DiningHallReport[]
+  farmLivestockBatches    FarmLivestockBatch[]
+  farmCropCycles          FarmCropCycle[]
+  farmInventoryItems      FarmInventoryItem[]
+  prefectDuties           PrefectDuty[]
+  prefectMeetings         PrefectMeeting[]
+  prefectReports          PrefectReport[]
+  staffAttendances        StaffAttendance[]
+  timetableSlots          TimetableSlot[]
+  classes                 SchoolClass[]
+  subjects                Subject[]
+  books                   Book[]
+  grades                  Grade[]
+  attendance              Attendance[]
+  fees                    Fee[]
+  assignments             Assignment[]
+  bookLoans               BookLoan[]
+  bookReservations        BookReservation[]
+  librarySetting          LibrarySetting?
   libraryDigitalResources LibraryDigitalResource[]
-  assignmentSubmissions AssignmentSubmission[]
-  supervisorAssignments SupervisorAssignment[]
-  extensionRequests     ExtensionRequest[]
-  progressReports       ProgressReport[]
-  tuckshopItems         TuckshopItem[]
+  assignmentSubmissions   AssignmentSubmission[]
+  supervisorAssignments   SupervisorAssignment[]
+  extensionRequests       ExtensionRequest[]
+  progressReports         ProgressReport[]
+  tuckshopItems           TuckshopItem[]
 
   // Junctions
   suppliers       SchoolSupplier[]
@@ -113,11 +112,11 @@ model School {
   auditLogs       AuditLog[]
 
   leadershipAssignments LeadershipAssignment[]
-  studentAllowedItems StudentAllowedItem[]
+  studentAllowedItems   StudentAllowedItem[]
 
-  departments     Department[]
-  hostels         Hostel[]
-  weeklyMenus     WeeklyMenu[]
+  departments Department[]
+  hostels     Hostel[]
+  weeklyMenus WeeklyMenu[]
 
   clinicSettings        ClinicSetting?
   clinicBeds            ClinicBed[]
@@ -171,25 +170,25 @@ model School {
   studentPayments   StudentPayment[]
   communicationLogs CommunicationLog[]
 
-  libraryCategories LibraryCategory[]
-  sections          Section[]
-  studentHouses     StudentHouse[]
-  holidays          Holiday[]
-  schoolSetting     SchoolSetting?
-  CBTExam           CBTExam[]
-  Syllabus          Syllabus[]
-  LessonPlan        LessonPlan[]
-  LiveClass         LiveClass[]
-  Award             Award[]
-  Course            Course[]
-  StudyMaterial     StudyMaterial[]
-  hostelCategories  HostelCategory[]
-  hostelRooms       HostelRoom[]
-  SchoolVehicle     SchoolVehicle[]
-  SchoolTransport   SchoolTransport[]
-  paymentPlans      PaymentPlan[]
-  meetingMinutes    MeetingMinutes[]
-  projectFundings   ProjectFunding[]
+  libraryCategories    LibraryCategory[]
+  sections             Section[]
+  studentHouses        StudentHouse[]
+  holidays             Holiday[]
+  schoolSetting        SchoolSetting?
+  CBTExam              CBTExam[]
+  Syllabus             Syllabus[]
+  LessonPlan           LessonPlan[]
+  LiveClass            LiveClass[]
+  Award                Award[]
+  Course               Course[]
+  StudyMaterial        StudyMaterial[]
+  hostelCategories     HostelCategory[]
+  hostelRooms          HostelRoom[]
+  SchoolVehicle        SchoolVehicle[]
+  SchoolTransport      SchoolTransport[]
+  paymentPlans         PaymentPlan[]
+  meetingMinutes       MeetingMinutes[]
+  projectFundings      ProjectFunding[]
   sportingEquipment    SportingEquipment[]
   ClinicPatient        ClinicPatient[]
   clinicInventoryItems ClinicInventoryItem[]
@@ -255,7 +254,6 @@ model HostelRoom {
 
 // ... (other models)
 
-
 model LeadershipAssignment {
   id             String         @id @default(cuid())
   schoolId       String
@@ -291,19 +289,19 @@ model StudentAllowedItem {
 }
 
 model UniformItem {
-  id           String                  @id @default(cuid())
-  name         String
-  orderPrice   Float                   @default(0)
-  sellingPrice Float                   @default(0)
+  id             String                  @id @default(cuid())
+  name           String
+  orderPrice     Float                   @default(0)
+  sellingPrice   Float                   @default(0)
   // stockLevel is now COMPUTED from UniformStockMovement — do not write directly
-  costPrice    Float                   @default(0) // last purchase unit cost, used for COGS
-  schoolId     String
-  school       School                  @relation(fields: [schoolId], references: [id])
-  stockItems   UniformStockOrderItem[]
-  saleItems    UniformSaleItem[]
+  costPrice      Float                   @default(0) // last purchase unit cost, used for COGS
+  schoolId       String
+  school         School                  @relation(fields: [schoolId], references: [id])
+  stockItems     UniformStockOrderItem[]
+  saleItems      UniformSaleItem[]
   stockMovements UniformStockMovement[]
-  createdAt    DateTime                @default(now())
-  updatedAt    DateTime                @updatedAt
+  createdAt      DateTime                @default(now())
+  updatedAt      DateTime                @updatedAt
 
   @@index([schoolId])
 }
@@ -464,22 +462,22 @@ model User {
   avatar             String? // Stores filename or reference ID
   religion           String? // User's religious affiliation
 
-  phone             String?
-  preferredLanguage String?           @default("en")
-  staffId           String? // Unique sequential ID (BUR-YY000001, etc.)
-  schoolId          String?
-  school            School?           @relation(fields: [schoolId], references: [id])
-  teacher           Teacher?
-  student           Student?
-  parent            Parent?
-  supplier          Supplier?
-  salaryStubs       SalaryStub[]
-  shiftAssignments  ShiftAssignment[]
-  employeeProfile   EmployeeProfile?
-  awards            Award[]
-  courses           Course[]
-  bookLoans         BookLoan[]
-  bookReservations  BookReservation[]
+  phone                   String?
+  preferredLanguage       String?                  @default("en")
+  staffId                 String? // Unique sequential ID (BUR-YY000001, etc.)
+  schoolId                String?
+  school                  School?                  @relation(fields: [schoolId], references: [id])
+  teacher                 Teacher?
+  student                 Student?
+  parent                  Parent?
+  supplier                Supplier?
+  salaryStubs             SalaryStub[]
+  shiftAssignments        ShiftAssignment[]
+  employeeProfile         EmployeeProfile?
+  awards                  Award[]
+  courses                 Course[]
+  bookLoans               BookLoan[]
+  bookReservations        BookReservation[]
   libraryDigitalResources LibraryDigitalResource[] @relation("LibraryDigitalResourceAddedBy")
 
   departmentId String?
@@ -507,11 +505,10 @@ model User {
   adminRequisitions          Requisition[]           @relation("RequisitionAdmin")
   transfers                  TransferAuthorization[] @relation("StudentTransfers")
 
-  leadershipAssigned LeadershipAssignment[] @relation("LeadershipAssignedBy")
-  wardenOfHostels Hostel[] @relation("HostelWarden")
-  matronApprovedRequisitions Requisition[] @relation("RequisitionMatronApprover")
-  issuedRequisitions Requisition[] @relation("RequisitionIssuer")
-
+  leadershipAssigned         LeadershipAssignment[] @relation("LeadershipAssignedBy")
+  wardenOfHostels            Hostel[]               @relation("HostelWarden")
+  matronApprovedRequisitions Requisition[]          @relation("RequisitionMatronApprover")
+  issuedRequisitions         Requisition[]          @relation("RequisitionIssuer")
 
   communicationLogs CommunicationLog[] @relation("CommunicationSender")
 
@@ -528,26 +525,27 @@ model User {
   paymentPlans     PaymentPlan[]     @relation("ParentPaymentPlans")
   payrollEntries   PayrollEntry[]
 
-  clinicAppointments  ClinicAppointment[]
-  clinicComplaints    ClinicComplaint[]
-  clinicImmunizations ClinicImmunization[]
-  clinicReferrals     ClinicReferral[]
-  clinicVisits        ClinicVisit[]
+  clinicAppointments     ClinicAppointment[]
+  clinicComplaints       ClinicComplaint[]
+  clinicImmunizations    ClinicImmunization[]
+  clinicReferrals        ClinicReferral[]
+  clinicVisits           ClinicVisit[]
   clinicHospitalizations ClinicHospitalization[]
-  clinicPatient       ClinicPatient?
-  createdSubjects     Subject[]                 @relation("SubjectCreatedByUser")
+  clinicPatient          ClinicPatient?
+  createdSubjects        Subject[]               @relation("SubjectCreatedByUser")
 
-  vitalsRecorded          ClinicVital[]             @relation("VitalRecordedBy")
-  prescriptionsWritten    ClinicPrescription[]      @relation("PrescriptionPrescribedBy")
-  pharmacyDispensingsMade PharmacyDispense[]        @relation("PharmacyDispensedBy")
-  monitoringLogsRecorded  ClinicMonitoringLog[]     @relation("MonitoringLogRecordedBy")
-  emergencyLogsRecorded   ClinicEmergencyLog[]      @relation("EmergencyLoggedBy")
-  clinicAccessAudits      ClinicAccessAudit[]       @relation("ClinicAccessAudits")
-  visitsTriaged           ClinicVisit[]             @relation("VisitTriageBy")
-  visitsConsulted         ClinicVisit[]             @relation("VisitConsultedBy")
-  leaveBalances           LeaveBalance[]            @relation("LeaveBalances")
-  announcementsCreated    Announcement[]            @relation("AnnouncementCreatedBy")
-  announcementReads       AnnouncementRead[]        @relation("AnnouncementReads")
+  vitalsRecorded          ClinicVital[]         @relation("VitalRecordedBy")
+  prescriptionsWritten    ClinicPrescription[]  @relation("PrescriptionPrescribedBy")
+  pharmacyDispensingsMade PharmacyDispense[]    @relation("PharmacyDispensedBy")
+  monitoringLogsRecorded  ClinicMonitoringLog[] @relation("MonitoringLogRecordedBy")
+  emergencyLogsRecorded   ClinicEmergencyLog[]  @relation("EmergencyLoggedBy")
+  clinicAccessAudits      ClinicAccessAudit[]   @relation("ClinicAccessAudits")
+  visitsTriaged           ClinicVisit[]         @relation("VisitTriageBy")
+  visitsConsulted         ClinicVisit[]         @relation("VisitConsultedBy")
+  leaveBalances           LeaveBalance[]        @relation("LeaveBalances")
+  announcementsCreated    Announcement[]        @relation("AnnouncementCreatedBy")
+  announcementReads       AnnouncementRead[]    @relation("AnnouncementReads")
+
   @@index([schoolId])
 }
 
@@ -623,13 +621,12 @@ model Student {
   courseEnrollments CourseEnrollment[]
 
   leadershipAssignments LeadershipAssignment[]
-  studentRequisitions Requisition[] @relation("StudentRequisitions")
+  studentRequisitions   Requisition[]          @relation("StudentRequisitions")
 
-  healthProfile         StudentHealthProfile?
-  clinicAdmissions      ClinicAdmission[]
-  clinicEmergencyLogs   ClinicEmergencyLog[]
-  clinicAccessAudits    ClinicAccessAudit[]
-
+  healthProfile       StudentHealthProfile?
+  clinicAdmissions    ClinicAdmission[]
+  clinicEmergencyLogs ClinicEmergencyLog[]
+  clinicAccessAudits  ClinicAccessAudit[]
 
   // Postgraduate Fields
   programLevel      String?   @default("UNDERGRADUATE") // UNDERGRADUATE, PG_DIPLOMA, MASTERS_TAUGHT, MASTERS_RESEARCH, MPHIL, PHD
@@ -754,38 +751,38 @@ model Section {
 }
 
 model Subject {
-  id             String                @id @default(cuid())
-  name           String
-  code           String?
-  department     String? // Keep for legacy/string-based fallback
-  departmentId   String?
-  dept           Department?           @relation(fields: [departmentId], references: [id])
-  schoolId       String
-  school         School                @relation(fields: [schoolId], references: [id])
-  createdById    String?
-  createdBy      User?                 @relation("SubjectCreatedByUser", fields: [createdById], references: [id])
-  teachers       TeacherSubject[]
-  classTeachers  ClassSubjectTeacher[]
-  grades         Grade[]
-  assignments    Assignment[]
-  questionPapers QuestionPaper[]
-  timetableSlots TimetableSlot[]
-  resources      DigitalResource[]
+  id                      String                   @id @default(cuid())
+  name                    String
+  code                    String?
+  department              String? // Keep for legacy/string-based fallback
+  departmentId            String?
+  dept                    Department?              @relation(fields: [departmentId], references: [id])
+  schoolId                String
+  school                  School                   @relation(fields: [schoolId], references: [id])
+  createdById             String?
+  createdBy               User?                    @relation("SubjectCreatedByUser", fields: [createdById], references: [id])
+  teachers                TeacherSubject[]
+  classTeachers           ClassSubjectTeacher[]
+  grades                  Grade[]
+  assignments             Assignment[]
+  questionPapers          QuestionPaper[]
+  timetableSlots          TimetableSlot[]
+  resources               DigitalResource[]
   libraryDigitalResources LibraryDigitalResource[]
-  lessonPlans    LessonPlan[]
-  books          Book[]
+  lessonPlans             LessonPlan[]
+  books                   Book[]
 
-  gradingType   String          @default("standard") // standard or competency
+  gradingType    String          @default("standard") // standard or competency
   moderatedScale Json?
-  credits       Float?          @default(0)
-  isIndustrial  Boolean         @default(false)
-  isProject     Boolean         @default(false)
-  isSubsidiary  Boolean         @default(false)
-  caWeight      Float           @default(30)
-  examWeight    Float           @default(70)
-  CBTExam       CBTExam[]
-  Syllabus      Syllabus[]
-  StudyMaterial StudyMaterial[]
+  credits        Float?          @default(0)
+  isIndustrial   Boolean         @default(false)
+  isProject      Boolean         @default(false)
+  isSubsidiary   Boolean         @default(false)
+  caWeight       Float           @default(30)
+  examWeight     Float           @default(70)
+  CBTExam        CBTExam[]
+  Syllabus       Syllabus[]
+  StudyMaterial  StudyMaterial[]
 
   @@index([schoolId])
 }
@@ -834,9 +831,9 @@ model Grade {
   isIndustrialGrade Boolean  @default(false)
   gradePoint        Float? // Calculated points (e.g. 4.0, 3.0) for GPA
   comment           String?
-  assessmentEntries Json?  // Tests, exercises, exams breakdown with selection for report
+  assessmentEntries Json? // Tests, exercises, exams breakdown with selection for report
   classAverage      Float? // Class average percentage for this subject
-  classPosition     Int?   // Position/Rank of student in class for this subject
+  classPosition     Int? // Position/Rank of student in class for this subject
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 
@@ -1053,21 +1050,21 @@ model TimetableSlot {
 }
 
 model Announcement {
-  id             String    @id @default(cuid())
-  title          String
-  content        String
-  body           String?
-  category       String    @default("GENERAL") // ACADEMIC | FEES | EVENTS | GENERAL
-  priority       String    @default("NORMAL")  // URGENT | NORMAL
-  audience       String    @default("ALL")     // ALL | ALL_TEACHERS | ALL_PARENTS | ALL_STAFF | SPECIFIC_CLASS | BOARDING_STAFF
-  targetClassId  String?
-  targetClass    SchoolClass? @relation(fields: [targetClassId], references: [id])
-  isPinned       Boolean   @default(false)
-  expiryDate     DateTime?
-  createdById    String?
-  createdBy      User?     @relation("AnnouncementCreatedBy", fields: [createdById], references: [id])
-  reads          AnnouncementRead[]
-  
+  id            String             @id @default(cuid())
+  title         String
+  content       String
+  body          String?
+  category      String             @default("GENERAL") // ACADEMIC | FEES | EVENTS | GENERAL
+  priority      String             @default("NORMAL") // URGENT | NORMAL
+  audience      String             @default("ALL") // ALL | ALL_TEACHERS | ALL_PARENTS | ALL_STAFF | SPECIFIC_CLASS | BOARDING_STAFF
+  targetClassId String?
+  targetClass   SchoolClass?       @relation(fields: [targetClassId], references: [id])
+  isPinned      Boolean            @default(false)
+  expiryDate    DateTime?
+  createdById   String?
+  createdBy     User?              @relation("AnnouncementCreatedBy", fields: [createdById], references: [id])
+  reads         AnnouncementRead[]
+
   // Legacy fields
   targetRole     String    @default("ALL") // Deprecated
   visiblePortals String[]  @default(["ALL"])
@@ -1076,9 +1073,9 @@ model Announcement {
   school         School    @relation(fields: [schoolId], references: [id])
   publishedAt    DateTime  @default(now())
   expiresAt      DateTime?
-  
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt @default(now())
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 
   @@index([schoolId, audience])
   @@index([schoolId, priority])
@@ -1388,30 +1385,30 @@ model SchoolSetting {
   idleTime          Int?    @default(0)
   idleTimeCountdown Int?    @default(0)
 
-  baseCurrency          String? @default("USD")
-  baseCurrencySymbol    String? @default("$")
-  altCurrency           String? @default("ZWG")
-  altCurrencySymbol     String? @default("ZWG")
-  mandatoryReceipts     Boolean @default(true)
-  showBalanceOnReceipts Boolean @default(true)
-  showUniformsModule    Boolean @default(true)
-  financialApprovalThreshold Float? @default(50.0)
-  tier1ApprovalRole     String? @default("BURSAR")
-  tier2ApprovalRole     String? @default("SCHOOL_ADMIN")
-  debtorLimit           Float?  @default(500.0)
-  tillVarianceThreshold Float?  @default(5.0)
-  allowNegativeStock    Boolean @default(false)
-  vatNumber             String?
-  vatRate               Float?  @default(15.0)
-  smtpEmail             String?
-  smtpHost              String?
-  smtpPort              Int?    @default(465)
-  smtpPassword          String?
-  smtpSsl               Boolean @default(true)
-  systemUrl             String?
-  whatsappApiUrl        String?
-  whatsappAccessToken   String?
-  countryPhoneCode      String? @default("263")
+  baseCurrency               String? @default("USD")
+  baseCurrencySymbol         String? @default("$")
+  altCurrency                String? @default("ZWG")
+  altCurrencySymbol          String? @default("ZWG")
+  mandatoryReceipts          Boolean @default(true)
+  showBalanceOnReceipts      Boolean @default(true)
+  showUniformsModule         Boolean @default(true)
+  financialApprovalThreshold Float?  @default(50.0)
+  tier1ApprovalRole          String? @default("BURSAR")
+  tier2ApprovalRole          String? @default("SCHOOL_ADMIN")
+  debtorLimit                Float?  @default(500.0)
+  tillVarianceThreshold      Float?  @default(5.0)
+  allowNegativeStock         Boolean @default(false)
+  vatNumber                  String?
+  vatRate                    Float?  @default(15.0)
+  smtpEmail                  String?
+  smtpHost                   String?
+  smtpPort                   Int?    @default(465)
+  smtpPassword               String?
+  smtpSsl                    Boolean @default(true)
+  systemUrl                  String?
+  whatsappApiUrl             String?
+  whatsappAccessToken        String?
+  countryPhoneCode           String? @default("263")
 
   systemName                      String?
   systemTitle                     String?
@@ -1460,11 +1457,11 @@ model SchoolSetting {
 
   idCardTemplateFront String? // Path to front face of ID card template image
   idCardTemplateBack  String? // Path to back face of ID card template image
-  setupStatus         Json?   // Guided onboarding wizard state & stage completion progress
+  setupStatus         Json? // Guided onboarding wizard state & stage completion progress
 
   // Module toggles
-  housesModuleEnabled Boolean @default(true) // Show/hide Houses module (default on for K12, can be disabled for tertiary)
-  transportGpsEnabled Boolean @default(false) // Toggle live GPS tracking vs manual status
+  housesModuleEnabled  Boolean @default(true) // Show/hide Houses module (default on for K12, can be disabled for tertiary)
+  transportGpsEnabled  Boolean @default(false) // Toggle live GPS tracking vs manual status
   transportTodayStatus String? @default("Bus departed school 15:32 ✓")
 
   createdAt DateTime @default(now())
@@ -1790,13 +1787,13 @@ model SupportTicket {
 // ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚Â STAFF LEAVE / HR ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚Â
 
 model StaffLeave {
-  id              String   @id @default(cuid())
+  id              String    @id @default(cuid())
   userId          String
   leaveType       String // annual, sick, maternity, study, unpaid
   startDate       DateTime
   endDate         DateTime
   reason          String?
-  status          String   @default("pending") // pending_hod, pending_head, approved, rejected, cancelled
+  status          String    @default("pending") // pending_hod, pending_head, approved, rejected, cancelled
   approvedBy      String?
   schoolId        String
   coverTeacherId  String?
@@ -1807,34 +1804,34 @@ model StaffLeave {
   headApprovedAt  DateTime?
   attachmentUrl   String?
   days            Int?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 
   @@index([userId])
   @@index([schoolId])
 }
 
 model LeaveBalance {
-  id                  String   @id @default(cuid())
-  schoolId            String
-  school              School   @relation(fields: [schoolId], references: [id])
-  userId              String
-  user                User     @relation("LeaveBalances", fields: [userId], references: [id])
-  annualTotal         Int      @default(30)
-  annualUsed          Int      @default(0)
-  sickTotal           Int      @default(90)
-  sickUsed            Int      @default(0)
-  compassionateTotal  Int      @default(5)
-  compassionateUsed   Int      @default(0)
-  maternityTotal      Int      @default(90)
-  maternityUsed       Int      @default(0)
-  studyTotal          Int      @default(10)
-  studyUsed           Int      @default(0)
-  unpaidTotal         Int      @default(365)
-  unpaidUsed          Int      @default(0)
-  academicYear        String   @default("2025")
-  updatedAt           DateTime @updatedAt
-  createdAt           DateTime @default(now())
+  id                 String   @id @default(cuid())
+  schoolId           String
+  school             School   @relation(fields: [schoolId], references: [id])
+  userId             String
+  user               User     @relation("LeaveBalances", fields: [userId], references: [id])
+  annualTotal        Int      @default(30)
+  annualUsed         Int      @default(0)
+  sickTotal          Int      @default(90)
+  sickUsed           Int      @default(0)
+  compassionateTotal Int      @default(5)
+  compassionateUsed  Int      @default(0)
+  maternityTotal     Int      @default(90)
+  maternityUsed      Int      @default(0)
+  studyTotal         Int      @default(10)
+  studyUsed          Int      @default(0)
+  unpaidTotal        Int      @default(365)
+  unpaidUsed         Int      @default(0)
+  academicYear       String   @default("2025")
+  updatedAt          DateTime @updatedAt
+  createdAt          DateTime @default(now())
 
   @@unique([schoolId, userId, academicYear])
   @@index([schoolId])
@@ -1843,52 +1840,52 @@ model LeaveBalance {
 // ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚Â ASSET INVENTORY ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚Â
 
 model Asset {
-  id                  String    @id @default(cuid())
-  assetNumber         String?   // System-generated unique e.g. AX-EMBAKWE-AST-0001
-  name                String
-  category            String    // furniture, electronics, vehicles, stationery, books, etc.
-  serialNumber        String?
-  location            String?
-  condition           String    @default("good") // good, fair, poor, condemned, damaged
-  status              String    @default("ACTIVE") // ACTIVE, PENDING_APPROVAL, UNDER_MAINTENANCE, DISPOSED, TRANSFERRED, DAMAGED, LOST
-  department          String?   // library, clinic, science, kitchen, grounds, admin, etc.
-  departmentId        String?
-  quantity            Int       @default(1)
-  purchaseDate        DateTime?
-  purchasePrice       Float?
-  supplierName        String?
-  invoiceNumber       String?
-  depreciationRate    Float?    // e.g. 10.0 for 10%/year
-  warrantyExpiry      DateTime?
-  photoUrl            String?
+  id               String    @id @default(cuid())
+  assetNumber      String? // System-generated unique e.g. AX-EMBAKWE-AST-0001
+  name             String
+  category         String // furniture, electronics, vehicles, stationery, books, etc.
+  serialNumber     String?
+  location         String?
+  condition        String    @default("good") // good, fair, poor, condemned, damaged
+  status           String    @default("ACTIVE") // ACTIVE, PENDING_APPROVAL, UNDER_MAINTENANCE, DISPOSED, TRANSFERRED, DAMAGED, LOST
+  department       String? // library, clinic, science, kitchen, grounds, admin, etc.
+  departmentId     String?
+  quantity         Int       @default(1)
+  purchaseDate     DateTime?
+  purchasePrice    Float?
+  supplierName     String?
+  invoiceNumber    String?
+  depreciationRate Float? // e.g. 10.0 for 10%/year
+  warrantyExpiry   DateTime?
+  photoUrl         String?
 
-  custodianId         String?
-  custodian           User?     @relation("AssetCustodian", fields: [custodianId], references: [id])
+  custodianId String?
+  custodian   User?   @relation("AssetCustodian", fields: [custodianId], references: [id])
 
-  registeredById      String?
-  registeredBy        User?     @relation("AssetRegisteredBy", fields: [registeredById], references: [id])
+  registeredById String?
+  registeredBy   User?   @relation("AssetRegisteredBy", fields: [registeredById], references: [id])
 
-  approvalStatus      String    @default("APPROVED") // PENDING_HOD, PENDING_BURSAR_ADMIN, APPROVED, REJECTED
-  hodApprovedAt       DateTime?
-  hodApprovedById     String?
-  bursarApprovedAt    DateTime?
-  bursarApprovedById  String?
-  adminApprovedAt     DateTime?
-  adminApprovedById   String?
-  rejectionReason     String?
+  approvalStatus     String    @default("APPROVED") // PENDING_HOD, PENDING_BURSAR_ADMIN, APPROVED, REJECTED
+  hodApprovedAt      DateTime?
+  hodApprovedById    String?
+  bursarApprovedAt   DateTime?
+  bursarApprovedById String?
+  adminApprovedAt    DateTime?
+  adminApprovedById  String?
+  rejectionReason    String?
 
-  schoolId            String
-  school              School    @relation(fields: [schoolId], references: [id])
+  schoolId String
+  school   School @relation(fields: [schoolId], references: [id])
 
-  incidents           AssetIncident[]
-  maintenance         AssetMaintenance[]
+  incidents   AssetIncident[]
+  maintenance AssetMaintenance[]
 
   nextMaintenance     DateTime?
   maintenanceInterval Int? // Interval in days
   attachments         Json? // [{name, url}] for receipts/warranties
 
-  createdAt           DateTime  @default(now())
-  updatedAt           DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([schoolId])
   @@index([custodianId])
@@ -2164,8 +2161,8 @@ model ReportTemplate {
 // ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚Â REQUISITION FLOW ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚Â
 
 model Requisition {
-  id              String  @id @default(cuid())
-  refNumber       String  @unique // e.g., PRQ-2024-001
+  id              String    @id @default(cuid())
+  refNumber       String    @unique // e.g., PRQ-2024-001
   title           String
   description     String?
   estimatedAmount Float
@@ -2197,24 +2194,23 @@ model Requisition {
   purchaseOrderId String?        @unique
   purchaseOrder   PurchaseOrder? @relation(fields: [purchaseOrderId], references: [id])
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt            DateTime       @default(now())
+  updatedAt            DateTime       @updatedAt
+  requesterRole        RequesterRole?
+  hostelReqId          String?
+  hostelReq            Hostel?        @relation("RequisitionHostel", fields: [hostelReqId], references: [id])
+  requestedByStudentId String?
+  requestedByStudent   Student?       @relation("StudentRequisitions", fields: [requestedByStudentId], references: [id])
+  matronApprovedAt     DateTime?
+  matronApprovedById   String?
+  matronApprovedBy     User?          @relation("RequisitionMatronApprover", fields: [matronApprovedById], references: [id])
+  rejectionReason      String?
+  issuedAt             DateTime?
+  issuedById           String?
+  issuedBy             User?          @relation("RequisitionIssuer", fields: [issuedById], references: [id])
+  receivedAt           DateTime?
 
   @@index([schoolId])
-  requesterRole            RequesterRole?
-  hostelReqId              String?  
-  hostelReq                Hostel?  @relation("RequisitionHostel", fields: [hostelReqId], references: [id])
-  requestedByStudentId     String?
-  requestedByStudent       Student? @relation("StudentRequisitions", fields: [requestedByStudentId], references: [id])
-  matronApprovedAt         DateTime?
-  matronApprovedById       String?
-  matronApprovedBy         User?    @relation("RequisitionMatronApprover", fields: [matronApprovedById], references: [id])
-  rejectionReason          String?
-  issuedAt                 DateTime?
-  issuedById               String?
-  issuedBy                 User?    @relation("RequisitionIssuer", fields: [issuedById], references: [id])
-  receivedAt               DateTime?
-
 }
 
 // ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚Â ANCILLARY SERVICES ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚Â
@@ -2233,18 +2229,17 @@ model Hostel {
   roomId   String?
   roomType HostelRoom? @relation(fields: [roomId], references: [id])
 
-  schoolId  String
-  school    School    @relation(fields: [schoolId], references: [id])
-  rooms     Room[]
-  students  Student[]
-  createdAt DateTime  @default(now())
+  schoolId              String
+  school                School                 @relation(fields: [schoolId], references: [id])
+  rooms                 Room[]
+  students              Student[]
+  createdAt             DateTime               @default(now())
+  wardenUserId          String?
+  warden                User?                  @relation("HostelWarden", fields: [wardenUserId], references: [id])
+  leadershipAssignments LeadershipAssignment[] @relation("LeadershipHostel")
+  requisitionsAsHostel  Requisition[]          @relation("RequisitionHostel")
 
   @@index([schoolId])
-  wardenUserId String?
-  warden       User?   @relation("HostelWarden", fields: [wardenUserId], references: [id])
-  leadershipAssignments LeadershipAssignment[] @relation("LeadershipHostel")
-  requisitionsAsHostel Requisition[] @relation("RequisitionHostel")
-
 }
 
 model Room {
@@ -2531,7 +2526,7 @@ model PhysicalProductConsumption {
   date         DateTime
 
   schoolId String
-  school   School @relation(fields: [schoolId], references: [id])
+  school   School  @relation(fields: [schoolId], references: [id])
   hostelId String?
 
   createdAt DateTime @default(now())
@@ -3216,16 +3211,16 @@ model ClinicPatient {
   school            School    @relation(fields: [schoolId], references: [id], onDelete: Cascade)
   userId            String?   @unique
   user              User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  mrn               String?   // Medical Record Number (e.g. MRN-2026-0001)
+  mrn               String? // Medical Record Number (e.g. MRN-2026-0001)
   firstName         String?
   lastName          String?
   dob               DateTime?
   gender            String?
   contactNumber     String?
   address           String?
-  bloodType         String?   // e.g. A+, O-, B+
-  allergies         String?   // e.g. Penicillin, Peanuts
-  chronicConditions String?   // e.g. Asthma, Diabetes Type 1
+  bloodType         String? // e.g. A+, O-, B+
+  allergies         String? // e.g. Penicillin, Peanuts
+  chronicConditions String? // e.g. Asthma, Diabetes Type 1
   guardianName      String?
   guardianContact   String?
   medicalHistory    String?
@@ -3302,7 +3297,7 @@ model ClinicImmunization {
   patient        ClinicPatient? @relation(fields: [patientId], references: [id], onDelete: Cascade)
   title          String
   details        String?
-  vaccine        String?        // e.g. Tetanus Toxoid, BCG, Oral Polio
+  vaccine        String? // e.g. Tetanus Toxoid, BCG, Oral Polio
   doseNumber     Int?           @default(1)
   nextDueDate    DateTime?
   administeredBy String?
@@ -3367,24 +3362,24 @@ model ClinicVisit {
   dispensings ClinicDispensingLog[]
 
   // Additional fields for consolidated clinic workflow
-  source                  String                    @default("WALK_IN") // WALK_IN, TEACHER_REFERRAL, STUDENT_APPOINTMENT, MATRON_ALERT
-  acuity                  String                    @default("GREEN")   // GREEN, YELLOW, RED
-  isEmergency             Boolean                   @default(false)
-  isConfidential          Boolean                   @default(false)
-  disposition             String?                                       // DISCHARGE_CLASS, ADMIT_SICK_BAY, REFER_HOSPITAL, EXCUSE_SPORTS
-  triageById              String?
-  triageBy                User?                     @relation("VisitTriageBy", fields: [triageById], references: [id])
-  consultedById           String?
-  consultedBy             User?                     @relation("VisitConsultedBy", fields: [consultedById], references: [id])
-  closedAt                DateTime?
+  source         String    @default("WALK_IN") // WALK_IN, TEACHER_REFERRAL, STUDENT_APPOINTMENT, MATRON_ALERT
+  acuity         String    @default("GREEN") // GREEN, YELLOW, RED
+  isEmergency    Boolean   @default(false)
+  isConfidential Boolean   @default(false)
+  disposition    String? // DISCHARGE_CLASS, ADMIT_SICK_BAY, REFER_HOSPITAL, EXCUSE_SPORTS
+  triageById     String?
+  triageBy       User?     @relation("VisitTriageBy", fields: [triageById], references: [id])
+  consultedById  String?
+  consultedBy    User?     @relation("VisitConsultedBy", fields: [consultedById], references: [id])
+  closedAt       DateTime?
 
   // Relations to dedicated clinical entities
-  vitalsRecord            ClinicVital?
-  diagnosesList           ClinicDiagnosis[]
-  prescriptionsList       ClinicPrescription[]
-  pharmacyDispensings     PharmacyDispense[]
-  admissionsList          ClinicAdmission[]
-  emergencyLogsList       ClinicEmergencyLog[]
+  vitalsRecord        ClinicVital?
+  diagnosesList       ClinicDiagnosis[]
+  prescriptionsList   ClinicPrescription[]
+  pharmacyDispensings PharmacyDispense[]
+  admissionsList      ClinicAdmission[]
+  emergencyLogsList   ClinicEmergencyLog[]
 
   // Follow-up
   status    String   @default("OPEN") // OPEN, CHECK_IN, TRIAGE, CONSULTATION, PRESCRIBED, DISPENSED, BILLED, DISCHARGED
@@ -3398,43 +3393,43 @@ model ClinicVisit {
 }
 
 model ClinicInventoryItem {
-  id           String   @id @default(cuid())
+  id           String    @id @default(cuid())
   schoolId     String
-  school       School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  school       School    @relation(fields: [schoolId], references: [id], onDelete: Cascade)
   name         String
-  category     String   @default("MEDICATION") // MEDICATION, CONSUMABLE, EQUIPMENT
+  category     String    @default("MEDICATION") // MEDICATION, CONSUMABLE, EQUIPMENT
   batchNumber  String?
   expiryDate   DateTime?
-  unit         String   @default("tablets") // tablets, bottles, vials, packs, boxes
-  stock        Int      @default(0)
-  reorderLevel Int      @default(10)
-  unitCost     Float    @default(0)
-  unitPrice    Float    @default(0)
-  location     String?  // Main Sick Bay, Shelf A, Outreach Bin 2
-  
-  dispensings  ClinicDispensingLog[]
+  unit         String    @default("tablets") // tablets, bottles, vials, packs, boxes
+  stock        Int       @default(0)
+  reorderLevel Int       @default(10)
+  unitCost     Float     @default(0)
+  unitPrice    Float     @default(0)
+  location     String? // Main Sick Bay, Shelf A, Outreach Bin 2
 
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  dispensings ClinicDispensingLog[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([schoolId])
 }
 
 model ClinicDispensingLog {
-  id           String              @id @default(cuid())
-  schoolId     String
-  itemId       String
-  item         ClinicInventoryItem @relation(fields: [itemId], references: [id], onDelete: Cascade)
-  visitId      String?
-  visit        ClinicVisit?        @relation(fields: [visitId], references: [id], onDelete: SetNull)
-  patientId    String?
-  patient      ClinicPatient?      @relation(fields: [patientId], references: [id], onDelete: SetNull)
-  quantity     Int
-  unitCost     Float               @default(0)
-  totalPrice   Float               @default(0)
-  dispensedBy  String?
-  notes        String?
-  dispensedAt  DateTime            @default(now())
+  id          String              @id @default(cuid())
+  schoolId    String
+  itemId      String
+  item        ClinicInventoryItem @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  visitId     String?
+  visit       ClinicVisit?        @relation(fields: [visitId], references: [id], onDelete: SetNull)
+  patientId   String?
+  patient     ClinicPatient?      @relation(fields: [patientId], references: [id], onDelete: SetNull)
+  quantity    Int
+  unitCost    Float               @default(0)
+  totalPrice  Float               @default(0)
+  dispensedBy String?
+  notes       String?
+  dispensedAt DateTime            @default(now())
 
   @@index([schoolId])
   @@index([itemId])
@@ -3442,24 +3437,24 @@ model ClinicDispensingLog {
 }
 
 model ClinicHospitalization {
-  id              String         @id @default(cuid())
-  userId          String?
-  user            User?          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  patientId       String?
-  patient         ClinicPatient? @relation(fields: [patientId], references: [id], onDelete: Cascade)
-  schoolId        String
-  school          School         @relation(fields: [schoolId], references: [id])
-  
-  stage           String         @default("PRE_ADMISSION") // PRE_ADMISSION, ADMITTED, TRANSFERRED, DISCHARGED
-  
+  id        String         @id @default(cuid())
+  userId    String?
+  user      User?          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  patientId String?
+  patient   ClinicPatient? @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  schoolId  String
+  school    School         @relation(fields: [schoolId], references: [id])
+
+  stage String @default("PRE_ADMISSION") // PRE_ADMISSION, ADMITTED, TRANSFERRED, DISCHARGED
+
   preAdmissionData Json?
   admissionData    Json?
   transferData     Json?
   dischargeData    Json?
 
-  createdAt       DateTime       @default(now())
-  updatedAt       DateTime       @updatedAt
-  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@index([schoolId])
   @@index([userId])
   @@index([patientId])
@@ -3637,26 +3632,26 @@ model Icd10Code {
 /// Supports hierarchical accounts via self-relation (parentId).
 /// system accounts cannot be deleted or renamed — only custom ones can.
 model ChartOfAccount {
-  id              String          @id @default(cuid())
+  id              String           @id @default(cuid())
   schoolId        String
-  school          School          @relation(fields: [schoolId], references: [id])
-  code            String          // e.g. "1100", "4100" — unique per tenant
-  name            String          // e.g. "Cash on Hand"
+  school          School           @relation(fields: [schoolId], references: [id])
+  code            String // e.g. "1100", "4100" — unique per tenant
+  name            String // e.g. "Cash on Hand"
   type            AccountType
   parentId        String?
-  parent          ChartOfAccount? @relation("AccountHierarchy", fields: [parentId], references: [id])
+  parent          ChartOfAccount?  @relation("AccountHierarchy", fields: [parentId], references: [id])
   children        ChartOfAccount[] @relation("AccountHierarchy")
-  isSystemAccount Boolean         @default(false) // system accounts cannot be deleted/renamed
-  isBank          Boolean         @default(false)
-  isTemplate      Boolean         @default(false)
-  isActive        Boolean         @default(true)
+  isSystemAccount Boolean          @default(false) // system accounts cannot be deleted/renamed
+  isBank          Boolean          @default(false)
+  isTemplate      Boolean          @default(false)
+  isActive        Boolean          @default(true)
   description     String?
 
-  journalLines    JournalEntryLine[]
-  bankStatements  BankStatement[]
+  journalLines   JournalEntryLine[]
+  bankStatements BankStatement[]
 
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([schoolId, code])
   @@index([schoolId])
@@ -3667,46 +3662,46 @@ model ChartOfAccount {
 /// Central journal entry header. Every financial event produces exactly one entry.
 /// Total debits across all lines MUST equal total credits — enforced by LedgerService.
 model JournalEntry {
-  id           String   @id @default(cuid())
-  schoolId     String
-  school       School   @relation(fields: [schoolId], references: [id])
+  id       String @id @default(cuid())
+  schoolId String
+  school   School @relation(fields: [schoolId], references: [id])
 
-  entryNumber  String   // JE-{SCHOOL_CODE}-{seq}
-  date         DateTime
-  description  String
-  status       String   @default("POSTED") // POSTED | REVERSED | VOID
+  entryNumber String // JE-{SCHOOL_CODE}-{seq}
+  date        DateTime
+  description String
+  status      String   @default("POSTED") // POSTED | REVERSED | VOID
 
   // Currency & FX audit
-  currency         String   @default("USD")
-  exchangeRateUsed Float    @default(1.0)
+  currency         String  @default("USD")
+  exchangeRateUsed Float   @default(1.0)
   ipAddress        String?
 
   // Reversal chain — never delete; always reverse
-  isReversing    Boolean  @default(false)   // true if this entry was created to reverse another
-  reversedById   String?  // ID of the original entry this reverses
+  isReversing    Boolean        @default(false) // true if this entry was created to reverse another
+  reversedById   String? // ID of the original entry this reverses
   reversedBy     JournalEntry?  @relation("Reversal", fields: [reversedById], references: [id])
   reversalOf     JournalEntry[] @relation("Reversal")
-  isReversed     Boolean  @default(false)   // true if this transaction has been reversed
-  reversedByCnId String?  // Reference to credit note or reversal transaction
+  isReversed     Boolean        @default(false) // true if this transaction has been reversed
+  reversedByCnId String? // Reference to credit note or reversal transaction
 
   // Fiscalisation relation
   fiscalInvoices FiscalInvoice[]
 
   // Source traceability — mandatory: every JE must link back to what caused it
-  sourceType   String   // fee_payment | uniform_sale | uniform_purchase | payroll
-                        // tuckshop_sale | expense | income | manual | wallet_deposit
-                        // refund | cogs | depreciation | migration
-  sourceId     String   // primary key in the source table
+  sourceType String // fee_payment | uniform_sale | uniform_purchase | payroll
+  // tuckshop_sale | expense | income | manual | wallet_deposit
+  // refund | cogs | depreciation | migration
+  sourceId   String // primary key in the source table
 
   // Period control
-  period       String   // "YYYY-MM" e.g. "2025-01"
-  isLocked     Boolean  @default(false)
+  period   String // "YYYY-MM" e.g. "2025-01"
+  isLocked Boolean @default(false)
 
   createdByUserId String?
-  lines        JournalEntryLine[]
+  lines           JournalEntryLine[]
 
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([schoolId, entryNumber])
   @@index([schoolId])
@@ -3720,38 +3715,38 @@ model JournalEntry {
 /// Exactly one of debit/credit is non-zero per line.
 /// Dual-currency: amounts stored in both base and foreign currency.
 model JournalEntryLine {
-  id             String       @id @default(cuid())
+  id             String         @id @default(cuid())
   journalEntryId String
-  journalEntry   JournalEntry @relation(fields: [journalEntryId], references: [id], onDelete: Cascade)
+  journalEntry   JournalEntry   @relation(fields: [journalEntryId], references: [id], onDelete: Cascade)
   accountId      String
   account        ChartOfAccount @relation(fields: [accountId], references: [id])
   schoolId       String
   coaCode        String?
 
-  description    String?
+  description String?
 
   // Base currency amounts (always stored in school's baseCurrency)
-  debit          Float        @default(0)
-  credit         Float        @default(0)
-  baseAmount     Float        @default(0)
-  taxCode        String?
+  debit      Float   @default(0)
+  credit     Float   @default(0)
+  baseAmount Float   @default(0)
+  taxCode    String?
 
   // Foreign currency support
-  currency       String       @default("USD")  // ISO 4217 code
-  exchangeRate   Float        @default(1.0)    // rate to base currency at time of posting
-  debitForeign   Float        @default(0)      // original amount in foreign currency
-  creditForeign  Float        @default(0)
+  currency      String @default("USD") // ISO 4217 code
+  exchangeRate  Float  @default(1.0) // rate to base currency at time of posting
+  debitForeign  Float  @default(0) // original amount in foreign currency
+  creditForeign Float  @default(0)
 
   // Sub-ledger references (for AR aging, student ledger reconciliation)
-  studentId      String?
-  supplierId     String?
+  studentId  String?
+  supplierId String?
 
   // Bank reconciliation
-  isReconciled   Boolean      @default(false)
-  reconciledAt   DateTime?
-  bankLineId     String?      // BankStatementLine.id when matched
+  isReconciled Boolean   @default(false)
+  reconciledAt DateTime?
+  bankLineId   String? // BankStatementLine.id when matched
 
-  createdAt      DateTime     @default(now())
+  createdAt DateTime @default(now())
 
   @@index([journalEntryId])
   @@index([accountId])
@@ -3766,7 +3761,7 @@ model AccountingPeriod {
   id        String    @id @default(cuid())
   schoolId  String
   school    School    @relation(fields: [schoolId], references: [id])
-  period    String    // "YYYY-MM"
+  period    String // "YYYY-MM"
   year      Int?
   term      String?
   startDate DateTime?
@@ -3801,15 +3796,15 @@ model Approval {
   id              String    @id @default(cuid())
   schoolId        String
   school          School    @relation(fields: [schoolId], references: [id])
-  entityType      String    // EXPENSE | REQUISITION | FEE_ADJUSTMENT | PAYROLL | TUCKSHOP
+  entityType      String // EXPENSE | REQUISITION | FEE_ADJUSTMENT | PAYROLL | TUCKSHOP
   entityId        String
-  requestedBy     String    // userId
+  requestedBy     String // userId
   amount          Float
   currency        String    @default("USD")
   status          String    @default("PENDING") // PENDING | APPROVED | REJECTED
   tier            Int       @default(1) // 1 = Tier 1 (<= $500), 2 = Tier 2 (> $500)
-  approverRole    String    // BURSAR | SCHOOL_ADMIN
-  approvedBy      String?   // userId
+  approverRole    String // BURSAR | SCHOOL_ADMIN
+  approvedBy      String? // userId
   approvedAt      DateTime?
   rejectionReason String?
   thresholdRule   String?
@@ -3825,7 +3820,7 @@ model Budget {
   schoolId  String
   school    School   @relation(fields: [schoolId], references: [id])
   year      Int
-  term      String?  // e.g. "Term 1", "Term 2", "Term 3", "Annual"
+  term      String? // e.g. "Term 1", "Term 2", "Term 3", "Annual"
   coaCode   String
   amount    Float
   currency  String   @default("USD")
@@ -3840,11 +3835,11 @@ model StockMovement {
   id             String   @id @default(cuid())
   schoolId       String
   school         School   @relation(fields: [schoolId], references: [id])
-  module         String   // TUCKSHOP | UNIFORM | PHARMACY | MAINTENANCE
+  module         String // TUCKSHOP | UNIFORM | PHARMACY | MAINTENANCE
   itemId         String
   itemName       String
   batchNumber    String?
-  direction      String   // IN | OUT
+  direction      String // IN | OUT
   quantity       Float
   unitCost       Float    @default(0)
   totalCost      Float    @default(0)
@@ -3858,21 +3853,21 @@ model StockMovement {
 }
 
 model TaxBracket {
-  id             String    @id @default(cuid())
-  schoolId       String
-  school         School    @relation(fields: [schoolId], references: [id])
-  currency       String    @default("USD") // USD | ZWG
-  effectiveFrom  DateTime
-  effectiveTo    DateTime?
-  minIncome      Float
-  maxIncome      Float?    // null = no upper limit
-  rate           Float     // percentage, e.g. 20, 25, 30, 40
-  deduction      Float     @default(0) // cumulative fixed deduction
-  aidsLevyRate   Float     @default(3.0) // 3% of PAYE
-  nssaCeiling    Float     @default(700.0) // insurable earnings ceiling
-  nssaRate       Float     @default(4.5) // 4.5% employee / 4.5% employer
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
+  id            String    @id @default(cuid())
+  schoolId      String
+  school        School    @relation(fields: [schoolId], references: [id])
+  currency      String    @default("USD") // USD | ZWG
+  effectiveFrom DateTime
+  effectiveTo   DateTime?
+  minIncome     Float
+  maxIncome     Float? // null = no upper limit
+  rate          Float // percentage, e.g. 20, 25, 30, 40
+  deduction     Float     @default(0) // cumulative fixed deduction
+  aidsLevyRate  Float     @default(3.0) // 3% of PAYE
+  nssaCeiling   Float     @default(700.0) // insurable earnings ceiling
+  nssaRate      Float     @default(4.5) // 4.5% employee / 4.5% employer
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
   @@index([schoolId, currency, effectiveFrom])
 }
@@ -3880,27 +3875,27 @@ model TaxBracket {
 /// Every stock change to a uniform item is recorded here.
 /// stockLevel is computed as SUM(quantity) — never stored separately.
 model UniformStockMovement {
-  id           String      @id @default(cuid())
-  schoolId     String
-  school       School      @relation(fields: [schoolId], references: [id])
-  itemId       String
-  item         UniformItem @relation(fields: [itemId], references: [id])
+  id       String      @id @default(cuid())
+  schoolId String
+  school   School      @relation(fields: [schoolId], references: [id])
+  itemId   String
+  item     UniformItem @relation(fields: [itemId], references: [id])
 
   // movementType determines sign convention:
   // PURCHASE_IN, RETURN_IN, ADJUSTMENT_IN = positive quantity
   // SALE_OUT, RETURN_OUT, ADJUSTMENT_OUT  = negative quantity
-  movementType String      // PURCHASE_IN | SALE_OUT | ADJUSTMENT_IN | ADJUSTMENT_OUT | RETURN_IN | RETURN_OUT
-  quantity     Int         // positive = stock in, negative = stock out
-  unitCost     Float       @default(0) // cost per unit at time of movement
-  totalCost    Float       @default(0) // quantity * unitCost
+  movementType String // PURCHASE_IN | SALE_OUT | ADJUSTMENT_IN | ADJUSTMENT_OUT | RETURN_IN | RETURN_OUT
+  quantity     Int // positive = stock in, negative = stock out
+  unitCost     Float  @default(0) // cost per unit at time of movement
+  totalCost    Float  @default(0) // quantity * unitCost
 
-  reference    String?     // e.g. stock order ID, sale ID
-  sourceType   String?     // uniform_purchase | uniform_sale | adjustment | return
-  sourceId     String?
+  reference  String? // e.g. stock order ID, sale ID
+  sourceType String? // uniform_purchase | uniform_sale | adjustment | return
+  sourceId   String?
 
-  journalEntryId String?   // the JE posted for this movement
+  journalEntryId String? // the JE posted for this movement
 
-  createdAt    DateTime    @default(now())
+  createdAt DateTime @default(now())
 
   @@index([schoolId])
   @@index([itemId])
@@ -3912,10 +3907,10 @@ model BankStatement {
   id         String              @id @default(cuid())
   schoolId   String
   school     School              @relation(fields: [schoolId], references: [id])
-  accountId  String              // ChartOfAccount — must be type=ASSET (bank account)
+  accountId  String // ChartOfAccount — must be type=ASSET (bank account)
   account    ChartOfAccount      @relation(fields: [accountId], references: [id])
-  period     String              // "YYYY-MM"
-  reference  String?             // statement reference / file name
+  period     String // "YYYY-MM"
+  reference  String? // statement reference / file name
   uploadedAt DateTime            @default(now())
   lines      BankStatementLine[]
 
@@ -3925,18 +3920,18 @@ model BankStatement {
 
 /// Individual line from a bank statement import.
 model BankStatementLine {
-  id              String        @id @default(cuid())
-  statementId     String
-  statement       BankStatement @relation(fields: [statementId], references: [id], onDelete: Cascade)
-  date            DateTime
-  description     String
-  debit           Float         @default(0)   // money out of account
-  credit          Float         @default(0)   // money into account
-  balance         Float         @default(0)   // running balance on statement
-  isReconciled    Boolean       @default(false)
-  journalLineId   String?       // matched JournalEntryLine.id
-  matchedAt       DateTime?
-  matchedBy       String?       // userId who matched it
+  id            String        @id @default(cuid())
+  statementId   String
+  statement     BankStatement @relation(fields: [statementId], references: [id], onDelete: Cascade)
+  date          DateTime
+  description   String
+  debit         Float         @default(0) // money out of account
+  credit        Float         @default(0) // money into account
+  balance       Float         @default(0) // running balance on statement
+  isReconciled  Boolean       @default(false)
+  journalLineId String? // matched JournalEntryLine.id
+  matchedAt     DateTime?
+  matchedBy     String? // userId who matched it
 
   @@index([statementId])
   @@index([isReconciled])
@@ -3970,67 +3965,67 @@ model PlatformSetting {
 
 // Plain-language mapping table for ICD-10 codes
 model Icd10ParentLabel {
-  id          String    @id @default(cuid())
-  code        String    @unique
-  plainLabel  String
-  icd10       Icd10Code @relation(fields: [code], references: [code], onDelete: Cascade)
-  createdAt   DateTime  @default(now())
+  id         String    @id @default(cuid())
+  code       String    @unique
+  plainLabel String
+  icd10      Icd10Code @relation(fields: [code], references: [code], onDelete: Cascade)
+  createdAt  DateTime  @default(now())
 }
 
 // Student Health Profile (Allergies, chronic conditions, treatment consent)
 model StudentHealthProfile {
-  id                    String   @id @default(cuid())
+  id                    String    @id @default(cuid())
   schoolId              String
-  school                School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
-  studentId             String   @unique
-  student               Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  school                School    @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  studentId             String    @unique
+  student               Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
   allergies             String?
   chronicConditions     String?
   bloodGroup            String?
   emergencyContactName  String?
   emergencyContactPhone String?
   emergencyContactRel   String?
-  treatmentConsent      Boolean  @default(false)
+  treatmentConsent      Boolean   @default(false)
   consentBy             String?
   consentedAt           DateTime?
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
 
   @@index([schoolId])
 }
 
 // Dedicated Vitals Table (Kept separate so no serializer outside clinic portal can include them)
 model ClinicVital {
-  id          String      @id @default(cuid())
-  schoolId    String
-  school      School      @relation(fields: [schoolId], references: [id], onDelete: Cascade)
-  visitId     String      @unique
-  visit       ClinicVisit @relation(fields: [visitId], references: [id], onDelete: Cascade)
-  temp        Float?
-  bp          String?
-  pulse       Int?
-  spo2        Int?
-  weight      Float?
-  height      Float?
+  id           String      @id @default(cuid())
+  schoolId     String
+  school       School      @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  visitId      String      @unique
+  visit        ClinicVisit @relation(fields: [visitId], references: [id], onDelete: Cascade)
+  temp         Float?
+  bp           String?
+  pulse        Int?
+  spo2         Int?
+  weight       Float?
+  height       Float?
   recordedById String?
-  recordedBy  User?       @relation("VitalRecordedBy", fields: [recordedById], references: [id], onDelete: SetNull)
-  recordedAt  DateTime    @default(now())
+  recordedBy   User?       @relation("VitalRecordedBy", fields: [recordedById], references: [id], onDelete: SetNull)
+  recordedAt   DateTime    @default(now())
 
   @@index([schoolId])
 }
 
 // Clinic Diagnoses
 model ClinicDiagnosis {
-  id          String      @id @default(cuid())
-  schoolId    String
-  school      School      @relation(fields: [schoolId], references: [id], onDelete: Cascade)
-  visitId     String
-  visit       ClinicVisit @relation(fields: [visitId], references: [id], onDelete: Cascade)
-  icd10Code   String?
-  icd10       Icd10Code?  @relation(fields: [icd10Code], references: [code], onDelete: SetNull)
-  notes       String?
-  parentNote  String?
-  createdAt   DateTime    @default(now())
+  id         String      @id @default(cuid())
+  schoolId   String
+  school     School      @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  visitId    String
+  visit      ClinicVisit @relation(fields: [visitId], references: [id], onDelete: Cascade)
+  icd10Code  String?
+  icd10      Icd10Code?  @relation(fields: [icd10Code], references: [code], onDelete: SetNull)
+  notes      String?
+  parentNote String?
+  createdAt  DateTime    @default(now())
 
   @@index([schoolId])
   @@index([visitId])
@@ -4057,18 +4052,18 @@ model ClinicPrescription {
 
 // Pharmacy Stock
 model PharmacyStock {
-  id          String            @id @default(cuid())
+  id          String             @id @default(cuid())
   schoolId    String
-  school      School            @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  school      School             @relation(fields: [schoolId], references: [id], onDelete: Cascade)
   drugName    String
-  category    String            @default("MEDICATION")
-  unit        String            @default("tablets")
-  minStock    Int               @default(10)
+  category    String             @default("MEDICATION")
+  unit        String             @default("tablets")
+  minStock    Int                @default(10)
   location    String?
   batches     PharmacyBatch[]
   dispensings PharmacyDispense[]
-  createdAt   DateTime          @default(now())
-  updatedAt   DateTime          @updatedAt
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
 
   @@unique([schoolId, drugName])
   @@index([schoolId])
@@ -4076,14 +4071,14 @@ model PharmacyStock {
 
 // Pharmacy Batches (FEFO: First-Expiry-First-Out)
 model PharmacyBatch {
-  id          String            @id @default(cuid())
+  id          String             @id @default(cuid())
   schoolId    String
   stockId     String
-  stock       PharmacyStock     @relation(fields: [stockId], references: [id], onDelete: Cascade)
+  stock       PharmacyStock      @relation(fields: [stockId], references: [id], onDelete: Cascade)
   batchNumber String
-  quantity    Int               @default(0)
+  quantity    Int                @default(0)
   expiryDate  DateTime
-  receivedAt  DateTime          @default(now())
+  receivedAt  DateTime           @default(now())
   dispensings PharmacyDispense[]
 
   @@index([schoolId])
@@ -4093,19 +4088,19 @@ model PharmacyBatch {
 
 // Pharmacy Dispensing Log
 model PharmacyDispense {
-  id           String         @id @default(cuid())
-  schoolId     String
-  school       School         @relation(fields: [schoolId], references: [id], onDelete: Cascade)
-  visitId      String?
-  visit        ClinicVisit?   @relation(fields: [visitId], references: [id], onDelete: SetNull)
-  stockId      String
-  stock        PharmacyStock  @relation(fields: [stockId], references: [id], onDelete: Cascade)
-  batchId      String
-  batch        PharmacyBatch  @relation(fields: [batchId], references: [id], onDelete: Cascade)
-  quantity     Int
+  id            String        @id @default(cuid())
+  schoolId      String
+  school        School        @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  visitId       String?
+  visit         ClinicVisit?  @relation(fields: [visitId], references: [id], onDelete: SetNull)
+  stockId       String
+  stock         PharmacyStock @relation(fields: [stockId], references: [id], onDelete: Cascade)
+  batchId       String
+  batch         PharmacyBatch @relation(fields: [batchId], references: [id], onDelete: Cascade)
+  quantity      Int
   dispensedById String?
-  dispensedBy  User?          @relation("PharmacyDispensedBy", fields: [dispensedById], references: [id], onDelete: SetNull)
-  dispensedAt  DateTime       @default(now())
+  dispensedBy   User?         @relation("PharmacyDispensedBy", fields: [dispensedById], references: [id], onDelete: SetNull)
+  dispensedAt   DateTime      @default(now())
 
   @@index([schoolId])
   @@index([visitId])
@@ -4146,8 +4141,8 @@ model ClinicAdmission {
   dischargedAt   DateTime?
   logs           ClinicMonitoringLog[]
 
-  createdAt      DateTime              @default(now())
-  updatedAt      DateTime              @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([schoolId])
   @@index([studentId])
@@ -4183,8 +4178,8 @@ model ClinicAccessAudit {
   student   Student? @relation(fields: [studentId], references: [id], onDelete: SetNull)
   userId    String
   user      User     @relation("ClinicAccessAudits", fields: [userId], references: [id], onDelete: Cascade)
-  action    String   // VIEW_RECORD, EDIT_RECORD, VIEW_VITALS, DISPENSE_DRUG, ADMIT_PATIENT, DISCHARGE
-  resource  String   // e.g. "Visit #visit-123", "HealthProfile"
+  action    String // VIEW_RECORD, EDIT_RECORD, VIEW_VITALS, DISPENSE_DRUG, ADMIT_PATIENT, DISCHARGE
+  resource  String // e.g. "Visit #visit-123", "HealthProfile"
   ipAddress String?
   createdAt DateTime @default(now())
 
@@ -4196,25 +4191,25 @@ model ClinicAccessAudit {
 
 // Clinic Emergency Log
 model ClinicEmergencyLog {
-  id                 String      @id @default(cuid())
+  id                 String       @id @default(cuid())
   schoolId           String
-  school             School      @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  school             School       @relation(fields: [schoolId], references: [id], onDelete: Cascade)
   visitId            String?
   visit              ClinicVisit? @relation(fields: [visitId], references: [id], onDelete: SetNull)
   studentId          String
-  student            Student     @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  student            Student      @relation(fields: [studentId], references: [id], onDelete: Cascade)
   title              String
   description        String
-  acuity             String      @default("RED") // RED, CRITICAL
-  ambulanceCalled    Boolean     @default(false)
+  acuity             String       @default("RED") // RED, CRITICAL
+  ambulanceCalled    Boolean      @default(false)
   ambulanceDetails   String?
-  parentContacted    Boolean     @default(false)
+  parentContacted    Boolean      @default(false)
   parentContactPhone String?
   parentContactNotes String?
-  photoUrls          String[]    @default([]) // Private tenant-namespaced bucket signed URLs
+  photoUrls          String[]     @default([]) // Private tenant-namespaced bucket signed URLs
   loggedById         String
-  loggedBy           User        @relation("EmergencyLoggedBy", fields: [loggedById], references: [id], onDelete: Cascade)
-  createdAt          DateTime    @default(now())
+  loggedBy           User         @relation("EmergencyLoggedBy", fields: [loggedById], references: [id], onDelete: Cascade)
+  createdAt          DateTime     @default(now())
 
   @@index([schoolId])
   @@index([studentId])
@@ -4222,16 +4217,16 @@ model ClinicEmergencyLog {
 
 // Tenant Clinic Configuration
 model ClinicSetting {
-  id                     String   @id @default(cuid())
-  schoolId               String   @unique
-  school                 School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
-  hasDoctorQueue         Boolean  @default(false)
-  bedCount               Int      @default(10)
-  monitoringIntervalHours Int     @default(4)
-  tempAlertThreshold     Float    @default(38.0)
-  billingEnabled         Boolean  @default(false)
-  createdAt              DateTime @default(now())
-  updatedAt              DateTime @updatedAt
+  id                      String   @id @default(cuid())
+  schoolId                String   @unique
+  school                  School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  hasDoctorQueue          Boolean  @default(false)
+  bedCount                Int      @default(10)
+  monitoringIntervalHours Int      @default(4)
+  tempAlertThreshold      Float    @default(38.0)
+  billingEnabled          Boolean  @default(false)
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
 }
 
 // ═══════════════════════════════════════════════════════════════════
@@ -4244,10 +4239,10 @@ model FiscalDevice {
   id          String   @id @default(cuid())
   schoolId    String
   school      School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
-  serialNo    String   // Device serial e.g. "REV-00123"
-  deviceModel String   // e.g. "VIRTUAL_FDMS_V1", "FISCAL_BOX_202"
-  location    String   // e.g. "Tuckshop Till 1", "Uniform Shop", "Main Bursar Office"
-  apiUrl      String   // VFD / FDMS endpoint
+  serialNo    String // Device serial e.g. "REV-00123"
+  deviceModel String // e.g. "VIRTUAL_FDMS_V1", "FISCAL_BOX_202"
+  location    String // e.g. "Tuckshop Till 1", "Uniform Shop", "Main Bursar Office"
+  apiUrl      String // VFD / FDMS endpoint
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -4264,45 +4259,45 @@ model FiscalDevice {
 /// Server-only secret store for fiscal device credentials (activation key, API tokens).
 /// Kept strictly separated from FiscalDevice and excluded from API serializers.
 model FiscalDeviceSecret {
-  id             String       @id @default(cuid())
-  deviceId       String       @unique
-  device         FiscalDevice @relation(fields: [deviceId], references: [id], onDelete: Cascade)
-  schoolId       String
-  activationKey  String       // Server-side encrypted or raw key
-  apiToken       String?      // Provider bearer token if applicable
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
+  id            String       @id @default(cuid())
+  deviceId      String       @unique
+  device        FiscalDevice @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+  schoolId      String
+  activationKey String // Server-side encrypted or raw key
+  apiToken      String? // Provider bearer token if applicable
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
 
   @@index([schoolId])
 }
 
 /// Fiscal invoices emitted to ZIMRA FDMS.
 model FiscalInvoice {
-  id               String        @id @default(cuid())
-  schoolId         String
-  school           School        @relation(fields: [schoolId], references: [id], onDelete: Cascade)
-  glTransactionId  String?
-  glTransaction    JournalEntry? @relation(fields: [glTransactionId], references: [id], onDelete: SetNull)
-  deviceId         String
-  device           FiscalDevice  @relation(fields: [deviceId], references: [id], onDelete: Restrict)
-  receiptNo        String        // Tenant-scoped sequence e.g. "RCPT-2026-00042"
-  fiscalCode       String?       // ZIMRA verification signature / fiscal day code
-  fiscalDayNo      Int?
-  qrCode           String?       // ZIMRA verification QR code URL / raw string
-  receiptHash      String?
-  payload          Json?         // Exact JSON payload dispatched to provider
-  response         Json?         // Exact response from provider
-  status           String        @default("pending") // 'pending', 'fiscalised', 'failed'
-  amount           Float         // Gross amount (VAT inclusive)
-  vatAmount        Float         // Extracted VAT (15/115)
-  currency         String        @default("USD")
-  paymentMethod    String        // 'CASH', 'ECOCASH', 'INNBUCKS', 'CARD', 'BANK'
-  isCreditNote     Boolean       @default(false)
-  originalFiscalId String?       // Link to original invoice if this is a FiscalCreditNote
-  originalFiscal   FiscalInvoice?  @relation("FiscalReversal", fields: [originalFiscalId], references: [id])
+  id                 String          @id @default(cuid())
+  schoolId           String
+  school             School          @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  glTransactionId    String?
+  glTransaction      JournalEntry?   @relation(fields: [glTransactionId], references: [id], onDelete: SetNull)
+  deviceId           String
+  device             FiscalDevice    @relation(fields: [deviceId], references: [id], onDelete: Restrict)
+  receiptNo          String // Tenant-scoped sequence e.g. "RCPT-2026-00042"
+  fiscalCode         String? // ZIMRA verification signature / fiscal day code
+  fiscalDayNo        Int?
+  qrCode             String? // ZIMRA verification QR code URL / raw string
+  receiptHash        String?
+  payload            Json? // Exact JSON payload dispatched to provider
+  response           Json? // Exact response from provider
+  status             String          @default("pending") // 'pending', 'fiscalised', 'failed'
+  amount             Float // Gross amount (VAT inclusive)
+  vatAmount          Float // Extracted VAT (15/115)
+  currency           String          @default("USD")
+  paymentMethod      String // 'CASH', 'ECOCASH', 'INNBUCKS', 'CARD', 'BANK'
+  isCreditNote       Boolean         @default(false)
+  originalFiscalId   String? // Link to original invoice if this is a FiscalCreditNote
+  originalFiscal     FiscalInvoice?  @relation("FiscalReversal", fields: [originalFiscalId], references: [id])
   creditNoteInvoices FiscalInvoice[] @relation("FiscalReversal")
-  createdAt        DateTime      @default(now())
-  updatedAt        DateTime      @updatedAt
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
 
   creditNotes CreditNote[]
 
@@ -4320,10 +4315,10 @@ model DocumentSequence {
   id          String   @id @default(cuid())
   schoolId    String
   school      School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
-  prefix      String   // 'INV', 'PAY', 'CN', 'DN', 'FISCAL', 'EXP', 'RCPT', 'TILL'
+  prefix      String // 'INV', 'PAY', 'CN', 'DN', 'FISCAL', 'EXP', 'RCPT', 'TILL'
   description String?
   lastNumber  Int      @default(0)
-  year        Int      // e.g. 2026
+  year        Int // e.g. 2026
   format      String   @default("{PREFIX}-{YEAR}-{NUMBER}") // e.g. "CN-2026-00001"
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -4338,13 +4333,13 @@ model CreditNote {
   id                     String           @id @default(cuid())
   schoolId               String
   school                 School           @relation(fields: [schoolId], references: [id], onDelete: Cascade)
-  creditNoteNumber       String           // CN-2026-00001
-  originalJournalEntryId String           // Original JournalEntry.id
-  reversalJournalEntryId String?          // New reversing JournalEntry.id
-  fiscalInvoiceId        String?          // If original sale was fiscalised, links to new FiscalInvoice (CN)
+  creditNoteNumber       String // CN-2026-00001
+  originalJournalEntryId String // Original JournalEntry.id
+  reversalJournalEntryId String? // New reversing JournalEntry.id
+  fiscalInvoiceId        String? // If original sale was fiscalised, links to new FiscalInvoice (CN)
   fiscalInvoice          FiscalInvoice?   @relation(fields: [fiscalInvoiceId], references: [id], onDelete: SetNull)
-  reason                 String           // e.g. "Item returned", "Billing error", "Customer refund"
-  totalAmount            Float            // Gross amount reversed
+  reason                 String // e.g. "Item returned", "Billing error", "Customer refund"
+  totalAmount            Float // Gross amount reversed
   totalVat               Float            @default(0)
   currency               String           @default("USD")
   issuedByUserId         String?
@@ -4379,24 +4374,24 @@ model CreditNoteLine {
 /// Cash-up and till management sessions per device.
 /// A device cannot perform sales without an OPEN till session.
 model TillSession {
-  id             String                @id @default(cuid())
+  id             String       @id @default(cuid())
   schoolId       String
-  school         School                @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  school         School       @relation(fields: [schoolId], references: [id], onDelete: Cascade)
   deviceId       String
-  device         FiscalDevice          @relation(fields: [deviceId], references: [id], onDelete: Restrict)
-  sessionNumber  String                // TILL-2026-00001
+  device         FiscalDevice @relation(fields: [deviceId], references: [id], onDelete: Restrict)
+  sessionNumber  String // TILL-2026-00001
   openedByUserId String
-  openedAt       DateTime              @default(now())
+  openedAt       DateTime     @default(now())
   closedByUserId String?
   closedAt       DateTime?
-  openingFloat   Float                 @default(0)
+  openingFloat   Float        @default(0)
   closingCounted Float?
   expectedSales  Float?
   variance       Float?
-  status         String                @default("OPEN") // 'OPEN', 'CLOSED', 'VARIANCE_REVIEW'
+  status         String       @default("OPEN") // 'OPEN', 'CLOSED', 'VARIANCE_REVIEW'
   notes          String?
-  createdAt      DateTime              @default(now())
-  updatedAt      DateTime              @updatedAt
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
 
   denominations CashupDenomination[]
   payments      CashupPayment[]
@@ -4414,7 +4409,7 @@ model CashupDenomination {
   tillSessionId String
   tillSession   TillSession @relation(fields: [tillSessionId], references: [id], onDelete: Cascade)
   currency      String      @default("USD")
-  denomination  Float       // 100, 50, 20, 10, 5, 2, 1, 0.5, 0.25, 0.1, 0.05
+  denomination  Float // 100, 50, 20, 10, 5, 2, 1, 0.5, 0.25, 0.1, 0.05
   count         Int
   total         Float
   createdAt     DateTime    @default(now())
@@ -4429,10 +4424,10 @@ model CashupPayment {
   schoolId       String
   tillSessionId  String
   tillSession    TillSession @relation(fields: [tillSessionId], references: [id], onDelete: Cascade)
-  paymentMethod  String      // 'CASH', 'ECOCASH', 'INNBUCKS', 'CARD', 'BANK'
-  expectedAmount Float       // Sum from sales / fiscal_invoices
-  countedAmount  Float       // Physically counted / e-wallet balance confirmed
-  variance       Float       // counted - expected
+  paymentMethod  String // 'CASH', 'ECOCASH', 'INNBUCKS', 'CARD', 'BANK'
+  expectedAmount Float // Sum from sales / fiscal_invoices
+  countedAmount  Float // Physically counted / e-wallet balance confirmed
+  variance       Float // counted - expected
   createdAt      DateTime    @default(now())
 
   @@index([schoolId])
@@ -4441,13 +4436,13 @@ model CashupPayment {
 
 /// Cross-module student clearance checklist (Library, Fees, Hostel).
 model StudentClearance {
-  id              String    @id @default(cuid())
-  schoolId        String
-  school          School    @relation(fields: [schoolId], references: [id], onDelete: Cascade)
-  studentId       String
-  student         Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  status          String    @default("PENDING") // 'PENDING', 'APPROVED', 'REJECTED'
-  
+  id        String  @id @default(cuid())
+  schoolId  String
+  school    School  @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  studentId String
+  student   Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  status    String  @default("PENDING") // 'PENDING', 'APPROVED', 'REJECTED'
+
   // Library sign-off
   libraryCleared  Boolean   @default(false)
   libraryNotes    String?
@@ -4455,30 +4450,80 @@ model StudentClearance {
   librarySignedAt DateTime?
 
   // Fees / Finance sign-off
-  feesCleared     Boolean   @default(false)
-  feesBalance     Float     @default(0)
-  feesNotes       String?
-  feesSignedBy    String?
-  feesSignedAt    DateTime?
+  feesCleared  Boolean   @default(false)
+  feesBalance  Float     @default(0)
+  feesNotes    String?
+  feesSignedBy String?
+  feesSignedAt DateTime?
 
   // Hostel / Boarding sign-off
-  hostelCleared   Boolean   @default(false)
-  hostelNotes     String?
-  hostelSignedBy  String?
-  hostelSignedAt  DateTime?
+  hostelCleared  Boolean   @default(false)
+  hostelNotes    String?
+  hostelSignedBy String?
+  hostelSignedAt DateTime?
 
   // Final Admin / Bursar Clearance
-  finalCleared    Boolean   @default(false)
-  finalSignedBy   String?
-  finalSignedAt   DateTime?
-  certificateNo   String?
+  finalCleared  Boolean   @default(false)
+  finalSignedBy String?
+  finalSignedAt DateTime?
+  certificateNo String?
 
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([schoolId, studentId])
   @@index([schoolId])
   @@index([schoolId, status])
 }
 
+// --- Phase 1: Attendance Models ---
 
+model AttendanceRegister {
+  id        String             @id @default(cuid())
+  schoolId  String
+  classId   String
+  date      DateTime
+  session   String // Morning, Afternoon, Evening
+  submitted Boolean            @default(false)
+  locked    Boolean            @default(false)
+  records   AttendanceRecord[]
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+
+  @@unique([schoolId, classId, date, session])
+}
+
+model AttendanceRecord {
+  id         String             @id @default(cuid())
+  registerId String
+  register   AttendanceRegister @relation(fields: [registerId], references: [id], onDelete: Cascade)
+  studentId  String
+  status     String // Present, Absent, Late, Sick, AuthorizedLeave, Truant
+  notes      String?
+  time       DateTime           @default(now())
+
+  @@unique([registerId, studentId])
+}
+
+model PeriodAttendance {
+  id                String    @id @default(cuid())
+  studentId         String
+  timetablePeriodId String
+  date              DateTime
+  status            String
+  scannedAt         DateTime?
+
+  @@unique([studentId, timetablePeriodId, date])
+}
+
+model QrCodeSession {
+  id           String   @id @default(cuid())
+  teacherId    String
+  classId      String?
+  periodId     String?
+  date         DateTime
+  code         String   @unique
+  expiresAt    DateTime
+  locationData Json?
+  createdAt    DateTime @default(now())
+}

@@ -1,0 +1,52 @@
+
+// --- Phase 1: Attendance Models ---
+
+model AttendanceRegister {
+  id        String   @id @default(cuid())
+  schoolId  String
+  classId   String
+  date      DateTime
+  session   String   // Morning, Afternoon, Evening
+  submitted Boolean  @default(false)
+  locked    Boolean  @default(false)
+  records   AttendanceRecord[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@unique([schoolId, classId, date, session])
+}
+
+model AttendanceRecord {
+  id         String   @id @default(cuid())
+  registerId String
+  register   AttendanceRegister @relation(fields: [registerId], references: [id], onDelete: Cascade)
+  studentId  String
+  status     String   // Present, Absent, Late, Sick, AuthorizedLeave, Truant
+  notes      String?
+  time       DateTime @default(now())
+  
+  @@unique([registerId, studentId])
+}
+
+model PeriodAttendance {
+  id               String   @id @default(cuid())
+  studentId        String
+  timetablePeriodId String
+  date             DateTime
+  status           String
+  scannedAt        DateTime?
+  
+  @@unique([studentId, timetablePeriodId, date])
+}
+
+model QrCodeSession {
+  id           String   @id @default(cuid())
+  teacherId    String
+  classId      String?
+  periodId     String?
+  date         DateTime
+  code         String   @unique
+  expiresAt    DateTime
+  locationData Json?
+  createdAt    DateTime @default(now())
+}

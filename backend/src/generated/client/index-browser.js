@@ -2954,6 +2954,48 @@ exports.Prisma.StudentClearanceScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.AttendanceRegisterScalarFieldEnum = {
+  id: 'id',
+  schoolId: 'schoolId',
+  classId: 'classId',
+  date: 'date',
+  session: 'session',
+  submitted: 'submitted',
+  locked: 'locked',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.AttendanceRecordScalarFieldEnum = {
+  id: 'id',
+  registerId: 'registerId',
+  studentId: 'studentId',
+  status: 'status',
+  notes: 'notes',
+  time: 'time'
+};
+
+exports.Prisma.PeriodAttendanceScalarFieldEnum = {
+  id: 'id',
+  studentId: 'studentId',
+  timetablePeriodId: 'timetablePeriodId',
+  date: 'date',
+  status: 'status',
+  scannedAt: 'scannedAt'
+};
+
+exports.Prisma.QrCodeSessionScalarFieldEnum = {
+  id: 'id',
+  teacherId: 'teacherId',
+  classId: 'classId',
+  periodId: 'periodId',
+  date: 'date',
+  code: 'code',
+  expiresAt: 'expiresAt',
+  locationData: 'locationData',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -3200,7 +3242,11 @@ exports.Prisma.ModelName = {
   TillSession: 'TillSession',
   CashupDenomination: 'CashupDenomination',
   CashupPayment: 'CashupPayment',
-  StudentClearance: 'StudentClearance'
+  StudentClearance: 'StudentClearance',
+  AttendanceRegister: 'AttendanceRegister',
+  AttendanceRecord: 'AttendanceRecord',
+  PeriodAttendance: 'PeriodAttendance',
+  QrCodeSession: 'QrCodeSession'
 };
 
 /**
