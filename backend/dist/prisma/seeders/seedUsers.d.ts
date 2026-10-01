@@ -49,6 +49,7 @@ export declare function seedUsers(prisma: PrismaClient, school: School, emailPre
         admissionsNotes: string | null;
         academicHistory: import("../../src/generated/client/runtime/library").JsonValue | null;
         enrollmentDate: Date | null;
+        nationalId: string | null;
         hexcoId: string | null;
         houseId: string | null;
         motherTongue: string | null;

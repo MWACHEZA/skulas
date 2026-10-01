@@ -191,7 +191,7 @@ router.get('/boarding/logs', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCILLARY
  */
 router.patch('/boarding/logs/:id/return', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCILLARY', 'TEACHER'), async (req: AuthRequest, res: Response) => {
   const schoolId = req.user!.schoolId!;
-  const { id } = req.params;
+  const id = req.params.id as string;
   try {
     const log = await prisma.boardingLog.findFirst({
       where: { id, schoolId }

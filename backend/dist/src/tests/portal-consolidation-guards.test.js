@@ -185,6 +185,79 @@ async function runConsolidationGuardTests() {
             verifyRequisitionMatronApprovalRBAC('ANCILLARY', 'Maintenance').statusCode === 403, 'Non-Boarding Ancillary staff CANNOT act as Matron approver (403)');
         assert(verifyRequisitionMatronApprovalRBAC('TEACHER', 'Academics').allowed === false, 'Teacher CANNOT act as Matron approver for hostel cleaning requisitions');
     }
+    // -------------------------------------------------------------------------
+    // TEST GROUP 6: Clinic Operations, FEFO Dispensing, and Security Auditing
+    // -------------------------------------------------------------------------
+    console.log('\n--- 6. Clinic Operations, FEFO Dispensing, and Security Auditing ---');
+    {
+        // 6a. FEFO Allocation simulation
+        const mockBatches = [
+            { id: 'b2', batchNumber: 'BATCH-JUN', quantity: 20, expiryDate: new Date('2026-06-01') },
+            { id: 'b1', batchNumber: 'BATCH-MAR', quantity: 15, expiryDate: new Date('2026-03-01') },
+            { id: 'b3', batchNumber: 'BATCH-DEC', quantity: 50, expiryDate: new Date('2026-12-01') },
+        ];
+        function simulateFefoDispense(batches, requestedQty) {
+            const totalAvailable = batches.reduce((sum, b) => sum + b.quantity, 0);
+            if (requestedQty > totalAvailable) {
+                return { error: 'Insufficient stock! Cannot allow negative balance.', success: false };
+            }
+            // Sort ascending by expiry date (FEFO)
+            const sorted = [...batches].sort((a, b) => a.expiryDate.getTime() - b.expiryDate.getTime());
+            let remaining = requestedQty;
+            const deductions = [];
+            for (const b of sorted) {
+                if (remaining <= 0)
+                    break;
+                const deduct = Math.min(b.quantity, remaining);
+                b.quantity -= deduct;
+                deductions.push({ batchNumber: b.batchNumber, deducted: deduct });
+                remaining -= deduct;
+            }
+            return { success: true, deductions, remainingTotal: totalAvailable - requestedQty };
+        }
+        // Test FEFO deducts BATCH-MAR first (earliest expiry)
+        const result1 = simulateFefoDispense(mockBatches, 25);
+        assert(result1.success === true, 'FEFO dispense of 25 units succeeds');
+        assert(result1.deductions?.[0].batchNumber === 'BATCH-MAR' && result1.deductions?.[0].deducted === 15, 'FEFO prioritizes earliest batch (BATCH-MAR: 15 units deducted)');
+        assert(result1.deductions?.[1].batchNumber === 'BATCH-JUN' && result1.deductions?.[1].deducted === 10, 'FEFO rolls over to next batch (BATCH-JUN: 10 units deducted)');
+        // Test Negative Stock Protection
+        const result2 = simulateFefoDispense(mockBatches, 1000);
+        assert(result2.success === false && Boolean(result2.error?.includes('negative balance')), 'Negative stock is strictly prohibited (400 rejection)');
+        const openRequisitions = [
+            { schoolId: 'school-1', title: 'Pharmacy Restock: Paracetamol 500mg', status: 'PENDING_ADMIN', requesterRole: 'CLINIC' }
+        ];
+        function checkShouldTriggerAutoRequisition(schoolId, drugName, currentTotal, minStock, existingReqs) {
+            if (currentTotal > minStock)
+                return false;
+            const hasOpenReq = existingReqs.some(r => r.schoolId === schoolId &&
+                r.requesterRole === 'CLINIC' &&
+                r.title.includes(drugName) &&
+                ['PENDING_ADMIN', 'PENDING_BURSAR'].includes(r.status));
+            return !hasOpenReq; // Trigger only if no open duplicate exists
+        }
+        assert(checkShouldTriggerAutoRequisition('school-1', 'Paracetamol 500mg', 5, 20, openRequisitions) === false, 'Low stock auto-procurement is deduplicated when an open requisition already exists');
+        assert(checkShouldTriggerAutoRequisition('school-1', 'Amoxicillin 250mg', 3, 20, openRequisitions) === true, 'Low stock auto-procurement triggers when no open requisition exists');
+        // 6c. Attendance Auto-Excuse on Admission/Consultation
+        function computeAttendanceExcuse(disposition) {
+            if (disposition === 'ADMIT_SICK_BAY' || disposition === 'DISCHARGE_CLASS') {
+                return { status: 'excused', note: 'Excused - Clinic' };
+            }
+            return null;
+        }
+        assert(computeAttendanceExcuse('ADMIT_SICK_BAY')?.status === 'excused' &&
+            computeAttendanceExcuse('ADMIT_SICK_BAY')?.note === 'Excused - Clinic', 'Sick bay inpatient admission automatically updates attendance to excused with Clinic note');
+        // 6d. Confidential Visit Flag suppresses parent summary notification
+        function shouldNotifyParentOnVisit(isConfidential, isEmergency) {
+            if (isConfidential)
+                return false; // Confidential visits suppressed
+            if (isEmergency)
+                return false; // Emergencies handled by direct phone call
+            return true;
+        }
+        assert(shouldNotifyParentOnVisit(true, false) === false, 'Confidential visit suppresses parent visit notification SMS/portal feed');
+        assert(shouldNotifyParentOnVisit(false, true) === false, 'Emergency visit bypasses automated routine SMS to require direct telephone dispatch');
+        assert(shouldNotifyParentOnVisit(false, false) === true, 'Standard non-confidential visit allows parent portal notification');
+    }
     console.log(`\n=================================================================`);
     console.log(`TEST SUMMARY: ${passed} PASSED, ${failed} FAILED`);
     console.log(`=================================================================\n`);

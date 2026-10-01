@@ -356,10 +356,31 @@ export async function exportToPdf<T = any>(options: ExportOptions<T>): Promise<v
 }
 
 /**
- * Unified export dispatcher for all 3 formats
+ * Export data as CSV document (.csv)
+ */
+export async function exportToCsv<T = any>(options: ExportOptions<T>): Promise<void> {
+  const { filename, title, columns, data } = options;
+
+  const headerRow = columns.map(c => `"${c.header.replace(/"/g, '""')}"`).join(',');
+  const dataRows = data.map((row, rIdx) => {
+    return columns.map(c => {
+      const val = getCellValue(c, row, rIdx);
+      return `"${String(val).replace(/"/g, '""')}"`;
+    }).join(',');
+  });
+
+  const csvContent = [headerRow, ...dataRows].join('\n');
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  
+  const baseName = sanitizeFilename(filename || title || 'export');
+  saveAs(blob, `${baseName}.csv`);
+}
+
+/**
+ * Unified export dispatcher for all formats
  */
 export async function exportData<T = any>(
-  format: 'excel' | 'word' | 'pdf',
+  format: 'excel' | 'word' | 'pdf' | 'csv',
   options: ExportOptions<T>
 ): Promise<void> {
   if (format === 'excel') {
@@ -368,5 +389,7 @@ export async function exportData<T = any>(
     return exportToWord(options);
   } else if (format === 'pdf') {
     return exportToPdf(options);
+  } else if (format === 'csv') {
+    return exportToCsv(options);
   }
 }

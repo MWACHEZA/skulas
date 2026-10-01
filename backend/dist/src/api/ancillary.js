@@ -156,6 +156,57 @@ router.post('/boarding/log', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL
         res.status(500).json({ error: 'Failed to record boarding log' });
     }
 });
+/**
+ * @route   GET /api/ancillary/boarding/logs
+ * @desc    Fetch recent boarding movement logs & exeat records
+ */
+router.get('/boarding/logs', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'ANCILLARY', 'TEACHER'), async (req, res) => {
+    const schoolId = req.user.schoolId;
+    try {
+        const logs = await prisma_1.default.boardingLog.findMany({
+            where: { schoolId },
+            include: {
+                student: {
+                    select: { id: true, name: true, studentId: true, hostel: { select: { name: true } } }
+                },
+                authorizedBy: {
+                    select: { id: true, name: true, role: true }
+                }
+            },
+            orderBy: { timestamp: 'desc' },
+            take: 100
+        });
+        res.json(logs);
+    }
+    catch (error) {
+        console.error('Fetch boarding logs error:', error);
+        res.status(500).json({ error: 'Failed to fetch boarding logs' });
+    }
+});
+/**
+ * @route   PATCH /api/ancillary/boarding/logs/:id/return
+ * @desc    Mark a student as returned from exeat / sign-out
+ */
+router.patch('/boarding/logs/:id/return', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'ANCILLARY', 'TEACHER'), async (req, res) => {
+    const schoolId = req.user.schoolId;
+    const id = req.params.id;
+    try {
+        const log = await prisma_1.default.boardingLog.findFirst({
+            where: { id, schoolId }
+        });
+        if (!log)
+            return res.status(404).json({ error: 'Boarding log not found' });
+        const updated = await prisma_1.default.boardingLog.update({
+            where: { id },
+            data: { returnedAt: new Date() }
+        });
+        res.json(updated);
+    }
+    catch (error) {
+        console.error('Update boarding return error:', error);
+        res.status(500).json({ error: 'Failed to update boarding return' });
+    }
+});
 // ═══════════ VISITOR TRACKING ═══════════
 /**
  * @route   GET /api/ancillary/visitors

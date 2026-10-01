@@ -1,12 +1,14 @@
 /**
- * LedgerService — the single posting engine for all financial events.
+ * LedgerService — the core double-entry accounting engine.
  *
- * RULES enforced here:
- *  1. Every posted entry must balance: SUM(debit) === SUM(credit)
- *  2. All account IDs must belong to the same schoolId
- *  3. Period must be OPEN (not CLOSED or LOCKED)
- *  4. Reversal creates a new entry with swapped DR/CR — never deletes
- *  5. Dual-currency: base-currency amounts always stored alongside foreign amounts
+ * Enforces:
+ *  1. Every posted entry balances: SUM(debit) === SUM(credit).
+ *  2. All accounts belong strictly to the tenant (schoolId).
+ *  3. Period must be OPEN (posting to CLOSED or LOCKED periods is rejected).
+ *  4. Immutability: No direct UPDATE/DELETE on posted entries; corrections only via reversal.
+ *  5. Dual-currency: base-currency and foreign amounts with historical exchange rates recorded at posting.
+ *  6. Threshold-based multi-tier approvals.
+ *  7. Full audit logging on every write.
  */
 import type { Prisma } from '../generated/client';
 export interface JournalLine {
@@ -16,9 +18,10 @@ export interface JournalLine {
     description?: string;
     studentId?: string;
     supplierId?: string;
-    /** ISO 4217 currency code — defaults to school's baseCurrency */
+    coaCode?: string;
+    baseAmount?: number;
+    taxCode?: string;
     currency?: string;
-    /** Exchange rate to base currency — defaults to 1.0 */
     exchangeRate?: number;
 }
 export interface PostEntryArgs {
@@ -29,8 +32,32 @@ export interface PostEntryArgs {
     sourceId: string;
     lines: JournalLine[];
     createdByUserId?: string;
-    /** Pass the caller's transaction client so the JE is atomic with the source record */
+    currency?: string;
+    exchangeRateUsed?: number;
+    ipAddress?: string;
+    period?: string;
     tx?: Prisma.TransactionClient;
+}
+export interface PostDoubleEntryArgs {
+    tenantId: string;
+    debitCode: string;
+    creditCode: string;
+    amount: number;
+    currency?: string;
+    reference?: string;
+    description: string;
+    studentId?: string;
+    supplierId?: string;
+    sourceModule: string;
+    period?: string;
+    date?: Date;
+    taxCode?: string;
+    vatCreditCode?: string;
+    vatAmount?: number;
+    userId?: string;
+    ipAddress?: string;
+    tx?: Prisma.TransactionClient;
+    bypassApprovalCheck?: boolean;
 }
 export interface TrialBalanceLine {
     accountCode: string;
@@ -49,6 +76,8 @@ export interface LedgerEntry {
     debit: number;
     credit: number;
     runningBalance: number;
+    currency: string;
+    coaCode?: string | null;
 }
 export interface ARAgingRow {
     studentId: string;
@@ -62,12 +91,60 @@ export interface ARAgingRow {
 }
 export declare const LedgerService: {
     /**
-     * Post a balanced journal entry.
-     * Must be called inside the same DB transaction as the triggering operation
-     * so that either both commit or both roll back.
+     * High-level single posting function mandated by specification.
+     * Every financial module calls this function.
+     */
+    postDoubleEntry(args: PostDoubleEntryArgs): Promise<{
+        lines: {
+            exchangeRate: number;
+            id: string;
+            createdAt: Date;
+            schoolId: string;
+            description: string | null;
+            studentId: string | null;
+            supplierId: string | null;
+            currency: string;
+            journalEntryId: string;
+            accountId: string;
+            coaCode: string | null;
+            debit: number;
+            credit: number;
+            baseAmount: number;
+            taxCode: string | null;
+            debitForeign: number;
+            creditForeign: number;
+            isReconciled: boolean;
+            reconciledAt: Date | null;
+            bankLineId: string | null;
+        }[];
+    } & {
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        status: string;
+        schoolId: string;
+        description: string;
+        date: Date;
+        currency: string;
+        isLocked: boolean;
+        ipAddress: string | null;
+        period: string;
+        entryNumber: string;
+        exchangeRateUsed: number;
+        isReversing: boolean;
+        reversedById: string | null;
+        isReversed: boolean;
+        reversedByCnId: string | null;
+        sourceType: string;
+        sourceId: string;
+        createdByUserId: string | null;
+    }>;
+    /**
+     * Post a balanced journal entry with multiple lines.
      */
     postEntry(args: PostEntryArgs): Promise<{
         lines: {
+            exchangeRate: number;
             id: string;
             createdAt: Date;
             schoolId: string;
@@ -77,9 +154,11 @@ export declare const LedgerService: {
             currency: string;
             journalEntryId: string;
             accountId: string;
+            coaCode: string | null;
             debit: number;
             credit: number;
-            exchangeRate: number;
+            baseAmount: number;
+            taxCode: string | null;
             debitForeign: number;
             creditForeign: number;
             isReconciled: boolean;
@@ -94,21 +173,27 @@ export declare const LedgerService: {
         schoolId: string;
         description: string;
         date: Date;
+        currency: string;
         isLocked: boolean;
+        ipAddress: string | null;
         period: string;
         entryNumber: string;
+        exchangeRateUsed: number;
         isReversing: boolean;
         reversedById: string | null;
+        isReversed: boolean;
+        reversedByCnId: string | null;
         sourceType: string;
         sourceId: string;
         createdByUserId: string | null;
     }>;
     /**
-     * Reverse a posted entry. Creates a new entry with all DR/CR swapped.
-     * The original entry is marked REVERSED — never deleted.
+     * Reverse a posted entry. Creates an immutable new entry with all DR/CR swapped.
+     * Original entry status updated to REVERSED — never deleted.
      */
     reverseEntry(journalEntryId: string, reason: string, userId: string, date?: Date): Promise<{
         lines: {
+            exchangeRate: number;
             id: string;
             createdAt: Date;
             schoolId: string;
@@ -118,9 +203,11 @@ export declare const LedgerService: {
             currency: string;
             journalEntryId: string;
             accountId: string;
+            coaCode: string | null;
             debit: number;
             credit: number;
-            exchangeRate: number;
+            baseAmount: number;
+            taxCode: string | null;
             debitForeign: number;
             creditForeign: number;
             isReconciled: boolean;
@@ -135,27 +222,56 @@ export declare const LedgerService: {
         schoolId: string;
         description: string;
         date: Date;
+        currency: string;
         isLocked: boolean;
+        ipAddress: string | null;
         period: string;
         entryNumber: string;
+        exchangeRateUsed: number;
         isReversing: boolean;
         reversedById: string | null;
+        isReversed: boolean;
+        reversedByCnId: string | null;
         sourceType: string;
         sourceId: string;
         createdByUserId: string | null;
     }>;
     /**
-     * Compute an account's balance from posted journal entries.
-     * For ASSET & EXPENSE: balance = SUM(debit) - SUM(credit)
-     * For LIABILITY, EQUITY, INCOME: balance = SUM(credit) - SUM(debit)
+     * Year-End / Period Close Function:
+     * Transfers net Income - Expense to Retained Surplus (3020) and marks period CLOSED.
+     */
+    closePeriod(tenantId: string, periodStr: string, userId: string, notes?: string, isYearEnd?: boolean): Promise<{
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        status: string;
+        schoolId: string;
+        term: string | null;
+        startDate: Date | null;
+        year: number | null;
+        endDate: Date | null;
+        notes: string | null;
+        period: string;
+        closedAt: Date | null;
+        closedBy: string | null;
+    }>;
+    /**
+     * Account balance from posted journal lines.
      */
     getAccountBalance(accountId: string, upToDate?: Date): Promise<number>;
     /**
-     * Trial Balance — sum all accounts and verify debit === credit.
+     * Trial Balance — verified sum of debit === credit across all accounts.
      */
-    trialBalance(schoolId: string, period?: string): Promise<TrialBalanceLine[]>;
+    trialBalance(schoolId: string, period?: string): Promise<{
+        lines: TrialBalanceLine[];
+        totalDebit: number;
+        totalCredit: number;
+        difference: number;
+        isBalanced: boolean;
+        period: string;
+    }>;
     /**
-     * Income Statement (P&L) for a date range.
+     * Income Statement (Profit & Loss).
      */
     incomeStatement(schoolId: string, from: Date, to: Date): Promise<{
         income: {
@@ -175,7 +291,7 @@ export declare const LedgerService: {
         to: Date;
     }>;
     /**
-     * Balance Sheet as of a given date.
+     * Balance Sheet (Assets = Liabilities + Equity).
      */
     balanceSheet(schoolId: string, asOfDate: Date): Promise<{
         assets: {
@@ -196,24 +312,97 @@ export declare const LedgerService: {
         totalAssets: number;
         totalLiabilities: number;
         totalEquity: number;
+        isValid: boolean;
         asOfDate: Date;
     }>;
     /**
-     * General Ledger — all transactions for a given account with running balance.
+     * General Ledger drilldown for a specific account.
      */
     generalLedger(accountId: string, from: Date, to: Date): Promise<LedgerEntry[]>;
     /**
-     * Accounts Receivable Aging — per student sub-ledger.
-     * Buckets: Current (0–30 days), 31–60, 61–90, 90+
+     * Accounts Receivable (Debtors) Aging with 0-30, 31-60, 61-90, 90+ buckets.
      */
     arAging(schoolId: string, asOfDate: Date): Promise<ARAgingRow[]>;
     /**
-     * Compute a student wallet balance on-the-fly (no cached field).
-     * DEPOSIT = positive, PURCHASE = negative, REFUND = positive.
+     * ZIMRA VAT Report — split standard-rated (15%) vs exempt education supplies.
+     */
+    vatReport(schoolId: string, from: Date, to: Date): Promise<{
+        standardRatedSales: number;
+        vatOutputCollected: number;
+        exemptTuitionSales: number;
+        effectiveRate: number;
+        from: Date;
+        to: Date;
+        details: ({
+            journalEntry: {
+                description: string;
+                date: Date;
+                entryNumber: string;
+            };
+            account: {
+                name: string;
+                code: string;
+                type: import("../generated/client").$Enums.AccountType;
+            };
+        } & {
+            exchangeRate: number;
+            id: string;
+            createdAt: Date;
+            schoolId: string;
+            description: string | null;
+            studentId: string | null;
+            supplierId: string | null;
+            currency: string;
+            journalEntryId: string;
+            accountId: string;
+            coaCode: string | null;
+            debit: number;
+            credit: number;
+            baseAmount: number;
+            taxCode: string | null;
+            debitForeign: number;
+            creditForeign: number;
+            isReconciled: boolean;
+            reconciledAt: Date | null;
+            bankLineId: string | null;
+        })[];
+    }>;
+    /**
+     * Cash Flow Statement — movement through all liquid bank & cash accounts.
+     */
+    cashFlowStatement(schoolId: string, from: Date, to: Date): Promise<{
+        openingCash: number;
+        operatingInflows: number;
+        operatingOutflows: number;
+        capitalExpenditure: number;
+        netChange: number;
+        closingCash: number;
+        from: Date;
+        to: Date;
+    }>;
+    /**
+     * Budget vs Actual variance report.
+     */
+    budgetVsActual(schoolId: string, year: number, term?: string): Promise<{
+        year: number;
+        term: string;
+        rows: {
+            code: string;
+            name: string;
+            type: import("../generated/client").$Enums.AccountType;
+            budget: number;
+            actual: number;
+            variance: number;
+            percentUtilized: number;
+            term: string | null;
+        }[];
+    }>;
+    /**
+     * Calculate wallet balance for student from WalletTransaction table.
      */
     getWalletBalance(studentId: string): Promise<number>;
     /**
-     * Compute uniform stock level on-the-fly from stock movements.
+     * Calculate current stock level for item from StockMovement table.
      */
     getStockLevel(itemId: string): Promise<number>;
 };

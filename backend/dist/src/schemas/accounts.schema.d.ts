@@ -33,9 +33,9 @@ export declare const ExpenseSchema: z.ZodObject<{
 export declare const PaymentMethodSchema: z.ZodObject<{
     name: z.ZodString;
     type: z.ZodEnum<{
+        CASH: "CASH";
         BANK: "BANK";
         MOBILE_MONEY: "MOBILE_MONEY";
-        CASH: "CASH";
     }>;
     details: z.ZodOptional<z.ZodObject<{
         accountNumber: z.ZodOptional<z.ZodString>;

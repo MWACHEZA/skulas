@@ -12,7 +12,9 @@ export interface ExportButtonProps<T = any> {
   data?: T[];
   orientation?: 'portrait' | 'landscape';
   metadata?: Record<string, string>;
-  onExport?: (format: 'excel' | 'word' | 'pdf') => Promise<void> | void;
+  visibleFormats?: ('excel' | 'word' | 'pdf' | 'csv')[];
+  defaultFormat?: 'excel' | 'word' | 'pdf' | 'csv';
+  onExport?: (format: 'excel' | 'word' | 'pdf' | 'csv') => Promise<void> | void;
   disabled?: boolean;
   className?: string;
   style?: React.CSSProperties;
@@ -29,6 +31,8 @@ export const ExportButton = <T extends any = any>({
   data = [],
   orientation,
   metadata,
+  visibleFormats,
+  defaultFormat,
   onExport,
   disabled = false,
   className = '',
@@ -38,7 +42,7 @@ export const ExportButton = <T extends any = any>({
 }: ExportButtonProps<T>) => {
   const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
-  const [exportingFormat, setExportingFormat] = useState<'excel' | 'word' | 'pdf' | null>(null);
+  const [exportingFormat, setExportingFormat] = useState<'excel' | 'word' | 'pdf' | 'csv' | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Close dropdown on outside click
@@ -58,7 +62,7 @@ export const ExportButton = <T extends any = any>({
 
   const effectiveSchoolName = schoolName || user?.schoolName || user?.school?.name || (user as any)?.tenantName || 'ACADEX SIS';
 
-  const handleExport = async (format: 'excel' | 'word' | 'pdf') => {
+  const handleExport = async (format: 'excel' | 'word' | 'pdf' | 'csv') => {
     setExportingFormat(format);
     setIsOpen(false);
 
@@ -91,6 +95,7 @@ export const ExportButton = <T extends any = any>({
   };
 
   const isExporting = exportingFormat !== null;
+  const formatsToShow = visibleFormats ?? ['excel', 'word', 'pdf'];
 
   return (
     <div
@@ -169,6 +174,7 @@ export const ExportButton = <T extends any = any>({
           </div>
 
           {/* Excel Option */}
+          {formatsToShow.includes('excel') && (
           <button
             type="button"
             onClick={() => handleExport('excel')}
@@ -211,8 +217,10 @@ export const ExportButton = <T extends any = any>({
               <div style={{ fontSize: '0.72rem', color: '#64748b' }}>.xlsx workbook format</div>
             </div>
           </button>
+          )}
 
           {/* Word Option */}
+          {formatsToShow.includes('word') && (
           <button
             type="button"
             onClick={() => handleExport('word')}
@@ -255,8 +263,10 @@ export const ExportButton = <T extends any = any>({
               <div style={{ fontSize: '0.72rem', color: '#64748b' }}>.docx styled document</div>
             </div>
           </button>
+          )}
 
           {/* PDF Option */}
+          {formatsToShow.includes('pdf') && (
           <button
             type="button"
             onClick={() => handleExport('pdf')}
@@ -299,6 +309,24 @@ export const ExportButton = <T extends any = any>({
               <div style={{ fontSize: '0.72rem', color: '#64748b' }}>.pdf printable document</div>
             </div>
           </button>
+          )}
+          
+          {/* CSV Option */}
+          {formatsToShow.includes('csv') && (
+          <button type="button" onClick={() => handleExport('csv')}
+            style={{ width: '100%', textAlign: 'left', padding: '8px 12px', borderRadius: '6px', border: 'none', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.85rem', fontWeight: 600, color: '#1e293b', transition: 'background 0.15s ease' }}
+            onMouseEnter={e => (e.currentTarget.style.background = '#f1f5f9')}
+            onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+          >
+            <div style={{ width: '28px', height: '28px', borderRadius: '6px', background: '#fef9c3', color: '#ca8a04', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.9rem' }}>
+              <i className="fas fa-file-csv" />
+            </div>
+            <div>
+              <div style={{ lineHeight: '1.2' }}>CSV Spreadsheet</div>
+              <div style={{ fontSize: '0.72rem', color: '#64748b' }}>.csv comma-separated</div>
+            </div>
+          </button>
+          )}
         </div>
       )}
     </div>

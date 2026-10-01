@@ -25,20 +25,24 @@ router.get('/', auth_1.requireAuth, async (req, res) => {
 router.post('/', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'BURSAR', 'ANCILLARY'), async (req, res) => {
     try {
         const schoolId = req.user.schoolId;
-        const { name, number, model, quantity, yearMade, driverName, driverLicense, driverContact, status, description } = req.body;
+        const { name, number, model, quantity, yearMade, driverName, driverLicense, driverContact, status, description, vehicleNumber, vehicleModel, note, registrationNumber, seatingCapacity } = req.body;
+        const resolvedNumber = number || vehicleNumber || registrationNumber || 'BUS-01';
+        const resolvedName = name || vehicleNumber || resolvedNumber;
+        const resolvedModel = model || vehicleModel || '';
+        const resolvedDesc = description || note || (seatingCapacity ? `${seatingCapacity} seats` : undefined);
         const vehicle = await prisma_1.default.schoolVehicle.create({
             data: {
                 schoolId,
-                name,
-                number,
-                model,
-                quantity: quantity ? parseInt(quantity) : 1,
+                name: resolvedName,
+                number: resolvedNumber,
+                model: resolvedModel,
+                quantity: quantity ? parseInt(quantity) : (seatingCapacity ? parseInt(seatingCapacity) : 1),
                 yearMade,
                 driverName,
                 driverLicense,
                 driverContact,
                 status: status || 'Available',
-                description
+                description: resolvedDesc
             }
         });
         // Automatically register as general school asset
@@ -68,20 +72,20 @@ router.put('/:id', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', '
     try {
         const schoolId = req.user.schoolId;
         const { id } = req.params;
-        const { name, number, model, quantity, yearMade, driverName, driverLicense, driverContact, status, description } = req.body;
+        const { name, number, model, quantity, yearMade, driverName, driverLicense, driverContact, status, description, vehicleNumber, vehicleModel, note, registrationNumber, seatingCapacity } = req.body;
         const vehicle = await prisma_1.default.schoolVehicle.update({
             where: { id: id, schoolId },
             data: {
-                name,
-                number,
-                model,
-                quantity: quantity ? parseInt(quantity) : undefined,
+                name: name || vehicleNumber || undefined,
+                number: number || vehicleNumber || registrationNumber || undefined,
+                model: model || vehicleModel || undefined,
+                quantity: quantity ? parseInt(quantity) : (seatingCapacity ? parseInt(seatingCapacity) : undefined),
                 yearMade,
                 driverName,
                 driverLicense,
                 driverContact,
                 status,
-                description
+                description: description || note || undefined
             }
         });
         res.json(vehicle);

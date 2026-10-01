@@ -1461,6 +1461,59 @@ router.post('/loans/:id/waive-fine', auth_1.requireAuth, (0, auth_1.requireRole)
     }
 });
 /**
+ * @route   POST /api/library/loans/:id/pay-fine
+ * @desc    Collect fine payment for an overdue loan and post double entry to 4065
+ */
+router.post('/loans/:id/pay-fine', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'LIBRARIAN', 'BURSAR'), async (req, res) => {
+    const id = req.params.id;
+    const { amount, paymentMethod = 'CASH' } = req.body;
+    const schoolId = req.user.schoolId;
+    if (!amount || parseFloat(amount) <= 0) {
+        return res.status(400).json({ error: 'Valid payment amount is required' });
+    }
+    const payAmt = Math.round(parseFloat(amount) * 100) / 100;
+    try {
+        const loan = await prisma_1.default.bookLoan.findFirst({
+            where: { id, schoolId },
+            include: { book: true, student: true, user: true }
+        });
+        if (!loan)
+            return res.status(404).json({ error: 'Loan record not found' });
+        const payCode = paymentMethod === 'BANK' ? '1110' : paymentMethod === 'ECOCASH' ? '1120' : '1100';
+        // 1. Update loan record
+        const updated = await prisma_1.default.bookLoan.update({
+            where: { id },
+            data: {
+                paidFine: (loan.paidFine || 0) + payAmt
+            }
+        });
+        // 2. Post double entry: DR Cash/Bank (1100/1110) / CR 4065 (Library Fines & Overdue Charges)
+        const journalEntry = await ledger_service_1.LedgerService.postDoubleEntry({
+            tenantId: schoolId,
+            debitCode: payCode,
+            creditCode: '4065',
+            amount: payAmt,
+            description: `Library fine collected for "${loan.book?.title || 'Book'}" (Loan #${id.substring(0, 8)}) via ${paymentMethod}`,
+            sourceModule: 'library_fine',
+            reference: `LIBFINE-${id.substring(0, 8)}-${Date.now()}`,
+            studentId: loan.studentId || undefined,
+            userId: req.user.id,
+            ipAddress: req.ip
+        });
+        res.json({
+            success: true,
+            paidAmount: payAmt,
+            loan: updated,
+            journalEntryId: journalEntry.id,
+            entryNumber: journalEntry.entryNumber
+        });
+    }
+    catch (error) {
+        console.error('Pay fine error:', error);
+        res.status(500).json({ error: error.message || 'Failed to process fine payment' });
+    }
+});
+/**
  * @route   POST /api/library/loans/:id/send-reminder
  * @desc    Send manual reminder to borrower
  */

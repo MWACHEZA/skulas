@@ -23,12 +23,14 @@ router.get('/', auth_1.requireAuth, async (req, res) => {
 router.post('/', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'BURSAR', 'ANCILLARY'), async (req, res) => {
     try {
         const schoolId = req.user.schoolId;
-        const { name, description } = req.body;
+        const { name, title, description, startPlace, stopPlace, fare } = req.body;
+        const resolvedName = name || title || 'New Route';
+        const resolvedDesc = description || (startPlace && stopPlace ? `${startPlace} to ${stopPlace}` : description);
         const route = await prisma_1.default.transportRoute.create({
             data: {
                 schoolId,
-                name,
-                description
+                name: resolvedName,
+                description: resolvedDesc
             }
         });
         res.status(201).json(route);

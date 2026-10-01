@@ -2,9 +2,9 @@ import { z } from 'zod';
 export declare const PaymentMethodSchema: z.ZodObject<{
     name: z.ZodString;
     type: z.ZodDefault<z.ZodEnum<{
+        CASH: "CASH";
         BANK: "BANK";
         MOBILE_MONEY: "MOBILE_MONEY";
-        CASH: "CASH";
     }>>;
     details: z.ZodOptional<z.ZodObject<{
         accountNumber: z.ZodOptional<z.ZodString>;
