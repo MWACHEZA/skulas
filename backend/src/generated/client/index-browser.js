@@ -635,13 +635,29 @@ exports.Prisma.AnnouncementScalarFieldEnum = {
   id: 'id',
   title: 'title',
   content: 'content',
+  body: 'body',
   category: 'category',
+  priority: 'priority',
+  audience: 'audience',
+  targetClassId: 'targetClassId',
+  isPinned: 'isPinned',
+  expiryDate: 'expiryDate',
+  createdById: 'createdById',
   targetRole: 'targetRole',
   visiblePortals: 'visiblePortals',
   isPublic: 'isPublic',
   schoolId: 'schoolId',
   publishedAt: 'publishedAt',
-  expiresAt: 'expiresAt'
+  expiresAt: 'expiresAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.AnnouncementReadScalarFieldEnum = {
+  id: 'id',
+  announcementId: 'announcementId',
+  userId: 'userId',
+  readAt: 'readAt'
 };
 
 exports.Prisma.AuditLogScalarFieldEnum = {
@@ -1158,8 +1174,37 @@ exports.Prisma.StaffLeaveScalarFieldEnum = {
   status: 'status',
   approvedBy: 'approvedBy',
   schoolId: 'schoolId',
+  coverTeacherId: 'coverTeacherId',
+  rejectionReason: 'rejectionReason',
+  department: 'department',
+  hodApprovedAt: 'hodApprovedAt',
+  hodApprovedById: 'hodApprovedById',
+  headApprovedAt: 'headApprovedAt',
+  attachmentUrl: 'attachmentUrl',
+  days: 'days',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
+};
+
+exports.Prisma.LeaveBalanceScalarFieldEnum = {
+  id: 'id',
+  schoolId: 'schoolId',
+  userId: 'userId',
+  annualTotal: 'annualTotal',
+  annualUsed: 'annualUsed',
+  sickTotal: 'sickTotal',
+  sickUsed: 'sickUsed',
+  compassionateTotal: 'compassionateTotal',
+  compassionateUsed: 'compassionateUsed',
+  maternityTotal: 'maternityTotal',
+  maternityUsed: 'maternityUsed',
+  studyTotal: 'studyTotal',
+  studyUsed: 'studyUsed',
+  unpaidTotal: 'unpaidTotal',
+  unpaidUsed: 'unpaidUsed',
+  academicYear: 'academicYear',
+  updatedAt: 'updatedAt',
+  createdAt: 'createdAt'
 };
 
 exports.Prisma.AssetScalarFieldEnum = {
@@ -3001,6 +3046,7 @@ exports.Prisma.ModelName = {
   QuestionPaper: 'QuestionPaper',
   TimetableSlot: 'TimetableSlot',
   Announcement: 'Announcement',
+  AnnouncementRead: 'AnnouncementRead',
   AuditLog: 'AuditLog',
   Book: 'Book',
   StudentHouse: 'StudentHouse',
@@ -3031,6 +3077,7 @@ exports.Prisma.ModelName = {
   Message: 'Message',
   SupportTicket: 'SupportTicket',
   StaffLeave: 'StaffLeave',
+  LeaveBalance: 'LeaveBalance',
   Asset: 'Asset',
   AssetIncident: 'AssetIncident',
   AssetMaintenance: 'AssetMaintenance',

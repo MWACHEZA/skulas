@@ -1,5 +1,4 @@
 import prisma from '../lib/prisma';
-import { LedgerService } from './ledger.service';
 import { SequenceService } from './sequence.service';
 
 export class ComplianceService {
@@ -200,7 +199,7 @@ export class ComplianceService {
     const fees = await prisma.fee.findMany({
       where: { schoolId, studentId, status: { in: ['PENDING', 'PARTIAL'] } }
     });
-    const balanceFromFees = fees.reduce((sum, f) => sum + (f.amount - (f.paidAmount || 0)), 0);
+    const balanceFromFees = fees.reduce((sum, f) => sum + (f.amount - (f.paid || 0)), 0);
 
     const journalLines = await prisma.journalEntryLine.findMany({
       where: {
@@ -339,8 +338,11 @@ export class ComplianceService {
     });
     const hasUnreturnedBooks = activeLoans.length > 0;
 
-    // 2. Live Fees Check: student balance
-    const feesBalance = await LedgerService.getStudentBalance(schoolId, studentId);
+    // 2. Live Fees Check: compute AR balance from journal lines (debit - credit on account 1200)
+    const arLines = await prisma.journalEntryLine.findMany({
+      where: { schoolId, studentId, coaCode: '1200' }
+    });
+    const feesBalance = arLines.reduce((sum, l) => sum + (l.debit - l.credit), 0);
     const isFeesClear = feesBalance <= 0;
 
     // 3. Upsert StudentClearance record

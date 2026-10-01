@@ -211,6 +211,7 @@ model School {
   creditNotes           CreditNote[]
   tillSessions          TillSession[]
   studentClearances     StudentClearance[]
+  leaveBalances         LeaveBalance[]
 
   @@index([code])
 }
@@ -544,7 +545,9 @@ model User {
   clinicAccessAudits      ClinicAccessAudit[]       @relation("ClinicAccessAudits")
   visitsTriaged           ClinicVisit[]             @relation("VisitTriageBy")
   visitsConsulted         ClinicVisit[]             @relation("VisitConsultedBy")
-
+  leaveBalances           LeaveBalance[]            @relation("LeaveBalances")
+  announcementsCreated    Announcement[]            @relation("AnnouncementCreatedBy")
+  announcementReads       AnnouncementRead[]        @relation("AnnouncementReads")
   @@index([schoolId])
 }
 
@@ -730,6 +733,7 @@ model SchoolClass {
   StudyMaterial       StudyMaterial[]
   FeeGroupClassAmount FeeGroupClassAmount[]
   AdmissionInquiry    AdmissionInquiry[]
+  announcements       Announcement[]
 
   @@unique([schoolId, name])
   @@index([schoolId])
@@ -1052,16 +1056,44 @@ model Announcement {
   id             String    @id @default(cuid())
   title          String
   content        String
-  category       String    @default("General") // Academic, Fees, Events, Urgent, General
-  targetRole     String    @default("ALL") // Deprecated in favor of visiblePortals
+  body           String?
+  category       String    @default("GENERAL") // ACADEMIC | FEES | EVENTS | GENERAL
+  priority       String    @default("NORMAL")  // URGENT | NORMAL
+  audience       String    @default("ALL")     // ALL | ALL_TEACHERS | ALL_PARENTS | ALL_STAFF | SPECIFIC_CLASS | BOARDING_STAFF
+  targetClassId  String?
+  targetClass    SchoolClass? @relation(fields: [targetClassId], references: [id])
+  isPinned       Boolean   @default(false)
+  expiryDate     DateTime?
+  createdById    String?
+  createdBy      User?     @relation("AnnouncementCreatedBy", fields: [createdById], references: [id])
+  reads          AnnouncementRead[]
+  
+  // Legacy fields
+  targetRole     String    @default("ALL") // Deprecated
   visiblePortals String[]  @default(["ALL"])
   isPublic       Boolean   @default(false)
   schoolId       String
   school         School    @relation(fields: [schoolId], references: [id])
   publishedAt    DateTime  @default(now())
   expiresAt      DateTime?
+  
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt @default(now())
 
-  @@index([schoolId])
+  @@index([schoolId, audience])
+  @@index([schoolId, priority])
+}
+
+model AnnouncementRead {
+  id             String       @id @default(cuid())
+  announcementId String
+  announcement   Announcement @relation(fields: [announcementId], references: [id], onDelete: Cascade)
+  userId         String
+  user           User         @relation("AnnouncementReads", fields: [userId], references: [id])
+  readAt         DateTime     @default(now())
+
+  @@unique([announcementId, userId])
+  @@index([userId])
 }
 
 // ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚Â AUDIT SYSTEM ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚Â
@@ -1758,19 +1790,53 @@ model SupportTicket {
 // ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚Â STAFF LEAVE / HR ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚Â
 
 model StaffLeave {
-  id         String   @id @default(cuid())
-  userId     String
-  leaveType  String // annual, sick, maternity, study, unpaid
-  startDate  DateTime
-  endDate    DateTime
-  reason     String?
-  status     String   @default("pending") // pending, approved, rejected
-  approvedBy String?
-  schoolId   String
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id              String   @id @default(cuid())
+  userId          String
+  leaveType       String // annual, sick, maternity, study, unpaid
+  startDate       DateTime
+  endDate         DateTime
+  reason          String?
+  status          String   @default("pending") // pending_hod, pending_head, approved, rejected, cancelled
+  approvedBy      String?
+  schoolId        String
+  coverTeacherId  String?
+  rejectionReason String?
+  department      String?
+  hodApprovedAt   DateTime?
+  hodApprovedById String?
+  headApprovedAt  DateTime?
+  attachmentUrl   String?
+  days            Int?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
   @@index([userId])
+  @@index([schoolId])
+}
+
+model LeaveBalance {
+  id                  String   @id @default(cuid())
+  schoolId            String
+  school              School   @relation(fields: [schoolId], references: [id])
+  userId              String
+  user                User     @relation("LeaveBalances", fields: [userId], references: [id])
+  annualTotal         Int      @default(30)
+  annualUsed          Int      @default(0)
+  sickTotal           Int      @default(90)
+  sickUsed            Int      @default(0)
+  compassionateTotal  Int      @default(5)
+  compassionateUsed   Int      @default(0)
+  maternityTotal      Int      @default(90)
+  maternityUsed       Int      @default(0)
+  studyTotal          Int      @default(10)
+  studyUsed           Int      @default(0)
+  unpaidTotal         Int      @default(365)
+  unpaidUsed          Int      @default(0)
+  academicYear        String   @default("2025")
+  updatedAt           DateTime @updatedAt
+  createdAt           DateTime @default(now())
+
+  @@unique([schoolId, userId, academicYear])
   @@index([schoolId])
 }
 

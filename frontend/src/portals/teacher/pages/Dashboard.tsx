@@ -6,25 +6,24 @@ import { useLessonReminder } from '../../../hooks/useLessonReminder';
 import { useTerminology } from '../../../hooks/useTerminology';
 import MaintenanceRequestModal from '../../../components/shared/MaintenanceRequestModal';
 import ClockInModal from '../../../components/attendance/ClockInModal';
-
-interface DashboardData {
-  stats: {
-    totalStudents: number;
-    totalClasses: number;
-    activeAssignments: number;
-  };
-  classes: { id: string; name: string; level: string; role: string; _count: { students: number } }[];
-  announcements: { id: string; title: string; body: string; createdAt: string }[];
-}
+import UrgentAnnouncementBanner from '../../../components/shared/UrgentAnnouncementBanner';
+import AnnouncementsWidget from '../../../components/shared/AnnouncementsWidget';
 
 export default function TeacherDashboard() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
+  
+  // Modals
   const [isMaintModalOpen, setIsMaintModalOpen] = useState(false);
   const [clockModalAction, setClockModalAction] = useState<'IN'|'OUT'|null>(null);
+  
+  // Data
   const [attendanceStatus, setAttendanceStatus] = useState<any>(null);
+  const [myClassesToday, setMyClassesToday] = useState<number>(0);
+  const [attendanceToDo, setAttendanceToDo] = useState<number>(0);
+  const [markingBacklog, setMarkingBacklog] = useState<number>(0);
+  const [feeDefaulters, setFeeDefaulters] = useState<number>(0);
 
   useLessonReminder(user?.role);
   const { t, isMedical } = useTerminology();
@@ -35,21 +34,27 @@ export default function TeacherDashboard() {
 
   const fetchDashboardData = () => {
     setLoading(true);
-    Promise.all([
-      api.get('/api/dashboard/teacher'),
-      api.get('/api/staff-attendance/today')
-    ])
-    .then(([dashRes, attRes]) => {
-      setData(dashRes.data);
-      setAttendanceStatus(attRes.data);
-    })
-    .finally(() => setLoading(false));
+    
+    // Core data (attendance status)
+    api.get('/api/staff-attendance/today')
+      .then(res => setAttendanceStatus(res.data))
+      .catch(console.error);
+
+    // New 4 cards endpoints (placeholders with 0 if they fail/don't exist)
+    // TODO: implement these endpoints if missing
+    api.get('/api/timetable/today').then(res => setMyClassesToday(res.data?.count || 0)).catch(() => setMyClassesToday(0));
+    api.get('/api/attendance/pending-today').then(res => setAttendanceToDo(res.data?.count || 0)).catch(() => setAttendanceToDo(0));
+    api.get('/api/grades/pending-count').then(res => setMarkingBacklog(res.data?.count || 0)).catch(() => setMarkingBacklog(0));
+    api.get('/api/fees/my-class-defaulters').then(res => setFeeDefaulters(res.data?.count || 0)).catch(() => setFeeDefaulters(0));
+
+    setLoading(false);
   };
 
   const greeting = () => {
     const h = new Date().getHours();
     return h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
   };
+
   if (loading) return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '60vh', flexDirection: 'column', gap: 16 }}>
       <i className="fas fa-spinner fa-spin fa-3x" style={{ color: 'var(--school-primary, #0056b3)', opacity: 0.6 }}></i>
@@ -58,36 +63,16 @@ export default function TeacherDashboard() {
   );
   
   return (
-    <>
+    <div style={{ paddingBottom: '80px' }}>
+      <UrgentAnnouncementBanner />
+      
       <div className="portal-page-header">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', flexWrap: 'wrap', gap: 16 }}>
           <div>
             <h1>{greeting()}, {user?.name?.split(' ')[0]} 👋</h1>
             <p>Here's what's happening in your {t('classes').toLowerCase()} today.</p>
           </div>
-          <button 
-            className="portal-btn-secondary" 
-            style={{ padding: '8px 16px' }}
-            onClick={() => setIsMaintModalOpen(true)}
-          >
-            <i className="fas fa-tools" style={{ marginRight: 8 }}></i>Report Issue
-          </button>
-        </div>
-      </div>
-
-      <div className="portal-stats-grid">
-        {/* Attendance Card */}
-        <div className="portal-stat-card" style={{ padding: '20px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minHeight: '170px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', width: '100%' }}>
-            <div>
-              <p style={{ margin: 0, fontSize: '0.85rem', color: '#718096', fontWeight: 600 }}>Daily attendance</p>
-              <h3 style={{ margin: '8px 0 0 0', fontSize: '1.8rem', fontWeight: 800, color: '#2d3748' }}>0</h3>
-            </div>
-            <div style={{ background: 'rgba(49, 130, 206, 0.1)', color: 'var(--portal-primary)', width: '48px', height: '48px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem' }}>
-              <i className="fas fa-user-clock"></i>
-            </div>
-          </div>
-          <div style={{ marginTop: '16px' }}>
+          <div style={{ display: 'flex', gap: 12 }}>
             <button 
               onClick={() => {
                 if (attendanceStatus && !attendanceStatus.timeOut) setClockModalAction('OUT');
@@ -95,17 +80,13 @@ export default function TeacherDashboard() {
               }}
               className="portal-btn-primary"
               style={{ 
-                width: '100%', 
                 display: 'flex', 
-                justifyContent: 'center', 
                 alignItems: 'center', 
                 gap: '8px', 
-                fontSize: '0.85rem', 
-                padding: '10px 14px', 
-                borderRadius: '10px',
-                fontWeight: 700,
-                background: (!attendanceStatus || attendanceStatus.timeOut) ? 'var(--school-primary, #0056b3)' : 'var(--school-accent, #2563eb)',
-                borderColor: (!attendanceStatus || attendanceStatus.timeOut) ? 'var(--school-primary, #0056b3)' : 'var(--school-accent, #2563eb)'
+                padding: '8px 16px', 
+                fontWeight: 600,
+                background: (!attendanceStatus || attendanceStatus.timeOut) ? 'var(--school-primary)' : 'var(--school-accent)',
+                borderColor: (!attendanceStatus || attendanceStatus.timeOut) ? 'var(--school-primary)' : 'var(--school-accent)'
               }}
             >
               <i className="fas fa-clock"></i>
@@ -113,207 +94,96 @@ export default function TeacherDashboard() {
             </button>
           </div>
         </div>
+      </div>
 
-        {/* Awards Card */}
-        <div className="portal-stat-card" style={{ padding: '20px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minHeight: '170px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', width: '100%' }}>
+      <AnnouncementsWidget />
+
+      <div className="portal-stats-grid" style={{ marginBottom: '32px' }}>
+        {/* Card 1: My Classes Today */}
+        <div className="portal-stat-card" style={{ padding: '20px', display: 'flex', flexDirection: 'column', minHeight: '130px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <div>
-              <p style={{ margin: 0, fontSize: '0.85rem', color: '#718096', fontWeight: 600 }}>My awards</p>
-              <h3 style={{ margin: '8px 0 0 0', fontSize: '1.8rem', fontWeight: 800, color: '#2d3748' }}>0</h3>
+              <p style={{ margin: 0, fontSize: '0.85rem', color: '#718096', fontWeight: 600 }}>Classes Today</p>
+              <h3 style={{ margin: '8px 0 0 0', fontSize: '1.8rem', fontWeight: 800, color: '#2d3748' }}>{myClassesToday}</h3>
             </div>
-            <div style={{ background: 'rgba(56, 161, 105, 0.1)', color: 'var(--portal-success)', width: '48px', height: '48px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem' }}>
-              <i className="fas fa-award"></i>
+            <div style={{ background: 'rgba(49, 130, 206, 0.1)', color: 'var(--portal-primary)', width: '48px', height: '48px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem' }}>
+              <i className="fas fa-chalkboard-teacher"></i>
             </div>
-          </div>
-          <div style={{ marginTop: '16px' }}>
-            <button 
-              onClick={() => navigate('/teacher/awards')}
-              className="portal-btn-secondary"
-              style={{ 
-                width: '100%', 
-                display: 'flex', 
-                justifyContent: 'center', 
-                alignItems: 'center', 
-                gap: '8px', 
-                fontSize: '0.85rem', 
-                padding: '10px 14px', 
-                borderRadius: '10px',
-                fontWeight: 700,
-                color: '#2d3748',
-                borderColor: '#e2e8f0',
-                background: '#fff'
-              }}
-            >
-              <i className="fas fa-chart-line"></i>
-              10. Jun 2026
-            </button>
           </div>
         </div>
 
-        {/* Messages Card */}
-        <div className="portal-stat-card" style={{ padding: '20px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minHeight: '170px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', width: '100%' }}>
+        {/* Card 2: Attendance To Do */}
+        <div className="portal-stat-card" style={{ padding: '20px', display: 'flex', flexDirection: 'column', minHeight: '130px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <div>
-              <p style={{ margin: 0, fontSize: '0.85rem', color: '#718096', fontWeight: 600 }}>Unread message</p>
-              <h3 style={{ margin: '8px 0 0 0', fontSize: '1.8rem', fontWeight: 800, color: '#2d3748' }}>No</h3>
+              <p style={{ margin: 0, fontSize: '0.85rem', color: '#718096', fontWeight: 600 }}>Attendance Pending</p>
+              <h3 style={{ margin: '8px 0 0 0', fontSize: '1.8rem', fontWeight: 800, color: '#e53e3e' }}>{attendanceToDo}</h3>
             </div>
-            <div style={{ background: 'rgba(237, 137, 54, 0.1)', color: '#ed8936', width: '48px', height: '48px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem' }}>
-              <i className="fab fa-facebook-messenger"></i>
+            <div style={{ background: 'rgba(229, 62, 62, 0.1)', color: '#e53e3e', width: '48px', height: '48px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem' }}>
+              <i className="fas fa-user-check"></i>
             </div>
-          </div>
-          <div style={{ marginTop: '16px' }}>
-            <button 
-              onClick={() => navigate('/teacher/messages')}
-              className="portal-btn-secondary"
-              style={{ 
-                width: '100%', 
-                display: 'flex', 
-                justifyContent: 'center', 
-                alignItems: 'center', 
-                gap: '8px', 
-                fontSize: '0.85rem', 
-                padding: '10px 14px', 
-                borderRadius: '10px',
-                fontWeight: 700,
-                color: '#dd6b20',
-                borderColor: '#fbd38d',
-                background: '#fffaf0'
-              }}
-            >
-              <i className="fas fa-envelope"></i>
-              Inbox messages
-            </button>
           </div>
         </div>
 
-        {/* Leave Card */}
-        <div className="portal-stat-card" style={{ padding: '20px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minHeight: '170px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', width: '100%' }}>
+        {/* Card 3: Marking Backlog */}
+        <div className="portal-stat-card" style={{ padding: '20px', display: 'flex', flexDirection: 'column', minHeight: '130px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <div>
-              <p style={{ margin: 0, fontSize: '0.85rem', color: '#718096', fontWeight: 600 }}>My leave</p>
-              <h3 style={{ margin: '8px 0 0 0', fontSize: '1.8rem', fontWeight: 800, color: '#2d3748' }}>1</h3>
+              <p style={{ margin: 0, fontSize: '0.85rem', color: '#718096', fontWeight: 600 }}>Marking Backlog</p>
+              <h3 style={{ margin: '8px 0 0 0', fontSize: '1.8rem', fontWeight: 800, color: '#dd6b20' }}>{markingBacklog}</h3>
+            </div>
+            <div style={{ background: 'rgba(221, 107, 32, 0.1)', color: '#dd6b20', width: '48px', height: '48px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem' }}>
+              <i className="fas fa-edit"></i>
+            </div>
+          </div>
+        </div>
+
+        {/* Card 4: Fee Defaulters */}
+        <div className="portal-stat-card" style={{ padding: '20px', display: 'flex', flexDirection: 'column', minHeight: '130px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <div>
+              <p style={{ margin: 0, fontSize: '0.85rem', color: '#718096', fontWeight: 600 }}>Fee Defaulters</p>
+              <h3 style={{ margin: '8px 0 0 0', fontSize: '1.8rem', fontWeight: 800, color: '#2d3748' }}>{feeDefaulters}</h3>
             </div>
             <div style={{ background: 'rgba(159, 122, 234, 0.1)', color: '#9f7aea', width: '48px', height: '48px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem' }}>
               <i className="fas fa-wallet"></i>
             </div>
           </div>
-          <div style={{ marginTop: '16px' }}>
-            <button 
-              onClick={() => navigate('/teacher/leave')}
-              className="portal-btn-secondary"
-              style={{ 
-                width: '100%', 
-                display: 'flex', 
-                justifyContent: 'center', 
-                alignItems: 'center', 
-                gap: '8px', 
-                fontSize: '0.85rem', 
-                padding: '10px 14px', 
-                borderRadius: '10px',
-                fontWeight: 700,
-                color: '#2d3748',
-                borderColor: '#e2e8f0',
-                background: '#fff'
-              }}
-            >
-              <i className="fas fa-calendar-minus"></i>
-              Go to My leave
-            </button>
-          </div>
         </div>
       </div>
 
-      <div className="portal-grid-2">
-        {/* My Classes */}
-        <div className="portal-card">
-          <div className="portal-card-header">
-            <h2><i className={`fas ${isMedical ? 'fa-hospital-user' : 'fa-door-open'}`} style={{ marginRight: 8, color: '#48bb78' }}></i>My {t('classes')}</h2>
-          </div>
-          <div className="portal-card-body" style={{ padding: 0 }}>
-            {!data?.classes?.length ? (
-              <div style={{ padding: 30, textAlign: 'center', color: '#718096' }}>No classes assigned yet.</div>
-            ) : (
-              <table className="portal-table">
-                <thead><tr><th>Class</th><th>Level</th><th>Role</th><th>Students</th><th></th></tr></thead>
-                <tbody>
-                  {data.classes.map((c: any) => (
-                    <tr key={c.id} style={{ cursor: 'pointer' }} onClick={() => navigate(`/teacher/classes/${c.id}`)}>
-                      <td style={{ fontWeight: 600 }}>{c.name}</td>
-                      <td><span className="portal-badge info">{c.level}</span></td>
-                      <td><span style={{ fontSize: '0.85rem', color: '#4a5568' }}>{c.role}</span></td>
-                      <td>{c._count.students} {t('students')}</td>
-                      <td style={{ textAlign: 'right' }}>
-                         <button className="portal-btn-secondary" style={{ padding: '4px 8px', fontSize: '0.75rem' }} onClick={(e) => { e.stopPropagation(); navigate(`/teacher/classes/${c.id}`); }}>View</button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
-          </div>
-        </div>
-
-        {/* Quick Actions */}
-        <div className="portal-card">
-          <div className="portal-card-header">
-            <h2><i className="fas fa-bolt" style={{ marginRight: 8, color: 'var(--portal-warning)' }}></i>Quick Actions</h2>
-          </div>
-          <div className="portal-card-body">
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-              {[
-                { icon: isMedical ? 'fa-notes-medical' : 'fa-clipboard-check', label: `Mark ${t('attendance')}`, color: '#48bb78', to: '/teacher/attendance' },
-                { icon: 'fa-plus-circle', label: `Create ${t('assignment')}`, color: 'var(--school-primary, #3182ce)', to: '/teacher/assignments' },
-                { icon: 'fa-edit', label: 'Enter Results', color: '#9f7aea', to: '/teacher/grades' },
-                { icon: 'fa-bullhorn', label: 'Post Notice', color: '#ed8936', to: '/teacher/messages' },
-              ].map(a => (
-                <a key={a.label} href={a.to} style={{
-                  display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, padding: '18px 12px',
-                  background: '#f8faff', borderRadius: 12, border: '2px solid #e2e8f0', textDecoration: 'none',
-                  color: '#2d3748', transition: 'all 0.2s', cursor: 'pointer',
-                }}
-                  onMouseEnter={e => {
-                    (e.currentTarget as HTMLElement).style.background = a.color;
-                    (e.currentTarget as HTMLElement).style.color = 'white';
-                    (e.currentTarget as HTMLElement).style.borderColor = a.color;
-                  }}
-                  onMouseLeave={e => {
-                    (e.currentTarget as HTMLElement).style.background = '#f8faff';
-                    (e.currentTarget as HTMLElement).style.color = '#2d3748';
-                    (e.currentTarget as HTMLElement).style.borderColor = '#e2e8f0';
-                  }}
-                >
-                  <i className={`fas ${a.icon} fa-lg`}></i>
-                  <span style={{ fontSize: '0.8rem', fontWeight: 600, textAlign: 'center' }}>{a.label}</span>
-                </a>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Announcements */}
-        <div className="portal-card" style={{ gridColumn: '1 / -1' }}>
-          <div className="portal-card-header">
-            <h2><i className="fas fa-bullhorn" style={{ marginRight: 8, color: '#ed8936' }}></i>School Announcements</h2>
-          </div>
-          <div className="portal-card-body" style={{ padding: 0 }}>
-            {!data?.announcements?.length ? (
-              <div style={{ padding: 30, textAlign: 'center', color: '#718096' }}>No announcements yet.</div>
-            ) : (
-              <table className="portal-table">
-                <thead><tr><th>Title</th><th>Date</th></tr></thead>
-                <tbody>
-                  {data.announcements.map(a => (
-                    <tr key={a.id}>
-                      <td><strong>{a.title}</strong><br /><span style={{ color: '#718096', fontSize: '0.82rem' }}>{a.body}</span></td>
-                      <td style={{ whiteSpace: 'nowrap', color: '#718096' }}>{new Date(a.createdAt).toLocaleDateString()}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
-          </div>
-        </div>
+      {/* Quick Actions Bar */}
+      <div style={{
+        position: 'fixed',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        backgroundColor: '#fff',
+        boxShadow: '0 -4px 6px -1px rgba(0, 0, 0, 0.1)',
+        padding: '12px 24px',
+        display: 'flex',
+        justifyContent: 'center',
+        gap: '16px',
+        zIndex: 900,
+        flexWrap: 'wrap',
+      }}>
+        <button className="portal-btn-secondary" onClick={() => navigate('/teacher/attendance')} style={{flex: '1 1 auto', minWidth: '120px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 8}}>
+          <i className="fas fa-clipboard-check"></i> Mark Attendance
+        </button>
+        <button className="portal-btn-secondary" onClick={() => navigate('/teacher/grades')} style={{flex: '1 1 auto', minWidth: '120px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 8}}>
+          <i className="fas fa-edit"></i> Enter Marks
+        </button>
+        <button className="portal-btn-secondary" onClick={() => navigate('/teacher/assignments')} style={{flex: '1 1 auto', minWidth: '120px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 8}}>
+          <i className="fas fa-file-upload"></i> Upload Assignment
+        </button>
+        <button className="portal-btn-secondary" onClick={() => navigate('/teacher/messages')} style={{flex: '1 1 auto', minWidth: '120px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 8}}>
+          <i className="fas fa-envelope"></i> Message Parent
+        </button>
+        <button className="portal-btn-secondary" onClick={() => setIsMaintModalOpen(true)} style={{flex: '1 1 auto', minWidth: '120px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 8}}>
+          <i className="fas fa-tools"></i> Report Issue
+        </button>
       </div>
+
       <MaintenanceRequestModal 
         isOpen={isMaintModalOpen}
         onClose={() => setIsMaintModalOpen(false)}
@@ -326,6 +196,6 @@ export default function TeacherDashboard() {
           onSuccess={fetchDashboardData}
         />
       )}
-    </>
+    </div>
   );
 }
