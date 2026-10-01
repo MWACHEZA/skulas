@@ -566,6 +566,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     portalVisibility: ['teacher'],
     tabs: [
       { id: 'syllabus', label: 'Syllabus' },
+      { id: 'schemes', label: 'Schemes of Work' },
       { id: 'lesson-plans', label: 'Lesson Plans' }
     ],
     searchKeywords: ['curriculum', 'syllabus', 'lesson planner', 'schemes of work']

@@ -45,6 +45,9 @@ model Plan {
 }
 
 model School {
+  syllabuses              Syllabus[]
+  schemesOfWork           SchemeOfWork[]
+  lessonPlans             LessonPlan[]
   id                      String                   @id @default(cuid())
   code                    String                   @unique // AX-XXXXXX
   name                    String
@@ -176,8 +179,6 @@ model School {
   holidays             Holiday[]
   schoolSetting        SchoolSetting?
   CBTExam              CBTExam[]
-  Syllabus             Syllabus[]
-  LessonPlan           LessonPlan[]
   LiveClass            LiveClass[]
   Award                Award[]
   Course               Course[]
@@ -451,13 +452,15 @@ model Expense {
 }
 
 model User {
+  uploadedSyllabuses Syllabus[]      @relation("SyllabusUploader")
+  coveredTopics      SyllabusTopic[] @relation("SyllabusCoveredBy")
   recruitedVacancies Vacancy[]
-  id                 String        @id @default(cuid())
-  email              String        @unique
+  id                 String          @id @default(cuid())
+  email              String          @unique
   password           String
   name               String
   role               String // SUPER_ADMIN, SCHOOL_ADMIN, TEACHER, BURSAR, LIBRARIAN, STUDENT, ALUMNI, ANCILLARY, PARENT, SUPPLIER
-  secondaryRoles     String[]      @default([])
+  secondaryRoles     String[]        @default([])
   sessions           UserSession[]
   avatar             String? // Stores filename or reference ID
   religion           String? // User's religious affiliation
@@ -566,6 +569,7 @@ model UserSession {
 }
 
 model Teacher {
+  schemesOfWork  SchemeOfWork[]
   id             String                 @id @default(cuid())
   staffId        String
   userId         String                 @unique
@@ -584,7 +588,6 @@ model Teacher {
   assignments    Assignment[]
   attendance     Attendance[]
   resources      DigitalResource[]
-  lessonPlans    LessonPlan[]
   supervisions   SupervisorAssignment[]
   questionPapers QuestionPaper[]
   houseMastered  StudentHouse[]         @relation("HouseMaster")
@@ -723,8 +726,6 @@ model SchoolClass {
   assignments         Assignment[]
   books               Book[]
   CBTExam             CBTExam[]
-  Syllabus            Syllabus[]
-  LessonPlan          LessonPlan[]
   LiveClass           LiveClass[]
   Course              Course[]
   StudyMaterial       StudyMaterial[]
@@ -751,6 +752,8 @@ model Section {
 }
 
 model Subject {
+  syllabuses              Syllabus[]
+  schemesOfWork           SchemeOfWork[]
   id                      String                   @id @default(cuid())
   name                    String
   code                    String?
@@ -769,7 +772,6 @@ model Subject {
   timetableSlots          TimetableSlot[]
   resources               DigitalResource[]
   libraryDigitalResources LibraryDigitalResource[]
-  lessonPlans             LessonPlan[]
   books                   Book[]
 
   gradingType    String          @default("standard") // standard or competency
@@ -781,7 +783,6 @@ model Subject {
   caWeight       Float           @default(30)
   examWeight     Float           @default(70)
   CBTExam        CBTExam[]
-  Syllabus       Syllabus[]
   StudyMaterial  StudyMaterial[]
 
   @@index([schoolId])
@@ -1647,7 +1648,7 @@ model SchoolSupplier {
   @@index([schoolId])
 }
 
-// ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚Â PARENT REGISTRY ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ���šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚Â
+// ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚Â PARENT REGISTRY ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚Â
 
 model Parent {
   id                String  @id @default(cuid())
@@ -2019,54 +2020,6 @@ model DigitalResource {
 
   @@index([teacherId])
   @@index([subjectId])
-}
-
-model Syllabus {
-  id        String @id @default(cuid())
-  schoolId  String
-  classId   String
-  subjectId String
-  topic     String
-  content   String
-  week      String
-
-  class   SchoolClass @relation(fields: [classId], references: [id])
-  subject Subject     @relation(fields: [subjectId], references: [id])
-  school  School      @relation(fields: [schoolId], references: [id])
-
-  lessonPlans LessonPlan[]
-
-  createdAt DateTime @default(now())
-
-  @@index([classId])
-  @@index([subjectId])
-}
-
-model LessonPlan {
-  id         String @id @default(cuid())
-  schoolId   String
-  classId    String
-  subjectId  String
-  syllabusId String
-  teacherId  String
-
-  week    String
-  session String
-  content String // TOPIC/CONTENT breakdown
-
-  class    SchoolClass @relation(fields: [classId], references: [id])
-  subject  Subject     @relation(fields: [subjectId], references: [id])
-  syllabus Syllabus    @relation(fields: [syllabusId], references: [id], onDelete: Cascade)
-  teacher  Teacher     @relation(fields: [teacherId], references: [id])
-  school   School      @relation(fields: [schoolId], references: [id])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([teacherId])
-  @@index([subjectId])
-  @@index([classId])
-  @@index([syllabusId])
 }
 
 // ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚Â HR / PAYROLL / ROSTERS ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚Â
@@ -4526,4 +4479,92 @@ model QrCodeSession {
   expiresAt    DateTime
   locationData Json?
   createdAt    DateTime @default(now())
+}
+
+model Syllabus {
+  id           String  @id @default(cuid())
+  schoolId     String
+  school       School  @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  subjectId    String
+  subject      Subject @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  form         String
+  url          String?
+  uploadedById String?
+  uploadedBy   User?   @relation("SyllabusUploader", fields: [uploadedById], references: [id])
+
+  topics SyllabusTopic[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([schoolId])
+  @@index([subjectId])
+}
+
+model SyllabusTopic {
+  id           String    @id @default(cuid())
+  syllabusId   String
+  syllabus     Syllabus  @relation(fields: [syllabusId], references: [id], onDelete: Cascade)
+  code         String?
+  topic        String
+  expectedWeek Int?
+  objectives   String?
+  isCovered    Boolean   @default(false)
+  coveredAt    DateTime?
+  coveredById  String?
+  coveredBy    User?     @relation("SyllabusCoveredBy", fields: [coveredById], references: [id])
+
+  schemes SchemeOfWork[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([syllabusId])
+}
+
+model SchemeOfWork {
+  lessonPlans     LessonPlan[]
+  id              String        @id @default(cuid())
+  schoolId        String
+  school          School        @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  teacherId       String
+  teacher         Teacher       @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  subjectId       String
+  subject         Subject       @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  form            String
+  term            Int
+  year            Int
+  status          String        @default("draft") // draft/pending/approved/rejected
+  comments        String?
+  syllabusTopicId String
+  syllabusTopic   SyllabusTopic @relation(fields: [syllabusTopicId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([schoolId])
+  @@index([teacherId])
+  @@index([subjectId])
+}
+
+model LessonPlan {
+  id              String       @id @default(cuid())
+  schoolId        String
+  school          School       @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  schemeId        String
+  scheme          SchemeOfWork @relation(fields: [schemeId], references: [id], onDelete: Cascade)
+  date            DateTime
+  objectives      String?
+  flow            String?
+  resources       String?
+  assessment      String?
+  homework        String?
+  differentiation String?
+  reflection      String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([schoolId])
+  @@index([schemeId])
 }

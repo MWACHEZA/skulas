@@ -1331,31 +1331,6 @@ exports.Prisma.DigitalResourceScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
-exports.Prisma.SyllabusScalarFieldEnum = {
-  id: 'id',
-  schoolId: 'schoolId',
-  classId: 'classId',
-  subjectId: 'subjectId',
-  topic: 'topic',
-  content: 'content',
-  week: 'week',
-  createdAt: 'createdAt'
-};
-
-exports.Prisma.LessonPlanScalarFieldEnum = {
-  id: 'id',
-  schoolId: 'schoolId',
-  classId: 'classId',
-  subjectId: 'subjectId',
-  syllabusId: 'syllabusId',
-  teacherId: 'teacherId',
-  week: 'week',
-  session: 'session',
-  content: 'content',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-};
-
 exports.Prisma.SalaryStubScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
@@ -2996,6 +2971,62 @@ exports.Prisma.QrCodeSessionScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.SyllabusScalarFieldEnum = {
+  id: 'id',
+  schoolId: 'schoolId',
+  subjectId: 'subjectId',
+  form: 'form',
+  url: 'url',
+  uploadedById: 'uploadedById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.SyllabusTopicScalarFieldEnum = {
+  id: 'id',
+  syllabusId: 'syllabusId',
+  code: 'code',
+  topic: 'topic',
+  expectedWeek: 'expectedWeek',
+  objectives: 'objectives',
+  isCovered: 'isCovered',
+  coveredAt: 'coveredAt',
+  coveredById: 'coveredById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.SchemeOfWorkScalarFieldEnum = {
+  id: 'id',
+  schoolId: 'schoolId',
+  teacherId: 'teacherId',
+  subjectId: 'subjectId',
+  form: 'form',
+  term: 'term',
+  year: 'year',
+  status: 'status',
+  comments: 'comments',
+  syllabusTopicId: 'syllabusTopicId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.LessonPlanScalarFieldEnum = {
+  id: 'id',
+  schoolId: 'schoolId',
+  schemeId: 'schemeId',
+  date: 'date',
+  objectives: 'objectives',
+  flow: 'flow',
+  resources: 'resources',
+  assessment: 'assessment',
+  homework: 'homework',
+  differentiation: 'differentiation',
+  reflection: 'reflection',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -3128,8 +3159,6 @@ exports.Prisma.ModelName = {
   TuckshopItem: 'TuckshopItem',
   TuckshopSale: 'TuckshopSale',
   DigitalResource: 'DigitalResource',
-  Syllabus: 'Syllabus',
-  LessonPlan: 'LessonPlan',
   SalaryStub: 'SalaryStub',
   ShiftAssignment: 'ShiftAssignment',
   ApplicantDocument: 'ApplicantDocument',
@@ -3246,7 +3275,11 @@ exports.Prisma.ModelName = {
   AttendanceRegister: 'AttendanceRegister',
   AttendanceRecord: 'AttendanceRecord',
   PeriodAttendance: 'PeriodAttendance',
-  QrCodeSession: 'QrCodeSession'
+  QrCodeSession: 'QrCodeSession',
+  Syllabus: 'Syllabus',
+  SyllabusTopic: 'SyllabusTopic',
+  SchemeOfWork: 'SchemeOfWork',
+  LessonPlan: 'LessonPlan'
 };
 
 /**
