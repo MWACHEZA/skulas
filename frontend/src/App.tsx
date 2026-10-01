@@ -39,6 +39,7 @@ import HouseDashboard from './portals/shared/pages/HouseDashboard';
 import ChaplaincyDashboard from './portals/shared/pages/ChaplaincyDashboard';
 import FarmManagement from './portals/shared/pages/FarmManagement';
 import DHRepresentative from './portals/student/pages/DHRepresentative';
+import TeacherDiningHall from './portals/teacher/pages/DiningHall';
 import PrefectCouncil from './portals/student/pages/PrefectCouncil';
 import ClassMonitorDashboard from './portals/student/pages/ClassMonitorDashboard';
 import ParentLayout from './portals/parent/ParentLayout';
@@ -538,7 +539,7 @@ export default function App() {
               <Route path="sports" element={<SportsManagement />} />
               <Route path="house" element={<HouseDashboard />} />
               <Route path="farm" element={<FarmManagement />} />
-              <Route path="dining-hall" element={<DHRepresentative />} />
+              <Route path="dining-hall" element={<TeacherDiningHall />} />
               <Route path="chaplaincy" element={<ChaplaincyDashboard />} />
               <Route path="prefects" element={<PrefectCouncil />} />
               <Route path="schedules" element={<AncillarySchedules />} />

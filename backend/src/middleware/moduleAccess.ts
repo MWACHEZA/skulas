@@ -71,6 +71,11 @@ export function getModuleAccess(user: any, module: string): ModuleAccessResult {
     return { level: 'request_only', actingAs: requestSecondary };
   }
 
+  // Teachers get request-only by DEFAULT for library
+  if (module === 'library' && primaryRole === 'TEACHER') {
+    return { level: 'request_only', actingAs: 'TEACHER' };
+  }
+
   return { level: 'none' };
 }
 

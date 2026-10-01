@@ -6,6 +6,9 @@ import { useTerminology } from '../../../hooks/useTerminology';
 import { useToast } from '../../../context/ToastContext';
 import SearchInput from '../../../components/shared/SearchInput';
 
+import { useModuleAccess } from '../../../hooks/useModuleAccess';
+import ViewingAsToggle from '../../../components/shared/ViewingAsToggle';
+
 // Import full Library suite components
 import LibraryDashboard from '../../library/pages/Dashboard';
 import LibraryBooks from '../../library/pages/Books';
@@ -63,8 +66,15 @@ export default function Library() {
   const { showToast } = useToast();
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const userRole = (user?.role || '').toUpperCase();
-  const isStaff = ['SCHOOL_ADMIN', 'SUPER_ADMIN', 'LIBRARIAN', 'TEACHER', 'ANCILLARY', 'BURSAR'].includes(userRole);
+  const { level, actingAs } = useModuleAccess('library');
+  const isStaff = level === 'full';
+  
+  // If no access, don't show anything or show limited.
+  // Wait, if student, level is 'none', but they have access.
+  // Let's preserve student logic by checking user?.role === 'STUDENT'
+  const isStudent = user?.role === 'STUDENT';
+  const hasLimitedAccess = level === 'request_only' || level === 'scoped' || isStudent;
+  const noAccess = level === 'none' && !isStudent;
 
   // Active Tab state
   const defaultTab = isStaff ? (searchParams.get('tab') || 'dashboard') : (searchParams.get('tab') || 'catalog');
@@ -191,6 +201,15 @@ export default function Library() {
 
   const isOverdue = (dueDate: string) => new Date(dueDate) < new Date();
 
+  if (noAccess) {
+    return (
+      <div className="portal-page-header">
+        <h1>No Access</h1>
+        <p>You do not have permission to view the Library module.</p>
+      </div>
+    );
+  }
+
   return (
     <>
       {/* Dynamic Top Navigation Tabs Bar */}
@@ -202,6 +221,7 @@ export default function Library() {
               ? 'Complete school-wide library operations, book catalog, active circulation, and reports.' 
               : 'Discover catalog materials, manage borrowed books, and track reserve hold requests.'}
           </p>
+          <ViewingAsToggle actingAs={actingAs} />
         </div>
 
         {/* Action Button for Staff vs Student */}

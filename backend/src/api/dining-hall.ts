@@ -3,11 +3,93 @@ import prisma from '../lib/prisma';
 import { requireAuth, AuthRequest } from '../middleware/auth';
 import { logAction } from '../utils/audit';
 import { LedgerService } from '../services/ledger.service';
+import { getModuleAccess } from '../middleware/moduleAccess';
 
 const router = Router();
 
 // All dining hall routes require authentication
 router.use(requireAuth);
+
+/**
+ * @route   GET /api/dining-hall/access
+ * @desc    Check if a teacher has access to the Dining Hall view
+ */
+router.get('/access', async (req: AuthRequest, res: Response) => {
+  try {
+    const user = req.user!;
+    const schoolId = user.schoolId!;
+    
+    // If not a teacher, just allow based on primary role (handled by frontend anyway)
+    if (user.role !== 'TEACHER') {
+      return res.json({ hasAccess: true, reason: 'Primary role grants access' });
+    }
+
+    // 1. Boarding staff check
+    const diningAccess = getModuleAccess(user, 'dining');
+    if (diningAccess.level === 'full' || diningAccess.level === 'scoped') {
+      return res.json({ hasAccess: true, reason: 'Boarding staff role' });
+    }
+
+    // 2. On duty today
+    const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const todayName = dayNames[new Date().getDay()];
+    
+    const prefectDuty = await prisma.prefectDuty.findFirst({
+      where: {
+        schoolId,
+        day: todayName,
+        prefectName: { equals: user.name, mode: 'insensitive' }
+      }
+    });
+
+    if (prefectDuty) {
+      return res.json({ hasAccess: true, reason: 'Assigned to duty today' });
+    }
+
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
+    const endOfDay = new Date();
+    endOfDay.setHours(23, 59, 59, 999);
+
+    const attendance = await prisma.staffAttendance.findFirst({
+      where: {
+        schoolId,
+        staffId: user.id,
+        date: { gte: startOfDay, lte: endOfDay },
+        status: { notIn: ['ABSENT', 'ON LEAVE'] }
+      }
+    });
+
+    if (attendance) {
+      return res.json({ hasAccess: true, reason: 'Staff present on duty today' });
+    }
+
+    // 3. Class teacher with dietary alerts
+    const teacherClass = await prisma.schoolClass.findFirst({
+      where: {
+        schoolId,
+        teacherId: user.id
+      }
+    });
+
+    if (teacherClass) {
+      const studentsWithAlerts = await prisma.student.count({
+        where: {
+          classId: teacherClass.id,
+          dietNotes: { not: null }
+        }
+      });
+      if (studentsWithAlerts > 0) {
+        return res.json({ hasAccess: true, reason: 'Class teacher of students with dietary alerts' });
+      }
+    }
+
+    return res.json({ hasAccess: false, reason: 'No active dining hall duty or access requirement' });
+  } catch (error) {
+    console.error('Dining hall access check error:', error);
+    res.status(500).json({ error: 'Failed to check access' });
+  }
+});
 
 /**
  * Helper to check if user has menu management access

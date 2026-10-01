@@ -51,5 +51,10 @@ export function useModuleAccess(module: string) {
   const scopedSecondary = secondaryRoles.find(r => map.secondaryScopedRoles.includes(r));
   if (scopedSecondary) return { level: 'scoped' as ModuleAccessLevel, actingAs: scopedSecondary };
 
+  // Teachers get request-only by DEFAULT for library
+  if (module === 'library' && primaryRole === 'TEACHER') {
+    return { level: 'request_only' as ModuleAccessLevel, actingAs: 'TEACHER' };
+  }
+
   return { level: 'none' as ModuleAccessLevel, actingAs: undefined };
 }
