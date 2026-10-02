@@ -221,7 +221,7 @@ export default function Library() {
               ? 'Complete school-wide library operations, book catalog, active circulation, and reports.' 
               : 'Discover catalog materials, manage borrowed books, and track reserve hold requests.'}
           </p>
-          <ViewingAsToggle actingAs={actingAs} />
+          {actingAs && <ViewingAsToggle actingAs={actingAs} />}
         </div>
 
         {/* Action Button for Staff vs Student */}

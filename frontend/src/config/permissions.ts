@@ -97,9 +97,12 @@ export const PERMISSIONS = {
   CLINIC_TRIAGE_MANAGE: 'clinic.triage:manage',
   CLINIC_PHARMACY_MANAGE: 'clinic.pharmacy:manage',
   CLINIC_REPORTS_VIEW: 'clinic.reports:view',
+  CLINIC_APPOINTMENTS: 'clinic.appointments:manage',
+  CLINIC_EMERGENCIES: 'clinic.emergencies:view',
 
   // 10. Communication & Portal
   COMMUNICATION_ANNOUNCEMENTS: 'communication.announcements:manage',
+  COMMUNICATION_BROADCASTS: 'communication.broadcasts:view',
   COMMUNICATION_MESSAGES: 'communication.messages:use',
   COMMUNICATION_WEBSITE_CMS: 'communication.website_cms:manage',
   COMMUNICATION_TEMPLATES: 'communication.templates:manage',
@@ -110,6 +113,7 @@ export const PERMISSIONS = {
   SYSTEM_SUBSCRIPTION: 'system.subscription:view',
 
   // 12. System & Settings
+  DASHBOARD_METRICS: 'dashboard.metrics:view',
   SYSTEM_HELPDESK: 'system.helpdesk:use',
   SETTINGS_INSTITUTIONAL: 'settings.institutional:manage',
   SETTINGS_FINANCE: 'settings.finance:manage',

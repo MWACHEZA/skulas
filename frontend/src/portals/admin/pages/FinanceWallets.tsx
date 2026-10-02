@@ -79,6 +79,58 @@ export default function FinanceWallets() {
     }
   };
 
+  const filteredSales = sales.filter((s: any) => {
+    const term = searchTerm.toLowerCase();
+    return (
+      (s.student?.user?.name || s.studentName || '').toLowerCase().includes(term) ||
+      (s.id || '').toLowerCase().includes(term) ||
+      (s.itemNames || '').toLowerCase().includes(term) ||
+      (s.paymentMethod || '').toLowerCase().includes(term)
+    );
+  });
+
+  const filteredInventory = inventory.filter((item: any) => {
+    const term = searchTerm.toLowerCase();
+    return (
+      (item.name || '').toLowerCase().includes(term) ||
+      (item.category || '').toLowerCase().includes(term)
+    );
+  });
+
+  const filteredWallets = wallets.filter((w: any) => {
+    const term = searchTerm.toLowerCase();
+    return (
+      (w.student?.user?.name || w.studentName || '').toLowerCase().includes(term) ||
+      (w.student?.studentId || w.studentId || '').toLowerCase().includes(term)
+    );
+  });
+
+  const exportData: Record<string, any>[] =
+    activeTab === 'sales'
+      ? filteredSales.map((s: any, idx: number) => ({
+          receiptId: s.id?.slice(0, 8) || `SALE-${idx + 1}`,
+          customer: s.student?.user?.name || s.studentName || 'Walk-in Student',
+          items: s.itemNames || `${s.quantity || 1} items`,
+          paymentMethod: s.paymentMethod || 'Wallet Debit',
+          amount: s.totalAmount || s.amount || 0,
+          date: s.createdAt ? new Date(s.createdAt).toLocaleString() : 'Today'
+        }))
+      : activeTab === 'inventory'
+      ? filteredInventory.map((item: any) => ({
+          name: item.name,
+          category: item.category || 'Snack',
+          price: item.price || 0,
+          stock: item.stock || 0,
+          status: (item.stock || 0) <= 5 ? 'Critical Stock' : (item.stock || 0) <= 15 ? 'Low Stock' : 'Adequate'
+        }))
+      : filteredWallets.map((w: any) => ({
+          studentName: w.student?.user?.name || w.studentName || 'Student',
+          studentId: w.student?.studentId || w.studentId || '—',
+          balance: w.balance || 0,
+          dailyLimit: w.dailyLimit || 'Unlimited',
+          status: w.status || 'Active'
+        }));
+
   return (
     <>
       <div className="portal-page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
@@ -136,48 +188,7 @@ export default function FinanceWallets() {
           />
         </div>
         <ExportButton
-          data={
-            activeTab === 'sales' ? sales.filter(s => {
-              const term = searchTerm.toLowerCase();
-              return (
-                (s.student?.user?.name || s.studentName || '').toLowerCase().includes(term) ||
-                (s.id || '').toLowerCase().includes(term) ||
-                (s.itemNames || '').toLowerCase().includes(term) ||
-                (s.paymentMethod || '').toLowerCase().includes(term)
-              );
-            }).map((s, idx) => ({
-              receiptId: s.id?.slice(0, 8) || `SALE-${idx + 1}`,
-              customer: s.student?.user?.name || s.studentName || 'Walk-in Student',
-              items: s.itemNames || `${s.quantity || 1} items`,
-              paymentMethod: s.paymentMethod || 'Wallet Debit',
-              amount: s.totalAmount || s.amount || 0,
-              date: s.createdAt ? new Date(s.createdAt).toLocaleString() : 'Today'
-            })) : activeTab === 'inventory' ? inventory.filter(item => {
-              const term = searchTerm.toLowerCase();
-              return (
-                (item.name || '').toLowerCase().includes(term) ||
-                (item.category || '').toLowerCase().includes(term)
-              );
-            }).map(item => ({
-              name: item.name,
-              category: item.category || 'Snack',
-              price: item.price || 0,
-              stock: item.stock || 0,
-              status: (item.stock || 0) <= 5 ? 'Critical Stock' : (item.stock || 0) <= 15 ? 'Low Stock' : 'Adequate'
-            })) : wallets.filter(w => {
-              const term = searchTerm.toLowerCase();
-              return (
-                (w.student?.user?.name || w.studentName || '').toLowerCase().includes(term) ||
-                (w.student?.studentId || w.studentId || '').toLowerCase().includes(term)
-              );
-            }).map(w => ({
-              studentName: w.student?.user?.name || w.studentName || 'Student',
-              studentId: w.student?.studentId || w.studentId || '—',
-              balance: w.balance || 0,
-              dailyLimit: w.dailyLimit || 'Unlimited',
-              status: w.status || 'Active'
-            }))
-          }
+          data={exportData}
           columns={
             activeTab === 'sales' ? [
               { header: 'Receipt ID', key: 'receiptId', width: 16 },

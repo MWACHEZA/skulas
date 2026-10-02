@@ -11,6 +11,7 @@ import type { ExportColumn } from '../../../utils/exportService';
 import '../../../styles/portal.css';
 
 export default function AdminSystem() {
+  const { user } = useAuth();
   const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -527,7 +528,7 @@ export default function AdminSystem() {
                     <td style={{ padding: '12px 16px' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                         <img
-                          src={getAvatarUrl(u.avatar, u.name)}
+                          src={getAvatarUrl(u.avatar, u.name) || undefined}
                           alt={u.name}
                           style={{ width: '38px', height: '38px', borderRadius: '50%', objectFit: 'cover' }}
                         />
@@ -1072,11 +1073,12 @@ export default function AdminSystem() {
         <UserEditModal
           user={activeUserForEdit}
           isOpen={isEditModalOpen}
+          currentUserRole={user?.role || 'SCHOOL_ADMIN'}
           onClose={() => {
             setIsEditModalOpen(false);
             setActiveUserForEdit(null);
           }}
-          onSave={() => {
+          onSuccess={() => {
             setIsEditModalOpen(false);
             setActiveUserForEdit(null);
             fetchUsers();
@@ -1105,13 +1107,18 @@ export default function AdminSystem() {
             setSelectedUser(null);
           }}
           title={selectedUser.name}
-        >
-          <div style={{ padding: '16px' }}>
-            <p><strong>Role:</strong> {selectedUser.role}</p>
-            <p><strong>Email:</strong> {selectedUser.email}</p>
-            <p><strong>Staff ID:</strong> {selectedUser.staffId || 'None'}</p>
-          </div>
-        </ManagementDetailPanel>
+          role={selectedUser.role}
+          sections={[
+            {
+              title: 'Account Information',
+              fields: [
+                { label: 'Role', value: selectedUser.role },
+                { label: 'Email', value: selectedUser.email },
+                { label: 'Staff ID', value: selectedUser.staffId || 'None' }
+              ]
+            }
+          ]}
+        />
       )}
     </div>
   );

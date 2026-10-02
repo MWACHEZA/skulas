@@ -199,6 +199,26 @@ export default function AdminDiscipline() {
     return matchesSearch;
   });
 
+  const exportData: Record<string, any>[] =
+    activeTab === 'conduct'
+      ? filteredConduct.map(r => ({
+          studentName: r.studentName,
+          category: r.category,
+          narrative: r.narrative,
+          punishment: r.punishment || 'None',
+          punishmentLocation: r.punishmentLocation || 'N/A',
+          status: r.punishmentStatus || 'N/A',
+          reportedBy: r.reportedBy?.name || 'Staff',
+          date: r.createdAt ? new Date(r.createdAt).toLocaleDateString() : '—'
+        }))
+      : filteredAwards.map(a => ({
+          recipient: a.user?.name || 'Unknown',
+          awardName: a.awardName,
+          gift: a.gift || 'None',
+          amount: a.amount ? formatCurrency(a.amount) : '—',
+          date: a.date ? new Date(a.date).toLocaleDateString() : '—'
+        }));
+
   return (
     <div className="portal-container" style={{ padding: '24px', maxWidth: '1400px', margin: '0 auto' }}>
       {/* Header */}
@@ -336,24 +356,7 @@ export default function AdminDiscipline() {
         )}
 
         <ExportButton
-          data={
-            activeTab === 'conduct' ? filteredConduct.map(r => ({
-              studentName: r.studentName,
-              category: r.category,
-              narrative: r.narrative,
-              punishment: r.punishment || 'None',
-              punishmentLocation: r.punishmentLocation || 'N/A',
-              status: r.punishmentStatus || 'N/A',
-              reportedBy: r.reportedBy?.name || 'Staff',
-              date: r.createdAt ? new Date(r.createdAt).toLocaleDateString() : '—'
-            })) : filteredAwards.map(a => ({
-              recipient: a.user?.name || 'Unknown',
-              awardName: a.awardName,
-              gift: a.gift || 'None',
-              amount: a.amount ? formatCurrency(a.amount) : '—',
-              date: a.date ? new Date(a.date).toLocaleDateString() : '—'
-            }))
-          }
+          data={exportData}
           columns={
             activeTab === 'conduct' ? [
               { header: 'Student Name', key: 'studentName', width: 22 },

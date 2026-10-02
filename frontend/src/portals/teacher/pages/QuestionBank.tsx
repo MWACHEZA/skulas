@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import api from '../../../../lib/api';
-import { useToast } from '../../../../context/ToastContext';
+import api from '../../../lib/api';
+import { useToast } from '../../../context/ToastContext';
 
 export default function QuestionBank() {
   const [questions, setQuestions] = useState<any[]>([]);

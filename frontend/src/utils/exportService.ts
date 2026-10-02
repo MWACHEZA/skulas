@@ -76,7 +76,7 @@ export async function exportToExcel<T = any>(options: ExportOptions<T>): Promise
   const ws = XLSX.utils.aoa_to_sheet(rows);
 
   // Calculate auto column widths
-  const colWidths = columns.map((col, cIdx) => {
+  const colWidths = columns.map((col) => {
     let maxLen = col.header.length;
     data.forEach((row, rIdx) => {
       const val = getCellValue(col, row, rIdx);

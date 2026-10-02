@@ -5,7 +5,7 @@ import { useToast } from '../../../context/ToastContext';
 import { formatCurrency } from '../../../utils/formatters';
 import '../../../styles/portal.css';
 
-type InventoryCategory = 'uniforms' | 'bookstore';
+type InventoryCategory = 'uniforms' | 'bookstore' | 'library';
 
 interface UniformItem {
   id: string;
@@ -26,12 +26,27 @@ interface BookstoreItem {
   isbn?: string;
 }
 
+interface LibraryBook {
+  id: string;
+  title: string;
+  author?: string;
+  category?: string | { name?: string };
+  isbn?: string;
+  copies: number;
+  available: number;
+}
+
 export default function AdminUniformsInventory() {
   const { showToast } = useToast();
   const [searchParams, setSearchParams] = useSearchParams();
   const tabParam = searchParams.get('tab');
   const catParam = searchParams.get('category');
-  const activeCategory: InventoryCategory = (catParam === 'bookstore' || tabParam === 'bookstore') ? 'bookstore' : 'uniforms';
+  const activeCategory: InventoryCategory =
+    (catParam === 'library' || tabParam === 'library')
+      ? 'library'
+      : (catParam === 'bookstore' || tabParam === 'bookstore')
+      ? 'bookstore'
+      : 'uniforms';
 
   const [loading, setLoading] = useState(true);
   const [uniforms, setUniforms] = useState<UniformItem[]>([]);
@@ -112,7 +127,7 @@ export default function AdminUniformsInventory() {
         });
         showToast(`Added ${restockAmount} copies to library catalog`, 'success');
         setBooks(prev =>
-          prev.map(b => (b.id === selectedItem.id ? { ...b, copies: b.copies + Number(restockAmount), available: b.available + Number(restockAmount) } : b))
+          prev.map(b => (b.id === selectedItem.id ? { ...b, copies: (b.copies || 0) + Number(restockAmount), available: (b.available || 0) + Number(restockAmount) } : b))
         );
       }
       setShowRestockModal(false);
@@ -181,11 +196,12 @@ export default function AdminUniformsInventory() {
 
   // Filtered Books
   const filteredBooks = books.filter(b => {
+    const categoryName = typeof b.category === 'object' ? b.category?.name || '' : b.category || '';
     const matchesSearch =
       b.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      b.author.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (b.category?.name || '').toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesLowStock = !showLowStockOnly || b.available <= 2;
+      (b.author || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      categoryName.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesLowStock = !showLowStockOnly || (b.available ?? 0) <= 2;
     return matchesSearch && matchesLowStock;
   });
 

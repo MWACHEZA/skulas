@@ -112,7 +112,7 @@ export function useSearchFilter<T = any>({
 
     const query = debouncedSearch.trim().toLowerCase();
 
-    return data.filter((item, idx) => {
+    return data.filter((item) => {
       // 1. Multi-field partial search match
       if (query && searchFields.length > 0) {
         const matchesQuery = searchFields.some(field => {

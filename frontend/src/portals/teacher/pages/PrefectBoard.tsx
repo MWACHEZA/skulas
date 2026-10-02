@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../../lib/api';
 import { useAuth } from '../../../contexts/AuthContext';
-import TabbedPage from '../../../components/shared/TabbedPage';
+import TabbedPage from '../../../components/portals/shared/TabbedPage';
 import ViewingAsToggle from '../../../components/shared/ViewingAsToggle';
 import { useModuleAccess } from '../../../hooks/useModuleAccess';
 
@@ -95,9 +95,9 @@ export default function PrefectBoard() {
     <div className="portal-page">
       <div className="portal-page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <h1>Prefect Board</h1>
-        <ViewingAsToggle module="prefects" />
+        {access.actingAs && <ViewingAsToggle actingAs={access.actingAs} />}
       </div>
-      <TabbedPage tabs={tabs} defaultTab="duty" />
+      <TabbedPage title="Prefect Board" tabs={tabs} defaultTab="duty" />
     </div>
   );
 }

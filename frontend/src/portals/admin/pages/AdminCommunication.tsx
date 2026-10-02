@@ -235,6 +235,33 @@ export default function AdminCommunication() {
     a.details.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const exportData: Record<string, any>[] =
+    activeTab === 'messages'
+      ? filteredMessages.map(m => ({
+          sender: m.sender?.name || 'Unknown',
+          email: m.sender?.email || 'N/A',
+          subject: m.subject || 'No Subject',
+          date: m.createdAt ? new Date(m.createdAt).toLocaleDateString() : '—',
+          status: m.isRead ? 'Read' : 'Unread'
+        }))
+      : activeTab === 'announcements'
+      ? filteredAnnouncements.map(a => ({
+          title: a.title,
+          category: a.category,
+          portals: (a.visiblePortals || []).join(', ') || 'All',
+          scope: a.isPublic ? 'Public' : 'Internal',
+          date: a.createdAt ? new Date(a.createdAt).toLocaleDateString() : '—'
+        }))
+      : filteredApprovals.map(ap => ({
+          category: ap.category,
+          title: ap.title,
+          requester: ap.requesterName,
+          role: ap.requesterRole,
+          details: ap.details,
+          date: ap.date,
+          status: ap.status
+        }));
+
   return (
     <div className="portal-container" style={{ padding: '24px', maxWidth: '1400px', margin: '0 auto' }}>
       {/* Header */}
@@ -375,29 +402,7 @@ export default function AdminCommunication() {
           />
         </div>
         <ExportButton
-          data={
-            activeTab === 'messages' ? filteredMessages.map(m => ({
-              sender: m.sender?.name || 'Unknown',
-              email: m.sender?.email || 'N/A',
-              subject: m.subject || 'No Subject',
-              date: m.createdAt ? new Date(m.createdAt).toLocaleDateString() : '—',
-              status: m.isRead ? 'Read' : 'Unread'
-            })) : activeTab === 'announcements' ? filteredAnnouncements.map(a => ({
-              title: a.title,
-              category: a.category,
-              portals: (a.visiblePortals || []).join(', ') || 'All',
-              scope: a.isPublic ? 'Public' : 'Internal',
-              date: a.createdAt ? new Date(a.createdAt).toLocaleDateString() : '—'
-            })) : filteredApprovals.map(ap => ({
-              category: ap.category,
-              title: ap.title,
-              requester: ap.requesterName,
-              role: ap.requesterRole,
-              details: ap.details,
-              date: ap.date,
-              status: ap.status
-            }))
-          }
+          data={exportData}
           columns={
             activeTab === 'messages' ? [
               { header: 'Sender', key: 'sender', width: 22 },

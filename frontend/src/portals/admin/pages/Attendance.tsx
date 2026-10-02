@@ -71,6 +71,28 @@ export default function AdminAttendance() {
     return matchesSearch && matchesStatus;
   });
 
+  const exportData: Record<string, any>[] =
+    audience === 'students'
+      ? filteredStudents.map(s => ({
+          studentId: s.student?.studentId || s.studentId || '—',
+          name: s.student?.name || s.name || 'Student',
+          class: s.student?.class || s.class || 'N/A',
+          direction: s.direction || 'IN (Gate)',
+          time: s.time || s.timeIn || '07:45 AM',
+          status: s.status || 'Present',
+          date: selectedDate
+        }))
+      : filteredStaff.map(st => ({
+          name: st.staff?.name || st.name || 'Staff Member',
+          email: st.staff?.email || st.email || '—',
+          role: st.staff?.role || 'Staff',
+          timeIn: st.timeIn ? new Date(st.timeIn).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '—',
+          timeOut: st.timeOut ? new Date(st.timeOut).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '—',
+          hours: st.hoursPresent || '—',
+          status: st.status || 'FULL DAY',
+          date: selectedDate
+        }));
+
   const totalCount = audience === 'students' ? studentLogs.length : staffLogs.length;
   const absentCount = audience === 'students' 
     ? studentLogs.filter(s => (s.status || '').toUpperCase() === 'ABSENT').length 
@@ -168,24 +190,7 @@ export default function AdminAttendance() {
               />
             </div>
             <ExportButton
-              data={audience === 'students' ? filteredStudents.map(s => ({
-                studentId: s.student?.studentId || s.studentId || '—',
-                name: s.student?.name || s.name || 'Student',
-                class: s.student?.class || s.class || 'N/A',
-                direction: s.direction || 'IN (Gate)',
-                time: s.time || s.timeIn || '07:45 AM',
-                status: s.status || 'Present',
-                date: selectedDate
-              })) : filteredStaff.map(st => ({
-                name: st.staff?.name || st.name || 'Staff Member',
-                email: st.staff?.email || st.email || '—',
-                role: st.staff?.role || 'Staff',
-                timeIn: st.timeIn ? new Date(st.timeIn).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '—',
-                timeOut: st.timeOut ? new Date(st.timeOut).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '—',
-                hours: st.hoursPresent || '—',
-                status: st.status || 'FULL DAY',
-                date: selectedDate
-              }))}
+              data={exportData}
               columns={audience === 'students' ? [
                 { header: 'Student ID', key: 'studentId', width: 18 },
                 { header: 'Student Name', key: 'name', width: 25 },

@@ -1519,7 +1519,7 @@ export default function ParentAcademics() {
       subtitle={`Review results, assessment breakdown, official report cards, and historical records for ${data?.student.name || activeEntity?.name || 'your child'}.`}
       tabs={tabs}
       defaultTab={initialTab}
-      tabParam="tab"
+      paramName="tab"
     />
   );
 }

@@ -169,6 +169,39 @@ export default function ClockInLogsPage() {
     }
   };
 
+  const exportData: Record<string, any>[] =
+    activeTab === 'staff'
+      ? filteredStaff.map(l => ({
+          name: l.staff?.name || 'N/A',
+          staffId: l.staff?.staffId || 'N/A',
+          role: l.staff?.role || 'Staff',
+          date: l.date,
+          timeIn: formatTime(l.timeIn),
+          timeOut: formatTime(l.timeOut),
+          hours: l.hoursPresent || '--',
+          schoolHours: l.schoolHoursPresent || '--',
+          status: l.status
+        }))
+      : activeTab === 'student'
+      ? filteredStudents.map(l => ({
+          name: l.student?.name || 'N/A',
+          studentId: l.student?.studentId || 'N/A',
+          class: l.student?.class || 'N/A',
+          department: l.student?.department || 'N/A',
+          date: l.time ? new Date(l.time).toLocaleDateString() : 'N/A',
+          timeIn: formatTime(l.time),
+          timeOut: '--',
+          status: l.direction || 'IN'
+        }))
+      : filteredMyLogs.map(l => ({
+          date: l.date,
+          timeIn: formatTime(l.timeIn),
+          timeOut: formatTime(l.timeOut),
+          hours: l.hoursPresent || '--',
+          schoolHours: l.schoolHoursPresent || '--',
+          status: l.status
+        }));
+
   return (
     <div className="portal-container animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className="portal-page-header">
@@ -222,39 +255,7 @@ export default function ClockInLogsPage() {
               />
             </div>
             <ExportButton
-              data={
-                activeTab === 'staff'
-                  ? filteredStaff.map(l => ({
-                      name: l.staff?.name || 'N/A',
-                      staffId: l.staff?.staffId || 'N/A',
-                      role: l.staff?.role || 'Staff',
-                      date: l.date,
-                      timeIn: formatTime(l.timeIn),
-                      timeOut: formatTime(l.timeOut),
-                      hours: l.hoursPresent || '--',
-                      schoolHours: l.schoolHoursPresent || '--',
-                      status: l.status
-                    }))
-                  : activeTab === 'students'
-                  ? filteredStudents.map(l => ({
-                      name: l.student?.name || 'N/A',
-                      studentId: l.student?.studentId || 'N/A',
-                      class: l.student?.class || 'N/A',
-                      department: l.student?.department || 'N/A',
-                      date: l.date,
-                      timeIn: formatTime(l.timeIn),
-                      timeOut: formatTime(l.timeOut),
-                      status: l.status
-                    }))
-                  : filteredMyLogs.map(l => ({
-                      date: l.date,
-                      timeIn: formatTime(l.timeIn),
-                      timeOut: formatTime(l.timeOut),
-                      hours: l.hoursPresent || '--',
-                      schoolHours: l.schoolHoursPresent || '--',
-                      status: l.status
-                    }))
-              }
+              data={exportData}
               columns={
                 activeTab === 'staff'
                   ? [
@@ -268,7 +269,7 @@ export default function ClockInLogsPage() {
                       { header: 'School Hours', key: 'schoolHours', width: 12 },
                       { header: 'Status', key: 'status', width: 14 }
                     ]
-                  : activeTab === 'students'
+                  : activeTab === 'student'
                   ? [
                       { header: 'Student Name', key: 'name', width: 22 },
                       { header: 'Student ID', key: 'studentId', width: 14 },

@@ -89,7 +89,7 @@ const PORTAL_ROUTE_REWRITES: Record<string, Record<string, string>> = {
   }
 };
 
-function generateParentPortalNavigation(user: UserContext | null | undefined, currentPath: string = ''): NavGroup[] {
+function generateParentPortalNavigation(_user: UserContext | null | undefined, currentPath: string = ''): NavGroup[] {
   const groups: NavGroup[] = [
     {
       id: 'ACADEMICS',

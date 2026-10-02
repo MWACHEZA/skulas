@@ -32,7 +32,7 @@ export const ExportButton = <T extends any = any>({
   orientation,
   metadata,
   visibleFormats,
-  defaultFormat,
+  defaultFormat: _defaultFormat,
   onExport,
   disabled = false,
   className = '',

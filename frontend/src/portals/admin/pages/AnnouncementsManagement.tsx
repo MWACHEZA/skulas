@@ -108,7 +108,7 @@ export default function AdminAnnouncementsManagement() {
           </div>
           <button className="portal-btn-primary" style={{ background: 'var(--school-primary, #0056b3)', borderColor: 'var(--school-primary, #0056b3)' }} onClick={() => {
             setEditingId(null);
-            setFormData({ title: '', content: '', visiblePortals: [], isPublic: false, expiresAt: '' });
+            setFormData({ title: '', content: '', category: 'General', visiblePortals: [], isPublic: false, expiresAt: '' });
             setShowModal(true);
           }}>
             <i className="fas fa-plus" style={{ marginRight: 8 }}></i>Create Announcement

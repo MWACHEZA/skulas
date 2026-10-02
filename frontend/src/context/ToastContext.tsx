@@ -38,21 +38,21 @@ export let globalShowToast: (message: string, type?: ToastType) => void = (msg, 
  * and direct toast.success / toast.error callers (replacing react-hot-toast).
  */
 export interface ToastCallable {
-  (msg: string): void;
-  success: (msg: string) => void;
-  error: (msg: string) => void;
-  warning: (msg: string) => void;
-  info: (msg: string) => void;
-  loading: (msg: string) => string;
+  (msg: string, options?: any): void;
+  success: (msg: string, options?: any) => void;
+  error: (msg: string, options?: any) => void;
+  warning: (msg: string, options?: any) => void;
+  info: (msg: string, options?: any) => void;
+  loading: (msg: string, options?: any) => string;
   dismiss: (id?: string) => void;
 }
 
 const baseToast = ((msg: string) => globalShowToast(msg, 'info')) as ToastCallable;
-baseToast.success = (msg: string) => globalShowToast(msg, 'success');
-baseToast.error = (msg: string) => globalShowToast(msg, 'error');
-baseToast.warning = (msg: string) => globalShowToast(msg, 'warning');
-baseToast.info = (msg: string) => globalShowToast(msg, 'info');
-baseToast.loading = (msg: string) => {
+baseToast.success = (msg: string, _options?: any) => globalShowToast(msg, 'success');
+baseToast.error = (msg: string, _options?: any) => globalShowToast(msg, 'error');
+baseToast.warning = (msg: string, _options?: any) => globalShowToast(msg, 'warning');
+baseToast.info = (msg: string, _options?: any) => globalShowToast(msg, 'info');
+baseToast.loading = (msg: string, _options?: any) => {
   globalShowToast(msg, 'info');
   return 'toast-loading';
 };

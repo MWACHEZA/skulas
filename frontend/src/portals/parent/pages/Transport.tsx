@@ -78,7 +78,7 @@ export default function ParentTransport() {
   const fetchTransportSummary = async () => {
     try {
       setLoading(true);
-      const studentId = activeEntity?.type === 'STUDENT' ? activeEntity.id : undefined;
+      const studentId = activeEntity?.id;
       const res = await api.get('/api/transports/parent-summary', {
         params: studentId ? { studentId } : {}
       });
