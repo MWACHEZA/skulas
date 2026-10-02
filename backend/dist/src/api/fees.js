@@ -1093,9 +1093,14 @@ router.get('/parent-summary', auth_1.requireAuth, async (req, res) => {
             where: {
                 studentId: student.id,
                 schoolId,
-                status: { in: ['APPROVED', 'PENDING', 'OVERDUE'] }
+                status: { in: ['ACTIVE', 'DEFAULTED'] }
             },
-            orderBy: { createdAt: 'desc' }
+            orderBy: { createdAt: 'desc' },
+            include: {
+                installments: {
+                    orderBy: { dueDate: 'asc' }
+                }
+            }
         });
         // Compute Totals
         const totalBilled = Math.round(fees.reduce((sum, f) => sum + f.amount, 0) * 100) / 100;
@@ -1286,42 +1291,26 @@ router.get('/parent-summary', auth_1.requireAuth, async (req, res) => {
         // Tab 4: Conditional Payment Plan
         let activePaymentPlanData = null;
         if (paymentPlan) {
-            const planAmount = paymentPlan.amount;
-            const planDueDate = paymentPlan.dueDate;
-            const halfAmount = Math.round((planAmount / 2) * 100) / 100;
-            const remainingHalf = Math.round((planAmount - halfAmount) * 100) / 100;
-            const firstDue = new Date(paymentPlan.createdAt);
-            firstDue.setDate(firstDue.getDate() + 14);
-            const isFirstPaid = totalPaid >= halfAmount;
-            const isSecondPaid = totalPaid >= planAmount;
-            const progressPct = Math.min(100, Math.round((totalPaid / planAmount) * 100));
+            const planAmount = paymentPlan.totalAmount;
+            const totalPaidOnPlan = paymentPlan.installments.filter(i => i.status === 'PAID').reduce((sum, i) => sum + i.amount, 0);
+            const progressPct = Math.min(100, Math.round((totalPaidOnPlan / planAmount) * 100));
             activePaymentPlanData = {
                 id: paymentPlan.id,
                 status: paymentPlan.status,
                 amount: planAmount,
-                dueDate: planDueDate,
-                notes: paymentPlan.notes,
+                dueDate: paymentPlan.installments.length ? paymentPlan.installments[paymentPlan.installments.length - 1].dueDate : new Date(),
+                notes: '',
                 createdAt: paymentPlan.createdAt,
                 progressPct,
-                totalPaidOnPlan: Math.min(planAmount, totalPaid),
-                milestones: [
-                    {
-                        id: 'm1',
-                        title: '1st Installment (50%)',
-                        amount: halfAmount,
-                        dueDate: firstDue.toISOString(),
-                        status: isFirstPaid ? 'PAID' : (firstDue < now ? 'OVERDUE' : 'DUE'),
-                        paidDate: isFirstPaid ? firstDue.toISOString() : null
-                    },
-                    {
-                        id: 'm2',
-                        title: '2nd Installment (Final Balance)',
-                        amount: remainingHalf,
-                        dueDate: new Date(planDueDate).toISOString(),
-                        status: isSecondPaid ? 'PAID' : (new Date(planDueDate) < now ? 'OVERDUE' : 'DUE'),
-                        paidDate: isSecondPaid ? new Date(planDueDate).toISOString() : null
-                    }
-                ]
+                totalPaidOnPlan,
+                milestones: paymentPlan.installments.map((inst, idx) => ({
+                    id: inst.id,
+                    title: `Installment ${idx + 1}`,
+                    amount: inst.amount,
+                    dueDate: new Date(inst.dueDate).toISOString(),
+                    status: inst.status,
+                    paidDate: inst.status === 'PAID' ? new Date(inst.updatedAt).toISOString() : null
+                }))
             };
         }
         res.json({

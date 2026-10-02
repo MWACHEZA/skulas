@@ -105,6 +105,7 @@ import SupervisorDashboard from './portals/teacher/pages/SupervisorDashboardPage
 import ZoomLiveClass from './portals/shared/pages/live-classes/ZoomLiveClass';
 import JitsiLiveClass from './portals/shared/pages/live-classes/JitsiLiveClass';
 import MyLeave from './portals/shared/pages/hr/MyLeave';
+import TeacherLeave from './portals/teacher/pages/TeacherLeave';
 import MyAwards from './portals/shared/pages/hr/MyAwards';
 import CoursesDashboard from './portals/teacher/pages/online-learning/CoursesDashboard';
 import AddNewCourse from './portals/teacher/pages/online-learning/AddNewCourse';
@@ -521,7 +522,7 @@ export default function App() {
               <Route path="library" element={<Library />} />
 
               <Route path="study-materials" element={<StudyMaterial />} />
-              <Route path="leave" element={<MyLeave />} />
+              <Route path="leave" element={<TeacherLeave />} />
               <Route path="awards" element={<MyAwards />} />
               <Route path="payslips" element={<MyPaymentSlip />} />
 

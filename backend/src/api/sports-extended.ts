@@ -7,6 +7,27 @@ const router = Router();
 
 router.use(requireModuleAccess('sports'));
 
+router.get('/teams', async (req: Request, res: Response) => {
+  const { schoolId } = (req as any).user;
+  const teams = await prisma.sport.findMany({ where: { schoolId } });
+  res.json(teams);
+});
+
+router.get('/houses', async (req: Request, res: Response) => {
+  const { schoolId } = (req as any).user;
+  const houses = await prisma.studentHouse.findMany({ where: { schoolId } });
+  res.json(houses);
+});
+
+router.get('/equipment', async (req: Request, res: Response) => {
+  const { schoolId } = (req as any).user;
+  const equipment = await prisma.sportingEquipment.findMany({
+    where: { sport: { schoolId } },
+    include: { sport: true }
+  });
+  res.json(equipment);
+});
+
 router.get('/events', async (req: Request, res: Response) => {
   const { schoolId } = (req as any).user;
   const events = await prisma.sportsEvent.findMany({ where: { schoolId } });

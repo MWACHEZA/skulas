@@ -32,14 +32,24 @@ export const formatDate = (date: string | Date): string => {
 /**
  * Resolves a stored avatar path or URL to an accessible image URL.
  */
-export const getAvatarUrl = (avatar?: string | null, schoolCode?: string | null): string | null => {
+export const getAvatarUrl = (avatar?: string | null, schoolCode?: string | null, cacheBuster?: string | number): string | null => {
   if (!avatar) return null;
-  if (avatar.startsWith('http://') || avatar.startsWith('https://') || avatar.startsWith('data:')) {
+  if (avatar.startsWith('data:')) {
     return avatar;
   }
-  let clean = avatar.replace(/\\/g, '/').replace(/^\/+/, '');
-  // If it starts with images/ followed by a path or filename, remove the redundant images/ prefix
-  clean = clean.replace(/^images\//, '');
-  const code = schoolCode || 'global';
-  return `${BASE_URL}/api/storage/media/${code}/${clean}`;
+  let url: string;
+  if (avatar.startsWith('http://') || avatar.startsWith('https://')) {
+    url = avatar;
+  } else {
+    let clean = avatar.replace(/\\/g, '/').replace(/^\/+/, '');
+    // If it starts with images/ followed by a path or filename, remove the redundant images/ prefix
+    clean = clean.replace(/^images\//, '');
+    const code = schoolCode || 'global';
+    url = `${BASE_URL}/api/storage/media/${code}/${clean}`;
+  }
+  if (cacheBuster) {
+    const separator = url.includes('?') ? '&' : '?';
+    return `${url}${separator}t=${cacheBuster}`;
+  }
+  return url;
 };

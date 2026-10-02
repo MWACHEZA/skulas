@@ -6,112 +6,128 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const prisma_1 = __importDefault(require("../lib/prisma"));
 const auth_1 = require("../middleware/auth");
-const ledger_service_1 = require("../services/ledger.service");
-const coa_seeder_1 = require("../../prisma/seeders/coa.seeder");
 const router = (0, express_1.Router)();
-// Get the logged in user's awards
-router.get('/my', auth_1.requireAuth, async (req, res) => {
+// Nominate
+router.post('/nominate', auth_1.requireAuth, (0, auth_1.requireRole)('TEACHER'), async (req, res) => {
+    const schoolId = req.user.schoolId;
+    const nominatedById = req.user.id;
+    const { studentId, category, title, reason, evidenceUrl } = req.body;
     try {
-        const awards = await prisma_1.default.award.findMany({
-            where: {
-                schoolId: req.user.schoolId,
-                userId: req.user.id
-            },
-            orderBy: { date: 'desc' }
+        const student = await prisma_1.default.student.findUnique({
+            where: { id: studentId }
         });
-        res.json(awards);
-    }
-    catch (error) {
-        console.error('Error fetching awards:', error);
-        res.status(500).json({ error: 'Failed to fetch awards' });
-    }
-});
-// Get all awards for the current school (tenant-scoped)
-router.get('/', auth_1.requireAuth, async (req, res) => {
-    try {
-        const schoolId = req.user.schoolId;
-        const awards = await prisma_1.default.award.findMany({
-            where: { schoolId },
-            include: {
-                user: {
-                    select: {
-                        id: true,
-                        name: true,
-                        role: true,
-                        studentId: true,
-                        staffId: true
-                    }
+        if (!student)
+            return res.status(404).json({ message: 'Student not found' });
+        // Enforce limit: 3 awards per teacher per class per week
+        const weekAgo = new Date();
+        weekAgo.setDate(weekAgo.getDate() - 7);
+        if (student.classId) {
+            const recentAwardsInClass = await prisma_1.default.studentAward.count({
+                where: {
+                    schoolId,
+                    nominatedById,
+                    student: { classId: student.classId },
+                    createdAt: { gte: weekAgo }
                 }
-            },
-            orderBy: { date: 'desc' }
-        });
-        res.json(awards);
-    }
-    catch (error) {
-        console.error('Error fetching school awards:', error);
-        res.status(500).json({ error: 'Failed to fetch school awards' });
-    }
-});
-// Admin/Teacher/Ancillary endpoint to give an award
-// FIX: Post an expense journal entry when a monetary award (amount > 0) is issued:
-//   DR  7900 Miscellaneous Expense   [amount]  (awards/recognition cost)
-//   CR  1100 Cash on Hand            [amount]  (cash disbursed)
-router.post('/', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'TEACHER', 'ANCILLARY'), async (req, res) => {
-    try {
-        const { userId, awardName, gift, amount, date } = req.body;
-        const schoolId = req.user.schoolId;
-        if (!userId || !awardName || !date) {
-            return res.status(400).json({ error: 'Missing required fields' });
+            });
+            if (recentAwardsInClass >= 3) {
+                return res.status(400).json({ message: 'Limit reached: 3 awards per class per week' });
+            }
         }
-        const awardAmount = parseFloat(amount) || 0;
-        const award = await prisma_1.default.award.create({
+        const config = await prisma_1.default.awardConfig.findFirst({
+            where: { schoolId, category }
+        });
+        const award = await prisma_1.default.studentAward.create({
             data: {
                 schoolId,
-                userId,
-                awardName,
-                gift: gift || '',
-                amount: awardAmount,
-                date: new Date(date)
+                studentId,
+                nominatedById,
+                category,
+                title,
+                reason,
+                evidenceUrl,
+                points: config?.points || 0,
+                status: config?.requiresApprovalBy ? 'pending' : 'approved',
+                approvedById: config?.requiresApprovalBy ? null : nominatedById
             }
         });
-        // Post expense journal entry only when a cash award amount is specified
-        if (awardAmount > 0) {
-            try {
-                const [expenseId, cashId] = await Promise.all([
-                    (0, coa_seeder_1.getAccountId)(schoolId, '7900', prisma_1.default), // Miscellaneous Expense
-                    (0, coa_seeder_1.getAccountId)(schoolId, '1100', prisma_1.default) // Cash on Hand
-                ]);
-                await ledger_service_1.LedgerService.postEntry({
-                    schoolId,
-                    date: new Date(date),
-                    description: `Award: ${awardName} — ${gift || 'Cash'} to user ${userId}`,
-                    sourceType: 'award_expense',
-                    sourceId: award.id,
-                    createdByUserId: req.user.id,
-                    lines: [
-                        {
-                            accountId: expenseId,
-                            debit: awardAmount,
-                            description: `Award expense: ${awardName}`
-                        },
-                        {
-                            accountId: cashId,
-                            credit: awardAmount,
-                            description: `Cash disbursed for award: ${awardName}`
-                        }
-                    ]
-                });
-            }
-            catch (ledgerErr) {
-                console.error('[Ledger] Award expense JE failed:', ledgerErr);
-                // Award record is saved. Admin can post a correcting manual JE via Accounts module.
-            }
+        if (award.status === 'approved') {
+            await handleAwardApproval(award);
         }
-        res.json(award);
+        res.status(201).json(award);
     }
     catch (error) {
-        console.error('Error creating award:', error);
-        res.status(500).json({ error: 'Failed to create award' });
+        res.status(500).json({ message: 'Server error', error });
+    }
+});
+// Approve
+router.post('/:id/approve', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'BURSAR'), async (req, res) => {
+    const schoolId = req.user.schoolId;
+    const id = req.params.id;
+    try {
+        const award = await prisma_1.default.studentAward.findFirst({
+            where: { id, schoolId, status: 'pending' },
+            include: { student: true }
+        });
+        if (!award)
+            return res.status(404).json({ message: 'Award not found or already processed' });
+        const updated = await prisma_1.default.studentAward.update({
+            where: { id },
+            data: { status: 'approved', approvedById: req.user.id }
+        });
+        await handleAwardApproval(updated);
+        res.json(updated);
+    }
+    catch (error) {
+        res.status(500).json({ message: 'Server error', error });
+    }
+});
+async function handleAwardApproval(award) {
+    const config = await prisma_1.default.awardConfig.findFirst({
+        where: { schoolId: award.schoolId, category: award.category }
+    });
+    if (config?.autoAddsToHousePoints && award.points > 0) {
+        const student = await prisma_1.default.student.findUnique({ where: { id: award.studentId } });
+        if (student?.houseId) {
+            await prisma_1.default.studentHouse.update({
+                where: { id: student.houseId },
+                data: { points: { increment: award.points } }
+            });
+        }
+    }
+    // Cross-module hook: Bursary Suggestion
+    if (award.category === "Head's Award") {
+        // Determine a default bursary type or find one
+        const bType = await prisma_1.default.bursaryType.findFirst({
+            where: { schoolId: award.schoolId, type: 'merit' }
+        });
+        await prisma_1.default.studentBursary.create({
+            data: {
+                schoolId: award.schoolId,
+                studentId: award.studentId,
+                type: bType ? bType.type : 'merit',
+                percentage: bType ? bType.defaultPercentage : 10,
+                validFrom: new Date(),
+                status: 'suggested',
+                suggestedFromAwardId: award.id
+            }
+        });
+    }
+}
+// Hall of Fame
+router.get('/hall-of-fame', auth_1.requireAuth, async (req, res) => {
+    const schoolId = req.user.schoolId;
+    try {
+        const awards = await prisma_1.default.studentAward.findMany({
+            where: { schoolId, status: 'approved' },
+            include: { student: true },
+            orderBy: { points: 'desc' },
+            take: 10
+        });
+        res.json(awards);
+    }
+    catch (error) {
+        res.status(500).json({ message: 'Server error', error });
     }
 });
 exports.default = router;

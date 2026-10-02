@@ -605,16 +605,16 @@ async function main() {
     // Duties
     await prisma.prefectDuty.createMany({
         data: [
-            { prefectName: 'Sarah Dube', zone: 'Dining Hall (DH)', timeSlot: '12:30 - 13:30', day: 'Monday', schoolId: school.id },
-            { prefectName: 'James Banda', zone: 'Main Gate', timeSlot: '07:00 - 08:00', day: 'Tuesday', schoolId: school.id },
-            { prefectName: 'Thabo Ncube', zone: 'Corridor B', timeSlot: '10:15 - 10:45', day: 'Monday', schoolId: school.id }
+            { studentId: 'dummy', role: 'Dining Hall (DH)', date: new Date(), timeSlot: '12:30 - 13:30', day: 'Monday', schoolId: school.id },
+            { studentId: 'dummy', role: 'Main Gate', date: new Date(), timeSlot: '07:00 - 08:00', day: 'Tuesday', schoolId: school.id },
+            { studentId: 'dummy', role: 'Corridor B', date: new Date(), timeSlot: '10:15 - 10:45', day: 'Monday', schoolId: school.id }
         ]
     });
     // Meetings
     await prisma.prefectMeeting.createMany({
         data: [
-            { title: 'Full Council Session', date: new Date('2026-10-14'), chair: 'Head Boy', recordsText: 'Discussed standard of dress, lateness at assemblies, and upcoming sports fixture coordination.', schoolId: school.id },
-            { title: 'Emergency Committee', date: new Date('2026-10-10'), chair: 'Senior Prefect', recordsText: 'Addressed minor corridor rowdiness. Assigned new monitors to Corridor B.', schoolId: school.id }
+            { agenda: 'Full Council Session', date: new Date('2026-10-14'), chairId: 'dummy', minutes: 'Discussed standard of dress, lateness at assemblies, and upcoming sports fixture coordination.', schoolId: school.id },
+            { agenda: 'Emergency Committee', date: new Date('2026-10-10'), chairId: 'dummy', minutes: 'Addressed minor corridor rowdiness. Assigned new monitors to Corridor B.', schoolId: school.id }
         ]
     });
     // Prefect Reports

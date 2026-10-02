@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import api, { BASE_URL } from '../../lib/api';
+import { getAvatarUrl } from '../../utils/formatters';
 import MaintenanceRequestModal from '../shared/MaintenanceRequestModal';
 import AdminPortalFooter from './shared/AdminPortalFooter';
 import ClockInModal from '../attendance/ClockInModal';
@@ -415,7 +416,7 @@ export default function DashboardLayout({
           <div className="portal-user-card" onClick={handleLogout} title="Click to logout">
             <div className="portal-user-avatar">
               {user?.avatar ? (
-                <img src={`${BASE_URL}/api/storage/media/${user?.schoolCode}/${user.avatar}`} alt="" style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} />
+                <img src={getAvatarUrl(user.avatar, user?.schoolCode, (user as any)?.updatedAt || (user as any)?.id) || ''} alt="" style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} />
               ) : (
                 initials
               )}
@@ -498,7 +499,7 @@ export default function DashboardLayout({
             <div className="portal-topbar-user">
               <div style={{ width: 32, height: 32, borderRadius: '50%', overflow: 'hidden', background: '#e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem', fontWeight: 900, color: '#64748b' }}>
                 {user?.avatar ? (
-                  <img src={`${BASE_URL}/api/storage/media/${user?.schoolCode}/${user.avatar}`} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  <img src={getAvatarUrl(user.avatar, user?.schoolCode, (user as any)?.updatedAt || (user as any)?.id) || ''} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 ) : (
                   initials
                 )}

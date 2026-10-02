@@ -74,6 +74,7 @@ router.get('/me', auth_1.requireAuth, async (req, res) => {
                 avatar: true,
                 staffId: true,
                 schoolId: true,
+                updatedAt: true,
                 religion: true,
                 departmentId: true,
                 dept: { select: { id: true, name: true } },
@@ -543,7 +544,7 @@ router.put('/me', auth_1.requireAuth, rate_limit_1.uploadLimiter, upload_1.uploa
                         updatedAt: new Date().toISOString()
                     }
                 },
-                select: { id: true, name: true, email: true, role: true, phone: true, avatar: true, metadata: true, religion: true },
+                select: { id: true, name: true, email: true, role: true, phone: true, avatar: true, metadata: true, religion: true, updatedAt: true },
             });
         });
         res.json(updatedUser);

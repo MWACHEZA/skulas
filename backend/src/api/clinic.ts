@@ -2730,7 +2730,9 @@ router.get('/teacher/referrals', requireAuth, async (req: AuthRequest, res: Resp
       id: v.id,
       studentName: v.user?.name || 'Student',
       date: v.createdAt.toLocaleDateString(),
-      status: v.status === 'DISCHARGED' ? 'Returned to class' : v.status === 'ADMITTED' ? 'In Sick Bay' : 'Seen by Nurse'
+      urgency: v.triageLevel || 'NORMAL',
+      symptoms: v.presentingComplaint || 'Classroom referral',
+      status: v.status === 'DISCHARGED' ? 'Returned to class' : (v.status === 'ADMITTED' || v.disposition === 'ADMIT_SICK_BAY') ? 'In Sick Bay' : 'Seen by Nurse'
     }));
 
     res.json(sanitized);
@@ -2745,7 +2747,7 @@ router.post('/teacher/refer', requireAuth, async (req: AuthRequest, res: Respons
       return res.status(403).json({ error: 'Only teachers can create classroom referrals' });
     }
     const schoolId = req.user!.schoolId!;
-    const { studentId, note } = req.body;
+    const { studentId, note, symptoms, urgency, notes } = req.body;
 
     const student = await prisma.student.findFirst({
       where: { id: studentId, schoolId },
@@ -2753,13 +2755,22 @@ router.post('/teacher/refer', requireAuth, async (req: AuthRequest, res: Respons
     });
     if (!student) return res.status(404).json({ error: 'Student not found' });
 
+    const complaintParts = [symptoms, notes || note].filter(Boolean);
+    const complaint = complaintParts.join(' - ') || 'Referred from classroom by teacher';
+    const triageLevel = urgency || 'URGENT';
+    const acuity = triageLevel === 'CRITICAL' ? 'RED' : triageLevel === 'URGENT' ? 'YELLOW' : 'GREEN';
+
     const visit = await prisma.clinicVisit.create({
       data: {
         schoolId,
         userId: student.userId,
         source: 'TEACHER_REFERRAL',
         status: 'OPEN',
-        presentingComplaint: note || 'Referred from classroom by teacher',
+        presentingComplaint: complaint,
+        triageLevel,
+        acuity,
+        isEmergency: triageLevel === 'CRITICAL',
+        disposition: 'ADMIT_SICK_BAY',
         triageById: req.user!.id
       }
     });

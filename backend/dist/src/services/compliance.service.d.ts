@@ -162,7 +162,7 @@ export declare class ComplianceService {
             };
             fees: {
                 cleared: boolean;
-                balance: any;
+                balance: number;
             };
             hostel: {
                 cleared: boolean;

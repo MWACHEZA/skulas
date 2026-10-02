@@ -7,25 +7,18 @@ const express_1 = require("express");
 const prisma_1 = __importDefault(require("../lib/prisma"));
 const auth_1 = require("../middleware/auth");
 const audit_1 = require("../utils/audit");
+const ledger_service_1 = __importDefault(require("../services/ledger.service"));
+const moduleAccess_1 = require("../middleware/moduleAccess");
 const router = (0, express_1.Router)();
 // All farm routes require authentication
 router.use(auth_1.requireAuth);
-/**
- * Helper to check if a user has permissions to modify farm data
- */
-const canModifyFarm = (user) => {
-    return user.role === 'SCHOOL_ADMIN' ||
-        user.secondaryRoles.includes('Agriculture Teacher') ||
-        user.secondaryRoles.includes('Farm Assistant') ||
-        user.secondaryRoles.includes('Farm Manager') ||
-        user.secondaryRoles.includes('Farm Manager Assistant');
-};
+router.get('/access', (req, res) => {
+    const { getModuleAccess } = require('../middleware/moduleAccess');
+    const access = getModuleAccess(req.user, 'farm');
+    res.json(access);
+});
 // ── LIVESTOCK MONITORS ──
-/**
- * @route   GET /api/farm/livestock
- * @desc    Get livestock batches for the school
- */
-router.get('/livestock', async (req, res) => {
+router.get('/livestock', (0, moduleAccess_1.requireModuleAccess)('farm', 'scoped'), async (req, res) => {
     try {
         const batches = await prisma_1.default.farmLivestockBatch.findMany({
             where: { schoolId: req.user.schoolId },
@@ -34,18 +27,10 @@ router.get('/livestock', async (req, res) => {
         res.json(batches);
     }
     catch (error) {
-        console.error('Fetch livestock error:', error);
         res.status(500).json({ error: 'Failed to fetch livestock batches' });
     }
 });
-/**
- * @route   POST /api/farm/livestock
- * @desc    Create a new livestock batch
- */
-router.post('/livestock', async (req, res) => {
-    if (!canModifyFarm(req.user)) {
-        return res.status(403).json({ error: 'Unauthorized to manage farm projects' });
-    }
+router.post('/livestock', (0, moduleAccess_1.requireModuleAccess)('farm', 'scoped'), async (req, res) => {
     const { batchName, type, datePlaced, currentCount, startCount, mortalityRate, status } = req.body;
     if (!batchName || !type || !datePlaced || currentCount === undefined || startCount === undefined) {
         return res.status(400).json({ error: 'Missing required livestock fields' });
@@ -67,16 +52,11 @@ router.post('/livestock', async (req, res) => {
         res.json(batch);
     }
     catch (error) {
-        console.error('Create livestock error:', error);
         res.status(500).json({ error: 'Failed to create livestock batch' });
     }
 });
 // ── CROP CYCLE PLANNER ──
-/**
- * @route   GET /api/farm/crops
- * @desc    Get crop cycles for the school
- */
-router.get('/crops', async (req, res) => {
+router.get('/crops', (0, moduleAccess_1.requireModuleAccess)('farm', 'scoped'), async (req, res) => {
     try {
         const crops = await prisma_1.default.farmCropCycle.findMany({
             where: { schoolId: req.user.schoolId },
@@ -85,18 +65,10 @@ router.get('/crops', async (req, res) => {
         res.json(crops);
     }
     catch (error) {
-        console.error('Fetch crops error:', error);
         res.status(500).json({ error: 'Failed to fetch crop cycles' });
     }
 });
-/**
- * @route   POST /api/farm/crops
- * @desc    Create a new crop cycle
- */
-router.post('/crops', async (req, res) => {
-    if (!canModifyFarm(req.user)) {
-        return res.status(403).json({ error: 'Unauthorized to manage farm projects' });
-    }
+router.post('/crops', (0, moduleAccess_1.requireModuleAccess)('farm', 'scoped'), async (req, res) => {
     const { name, type, sector, datePlanted, expectedHarvest, status } = req.body;
     if (!name || !type || !sector || !datePlanted || !expectedHarvest) {
         return res.status(400).json({ error: 'Missing required crop fields' });
@@ -117,16 +89,11 @@ router.post('/crops', async (req, res) => {
         res.json(crop);
     }
     catch (error) {
-        console.error('Create crop error:', error);
         res.status(500).json({ error: 'Failed to create crop cycle' });
     }
 });
 // ── FARM INVENTORY ──
-/**
- * @route   GET /api/farm/inventory
- * @desc    Get farm inventory items
- */
-router.get('/inventory', async (req, res) => {
+router.get('/inventory', (0, moduleAccess_1.requireModuleAccess)('farm', 'scoped'), async (req, res) => {
     try {
         const inventory = await prisma_1.default.farmInventoryItem.findMany({
             where: { schoolId: req.user.schoolId },
@@ -135,18 +102,10 @@ router.get('/inventory', async (req, res) => {
         res.json(inventory);
     }
     catch (error) {
-        console.error('Fetch farm inventory error:', error);
         res.status(500).json({ error: 'Failed to fetch farm inventory' });
     }
 });
-/**
- * @route   POST /api/farm/inventory
- * @desc    Add/Request farm inventory item
- */
-router.post('/inventory', async (req, res) => {
-    if (!canModifyFarm(req.user)) {
-        return res.status(403).json({ error: 'Unauthorized to manage farm inventory' });
-    }
+router.post('/inventory', (0, moduleAccess_1.requireModuleAccess)('farm', 'scoped'), async (req, res) => {
     const { name, category, quantity, condition } = req.body;
     if (!name || !category || !quantity) {
         return res.status(400).json({ error: 'Missing required inventory fields' });
@@ -165,8 +124,60 @@ router.post('/inventory', async (req, res) => {
         res.json(item);
     }
     catch (error) {
-        console.error('Create farm inventory error:', error);
         res.status(500).json({ error: 'Failed to add farm inventory item' });
+    }
+});
+// ── PRODUCE SALES ──
+router.post('/sales', (0, moduleAccess_1.requireModuleAccess)('farm', 'full'), async (req, res) => {
+    const { itemId, productName, quantitySold, saleAmount } = req.body;
+    const schoolId = req.user.schoolId;
+    try {
+        const farmIncomeCode = '4050'; // Farm/Agricultural Revenue
+        // GL Engine
+        await ledger_service_1.default.postDoubleEntry({
+            tenantId: schoolId,
+            debitCode: '1010', // Cash/Bank
+            creditCode: farmIncomeCode,
+            amount: Number(saleAmount),
+            description: `Farm produce sale: ${productName} x${quantitySold}`,
+            sourceModule: 'farm_sale',
+            reference: `FARM-${Date.now()}`,
+            userId: req.user.id
+        });
+        // Decrement farm inventory: quantity is stored as a String in schema
+        // Update the condition to reflect lower stock
+        const currentItem = await prisma_1.default.farmInventoryItem.findFirst({ where: { id: itemId, schoolId } });
+        if (currentItem) {
+            // Parse numeric part from quantity string (e.g. "12 Bags" -> 12), subtract, reformat
+            const numericQty = parseFloat(currentItem.quantity) || 0;
+            const newQty = Math.max(0, numericQty - Number(quantitySold));
+            const unit = currentItem.quantity.replace(/[\d.]+/, '').trim();
+            await prisma_1.default.farmInventoryItem.update({
+                where: { id: itemId },
+                data: {
+                    quantity: `${newQty} ${unit}`.trim(),
+                    condition: newQty === 0 ? 'Out of Stock' : newQty < 5 ? 'Low Stock' : currentItem.condition
+                }
+            });
+        }
+        // Stock movement record — use fields that exist in StockMovement schema
+        await prisma_1.default.stockMovement.create({
+            data: {
+                schoolId,
+                module: 'FARM',
+                itemId,
+                itemName: String(productName),
+                direction: 'OUT',
+                quantity: Number(quantitySold),
+                unitCost: Number(saleAmount) / Number(quantitySold),
+                totalCost: Number(saleAmount),
+                reference: `FARM-${Date.now()}`
+            }
+        });
+        res.json({ success: true });
+    }
+    catch (error) {
+        res.status(500).json({ error: 'Failed to process farm sale' });
     }
 });
 exports.default = router;

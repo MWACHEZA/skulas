@@ -108,7 +108,7 @@ async function seedExtras2(prisma, school, admin, student) {
         }
         catch (e) { }
         try {
-            await prisma.paymentPlan.create({ data: { schoolId: school.id, studentId: student.id, parentUserId: admin.id, amount: 500, dueDate: new Date() } });
+            await prisma.paymentPlan.create({ data: { schoolId: school.id, studentId: student.id, parentUserId: admin.id, totalAmount: 500, installmentsCount: 1, planType: 'monthly' } });
         }
         catch (e) { }
         try {
@@ -241,7 +241,7 @@ async function seedExtras2(prisma, school, admin, student) {
         }
         catch (e) { }
         try {
-            await prisma.prefectMeeting.create({ data: { title: `Discipline ${i}`, chair: 'Head Boy', recordsText: 'Done', date: new Date(), schoolId: school.id } });
+            await prisma.prefectMeeting.create({ data: { agenda: `Discipline ${i}`, chairId: 'dummy', minutes: 'Done', date: new Date(), schoolId: school.id } });
         }
         catch (e) { }
         try {

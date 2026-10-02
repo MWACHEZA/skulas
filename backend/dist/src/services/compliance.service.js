@@ -5,7 +5,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ComplianceService = void 0;
 const prisma_1 = __importDefault(require("../lib/prisma"));
-const ledger_service_1 = require("./ledger.service");
 const sequence_service_1 = require("./sequence.service");
 class ComplianceService {
     /**
@@ -182,7 +181,7 @@ class ComplianceService {
         const fees = await prisma_1.default.fee.findMany({
             where: { schoolId, studentId, status: { in: ['PENDING', 'PARTIAL'] } }
         });
-        const balanceFromFees = fees.reduce((sum, f) => sum + (f.amount - (f.paidAmount || 0)), 0);
+        const balanceFromFees = fees.reduce((sum, f) => sum + (f.amount - (f.paid || 0)), 0);
         const journalLines = await prisma_1.default.journalEntryLine.findMany({
             where: {
                 schoolId,
@@ -305,8 +304,11 @@ class ComplianceService {
             include: { book: true }
         });
         const hasUnreturnedBooks = activeLoans.length > 0;
-        // 2. Live Fees Check: student balance
-        const feesBalance = await ledger_service_1.LedgerService.getStudentBalance(schoolId, studentId);
+        // 2. Live Fees Check: compute AR balance from journal lines (debit - credit on account 1200)
+        const arLines = await prisma_1.default.journalEntryLine.findMany({
+            where: { schoolId, studentId, coaCode: '1200' }
+        });
+        const feesBalance = arLines.reduce((sum, l) => sum + (l.debit - l.credit), 0);
         const isFeesClear = feesBalance <= 0;
         // 3. Upsert StudentClearance record
         const clearance = await prisma_1.default.studentClearance.upsert({

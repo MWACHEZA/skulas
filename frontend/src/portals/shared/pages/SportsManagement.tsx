@@ -837,10 +837,10 @@ export default function SportsManagement() {
         </div>
       )}
 
-      {/* ── TAB 4: REQUISITIONS (Core Procurements UI) ── */}
+      {/* ── TAB 4: REQUISITIONS (Core Procurements UI - Review & Approval) ── */}
       {activeTab === 'requisitions' && (
         <div className="animate-in">
-          <ProcurementUI mode="FULL" />
+          <ProcurementUI mode="MANAGE" />
         </div>
       )}
 

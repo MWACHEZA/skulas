@@ -58,7 +58,8 @@ router.get('/:id/expected', async (req, res) => {
         const schoolId = req.user?.schoolId;
         if (!schoolId)
             return res.status(400).json({ error: 'Missing schoolId' });
-        const expected = await till_service_1.TillService.calculateExpectedSales(schoolId, req.params.id);
+        const id = req.params.id;
+        const expected = await till_service_1.TillService.calculateExpectedSales(schoolId, id);
         res.json(expected);
     }
     catch (err) {
@@ -74,10 +75,11 @@ router.post('/:id/close', async (req, res) => {
         const schoolId = req.user?.schoolId;
         if (!schoolId)
             return res.status(400).json({ error: 'Missing schoolId' });
+        const id = req.params.id;
         const { denominations, countedPayments, notes, tillAccountCode } = req.body;
         const closed = await till_service_1.TillService.closeTill({
             schoolId,
-            tillSessionId: req.params.id,
+            tillSessionId: id,
             userId: req.user?.id || 'SYSTEM',
             denominations: denominations || [],
             countedPayments: countedPayments || [],

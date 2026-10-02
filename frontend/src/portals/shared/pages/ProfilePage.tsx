@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
 import api, { BASE_URL } from '../../../lib/api';
+import { getAvatarUrl } from '../../../utils/formatters';
 import ActiveSessions from '../../../components/shared/ActiveSessions';
 import EmptyState from '../../../components/shared/EmptyState';
 import '../../../styles/portal.css';
@@ -13,6 +14,7 @@ export default function ProfilePage() {
   const [fetchingProfile, setFetchingProfile] = useState(true);
   const [profileData, setProfileData] = useState<any>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [editingSection, setEditingSection] = useState<string | null>(null);
 
   const isParent = user?.role === 'PARENT';
@@ -73,11 +75,33 @@ export default function ProfilePage() {
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      setAvatarFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
         setAvatarPreview(reader.result as string);
       };
       reader.readAsDataURL(file);
+    }
+  };
+
+  const handleSavePhoto = async () => {
+    if (!avatarFile) return;
+    setLoading(true);
+    try {
+      const formData = new FormData();
+      formData.append('avatar', avatarFile);
+      await api.put('/api/users/me', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      showToast('Profile photo updated successfully', 'success');
+      setAvatarFile(null);
+      setAvatarPreview(null);
+      await refreshUser();
+      fetchProfile();
+    } catch (err: any) {
+      showToast(err.response?.data?.error || 'Failed to update photo', 'error');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -175,7 +199,7 @@ export default function ProfilePage() {
                     {avatarPreview ? (
                         <img src={avatarPreview} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     ) : user?.avatar ? (
-                        <img src={`${BASE_URL}/api/storage/media/${user.schoolCode}/${user.avatar}`} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        <img src={getAvatarUrl(user.avatar, user.schoolCode, (user as any)?.updatedAt || Date.now()) || ''} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     ) : (
                         getInitials(isParent ? (activeEntity?.name || targetStudent?.name || user?.name || '') : (user?.name || ''))
                     )}
@@ -209,8 +233,8 @@ export default function ProfilePage() {
                 )}
              </div>
              {avatarPreview && (
-               <button className="portal-btn-primary" style={{ marginTop: 20 }} onClick={() => handleUpdateProfile({ avatar: avatarPreview })}>
-                 Save Photo
+               <button className="portal-btn-primary" style={{ marginTop: 20 }} onClick={handleSavePhoto} disabled={loading}>
+                 {loading ? 'Saving Photo...' : 'Save Photo'}
                </button>
              )}
           </div>
@@ -712,8 +736,8 @@ export default function ProfilePage() {
                     });
                 }}>
                     <div className="portal-modal-body" style={{ padding: '32px', maxHeight: '400px', overflowY: 'auto' }}>
-                        {(profileData?.student?.parents || []).map((p: any, idx: number) => (
-                            <div key={idx} style={{ marginBottom: '24px', paddingBottom: '20px', borderBottom: idx < parentList.length - 1 ? '1px solid #e2e8f0' : 'none' }}>
+                        {(profileData?.student?.parents || []).map((p: any, idx: number, arr: any[]) => (
+                            <div key={idx} style={{ marginBottom: '24px', paddingBottom: '20px', borderBottom: idx < arr.length - 1 ? '1px solid #e2e8f0' : 'none' }}>
                                 <h4 style={{ margin: '0 0 16px', fontSize: '1rem', fontWeight: 800, color: '#334155' }}>{p.relation} Contact</h4>
                                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
                                     <div className="form-group">

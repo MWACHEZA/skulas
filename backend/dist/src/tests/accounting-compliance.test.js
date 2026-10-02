@@ -30,13 +30,19 @@ async function runTests() {
         const existingSchools = await prisma_1.default.school.findMany({ take: 2 });
         let schoolA = existingSchools[0];
         let schoolB = existingSchools[1];
+        // Ensure a default plan exists (planId is required on School)
+        const testPlan = await prisma_1.default.plan.upsert({
+            where: { name: 'Starter' },
+            update: {},
+            create: { name: 'Starter', price: 0, features: [] }
+        });
         if (!schoolA) {
             schoolA = await prisma_1.default.school.create({
                 data: {
                     name: 'Test Academy Alpha',
                     code: 'SCH-ALP-' + Date.now().toString().slice(-4),
                     type: 'COMBINED',
-                    slug: 'test-alpha-' + Date.now(),
+                    planId: testPlan.id,
                     address: 'Harare, Zimbabwe',
                     phone: '+263771000001',
                     email: `alpha_${Date.now()}@acadex.test`
@@ -49,7 +55,7 @@ async function runTests() {
                     name: 'Test Academy Beta',
                     code: 'SCH-BET-' + Date.now().toString().slice(-4),
                     type: 'COMBINED',
-                    slug: 'test-beta-' + Date.now(),
+                    planId: testPlan.id,
                     address: 'Bulawayo, Zimbabwe',
                     phone: '+263771000002',
                     email: `beta_${Date.now()}@acadex.test`
@@ -185,8 +191,8 @@ async function runTests() {
         const reversalJournal = result.reversingEntry;
         assert(creditNote.creditNoteNumber.startsWith('CN-'), 'Credit Note created with official sequence prefix', creditNote.creditNoteNumber);
         assert(creditNote.totalAmount === 45.00, 'Credit Note captures exact gross amount to reverse', `${creditNote.totalAmount}`);
-        const arLine = reversalJournal?.lines.find(l => l.account?.code === '1200' || l.coaCode === '1200');
-        const revLine = reversalJournal?.lines.find(l => l.account?.code === '4010' || l.coaCode === '4010');
+        const arLine = reversalJournal?.lines.find(l => l.coaCode === '1200');
+        const revLine = reversalJournal?.lines.find(l => l.coaCode === '4010');
         assert(arLine?.credit === 45.00 && arLine?.debit === 0, 'Original Debit line (1200 AR) was swapped to Credit', `CR ${arLine?.credit}`);
         assert(revLine?.debit === 45.00 && revLine?.credit === 0, 'Original Credit line (4010 Tuition) was swapped to Debit', `DR ${revLine?.debit}`);
         // Verify original entry marked reversed

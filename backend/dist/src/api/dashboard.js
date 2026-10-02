@@ -776,27 +776,34 @@ router.get('/parent', auth_1.requireAuth, async (req, res) => {
             });
         }
         // Action item: Pending Payment Plan
-        const pendingPaymentPlan = await prisma_1.default.paymentPlan.findFirst({
+        const activePaymentPlan = await prisma_1.default.paymentPlan.findFirst({
             where: {
                 studentId: student.id,
-                status: { in: ['PENDING', 'OVERDUE'] }
+                status: { in: ['ACTIVE', 'DEFAULTED'] }
             },
-            orderBy: { dueDate: 'asc' }
+            include: {
+                installments: {
+                    where: { status: { in: ['PENDING', 'OVERDUE'] } },
+                    orderBy: { dueDate: 'asc' },
+                    take: 1
+                }
+            }
         }).catch(() => null);
-        if (pendingPaymentPlan) {
+        if (activePaymentPlan && activePaymentPlan.installments.length > 0) {
+            const nextInst = activePaymentPlan.installments[0];
             actionItems.push({
-                id: `action-plan-${pendingPaymentPlan.id}`,
+                id: `action-plan-${activePaymentPlan.id}`,
                 type: 'PAYMENT_PLAN',
                 icon: 'fas fa-hand-holding-usd text-primary',
-                label: `Payment Plan Installment: ${currencySymbol}${pendingPaymentPlan.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}`,
-                description: `Installment agreement due ${new Date(pendingPaymentPlan.dueDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}`,
-                dueDate: `Due ${new Date(pendingPaymentPlan.dueDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}`,
-                isOverdue: new Date(pendingPaymentPlan.dueDate) < now,
+                label: `Payment Plan Installment: ${currencySymbol}${nextInst.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}`,
+                description: `Installment agreement due ${new Date(nextInst.dueDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}`,
+                dueDate: `Due ${new Date(nextInst.dueDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}`,
+                isOverdue: new Date(nextInst.dueDate) < now,
                 actionUrl: '/parent/fees?tab=payment-plan',
                 actionModal: 'PAY_NOW',
                 payload: {
-                    planId: pendingPaymentPlan.id,
-                    amount: pendingPaymentPlan.amount
+                    planId: activePaymentPlan.id,
+                    amount: nextInst.amount
                 }
             });
         }

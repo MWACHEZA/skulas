@@ -75,6 +75,7 @@ router.get('/me', requireAuth, async (req: AuthRequest, res: Response) => {
           avatar: true,
           staffId: true,
           schoolId: true,
+          updatedAt: true,
           religion: true,
           departmentId: true,
           dept: { select: { id: true, name: true } },
@@ -575,7 +576,7 @@ router.put('/me', requireAuth, uploadLimiter, upload.single('avatar'), validate(
               updatedAt: new Date().toISOString()
           } as any
         },
-        select: { id: true, name: true, email: true, role: true, phone: true, avatar: true, metadata: true, religion: true },
+        select: { id: true, name: true, email: true, role: true, phone: true, avatar: true, metadata: true, religion: true, updatedAt: true },
       });
     });
 

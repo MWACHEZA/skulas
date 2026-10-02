@@ -679,10 +679,15 @@ exports.LedgerService = {
         });
         if (arAccounts.length === 0)
             return [];
+        const activePaymentPlans = await prisma_1.default.paymentPlan.findMany({
+            where: { schoolId, status: 'ACTIVE' },
+            select: { studentId: true }
+        });
+        const excludedStudentIds = new Set(activePaymentPlans.map(p => p.studentId));
         const lines = await prisma_1.default.journalEntryLine.findMany({
             where: {
                 accountId: { in: arAccounts.map(a => a.id) },
-                studentId: { not: null },
+                studentId: { not: null, notIn: [...excludedStudentIds] },
                 journalEntry: { status: 'POSTED', date: { lte: asOfDate } }
             },
             include: {
@@ -893,7 +898,7 @@ exports.LedgerService = {
      */
     async getWalletBalance(studentId) {
         const txs = await prisma_1.default.walletTransaction.findMany({
-            where: { studentId },
+            where: { wallet: { studentId } },
             select: { type: true, amount: true }
         });
         return round2(txs.reduce((sum, t) => sum + (t.type === 'CREDIT' ? t.amount : -t.amount), 0));

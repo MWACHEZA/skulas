@@ -55,7 +55,8 @@ router.get('/:id', async (req, res) => {
         const schoolId = req.user?.schoolId;
         if (!schoolId)
             return res.status(400).json({ error: 'Missing schoolId' });
-        const details = await credit_note_service_1.CreditNoteService.getCreditNoteDetails(schoolId, req.params.id);
+        const id = req.params.id;
+        const details = await credit_note_service_1.CreditNoteService.getCreditNoteDetails(schoolId, id);
         res.json(details);
     }
     catch (err) {
