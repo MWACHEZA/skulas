@@ -171,33 +171,26 @@ async function runGateCheck(studentId: string, schoolId: string) {
     }
   }
 
-  // If not allowed, check for APPROVED payment plans
+  // If not allowed, check for ACTIVE payment plans
   if (!allowed) {
     const activePlans = await prisma.paymentPlan.findMany({
       where: {
         studentId: student.id,
-        status: { in: ['APPROVED', 'OVERDUE'] }
+        status: { in: ['ACTIVE', 'DEFAULTED'] }
       },
-      orderBy: { dueDate: 'desc' }
+      orderBy: { createdAt: 'desc' },
+      include: { installments: { orderBy: { dueDate: 'asc' } } }
     });
 
     if (activePlans.length > 0) {
       const latestPlan = activePlans[0];
-      const today = new Date();
 
-      if (today > new Date(latestPlan.dueDate) && balance > 0) {
-        // Overdue payment plan! Flag it as OVERDUE
-        if (latestPlan.status !== 'OVERDUE') {
-          await prisma.paymentPlan.update({
-            where: { id: latestPlan.id },
-            data: { status: 'OVERDUE' }
-          });
-        }
+      if (latestPlan.status === 'DEFAULTED') {
         allowed = false;
-        reason = `Denied: Overdue payment plan. Promised payment date was ${new Date(latestPlan.dueDate).toLocaleDateString()}.`;
+        reason = `Denied: Overdue payment plan.`;
       } else {
         allowed = true;
-        reason = `Allowed: Covered by active/approved payment plan (due date: ${new Date(latestPlan.dueDate).toLocaleDateString()}).`;
+        reason = `Allowed: Covered by active payment plan.`;
       }
     }
   }

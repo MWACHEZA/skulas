@@ -918,10 +918,16 @@ export const LedgerService = {
     });
     if (arAccounts.length === 0) return [];
 
+    const activePaymentPlans = await prisma.paymentPlan.findMany({
+      where: { schoolId, status: 'ACTIVE' },
+      select: { studentId: true }
+    });
+    const excludedStudentIds = new Set(activePaymentPlans.map(p => p.studentId));
+
     const lines = await prisma.journalEntryLine.findMany({
       where: {
         accountId: { in: arAccounts.map(a => a.id) },
-        studentId: { not: null },
+        studentId: { not: null, notIn: [...excludedStudentIds] },
         journalEntry: { status: 'POSTED', date: { lte: asOfDate } }
       },
       include: {

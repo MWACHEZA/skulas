@@ -1495,22 +1495,36 @@ model SchoolSetting {
 }
 
 model PaymentPlan {
-  id           String   @id @default(cuid())
-  schoolId     String
-  school       School   @relation(fields: [schoolId], references: [id])
-  studentId    String
-  student      Student  @relation(fields: [studentId], references: [id])
-  parentUserId String
-  parentUser   User     @relation("ParentPaymentPlans", fields: [parentUserId], references: [id])
-  amount       Float
-  dueDate      DateTime
-  status       String   @default("PENDING") // PENDING, APPROVED, REJECTED, OVERDUE, PAID
-  notes        String?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id                String                   @id @default(cuid())
+  schoolId          String
+  school            School                   @relation(fields: [schoolId], references: [id])
+  studentId         String
+  student           Student                  @relation(fields: [studentId], references: [id])
+  parentUserId      String?
+  parentUser        User?                    @relation("ParentPaymentPlans", fields: [parentUserId], references: [id])
+  totalAmount       Float
+  planType          String // weekly, monthly, custom
+  installmentsCount Int
+  status            String                   @default("ACTIVE") // ACTIVE, COMPLETED, DEFAULTED
+  createdAt         DateTime                 @default(now())
+  updatedAt         DateTime                 @updatedAt
+  installments      PaymentPlanInstallment[]
 
   @@index([schoolId])
   @@index([studentId])
+}
+
+model PaymentPlanInstallment {
+  id        String      @id @default(cuid())
+  planId    String
+  plan      PaymentPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
+  amount    Float
+  dueDate   DateTime
+  status    String      @default("PENDING") // PENDING, PAID, OVERDUE
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  @@index([planId])
 }
 
 model Gallery {

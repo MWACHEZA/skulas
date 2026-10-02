@@ -950,10 +950,20 @@ exports.Prisma.PaymentPlanScalarFieldEnum = {
   schoolId: 'schoolId',
   studentId: 'studentId',
   parentUserId: 'parentUserId',
+  totalAmount: 'totalAmount',
+  planType: 'planType',
+  installmentsCount: 'installmentsCount',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.PaymentPlanInstallmentScalarFieldEnum = {
+  id: 'id',
+  planId: 'planId',
   amount: 'amount',
   dueDate: 'dueDate',
   status: 'status',
-  notes: 'notes',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -3313,6 +3323,7 @@ exports.Prisma.ModelName = {
   News: 'News',
   SchoolSetting: 'SchoolSetting',
   PaymentPlan: 'PaymentPlan',
+  PaymentPlanInstallment: 'PaymentPlanInstallment',
   Gallery: 'Gallery',
   Club: 'Club',
   Sport: 'Sport',

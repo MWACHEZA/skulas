@@ -52,7 +52,7 @@ export async function seedExtras2(prisma: PrismaClient, school: School, admin: U
     if (assignment) { try { await prisma.assignmentSubmission.create({ data: { assignmentId: assignment.id, studentId: student.id, schoolId: school.id } }); } catch(e){} }
     
     try { await prisma.schoolSetting.create({ data: { schoolId: school.id } }); } catch(e){}
-    try { await prisma.paymentPlan.create({ data: { schoolId: school.id, studentId: student.id, parentUserId: admin.id, amount: 500, dueDate: new Date() } }); } catch(e){}
+    try { await prisma.paymentPlan.create({ data: { schoolId: school.id, studentId: student.id, parentUserId: admin.id, totalAmount: 500, installmentsCount: 1, planType: 'monthly' } }); } catch(e){}
     try { await prisma.visitorLog.create({ data: { name: `John Doe ${i}`, phone: '123', purpose: 'Visit', schoolId: school.id } }); } catch(e){}
     try { await prisma.admissionInquiry.create({ data: { name: `Jane Doe ${i}`, phone: '123', source: 'Web', schoolId: school.id } }); } catch(e){}
     try { await prisma.phoneCallLog.create({ data: { name: `Alice ${i}`, phone: '123', callType: 'Incoming', schoolId: school.id } }); } catch(e){}
