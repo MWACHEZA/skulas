@@ -371,9 +371,10 @@ export default function ClinicReportsUnifiedPage() {
                 </div>
               </div>
             </div>
-          )}
-        </div>
-      )}
+          </div>
+        )}
+      </div>
+    )}
 
       {/* TAB 3: Clinic Billing */}
       {activeTab === 'billing' && (

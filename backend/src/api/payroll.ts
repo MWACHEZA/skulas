@@ -450,12 +450,61 @@ router.post('/generate', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), asy
 
     const entries = [];
 
+    // Check approved leaves during this month/year that have payroll impact (unpaid, half-pay)
+    const monthStart = new Date(year, month - 1, 1);
+    const monthEnd = new Date(year, month, 0);
+
+    const relevantLeaves = await prisma.staffLeave.findMany({
+      where: {
+        schoolId,
+        status: 'approved',
+        startDate: { lte: monthEnd },
+        endDate: { gte: monthStart }
+      }
+    });
+
     for (const emp of employees) {
       const basicSalary = (emp as any).employeeProfile?.basePay || 0;
-      // In a real application, we would calculate specific allowances and deductions
-      const allowances = 0; 
-      const deductions = 0;
-      const netSalary = basicSalary + allowances - deductions;
+      const dailyRate = basicSalary > 0 ? basicSalary / 30 : 0;
+
+      // 1. Calculate leave adjustments
+      let leaveDeduction = 0;
+      const empLeaves = relevantLeaves.filter(l => l.userId === emp.id);
+      for (const l of empLeaves) {
+        const type = (l.leaveType || '').toLowerCase();
+        const days = l.days || 1;
+        if (type === 'unpaid') {
+          leaveDeduction += days * dailyRate;
+        } else if (type === 'sick' && days > 14) {
+          leaveDeduction += (days - 14) * (dailyRate * 0.5);
+        }
+      }
+      leaveDeduction = Math.round(leaveDeduction * 100) / 100;
+
+      // 2. Allowances (e.g. HOD allowance, Boarding allowance if secondary roles present)
+      let allowances = 0;
+      if (emp.secondaryRoles?.some((r: string) => ['HOD', 'DEPARTMENT_HEAD'].includes(r.toUpperCase()))) {
+        allowances += 150; // standard HOD allowance
+      }
+      if (emp.secondaryRoles?.some((r: string) => ['HOUSE_MASTER', 'BOARDING_STAFF'].includes(r.toUpperCase()))) {
+        allowances += 100;
+      }
+
+      // 3. Tax / PAYE Calculation (progressive brackets fallback)
+      const taxableGross = Math.max(0, basicSalary + allowances - leaveDeduction);
+      let taxAmount = 0;
+      if (taxableGross > 300) {
+        if (taxableGross <= 1000) {
+          taxAmount = (taxableGross - 300) * 0.20;
+        } else {
+          taxAmount = (700 * 0.20) + ((taxableGross - 1000) * 0.30);
+        }
+      }
+      taxAmount = Math.round(taxAmount * 100) / 100;
+      const aidsLevy = Math.round(taxAmount * 0.03 * 100) / 100; // Standard 3% Aids Levy on PAYE
+
+      const empDeductions = leaveDeduction + taxAmount + aidsLevy;
+      const netSalary = Math.max(0, (basicSalary + allowances) - empDeductions);
 
       entries.push({
         payrollRunId: payrollRun.id,
@@ -465,14 +514,15 @@ router.post('/generate', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), asy
         jobTitle: (emp as any).employeeProfile?.jobTitle || emp.role,
         grossSalary: basicSalary,
         totalAllowances: allowances,
-        totalDeductions: deductions,
-        taxAmount: 0,
-        netSalary: netSalary,
+        totalDeductions: empDeductions,
+        taxAmount: taxAmount,
+        aidsLevy: aidsLevy,
+        netSalary: Math.round(netSalary * 100) / 100,
         isPaid: false
       });
 
       totalGross += basicSalary + allowances;
-      totalDeductions += deductions;
+      totalDeductions += empDeductions;
       totalNet += netSalary;
     }
 
@@ -541,6 +591,77 @@ router.post('/generate', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), asy
   } catch (error) {
     console.error('Error generating payroll', error);
     res.status(500).json({ error: 'Failed to generate payroll' });
+  }
+});
+
+// Head / Principal Approval Gate for Payroll Run
+router.patch('/runs/:id/approve', requireAuth, requireRole('SCHOOL_ADMIN', 'SUPER_ADMIN'), async (req: AuthRequest, res: Response) => {
+  try {
+    const id = req.params.id as string;
+    const schoolId = req.user!.schoolId!;
+
+    const run = await prisma.payrollRun.findUnique({
+      where: { id }
+    });
+
+    if (!run || run.schoolId !== schoolId) {
+      return res.status(404).json({ error: 'Payroll run not found' });
+    }
+
+    const updated = await prisma.payrollRun.update({
+      where: { id },
+      data: { status: 'Approved' }
+    });
+
+    await logSecurityEvent({
+      actorId: req.user!.id,
+      action: 'APPROVE_PAYROLL_RUN',
+      entityType: 'PayrollRun',
+      entityId: id,
+      details: { month: run.month, year: run.year },
+      schoolId,
+      ipAddress: req.ip
+    });
+
+    res.json(updated);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to approve payroll run' });
+  }
+});
+
+// Bank Export CSV (compatible with generic bank format / CBZ batch format)
+router.get('/runs/:id/bank-export', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req: AuthRequest, res: Response) => {
+  try {
+    const id = req.params.id as string;
+    const schoolId = req.user!.schoolId!;
+
+    const entries = await prisma.payrollEntry.findMany({
+      where: { payrollRunId: id, schoolId },
+      include: {
+        user: {
+          include: { employeeProfile: true }
+        }
+      }
+    });
+
+    if (entries.length === 0) {
+      return res.status(404).json({ error: 'No entries found for this payroll run' });
+    }
+
+    let csvContent = 'Employee Name,Account Number,Bank Name,Branch Code,Currency,Net Pay\n';
+    for (const e of entries) {
+      const profile = e.user?.employeeProfile;
+      const acc = profile?.accountNumber || profile?.accountNumberZig || 'N/A';
+      const bank = profile?.bankName || profile?.bankNameZig || 'General Bank';
+      const branch = profile?.branchCode || profile?.branchCodeZig || '001';
+      csvContent += `"${e.employeeName}","${acc}","${bank}","${branch}","USD",${e.netSalary.toFixed(2)}\n`;
+    }
+
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', `attachment; filename="payroll-bank-export-${id}.csv"`);
+    res.send(csvContent);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to export bank file' });
   }
 });
 

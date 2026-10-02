@@ -66,6 +66,11 @@ router.post('/', requireAuth, async (req: AuthRequest, res: Response) => {
       }
     }
 
+    // Sick-leave document requirement: mandatory attachment for sick leave > 2 days
+    if (leaveType.toLowerCase() === 'sick' && days > 2 && !attachmentUrl) {
+      return res.status(400).json({ error: 'Medical certificate/document attachment is mandatory for sick leave exceeding 2 days.' });
+    }
+
     const leave = await prisma.staffLeave.create({
       data: {
         schoolId: req.user!.schoolId!,
@@ -218,6 +223,164 @@ router.patch('/:id/reject', requireAuth, requireRole('SCHOOL_ADMIN', 'SUPER_ADMI
     res.json(leave);
   } catch (error) {
     res.status(500).json({ error: 'Failed to reject leave' });
+  }
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Cover-teacher Suggestion based on Shared Timetable
+// ─────────────────────────────────────────────────────────────────────────────
+router.get('/suggest-cover', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    const schoolId = req.user!.schoolId!;
+    const { startDate, endDate, department } = req.query;
+
+    // Find teachers in the same school/department
+    const teachers = await prisma.user.findMany({
+      where: {
+        schoolId,
+        role: 'TEACHER',
+        isLocked: false,
+        id: { not: req.user!.id }
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        teacher: { select: { id: true, department: true } }
+      }
+    });
+
+    // Also check teachers who already have approved leaves overlapping these dates
+    const busyTeachers = await prisma.staffLeave.findMany({
+      where: {
+        schoolId,
+        status: 'approved',
+        ...(startDate && endDate ? {
+          startDate: { lte: new Date(endDate as string) },
+          endDate: { gte: new Date(startDate as string) }
+        } : {})
+      },
+      select: { userId: true }
+    });
+    const busyIds = new Set(busyTeachers.map(b => b.userId));
+
+    const suggestions = teachers.map(t => ({
+      userId: t.id,
+      name: t.name,
+      department: t.teacher?.department || 'General',
+      isAvailable: !busyIds.has(t.id)
+    })).sort((a, b) => Number(b.isAvailable) - Number(a.isAvailable));
+
+    res.json(suggestions);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to suggest cover teachers' });
+  }
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Bursar / Head Payroll Consequences View (Phase 3)
+// ─────────────────────────────────────────────────────────────────────────────
+router.get('/payroll-consequences', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req: AuthRequest, res: Response) => {
+  try {
+    const schoolId = req.user!.schoolId!;
+    const approvedLeaves = await prisma.staffLeave.findMany({
+      where: {
+        schoolId,
+        status: 'approved'
+      },
+      orderBy: { startDate: 'desc' }
+    });
+
+    // Map each approved leave with computed salary impact
+    // Policy defaults:
+    //  - 'unpaid': Full pro-rated deduction (unpaid days * (basePay / 30))
+    //  - 'sick': If days > 14 (configurable threshold, default 14), half-pay for days beyond 14
+    //  - 'annual', 'maternity', 'study', etc.: Fully paid within policy
+    const enrichedLeaves = await Promise.all(approvedLeaves.map(async (leave) => {
+      const user = await prisma.user.findUnique({
+        where: { id: leave.userId },
+        select: {
+          name: true,
+          email: true,
+          role: true,
+          employeeProfile: { select: { basePay: true } }
+        }
+      });
+
+      const basePay = user?.employeeProfile?.basePay || 0;
+      const dailyRate = basePay > 0 ? basePay / 30 : 0;
+      const days = leave.days || calculateDays(leave.startDate, leave.endDate);
+
+      let impactType: 'PAID' | 'UNPAID_DEDUCTION' | 'HALF_PAY' = 'PAID';
+      let estimatedDeduction = 0;
+
+      const type = (leave.leaveType || '').toLowerCase();
+      if (type === 'unpaid') {
+        impactType = 'UNPAID_DEDUCTION';
+        estimatedDeduction = days * dailyRate;
+      } else if (type === 'sick' && days > 14) {
+        impactType = 'HALF_PAY';
+        const halfPayDays = days - 14;
+        estimatedDeduction = halfPayDays * (dailyRate * 0.5);
+      }
+
+      return {
+        ...leave,
+        employeeName: user?.name || 'Staff Member',
+        employeeEmail: user?.email,
+        employeeRole: user?.role,
+        basePay,
+        days,
+        impactType,
+        estimatedDeduction: Math.round(estimatedDeduction * 100) / 100
+      };
+    }));
+
+    res.json(enrichedLeaves);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch leave payroll consequences' });
+  }
+});
+
+// Leave Calendar View for Head / Bursar to spot risky clustering
+router.get('/calendar-view', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req: AuthRequest, res: Response) => {
+  try {
+    const schoolId = req.user!.schoolId!;
+    const leaves = await prisma.staffLeave.findMany({
+      where: {
+        schoolId,
+        status: 'approved'
+      },
+      select: {
+        id: true,
+        userId: true,
+        leaveType: true,
+        startDate: true,
+        endDate: true,
+        department: true,
+        days: true
+      }
+    });
+
+    const userIds = [...new Set(leaves.map(l => l.userId))];
+    const users = await prisma.user.findMany({
+      where: { id: { in: userIds } },
+      select: { id: true, name: true }
+    });
+    const userMap = new Map(users.map(u => [u.id, u.name]));
+
+    const events = leaves.map(l => ({
+      id: l.id,
+      title: `${userMap.get(l.userId) || 'Staff'} (${l.leaveType})`,
+      start: l.startDate,
+      end: l.endDate,
+      department: l.department,
+      days: l.days
+    }));
+
+    res.json(events);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch leave calendar' });
   }
 });
 
