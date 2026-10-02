@@ -5,6 +5,49 @@ import { SearchInput, ExportButton } from '../../../components/shared';
 
 export type ReportsTab = 'patients' | 'analytics' | 'billing';
 
+export interface PatientSearchResult {
+  id: string;
+  name: string;
+  studentId?: string;
+  class?: { name?: string };
+  hostel?: { name?: string };
+  healthProfile?: {
+    allergies?: string[];
+    chronicConditions?: string[];
+    bloodGroup?: string;
+    emergencyContact?: string;
+  };
+}
+
+export interface ClinicVisitRecord {
+  id: string;
+  visitCode?: string;
+  createdAt: string;
+  presentingComplaint?: string;
+  conditionDetails?: string;
+  disposition?: string;
+}
+
+export interface PatientDossier {
+  student: PatientSearchResult;
+  visits?: ClinicVisitRecord[];
+}
+
+export interface TopAilment {
+  name: string;
+  count: number;
+}
+
+export interface ClinicAnalyticsData {
+  topAilments?: TopAilment[];
+  visitsBySource?: {
+    walkIn?: number;
+    teacherReferral?: number;
+    studentBooking?: number;
+    matronAlert?: number;
+  };
+}
+
 export default function ClinicReportsUnifiedPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const currentTab = (searchParams.get('tab') as ReportsTab) || 'patients';
@@ -12,13 +55,13 @@ export default function ClinicReportsUnifiedPage() {
 
   // Tab 1: Patients & Medical Files
   const [patientQuery, setPatientQuery] = useState('');
-  const [patientResults, setPatientResults] = useState<any[]>([]);
+  const [patientResults, setPatientResults] = useState<PatientSearchResult[]>([]);
   const [searchingPatients, setSearchingPatients] = useState(false);
-  const [selectedStudentFile, setSelectedStudentFile] = useState<any>(null);
+  const [selectedStudentFile, setSelectedStudentFile] = useState<PatientDossier | null>(null);
   const [loadingFile, setLoadingFile] = useState(false);
 
   // Tab 2: Analytics
-  const [analyticsData, setAnalyticsData] = useState<any>(null);
+  const [analyticsData, setAnalyticsData] = useState<ClinicAnalyticsData | null>(null);
   const [loadingAnalytics, setLoadingAnalytics] = useState(false);
 
   useEffect(() => {
@@ -53,7 +96,7 @@ export default function ClinicReportsUnifiedPage() {
     return () => clearTimeout(timer);
   }, [patientQuery]);
 
-  const handleOpenPatientFile = async (student: any) => {
+  const handleOpenPatientFile = async (student: PatientSearchResult) => {
     try {
       setLoadingFile(true);
       // Fetch full audited patient clinical file
@@ -196,9 +239,9 @@ export default function ClinicReportsUnifiedPage() {
                     <div style={{ fontSize: '0.8rem', color: '#64748b', marginTop: 2 }}>
                       ID: {stud.studentId || 'N/A'} | Class: {stud.class?.name || 'Standard'} | Hostel: {stud.hostel?.name || 'Day'}
                     </div>
-                    {stud.healthProfile?.allergies?.length > 0 && (
+                    {(stud.healthProfile?.allergies?.length ?? 0) > 0 && (
                       <div style={{ marginTop: 4, fontSize: '0.75rem', color: '#dc2626', fontWeight: 600 }}>
-                        <i className="fas fa-exclamation-circle" /> Allergies: {stud.healthProfile.allergies.join(', ')}
+                        <i className="fas fa-exclamation-circle" /> Allergies: {stud.healthProfile?.allergies?.join(', ')}
                       </div>
                     )}
                   </div>
@@ -235,8 +278,8 @@ export default function ClinicReportsUnifiedPage() {
                         <i className="fas fa-allergies" /> Known Allergies
                       </div>
                       <div style={{ fontSize: '0.85rem', color: '#7f1d1d' }}>
-                        {selectedStudentFile.student?.healthProfile?.allergies?.length > 0
-                          ? selectedStudentFile.student.healthProfile.allergies.join(', ')
+                        {(selectedStudentFile.student?.healthProfile?.allergies?.length ?? 0) > 0
+                          ? selectedStudentFile.student?.healthProfile?.allergies?.join(', ')
                           : 'No known drug or food allergies'}
                       </div>
                     </div>
@@ -246,8 +289,8 @@ export default function ClinicReportsUnifiedPage() {
                         <i className="fas fa-notes-medical" /> Chronic Conditions & Care Plan
                       </div>
                       <div style={{ fontSize: '0.85rem', color: '#1e3a8a' }}>
-                        {selectedStudentFile.student?.healthProfile?.chronicConditions?.length > 0
-                          ? selectedStudentFile.student.healthProfile.chronicConditions.join(', ')
+                        {(selectedStudentFile.student?.healthProfile?.chronicConditions?.length ?? 0) > 0
+                          ? selectedStudentFile.student?.healthProfile?.chronicConditions?.join(', ')
                           : 'No chronic conditions logged'}
                       </div>
                     </div>
@@ -261,7 +304,7 @@ export default function ClinicReportsUnifiedPage() {
                     <p style={{ color: '#94a3b8', fontSize: '0.85rem' }}>No clinical visits recorded.</p>
                   ) : (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                      {selectedStudentFile.visits?.map((v: any) => (
+                      {selectedStudentFile.visits?.map((v: ClinicVisitRecord) => (
                         <div key={v.id} style={{ border: '1px solid #e2e8f0', borderRadius: 8, padding: 12, fontSize: '0.85rem' }}>
                           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
                             <strong>Episode {v.visitCode}</strong>
@@ -327,7 +370,7 @@ export default function ClinicReportsUnifiedPage() {
                     Top Morbidities & Chief Complaints
                   </h3>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                  {analyticsData.topAilments?.map((a: any, idx: number) => (
+                  {analyticsData.topAilments?.map((a: TopAilment, idx: number) => (
                     <div key={idx} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.9rem' }}>
                       <span style={{ fontWeight: 500, color: '#334155' }}>{a.name}</span>
                       <span style={{ background: '#f1f5f9', padding: '2px 10px', borderRadius: 12, fontWeight: 700, color: '#4f46e5' }}>
