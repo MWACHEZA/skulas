@@ -8,6 +8,7 @@ import { NotificationService } from '../services/notifications';
 import { logAction } from '../utils/audit';
 import { LedgerService } from '../services/ledger.service';
 import { getAccountId } from '../../prisma/seeders/coa.seeder';
+import { SequenceService } from '../services/sequence.service';
 
 const router = Router();
 const upload = multer({ storage: multer.memoryStorage() });
@@ -416,18 +417,22 @@ router.post('/invoice/standard', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMI
           const netAmount = Math.max(0, Math.round((amount - itemDiscount) * 100) / 100);
           const paidAmount = isPaid ? netAmount : 0;
 
+          const docNo = await SequenceService.nextDocNo(schoolId, 'INV', tx as any);
+          const fullDesc = `[${docNo}] ${description || `${group.name} - ${group.billingType} ${group.year}`}`;
+
           const fee = await tx.fee.create({
             data: {
               studentId,
               feeGroupId: group.id,
               amount: Math.round(amount * 100) / 100,
               discount: itemDiscount,
+              vatPercentage: 0,
               paid: paidAmount,
               status: isPaid ? 'paid' : 'unpaid',
               term: group.billingType,
               year: group.year,
               dueDate: dueDate ? new Date(dueDate) : new Date(group.year, 11, 31),
-              description: description || `${group.name} - ${group.billingType} ${group.year}`,
+              description: fullDesc,
               schoolId
             }
           });
