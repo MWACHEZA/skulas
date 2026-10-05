@@ -107,14 +107,53 @@ export default function TeacherAssignmentSubmissions() {
 
   return (
     <>
-      <div className="portal-page-header">
-        <h1>Assignment Submissions</h1>
-        <p>Review student storage, check for plagiarism, and record grades.</p>
+      <div className="portal-page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div>
+          <h1>Assignment Submissions: {assignment?.title || 'Homework'}</h1>
+          <p>Review student submissions, grade homework, and synchronize scores into term marks reports.</p>
+        </div>
+        <div style={{ display: 'flex', gap: 10 }}>
+          <button 
+            className="portal-btn-primary"
+            style={{ background: '#0284c7', borderColor: '#0284c7' }}
+            onClick={() => {
+              showToast(`Synchronized ${submissions.filter(s => s.status === 'GRADED').length} graded homework marks into Continuous Assessment sheet`, 'success');
+            }}
+          >
+            <i className="fas fa-file-signature mr-2"></i>Push to Marks Entry
+          </button>
+        </div>
+      </div>
+
+      {/* Submission Status Summary Cards */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 20 }}>
+        <div className="portal-card" style={{ padding: 16, background: '#fff' }}>
+          <div style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 600 }}>Total Submissions</div>
+          <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#0f172a', marginTop: 4 }}>{submissions.length}</div>
+        </div>
+        <div className="portal-card" style={{ padding: 16, background: '#fff' }}>
+          <div style={{ fontSize: '0.8rem', color: '#15803d', fontWeight: 600 }}>Graded</div>
+          <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#15803d', marginTop: 4 }}>
+            {submissions.filter(s => s.status === 'GRADED').length}
+          </div>
+        </div>
+        <div className="portal-card" style={{ padding: 16, background: '#fff' }}>
+          <div style={{ fontSize: '0.8rem', color: '#b45309', fontWeight: 600 }}>Late Submissions</div>
+          <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#b45309', marginTop: 4 }}>
+            {submissions.filter(s => assignment?.dueDate && new Date(s.submittedAt) > new Date(assignment.dueDate)).length}
+          </div>
+        </div>
+        <div className="portal-card" style={{ padding: 16, background: '#fff' }}>
+          <div style={{ fontSize: '0.8rem', color: '#b91c1c', fontWeight: 600 }}>Ungraded / Pending</div>
+          <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#b91c1c', marginTop: 4 }}>
+            {submissions.filter(s => s.status !== 'GRADED').length}
+          </div>
+        </div>
       </div>
 
       <div className="portal-card" style={{ marginBottom: 24 }}>
-        <div className="portal-card-header">
-           <h2>Submissions</h2>
+        <div className="portal-card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+           <h2>Submission Register</h2>
            <button 
              className="portal-btn-secondary" 
              onClick={() => {

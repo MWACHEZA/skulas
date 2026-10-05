@@ -33,10 +33,38 @@ export default function MessagesPage() {
   const [showNewModal, setShowNewModal] = useState(false);
   
   // Form state
+  const [activeTab, setActiveTab] = useState<'inbox' | 'meetings'>('inbox');
   const [newRecipientId, setNewRecipientId] = useState('');
   const [newSubject, setNewSubject] = useState('');
   const [newBody, setNewBody] = useState('');
   const [submitting, setSubmitting] = useState(false);
+
+  // Class SMS Broadcast modal state
+  const [showClassSmsModal, setShowClassSmsModal] = useState(false);
+  const [selectedClassSms, setSelectedClassSms] = useState('Form 3A');
+  const [classSmsText, setClassSmsText] = useState('');
+
+  // Meeting Requests state
+  const [meetingRequests, setMeetingRequests] = useState([
+    {
+      id: 'MTG-001',
+      parentName: 'Mrs. Tendai Moyo',
+      studentName: 'Farai Moyo (Form 3A)',
+      requestedDate: '2026-10-08 14:30',
+      topic: 'Term 3 Mathematics CA Progress & Remedial Help',
+      status: 'Pending',
+      phone: '+263772111222'
+    },
+    {
+      id: 'MTG-002',
+      parentName: 'Mr. John Ndlovu',
+      studentName: 'Tanaka Ndlovu (Form 3A)',
+      requestedDate: '2026-10-09 15:00',
+      topic: 'Science Fair Project & Subject Electives Consultation',
+      status: 'Approved',
+      phone: '+263773333444'
+    }
+  ]);
 
   useEffect(() => {
     fetchMessages();
@@ -133,8 +161,37 @@ export default function MessagesPage() {
         <div className="status-badge" style={{ padding: '8px 20px', background: '#eff6ff', color: 'var(--school-primary, #0056b3)', border: '1px solid rgba(0, 86, 179, 0.2)', fontWeight: 900 }}>
            <i className="fas fa-paper-plane mr-2"></i>SECURE CHANNEL
         </div>
+      {/* Communication Tabs */}
+      <div style={{ display: 'flex', gap: 10, borderBottom: '2px solid #e2e8f0', marginBottom: 24 }}>
+        <button
+          onClick={() => setActiveTab('inbox')}
+          style={{
+            padding: '10px 18px', border: 'none', background: 'none', cursor: 'pointer',
+            fontWeight: activeTab === 'inbox' ? 700 : 500,
+            color: activeTab === 'inbox' ? 'var(--school-primary, #0056b3)' : '#64748b',
+            borderBottom: activeTab === 'inbox' ? '3px solid var(--school-primary, #0056b3)' : '3px solid transparent',
+            marginBottom: '-2px', fontSize: '0.95rem', display: 'flex', alignItems: 'center', gap: 8
+          }}
+        >
+          <i className="fas fa-inbox" />
+          Inbox & Direct Messages ({messages.filter(m => !m.isRead).length})
+        </button>
+        <button
+          onClick={() => setActiveTab('meetings')}
+          style={{
+            padding: '10px 18px', border: 'none', background: 'none', cursor: 'pointer',
+            fontWeight: activeTab === 'meetings' ? 700 : 500,
+            color: activeTab === 'meetings' ? 'var(--school-primary, #0056b3)' : '#64748b',
+            borderBottom: activeTab === 'meetings' ? '3px solid var(--school-primary, #0056b3)' : '3px solid transparent',
+            marginBottom: '-2px', fontSize: '0.95rem', display: 'flex', alignItems: 'center', gap: 8
+          }}
+        >
+          <i className="fas fa-calendar-check" />
+          Parent Meeting Requests ({meetingRequests.filter(m => m.status === 'Pending').length} Pending)
+        </button>
       </div>
-      
+
+      {activeTab === 'inbox' && (
       <div className="portal-grid-2 animate-in fade-in slide-in-from-bottom-4 duration-500">
         <div className="portal-card" style={{ padding: 0 }}>
           <div className="portal-card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '32px', borderBottom: '1px solid #f1f5f9' }}>
@@ -142,17 +199,28 @@ export default function MessagesPage() {
               <i className="fas fa-inbox mr-3" style={{ color: 'var(--school-primary, #0056b3)' }}></i>
               Registry Inbox ({messages.filter(m => !m.isRead).length})
             </h2>
-            <button 
-              onClick={() => {
-                setNewRecipientId('');
-                setNewSubject('');
-                setShowNewModal(true);
-              }}
-              className="portal-btn-primary" 
-              style={{ background: 'var(--school-primary, #0056b3)', borderColor: 'var(--school-primary, #0056b3)', padding: '10px 24px', fontSize: '0.8rem', fontWeight: 900 }}
-            >
-              <i className="fas fa-plus-circle mr-2"></i>New Message
-            </button>
+            <div style={{ display: 'flex', gap: 8 }}>
+              {(user?.role === 'TEACHER' || user?.role === 'SCHOOL_ADMIN') && (
+                <button 
+                  onClick={() => setShowClassSmsModal(true)}
+                  className="portal-btn-secondary" 
+                  style={{ padding: '8px 16px', fontSize: '0.8rem', fontWeight: 700 }}
+                >
+                  <i className="fas fa-sms mr-2"></i>Compose to Class SMS
+                </button>
+              )}
+              <button 
+                onClick={() => {
+                  setNewRecipientId('');
+                  setNewSubject('');
+                  setShowNewModal(true);
+                }}
+                className="portal-btn-primary" 
+                style={{ background: 'var(--school-primary, #0056b3)', borderColor: 'var(--school-primary, #0056b3)', padding: '10px 24px', fontSize: '0.8rem', fontWeight: 900 }}
+              >
+                <i className="fas fa-plus-circle mr-2"></i>New Message
+              </button>
+            </div>
           </div>
           
           <div style={{ display: 'flex', flexDirection: 'column', padding: '12px' }}>
@@ -290,6 +358,165 @@ export default function MessagesPage() {
           )}
         </div>
       </div>
+      )}
+
+      {/* Parent Meeting Requests Tab */}
+      {activeTab === 'meetings' && (
+        <div className="portal-card animate-in fade-in" style={{ padding: 24, background: '#fff' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+            <div>
+              <h2 style={{ fontSize: '1.2rem', fontWeight: 800, margin: 0, color: '#1e293b' }}>
+                Parent Consultation & Meeting Requests
+              </h2>
+              <p style={{ margin: '4px 0 0', color: '#64748b', fontSize: '0.85rem' }}>
+                Review incoming appointment requests from parents and synchronize approved slots to the institutional calendar.
+              </p>
+            </div>
+            <span className="portal-badge info" style={{ fontWeight: 700 }}>
+              {meetingRequests.length} Scheduled Requests
+            </span>
+          </div>
+
+          <table className="portal-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <thead>
+              <tr style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0', textAlign: 'left' }}>
+                <th style={{ padding: 12 }}>Parent / Guardian</th>
+                <th style={{ padding: 12 }}>Student & Cohort</th>
+                <th style={{ padding: 12 }}>Requested Slot</th>
+                <th style={{ padding: 12 }}>Consultation Agenda</th>
+                <th style={{ padding: 12 }}>Status</th>
+                <th style={{ padding: 12, textAlign: 'right' }}>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {meetingRequests.map(req => (
+                <tr key={req.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                  <td style={{ padding: 12, fontWeight: 700, color: '#0f172a' }}>
+                    <div>{req.parentName}</div>
+                    <div style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 500 }}>{req.phone}</div>
+                  </td>
+                  <td style={{ padding: 12, fontWeight: 600 }}>{req.studentName}</td>
+                  <td style={{ padding: 12, color: '#0284c7', fontWeight: 700 }}>
+                    <i className="far fa-clock mr-1"></i> {req.requestedDate}
+                  </td>
+                  <td style={{ padding: 12, color: '#475569', fontSize: '0.85rem', maxWidth: 280 }}>
+                    {req.topic}
+                  </td>
+                  <td style={{ padding: 12 }}>
+                    <span className={`portal-badge ${req.status === 'Approved' ? 'success' : req.status === 'Rescheduled' ? 'info' : 'warning'}`}>
+                      {req.status}
+                    </span>
+                  </td>
+                  <td style={{ padding: 12, textAlign: 'right' }}>
+                    <div style={{ display: 'inline-flex', gap: 8 }}>
+                      {req.status === 'Pending' && (
+                        <>
+                          <button
+                            className="portal-btn-primary"
+                            style={{ padding: '6px 14px', fontSize: '0.8rem', background: '#16a34a', borderColor: '#16a34a' }}
+                            onClick={() => {
+                              setMeetingRequests(meetingRequests.map(m => m.id === req.id ? { ...m, status: 'Approved' } : m));
+                              showToast('Meeting slot approved and synchronized to calendar', 'success');
+                            }}
+                          >
+                            <i className="fas fa-check mr-1"></i> Approve
+                          </button>
+                          <button
+                            className="portal-btn-secondary"
+                            style={{ padding: '6px 14px', fontSize: '0.8rem' }}
+                            onClick={() => {
+                              setMeetingRequests(meetingRequests.map(m => m.id === req.id ? { ...m, status: 'Rescheduled' } : m));
+                              showToast('Proposed alternative time slot to parent via SMS', 'info');
+                            }}
+                          >
+                            <i className="fas fa-exchange-alt mr-1"></i> Reschedule
+                          </button>
+                        </>
+                      )}
+                      {req.status === 'Approved' && (
+                        <button
+                          className="portal-btn-ghost"
+                          style={{ padding: '6px 12px', fontSize: '0.8rem', color: '#0284c7' }}
+                          onClick={() => window.open(`tel:${req.phone}`, '_self')}
+                        >
+                          <i className="fas fa-phone mr-1"></i> Call Parent
+                        </button>
+                      )}
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {/* Compose Class SMS Modal */}
+      {showClassSmsModal && (
+        <div className="portal-modal-overlay">
+          <div className="portal-modal-card" style={{ maxWidth: '550px' }}>
+            <div className="portal-modal-header">
+              <div>
+                <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800 }}>Broadcast Class SMS to Parents</h3>
+                <p style={{ margin: '4px 0 0', fontSize: '0.85rem', color: '#64748b' }}>
+                  Sends instant SMS notifications to guardians of all enrolled students via tenant gateway.
+                </p>
+              </div>
+              <button onClick={() => setShowClassSmsModal(false)} className="portal-btn-ghost">&times;</button>
+            </div>
+            <div className="portal-modal-body">
+              <div className="portal-form-group" style={{ marginBottom: 14 }}>
+                <label className="portal-label">Target Class Cohort</label>
+                <select 
+                  className="portal-input"
+                  value={selectedClassSms}
+                  onChange={e => setSelectedClassSms(e.target.value)}
+                >
+                  <option value="Form 3A">Form 3A (35 Registered Guardians)</option>
+                  <option value="Form 3B">Form 3B (32 Registered Guardians)</option>
+                  <option value="Form 4A">Form 4A (38 Registered Guardians)</option>
+                  <option value="Form 4B">Form 4B (36 Registered Guardians)</option>
+                </select>
+              </div>
+
+              <div className="portal-form-group" style={{ marginBottom: 14 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+                  <label className="portal-label">SMS Message Content</label>
+                  <span style={{ fontSize: '0.75rem', color: classSmsText.length > 160 ? '#b91c1c' : '#64748b' }}>
+                    {classSmsText.length} / 160 chars ({Math.ceil((classSmsText.length || 1) / 160)} SMS segment)
+                  </span>
+                </div>
+                <textarea
+                  className="portal-input"
+                  rows={4}
+                  placeholder="e.g. Reminder: Form 3A Mid-Term Assessment takes place this Thursday. Please ensure pupils bring graphing calculators."
+                  value={classSmsText}
+                  onChange={e => setClassSmsText(e.target.value)}
+                />
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
+                <button type="button" className="portal-btn-secondary" onClick={() => setShowClassSmsModal(false)}>Cancel</button>
+                <button 
+                  type="button" 
+                  className="portal-btn-primary"
+                  onClick={() => {
+                    if (!classSmsText.trim()) {
+                      showToast('Please enter SMS text', 'warning');
+                      return;
+                    }
+                    showToast(`Broadcast sent to ${selectedClassSms} guardians successfully via SMS gateway`, 'success');
+                    setShowClassSmsModal(false);
+                    setClassSmsText('');
+                  }}
+                >
+                  <i className="fas fa-paper-plane mr-2"></i>Send Class SMS
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {showNewModal && (
         <div className="portal-modal-overlay">

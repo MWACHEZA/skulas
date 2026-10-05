@@ -567,9 +567,10 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     tabs: [
       { id: 'syllabus', label: 'Syllabus' },
       { id: 'schemes', label: 'Schemes of Work' },
-      { id: 'lesson-plans', label: 'Lesson Plans' }
+      { id: 'lesson-plans', label: 'Lesson Plans' },
+      { id: 'observations', label: 'Lesson Observations' }
     ],
-    searchKeywords: ['curriculum', 'syllabus', 'lesson planner', 'schemes of work']
+    searchKeywords: ['curriculum', 'syllabus', 'lesson planner', 'schemes of work', 'observations']
   },
   {
     id: 'teacher-timetable',
@@ -753,6 +754,31 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     permissionKey: PERMISSIONS.FARM_PROJECTS_MANAGE,
     portalVisibility: ['teacher'],
     searchKeywords: ['agriculture', 'school farm', 'projects']
+  },
+  {
+    id: 'teacher-leave',
+    label: 'Leave & Cover',
+    route: '/teacher/leave',
+    group: 'HR_PAYROLL',
+    icon: 'fas fa-calendar-minus',
+    permissionKey: PERMISSIONS.HR_LEAVE_VIEW,
+    portalVisibility: ['teacher'],
+    tabs: [
+      { id: 'my', label: 'My Leave' },
+      { id: 'cover', label: 'Cover Arrangements' },
+      { id: 'department', label: 'Department Approvals' }
+    ],
+    searchKeywords: ['leave', 'time off', 'cover teacher', 'substitute']
+  },
+  {
+    id: 'teacher-payslips',
+    label: 'My Payslips',
+    route: '/teacher/payslips',
+    group: 'HR_PAYROLL',
+    icon: 'fas fa-file-invoice-dollar',
+    permissionKey: PERMISSIONS.HR_PAYROLL_VIEW,
+    portalVisibility: ['teacher'],
+    searchKeywords: ['payslips', 'salary', 'payroll', 'remuneration', 'earnings']
   },
 
   // =========================================================================

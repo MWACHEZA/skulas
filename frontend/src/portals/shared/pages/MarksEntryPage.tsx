@@ -7,7 +7,7 @@ import { useAcademicConfig } from '../../../hooks/useAcademicConfig';
 interface AssessmentColumn {
   id: string;
   name: string;
-  type: 'Test' | 'Exercise' | 'Quiz' | 'Mid-Year Exam' | 'End-of-Term Exam' | 'End-of-Year Exam';
+  type: 'Test' | 'Exercise' | 'Quiz' | 'Mid-Year Exam' | 'End-of-Term Exam' | 'End-of-Year Exam' | 'Homework' | 'Assignment';
   maxScore: number;
   selectedForReport: boolean;
   isCustom?: boolean;

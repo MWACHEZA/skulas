@@ -370,10 +370,81 @@ export default function TeacherLeave() {
         </div>
       </div>
     );
-  };
+  const CoverArrangementsTab = () => (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+      <div style={{ background: '#fff', padding: '16px 20px', borderRadius: 10, border: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div>
+          <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, color: '#1e293b' }}>Staff Cover & Relief Arrangements</h3>
+          <p style={{ margin: '4px 0 0', color: '#64748b', fontSize: '0.85rem' }}>
+            Classroom coverage scheduled during approved staff leaves, ensuring continuous learning without teacherless periods.
+          </p>
+        </div>
+        <span className="portal-badge info" style={{ fontWeight: 700 }}>Active Term Rotations</span>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
+        {/* Coverage for My Absences */}
+        <div className="portal-card" style={{ padding: 20, background: '#fff', borderRadius: 10, border: '1px solid #e2e8f0' }}>
+          <h4 style={{ margin: '0 0 12px', fontSize: '1rem', fontWeight: 700, color: '#0f172a', display: 'flex', alignItems: 'center', gap: 8 }}>
+            <i className="fas fa-user-shield" style={{ color: '#0284c7' }} /> Cover For My Classes (When on Leave)
+          </h4>
+          <table className="portal-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
+            <thead>
+              <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', textAlign: 'left' }}>
+                <th style={{ padding: 10 }}>Leave Date</th>
+                <th style={{ padding: 10 }}>Class & Period</th>
+                <th style={{ padding: 10 }}>Assigned Cover Teacher</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style={{ borderBottom: '1px solid #f1f5f9' }}>
+                <td style={{ padding: 10 }}>2026-10-12</td>
+                <td style={{ padding: 10, fontWeight: 600 }}>Form 3A &bull; Period 1</td>
+                <td style={{ padding: 10, color: '#15803d', fontWeight: 700 }}>Mr. T. Sibanda (Maths)</td>
+              </tr>
+              <tr style={{ borderBottom: '1px solid #f1f5f9' }}>
+                <td style={{ padding: 10 }}>2026-10-12</td>
+                <td style={{ padding: 10, fontWeight: 600 }}>Form 4B &bull; Period 2</td>
+                <td style={{ padding: 10, color: '#15803d', fontWeight: 700 }}>Mrs. P. Dube (Science)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        {/* Coverage Assigned to Me */}
+        <div className="portal-card" style={{ padding: 20, background: '#fff', borderRadius: 10, border: '1px solid #e2e8f0' }}>
+          <h4 style={{ margin: '0 0 12px', fontSize: '1rem', fontWeight: 700, color: '#0f172a', display: 'flex', alignItems: 'center', gap: 8 }}>
+            <i className="fas fa-hand-holding-heart" style={{ color: '#15803d' }} /> My Relief Duties (Covering For Peers)
+          </h4>
+          <table className="portal-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
+            <thead>
+              <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', textAlign: 'left' }}>
+                <th style={{ padding: 10 }}>Date & Period</th>
+                <th style={{ padding: 10 }}>Class & Room</th>
+                <th style={{ padding: 10 }}>Absent Colleague</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style={{ borderBottom: '1px solid #f1f5f9' }}>
+                <td style={{ padding: 10 }}>2026-10-09 &bull; P4 (11:00)</td>
+                <td style={{ padding: 10, fontWeight: 600 }}>Form 2C (Rm 8)</td>
+                <td style={{ padding: 10, color: '#b45309' }}>Ms. S. Ncube (Sick Leave)</td>
+              </tr>
+              <tr style={{ borderBottom: '1px solid #f1f5f9' }}>
+                <td style={{ padding: 10 }}>2026-10-14 &bull; P2 (08:45)</td>
+                <td style={{ padding: 10, fontWeight: 600 }}>Form 1A (Rm 3)</td>
+                <td style={{ padding: 10, color: '#b45309' }}>Mr. K. Chikore (Study Leave)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
 
   const tabs = [
     { id: 'my', label: 'My Leave', content: <MyLeaveTab /> },
+    { id: 'cover', label: 'Cover Arrangements', content: <CoverArrangementsTab /> },
     ...(isHod ? [{ id: 'dept', label: 'Department', content: <DeptTab /> }] : []),
     ...(isAdmin ? [{ id: 'all', label: 'All Leaves', content: <AdminTab /> }] : [])
   ];
