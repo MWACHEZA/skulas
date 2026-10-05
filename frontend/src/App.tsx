@@ -260,6 +260,7 @@ import PersonalPreferences from './portals/shared/pages/PersonalPreferences';
 import NotFoundPage from './portals/shared/pages/NotFoundPage';
 import PrivacyPolicyPage from './portals/shared/pages/PrivacyPolicyPage';
 import TermsPage from './portals/shared/pages/TermsPage';
+import GovernancePage from './portals/shared/pages/GovernancePage';
 import ITSupportPage from './portals/shared/pages/ITSupportPage';
 import PaymentMethodsPage from './portals/shared/pages/PaymentMethodsPage';
 import RevenueAllocationPage from './portals/shared/pages/RevenueAllocationPage';
