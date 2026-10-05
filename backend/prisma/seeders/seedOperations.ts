@@ -185,7 +185,7 @@ export async function seedOperations(
     });
 
     await prisma.prefectDuty.create({
-      data: { studentId: 'dummy', role: `Zone ${i + 1}`, date: new Date(), timeSlot: 'Lunch Time', day: 'Monday', schoolId: school.id }
+      data: { studentId: 'dummy', role: `Zone ${i + 1}`, date: new Date(), schoolId: school.id }
     });
   }
 

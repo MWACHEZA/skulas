@@ -370,6 +370,8 @@ export default function TeacherLeave() {
         </div>
       </div>
     );
+  };
+
   const CoverArrangementsTab = () => (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
       <div style={{ background: '#fff', padding: '16px 20px', borderRadius: 10, border: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>

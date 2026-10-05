@@ -289,6 +289,22 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     searchKeywords: ['users', 'roles', 'staff', 'teachers', 'bursars', 'passwords', 'permissions']
   },
   {
+    id: 'admin-system-config',
+    label: 'System Configuration',
+    route: '/admin/system-config',
+    group: 'SYSTEM',
+    icon: 'fas fa-sliders-h',
+    permissionKey: PERMISSIONS.SETTINGS_INSTITUTIONAL,
+    portalVisibility: ['admin'],
+    tabs: [
+      { id: 'branding', label: 'School Profile & Receipts' },
+      { id: 'gateways', label: 'SMS & Email Gateways' },
+      { id: 'notifications', label: 'Notification Triggers' },
+      { id: 'backup', label: 'Backup & Data Exports' }
+    ],
+    searchKeywords: ['branding', 'sms gateway', 'email smtp', 'receipt headers', 'backup', 'data export', 'configuration']
+  },
+  {
     id: 'admin-boarding',
     label: 'Boarding & Hostels',
     route: '/admin/boarding',
@@ -761,7 +777,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     route: '/teacher/leave',
     group: 'HR_PAYROLL',
     icon: 'fas fa-calendar-minus',
-    permissionKey: PERMISSIONS.HR_LEAVE_VIEW,
+    permissionKey: PERMISSIONS.HR_LEAVE_APPLY,
     portalVisibility: ['teacher'],
     tabs: [
       { id: 'my', label: 'My Leave' },
@@ -776,7 +792,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     route: '/teacher/payslips',
     group: 'HR_PAYROLL',
     icon: 'fas fa-file-invoice-dollar',
-    permissionKey: PERMISSIONS.HR_PAYROLL_VIEW,
+    permissionKey: PERMISSIONS.HR_PAYROLL_MANAGE,
     portalVisibility: ['teacher'],
     searchKeywords: ['payslips', 'salary', 'payroll', 'remuneration', 'earnings']
   },

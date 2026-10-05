@@ -6,7 +6,7 @@ import { formatCurrency } from '../../../utils/formatters';
 import { SearchInput, ExportButton } from '../../../components/shared';
 import '../../../styles/portal.css';
 
-type DisciplineTab = 'conduct' | 'awards';
+type DisciplineTab = 'conduct' | 'awards' | 'committee';
 
 interface ConductReport {
   id: string;
@@ -33,6 +33,24 @@ interface AwardItem {
     role: string;
     studentId?: string;
   };
+}
+
+interface DisciplinaryHearing {
+  id: string;
+  caseNumber: string;
+  studentName: string;
+  studentClass: string;
+  hearingDate: string;
+  panelMembers: string;
+  charge: string;
+  defenseStatement: string;
+  verdict: 'PENDING' | 'FORMAL_WARNING' | 'COMMUNITY_SERVICE' | 'SUSPENDED' | 'EXPULSION' | 'EXONERATED';
+  suspensionDays?: number;
+  suspensionStartDate?: string;
+  suspensionEndDate?: string;
+  blocksAttendance: boolean;
+  parentSummoned: boolean;
+  parentAttended: boolean;
 }
 
 export default function AdminDiscipline() {
@@ -72,6 +90,107 @@ export default function AdminDiscipline() {
     amount: '',
     date: new Date().toISOString().split('T')[0]
   });
+
+  // Committee Hearings State
+  const [hearings, setHearings] = useState<DisciplinaryHearing[]>([
+    {
+      id: 'h-1',
+      caseNumber: 'DC-2026-004',
+      studentName: 'Tinashe Marange',
+      studentClass: 'Form 4A',
+      hearingDate: '2026-02-18',
+      panelMembers: 'Sister Chipo (Head), Mr. Chikore, Mrs. Moyo',
+      charge: 'Repeated unauthorized absence from evening prep',
+      defenseStatement: 'Student claimed family illness pass, but failed to present an authorized clinic clearance chit.',
+      verdict: 'COMMUNITY_SERVICE',
+      blocksAttendance: false,
+      parentSummoned: true,
+      parentAttended: true
+    },
+    {
+      id: 'h-2',
+      caseNumber: 'DC-2026-009',
+      studentName: 'Farai Moyo',
+      studentClass: 'Form 3B',
+      hearingDate: '2026-03-12',
+      panelMembers: 'Sister Chipo (Head), Mr. Mutasa, Mr. Ncube',
+      charge: 'Physical altercation in dining hall with property damage',
+      defenseStatement: 'Student pleaded provocation but admitted striking peer and damaging dining bench.',
+      verdict: 'SUSPENDED',
+      suspensionDays: 7,
+      suspensionStartDate: '2026-03-14',
+      suspensionEndDate: '2026-03-21',
+      blocksAttendance: true,
+      parentSummoned: true,
+      parentAttended: true
+    }
+  ]);
+  const [showHearingModal, setShowHearingModal] = useState(false);
+  const [hearingForm, setHearingForm] = useState({
+    studentName: '',
+    studentClass: 'Form 4A',
+    hearingDate: new Date().toISOString().split('T')[0],
+    panelMembers: 'Sister Chipo, Mr. Chikore, Mrs. Moyo',
+    charge: '',
+    defenseStatement: '',
+    verdict: 'PENDING' as DisciplinaryHearing['verdict'],
+    suspensionDays: 0,
+    blocksAttendance: false,
+    parentSummoned: true,
+    parentAttended: false
+  });
+
+  const handleToggleAttendanceBlock = (id: string) => {
+    setHearings(prev =>
+      prev.map(h => {
+        if (h.id === id) {
+          const nextVal = !h.blocksAttendance;
+          showToast(`Student attendance ${nextVal ? 'LOCKED (Excluded from attendance register)' : 'UNLOCKED (Attendance permitted)'}`, nextVal ? 'warning' : 'success');
+          return { ...h, blocksAttendance: nextVal };
+        }
+        return h;
+      })
+    );
+  };
+
+  const handleCreateHearing = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!hearingForm.studentName || !hearingForm.charge) {
+      showToast('Student name and charge are required', 'error');
+      return;
+    }
+    const newCase: DisciplinaryHearing = {
+      id: `h-${Date.now()}`,
+      caseNumber: `DC-2026-0${hearings.length + 10}`,
+      studentName: hearingForm.studentName,
+      studentClass: hearingForm.studentClass,
+      hearingDate: hearingForm.hearingDate,
+      panelMembers: hearingForm.panelMembers,
+      charge: hearingForm.charge,
+      defenseStatement: hearingForm.defenseStatement || 'No defense statement tendered.',
+      verdict: hearingForm.verdict,
+      suspensionDays: hearingForm.suspensionDays,
+      blocksAttendance: hearingForm.verdict === 'SUSPENDED' || hearingForm.verdict === 'EXPULSION' || hearingForm.blocksAttendance,
+      parentSummoned: hearingForm.parentSummoned,
+      parentAttended: hearingForm.parentAttended
+    };
+    setHearings(prev => [newCase, ...prev]);
+    setShowHearingModal(false);
+    setHearingForm({
+      studentName: '',
+      studentClass: 'Form 4A',
+      hearingDate: new Date().toISOString().split('T')[0],
+      panelMembers: 'Sister Chipo, Mr. Chikore, Mrs. Moyo',
+      charge: '',
+      defenseStatement: '',
+      verdict: 'PENDING',
+      suspensionDays: 0,
+      blocksAttendance: false,
+      parentSummoned: true,
+      parentAttended: false
+    });
+    showToast('Disciplinary hearing docket created successfully!', 'success');
+  };
 
   useEffect(() => {
     fetchData();
@@ -233,7 +352,7 @@ export default function AdminDiscipline() {
           </p>
         </div>
         <div>
-          {activeTab === 'conduct' ? (
+          {activeTab === 'conduct' && (
             <button
               type="button"
               className="btn btn-primary"
@@ -242,7 +361,8 @@ export default function AdminDiscipline() {
             >
               <i className="fas fa-plus"></i> File Incident
             </button>
-          ) : (
+          )}
+          {activeTab === 'awards' && (
             <button
               type="button"
               className="btn btn-primary"
@@ -250,6 +370,16 @@ export default function AdminDiscipline() {
               style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 18px', background: '#059669', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 600 }}
             >
               <i className="fas fa-award"></i> Present Award
+            </button>
+          )}
+          {activeTab === 'committee' && (
+            <button
+              type="button"
+              className="btn btn-primary"
+              onClick={() => setShowHearingModal(true)}
+              style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 18px', background: '#dc2626', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 600 }}
+            >
+              <i className="fas fa-gavel"></i> Docket Committee Hearing
             </button>
           )}
         </div>
@@ -310,6 +440,28 @@ export default function AdminDiscipline() {
         >
           <i className="fas fa-medal"></i>
           Merits & Awards ({awards.length})
+        </button>
+
+        <button
+          type="button"
+          onClick={() => handleTabChange('committee')}
+          style={{
+            padding: '10px 18px',
+            border: 'none',
+            background: 'none',
+            cursor: 'pointer',
+            fontWeight: activeTab === 'committee' ? 700 : 500,
+            color: activeTab === 'committee' ? '#dc2626' : '#64748b',
+            borderBottom: activeTab === 'committee' ? '3px solid #dc2626' : '3px solid transparent',
+            marginBottom: '-2px',
+            fontSize: '0.95rem',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px'
+          }}
+        >
+          <i className="fas fa-gavel"></i>
+          Disciplinary Committee Hearings ({hearings.length})
         </button>
       </div>
 
@@ -474,7 +626,7 @@ export default function AdminDiscipline() {
             </table>
           )}
         </div>
-      ) : (
+      ) : activeTab === 'awards' ? (
         /* Awards Table */
         <div style={{ background: '#fff', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)', overflow: 'hidden' }}>
           {filteredAwards.length === 0 ? (
@@ -525,6 +677,119 @@ export default function AdminDiscipline() {
               </tbody>
             </table>
           )}
+        </div>
+      ) : (
+        /* Disciplinary Committee Hearings Table */
+        <div style={{ background: '#fff', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)', overflow: 'hidden' }}>
+          <div style={{ padding: '16px 20px', background: '#fef2f2', borderBottom: '1px solid #fee2e2', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div>
+              <h3 style={{ margin: 0, color: '#991b1b', fontSize: '1rem', fontWeight: 700 }}>
+                <i className="fas fa-gavel mr-2" style={{ marginRight: 8 }}></i>
+                Disciplinary Tribunal & Board Hearings Register
+              </h3>
+              <p style={{ margin: '4px 0 0', fontSize: '0.85rem', color: '#b91c1c' }}>
+                Statutory hearing verdicts. Suspended or Expelled students are automatically blocked from biometric turnstiles and class attendance registers.
+              </p>
+            </div>
+          </div>
+
+          <table className="portal-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.88rem' }}>
+            <thead>
+              <tr style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0', textAlign: 'left', color: '#475569' }}>
+                <th style={{ padding: '12px 16px' }}>Case Reference</th>
+                <th style={{ padding: '12px 16px' }}>Student / Class</th>
+                <th style={{ padding: '12px 16px' }}>Alleged Infraction</th>
+                <th style={{ padding: '12px 16px' }}>Tribunal Panel</th>
+                <th style={{ padding: '12px 16px' }}>Hearing Date</th>
+                <th style={{ padding: '12px 16px', textAlign: 'center' }}>Verdict</th>
+                <th style={{ padding: '12px 16px', textAlign: 'center' }}>Attendance Register Lock</th>
+                <th style={{ padding: '12px 16px', textAlign: 'right' }}>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {hearings.map(h => (
+                <tr key={h.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                  <td style={{ padding: '12px 16px', fontWeight: 700, color: '#1e293b', fontFamily: 'monospace' }}>
+                    {h.caseNumber}
+                  </td>
+                  <td style={{ padding: '12px 16px' }}>
+                    <div style={{ fontWeight: 600, color: '#1e293b' }}>{h.studentName}</div>
+                    <div style={{ fontSize: '0.78rem', color: '#64748b' }}>{h.studentClass}</div>
+                  </td>
+                  <td style={{ padding: '12px 16px', maxWidth: 260 }}>
+                    <div style={{ fontWeight: 600, color: '#991b1b' }}>{h.charge}</div>
+                    <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: 2 }}>{h.defenseStatement}</div>
+                  </td>
+                  <td style={{ padding: '12px 16px', fontSize: '0.82rem', color: '#475569' }}>
+                    {h.panelMembers}
+                  </td>
+                  <td style={{ padding: '12px 16px', fontSize: '0.82rem', color: '#64748b', whiteSpace: 'nowrap' }}>
+                    {h.hearingDate}
+                  </td>
+                  <td style={{ padding: '12px 16px', textAlign: 'center' }}>
+                    <span
+                      style={{
+                        display: 'inline-block',
+                        padding: '3px 8px',
+                        borderRadius: 4,
+                        fontSize: '0.75rem',
+                        fontWeight: 700,
+                        background:
+                          h.verdict === 'SUSPENDED' || h.verdict === 'EXPULSION'
+                            ? '#fee2e2'
+                            : h.verdict === 'COMMUNITY_SERVICE' || h.verdict === 'FORMAL_WARNING'
+                            ? '#fef3c7'
+                            : '#f1f5f9',
+                        color:
+                          h.verdict === 'SUSPENDED' || h.verdict === 'EXPULSION'
+                            ? '#b91c1c'
+                            : h.verdict === 'COMMUNITY_SERVICE' || h.verdict === 'FORMAL_WARNING'
+                            ? '#b45309'
+                            : '#475569'
+                      }}
+                    >
+                      {h.verdict.replace('_', ' ')}
+                    </span>
+                    {h.suspensionDays ? (
+                      <div style={{ fontSize: '0.72rem', color: '#dc2626', marginTop: 2, fontWeight: 600 }}>
+                        ({h.suspensionDays}d: {h.suspensionStartDate} - {h.suspensionEndDate})
+                      </div>
+                    ) : null}
+                  </td>
+                  <td style={{ padding: '12px 16px', textAlign: 'center' }}>
+                    <button
+                      type="button"
+                      onClick={() => handleToggleAttendanceBlock(h.id)}
+                      style={{
+                        padding: '4px 10px',
+                        borderRadius: 4,
+                        border: 'none',
+                        cursor: 'pointer',
+                        fontWeight: 700,
+                        fontSize: '0.75rem',
+                        background: h.blocksAttendance ? '#fee2e2' : '#dcfce7',
+                        color: h.blocksAttendance ? '#dc2626' : '#15803d'
+                      }}
+                      title={h.blocksAttendance ? 'Student blocked from attendance roll-call' : 'Student active in attendance'}
+                    >
+                      <i className={`fas fa-${h.blocksAttendance ? 'lock' : 'check'} mr-1`}></i>
+                      {h.blocksAttendance ? 'BLOCKED' : 'ACTIVE'}
+                    </button>
+                  </td>
+                  <td style={{ padding: '12px 16px', textAlign: 'right' }}>
+                    <button
+                      type="button"
+                      className="btn btn-sm btn-secondary"
+                      onClick={() => showToast(`Summons dispatch record: Parent ${h.parentSummoned ? 'SUMMONED' : 'NOT SUMMONED'}, Attendance: ${h.parentAttended ? 'PRESENT' : 'ABSENT'}`, 'info')}
+                      style={{ fontSize: '0.75rem', padding: '4px 8px' }}
+                    >
+                      <i className="fas fa-envelope mr-1"></i> Summons
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
 
@@ -713,6 +978,142 @@ export default function AdminDiscipline() {
                   style={{ padding: '9px 18px', borderRadius: '6px', border: 'none', background: '#059669', color: '#fff', fontWeight: 600, cursor: 'pointer' }}
                 >
                   {submitting ? 'Presenting...' : 'Record Award'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Hearing Modal */}
+      {showHearingModal && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px' }}>
+          <div style={{ background: '#fff', borderRadius: '12px', width: '100%', maxWidth: '580px', padding: '24px', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)', maxHeight: '90vh', overflowY: 'auto' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px' }}>
+              <div>
+                <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 700, color: '#991b1b' }}>Docket Disciplinary Committee Hearing</h3>
+                <span style={{ fontSize: '0.8rem', color: '#64748b' }}>Formal Tribunal Review & Attendance Register Controls</span>
+              </div>
+              <button type="button" onClick={() => setShowHearingModal(false)} style={{ border: 'none', background: 'none', cursor: 'pointer', fontSize: '1.2rem', color: '#94a3b8' }}>✕</button>
+            </div>
+            <form onSubmit={handleCreateHearing}>
+              <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 12, marginBottom: 14 }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#475569', marginBottom: 4 }}>Student Name *</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Farai Moyo"
+                    value={hearingForm.studentName}
+                    onChange={e => setHearingForm({ ...hearingForm, studentName: e.target.value })}
+                    style={{ width: '100%', padding: '9px 12px', borderRadius: '6px', border: '1px solid #cbd5e1' }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#475569', marginBottom: 4 }}>Class Form</label>
+                  <input
+                    type="text"
+                    value={hearingForm.studentClass}
+                    onChange={e => setHearingForm({ ...hearingForm, studentClass: e.target.value })}
+                    style={{ width: '100%', padding: '9px 12px', borderRadius: '6px', border: '1px solid #cbd5e1' }}
+                  />
+                </div>
+              </div>
+
+              <div style={{ marginBottom: 14 }}>
+                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#475569', marginBottom: 4 }}>Committee Panelists</label>
+                <input
+                  type="text"
+                  value={hearingForm.panelMembers}
+                  onChange={e => setHearingForm({ ...hearingForm, panelMembers: e.target.value })}
+                  style={{ width: '100%', padding: '9px 12px', borderRadius: '6px', border: '1px solid #cbd5e1' }}
+                />
+              </div>
+
+              <div style={{ marginBottom: 14 }}>
+                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#475569', marginBottom: 4 }}>Specific Charge / Allegation *</label>
+                <textarea
+                  required
+                  rows={2}
+                  placeholder="e.g. Violation of school code: Unauthorized exit from campus during study hours"
+                  value={hearingForm.charge}
+                  onChange={e => setHearingForm({ ...hearingForm, charge: e.target.value })}
+                  style={{ width: '100%', padding: '9px 12px', borderRadius: '6px', border: '1px solid #cbd5e1' }}
+                />
+              </div>
+
+              <div style={{ marginBottom: 14 }}>
+                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#475569', marginBottom: 4 }}>Student Defense Statement / Mitigation</label>
+                <textarea
+                  rows={2}
+                  placeholder="Notes from student statement during tribunal proceedings..."
+                  value={hearingForm.defenseStatement}
+                  onChange={e => setHearingForm({ ...hearingForm, defenseStatement: e.target.value })}
+                  style={{ width: '100%', padding: '9px 12px', borderRadius: '6px', border: '1px solid #cbd5e1' }}
+                />
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 14 }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#475569', marginBottom: 4 }}>Verdict</label>
+                  <select
+                    value={hearingForm.verdict}
+                    onChange={e => setHearingForm({ ...hearingForm, verdict: e.target.value as any })}
+                    style={{ width: '100%', padding: '9px 12px', borderRadius: '6px', border: '1px solid #cbd5e1' }}
+                  >
+                    <option value="PENDING">Hearing Pending</option>
+                    <option value="FORMAL_WARNING">Formal Written Warning</option>
+                    <option value="COMMUNITY_SERVICE">Campus Community Service</option>
+                    <option value="SUSPENDED">Suspension from School</option>
+                    <option value="EXPULSION">Permanent Expulsion</option>
+                    <option value="EXONERATED">Exonerated (No Fault)</option>
+                  </select>
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#475569', marginBottom: 4 }}>Suspension Days (if applicable)</label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={hearingForm.suspensionDays}
+                    onChange={e => setHearingForm({ ...hearingForm, suspensionDays: Number(e.target.value) })}
+                    style={{ width: '100%', padding: '9px 12px', borderRadius: '6px', border: '1px solid #cbd5e1' }}
+                  />
+                </div>
+              </div>
+
+              <div style={{ background: '#f8fafc', padding: 12, borderRadius: 6, marginBottom: 16 }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: '0.85rem', fontWeight: 600, color: '#dc2626', cursor: 'pointer', marginBottom: 8 }}>
+                  <input
+                    type="checkbox"
+                    checked={hearingForm.blocksAttendance || hearingForm.verdict === 'SUSPENDED' || hearingForm.verdict === 'EXPULSION'}
+                    onChange={e => setHearingForm({ ...hearingForm, blocksAttendance: e.target.checked })}
+                  />
+                  Auto-Lock Student Attendance Register (Blocks from teacher roll-calls)
+                </label>
+                <div style={{ display: 'flex', gap: 16 }}>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.85rem', cursor: 'pointer' }}>
+                    <input
+                      type="checkbox"
+                      checked={hearingForm.parentSummoned}
+                      onChange={e => setHearingForm({ ...hearingForm, parentSummoned: e.target.checked })}
+                    />
+                    Parent Summoned
+                  </label>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.85rem', cursor: 'pointer' }}>
+                    <input
+                      type="checkbox"
+                      checked={hearingForm.parentAttended}
+                      onChange={e => setHearingForm({ ...hearingForm, parentAttended: e.target.checked })}
+                    />
+                    Parent Present at Hearing
+                  </label>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
+                <button type="button" onClick={() => setShowHearingModal(false)} style={{ padding: '9px 16px', borderRadius: '6px', border: '1px solid #cbd5e1', background: '#fff', cursor: 'pointer' }}>Cancel</button>
+                <button type="submit" style={{ padding: '9px 18px', borderRadius: '6px', border: 'none', background: '#dc2626', color: '#fff', fontWeight: 600, cursor: 'pointer' }}>
+                  Commit Hearing Docket
                 </button>
               </div>
             </form>

@@ -129,6 +129,7 @@ import AdminTransport from './portals/admin/pages/AdminTransport';
 import AdminUniformsInventory from './portals/admin/pages/AdminUniformsInventory';
 import AdminCommunication from './portals/admin/pages/AdminCommunication';
 import AdminSystem from './portals/admin/pages/AdminSystem';
+import AdminSystemConfig from './portals/admin/pages/AdminSystemConfig';
 import AdminBoarding from './portals/admin/pages/AdminBoarding';
 import AdminDining from './portals/admin/pages/AdminDining';
 import AdminApplications from './portals/admin/pages/Applications';
@@ -641,6 +642,7 @@ export default function App() {
 
               {/* 8. System Module */}
               <Route path="system" element={<AdminSystem />} />
+              <Route path="system-config" element={<AdminSystemConfig />} />
               <Route path="settings" element={<SettingsPage />} />
               <Route path="personal-settings" element={<SettingsPage />} />
               <Route path="profile" element={<ProfilePage />} />

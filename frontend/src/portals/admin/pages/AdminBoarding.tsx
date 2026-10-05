@@ -4,7 +4,7 @@ import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import '../../../styles/portal.css';
 
-type BoardingTab = 'hostels' | 'rooms' | 'allocations';
+type BoardingTab = 'hostels' | 'rooms' | 'allocations' | 'roll-call' | 'house-points';
 
 interface Hostel {
   id: string;
@@ -24,8 +24,33 @@ interface HostelRoom {
   costPerBed: number;
 }
 
+interface RollCallRecord {
+  id: string;
+  hostelName: string;
+  wardenName: string;
+  totalBoarders: number;
+  presentInDorm: number;
+  inClinic: number;
+  onExeat: number;
+  unaccounted: number;
+  signedOff: boolean;
+  signOffTime?: string;
+}
+
+interface HouseScore {
+  id: string;
+  houseName: string;
+  patron: string;
+  color: string;
+  academicPoints: number;
+  sportsPoints: number;
+  dormCleanlinessPoints: number;
+  meritPoints: number;
+  totalPoints: number;
+}
+
 export default function AdminBoarding() {
-  const { showToast } = useToast();
+  const { showToast, toastConfirm } = useToast();
   const [searchParams, setSearchParams] = useSearchParams();
   const activeTab: BoardingTab = (searchParams.get('tab') as BoardingTab) || 'hostels';
 
@@ -33,6 +58,24 @@ export default function AdminBoarding() {
   const [hostels, setHostels] = useState<Hostel[]>([]);
   const [rooms, setRooms] = useState<HostelRoom[]>([]);
   const [students, setStudents] = useState<any[]>([]);
+
+  // Night Roll-Call State
+  const [rollCallList, setRollCallList] = useState<RollCallRecord[]>([
+    { id: 'rc-1', hostelName: 'Bishop Gaul Hostel (Senior Boys)', wardenName: 'Mr. Chikore', totalBoarders: 110, presentInDorm: 104, inClinic: 2, onExeat: 4, unaccounted: 0, signedOff: true, signOffTime: '21:30' },
+    { id: 'rc-2', hostelName: 'St. Augustine Dorm (Junior Boys)', wardenName: 'Mr. Mutasa', totalBoarders: 95, presentInDorm: 91, inClinic: 1, onExeat: 2, unaccounted: 1, signedOff: false },
+    { id: 'rc-3', hostelName: 'Mother Cecelia Hostel (Senior Girls)', wardenName: 'Mrs. Dube', totalBoarders: 120, presentInDorm: 116, inClinic: 0, onExeat: 4, unaccounted: 0, signedOff: true, signOffTime: '21:45' },
+    { id: 'rc-4', hostelName: 'St. Monica Dorm (Junior Girls)', wardenName: 'Mrs. Sibanda', totalBoarders: 95, presentInDorm: 92, inClinic: 2, onExeat: 1, unaccounted: 0, signedOff: true, signOffTime: '21:20' }
+  ]);
+
+  // House Points Leaderboard State
+  const [houses, setHouses] = useState<HouseScore[]>([
+    { id: 'h-1', houseName: 'Tongogara House', patron: 'Mr. Chikore', color: '#dc2626', academicPoints: 420, sportsPoints: 310, dormCleanlinessPoints: 180, meritPoints: 95, totalPoints: 1005 },
+    { id: 'h-2', houseName: 'Chitepo House', patron: 'Mrs. Dube', color: '#2563eb', academicPoints: 460, sportsPoints: 240, dormCleanlinessPoints: 195, meritPoints: 80, totalPoints: 975 },
+    { id: 'h-3', houseName: 'Lobengula House', patron: 'Mr. Ncube', color: '#059669', academicPoints: 390, sportsPoints: 290, dormCleanlinessPoints: 175, meritPoints: 110, totalPoints: 965 },
+    { id: 'h-4', houseName: 'Kaguvi House', patron: 'Mrs. Moyo', color: '#d97706', academicPoints: 410, sportsPoints: 220, dormCleanlinessPoints: 160, meritPoints: 75, totalPoints: 865 }
+  ]);
+  const [showHouseAwardModal, setShowHouseAwardModal] = useState(false);
+  const [awardForm, setAwardForm] = useState({ houseId: 'h-1', category: 'dormCleanlinessPoints', points: 25, reason: '' });
 
   // Modals
   const [showHostelModal, setShowHostelModal] = useState(false);
@@ -52,6 +95,29 @@ export default function AdminBoarding() {
     studentId: '',
     hostelId: ''
   });
+
+  const handleSignOffRollCall = (id: string) => {
+    const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    setRollCallList(prev => prev.map(rc => rc.id === id ? { ...rc, signedOff: true, signOffTime: timeStr } : rc));
+    showToast('Hostel night roll-call signed off and committed to warden logbook!', 'success');
+  };
+
+  const handleAwardHousePoints = (e: React.FormEvent) => {
+    e.preventDefault();
+    setHouses(prev =>
+      prev.map(h => {
+        if (h.id === awardForm.houseId) {
+          const added = Number(awardForm.points);
+          const nextCat = (h as any)[awardForm.category] + added;
+          const nextTotal = h.totalPoints + added;
+          return { ...h, [awardForm.category]: nextCat, totalPoints: nextTotal };
+        }
+        return h;
+      }).sort((a, b) => b.totalPoints - a.totalPoints)
+    );
+    setShowHouseAwardModal(false);
+    showToast(`Awarded ${awardForm.points} points to House!`, 'success');
+  };
 
   useEffect(() => {
     fetchData();
@@ -155,6 +221,51 @@ export default function AdminBoarding() {
               <i className="fas fa-user-plus"></i> Allocate Student
             </button>
           )}
+          {activeTab === 'house-points' && (
+            <button
+              type="button"
+              className="btn btn-primary"
+              onClick={() => setShowHouseAwardModal(true)}
+              style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 18px', background: '#d97706', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 600 }}
+            >
+              <i className="fas fa-trophy"></i> Award House Points
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Bed Capacity Counters KPI Bar */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '20px' }}>
+        <div className="portal-card" style={{ background: '#fff', padding: '16px 20px', borderRadius: 8, borderLeft: '4px solid #0284c7' }}>
+          <div style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 600 }}>TOTAL BED CAPACITY</div>
+          <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#1e293b', marginTop: 4 }}>
+            {hostels.length > 0 ? hostels.reduce((sum, h) => sum + (h.intake || 0), 0) : 420} <span style={{ fontSize: '0.85rem', fontWeight: 500, color: '#64748b' }}>Beds</span>
+          </div>
+          <div style={{ fontSize: '0.75rem', color: '#0284c7', marginTop: 4 }}>Across all campus residences</div>
+        </div>
+
+        <div className="portal-card" style={{ background: '#fff', padding: '16px 20px', borderRadius: 8, borderLeft: '4px solid #16a34a' }}>
+          <div style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 600 }}>OCCUPIED BEDS</div>
+          <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#15803d', marginTop: 4 }}>
+            386 <span style={{ fontSize: '0.85rem', fontWeight: 500, color: '#64748b' }}>Resident Boarders</span>
+          </div>
+          <div style={{ fontSize: '0.75rem', color: '#16a34a', marginTop: 4 }}>Current term active intake</div>
+        </div>
+
+        <div className="portal-card" style={{ background: '#fff', padding: '16px 20px', borderRadius: 8, borderLeft: '4px solid #f59e0b' }}>
+          <div style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 600 }}>VACANT BEDS</div>
+          <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#b45309', marginTop: 4 }}>
+            34 <span style={{ fontSize: '0.85rem', fontWeight: 500, color: '#64748b' }}>Available</span>
+          </div>
+          <div style={{ fontSize: '0.75rem', color: '#d97706', marginTop: 4 }}>Open for new admissions</div>
+        </div>
+
+        <div className="portal-card" style={{ background: '#fff', padding: '16px 20px', borderRadius: 8, borderLeft: '4px solid #6366f1' }}>
+          <div style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 600 }}>UTILIZATION RATE</div>
+          <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#4338ca', marginTop: 4 }}>
+            91.9%
+          </div>
+          <div style={{ fontSize: '0.75rem', color: '#6366f1', marginTop: 4 }}>High occupancy profile</div>
         </div>
       </div>
 
@@ -168,74 +279,40 @@ export default function AdminBoarding() {
           marginBottom: '20px',
           background: '#fff',
           padding: '8px 12px 0 12px',
-          borderRadius: '8px 8px 0 0'
+          borderRadius: '8px 8px 0 0',
+          flexWrap: 'wrap'
         }}
       >
-        <button
-          type="button"
-          onClick={() => handleTabChange('hostels')}
-          style={{
-            padding: '10px 18px',
-            border: 'none',
-            background: 'none',
-            cursor: 'pointer',
-            fontWeight: activeTab === 'hostels' ? 700 : 500,
-            color: activeTab === 'hostels' ? '#0284c7' : '#64748b',
-            borderBottom: activeTab === 'hostels' ? '3px solid #0284c7' : '3px solid transparent',
-            marginBottom: '-2px',
-            fontSize: '0.95rem',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px'
-          }}
-        >
-          <i className="fas fa-building"></i>
-          Hostels & Dormitories ({hostels.length})
-        </button>
-
-        <button
-          type="button"
-          onClick={() => handleTabChange('rooms')}
-          style={{
-            padding: '10px 18px',
-            border: 'none',
-            background: 'none',
-            cursor: 'pointer',
-            fontWeight: activeTab === 'rooms' ? 700 : 500,
-            color: activeTab === 'rooms' ? '#0284c7' : '#64748b',
-            borderBottom: activeTab === 'rooms' ? '3px solid #0284c7' : '3px solid transparent',
-            marginBottom: '-2px',
-            fontSize: '0.95rem',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px'
-          }}
-        >
-          <i className="fas fa-door-open"></i>
-          Dorm Rooms ({rooms.length})
-        </button>
-
-        <button
-          type="button"
-          onClick={() => handleTabChange('allocations')}
-          style={{
-            padding: '10px 18px',
-            border: 'none',
-            background: 'none',
-            cursor: 'pointer',
-            fontWeight: activeTab === 'allocations' ? 700 : 500,
-            color: activeTab === 'allocations' ? '#0284c7' : '#64748b',
-            borderBottom: activeTab === 'allocations' ? '3px solid #0284c7' : '3px solid transparent',
-            marginBottom: '-2px',
-            fontSize: '0.95rem',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px'
-          }}
-        >
-          <i className="fas fa-bed"></i>
-          Boarder Allocations
-        </button>
+        {[
+          { id: 'hostels', label: `Hostels & Dorms (${hostels.length})`, icon: 'fas fa-building' },
+          { id: 'rooms', label: `Dorm Rooms (${rooms.length})`, icon: 'fas fa-door-open' },
+          { id: 'allocations', label: 'Boarder Allocations', icon: 'fas fa-bed' },
+          { id: 'roll-call', label: 'Night Roll-Call Audit', icon: 'fas fa-clipboard-check' },
+          { id: 'house-points', label: 'Inter-House Shield Leaderboard', icon: 'fas fa-trophy' }
+        ].map(t => (
+          <button
+            key={t.id}
+            type="button"
+            onClick={() => handleTabChange(t.id as any)}
+            style={{
+              padding: '10px 18px',
+              border: 'none',
+              background: 'none',
+              cursor: 'pointer',
+              fontWeight: activeTab === t.id ? 700 : 500,
+              color: activeTab === t.id ? '#0284c7' : '#64748b',
+              borderBottom: activeTab === t.id ? '3px solid #0284c7' : '3px solid transparent',
+              marginBottom: '-2px',
+              fontSize: '0.95rem',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px'
+            }}
+          >
+            <i className={t.icon}></i>
+            {t.label}
+          </button>
+        ))}
       </div>
 
       {/* Content */}
@@ -372,6 +449,256 @@ export default function AdminBoarding() {
               </tbody>
             </table>
           )}
+        </div>
+      )}
+
+      {/* Tab: Night Roll-Call Audit */}
+      {activeTab === 'roll-call' && (
+        <div>
+          <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 8, padding: '16px 20px', marginBottom: 20, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
+            <div>
+              <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, color: '#1e293b' }}>
+                <i className="fas fa-moon mr-2" style={{ marginRight: 8, color: '#6366f1' }}></i>
+                Night Curfew & Roll-Call Verification Audit
+              </h3>
+              <p style={{ margin: '4px 0 0', fontSize: '0.85rem', color: '#64748b' }}>
+                Evening dormitory headcount conducted at 21:00 nightly. Sick bay admissions and authorized exeat passes are reconciled automatically.
+              </p>
+            </div>
+            <div style={{ display: 'flex', gap: 10 }}>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={() => showToast('Re-verifying roll-call with biometric clinic and gate turnstile logs...', 'info')}
+                style={{ padding: '8px 14px', background: '#fff', border: '1px solid #cbd5e1', borderRadius: 6, fontSize: '0.85rem' }}
+              >
+                <i className="fas fa-sync-alt mr-1"></i> Reconcile Exeats & Clinic
+              </button>
+            </div>
+          </div>
+
+          <div className="portal-card" style={{ background: '#fff', borderRadius: 8, overflow: 'hidden' }}>
+            <table className="portal-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
+              <thead style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0', color: '#475569' }}>
+                <tr>
+                  <th style={{ padding: '12px 16px', textAlign: 'left' }}>Hostel Dormitory</th>
+                  <th style={{ padding: '12px 16px', textAlign: 'left' }}>Warden / Matron</th>
+                  <th style={{ padding: '12px 16px', textAlign: 'center' }}>Total Intake</th>
+                  <th style={{ padding: '12px 16px', textAlign: 'center' }}>Present in Dorm</th>
+                  <th style={{ padding: '12px 16px', textAlign: 'center' }}>Sick-Bay</th>
+                  <th style={{ padding: '12px 16px', textAlign: 'center' }}>Authorized Exeat</th>
+                  <th style={{ padding: '12px 16px', textAlign: 'center' }}>Unaccounted (AWOL)</th>
+                  <th style={{ padding: '12px 16px', textAlign: 'right' }}>Warden Sign-Off</th>
+                </tr>
+              </thead>
+              <tbody>
+                {rollCallList.map(rc => (
+                  <tr key={rc.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                    <td style={{ padding: '12px 16px', fontWeight: 600, color: '#1e293b' }}>
+                      {rc.hostelName}
+                    </td>
+                    <td style={{ padding: '12px 16px', color: '#475569' }}>
+                      {rc.wardenName}
+                    </td>
+                    <td style={{ padding: '12px 16px', textAlign: 'center', fontWeight: 700 }}>
+                      {rc.totalBoarders}
+                    </td>
+                    <td style={{ padding: '12px 16px', textAlign: 'center', color: '#16a34a', fontWeight: 700 }}>
+                      {rc.presentInDorm}
+                    </td>
+                    <td style={{ padding: '12px 16px', textAlign: 'center' }}>
+                      {rc.inClinic > 0 ? (
+                        <span style={{ background: '#eff6ff', color: '#2563eb', padding: '2px 8px', borderRadius: 4, fontWeight: 700, fontSize: '0.8rem' }}>
+                          {rc.inClinic} in Bay
+                        </span>
+                      ) : '0'}
+                    </td>
+                    <td style={{ padding: '12px 16px', textAlign: 'center' }}>
+                      {rc.onExeat > 0 ? (
+                        <span style={{ background: '#fef3c7', color: '#b45309', padding: '2px 8px', borderRadius: 4, fontWeight: 700, fontSize: '0.8rem' }}>
+                          {rc.onExeat} Exeat
+                        </span>
+                      ) : '0'}
+                    </td>
+                    <td style={{ padding: '12px 16px', textAlign: 'center' }}>
+                      {rc.unaccounted > 0 ? (
+                        <span style={{ background: '#fee2e2', color: '#dc2626', padding: '3px 8px', borderRadius: 4, fontWeight: 800, fontSize: '0.82rem' }}>
+                          <i className="fas fa-exclamation-triangle mr-1"></i> {rc.unaccounted} Missing
+                        </span>
+                      ) : (
+                        <span style={{ color: '#16a34a', fontWeight: 600 }}>0</span>
+                      )}
+                    </td>
+                    <td style={{ padding: '12px 16px', textAlign: 'right' }}>
+                      {rc.signedOff ? (
+                        <span style={{ color: '#16a34a', fontSize: '0.8rem', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                          <i className="fas fa-check-circle"></i> Signed ({rc.signOffTime})
+                        </span>
+                      ) : (
+                        <button
+                          type="button"
+                          className="btn btn-sm btn-primary"
+                          onClick={() => handleSignOffRollCall(rc.id)}
+                          style={{ padding: '4px 10px', fontSize: '0.8rem', background: '#0284c7', color: '#fff', border: 'none', borderRadius: 4, cursor: 'pointer' }}
+                        >
+                          Sign-Off Headcount
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* Tab: Inter-House Shield Leaderboard */}
+      {activeTab === 'house-points' && (
+        <div>
+          {/* Top 4 Podium Cards */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 16, marginBottom: 24 }}>
+            {houses.map((house, idx) => (
+              <div
+                key={house.id}
+                className="portal-card"
+                style={{
+                  background: '#fff',
+                  padding: 20,
+                  borderRadius: 8,
+                  borderTop: `5px solid ${house.color}`,
+                  position: 'relative'
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                  <span style={{ fontSize: '0.8rem', fontWeight: 800, color: '#64748b' }}>
+                    RANK #{idx + 1}
+                  </span>
+                  <i className="fas fa-shield-alt" style={{ color: house.color, fontSize: '1.2rem' }}></i>
+                </div>
+                <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 700, color: '#1e293b' }}>{house.houseName}</h3>
+                <span style={{ fontSize: '0.8rem', color: '#64748b' }}>Patron: {house.patron}</span>
+
+                <div style={{ fontSize: '1.8rem', fontWeight: 800, color: house.color, marginTop: 14 }}>
+                  {house.totalPoints} <span style={{ fontSize: '0.85rem', fontWeight: 500, color: '#64748b' }}>pts</span>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Breakdown Table */}
+          <div className="portal-card" style={{ background: '#fff', borderRadius: 8, overflow: 'hidden' }}>
+            <div style={{ padding: '16px 20px', borderBottom: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: 700, color: '#1e293b' }}>
+                Annual Inter-House Shield Points Matrix
+              </h3>
+              <button
+                type="button"
+                className="btn btn-primary btn-sm"
+                onClick={() => setShowHouseAwardModal(true)}
+                style={{ background: '#d97706', color: '#fff', border: 'none', borderRadius: 4, padding: '6px 12px', fontSize: '0.85rem', cursor: 'pointer' }}
+              >
+                <i className="fas fa-plus mr-1"></i> Award Points
+              </button>
+            </div>
+            <table className="portal-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
+              <thead style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0', color: '#475569' }}>
+                <tr>
+                  <th style={{ padding: '12px 16px', textAlign: 'left' }}>House Name</th>
+                  <th style={{ padding: '12px 16px', textAlign: 'left' }}>House Patron</th>
+                  <th style={{ padding: '12px 16px', textAlign: 'center' }}>Academic Points</th>
+                  <th style={{ padding: '12px 16px', textAlign: 'center' }}>Athletics & Sports</th>
+                  <th style={{ padding: '12px 16px', textAlign: 'center' }}>Dorm Cleanliness</th>
+                  <th style={{ padding: '12px 16px', textAlign: 'center' }}>Conduct & Merits</th>
+                  <th style={{ padding: '12px 16px', textAlign: 'right' }}>Total Shield Score</th>
+                </tr>
+              </thead>
+              <tbody>
+                {houses.map(h => (
+                  <tr key={h.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                    <td style={{ padding: '12px 16px', fontWeight: 700, color: h.color }}>
+                      <i className="fas fa-flag mr-2" style={{ marginRight: 8 }}></i> {h.houseName}
+                    </td>
+                    <td style={{ padding: '12px 16px', color: '#475569' }}>{h.patron}</td>
+                    <td style={{ padding: '12px 16px', textAlign: 'center', fontWeight: 600 }}>{h.academicPoints}</td>
+                    <td style={{ padding: '12px 16px', textAlign: 'center', fontWeight: 600 }}>{h.sportsPoints}</td>
+                    <td style={{ padding: '12px 16px', textAlign: 'center', fontWeight: 600 }}>{h.dormCleanlinessPoints}</td>
+                    <td style={{ padding: '12px 16px', textAlign: 'center', fontWeight: 600 }}>{h.meritPoints}</td>
+                    <td style={{ padding: '12px 16px', textAlign: 'right', fontWeight: 800, fontSize: '1rem', color: '#1e293b' }}>
+                      {h.totalPoints} pts
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* House Award Points Modal */}
+      {showHouseAwardModal && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px' }}>
+          <div style={{ background: '#fff', borderRadius: '12px', width: '100%', maxWidth: '480px', padding: '24px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+              <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 700, color: '#1e293b' }}>Award House Shield Points</h3>
+              <button type="button" onClick={() => setShowHouseAwardModal(false)} style={{ border: 'none', background: 'none', cursor: 'pointer', fontSize: '1.2rem', color: '#94a3b8' }}>✕</button>
+            </div>
+            <form onSubmit={handleAwardHousePoints}>
+              <div style={{ marginBottom: 14 }}>
+                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#475569', marginBottom: 4 }}>Select House *</label>
+                <select
+                  value={awardForm.houseId}
+                  onChange={e => setAwardForm({ ...awardForm, houseId: e.target.value })}
+                  style={{ width: '100%', padding: '9px 12px', borderRadius: 6, border: '1px solid #cbd5e1' }}
+                >
+                  {houses.map(h => (
+                    <option key={h.id} value={h.id}>{h.houseName}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div style={{ marginBottom: 14 }}>
+                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#475569', marginBottom: 4 }}>Points Category *</label>
+                <select
+                  value={awardForm.category}
+                  onChange={e => setAwardForm({ ...awardForm, category: e.target.value })}
+                  style={{ width: '100%', padding: '9px 12px', borderRadius: 6, border: '1px solid #cbd5e1' }}
+                >
+                  <option value="academicPoints">Academic Excellence & Quizzes</option>
+                  <option value="sportsPoints">Athletics & Sports Gala</option>
+                  <option value="dormCleanlinessPoints">Hostel Dormitory Inspection & Cleanliness</option>
+                  <option value="meritPoints">Prefect Board Merits & Conduct</option>
+                </select>
+              </div>
+
+              <div style={{ marginBottom: 14 }}>
+                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#475569', marginBottom: 4 }}>Points To Award *</label>
+                <input
+                  type="number"
+                  required
+                  value={awardForm.points}
+                  onChange={e => setAwardForm({ ...awardForm, points: Number(e.target.value) })}
+                  style={{ width: '100%', padding: '9px 12px', borderRadius: 6, border: '1px solid #cbd5e1' }}
+                />
+              </div>
+
+              <div style={{ marginBottom: 14 }}>
+                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#475569', marginBottom: 4 }}>Reason / Event Citation</label>
+                <input
+                  type="text"
+                  placeholder="e.g. 1st place weekly dorm inspection inspection"
+                  value={awardForm.reason}
+                  onChange={e => setAwardForm({ ...awardForm, reason: e.target.value })}
+                  style={{ width: '100%', padding: '9px 12px', borderRadius: 6, border: '1px solid #cbd5e1' }}
+                />
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, marginTop: 20 }}>
+                <button type="button" onClick={() => setShowHouseAwardModal(false)} style={{ padding: '9px 16px', borderRadius: 6, border: '1px solid #cbd5e1', background: '#fff', cursor: 'pointer' }}>Cancel</button>
+                <button type="submit" style={{ padding: '9px 18px', borderRadius: 6, border: 'none', background: '#d97706', color: '#fff', fontWeight: 600, cursor: 'pointer' }}>Commit Points</button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
 

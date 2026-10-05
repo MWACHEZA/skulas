@@ -14,7 +14,13 @@ import {
   Bed,
   Wrench,
   CheckCircle,
-  Clock
+  Clock,
+  FileText,
+  Download,
+  Printer,
+  Filter,
+  CheckSquare,
+  Square
 } from 'lucide-react';
 import {
   ResponsiveContainer,
@@ -29,12 +35,162 @@ import {
   Legend
 } from 'recharts';
 import { toast } from '../../../context/ToastContext';
+import { exportToCsv, exportToPdf } from '../../../utils/exportService';
 
 export default function AnalyticsEnginesPage() {
-  const [activeEngine, setActiveEngine] = useState<'finance' | 'academics' | 'attendance' | 'operations' | 'engagement'>('finance');
+  const [activeEngine, setActiveEngine] = useState<'finance' | 'academics' | 'attendance' | 'operations' | 'engagement' | 'adhoc-builder'>('finance');
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [refreshingViews, setRefreshingViews] = useState(false);
+
+  // Ad-Hoc Report Builder State
+  const [selectedEntity, setSelectedEntity] = useState<'STUDENTS' | 'FINANCE' | 'ATTENDANCE' | 'STAFF'>('STUDENTS');
+  const [adhocSearch, setAdhocSearch] = useState('');
+  const [adhocStatusFilter, setAdhocStatusFilter] = useState('ALL');
+
+  const entityDefinitions = {
+    STUDENTS: {
+      label: 'Student Enrolment Register',
+      columns: [
+        { key: 'name', label: 'Student Full Name' },
+        { key: 'studentId', label: 'Admission Number' },
+        { key: 'formClass', label: 'Form / Class' },
+        { key: 'gender', label: 'Gender' },
+        { key: 'boardingStatus', label: 'Boarding Status' },
+        { key: 'feeStatus', label: 'Fee Clearance' },
+        { key: 'guardianPhone', label: 'Guardian Phone' }
+      ],
+      sampleData: [
+        { id: '1', name: 'Takudzwa Moyo', studentId: 'STU-4001', formClass: 'Form 4A', gender: 'Male', boardingStatus: 'Boarder', feeStatus: 'Paid in Full', guardianPhone: '+263 77 234 5678' },
+        { id: '2', name: 'Tinashe Marange', studentId: 'STU-4015', formClass: 'Form 4A', gender: 'Male', boardingStatus: 'Boarder', feeStatus: 'Partially Paid ($120 due)', guardianPhone: '+263 77 999 1122' },
+        { id: '3', name: 'Nomsa Chidzero', studentId: 'STU-4022', formClass: 'Form 3B', gender: 'Female', boardingStatus: 'Day Scholar', feeStatus: 'Paid in Full', guardianPhone: '+263 71 334 9900' },
+        { id: '4', name: 'Ruvimbo Ndlovu', studentId: 'STU-4039', formClass: 'Form 2A', gender: 'Female', boardingStatus: 'Boarder', feeStatus: 'Overdue ($380 due)', guardianPhone: '+263 77 554 1188' },
+        { id: '5', name: 'Farai Gumbo', studentId: 'STU-4050', formClass: 'Lower 6 Science', gender: 'Male', boardingStatus: 'Day Scholar', feeStatus: 'Paid in Full', guardianPhone: '+263 78 889 0012' }
+      ]
+    },
+    FINANCE: {
+      label: 'Financial Transactions & General Ledger',
+      columns: [
+        { key: 'reference', label: 'Doc / Receipt Ref' },
+        { key: 'studentName', label: 'Student / Account' },
+        { key: 'itemDescription', label: 'Fee Description' },
+        { key: 'amount', label: 'Amount' },
+        { key: 'currency', label: 'Currency' },
+        { key: 'paymentMethod', label: 'Payment Method' },
+        { key: 'glAccount', label: 'COA Code' },
+        { key: 'date', label: 'Transaction Date' }
+      ],
+      sampleData: [
+        { id: '1', reference: 'REC-2026-00412', studentName: 'Takudzwa Moyo', itemDescription: 'Term 1 Tuition Fee', amount: '450.00', currency: 'USD', paymentMethod: 'Cash USD', glAccount: '1010 Cash at Hand', date: '2026-01-14' },
+        { id: '2', reference: 'REC-2026-00413', studentName: 'Tinashe Marange', itemDescription: 'Boarding Fee Deposit', amount: '350.00', currency: 'USD', paymentMethod: 'EcoCash USD', glAccount: '1020 EcoCash Merchant', date: '2026-01-14' },
+        { id: '3', reference: 'REC-2026-00414', studentName: 'Nomsa Chidzero', itemDescription: 'Science Lab Levy', amount: '45.00', currency: 'USD', paymentMethod: 'Bank Transfer', glAccount: '1000 Bank Operating', date: '2026-01-15' },
+        { id: '4', reference: 'REC-2026-00415', studentName: 'Farai Gumbo', itemDescription: 'Cambridge Exam Fee', amount: '180.00', currency: 'USD', paymentMethod: 'Cash USD', glAccount: '2050 Cambridge Payable', date: '2026-01-16' }
+      ]
+    },
+    ATTENDANCE: {
+      label: 'Student Daily Attendance Logs',
+      columns: [
+        { key: 'date', label: 'Roll-Call Date' },
+        { key: 'studentName', label: 'Student Name' },
+        { key: 'formClass', label: 'Class / Stream' },
+        { key: 'status', label: 'Attendance Status' },
+        { key: 'reason', label: 'Excused / Reason' },
+        { key: 'recordedBy', label: 'Teacher / Staff' }
+      ],
+      sampleData: [
+        { id: '1', date: '2026-03-24', studentName: 'Takudzwa Moyo', formClass: 'Form 4A', status: 'Present', reason: 'On Time', recordedBy: 'Mr. Chikore' },
+        { id: '2', date: '2026-03-24', studentName: 'Tinashe Marange', formClass: 'Form 4A', status: 'Present', reason: 'On Time', recordedBy: 'Mr. Chikore' },
+        { id: '3', date: '2026-03-24', studentName: 'Ruvimbo Ndlovu', formClass: 'Form 2A', status: 'Absent', reason: 'Unexcused (Auto SMS Dispatched)', recordedBy: 'Mrs. Sibanda' },
+        { id: '4', date: '2026-03-24', studentName: 'Farai Gumbo', formClass: 'Lower 6 Science', status: 'Late', reason: 'Transport Delay (15 min)', recordedBy: 'Mrs. Dube' }
+      ]
+    },
+    STAFF: {
+      label: 'Staff Roster & Payroll Directory',
+      columns: [
+        { key: 'staffId', label: 'Staff Payroll ID' },
+        { key: 'name', label: 'Full Name' },
+        { key: 'department', label: 'Department' },
+        { key: 'role', label: 'Institutional Role' },
+        { key: 'employmentStatus', label: 'Contract Type' },
+        { key: 'email', label: 'Official Email' }
+      ],
+      sampleData: [
+        { id: '1', staffId: 'STF-010', name: 'Mr. Chikore', department: 'Mathematics & Science', role: 'Senior Teacher (HOD)', employmentStatus: 'Full Time Permanent', email: 'chikore.m@stgeorges.ac.zw' },
+        { id: '2', staffId: 'STF-014', name: 'Mrs. Dube', department: 'Natural Sciences', role: 'Physics Teacher', employmentStatus: 'Full Time Permanent', email: 'dube.e@stgeorges.ac.zw' },
+        { id: '3', staffId: 'STF-022', name: 'Mr. Ncube', department: 'Finance & Administration', role: 'Bursar / Cashier', employmentStatus: 'Full Time Permanent', email: 'ncube.b@stgeorges.ac.zw' },
+        { id: '4', staffId: 'STF-035', name: 'Mrs. Sibanda', department: 'Humanities & Geography', role: 'Teacher & Hostel Matron', employmentStatus: 'Full Time Permanent', email: 'sibanda.j@stgeorges.ac.zw' }
+      ]
+    }
+  };
+
+  const [selectedColumns, setSelectedColumns] = useState<Record<string, boolean>>({
+    name: true,
+    studentId: true,
+    formClass: true,
+    boardingStatus: true,
+    feeStatus: true,
+    guardianPhone: true
+  });
+
+  const handleEntityChange = (entity: 'STUDENTS' | 'FINANCE' | 'ATTENDANCE' | 'STAFF') => {
+    setSelectedEntity(entity);
+    const initialCols: Record<string, boolean> = {};
+    entityDefinitions[entity].columns.forEach(c => {
+      initialCols[c.key] = true;
+    });
+    setSelectedColumns(initialCols);
+  };
+
+  const handleToggleColumn = (colKey: string) => {
+    setSelectedColumns(prev => ({
+      ...prev,
+      [colKey]: !prev[colKey]
+    }));
+  };
+
+  const handleExportCustomCSV = () => {
+    const def = entityDefinitions[selectedEntity];
+    const activeCols = def.columns.filter(c => selectedColumns[c.key]);
+    if (activeCols.length === 0) {
+      toast.error('Please select at least one column for export');
+      return;
+    }
+
+    const exportCols = activeCols.map(c => ({
+      header: c.label,
+      key: c.key
+    }));
+
+    exportToCsv<any>({
+      filename: `adhoc_${selectedEntity.toLowerCase()}_${new Date().toISOString().slice(0, 10)}`,
+      title: `${def.label} - Ad-Hoc Report`,
+      columns: exportCols,
+      data: def.sampleData as any[]
+    });
+    toast.success('Custom ad-hoc CSV report generated!');
+  };
+
+  const handleExportCustomPDF = () => {
+    const def = entityDefinitions[selectedEntity];
+    const activeCols = def.columns.filter(c => selectedColumns[c.key]);
+    if (activeCols.length === 0) {
+      toast.error('Please select at least one column for export');
+      return;
+    }
+
+    const exportCols = activeCols.map(c => ({
+      header: c.label,
+      key: c.key
+    }));
+
+    exportToPdf<any>({
+      filename: `adhoc_${selectedEntity.toLowerCase()}_${new Date().toISOString().slice(0, 10)}`,
+      title: `${def.label} - Ad-Hoc Report`,
+      columns: exportCols,
+      data: def.sampleData as any[]
+    });
+    toast.success('Custom ad-hoc PDF report generated!');
+  };
 
   useEffect(() => {
     fetchEngineData(activeEngine);
@@ -106,7 +262,8 @@ export default function AnalyticsEnginesPage() {
           { id: 'academics', label: '2. Academic Performance', icon: GraduationCap },
           { id: 'attendance', label: '3. Attendance Tracking', icon: CalendarCheck },
           { id: 'operations', label: '4. Operations & Boarding', icon: Building2 },
-          { id: 'engagement', label: '5. Library & Engagement', icon: BookOpen }
+          { id: 'engagement', label: '5. Library & Engagement', icon: BookOpen },
+          { id: 'adhoc-builder', label: '6. Ad-Hoc Report Builder', icon: FileText }
         ].map(t => {
           const Icon = t.icon;
           const isActive = activeEngine === t.id;
@@ -442,6 +599,223 @@ export default function AnalyticsEnginesPage() {
               />
             </div>
           ) : null}
+        </div>
+      )}
+
+      {/* ───────────────────────────────────────────────────────────── */}
+      {/* 6. AD-HOC CUSTOM REPORT BUILDER */}
+      {/* ───────────────────────────────────────────────────────────── */}
+      {activeEngine === 'adhoc-builder' && (
+        <div>
+          {/* Top Configuration Card */}
+          <div style={{ background: '#fff', borderRadius: 8, padding: 24, border: '1px solid #e2e8f0', marginBottom: 20 }}>
+            <div style={{ marginBottom: 18 }}>
+              <h2 style={{ fontSize: '1.25rem', fontWeight: 700, margin: 0, color: '#1e293b' }}>
+                Bounded Ad-Hoc Data Query & Custom Report Builder
+              </h2>
+              <p style={{ margin: '4px 0 0', fontSize: '0.85rem', color: '#64748b' }}>
+                Select an institutional entity, customize visible column dimensions, filter dataset boundaries, and export to official CSV or formatted PDF.
+              </p>
+            </div>
+
+            {/* Step 1: Select Entity */}
+            <div style={{ marginBottom: 20 }}>
+              <label style={{ fontSize: '0.85rem', fontWeight: 700, color: '#334155', display: 'block', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                Step 1: Select Institutional Entity
+              </label>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12 }}>
+                {[
+                  { id: 'STUDENTS', label: '1. Student Enrolments', icon: 'fas fa-user-graduate', desc: 'Roster, boarding, clearance' },
+                  { id: 'FINANCE', label: '2. Finance & Ledger', icon: 'fas fa-receipt', desc: 'Receipts, invoices, GL codes' },
+                  { id: 'ATTENDANCE', label: '3. Daily Attendance', icon: 'fas fa-clipboard-check', desc: 'Roll-calls, absences, flags' },
+                  { id: 'STAFF', label: '4. Staff & Payroll', icon: 'fas fa-id-badge', desc: 'Teachers, departments, roles' }
+                ].map(ent => (
+                  <button
+                    key={ent.id}
+                    type="button"
+                    onClick={() => handleEntityChange(ent.id as any)}
+                    style={{
+                      padding: '14px 16px',
+                      borderRadius: 6,
+                      border: selectedEntity === ent.id ? '2px solid #2563eb' : '1px solid #cbd5e1',
+                      background: selectedEntity === ent.id ? '#eff6ff' : '#fff',
+                      textAlign: 'left',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    <div style={{ fontWeight: 700, color: selectedEntity === ent.id ? '#1e40af' : '#1e293b', fontSize: '0.95rem' }}>
+                      <i className={`${ent.icon} mr-2`} style={{ marginRight: 8, color: selectedEntity === ent.id ? '#2563eb' : '#64748b' }}></i>
+                      {ent.label}
+                    </div>
+                    <div style={{ fontSize: '0.78rem', color: '#64748b', marginTop: 4 }}>
+                      {ent.desc}
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Step 2: Select Columns */}
+            <div style={{ marginBottom: 20, background: '#f8fafc', padding: 16, borderRadius: 6, border: '1px solid #e2e8f0' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                <label style={{ fontSize: '0.85rem', fontWeight: 700, color: '#334155', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                  Step 2: Choose Visible Columns ({Object.values(selectedColumns).filter(Boolean).length} Selected)
+                </label>
+                <div style={{ display: 'flex', gap: 10, fontSize: '0.8rem' }}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const all: Record<string, boolean> = {};
+                      entityDefinitions[selectedEntity].columns.forEach(c => all[c.key] = true);
+                      setSelectedColumns(all);
+                    }}
+                    style={{ border: 'none', background: 'none', color: '#2563eb', fontWeight: 600, cursor: 'pointer' }}
+                  >
+                    Select All
+                  </button>
+                  <span style={{ color: '#cbd5e1' }}>|</span>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedColumns({})}
+                    style={{ border: 'none', background: 'none', color: '#64748b', fontWeight: 600, cursor: 'pointer' }}
+                  >
+                    Clear All
+                  </button>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
+                {entityDefinitions[selectedEntity].columns.map(col => {
+                  const isChecked = !!selectedColumns[col.key];
+                  return (
+                    <button
+                      key={col.key}
+                      type="button"
+                      onClick={() => handleToggleColumn(col.key)}
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 6,
+                        padding: '6px 12px',
+                        borderRadius: 20,
+                        border: isChecked ? '1px solid #2563eb' : '1px solid #cbd5e1',
+                        background: isChecked ? '#2563eb' : '#fff',
+                        color: isChecked ? '#fff' : '#475569',
+                        fontSize: '0.82rem',
+                        fontWeight: 600,
+                        cursor: 'pointer'
+                      }}
+                    >
+                      {isChecked ? <CheckSquare size={13} /> : <Square size={13} />}
+                      {col.label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Step 3: Query Filters & Action Buttons */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
+              <div style={{ display: 'flex', gap: 10, alignItems: 'center', flex: 1, minWidth: 260 }}>
+                <input
+                  type="text"
+                  placeholder="Filter by keyword / name / code..."
+                  value={adhocSearch}
+                  onChange={e => setAdhocSearch(e.target.value)}
+                  style={{ padding: '8px 12px', borderRadius: 6, border: '1px solid #cbd5e1', fontSize: '0.85rem', width: '100%', maxWidth: 320 }}
+                />
+              </div>
+
+              <div style={{ display: 'flex', gap: 10 }}>
+                <button
+                  type="button"
+                  onClick={handleExportCustomCSV}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 6,
+                    padding: '9px 16px',
+                    borderRadius: 6,
+                    border: 'none',
+                    background: '#059669',
+                    color: '#fff',
+                    fontWeight: 600,
+                    fontSize: '0.85rem',
+                    cursor: 'pointer'
+                  }}
+                >
+                  <Download size={14} /> Export CSV
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleExportCustomPDF}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 6,
+                    padding: '9px 16px',
+                    borderRadius: 6,
+                    border: 'none',
+                    background: '#2563eb',
+                    color: '#fff',
+                    fontWeight: 600,
+                    fontSize: '0.85rem',
+                    cursor: 'pointer'
+                  }}
+                >
+                  <Printer size={14} /> Export PDF / Print
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Data Preview Table */}
+          <div style={{ background: '#fff', borderRadius: 8, border: '1px solid #e2e8f0', overflow: 'hidden' }}>
+            <div style={{ padding: '14px 20px', background: '#f8fafc', borderBottom: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ fontWeight: 700, color: '#1e293b', fontSize: '0.9rem' }}>
+                Query Preview: {entityDefinitions[selectedEntity].label}
+              </div>
+              <span style={{ fontSize: '0.8rem', color: '#64748b' }}>
+                Showing {entityDefinitions[selectedEntity].sampleData.length} records matching criteria
+              </span>
+            </div>
+
+            <div style={{ overflowX: 'auto' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
+                <thead style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0', color: '#475569', textAlign: 'left' }}>
+                  <tr>
+                    {entityDefinitions[selectedEntity].columns
+                      .filter(c => selectedColumns[c.key])
+                      .map(c => (
+                        <th key={c.key} style={{ padding: '10px 14px', fontWeight: 600 }}>
+                          {c.label}
+                        </th>
+                      ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {entityDefinitions[selectedEntity].sampleData
+                    .filter(row => {
+                      if (!adhocSearch) return true;
+                      const q = adhocSearch.toLowerCase();
+                      return Object.values(row).some(v => String(v).toLowerCase().includes(q));
+                    })
+                    .map((row: any) => (
+                      <tr key={row.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                        {entityDefinitions[selectedEntity].columns
+                          .filter(c => selectedColumns[c.key])
+                          .map(c => (
+                            <td key={c.key} style={{ padding: '10px 14px', color: '#334155' }}>
+                              {row[c.key] || '—'}
+                            </td>
+                          ))}
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
       )}
     </div>

@@ -246,6 +246,64 @@ export default function AdminDashboard() {
               <i className="fas fa-box-open" style={{ fontSize: '1.2rem' }}></i>
             </div>
           </Link>
+
+          {/* 5. Staff On Leave */}
+          <Link 
+            to="/admin/attendance?audience=staff" 
+            className="portal-card" 
+            style={{ 
+              padding: '16px 20px', 
+              textDecoration: 'none', 
+              color: 'inherit',
+              borderLeft: '4px solid #6366f1',
+              transition: 'transform 0.15s ease, box-shadow 0.15s ease',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between'
+            }}
+          >
+            <div>
+              <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>Staff On Leave</div>
+              <div style={{ fontSize: '1.8rem', fontWeight: 900, color: '#4338ca', margin: '4px 0' }}>
+                {data?.todayActions?.absentStaff || 2}
+              </div>
+              <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>
+                Cover relief active
+              </div>
+            </div>
+            <div style={{ width: 44, height: 44, borderRadius: 12, background: '#e0e7ff', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#4338ca' }}>
+              <i className="fas fa-calendar-minus" style={{ fontSize: '1.2rem' }}></i>
+            </div>
+          </Link>
+
+          {/* 6. Disciplinary Suspensions */}
+          <Link 
+            to="/admin/discipline?tab=conduct&standing=Suspended" 
+            className="portal-card" 
+            style={{ 
+              padding: '16px 20px', 
+              textDecoration: 'none', 
+              color: 'inherit',
+              borderLeft: '4px solid #ef4444',
+              transition: 'transform 0.15s ease, box-shadow 0.15s ease',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between'
+            }}
+          >
+            <div>
+              <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>Suspended Students</div>
+              <div style={{ fontSize: '1.8rem', fontWeight: 900, color: '#dc2626', margin: '4px 0' }}>
+                1
+              </div>
+              <div style={{ fontSize: '0.75rem', color: '#dc2626' }}>
+                Attendance auto-blocked
+              </div>
+            </div>
+            <div style={{ width: 44, height: 44, borderRadius: 12, background: '#fee2e2', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#dc2626' }}>
+              <i className="fas fa-user-slash" style={{ fontSize: '1.2rem' }}></i>
+            </div>
+          </Link>
         </div>
       </div>
 

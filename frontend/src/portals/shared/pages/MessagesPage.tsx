@@ -161,6 +161,8 @@ export default function MessagesPage() {
         <div className="status-badge" style={{ padding: '8px 20px', background: '#eff6ff', color: 'var(--school-primary, #0056b3)', border: '1px solid rgba(0, 86, 179, 0.2)', fontWeight: 900 }}>
            <i className="fas fa-paper-plane mr-2"></i>SECURE CHANNEL
         </div>
+      </div>
+
       {/* Communication Tabs */}
       <div style={{ display: 'flex', gap: 10, borderBottom: '2px solid #e2e8f0', marginBottom: 24 }}>
         <button
