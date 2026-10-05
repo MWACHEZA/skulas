@@ -35,6 +35,7 @@ import LibraryLayout from './portals/library/LibraryLayout';
 import AlumniLayout from './portals/alumni/AlumniLayout';
 import AncillaryLayout from './portals/ancillary/AncillaryLayout';
 import SportsManagement from './portals/shared/pages/SportsManagement';
+import SportsModule from './portals/teacher/pages/SportsModule';
 import HouseDashboard from './portals/shared/pages/HouseDashboard';
 import ChaplaincyDashboard from './portals/shared/pages/ChaplaincyDashboard';
 import FarmManagement from './portals/shared/pages/FarmManagement';
@@ -541,7 +542,7 @@ export default function App() {
               <Route path="cbt/manage/:id/results" element={<CBTResults />} />
               <Route path="cbt/take/:id" element={<TakeExam />} />
               <Route path="timetable" element={<TeacherTimetable />} />
-              <Route path="sports" element={<SportsManagement />} />
+              <Route path="sports" element={<SportsModule />} />
               <Route path="house" element={<HouseDashboard />} />
               <Route path="farm" element={<FarmManagement />} />
               <Route path="dining-hall" element={<TeacherDiningHall />} />

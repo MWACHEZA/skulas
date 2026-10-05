@@ -45,11 +45,19 @@ export const getAvatarUrl = (avatar?: string | null, schoolCode?: string | null,
     // If it starts with images/ followed by a path or filename, remove the redundant images/ prefix
     clean = clean.replace(/^images\//, '');
     const code = schoolCode || 'global';
+    if (clean.toLowerCase().startsWith(`${code.toLowerCase()}/`)) {
+      clean = clean.slice(code.length + 1);
+    }
     url = `${BASE_URL}/api/storage/media/${code}/${clean}`;
   }
-  if (cacheBuster) {
+  if (cacheBuster !== undefined && cacheBuster !== null && cacheBuster !== '') {
+    const buster = typeof cacheBuster === 'number'
+      ? cacheBuster
+      : !isNaN(new Date(cacheBuster).getTime())
+        ? new Date(cacheBuster).getTime()
+        : cacheBuster;
     const separator = url.includes('?') ? '&' : '?';
-    return `${url}${separator}t=${cacheBuster}`;
+    return `${url}${separator}t=${buster}`;
   }
   return url;
 };

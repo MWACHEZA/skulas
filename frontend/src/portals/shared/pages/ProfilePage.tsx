@@ -8,7 +8,7 @@ import EmptyState from '../../../components/shared/EmptyState';
 import '../../../styles/portal.css';
 
 export default function ProfilePage() {
-  const { user, refreshUser, activeEntity } = useAuth();
+  const { user, refreshUser, updateUser, activeEntity } = useAuth();
   const { showToast } = useToast();
   const [loading, setLoading] = useState(false);
   const [fetchingProfile, setFetchingProfile] = useState(true);
@@ -90,12 +90,18 @@ export default function ProfilePage() {
     try {
       const formData = new FormData();
       formData.append('avatar', avatarFile);
-      await api.put('/api/users/me', formData, {
+      const res = await api.put('/api/users/me', formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       showToast('Profile photo updated successfully', 'success');
       setAvatarFile(null);
       setAvatarPreview(null);
+      const updatedAvatar = res.data?.avatar;
+      const updatedTimestamp = res.data?.updatedAt || new Date().toISOString();
+      if (updatedAvatar) {
+        updateUser({ avatar: updatedAvatar, updatedAt: updatedTimestamp });
+        setProfileData((prev: any) => ({ ...prev, avatar: updatedAvatar, updatedAt: updatedTimestamp }));
+      }
       await refreshUser();
       fetchProfile();
     } catch (err: any) {
@@ -198,8 +204,8 @@ export default function ProfilePage() {
                 }}>
                     {avatarPreview ? (
                         <img src={avatarPreview} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                    ) : user?.avatar ? (
-                        <img src={getAvatarUrl(user.avatar, user.schoolCode, (user as any)?.updatedAt || Date.now()) || ''} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    ) : (profileData?.avatar || user?.avatar) ? (
+                        <img src={getAvatarUrl(profileData?.avatar || user?.avatar, user?.schoolCode, profileData?.updatedAt || (user as any)?.updatedAt || Date.now()) || ''} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     ) : (
                         getInitials(isParent ? (activeEntity?.name || targetStudent?.name || user?.name || '') : (user?.name || ''))
                     )}

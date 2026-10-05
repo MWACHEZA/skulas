@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import api from '../../../lib/api';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
+import { SearchInput } from '../../../components/shared/SearchInput';
 
 export default function TeacherClinicUnified() {
   const { user } = useAuth();
@@ -139,7 +140,8 @@ export default function TeacherClinicUnified() {
         studentId: selectedSickBayStudent.id,
         symptoms: sickBaySymptoms,
         urgency: sickBayUrgency,
-        notes: sickBayNotes,
+        isSickBayAdmission: true,
+        notes: sickBayNotes ? `[IMMEDIATE SICK BAY ADMISSION] ${sickBayNotes}` : '[IMMEDIATE SICK BAY ADMISSION]',
         note: sickBaySymptoms
       });
 
@@ -376,6 +378,7 @@ export default function TeacherClinicUnified() {
                     <th style={{ padding: '12px 16px', fontWeight: 600, color: '#475569', fontSize: '0.85rem' }}>Urgency</th>
                     <th style={{ padding: '12px 16px', fontWeight: 600, color: '#475569', fontSize: '0.85rem' }}>Time Sent</th>
                     <th style={{ padding: '12px 16px', fontWeight: 600, color: '#475569', fontSize: '0.85rem' }}>Clinic Status</th>
+                    <th style={{ padding: '12px 16px', fontWeight: 600, color: '#475569', fontSize: '0.85rem', textAlign: 'right' }}>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -418,6 +421,45 @@ export default function TeacherClinicUnified() {
                           }}>
                             {r.status || 'Under Care / Reviewed'}
                           </span>
+                        </td>
+                        <td style={{ padding: '12px 16px', textAlign: 'right' }}>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const found = students.find(s =>
+                                (r.studentId && (s.id === r.studentId || s.studentId === r.studentId)) ||
+                                (r.studentName && s.name?.toLowerCase() === r.studentName?.toLowerCase())
+                              );
+                              if (found) {
+                                setSelectedSickBayStudent(found);
+                              } else {
+                                setSelectedSickBayStudent({
+                                  id: r.studentId || r.userId || r.id,
+                                  name: r.studentName || 'Student',
+                                  class: r.className || null
+                                });
+                              }
+                              setSickBayUrgency('URGENT');
+                              setSickBaySymptoms(r.symptoms ? `Escalated to Sick Bay: ${r.symptoms}` : '');
+                              setShowSickBayModal(true);
+                            }}
+                            title="Send or escalate student to Sick Bay"
+                            style={{
+                              background: '#fee2e2',
+                              color: '#b91c1c',
+                              border: '1px solid #fecaca',
+                              borderRadius: 6,
+                              padding: '5px 10px',
+                              fontSize: '0.78rem',
+                              fontWeight: 700,
+                              cursor: 'pointer',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: 5
+                            }}
+                          >
+                            <i className="fas fa-bed-pulse" /> Send to Sick Bay
+                          </button>
                         </td>
                       </tr>
                     );
@@ -512,17 +554,13 @@ export default function TeacherClinicUnified() {
                   </div>
                 ) : (
                   <div>
-                    <div style={{ position: 'relative' }}>
-                      <i className="fas fa-search" style={{ position: 'absolute', left: 12, top: 13, color: '#94a3b8' }} />
-                      <input
-                        type="text"
-                        autoFocus
-                        placeholder="Type student name, student ID, or class..."
-                        value={studentSearch}
-                        onChange={e => setStudentSearch(e.target.value)}
-                        style={{ width: '100%', padding: '10px 12px 10px 36px', borderRadius: 8, border: '1px solid #cbd5e1', fontSize: '0.9rem' }}
-                      />
-                    </div>
+                    <SearchInput
+                      autoFocus
+                      placeholder="Type student name, student ID, or class..."
+                      value={studentSearch}
+                      onChange={setStudentSearch}
+                      onClear={() => setStudentSearch('')}
+                    />
                     {/* Live search results list */}
                     <div style={{ maxHeight: 180, overflowY: 'auto', marginTop: 6, border: '1px solid #e2e8f0', borderRadius: 8, background: '#f8fafc' }}>
                       {filteredStudents.length === 0 ? (

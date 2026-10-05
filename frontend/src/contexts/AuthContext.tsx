@@ -32,6 +32,7 @@ interface AuthUser {
   schoolType?: string;   // e.g. 'Primary', 'Secondary', 'Nursing School'
   linkedEntities?: LinkedEntity[];
   createdAt?: string;
+  updatedAt?: string;
   departmentId?: string;
   dept?: {
     id: string;
@@ -69,6 +70,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   hasRole: (...roles: string[]) => boolean;
   refreshUser: () => Promise<void>;
+  updateUser: (fields: Partial<AuthUser>) => void;
   isLeader: boolean;
   leadershipAssignment: any | null;
   refreshLeadership: () => Promise<void>;
@@ -377,6 +379,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const updateUser = (fields: Partial<AuthUser>) => {
+    setUser(prev => {
+      if (!prev) return null;
+      const updated = { ...prev, ...fields };
+      localStorage.setItem('acadex_user', JSON.stringify(updated));
+      return updated;
+    });
+  };
+
   const refreshLeadership = async () => {
     if (!token || user?.role !== 'STUDENT') {
       setIsLeader(false);
@@ -421,6 +432,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       isAuthenticated: !!token && !!user, 
       hasRole,
       refreshUser,
+      updateUser,
       isLeader,
       leadershipAssignment,
       refreshLeadership
