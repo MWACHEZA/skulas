@@ -110,9 +110,11 @@ interface Sale {
 }
 
 const UniformsPage: React.FC = () => {
+  const { user, hasRole } = useAuth();
+  const isBursarRole = user?.role === 'BURSAR' || user?.secondaryRoles?.includes('BURSAR');
+  const [viewMode, setViewMode] = useState<'STORES_CLERK' | 'BURSAR'>(isBursarRole ? 'BURSAR' : 'STORES_CLERK');
   const [activeTab, setActiveTab] = useState("items");
 
-  const { user, hasRole } = useAuth();
   const canManage = hasRole('BURSAR', 'SCHOOL_ADMIN');
   const isSupplier = hasRole('SUPPLIER');
   const isParentOrStudent = hasRole('PARENT', 'STUDENT');
@@ -162,11 +164,36 @@ const UniformsPage: React.FC = () => {
   const fetchData = () => invalidateAllAccountingKeys();
 
   const tabs = [
-    { id: "items", label: "Uniform Inventory", icon: "fa-tshirt", show: canManage || isParentOrStudent },
-    { id: "stock", label: canManage ? "Procurement & Restock" : "Supply History", icon: "fa-truck-loading", show: canManage || isSupplier },
-    { id: "sales", label: canManage ? "Sales Ledger" : "Purchase History", icon: "fa-shopping-cart", show: canManage || isParentOrStudent },
-    { id: "suppliers", label: "Supplier Directory", icon: "fa-address-book", show: canManage },
-    { id: "payments", label: canManage ? "Settlements" : "Payouts", icon: "fa-money-check-alt", show: canManage || isSupplier }
+    {
+      id: "items",
+      label: viewMode === 'BURSAR' ? "Pricing & Catalog" : "Uniform Stock & Sizes",
+      icon: "fa-tshirt",
+      show: canManage || isParentOrStudent
+    },
+    {
+      id: "stock",
+      label: viewMode === 'BURSAR' ? "Goods Received & Valuation" : "Incoming Deliveries & Stock",
+      icon: "fa-truck-loading",
+      show: (canManage && viewMode === 'STORES_CLERK') || isSupplier
+    },
+    {
+      id: "sales",
+      label: viewMode === 'BURSAR' ? "Sales Receipts & Billing" : "Issue / Dispatch to Students",
+      icon: "fa-shopping-cart",
+      show: canManage || isParentOrStudent
+    },
+    {
+      id: "suppliers",
+      label: "Supplier Directory",
+      icon: "fa-address-book",
+      show: canManage && viewMode === 'BURSAR'
+    },
+    {
+      id: "payments",
+      label: "Supplier Payment Vouchers",
+      icon: "fa-money-check-alt",
+      show: (canManage && viewMode === 'BURSAR') || isSupplier
+    }
   ].filter(t => t.show);
 
   return (
@@ -176,9 +203,41 @@ const UniformsPage: React.FC = () => {
           <h1>Uniforms Management</h1>
           <p>{canManage ? "Comprehensive oversight of institutional uniform inventory, procurement, and distribution." : "View available uniforms and monitor your transaction history."}</p>
         </div>
-        <div className="portal-header-actions-row">
+        <div className="portal-header-actions-row" style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+          {canManage && (
+            <div style={{ display: 'flex', background: '#e2e8f0', borderRadius: 8, padding: 3 }}>
+              <button
+                type="button"
+                onClick={() => { setViewMode('STORES_CLERK'); setActiveTab('items'); }}
+                style={{
+                  padding: '6px 14px', borderRadius: 6, border: 'none', cursor: 'pointer',
+                  fontWeight: viewMode === 'STORES_CLERK' ? 700 : 500,
+                  fontSize: '0.85rem',
+                  background: viewMode === 'STORES_CLERK' ? '#fff' : 'transparent',
+                  color: viewMode === 'STORES_CLERK' ? '#0f172a' : '#64748b',
+                  boxShadow: viewMode === 'STORES_CLERK' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none'
+                }}
+              >
+                <i className="fas fa-boxes" style={{ marginRight: 6 }} /> Stores Clerk View
+              </button>
+              <button
+                type="button"
+                onClick={() => { setViewMode('BURSAR'); setActiveTab('items'); }}
+                style={{
+                  padding: '6px 14px', borderRadius: 6, border: 'none', cursor: 'pointer',
+                  fontWeight: viewMode === 'BURSAR' ? 700 : 500,
+                  fontSize: '0.85rem',
+                  background: viewMode === 'BURSAR' ? '#fff' : 'transparent',
+                  color: viewMode === 'BURSAR' ? '#0f172a' : '#64748b',
+                  boxShadow: viewMode === 'BURSAR' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none'
+                }}
+              >
+                <i className="fas fa-file-invoice-dollar" style={{ marginRight: 6 }} /> Bursar & Revenue View
+              </button>
+            </div>
+          )}
           <div className="status-badge portal-status-badge-authorization">
-             <i className="fas fa-shield-alt mr-2"></i>{user?.role?.toUpperCase()} AUTHORIZATION
+             <i className="fas fa-shield-alt mr-2"></i>{viewMode === 'BURSAR' ? 'BURSAR REVENUE' : 'STORES CLERK'}
           </div>
           {canManage && activeTab === "items" && (
              <button 
@@ -352,7 +411,10 @@ const ItemsTab: React.FC<ItemsTabProps> = ({ items, onUpdate, canManage, showMod
                     <div className="portal-text-sku">SKU: {item.id.slice(0, 8).toUpperCase()}</div>
                   </td>
                   {canManage && <td className="portal-text-muted-bold">${item.orderPrice.toFixed(2)}</td>}
-                  <td className="portal-text-price-blue">${item.sellingPrice.toFixed(2)}</td>
+                  <td className="portal-text-price-blue">
+                    <div>${item.sellingPrice.toFixed(2)}</div>
+                    <div style={{ fontSize: '0.75rem', color: '#16a34a', fontWeight: 600 }}>ZiG {(item.sellingPrice * 26.5).toFixed(2)}</div>
+                  </td>
                   <td>
                     {item.stockLevel > 0 ? (
                       <span className="status-badge status-active portal-status-badge-pill">
