@@ -5,6 +5,8 @@ import TopBar from './TopBar';
 import Header from './Header';
 import Footer from './Footer';
 import AIChatBot from '../shared/AIChatBot';
+import CookieNotice from '../shared/CookieNotice';
+import TawkToWidget from '../shared/TawkToWidget';
 
 // ── Timezone overrides ───────────────────────────────────────────────────────
 if (typeof window !== 'undefined' && !(window as any).__date_overridden__) {
@@ -131,6 +133,11 @@ export default function Layout() {
       </main>
       <Footer school={school} />
       <AIChatBot />
+      <CookieNotice />
+      <TawkToWidget
+        propertyId={school?.schoolSetting?.tawktoPropertyId || (school as any)?.communication?.tawktoPropertyId}
+        enabled={Boolean(school?.schoolSetting?.liveChatEnabled ?? (school as any)?.communication?.liveChatEnabled)}
+      />
     </SchoolContext.Provider>
   );
 }

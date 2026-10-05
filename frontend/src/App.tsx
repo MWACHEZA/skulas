@@ -256,6 +256,10 @@ import PlatformSettings from './portals/acadex/pages/PlatformSettings';
 import MessagesPage from './portals/shared/pages/MessagesPage';
 import ProfilePage from './portals/shared/pages/ProfilePage';
 import SettingsPage from './portals/shared/pages/SettingsPage';
+import PersonalPreferences from './portals/shared/pages/PersonalPreferences';
+import NotFoundPage from './portals/shared/pages/NotFoundPage';
+import PrivacyPolicyPage from './portals/shared/pages/PrivacyPolicyPage';
+import TermsPage from './portals/shared/pages/TermsPage';
 import ITSupportPage from './portals/shared/pages/ITSupportPage';
 import PaymentMethodsPage from './portals/shared/pages/PaymentMethodsPage';
 import RevenueAllocationPage from './portals/shared/pages/RevenueAllocationPage';
@@ -477,7 +481,7 @@ export default function App() {
               <Route path="research" element={<ResearchDashboard />} />
               <Route path="portfolio" element={<AcademicPortfolio />} />
               <Route path="messages" element={<MessagesPage />} />
-              <Route path="settings" element={<SettingsPage />} />
+              <Route path="settings" element={<PersonalPreferences />} />
               <Route path="profile" element={<ProfilePage />} />
               <Route path="cbt" element={<CBTExams />} />
               <Route path="cbt/take/:id" element={<TakeExam />} />
@@ -562,7 +566,7 @@ export default function App() {
               <Route path="supervision" element={<SupervisorDashboard />} />
               <Route path="assets" element={<TeacherAssets />} />
               <Route path="uniforms" element={<UniformsPage />} />
-              <Route path="settings" element={<SettingsPage />} />
+              <Route path="settings" element={<PersonalPreferences />} />
               <Route path="profile" element={<ProfilePage />} />
 
               {/* Backward-Compatible Redirects */}
@@ -644,8 +648,8 @@ export default function App() {
               {/* 8. System Module */}
               <Route path="system" element={<AdminSystem />} />
               <Route path="system-config" element={<AdminSystemConfig />} />
-              <Route path="settings" element={<SettingsPage />} />
-              <Route path="personal-settings" element={<SettingsPage />} />
+              <Route path="settings" element={<PersonalPreferences />} />
+              <Route path="personal-settings" element={<PersonalPreferences />} />
               <Route path="profile" element={<ProfilePage />} />
               <Route path="setup" element={<SetupWizardPage />} />
               <Route path="helpdesk" element={<AdminHelpdesk />} />
@@ -667,7 +671,7 @@ export default function App() {
               <Route path="sdc-funding" element={<AdminSDCFunding />} />
               <Route path="document-templates" element={<AdminDocumentTemplates />} />
               <Route path="branding" element={<AdminDocumentTemplates />} />
-              <Route path="website-settings" element={<SettingsPage />} />
+              <Route path="website-settings" element={<SettingsPage defaultTab="banner" />} />
               <Route path="departments" element={<AdminDepartments />} />
               <Route path="teacher-load" element={<AdminTeacherLoad />} />
 
@@ -836,8 +840,8 @@ export default function App() {
                 <Route path="view/:type" element={<ReportViewerPage />} />
               </Route>
 
-              <Route path="website-settings" element={<SettingsPage />} />
-              <Route path="settings" element={<SettingsPage />} />
+              <Route path="website-settings" element={<SettingsPage defaultTab="banner" />} />
+              <Route path="settings" element={<PersonalPreferences />} />
               <Route path="payment-methods" element={<PaymentMethodsPage />} />
               <Route path="fee-groups" element={<FeeGroupsPage />} />
               <Route path="revenue-allocation" element={<RevenueAllocationPage />} />
@@ -893,7 +897,7 @@ export default function App() {
               <Route path="assets" element={<AdminAssetManagement />} />
               <Route path="procurement" element={<AncillaryProcurement />} />
               <Route path="messages" element={<MessagesPage />} />
-              <Route path="settings" element={<SettingsPage />} />
+              <Route path="settings" element={<PersonalPreferences />} />
               <Route path="profile" element={<ProfilePage />} />
               <Route path="leave" element={<MyLeave />} />
               <Route path="awards" element={<MyAwards />} />
@@ -923,7 +927,7 @@ export default function App() {
               <Route path="events" element={<AlumniEvents />} />
               <Route path="fees" element={<AlumniFees />} />
               <Route path="updates" element={<AlumniUpdates />} />
-              <Route path="settings" element={<SettingsPage />} />
+              <Route path="settings" element={<PersonalPreferences />} />
               <Route path="profile" element={<ProfilePage />} />
               <Route path="support" element={<ITSupportPage />} />
             </Route>
@@ -947,8 +951,8 @@ export default function App() {
               <Route path="office/complaints" element={<ComplaintsPage />} />
               <Route path="it-support" element={<ITSupportPage />} />
               <Route path="support" element={<ITSupportPage />} />
-              <Route path="website-settings" element={<SettingsPage />} />
-              <Route path="settings" element={<SettingsPage />} />
+              <Route path="website-settings" element={<SettingsPage defaultTab="banner" />} />
+              <Route path="settings" element={<PersonalPreferences />} />
               <Route path="assets" element={<AncillaryAssets />} />
               <Route path="procurement" element={<AncillaryProcurement />} />
               <Route path="directory" element={<AncillaryDirectory />} />
@@ -1020,7 +1024,7 @@ export default function App() {
               <Route path="notices" element={<ParentNotices />} />
               <Route path="approvals" element={<ParentApprovals />} />
               <Route path="clinic" element={<ParentClinic />} />
-              <Route path="settings" element={<SettingsPage />} />
+              <Route path="settings" element={<PersonalPreferences />} />
               <Route path="support" element={<ITSupportPage />} />
 
               {/* Backward-Compatible Redirects for Consolidated Pages */}
@@ -1102,7 +1106,7 @@ export default function App() {
               <Route path="profile" element={<ProfilePage />} />
               <Route path="support" element={<ITSupportPage />} />
               <Route path="assets" element={<AdminAssetManagement />} />
-              <Route path="settings" element={<SettingsPage />} />
+              <Route path="settings" element={<PersonalPreferences />} />
             </Route>
 
             {/*  APPLICANT PORTAL */}
@@ -1121,9 +1125,14 @@ export default function App() {
               <Route path="fees" element={<ApplicantFees />} />
               <Route path="messages" element={<MessagesPage />} />
               <Route path="faq" element={<ApplicantFAQPage />} />
-              <Route path="settings" element={<SettingsPage />} />
+              <Route path="settings" element={<PersonalPreferences />} />
               <Route path="support" element={<ITSupportPage />} />
             </Route>
+
+            {/* Legal & Compliance Pages */}
+            <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+            <Route path="/terms" element={<TermsPage />} />
+            <Route path="/404" element={<NotFoundPage />} />
 
             {/*  ACADEX PLATFORM PORTAL */}
             <Route path="/acadex/login" element={
@@ -1143,6 +1152,9 @@ export default function App() {
               <Route path="profile" element={<ProfilePage />} />
               <Route path="support" element={<ITSupportPage />} />
             </Route>
+
+            {/* Catch-all 404 Route */}
+            <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </BrowserRouter>
         </SetupProvider>

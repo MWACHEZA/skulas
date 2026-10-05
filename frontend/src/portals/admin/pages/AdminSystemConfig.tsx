@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useToast } from '../../../context/ToastContext';
+import SystemConfigCommunication from './SystemConfigCommunication';
 import '../../../styles/portal.css';
 
 type ConfigTab = 'branding' | 'gateways' | 'notifications' | 'backup';
@@ -12,8 +13,6 @@ export default function AdminSystemConfig() {
 
   const [saving, setSaving] = useState(false);
   const [backingUp, setBackingUp] = useState(false);
-  const [testPhone, setTestPhone] = useState('+263 77 123 4567');
-  const [sendingTest, setSendingTest] = useState(false);
 
   // 1. School Profile & Receipt Branding
   const [profile, setProfile] = useState({
@@ -35,18 +34,6 @@ export default function AdminSystemConfig() {
     receiptFooter: 'Thank you for your timely settlement. All school fees are strictly non-refundable.'
   });
 
-  // 2. SMS & Email Gateways
-  const [gateways, setGateways] = useState({
-    smsProvider: 'BulkSMS_ZW',
-    smsApiKey: 'sk_live_bulksms_99281a8c9b2f1e09',
-    smsSenderId: 'ST_GEORGES',
-    smsEndpoint: 'https://api.bulksms.co.zw/v2/messages',
-    emailHost: 'smtp.office365.com',
-    emailPort: 587,
-    emailUsername: 'notifications@stgeorges.ac.zw',
-    emailPassword: '••••••••••••••••',
-    emailEncryption: 'STARTTLS'
-  });
 
   // 3. Notification Rules
   const [notificationRules, setNotificationRules] = useState([
@@ -78,26 +65,6 @@ export default function AdminSystemConfig() {
     }, 600);
   };
 
-  const handleSaveGateways = (e: React.FormEvent) => {
-    e.preventDefault();
-    setSaving(true);
-    setTimeout(() => {
-      setSaving(false);
-      showToast('SMS and SMTP communication gateways reconfigured and verified!', 'success');
-    }, 600);
-  };
-
-  const handleSendTestSms = () => {
-    if (!testPhone) {
-      showToast('Please provide a valid recipient phone number', 'error');
-      return;
-    }
-    setSendingTest(true);
-    setTimeout(() => {
-      setSendingTest(false);
-      showToast(`Test dispatch successful! SMS delivered to ${testPhone} via ${gateways.smsProvider}.`, 'success');
-    }, 1200);
-  };
 
   const handleToggleRule = (id: string) => {
     setNotificationRules(prev => prev.map(r => r.id === id ? { ...r, enabled: !r.enabled } : r));
@@ -410,164 +377,7 @@ export default function AdminSystemConfig() {
       {/* TAB 2: SMS & EMAIL GATEWAYS */}
       {/* ───────────────────────────────────────────────────────────── */}
       {activeTab === 'gateways' && (
-        <form onSubmit={handleSaveGateways}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, marginBottom: 24 }}>
-            {/* SMS Provider Card */}
-            <div className="portal-card" style={{ background: '#fff', borderRadius: 8, padding: 24 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
-                <i className="fas fa-sms" style={{ fontSize: '1.4rem', color: '#0284c7' }}></i>
-                <div>
-                  <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, color: '#1e293b' }}>SMS Telephony Gateway</h3>
-                  <span style={{ fontSize: '0.8rem', color: '#64748b' }}>Parent billing alerts, OTPs and emergency broadcasts</span>
-                </div>
-              </div>
-
-              <div style={{ marginBottom: 14 }}>
-                <label className="form-label" style={{ fontWeight: 600, fontSize: '0.85rem' }}>Active SMS Gateway Provider</label>
-                <select
-                  className="portal-input"
-                  value={gateways.smsProvider}
-                  onChange={e => setGateways({ ...gateways, smsProvider: e.target.value })}
-                >
-                  <option value="BulkSMS_ZW">BulkSMS Zimbabwe (Local EcoCash Gateway)</option>
-                  <option value="Twilio">Twilio Global SMS & WhatsApp API</option>
-                  <option value="AfricasTalking">Africa's Talking (East & Southern Africa)</option>
-                  <option value="EconetSMS">Econet Wireless Direct SMS Link</option>
-                </select>
-              </div>
-
-              <div style={{ marginBottom: 14 }}>
-                <label className="form-label" style={{ fontWeight: 600, fontSize: '0.85rem' }}>Sender ID / Alphanumeric Tag (Max 11 Chars)</label>
-                <input
-                  type="text"
-                  maxLength={11}
-                  className="portal-input"
-                  value={gateways.smsSenderId}
-                  onChange={e => setGateways({ ...gateways, smsSenderId: e.target.value })}
-                />
-              </div>
-
-              <div style={{ marginBottom: 14 }}>
-                <label className="form-label" style={{ fontWeight: 600, fontSize: '0.85rem' }}>API Secret Key / Token</label>
-                <input
-                  type="password"
-                  className="portal-input"
-                  value={gateways.smsApiKey}
-                  onChange={e => setGateways({ ...gateways, smsApiKey: e.target.value })}
-                />
-              </div>
-
-              <div style={{ marginBottom: 20 }}>
-                <label className="form-label" style={{ fontWeight: 600, fontSize: '0.85rem' }}>Provider HTTP Endpoint</label>
-                <input
-                  type="url"
-                  className="portal-input"
-                  value={gateways.smsEndpoint}
-                  onChange={e => setGateways({ ...gateways, smsEndpoint: e.target.value })}
-                />
-              </div>
-
-              <div style={{ background: '#f8fafc', padding: 14, borderRadius: 6, border: '1px solid #e2e8f0' }}>
-                <label style={{ fontSize: '0.82rem', fontWeight: 600, color: '#334155', display: 'block', marginBottom: 6 }}>Test Live Dispatch:</label>
-                <div style={{ display: 'flex', gap: 8 }}>
-                  <input
-                    type="text"
-                    className="portal-input"
-                    value={testPhone}
-                    onChange={e => setTestPhone(e.target.value)}
-                    placeholder="+263 77..."
-                    style={{ flex: 1 }}
-                  />
-                  <button
-                    type="button"
-                    disabled={sendingTest}
-                    onClick={handleSendTestSms}
-                    className="btn btn-secondary"
-                    style={{ padding: '8px 14px', background: '#0284c7', color: '#fff', border: 'none', borderRadius: 4, fontWeight: 600, cursor: 'pointer' }}
-                  >
-                    {sendingTest ? 'Sending...' : 'Send Test'}
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            {/* Email SMTP Card */}
-            <div className="portal-card" style={{ background: '#fff', borderRadius: 8, padding: 24 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
-                <i className="fas fa-envelope-open-text" style={{ fontSize: '1.4rem', color: '#4f46e5' }}></i>
-                <div>
-                  <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, color: '#1e293b' }}>Email SMTP Relayer</h3>
-                  <span style={{ fontSize: '0.8rem', color: '#64748b' }}>Invoices, statement PDF attachments & transcripts</span>
-                </div>
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 14, marginBottom: 14 }}>
-                <div>
-                  <label className="form-label" style={{ fontWeight: 600, fontSize: '0.85rem' }}>SMTP Host Server</label>
-                  <input
-                    type="text"
-                    className="portal-input"
-                    value={gateways.emailHost}
-                    onChange={e => setGateways({ ...gateways, emailHost: e.target.value })}
-                  />
-                </div>
-                <div>
-                  <label className="form-label" style={{ fontWeight: 600, fontSize: '0.85rem' }}>Port</label>
-                  <input
-                    type="number"
-                    className="portal-input"
-                    value={gateways.emailPort}
-                    onChange={e => setGateways({ ...gateways, emailPort: Number(e.target.value) })}
-                  />
-                </div>
-              </div>
-
-              <div style={{ marginBottom: 14 }}>
-                <label className="form-label" style={{ fontWeight: 600, fontSize: '0.85rem' }}>SMTP Username / Sender Address</label>
-                <input
-                  type="email"
-                  className="portal-input"
-                  value={gateways.emailUsername}
-                  onChange={e => setGateways({ ...gateways, emailUsername: e.target.value })}
-                />
-              </div>
-
-              <div style={{ marginBottom: 14 }}>
-                <label className="form-label" style={{ fontWeight: 600, fontSize: '0.85rem' }}>SMTP Password / App Secret</label>
-                <input
-                  type="password"
-                  className="portal-input"
-                  value={gateways.emailPassword}
-                  onChange={e => setGateways({ ...gateways, emailPassword: e.target.value })}
-                />
-              </div>
-
-              <div style={{ marginBottom: 20 }}>
-                <label className="form-label" style={{ fontWeight: 600, fontSize: '0.85rem' }}>Encryption Protocol</label>
-                <select
-                  className="portal-input"
-                  value={gateways.emailEncryption}
-                  onChange={e => setGateways({ ...gateways, emailEncryption: e.target.value })}
-                >
-                  <option value="STARTTLS">STARTTLS (Port 587)</option>
-                  <option value="SSL_TLS">SSL / TLS (Port 465)</option>
-                  <option value="NONE">Unencrypted (Port 25)</option>
-                </select>
-              </div>
-
-              <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 32 }}>
-                <button
-                  type="submit"
-                  disabled={saving}
-                  className="btn btn-primary"
-                  style={{ background: '#4f46e5', color: '#fff', border: 'none', padding: '10px 24px', borderRadius: 6, fontWeight: 600, cursor: 'pointer' }}
-                >
-                  {saving ? 'Saving...' : 'Save Communication Gateways'}
-                </button>
-              </div>
-            </div>
-          </div>
-        </form>
+        <SystemConfigCommunication />
       )}
 
       {/* ───────────────────────────────────────────────────────────── */}

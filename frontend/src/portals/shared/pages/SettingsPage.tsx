@@ -677,10 +677,6 @@ export default function SettingsPage({ defaultTab: _defaultTab }: SettingsPagePr
                 onChange={e => updateSetting('exchangeRate', e.target.value)} 
               />
             </div>
-            <div className="form-group">
-              <label className="portal-label">Paypal Gateway Email</label>
-              <input type="email" className="portal-input" value={settings.paypalEmail || ''} onChange={e => updateSetting('paypalEmail', e.target.value)} placeholder="finance@school.ac.zw" />
-            </div>
           </div>
 
           <h4 style={{ margin: '0 0 16px', fontSize: '0.95rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#1e293b', display: 'flex', alignItems: 'center', gap: '8px' }}>
