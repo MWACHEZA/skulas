@@ -19,11 +19,25 @@ export default function ProtectedRoute({ children, allowedRole, allowedRoles, lo
   }
 
   const roles = allowedRoles || (allowedRole ? [allowedRole] : []);
-  if (roles.length > 0 && (!user?.role || !roles.includes(user.role))) {
-    // If logged in as wrong role, redirect to their home or show unauthorized
-    // For simplicity, we'll redirect back to home or their own dashboard
-    return <Navigate to="/" replace />;
+  if (roles.length > 0) {
+    const userRoles = [user?.role, ...(user?.secondaryRoles || [])].filter(Boolean) as string[];
+    const isSuperOrAdmin = user?.role === 'SUPER_ADMIN' || user?.role === 'SCHOOL_ADMIN';
+    const hasRoleAccess = roles.some((r) => userRoles.includes(r));
+    const hasAdminOversight = isSuperOrAdmin && roles.includes('BURSAR');
+
+    if (!hasRoleAccess && !hasAdminOversight) {
+      const fallback =
+        user?.role === 'TEACHER'
+          ? '/teacher/dashboard'
+          : user?.role === 'STUDENT'
+          ? '/student/dashboard'
+          : user?.role === 'BURSAR'
+          ? '/bursar/dashboard'
+          : '/admin/dashboard';
+      return <Navigate to={fallback} replace />;
+    }
   }
 
   return <>{children}</>;
 }
+

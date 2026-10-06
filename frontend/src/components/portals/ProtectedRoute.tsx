@@ -16,8 +16,19 @@ export default function ProtectedRoute({ children, allowedRoles, redirectTo = '/
     return <Navigate to={redirectTo} state={{ from: location }} replace />;
   }
 
-  if (!hasRole(...allowedRoles)) {
-    return <Navigate to={redirectTo} replace />;
+  const isSuperOrAdmin = user?.role === 'SUPER_ADMIN' || user?.role === 'SCHOOL_ADMIN';
+  const hasAccess = hasRole(...allowedRoles) || (isSuperOrAdmin && allowedRoles.includes('BURSAR'));
+
+  if (!hasAccess) {
+    const fallback =
+      user?.role === 'TEACHER'
+        ? '/teacher/dashboard'
+        : user?.role === 'STUDENT'
+        ? '/student/dashboard'
+        : user?.role === 'BURSAR'
+        ? '/bursar/dashboard'
+        : '/admin/dashboard';
+    return <Navigate to={fallback} replace />;
   }
 
   return <>{children}</>;

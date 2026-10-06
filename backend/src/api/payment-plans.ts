@@ -209,4 +209,115 @@ router.post('/installments/:id/pay', requireAuth, requireRole('PARENT', 'SCHOOL_
   }
 });
 
+// 5. Admin payment plans view (ManagePaymentPlans.tsx)
+router.get('/admin', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR'), async (req: AuthRequest, res: Response) => {
+  try {
+    const plans = await prisma.paymentPlan.findMany({
+      where: { schoolId: req.user!.schoolId! },
+      include: {
+        installments: { orderBy: { dueDate: 'asc' } },
+        student: { select: { id: true, name: true, studentId: true, class: { select: { name: true } } } },
+        parentUser: { select: { name: true, email: true } }
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+
+    const formatted = plans.map(p => {
+      const firstPending = p.installments.find(i => i.status === 'PENDING') || p.installments[0];
+      return {
+        id: p.id,
+        amount: p.totalAmount,
+        dueDate: firstPending ? firstPending.dueDate.toISOString() : p.createdAt.toISOString(),
+        status: p.status,
+        notes: `${p.planType} payment plan (${p.installmentsCount} installments)`,
+        createdAt: p.createdAt.toISOString(),
+        student: {
+          name: p.student?.name || 'Student',
+          studentId: p.student?.studentId || p.studentId,
+          class: p.student?.class || { name: 'General' }
+        },
+        parentUser: {
+          name: p.parentUser?.name || 'Parent/Guardian',
+          email: p.parentUser?.email || ''
+        },
+        installments: p.installments
+      };
+    });
+
+    res.json(formatted);
+  } catch (error) {
+    console.error('Error fetching admin payment plans:', error);
+    res.status(500).json({ error: 'Failed to fetch payment plans' });
+  }
+});
+
+// 6. Update payment plan status
+router.patch('/:id/status', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR'), async (req: AuthRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+    const plan = await prisma.paymentPlan.update({
+      where: { id: id as string },
+      data: { status }
+    });
+    res.json(plan);
+  } catch (error) {
+    console.error('Error updating payment plan status:', error);
+    res.status(500).json({ error: 'Failed to update plan status' });
+  }
+});
+
+// In-memory template store per school with standard default templates
+const templatesStore = new Map<string, any[]>([
+  ['default', [
+    { id: 'tmpl-1', name: 'Three-Term Equal Split', amount: 450, dueDate: null, notes: 'Standard 3-installment termly payment agreement' },
+    { id: 'tmpl-2', name: 'Monthly Installment Plan', amount: 150, dueDate: null, notes: 'Monthly recurring plan across academic term' },
+    { id: 'tmpl-3', name: 'Boarding & Tuition Bi-Weekly', amount: 300, dueDate: null, notes: 'Bi-weekly residential boarder settlement' }
+  ]]
+]);
+
+// 7. Get templates
+router.get('/templates', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR'), async (req: AuthRequest, res: Response) => {
+  const schoolId = req.user!.schoolId!;
+  const tmpls = templatesStore.get(schoolId) || templatesStore.get('default') || [];
+  res.json(tmpls);
+});
+
+// 8. Create or update template
+router.post('/templates', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR'), async (req: AuthRequest, res: Response) => {
+  const schoolId = req.user!.schoolId!;
+  const { id, name, amount, dueDate, notes } = req.body;
+  const current = templatesStore.get(schoolId) || [...(templatesStore.get('default') || [])];
+
+  if (id) {
+    const idx = current.findIndex(t => t.id === id);
+    if (idx !== -1) {
+      current[idx] = { id, name, amount: Number(amount), dueDate, notes };
+    } else {
+      current.push({ id, name, amount: Number(amount), dueDate, notes });
+    }
+  } else {
+    current.push({
+      id: `tmpl-${Date.now()}`,
+      name,
+      amount: Number(amount),
+      dueDate,
+      notes
+    });
+  }
+
+  templatesStore.set(schoolId, current);
+  res.json({ success: true, templates: current });
+});
+
+// 9. Delete template
+router.delete('/templates/:id', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR'), async (req: AuthRequest, res: Response) => {
+  const schoolId = req.user!.schoolId!;
+  const { id } = req.params;
+  const current = (templatesStore.get(schoolId) || templatesStore.get('default') || []).filter(t => t.id !== id);
+  templatesStore.set(schoolId, current);
+  res.json({ success: true, templates: current });
+});
+
 export default router;
+

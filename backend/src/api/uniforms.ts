@@ -46,15 +46,30 @@ router.post('/items', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async 
   try {
     const schoolId = req.user!.schoolId!;
     const validatedData = UniformItemSchema.parse(req.body);
+    const { stockLevel, ...itemData } = validatedData;
 
     const item = await prisma.uniformItem.create({
       data: {
-        ...validatedData,
+        ...itemData,
         schoolId
       }
     });
 
-    res.status(201).json({ ...item, stockLevel: 0 });
+    if (stockLevel && stockLevel > 0) {
+      await prisma.uniformStockMovement.create({
+        data: {
+          itemId: item.id,
+          quantity: stockLevel,
+          movementType: 'PURCHASE_IN',
+          reference: 'INITIAL_STOCK',
+          unitCost: item.costPrice || 0,
+          totalCost: (item.costPrice || 0) * stockLevel,
+          schoolId
+        }
+      });
+    }
+
+    res.status(201).json({ ...item, stockLevel: stockLevel || 0 });
   } catch (error: any) {
     res.status(400).json({ error: error.message || 'Failed to create item' });
   }
@@ -65,10 +80,11 @@ router.patch('/items/:id', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), a
     const { id } = req.params;
     const schoolId = req.user!.schoolId!;
     const validatedData = UniformItemSchema.partial().parse(req.body);
+    const { stockLevel, ...itemData } = validatedData;
 
     const item = await prisma.uniformItem.updateMany({
       where: { id: id as string, schoolId },
-      data: validatedData
+      data: itemData
     });
 
     res.json(item);

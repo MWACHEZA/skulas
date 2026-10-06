@@ -65,10 +65,30 @@ export default function StudyMaterial() {
   const fetchSubjects = async () => {
     try {
       const res = await api.get('/api/subjects');
-      setSubjects(res.data);
+      const allSubjects = Array.isArray(res.data) ? res.data : (res.data?.subjects || []);
+      if (user?.role === 'TEACHER') {
+        const assignedIds = new Set(
+          (user.teacher?.subjects || [])
+            .map((s: any) => s.subjectId || s.subject?.id || s.id)
+            .filter(Boolean)
+        );
+        const filtered = allSubjects.filter((s: any) => {
+          if (assignedIds.size > 0 && assignedIds.has(s.id)) return true;
+          if (s.teachers && Array.isArray(s.teachers)) {
+            return s.teachers.some((t: any) =>
+              t.teacher?.user?.id === user.id ||
+              t.teacherId === user.teacher?.id ||
+              t.teacher?.id === user.teacher?.id
+            );
+          }
+          return false;
+        });
+        setSubjects(filtered.length > 0 ? filtered : allSubjects);
+      } else {
+        setSubjects(allSubjects);
+      }
     } catch (error) {
       console.error('Error fetching subjects', error);
-    
     }
   };
 

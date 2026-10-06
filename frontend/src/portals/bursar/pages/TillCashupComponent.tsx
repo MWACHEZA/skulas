@@ -41,7 +41,7 @@ export default function TillCashupComponent() {
 
   const fetchDevices = async () => {
     try {
-      const res = await api.get('/fiscal/devices');
+      const res = await api.get('/api/fiscal/devices');
       setDevices(res.data);
       if (res.data.length > 0 && !selectedDeviceId) {
         setSelectedDeviceId(res.data[0].id);
@@ -54,10 +54,10 @@ export default function TillCashupComponent() {
   const checkActiveSession = async (deviceId: string) => {
     setLoading(true);
     try {
-      const res = await api.get(`/tills/active?deviceId=${deviceId}`);
+      const res = await api.get(`/api/tills/active?deviceId=${deviceId}`);
       setActiveSession(res.data.session);
       if (res.data.session) {
-        const expRes = await api.get(`/tills/${res.data.session.id}/expected`);
+        const expRes = await api.get(`/api/tills/${res.data.session.id}/expected`);
         setExpectedSales(expRes.data);
       } else {
         setExpectedSales(null);
@@ -71,7 +71,7 @@ export default function TillCashupComponent() {
 
   const fetchVariances = async () => {
     try {
-      const res = await api.get('/tills/variances');
+      const res = await api.get('/api/tills/variances');
       setVariancesHistory(res.data);
     } catch (err) {
       console.error('Fetch variances error:', err);
@@ -81,7 +81,7 @@ export default function TillCashupComponent() {
   const handleOpenTill = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await api.post('/tills/open', {
+      await api.post('/api/tills/open', {
         deviceId: selectedDeviceId,
         openingFloat: parseFloat(openingFloat) || 0
       });
@@ -115,7 +115,7 @@ export default function TillCashupComponent() {
         countedAmount: parseFloat(amt) || 0
       }));
 
-      await api.post(`/tills/${activeSession.id}/close`, {
+      await api.post(`/api/tills/${activeSession.id}/close`, {
         denominations,
         countedPayments,
         notes: closeNotes

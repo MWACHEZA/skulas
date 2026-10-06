@@ -158,29 +158,31 @@ export default function TeacherDashboard() {
         bottom: 0,
         left: 0,
         right: 0,
-        backgroundColor: '#fff',
-        boxShadow: '0 -4px 6px -1px rgba(0, 0, 0, 0.1)',
-        padding: '12px 24px',
+        backgroundColor: '#ffffff',
+        borderTop: '1px solid #e2e8f0',
+        boxShadow: '0 -4px 12px rgba(0, 0, 0, 0.08)',
+        padding: '10px 16px',
         display: 'flex',
         justifyContent: 'center',
-        gap: '16px',
+        alignItems: 'center',
+        gap: '12px',
         zIndex: 900,
         flexWrap: 'wrap',
       }}>
-        <button className="portal-btn-secondary" onClick={() => navigate('/teacher/attendance')} style={{flex: '1 1 auto', minWidth: '120px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 8}}>
-          <i className="fas fa-clipboard-check"></i> Mark Attendance
+        <button className="portal-btn-secondary" onClick={() => navigate('/teacher/classes')} style={{flex: '1 1 auto', minWidth: '120px', maxWidth: '180px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 8, padding: '8px 12px', fontSize: '0.875rem'}}>
+          <i className="fas fa-chalkboard-teacher"></i> My Classes
         </button>
-        <button className="portal-btn-secondary" onClick={() => navigate('/teacher/grades')} style={{flex: '1 1 auto', minWidth: '120px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 8}}>
-          <i className="fas fa-edit"></i> Enter Marks
+        <button className="portal-btn-secondary" onClick={() => navigate('/teacher/attendance')} style={{flex: '1 1 auto', minWidth: '120px', maxWidth: '180px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 8, padding: '8px 12px', fontSize: '0.875rem'}}>
+          <i className="fas fa-clipboard-check"></i> Attendance
         </button>
-        <button className="portal-btn-secondary" onClick={() => navigate('/teacher/assignments')} style={{flex: '1 1 auto', minWidth: '120px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 8}}>
-          <i className="fas fa-file-upload"></i> Upload Assignment
+        <button className="portal-btn-secondary" onClick={() => navigate('/teacher/grades')} style={{flex: '1 1 auto', minWidth: '120px', maxWidth: '180px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 8, padding: '8px 12px', fontSize: '0.875rem'}}>
+          <i className="fas fa-edit"></i> Marks Entry
         </button>
-        <button className="portal-btn-secondary" onClick={() => navigate('/teacher/messages')} style={{flex: '1 1 auto', minWidth: '120px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 8}}>
-          <i className="fas fa-envelope"></i> Message Parent
+        <button className="portal-btn-secondary" onClick={() => navigate('/teacher/curriculum')} style={{flex: '1 1 auto', minWidth: '120px', maxWidth: '180px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 8, padding: '8px 12px', fontSize: '0.875rem'}}>
+          <i className="fas fa-book-open"></i> Curriculum
         </button>
-        <button className="portal-btn-secondary" onClick={() => setIsMaintModalOpen(true)} style={{flex: '1 1 auto', minWidth: '120px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 8}}>
-          <i className="fas fa-tools"></i> Report Issue
+        <button className="portal-btn-secondary" onClick={() => navigate('/teacher/clinic?tab=refer')} style={{flex: '1 1 auto', minWidth: '120px', maxWidth: '180px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 8, padding: '8px 12px', fontSize: '0.875rem', color: '#c53030', borderColor: '#feb2b2'}}>
+          <i className="fas fa-first-aid"></i> Sick Bay
         </button>
       </div>
 

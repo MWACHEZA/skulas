@@ -1185,6 +1185,7 @@ export default function AdminUserCreateModal({
                         <label>Business Category *</label>
                         <select name="category" value={formData.category || ''} onChange={handleInputChange} className="form-control" required>
                           <option value="">Select Category...</option>
+                          <option value="Uniforms & Apparel">Uniforms & Apparel</option>
                           <option value="ICT / Software">ICT / Software</option>
                           <option value="Transport & Logistics">Transport & Logistics</option>
                           <option value="Stationery & Printing">Stationery & Printing</option>
@@ -1198,8 +1199,35 @@ export default function AdminUserCreateModal({
                         <input name="designation" value={formData.designation || ''} onChange={handleInputChange} className="form-control" placeholder="e.g. Sales Manager" />
                       </div>
                       <div className="form-group" style={{ gridColumn: 'span 3' }}>
+                        <label>Items Supplied & Product Catalog</label>
+                        <textarea
+                          name="itemsSupplied"
+                          value={formData.itemsSupplied || ''}
+                          onChange={handleInputChange}
+                          className="form-control"
+                          rows={2}
+                          placeholder="e.g. School blazers, ties, white shirts, tracksuits, sports kits..."
+                        />
+                      </div>
+                      <div className="form-group" style={{ gridColumn: 'span 3' }}>
                         <label>Business Address *</label>
                         <textarea name="address" value={formData.address || ''} onChange={handleInputChange} className="form-control" rows={2} required placeholder="Physical business address..." />
+                      </div>
+                    </div>
+
+                    <div className="form-section-header mt-6">Banking & Settlement Profile</div>
+                    <div className="modal-form-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}>
+                      <div className="form-group">
+                        <label>Bank Name</label>
+                        <input name="bankName" value={formData.bankName || ''} onChange={handleInputChange} className="form-control" placeholder="e.g. Stanbic / CBZ" />
+                      </div>
+                      <div className="form-group">
+                        <label>Branch & Code</label>
+                        <input name="branchCode" value={formData.branchCode || ''} onChange={handleInputChange} className="form-control" placeholder="e.g. Harare Centre" />
+                      </div>
+                      <div className="form-group">
+                        <label>Account Number</label>
+                        <input name="accountNumber" value={formData.accountNumber || ''} onChange={handleInputChange} className="form-control" placeholder="Account No." />
                       </div>
                     </div>
 

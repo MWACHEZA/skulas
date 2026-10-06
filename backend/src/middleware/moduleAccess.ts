@@ -22,9 +22,15 @@ const MODULE_ACCESS_MAP: Record<string, {
     secondaryRequestRoles: [] // teachers get request-only by DEFAULT (handled in route)
   },
   farm: {
-    fullRoles: ['SCHOOL_ADMIN', 'SUPER_ADMIN'],
-    secondaryFullRoles: ['farm_manager', 'FARM_MANAGER', 'FARM_MGT'],
-    secondaryScopedRoles: ['agric_teacher', 'AGRIC_TEACHER', 'AGRI_ACADEMIC'],
+    fullRoles: ['SCHOOL_ADMIN', 'SUPER_ADMIN', 'TEACHER'],
+    secondaryFullRoles: ['farm_manager', 'FARM_MANAGER', 'FARM_MGT', 'Agriculture Teacher', 'Farm Assistant', 'agric_teacher', 'AGRIC_TEACHER'],
+    secondaryScopedRoles: ['agric_teacher', 'AGRIC_TEACHER', 'AGRI_ACADEMIC', 'Agriculture Teacher', 'Farm Assistant', 'teacher', 'TEACHER'],
+    secondaryRequestRoles: []
+  },
+  prefects: {
+    fullRoles: ['SCHOOL_ADMIN', 'SUPER_ADMIN', 'TEACHER'],
+    secondaryFullRoles: ['prefect_master', 'DISCIPLINE_MASTER', 'head_prefect', 'PREFECT'],
+    secondaryScopedRoles: ['house_master', 'HOUSE_MASTER', 'teacher', 'TEACHER'],
     secondaryRequestRoles: []
   },
   dining: {

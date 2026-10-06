@@ -34,7 +34,9 @@ export default function MessagesPage() {
   
   // Form state
   const [activeTab, setActiveTab] = useState<'inbox' | 'meetings'>('inbox');
+  const [recipientMode, setRecipientMode] = useState<'select' | 'email'>('select');
   const [newRecipientId, setNewRecipientId] = useState('');
+  const [newRecipientEmail, setNewRecipientEmail] = useState('');
   const [newSubject, setNewSubject] = useState('');
   const [newBody, setNewBody] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -108,23 +110,33 @@ export default function MessagesPage() {
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newRecipientId || !newSubject || !newBody) return;
+    if (recipientMode === 'select' && !newRecipientId) {
+      showToast('Please select a recipient', 'error');
+      return;
+    }
+    if (recipientMode === 'email' && !newRecipientEmail.trim()) {
+      showToast('Please enter recipient email', 'error');
+      return;
+    }
+    if (!newSubject || !newBody) return;
     setSubmitting(true);
     try {
       await api.post('/api/messages', {
-        recipientId: newRecipientId,
+        recipientId: recipientMode === 'select' ? newRecipientId : undefined,
+        recipientEmail: recipientMode === 'email' ? newRecipientEmail.trim() : undefined,
         subject: newSubject,
         body: newBody
       });
       showToast('Message sent successfully!', 'success');
       setShowNewModal(false);
       setNewRecipientId('');
+      setNewRecipientEmail('');
       setNewSubject('');
       setNewBody('');
       fetchMessages();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error sending message:', error);
-      showToast('Failed to send message.', 'error');
+      showToast(error.response?.data?.error || 'Failed to send message.', 'error');
     } finally {
       setSubmitting(false);
     }
@@ -539,18 +551,58 @@ export default function MessagesPage() {
             <div className="portal-modal-body">
               <form onSubmit={handleSendMessage} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                 <div className="portal-form-group">
-                  <label className="portal-label">Recipient <span style={{ color: 'red' }}>*</span></label>
-                  <select 
-                    required 
-                    className="portal-input" 
-                    value={newRecipientId} 
-                    onChange={e => setNewRecipientId(e.target.value)}
-                  >
-                    <option value="">Select a user</option>
-                    {recipients.map(r => (
-                      <option key={r.id} value={r.id}>{r.name} ({r.role.replace('_', ' ')})</option>
-                    ))}
-                  </select>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                    <label className="portal-label" style={{ margin: 0 }}>
+                      Recipient <span style={{ color: 'red' }}>*</span>
+                    </label>
+                    <div style={{ display: 'flex', gap: 6, fontSize: '0.8rem' }}>
+                      <button
+                        type="button"
+                        onClick={() => setRecipientMode('select')}
+                        style={{
+                          background: recipientMode === 'select' ? '#0284c7' : '#f1f5f9',
+                          color: recipientMode === 'select' ? '#fff' : '#475569',
+                          border: 'none', padding: '3px 8px', borderRadius: 4, cursor: 'pointer', fontWeight: 600
+                        }}
+                      >
+                        Select User
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setRecipientMode('email')}
+                        style={{
+                          background: recipientMode === 'email' ? '#0284c7' : '#f1f5f9',
+                          color: recipientMode === 'email' ? '#fff' : '#475569',
+                          border: 'none', padding: '3px 8px', borderRadius: 4, cursor: 'pointer', fontWeight: 600
+                        }}
+                      >
+                        Type Email
+                      </button>
+                    </div>
+                  </div>
+
+                  {recipientMode === 'select' ? (
+                    <select 
+                      required 
+                      className="portal-input" 
+                      value={newRecipientId} 
+                      onChange={e => setNewRecipientId(e.target.value)}
+                    >
+                      <option value="">Select a user</option>
+                      {recipients.map(r => (
+                        <option key={r.id} value={r.id}>{r.name} ({r.role.replace('_', ' ')}) {r.email ? `- ${r.email}` : ''}</option>
+                      ))}
+                    </select>
+                  ) : (
+                    <input
+                      type="email"
+                      required
+                      className="portal-input"
+                      placeholder="e.g. bursar@school.ac.zw or staff@example.com"
+                      value={newRecipientEmail}
+                      onChange={e => setNewRecipientEmail(e.target.value)}
+                    />
+                  )}
                 </div>
 
                 <div className="portal-form-group">

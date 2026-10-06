@@ -307,6 +307,53 @@ router.post('/sales', async (req: AuthRequest, res) => {
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
+// GET /api/tuckshop/sales (Full directory for FinanceWallets.tsx)
+// ─────────────────────────────────────────────────────────────────────────────
+router.get('/sales', async (req: AuthRequest, res) => {
+  try {
+    const schoolId = req.user?.schoolId;
+    if (!schoolId) return res.status(400).json({ error: 'Missing school context' });
+
+    const sales = await prisma.tuckshopSale.findMany({
+      where: { schoolId },
+      orderBy: { soldAt: 'desc' },
+      take: 200,
+      include: {
+        item: true
+      }
+    });
+
+    const studentIds = sales.map(s => s.studentId).filter((id): id is string => Boolean(id));
+    const students = studentIds.length > 0 
+      ? await prisma.student.findMany({
+          where: { id: { in: studentIds } },
+          select: { id: true, name: true, studentId: true, user: { select: { name: true, email: true } } }
+        })
+      : [];
+    const studentMap = new Map(students.map(st => [st.id, st]));
+
+    const formatted = sales.map(s => {
+      const student = s.studentId ? studentMap.get(s.studentId) : null;
+      return {
+        id: s.id,
+        itemNames: s.item?.name || 'Tuckshop Item',
+        totalAmount: s.totalAmount,
+        quantity: s.quantity,
+        paymentMethod: 'CASH',
+        soldAt: s.soldAt,
+        studentName: student?.user?.name || student?.name || 'Counter Sale',
+        student: student || null
+      };
+    });
+
+    res.json(formatted);
+  } catch (error) {
+    console.error('Fetch sales error:', error);
+    res.status(500).json({ error: 'Failed to fetch sales' });
+  }
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
 // GET /api/tuckshop/sales/recent
 // ─────────────────────────────────────────────────────────────────────────────
 router.get('/sales/recent', async (req: AuthRequest, res) => {

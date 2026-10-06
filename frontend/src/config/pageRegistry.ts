@@ -167,6 +167,16 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     searchKeywords: ['curriculum', 'subjects', 'classes', 'streams', 'grading settings']
   },
   {
+    id: 'admin-departments',
+    label: 'Academic Departments',
+    route: '/admin/departments',
+    group: 'ACADEMICS',
+    icon: 'fas fa-sitemap',
+    permissionKey: PERMISSIONS.ACADEMICS_SUBJECTS_MANAGE,
+    portalVisibility: ['admin'],
+    searchKeywords: ['departments', 'hod', 'faculty', 'subject departments', 'academic departments']
+  },
+  {
     id: 'admin-academics-marks',
     label: 'Marks & Reports',
     route: '/admin/academics/marks',
@@ -317,7 +327,17 @@ export const PAGE_REGISTRY: PageDefinition[] = [
       { id: 'rooms', label: 'Dorm Rooms' },
       { id: 'allocations', label: 'Boarder Allocations' }
     ],
-    searchKeywords: ['hostels', 'dorms', 'boarders', 'residential']
+    searchKeywords: ['hostels', 'dorms', 'dormitory', 'houses', 'student houses', 'boarders', 'residential', 'boarding']
+  },
+  {
+    id: 'admin-clubs',
+    label: 'Clubs & Societies',
+    route: '/admin/clubs',
+    group: 'STUDENT_LIFE',
+    icon: 'fas fa-users',
+    permissionKey: PERMISSIONS.STUDENT_LIFE_CLUBS,
+    portalVisibility: ['admin'],
+    searchKeywords: ['clubs', 'societies', 'extracurricular', 'student clubs', 'societies']
   },
   {
     id: 'admin-dining',

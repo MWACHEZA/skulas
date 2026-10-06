@@ -162,8 +162,17 @@ export default function PortalLoginPage({ portalName, portalIcon, roleBadge, all
         isOpen={showPasswordModal}
         userEmail={form.email}
         token={pendingAuth?.token}
-        onCancel={() => setShowPasswordModal(false)}
-        onSuccess={() => finalizeLogin(pendingAuth)}
+        onCancel={() => {
+          setShowPasswordModal(false);
+          setPendingAuth(null);
+        }}
+        onSuccess={() => {
+          setShowPasswordModal(false);
+          setPendingAuth(null);
+          setForm(f => ({ ...f, password: '' }));
+          setError('');
+          showToast('Password updated successfully. Please sign in with your new password.', 'success');
+        }}
       />
     </div>
   );

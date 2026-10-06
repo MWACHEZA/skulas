@@ -81,6 +81,28 @@ export default function AdminBoarding() {
   const [showHostelModal, setShowHostelModal] = useState(false);
   const [showAssignModal, setShowAssignModal] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [studentFilterTerm, setStudentFilterTerm] = useState('');
+  const [hostelFilterTerm, setHostelFilterTerm] = useState('');
+
+  const filteredModalStudents = useMemo(() => {
+    if (!studentFilterTerm.trim()) return students;
+    const term = studentFilterTerm.toLowerCase();
+    return students.filter(s => {
+      const fullName = (s.firstName ? `${s.firstName} ${s.lastName}` : s.name || '').toLowerCase();
+      const stId = (s.studentId || '').toLowerCase();
+      const cls = (s.class?.name || '').toLowerCase();
+      return fullName.includes(term) || stId.includes(term) || cls.includes(term);
+    });
+  }, [students, studentFilterTerm]);
+
+  const filteredModalHostels = useMemo(() => {
+    if (!hostelFilterTerm.trim()) return hostels;
+    const term = hostelFilterTerm.toLowerCase();
+    return hostels.filter(h => {
+      return (h.hostelName || '').toLowerCase().includes(term) ||
+             (h.type || '').toLowerCase().includes(term);
+    });
+  }, [hostels, hostelFilterTerm]);
 
   // Forms
   const [hostelForm, setHostelForm] = useState({
@@ -780,15 +802,24 @@ export default function AdminBoarding() {
             </div>
             <form onSubmit={handleAssignStudent}>
               <div style={{ marginBottom: '14px' }}>
-                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#475569', marginBottom: '4px' }}>Select Student *</label>
+                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#475569', marginBottom: '4px' }}>
+                  Select Student *
+                </label>
+                <input
+                  type="text"
+                  placeholder="Type to filter students by name, ID, class..."
+                  value={studentFilterTerm}
+                  onChange={e => setStudentFilterTerm(e.target.value)}
+                  style={{ width: '100%', padding: '7px 10px', borderRadius: '6px', border: '1px solid #cbd5e1', marginBottom: '6px', fontSize: '0.85rem' }}
+                />
                 <select
                   required
                   value={assignForm.studentId}
                   onChange={e => setAssignForm({ ...assignForm, studentId: e.target.value })}
                   style={{ width: '100%', padding: '9px 12px', borderRadius: '6px', border: '1px solid #cbd5e1' }}
                 >
-                  <option value="">-- Choose Student --</option>
-                  {students.map(s => (
+                  <option value="">-- Choose Student ({filteredModalStudents.length} matches) --</option>
+                  {filteredModalStudents.map(s => (
                     <option key={s.id} value={s.id}>
                       {s.firstName ? `${s.firstName} ${s.lastName}` : s.name} ({s.class?.name || s.studentId || 'Student'})
                     </option>
@@ -797,15 +828,24 @@ export default function AdminBoarding() {
               </div>
 
               <div style={{ marginBottom: '14px' }}>
-                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#475569', marginBottom: '4px' }}>Select Hostel *</label>
+                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#475569', marginBottom: '4px' }}>
+                  Select Hostel *
+                </label>
+                <input
+                  type="text"
+                  placeholder="Type to filter hostels by name or type..."
+                  value={hostelFilterTerm}
+                  onChange={e => setHostelFilterTerm(e.target.value)}
+                  style={{ width: '100%', padding: '7px 10px', borderRadius: '6px', border: '1px solid #cbd5e1', marginBottom: '6px', fontSize: '0.85rem' }}
+                />
                 <select
                   required
                   value={assignForm.hostelId}
                   onChange={e => setAssignForm({ ...assignForm, hostelId: e.target.value })}
                   style={{ width: '100%', padding: '9px 12px', borderRadius: '6px', border: '1px solid #cbd5e1' }}
                 >
-                  <option value="">-- Choose Hostel --</option>
-                  {hostels.map(h => (
+                  <option value="">-- Choose Hostel ({filteredModalHostels.length} matches) --</option>
+                  {filteredModalHostels.map(h => (
                     <option key={h.id} value={h.id}>{h.hostelName} ({h.type} - {h.intake} beds)</option>
                   ))}
                 </select>

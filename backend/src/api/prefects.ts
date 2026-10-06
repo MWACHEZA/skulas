@@ -42,8 +42,73 @@ router.post('/meetings', async (req: Request, res: Response) => {
 // Conduct Reports (DisciplineRecord)
 router.get('/conduct', async (req: Request, res: Response) => {
   const { schoolId } = (req as any).user;
-  const reports = await prisma.disciplineRecord.findMany({ where: { schoolId } });
-  res.json(reports);
+  const reports = await prisma.disciplineRecord.findMany({
+    where: { schoolId },
+    orderBy: { date: 'desc' }
+  });
+  const studentIds = [...new Set(reports.map(r => r.studentId))];
+  const reporterIds = [...new Set(reports.map(r => r.reporterId))];
+  const [students, reporters] = await Promise.all([
+    prisma.student.findMany({
+      where: { id: { in: studentIds } },
+      select: { id: true, name: true, studentId: true, class: { select: { name: true } } }
+    }),
+    prisma.user.findMany({
+      where: { id: { in: reporterIds } },
+      select: { id: true, name: true, role: true }
+    })
+  ]);
+  const sMap = new Map(students.map(s => [s.id, s]));
+  const rMap = new Map(reporters.map(r => [r.id, r]));
+  res.json(reports.map(r => ({
+    ...r,
+    student: sMap.get(r.studentId) || null,
+    reporter: rMap.get(r.reporterId) || null
+  })));
+});
+
+router.get('/reports', async (req: Request, res: Response) => {
+  const { schoolId } = (req as any).user;
+  const reports = await prisma.disciplineRecord.findMany({
+    where: { schoolId },
+    orderBy: { date: 'desc' }
+  });
+  const studentIds = [...new Set(reports.map(r => r.studentId))];
+  const reporterIds = [...new Set(reports.map(r => r.reporterId))];
+  const [students, reporters] = await Promise.all([
+    prisma.student.findMany({
+      where: { id: { in: studentIds } },
+      select: { id: true, name: true, studentId: true, class: { select: { name: true } } }
+    }),
+    prisma.user.findMany({
+      where: { id: { in: reporterIds } },
+      select: { id: true, name: true, role: true }
+    })
+  ]);
+  const sMap = new Map(students.map(s => [s.id, s]));
+  const rMap = new Map(reporters.map(r => [r.id, r]));
+  res.json(reports.map(r => ({
+    ...r,
+    student: sMap.get(r.studentId) || null,
+    reporter: rMap.get(r.reporterId) || null
+  })));
+});
+
+router.patch('/reports/:id/status', async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { status, resolution } = req.body;
+  try {
+    const updated = await prisma.disciplineRecord.update({
+      where: { id: id as string },
+      data: {
+        actionTaken: resolution || status,
+        updatedAt: new Date()
+      }
+    });
+    res.json(updated);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to update report status' });
+  }
 });
 
 router.post('/conduct', async (req: Request, res: Response) => {

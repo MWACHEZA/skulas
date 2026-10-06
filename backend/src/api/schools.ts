@@ -776,7 +776,7 @@ router.get('/houses/:id/members', requireAuth, async (req: AuthRequest, res) => 
 });
 
 // ── STUDENT CLUBS ──
-router.get('/clubs-list', requireAuth, async (req: AuthRequest, res) => {
+router.get(['/clubs-list', '/clubs'], requireAuth, async (req: AuthRequest, res) => {
   try {
     const clubs = await prisma.club.findMany({
       where: { schoolId: req.user!.schoolId! },
@@ -788,7 +788,7 @@ router.get('/clubs-list', requireAuth, async (req: AuthRequest, res) => {
   }
 });
 
-router.post('/clubs-list', requireAuth, requireRole('SCHOOL_ADMIN'), clubsUpload.single('logo'), validate(ClubSchema), async (req: AuthRequest, res) => {
+router.post(['/clubs-list', '/clubs'], requireAuth, requireRole('SCHOOL_ADMIN'), clubsUpload.single('logo'), validate(ClubSchema), async (req: AuthRequest, res) => {
   try {
     const { name, description, date, category, patron, chairperson } = req.body;
     const logoFilename = req.file ? req.file.filename : undefined;
@@ -796,7 +796,7 @@ router.post('/clubs-list', requireAuth, requireRole('SCHOOL_ADMIN'), clubsUpload
     const club = await prisma.club.create({
       data: {
         name,
-        description,
+        description: description || null,
         date: date ? new Date(date) : new Date(),
         icon: logoFilename || null,
         category: category || null,
@@ -812,7 +812,7 @@ router.post('/clubs-list', requireAuth, requireRole('SCHOOL_ADMIN'), clubsUpload
   }
 });
 
-router.patch('/clubs-list/:id', requireAuth, requireRole('SCHOOL_ADMIN'), clubsUpload.single('logo'), validate(ClubSchema), async (req: AuthRequest, res) => {
+router.patch(['/clubs-list/:id', '/clubs/:id'], requireAuth, requireRole('SCHOOL_ADMIN'), clubsUpload.single('logo'), validate(ClubSchema), async (req: AuthRequest, res) => {
   try {
     const { id } = req.params;
     const { name, description, date, category, patron, chairperson } = req.body;
@@ -836,7 +836,7 @@ router.patch('/clubs-list/:id', requireAuth, requireRole('SCHOOL_ADMIN'), clubsU
   }
 });
 
-router.delete('/clubs-list/:id', requireAuth, requireRole('SCHOOL_ADMIN'), async (req: AuthRequest, res) => {
+router.delete(['/clubs-list/:id', '/clubs/:id'], requireAuth, requireRole('SCHOOL_ADMIN'), async (req: AuthRequest, res) => {
   try {
     const club = await prisma.club.findFirst({
       where: { id: req.params.id as string, schoolId: req.user!.schoolId! }

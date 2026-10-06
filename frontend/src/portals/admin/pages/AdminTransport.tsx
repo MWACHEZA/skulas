@@ -112,6 +112,39 @@ function AdminTransportContent() {
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
 
+  // Driver Live Search State
+  const [driverSearchResults, setDriverSearchResults] = useState<any[]>([]);
+  const [isSearchingDriver, setIsSearchingDriver] = useState(false);
+  const [showDriverDropdown, setShowDriverDropdown] = useState(false);
+
+  const searchDrivers = async (query: string) => {
+    if (!query || query.trim().length < 2) {
+      setDriverSearchResults([]);
+      setShowDriverDropdown(false);
+      return;
+    }
+    setIsSearchingDriver(true);
+    try {
+      const res = await api.get(`/api/users/search?query=${encodeURIComponent(query.trim())}`);
+      const list = Array.isArray(res.data) ? res.data : [];
+      setDriverSearchResults(list);
+      setShowDriverDropdown(list.length > 0);
+    } catch (e) {
+      setDriverSearchResults([]);
+    } finally {
+      setIsSearchingDriver(false);
+    }
+  };
+
+  const handleSelectDriver = (driver: any) => {
+    setVehicleForm(prev => ({
+      ...prev,
+      driverName: driver.name,
+      driverContact: driver.phone || prev.driverContact
+    }));
+    setShowDriverDropdown(false);
+  };
+
   useEffect(() => {
     const timer = setTimeout(() => setDebouncedSearch(searchTerm), 300);
     return () => clearTimeout(timer);
@@ -777,18 +810,64 @@ function AdminTransportContent() {
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#475569', marginBottom: '4px' }}>Driver Name</label>
-                  <input
-                    type="text"
-                    placeholder="e.g. Samuel Sibanda"
-                    value={vehicleForm.driverName}
-                    onChange={e => setVehicleForm({ ...vehicleForm, driverName: e.target.value })}
-                    style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid #cbd5e1' }}
-                  />
+                <div style={{ position: 'relative' }}>
+                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#475569', marginBottom: '4px' }}>
+                    Driver Name (Search Staff / Type)
+                  </label>
+                  <div style={{ position: 'relative' }}>
+                    <input
+                      type="text"
+                      placeholder="Search staff or type driver name..."
+                      value={vehicleForm.driverName}
+                      onChange={e => {
+                        const val = e.target.value;
+                        setVehicleForm({ ...vehicleForm, driverName: val });
+                        searchDrivers(val);
+                      }}
+                      onFocus={() => {
+                        if (driverSearchResults.length > 0) setShowDriverDropdown(true);
+                      }}
+                      style={{ width: '100%', padding: '8px 10px', paddingRight: '28px', borderRadius: '6px', border: '1px solid #cbd5e1' }}
+                    />
+                    {isSearchingDriver && (
+                      <i className="fas fa-spinner fa-spin" style={{ position: 'absolute', right: 10, top: 11, color: '#94a3b8', fontSize: '0.8rem' }} />
+                    )}
+                  </div>
+                  {showDriverDropdown && driverSearchResults.length > 0 && (
+                    <div style={{
+                      position: 'absolute', top: '100%', left: 0, right: 0, zIndex: 100,
+                      background: '#fff', border: '1px solid #cbd5e1', borderRadius: '6px',
+                      boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)', maxHeight: '180px', overflowY: 'auto', marginTop: 2
+                    }}>
+                      {driverSearchResults.map(u => (
+                        <div
+                          key={u.id}
+                          onClick={() => handleSelectDriver(u)}
+                          style={{
+                            padding: '8px 12px', cursor: 'pointer', borderBottom: '1px solid #f1f5f9',
+                            display: 'flex', justifyContent: 'space-between', alignItems: 'center'
+                          }}
+                          onMouseEnter={e => (e.currentTarget.style.background = '#f8fafc')}
+                          onMouseLeave={e => (e.currentTarget.style.background = '#fff')}
+                        >
+                          <div>
+                            <div style={{ fontWeight: 600, fontSize: '0.85rem', color: '#1e293b' }}>{u.name}</div>
+                            <div style={{ fontSize: '0.75rem', color: '#64748b' }}>{u.role} {u.staffId ? `• ID: ${u.staffId}` : ''}</div>
+                          </div>
+                          {u.phone && (
+                            <span style={{ fontSize: '0.75rem', color: '#059669', fontWeight: 600 }}>
+                              <i className="fas fa-phone-alt mr-1" />{u.phone}
+                            </span>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#475569', marginBottom: '4px' }}>Driver Phone</label>
+                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#475569', marginBottom: '4px' }}>
+                    Driver Phone (Auto-Populated)
+                  </label>
                   <input
                     type="text"
                     placeholder="e.g. +263 77..."

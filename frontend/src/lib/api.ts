@@ -80,7 +80,13 @@ api.interceptors.response.use(
         localStorage.removeItem('acadex_active_entity');
         // Only force-reload if we actually had a session (avoids loop on login page itself)
         if (hadToken && !window.location.pathname.includes('/login')) {
-          window.location.href = '/';
+          const path = window.location.pathname;
+          let targetLogin = '/';
+          if (path.startsWith('/bursar')) targetLogin = '/bursar/login';
+          else if (path.startsWith('/admin')) targetLogin = '/admin/login';
+          else if (path.startsWith('/teacher')) targetLogin = '/teacher/login';
+          else if (path.startsWith('/student')) targetLogin = '/student/login';
+          window.location.href = targetLogin;
         }
       }
     }

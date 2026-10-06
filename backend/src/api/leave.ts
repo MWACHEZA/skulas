@@ -248,13 +248,23 @@ router.patch('/:id/hod-reject', requireAuth, async (req: AuthRequest, res: Respo
   }
 });
 
-router.get('/all', requireAuth, requireRole('SCHOOL_ADMIN', 'SUPER_ADMIN'), async (req: AuthRequest, res: Response) => {
+router.get('/all', requireAuth, requireRole('SCHOOL_ADMIN', 'SUPER_ADMIN', 'BURSAR'), async (req: AuthRequest, res: Response) => {
   try {
     const leaves = await prisma.staffLeave.findMany({
       where: { schoolId: req.user!.schoolId! },
       orderBy: { createdAt: 'desc' }
     });
-    res.json(leaves);
+    const userIds = [...new Set(leaves.map(l => l.userId))];
+    const users = await prisma.user.findMany({
+      where: { id: { in: userIds } },
+      select: { id: true, name: true, email: true, role: true }
+    });
+    const userMap = new Map(users.map(u => [u.id, u]));
+    const leavesWithStaff = leaves.map(leave => ({
+      ...leave,
+      staff: userMap.get(leave.userId) || null
+    }));
+    res.json(leavesWithStaff);
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch all leaves' });
   }

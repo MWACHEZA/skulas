@@ -63,8 +63,8 @@ baseToast.dismiss = (_id?: string) => {
 export const toast = baseToast;
 export default toast;
 
-const MAX_VISIBLE_TOASTS = 4;
-const DEFAULT_TOAST_DURATION = 10000; // 10 seconds auto-dismiss
+const MAX_VISIBLE_TOASTS = 3;
+const DEFAULT_TOAST_DURATION = 5000; // 5 seconds auto-dismiss
 const RESUME_MIN_GRACE = 5000; // Pause & resume with at least 5 seconds remaining
 
 /**
@@ -186,8 +186,9 @@ const ToastItem: React.FC<{
 
 export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [activeToasts, setActiveToasts] = useState<ToastItemData[]>([]);
-  const [toastQueue, setToastQueue] = useState<ToastItemData[]>([]);
   const [confirmDialog, setConfirmDialog] = useState<{ message: string; resolve: (val: boolean) => void } | null>(null);
+  const recentToastsRef = useRef<Map<string, number>>(new Map());
+  const lastNetworkErrorRef = useRef<number>(0);
 
   const toastConfirm = useCallback((message: string) => {
     return new Promise<boolean>((resolve) => {
@@ -196,22 +197,26 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   }, []);
 
   const removeToast = useCallback((id: string) => {
-    setActiveToasts((prev) => {
-      const remaining = prev.filter((t) => t.id !== id);
-      // Promote from queue if available
-      setToastQueue((q) => {
-        if (q.length > 0 && remaining.length < MAX_VISIBLE_TOASTS) {
-          const [next, ...rest] = q;
-          setActiveToasts((curr) => [...curr, next]);
-          return rest;
-        }
-        return q;
-      });
-      return remaining;
-    });
+    setActiveToasts((prev) => prev.filter((t) => t.id !== id));
   }, []);
 
   const showToast = useCallback((message: string, type: ToastType = 'info') => {
+    if (!message) return;
+    const now = Date.now();
+    const lastSeen = recentToastsRef.current.get(message);
+    if (lastSeen && now - lastSeen < 3000) {
+      // Deduplicate: drop identical message within 3s window
+      return;
+    }
+    recentToastsRef.current.set(message, now);
+
+    // Prune entries older than 10s
+    for (const [key, ts] of recentToastsRef.current.entries()) {
+      if (now - ts > 10000) {
+        recentToastsRef.current.delete(key);
+      }
+    }
+
     const id = Math.random().toString(36).substr(2, 9);
     const newToast: ToastItemData = {
       id,
@@ -221,12 +226,11 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     };
 
     setActiveToasts((prev) => {
-      if (prev.length < MAX_VISIBLE_TOASTS) {
-        return [...prev, newToast];
-      } else {
-        setToastQueue((q) => [...q, newToast]);
-        return prev;
+      // FIFO eviction: cap to MAX_VISIBLE_TOASTS (3)
+      if (prev.length >= MAX_VISIBLE_TOASTS) {
+        return [...prev.slice(prev.length - (MAX_VISIBLE_TOASTS - 1)), newToast];
       }
+      return [...prev, newToast];
     });
 
     // Optional user preferences integration
@@ -273,6 +277,11 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   useEffect(() => {
     const handleNetworkError = () => {
+      const now = Date.now();
+      if (now - lastNetworkErrorRef.current < 10000) {
+        return; // Debounce network error to at most once per 10s
+      }
+      lastNetworkErrorRef.current = now;
       showToast('Network error: You appear to be offline or the server is unreachable.', 'error');
     };
     window.addEventListener('acadex-network-error', handleNetworkError);

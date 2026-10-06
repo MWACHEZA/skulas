@@ -10,6 +10,61 @@ const router = Router();
 router.use(requireAuth);
 
 /**
+ * @route   GET /api/wallets
+ * @desc    Get all student wallets with balances for the school
+ */
+router.get('/', async (req: AuthRequest, res) => {
+  try {
+    const schoolId = req.user?.schoolId;
+    if (!schoolId) return res.status(400).json({ error: 'Missing school context' });
+
+    const students = await prisma.student.findMany({
+      where: { schoolId },
+      include: {
+        user: { select: { name: true, email: true } },
+        wallet: true
+      },
+      take: 200
+    });
+
+    const school = await prisma.school.findUnique({
+      where: { id: schoolId },
+      select: { settings: true }
+    });
+    const schoolSettings = (school?.settings as any) || {};
+
+    const walletList = await Promise.all(students.map(async s => {
+      let balance = 0;
+      if (s.wallet) {
+        balance = await LedgerService.getWalletBalance(s.id);
+      }
+      const dailyLimit = schoolSettings.dailyWalletLimits?.[s.id] ?? null;
+      return {
+        id: s.wallet?.id || s.id,
+        walletId: s.wallet?.id,
+        studentId: s.id,
+        studentCode: s.studentId,
+        studentName: s.user?.name || s.name || 'Student',
+        student: {
+          id: s.id,
+          studentId: s.studentId,
+          name: s.user?.name || s.name,
+          user: { name: s.user?.name || s.name }
+        },
+        balance,
+        dailyLimit,
+        status: s.status || 'Active'
+      };
+    }));
+
+    res.json(walletList);
+  } catch (error) {
+    console.error('Fetch all wallets error:', error);
+    res.status(500).json({ error: 'Failed to fetch wallets' });
+  }
+});
+
+/**
  * @route   GET /api/wallets/:studentId
  * @desc    Get wallet balance and transactions for a student
  *          Balance is computed on-the-fly: SUM(WalletTransaction.amount)
@@ -295,4 +350,81 @@ router.post('/spend', async (req: AuthRequest, res) => {
   }
 });
 
+/**
+ * @route   POST /api/wallets/:id/topup
+ * @desc    Top-up a student wallet from Cash Desk or Admin
+ */
+router.post('/:id/topup', async (req: AuthRequest, res) => {
+  try {
+    const targetId = req.params.id as string;
+    const { amount, channel } = req.body;
+    const topupAmount = parseFloat(amount);
+    if (isNaN(topupAmount) || topupAmount <= 0) {
+      return res.status(400).json({ error: 'Amount must be greater than zero' });
+    }
+
+    // Try finding wallet by id or studentId
+    let wallet = await prisma.studentWallet.findFirst({
+      where: { OR: [{ id: targetId }, { studentId: targetId }] },
+      include: { student: true }
+    });
+
+    let studentId = wallet?.studentId;
+    if (!wallet) {
+      const student = await prisma.student.findUnique({ where: { id: targetId } });
+      if (!student) return res.status(404).json({ error: 'Student or wallet not found' });
+      studentId = student.id;
+      wallet = await prisma.studentWallet.create({
+        data: { studentId },
+        include: { student: true }
+      });
+    }
+
+    if (!wallet) return res.status(404).json({ error: 'Wallet not found' });
+
+    const student = await prisma.student.findUnique({
+      where: { id: studentId },
+      select: { schoolId: true }
+    });
+    const schoolId = student?.schoolId || req.user?.schoolId;
+    if (!schoolId) return res.status(400).json({ error: 'Missing school context' });
+
+    // Record DEPOSIT transaction
+    const tx = await prisma.walletTransaction.create({
+      data: {
+        walletId: wallet.id,
+        amount: topupAmount,
+        type: 'DEPOSIT',
+        description: `Top-up via ${channel || 'CASH_DESK'}`
+      }
+    });
+
+    // Post double-entry to Ledger
+    try {
+      await LedgerService.postDoubleEntry({
+        tenantId: schoolId,
+        debitCode: channel === 'CASH_DESK' ? '1020' : '1010',
+        creditCode: '2110',
+        amount: Math.round(topupAmount * 100) / 100,
+        description: `Cash desk wallet topup — student ${studentId}`,
+        sourceModule: 'wallet_deposit',
+        reference: tx.id,
+        studentId,
+        userId: req.user?.id,
+        ipAddress: req.ip,
+        bypassApprovalCheck: true
+      });
+    } catch (e) {
+      console.warn('Ledger posting warning on topup:', e);
+    }
+
+    const newBalance = await LedgerService.getWalletBalance(studentId!);
+    res.json({ success: true, balance: newBalance, transaction: tx });
+  } catch (error) {
+    console.error('Wallet topup error:', error);
+    res.status(500).json({ error: 'Failed to process wallet top-up' });
+  }
+});
+
 export default router;
+

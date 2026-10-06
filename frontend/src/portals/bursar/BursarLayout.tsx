@@ -11,7 +11,7 @@ export default function BursarLayout() {
   const navGroups = generatePortalNavigation('bursar', user, location.pathname);
 
   return (
-    <ProtectedRoute allowedRoles={['BURSAR']} redirectTo="/bursar/login">
+    <ProtectedRoute allowedRoles={['BURSAR', 'SCHOOL_ADMIN', 'SUPER_ADMIN', 'FINANCE']} redirectTo="/bursar/login">
       <DashboardLayout
         portalName="Bursar Portal"
         portalIcon="fas fa-coins"

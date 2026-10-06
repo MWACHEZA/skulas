@@ -112,11 +112,12 @@ export function useAccountingQuery<T>({ key, fetcher, staleTimeMs = 15000, enabl
       return;
     }
 
-    if (existing?.fetching) return;
+    // Guard against concurrent fetches, but time out stuck fetching flags after 10s
+    if (existing?.fetching && (now - existing.timestamp < 10000)) return;
 
     globalCache.set(key, {
       data: existing?.data,
-      timestamp: existing?.timestamp ?? 0,
+      timestamp: now,
       fetching: true
     });
 
@@ -124,24 +125,20 @@ export function useAccountingQuery<T>({ key, fetcher, staleTimeMs = 15000, enabl
 
     try {
       const data = await fetcher();
-      if (isMounted.current) {
-        globalCache.set(key, {
-          data,
-          timestamp: Date.now(),
-          fetching: false
-        });
-        notifySubscribers(key);
-      }
+      globalCache.set(key, {
+        data,
+        timestamp: Date.now(),
+        fetching: false
+      });
+      notifySubscribers(key);
     } catch (error) {
-      if (isMounted.current) {
-        globalCache.set(key, {
-          data: existing?.data,
-          timestamp: existing?.timestamp ?? 0,
-          fetching: false
-        });
-        notifySubscribers(key);
-      }
-      throw error;
+      globalCache.set(key, {
+        data: existing?.data,
+        timestamp: existing?.timestamp ?? 0,
+        fetching: false
+      });
+      notifySubscribers(key);
+      console.warn(`[useAccountingQuery] fetch error for key "${key}":`, error);
     }
   }, [key, fetcher, staleTimeMs, enabled]);
 
@@ -158,7 +155,9 @@ export function useAccountingQuery<T>({ key, fetcher, staleTimeMs = 15000, enabl
     listeners.get(key)!.add(subFn);
 
     // Initial fetch if missing or stale
-    fetchData();
+    fetchData().catch((err) => {
+      console.warn(`[useAccountingQuery] initial fetch failed for "${key}":`, err);
+    });
 
     return () => {
       const subs = listeners.get(key);
@@ -171,7 +170,7 @@ export function useAccountingQuery<T>({ key, fetcher, staleTimeMs = 15000, enabl
 
   return {
     data: entry?.data as T | undefined,
-    isLoading: !entry?.data && entry?.fetching,
+    isLoading: !entry?.data && (entry?.fetching ?? false),
     isFetching: entry?.fetching ?? false,
     refetch: () => fetchData(true)
   };

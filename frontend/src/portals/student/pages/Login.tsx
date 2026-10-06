@@ -140,8 +140,18 @@ export default function StudentLogin() {
       <PasswordChangeModal 
         isOpen={showPasswordModal}
         userEmail={form.email}
-        onCancel={() => setShowPasswordModal(false)}
-        onSuccess={() => finalizeLogin(pendingAuth)}
+        token={pendingAuth?.token}
+        onCancel={() => {
+          setShowPasswordModal(false);
+          setPendingAuth(null);
+        }}
+        onSuccess={() => {
+          setShowPasswordModal(false);
+          setPendingAuth(null);
+          setForm(f => ({ ...f, password: '' }));
+          setError('');
+          showToast('Password updated successfully. Please sign in with your new password.', 'success');
+        }}
       />
     </div>
   );

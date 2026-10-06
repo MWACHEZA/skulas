@@ -1,62 +1,142 @@
 import { Router } from 'express';
-import { PrismaClient } from '../generated/client';
+import prisma from '../lib/prisma';
+import { requireAuth, AuthRequest } from '../middleware/auth';
 
 const router = Router();
-const prisma = new PrismaClient();
 
-router.get('/questions', async (req, res) => {
+router.get('/questions', requireAuth, async (req: AuthRequest, res) => {
+  const schoolId = req.user?.schoolId;
   try {
     const questions = await prisma.question.findMany({
-      include: { subject: true, createdBy: true }
+      where: schoolId ? { schoolId } : undefined,
+      include: {
+        subject: { select: { id: true, name: true, code: true } },
+        createdBy: { select: { id: true, name: true } }
+      },
+      orderBy: { createdAt: 'desc' }
     });
     res.json(questions);
   } catch (error) {
+    console.error('Failed to fetch questions:', error);
     res.status(500).json({ error: 'Failed to fetch questions' });
   }
 });
 
-router.post('/questions', async (req, res) => {
+router.post('/questions', requireAuth, async (req: AuthRequest, res) => {
+  const schoolId = req.user?.schoolId || req.body.schoolId;
+  const createdById = req.user?.id || req.body.createdById;
+
+  if (!schoolId || !createdById) {
+    return res.status(400).json({ error: 'Authentication required' });
+  }
+
   try {
-    const { type, text, form, subjectId, syllabusTopicId, difficulty, marks, options, explanation, isShared, schoolId, createdById } = req.body;
+    let { type, text, form, subjectId, syllabusTopicId, difficulty, marks, options, explanation, isShared } = req.body;
+
+    if (!text) {
+      return res.status(400).json({ error: 'Question text is required' });
+    }
+
+    if (!subjectId) {
+      const firstSubject = await prisma.subject.findFirst({ where: { schoolId } });
+      if (firstSubject) {
+        subjectId = firstSubject.id;
+      } else {
+        return res.status(400).json({ error: 'Subject is required. Please create a subject first.' });
+      }
+    }
+
     const question = await prisma.question.create({
       data: {
-        type, text, form, subjectId, syllabusTopicId, difficulty, marks, options, explanation, isShared, schoolId, createdById
+        type: type || 'MULTIPLE_CHOICE',
+        text,
+        form: form || null,
+        subjectId,
+        syllabusTopicId: syllabusTopicId || null,
+        difficulty: difficulty || 'MEDIUM',
+        marks: marks ? parseFloat(marks) : 1,
+        options: options || null,
+        explanation: explanation || null,
+        isShared: Boolean(isShared),
+        schoolId,
+        createdById
+      },
+      include: {
+        subject: { select: { id: true, name: true, code: true } }
       }
     });
-    res.json(question);
+    res.status(201).json(question);
   } catch (error) {
+    console.error('Failed to create question:', error);
     res.status(500).json({ error: 'Failed to create question' });
   }
 });
 
-router.get('/papers', async (req, res) => {
+router.get('/papers', requireAuth, async (req: AuthRequest, res) => {
+  const schoolId = req.user?.schoolId;
   try {
     const papers = await prisma.questionPaper.findMany({
-      include: { subject: true }
+      where: schoolId ? { schoolId } : undefined,
+      include: {
+        subject: { select: { id: true, name: true, code: true } }
+      },
+      orderBy: { createdAt: 'desc' }
     });
     res.json(papers);
   } catch (error) {
+    console.error('Failed to fetch papers:', error);
     res.status(500).json({ error: 'Failed to fetch papers' });
   }
 });
 
-router.post('/papers', async (req, res) => {
+router.post('/papers', requireAuth, async (req: AuthRequest, res) => {
+  const schoolId = req.user?.schoolId || req.body.schoolId;
+
+  if (!schoolId) {
+    return res.status(400).json({ error: 'School ID missing from user session' });
+  }
+
   try {
-    const { title, totalMarks, createdById, schoolId, sections, subjectId } = req.body;
+    let { title, totalMarks, sections, subjectId, duration, description, instructions } = req.body;
+
+    if (!title) {
+      return res.status(400).json({ error: 'Paper title is required' });
+    }
+
+    if (!subjectId) {
+      const firstSubject = await prisma.subject.findFirst({ where: { schoolId } });
+      if (firstSubject) {
+        subjectId = firstSubject.id;
+      } else {
+        return res.status(400).json({ error: 'Subject is required. Please create a subject first.' });
+      }
+    }
+
     const paper = await prisma.questionPaper.create({
       data: {
-        title, totalMarks, createdById, schoolId, sections, subjectId
+        title,
+        description: description || null,
+        instructions: instructions || null,
+        duration: duration ? parseInt(duration) : 60,
+        totalMarks: totalMarks ? parseInt(totalMarks) : 100,
+        schoolId,
+        subjectId,
+        sections: sections || []
+      },
+      include: {
+        subject: { select: { id: true, name: true, code: true } }
       }
     });
-    res.json(paper);
+    res.status(201).json(paper);
   } catch (error) {
+    console.error('Failed to create paper:', error);
     res.status(500).json({ error: 'Failed to create paper' });
   }
 });
 
-router.post('/papers/:id/convert-to-cbt', async (req, res) => {
+router.post('/papers/:id/convert-to-cbt', requireAuth, async (req: AuthRequest, res) => {
   try {
-    const { id } = req.params;
+    const id = req.params.id as string;
     const paper = await prisma.questionPaper.findUnique({
       where: { id }
     });
@@ -69,15 +149,15 @@ router.post('/papers/:id/convert-to-cbt', async (req, res) => {
     const cbt = await prisma.cbtExam.create({
       data: {
         title: paper.title,
-        classId,
+        classId: classId || null,
         subjectId: paper.subjectId,
         description: paper.description,
         instructions: paper.instructions,
         startTime: startTime ? new Date(startTime) : null,
         endTime: endTime ? new Date(endTime) : null,
-        durationMinutes: durationMinutes || paper.duration,
+        durationMinutes: durationMinutes || paper.duration || 60,
         passingPercentage: passingPercentage || 50,
-        createdById: paper.teacherId || '',
+        createdById: req.user?.id || '',
         schoolId: paper.schoolId,
         status: 'Pending',
         questions: paper.sections || []
@@ -86,7 +166,7 @@ router.post('/papers/:id/convert-to-cbt', async (req, res) => {
 
     res.json(cbt);
   } catch (error) {
-    console.error(error);
+    console.error('Failed to convert to CBT:', error);
     res.status(500).json({ error: 'Failed to convert to CBT' });
   }
 });

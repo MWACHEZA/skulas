@@ -139,6 +139,7 @@ import AdminProcurement from './portals/admin/pages/Procurement';
 import AdminSuppliers from './portals/admin/pages/SupplierManagement';
 import ClockInLogsPage from './portals/shared/pages/ClockInLogsPage';
 import AdminDepartments from './portals/admin/pages/Departments';
+import StudentClub from './portals/admin/pages/StudentClub';
 import AdminAssetManagement from './portals/admin/pages/AssetManagement';
 import LeaveManagement from './portals/shared/pages/hr/MyLeave';
 import HostelCategory from './portals/ancillary/pages/boarding/HostelCategory';
@@ -679,6 +680,10 @@ export default function App() {
               <Route path="branding" element={<AdminDocumentTemplates />} />
               <Route path="website-settings" element={<SettingsPage defaultTab="banner" />} />
               <Route path="departments" element={<AdminDepartments />} />
+              <Route path="clubs" element={<StudentClub />} />
+              <Route path="student-club" element={<Navigate to="/admin/clubs" replace />} />
+              <Route path="student-house" element={<Navigate to="/admin/boarding" replace />} />
+              <Route path="houses" element={<Navigate to="/admin/boarding" replace />} />
               <Route path="teacher-load" element={<AdminTeacherLoad />} />
 
               {/* ============================================================== */}
@@ -772,6 +777,13 @@ export default function App() {
               <Route path="staff-admins" element={<Navigate to="/admin/system?role=SCHOOL_ADMIN" replace />} />
               <Route path="parents" element={<Navigate to="/admin/system?role=PARENT" replace />} />
               <Route path="alumni" element={<Navigate to="/admin/system?role=ALUMNI" replace />} />
+              <Route path="accounts/gl" element={<Navigate to="/bursar/accounts/gl" replace />} />
+              <Route path="accounts/financial-reports" element={<Navigate to="/bursar/accounts/financial-reports" replace />} />
+              <Route path="accounts/coa" element={<Navigate to="/bursar/accounts/coa" replace />} />
+              <Route path="budgets" element={<Navigate to="/bursar/budgets" replace />} />
+              <Route path="fiscal" element={<Navigate to="/bursar/fiscal" replace />} />
+              <Route path="fiscal/*" element={<Navigate to="/bursar/fiscal" replace />} />
+              <Route path="zimra/returns" element={<Navigate to="/bursar/zimra/returns" replace />} />
               <Route path="house" element={<Navigate to="/admin/boarding" replace />} />
             </Route>
 
@@ -782,7 +794,7 @@ export default function App() {
                 registrationPath="/register/bursar" />
             } />
             <Route path="/bursar" element={
-              <ProtectedRoute allowedRole="BURSAR" loginPath="/bursar/login">
+              <ProtectedRoute allowedRoles={['BURSAR', 'SCHOOL_ADMIN', 'SUPER_ADMIN', 'FINANCE']} loginPath="/bursar/login">
                 <BursarLayout />
               </ProtectedRoute>
             }>

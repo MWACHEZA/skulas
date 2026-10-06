@@ -410,13 +410,28 @@ export default function SupplierManagement() {
               ]
             },
             {
+              title: "Items Supplied & Catalog",
+              fields: [
+                { 
+                  label: "Products / Uniform Catalog", 
+                  value: selectedSupplier.metadata?.itemsSupplied || 'No specific catalog or supplied items listed' 
+                }
+              ]
+            },
+            {
               title: "Bank Details",
               fields: (selectedSupplier.metadata?.bankAccounts && selectedSupplier.metadata.bankAccounts.length > 0)
                 ? selectedSupplier.metadata.bankAccounts.map((acc: any, index: number) => ({
                     label: `${acc.accountType || 'Bank'} Account #${index + 1}`,
                     value: `${acc.bankName} (Branch: ${acc.bankBranch}, Code: ${acc.branchCode}) \nName: ${acc.accountName} \nNo: ${acc.accountNumber}`
                   }))
-                : [{ label: "Bank Accounts", value: "No bank accounts added" }]
+                : (selectedSupplier.metadata?.bankName || selectedSupplier.metadata?.accountNumber)
+                  ? [
+                      { label: "Bank Name", value: selectedSupplier.metadata?.bankName || 'N/A' },
+                      { label: "Branch Code", value: selectedSupplier.metadata?.branchCode || 'N/A' },
+                      { label: "Account Number", value: selectedSupplier.metadata?.accountNumber || 'N/A' }
+                    ]
+                  : [{ label: "Bank Accounts", value: "No bank accounts added" }]
             },
             {
               title: "Category Payment Details",

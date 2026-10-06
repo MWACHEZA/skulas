@@ -61,13 +61,13 @@ export default function FiscalManagementPage() {
     setLoading(true);
     try {
       if (activeTab === 'dashboard') {
-        const res = await api.get('/fiscal/dashboard');
+        const res = await api.get('/api/fiscal/dashboard');
         setDashboardData(res.data);
       } else if (activeTab === 'devices') {
-        const res = await api.get('/fiscal/devices');
+        const res = await api.get('/api/fiscal/devices');
         setDevices(res.data);
       } else if (activeTab === 'reports') {
-        const res = await api.get('/fiscal/reports');
+        const res = await api.get('/api/fiscal/reports');
         setReportsData(res.data);
       }
     } catch (err: any) {
@@ -80,7 +80,7 @@ export default function FiscalManagementPage() {
   const handleRegisterDevice = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await api.post('/fiscal/devices', newDevice);
+      await api.post('/api/fiscal/devices', newDevice);
       setIsRegisterOpen(false);
       setNewDevice({
         serialNo: '',
@@ -99,7 +99,7 @@ export default function FiscalManagementPage() {
 
   const handleRetry = async (invoiceId: string) => {
     try {
-      await api.post(`/fiscal/retry/${invoiceId}`);
+      await api.post(`/api/fiscal/retry/${invoiceId}`);
       showToast('Invoice transmission retried', 'success');
       fetchData();
     } catch (err: any) {

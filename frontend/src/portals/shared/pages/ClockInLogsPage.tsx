@@ -59,6 +59,7 @@ export default function ClockInLogsPage() {
   const [loading, setLoading] = useState(true);
   const [isHod, setIsHod] = useState(false);
   const [checkingHod, setCheckingHod] = useState(isStaffRole);
+  const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null);
 
   useEffect(() => {
     if (isStaffRole) {
@@ -414,7 +415,11 @@ export default function ClockInLogsPage() {
                       <td style={{ fontWeight: 900, color: '#059669' }}>{formatTime(log.timeIn)}</td>
                       <td>
                         {log.clockInImage ? (
-                          <div style={{ width: '48px', height: '48px', borderRadius: '8px', overflow: 'hidden', border: '1px solid #e2e8f0' }}>
+                          <div
+                            style={{ width: '48px', height: '48px', borderRadius: '8px', overflow: 'hidden', border: '1px solid #e2e8f0', cursor: 'pointer' }}
+                            onClick={() => setSelectedPhoto(log.clockInImage)}
+                            title="Click to enlarge"
+                          >
                             <img src={log.clockInImage} alt="Clock In" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                           </div>
                         ) : (
@@ -424,7 +429,11 @@ export default function ClockInLogsPage() {
                       <td style={{ fontWeight: 900, color: '#ea580c' }}>{formatTime(log.timeOut)}</td>
                       <td>
                         {log.clockOutImage ? (
-                          <div style={{ width: '48px', height: '48px', borderRadius: '8px', overflow: 'hidden', border: '1px solid #e2e8f0' }}>
+                          <div
+                            style={{ width: '48px', height: '48px', borderRadius: '8px', overflow: 'hidden', border: '1px solid #e2e8f0', cursor: 'pointer' }}
+                            onClick={() => setSelectedPhoto(log.clockOutImage)}
+                            title="Click to enlarge"
+                          >
                             <img src={log.clockOutImage} alt="Clock Out" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                           </div>
                         ) : (
@@ -498,7 +507,11 @@ export default function ClockInLogsPage() {
                         </span>
                       </td>
                       <td>
-                        <div style={{ width: '48px', height: '48px', borderRadius: '8px', overflow: 'hidden', border: '1px solid #e2e8f0' }}>
+                        <div
+                          style={{ width: '48px', height: '48px', borderRadius: '8px', overflow: 'hidden', border: '1px solid #e2e8f0', cursor: 'pointer' }}
+                          onClick={() => setSelectedPhoto(`${BASE_URL}${log.image}`)}
+                          title="Click to enlarge"
+                        >
                           <img src={`${BASE_URL}${log.image}`} alt="Scan Photo" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                         </div>
                       </td>
@@ -507,6 +520,35 @@ export default function ClockInLogsPage() {
                 )}
               </tbody>
             </table>
+          </div>
+        </div>
+      )}
+
+      {selectedPhoto && (
+        <div
+          style={{
+            position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+            background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+            zIndex: 1100, padding: 20
+          }}
+          onClick={() => setSelectedPhoto(null)}
+        >
+          <div style={{ position: 'relative', maxWidth: '90vw', maxHeight: '90vh' }} onClick={e => e.stopPropagation()}>
+            <button
+              onClick={() => setSelectedPhoto(null)}
+              style={{
+                position: 'absolute', top: -14, right: -14, background: '#ef4444', color: '#fff',
+                border: 'none', borderRadius: '50%', width: 32, height: 32, cursor: 'pointer',
+                fontWeight: 'bold', fontSize: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center'
+              }}
+            >
+              &times;
+            </button>
+            <img
+              src={selectedPhoto}
+              alt="Enlarged Clock Photo"
+              style={{ maxWidth: '85vw', maxHeight: '80vh', borderRadius: 8, boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)' }}
+            />
           </div>
         </div>
       )}

@@ -58,6 +58,8 @@ const exportToWord = (title: string, headers: string[], dataRows: string[][]) =>
 export default function MyLeave() {
   const { user } = useAuth();
   const { showToast } = useToast();
+  const isPrivileged = ['BURSAR', 'SCHOOL_ADMIN', 'SUPER_ADMIN', 'HR', 'FINANCE'].includes(user?.role || '');
+  const [viewMode, setViewMode] = useState<'my' | 'institutional'>(isPrivileged ? 'institutional' : 'my');
   const [leaves, setLeaves] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
@@ -75,23 +77,26 @@ export default function MyLeave() {
 
   useEffect(() => {
     fetchLeaves();
-  }, []);
+  }, [viewMode]);
 
   const fetchLeaves = async () => {
     try {
-      const res = await api.get('/api/leave/my');
-      setLeaves(res.data);
+      const endpoint = viewMode === 'institutional' && isPrivileged ? '/api/leave/all' : '/api/leave/my';
+      const res = await api.get(endpoint);
+      setLeaves(Array.isArray(res.data) ? res.data : []);
     } catch (error) {
       console.error('Error fetching leaves', error);
-    
+      setLeaves([]);
     }
   };
 
   const filteredLeaves = leaves.filter(l => {
     const reasonText = l.reason || '';
     const statusText = l.status || '';
+    const staffName = l.staff?.name || '';
     return reasonText.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      statusText.toLowerCase().includes(searchTerm.toLowerCase());
+      statusText.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      staffName.toLowerCase().includes(searchTerm.toLowerCase());
   });
   const paginatedLeaves = filteredLeaves.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
   const totalPages = Math.ceil(filteredLeaves.length / itemsPerPage);
@@ -148,15 +153,39 @@ export default function MyLeave() {
   return (
     <>
       <div className="portal-page-header">
-        <h1>My leave application</h1>
+        <h1>{viewMode === 'institutional' ? 'Institutional Staff Leave Management' : 'My Leave Applications'}</h1>
+        <p style={{ color: '#64748b', fontSize: '0.9rem', marginTop: 4 }}>
+          {viewMode === 'institutional'
+            ? 'Review institutional staff leave applications, dates, and administrative approvals.'
+            : 'Track personal leave requests, entitlements, and approval progress.'}
+        </p>
       </div>
+
+      {isPrivileged && (
+        <div style={{ display: 'flex', gap: 10, marginBottom: 16 }}>
+          <button
+            className={viewMode === 'institutional' ? 'portal-btn-primary' : 'portal-btn-secondary'}
+            onClick={() => setViewMode('institutional')}
+            style={{ padding: '8px 18px', fontSize: '0.9rem', fontWeight: 700 }}
+          >
+            <i className="fas fa-building mr-2" />Institutional Staff Leave
+          </button>
+          <button
+            className={viewMode === 'my' ? 'portal-btn-primary' : 'portal-btn-secondary'}
+            onClick={() => setViewMode('my')}
+            style={{ padding: '8px 18px', fontSize: '0.9rem', fontWeight: 700 }}
+          >
+            <i className="fas fa-user mr-2" />My Leave Applications
+          </button>
+        </div>
+      )}
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
         {/* Right Table (Now Full Width) */}
         <div className="portal-card" style={{ width: '100%' }}>
           <div className="portal-card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px', padding: '24px 30px', borderBottom: '1px solid #f1f5f9' }}>
             <h2 style={{ color: '#1e3a8a', margin: 0, fontSize: '1.4rem', fontWeight: 900 }}>
-              <i className="fas fa-list mr-2"></i>LEAVE HISTORY
+              <i className="fas fa-list mr-2"></i>{viewMode === 'institutional' ? 'STAFF LEAVE AUDIT' : 'LEAVE HISTORY'}
             </h2>
             <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }} className="no-print">
               <button 
@@ -234,6 +263,7 @@ export default function MyLeave() {
               <thead>
                 <tr>
                   <th>ID</th>
+                  {viewMode === 'institutional' && <th>STAFF MEMBER</th>}
                   <th>START DATE</th>
                   <th>END DATE</th>
                   <th>REASON</th>
@@ -243,13 +273,19 @@ export default function MyLeave() {
               </thead>
               <tbody>
                 {paginatedLeaves.length === 0 ? (
-                  <tr><td colSpan={6} style={{ textAlign: 'center', padding: 30, color: '#a0aec0' }}>
+                  <tr><td colSpan={viewMode === 'institutional' ? 7 : 6} style={{ textAlign: 'center', padding: 30, color: '#a0aec0' }}>
                     <span>No leave records found.</span>
                   </td></tr>
                 ) : (
                   paginatedLeaves.map((leave) => (
                     <tr key={leave.id}>
                       <td>{leave.id.substring(0, 8)}</td>
+                      {viewMode === 'institutional' && (
+                        <td>
+                          <strong>{leave.staff?.name || 'Staff Member'}</strong>
+                          <br /><span style={{ fontSize: '0.75rem', color: '#64748b' }}>{leave.staff?.role}</span>
+                        </td>
+                      )}
                       <td>{format(new Date(leave.startDate), 'yyyy-MM-dd')}</td>
                       <td>{format(new Date(leave.endDate), 'yyyy-MM-dd')}</td>
                       <td>{leave.reason?.substring(0, 20)}...</td>

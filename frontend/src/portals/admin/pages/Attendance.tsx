@@ -24,6 +24,7 @@ export default function AdminAttendance() {
   const [studentLogs, setStudentLogs] = useState<any[]>([]);
   const [staffLogs, setStaffLogs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null);
 
   useEffect(() => {
     fetchAttendance();
@@ -277,6 +278,7 @@ export default function AdminAttendance() {
                       <th>Staff Member</th>
                       <th>Role</th>
                       <th>Time In</th>
+                      <th>Clock-In Photo</th>
                       <th>Time Out</th>
                       <th>Hours Logged</th>
                       <th>Status</th>
@@ -291,6 +293,19 @@ export default function AdminAttendance() {
                         </td>
                         <td><span className="portal-badge neutral">{log.staff?.role || 'Teacher'}</span></td>
                         <td style={{ color: '#059669', fontWeight: 600 }}>{log.timeIn ? new Date(log.timeIn).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '—'}</td>
+                        <td>
+                          {log.clockInImage ? (
+                            <img
+                              src={log.clockInImage}
+                              alt="Clock In"
+                              onClick={() => setSelectedPhoto(log.clockInImage)}
+                              style={{ width: 44, height: 44, borderRadius: 6, objectFit: 'cover', cursor: 'pointer', border: '1px solid #cbd5e1' }}
+                              title="Click to enlarge"
+                            />
+                          ) : (
+                            <span style={{ color: '#94a3b8', fontSize: '0.8rem' }}>No Photo</span>
+                          )}
+                        </td>
                         <td style={{ color: '#d97706', fontWeight: 600 }}>{log.timeOut ? new Date(log.timeOut).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Still on duty'}</td>
                         <td>{log.hoursPresent || '—'}</td>
                         <td>
@@ -307,6 +322,35 @@ export default function AdminAttendance() {
           </div>
         )}
       </div>
+
+      {selectedPhoto && (
+        <div
+          style={{
+            position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+            background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+            zIndex: 1100, padding: 20
+          }}
+          onClick={() => setSelectedPhoto(null)}
+        >
+          <div style={{ position: 'relative', maxWidth: '90vw', maxHeight: '90vh' }} onClick={e => e.stopPropagation()}>
+            <button
+              onClick={() => setSelectedPhoto(null)}
+              style={{
+                position: 'absolute', top: -14, right: -14, background: '#ef4444', color: '#fff',
+                border: 'none', borderRadius: '50%', width: 32, height: 32, cursor: 'pointer',
+                fontWeight: 'bold', fontSize: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center'
+              }}
+            >
+              &times;
+            </button>
+            <img
+              src={selectedPhoto}
+              alt="Clock In Enlarge"
+              style={{ maxWidth: '85vw', maxHeight: '80vh', borderRadius: 8, boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)' }}
+            />
+          </div>
+        </div>
+      )}
     </>
   );
 }

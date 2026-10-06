@@ -13,7 +13,11 @@ export default function FinanceBilling() {
   const [searchParams, setSearchParams] = useSearchParams();
   const { showToast } = useToast();
 
-  const activeTab = (searchParams.get('tab') as BillingTab) || 'invoices';
+  const subtabParam = searchParams.get('subtab') as BillingTab | null;
+  const tabParam = searchParams.get('tab');
+  const activeTab: BillingTab = (subtabParam && ['invoices', 'receipts', 'ledgers'].includes(subtabParam))
+    ? subtabParam
+    : (tabParam && ['invoices', 'receipts', 'ledgers'].includes(tabParam) ? tabParam as BillingTab : 'invoices');
   const initialSearch = searchParams.get('search') || '';
 
   // Data states
@@ -21,6 +25,18 @@ export default function FinanceBilling() {
   const [receipts, setReceipts] = useState<any[]>([]);
   const [ledgers, setLedgers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Emit Invoice Modal State
+  const [showEmitModal, setShowEmitModal] = useState(false);
+  const [feeGroups, setFeeGroups] = useState<any[]>([]);
+  const [students, setStudents] = useState<any[]>([]);
+  const [selectedFeeGroupId, setSelectedFeeGroupId] = useState('');
+  const [selectedStudentId, setSelectedStudentId] = useState('');
+  const [customAmount, setCustomAmount] = useState('');
+  const [dueDate, setDueDate] = useState('');
+  const [discount, setDiscount] = useState('0');
+  const [description, setDescription] = useState('');
+  const [submittingInvoice, setSubmittingInvoice] = useState(false);
 
   // Filter states
   const [searchTerm, setSearchTerm] = useState(initialSearch);
@@ -65,7 +81,71 @@ export default function FinanceBilling() {
   };
 
   const handleTabChange = (tab: BillingTab) => {
-    setSearchParams({ tab, search: searchTerm });
+    const next = new URLSearchParams(searchParams);
+    next.set('tab', 'billing');
+    next.set('subtab', tab);
+    if (searchTerm) next.set('search', searchTerm);
+    setSearchParams(next);
+  };
+
+  const openEmitModal = async () => {
+    setShowEmitModal(true);
+    try {
+      const [groupsRes, studentsRes] = await Promise.all([
+        api.get('/api/fees/groups'),
+        api.get('/api/fees/students-list')
+      ]);
+      const grps = Array.isArray(groupsRes.data) ? groupsRes.data : groupsRes.data.groups || [];
+      const stds = Array.isArray(studentsRes.data) ? studentsRes.data : studentsRes.data.students || [];
+      setFeeGroups(grps);
+      setStudents(stds);
+      if (grps.length > 0) {
+        setSelectedFeeGroupId(grps[0].id);
+        setCustomAmount(String(grps[0].amount || ''));
+      }
+      if (stds.length > 0) {
+        setSelectedStudentId(stds[0].id);
+      }
+    } catch (err) {
+      console.error('Failed to load fee groups or students:', err);
+      showToast('Could not load fee groups or student list', 'error');
+    }
+  };
+
+  const handleFeeGroupSelect = (groupId: string) => {
+    setSelectedFeeGroupId(groupId);
+    const grp = feeGroups.find(g => g.id === groupId);
+    if (grp) {
+      setCustomAmount(String(grp.amount || ''));
+    }
+  };
+
+  const handleEmitInvoiceSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedFeeGroupId || !selectedStudentId || !customAmount) {
+      showToast('Please select a fee group, student, and specify an amount', 'error');
+      return;
+    }
+    setSubmittingInvoice(true);
+    try {
+      await api.post('/api/fees/invoice/custom', {
+        feeGroupId: selectedFeeGroupId,
+        studentIds: [selectedStudentId],
+        customAmount: parseFloat(customAmount),
+        dueDate: dueDate || undefined,
+        discount: parseFloat(discount) || 0,
+        description: description || undefined,
+        paymentStatus: 'unpaid'
+      });
+      showToast('Fee invoice emitted successfully!', 'success');
+      setShowEmitModal(false);
+      fetchData();
+    } catch (err: any) {
+      console.error('Failed to emit invoice:', err);
+      showToast(err.response?.data?.error || 'Failed to emit invoice', 'error');
+    } finally {
+      setSubmittingInvoice(false);
+    }
   };
 
   // Filtered datasets with debounced search
@@ -138,7 +218,7 @@ export default function FinanceBilling() {
           </p>
         </div>
         <div style={{ display: 'flex', gap: 10 }}>
-          <button className="portal-btn-primary" onClick={() => showToast('Feature to emit invoices is active under Billing Engine', 'info')}>
+          <button className="portal-btn-primary" onClick={openEmitModal}>
             <i className="fas fa-file-invoice-dollar mr-2"></i>Emit Fee Invoice
           </button>
         </div>
@@ -430,6 +510,159 @@ export default function FinanceBilling() {
           </>
         )}
       </div>
+      {showEmitModal && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+          zIndex: 1050, padding: 20
+        }}>
+          <div style={{
+            background: '#fff', borderRadius: 8, maxWidth: 520, width: '100%',
+            boxShadow: '0 20px 25px -5px rgba(0,0,0,0.2)', overflow: 'hidden'
+          }}>
+            <div style={{
+              padding: '16px 20px', borderBottom: '1px solid #e2e8f0',
+              display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+              background: '#f8fafc'
+            }}>
+              <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, color: '#0f172a' }}>
+                <i className="fas fa-file-invoice-dollar mr-2" style={{ color: '#2563eb' }}></i>
+                Emit Custom Fee Invoice
+              </h3>
+              <button
+                type="button"
+                onClick={() => setShowEmitModal(false)}
+                style={{ background: 'none', border: 'none', fontSize: '1.2rem', cursor: 'pointer', color: '#64748b' }}
+              >
+                &times;
+              </button>
+            </div>
+
+            <form onSubmit={handleEmitInvoiceSubmit} style={{ padding: 20 }}>
+              <div style={{ marginBottom: 14 }}>
+                <label style={{ display: 'block', fontWeight: 600, fontSize: '0.85rem', marginBottom: 6, color: '#334155' }}>
+                  Fee Group / Vote Item *
+                </label>
+                <select
+                  className="portal-input"
+                  style={{ width: '100%' }}
+                  value={selectedFeeGroupId}
+                  onChange={e => handleFeeGroupSelect(e.target.value)}
+                  required
+                >
+                  {feeGroups.map(g => (
+                    <option key={g.id} value={g.id}>
+                      {g.name} ({formatCurrency(g.amount || 0)}) - {g.billingType || 'Term'} {g.year || ''}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div style={{ marginBottom: 14 }}>
+                <label style={{ display: 'block', fontWeight: 600, fontSize: '0.85rem', marginBottom: 6, color: '#334155' }}>
+                  Target Student *
+                </label>
+                <select
+                  className="portal-input"
+                  style={{ width: '100%' }}
+                  value={selectedStudentId}
+                  onChange={e => setSelectedStudentId(e.target.value)}
+                  required
+                >
+                  {students.map(s => (
+                    <option key={s.id} value={s.id}>
+                      {s.name} ({s.studentId}) {s.class?.name ? `- ${s.class.name}` : ''}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 14 }}>
+                <div>
+                  <label style={{ display: 'block', fontWeight: 600, fontSize: '0.85rem', marginBottom: 6, color: '#334155' }}>
+                    Custom Amount (USD) *
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    className="portal-input"
+                    style={{ width: '100%' }}
+                    value={customAmount}
+                    onChange={e => setCustomAmount(e.target.value)}
+                    required
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontWeight: 600, fontSize: '0.85rem', marginBottom: 6, color: '#334155' }}>
+                    Discount (USD)
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    className="portal-input"
+                    style={{ width: '100%' }}
+                    value={discount}
+                    onChange={e => setDiscount(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              <div style={{ marginBottom: 14 }}>
+                <label style={{ display: 'block', fontWeight: 600, fontSize: '0.85rem', marginBottom: 6, color: '#334155' }}>
+                  Payment Due Date
+                </label>
+                <input
+                  type="date"
+                  className="portal-input"
+                  style={{ width: '100%' }}
+                  value={dueDate}
+                  onChange={e => setDueDate(e.target.value)}
+                />
+              </div>
+
+              <div style={{ marginBottom: 20 }}>
+                <label style={{ display: 'block', fontWeight: 600, fontSize: '0.85rem', marginBottom: 6, color: '#334155' }}>
+                  Description / Billing Notes
+                </label>
+                <input
+                  type="text"
+                  className="portal-input"
+                  style={{ width: '100%' }}
+                  placeholder="e.g. Special term charge or approved waiver"
+                  value={description}
+                  onChange={e => setDescription(e.target.value)}
+                />
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
+                <button
+                  type="button"
+                  className="portal-btn-ghost"
+                  onClick={() => setShowEmitModal(false)}
+                  disabled={submittingInvoice}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="portal-btn-primary"
+                  disabled={submittingInvoice}
+                >
+                  {submittingInvoice ? (
+                    <>
+                      <i className="fas fa-spinner fa-spin mr-2"></i>Emitting...
+                    </>
+                  ) : (
+                    'Emit Invoice'
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </>
   );
 }

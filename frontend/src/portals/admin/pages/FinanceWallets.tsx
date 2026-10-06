@@ -12,7 +12,11 @@ export default function FinanceWallets() {
   const [searchParams, setSearchParams] = useSearchParams();
   const { showToast } = useToast();
 
-  const activeTab = (searchParams.get('tab') as WalletTab) || 'sales';
+  const subtabParam = searchParams.get('subtab') as WalletTab | null;
+  const tabParam = searchParams.get('tab');
+  const activeTab: WalletTab = (subtabParam && ['sales', 'inventory', 'topups'].includes(subtabParam))
+    ? subtabParam
+    : (tabParam && ['sales', 'inventory', 'topups'].includes(tabParam) ? tabParam as WalletTab : 'sales');
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
 
@@ -54,7 +58,10 @@ export default function FinanceWallets() {
   };
 
   const handleTabChange = (tab: WalletTab) => {
-    setSearchParams({ tab });
+    const next = new URLSearchParams(searchParams);
+    next.set('tab', 'wallets');
+    next.set('subtab', tab);
+    setSearchParams(next);
   };
 
   const handleTopupSubmit = async (e: React.FormEvent) => {

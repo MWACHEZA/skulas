@@ -25,13 +25,13 @@ export default function ZimraReturnsPage() {
     setLoading(true);
     try {
       if (activeTab === 'vat2') {
-        const res = await api.get(`/compliance/zimra/vat2?period=${period}`);
+        const res = await api.get(`/api/compliance/zimra/vat2?period=${period}`);
         setVatData(res.data);
       } else if (activeTab === 'p2') {
-        const res = await api.get(`/compliance/zimra/p2?period=${period}`);
+        const res = await api.get(`/api/compliance/zimra/p2?period=${period}`);
         setP2Data(res.data);
       } else if (activeTab === 'emis') {
-        const res = await api.get(`/compliance/emis?year=${period.substring(0, 4)}`);
+        const res = await api.get(`/api/compliance/emis?year=${period.substring(0, 4)}`);
         setEmisData(res.data);
       }
     } catch (err) {
@@ -49,7 +49,7 @@ export default function ZimraReturnsPage() {
     e.preventDefault();
     if (!studentSearchId) return;
     try {
-      const res = await api.get(`/compliance/clearance/${studentSearchId}`);
+      const res = await api.get(`/api/compliance/clearance/${studentSearchId}`);
       setClearanceData(res.data);
     } catch (err: any) {
       showToast(err.response?.data?.error || 'Student clearance not found', 'error');
@@ -59,8 +59,8 @@ export default function ZimraReturnsPage() {
   const handleSignoff = async (section: 'LIBRARY' | 'FEES' | 'HOSTEL' | 'FINAL') => {
     if (!studentSearchId) return;
     try {
-      await api.post(`/compliance/clearance/${studentSearchId}/signoff`, { section });
-      const res = await api.get(`/compliance/clearance/${studentSearchId}`);
+      await api.post(`/api/compliance/clearance/${studentSearchId}/signoff`, { section });
+      const res = await api.get(`/api/compliance/clearance/${studentSearchId}`);
       setClearanceData(res.data);
       showToast(`Clearance for ${section.toLowerCase()} recorded successfully`, 'success');
     } catch (err: any) {

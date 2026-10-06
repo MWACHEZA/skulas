@@ -58,6 +58,8 @@ const exportToWord = (title: string, headers: string[], dataRows: string[][]) =>
 export default function MyAwards() {
   const { user } = useAuth();
   const { showToast } = useToast();
+  const isPrivileged = ['BURSAR', 'SCHOOL_ADMIN', 'SUPER_ADMIN', 'FINANCE'].includes(user?.role || '');
+  const [viewMode, setViewMode] = useState<'my' | 'institutional'>(isPrivileged ? 'institutional' : 'my');
   const [awards, setAwards] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
@@ -65,37 +67,63 @@ export default function MyAwards() {
 
   useEffect(() => {
     fetchAwards();
-  }, []);
+  }, [viewMode]);
 
   const fetchAwards = async () => {
     try {
-      const res = await api.get('/api/awards/my');
-      setAwards(res.data);
+      const endpoint = viewMode === 'institutional' && isPrivileged ? '/api/awards/staff' : '/api/awards/my';
+      const res = await api.get(endpoint);
+      setAwards(Array.isArray(res.data) ? res.data : (res.data?.awards || []));
     } catch (error) {
       console.error('Error fetching awards', error);
-      showToast('Failed to load awards', 'error');
-    
+      setAwards([]);
     }
   };
 
   const filteredAwards = awards.filter(award => {
-    const nameText = award.awardName || '';
+    const nameText = award.awardName || award.title || '';
     const giftText = award.gift || '';
+    const recipientText = award.recipientName || award.user?.name || award.student?.name || '';
     return nameText.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      giftText.toLowerCase().includes(searchTerm.toLowerCase());
+      giftText.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      recipientText.toLowerCase().includes(searchTerm.toLowerCase());
   });
   const paginatedAwards = filteredAwards.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   return (
     <>
       <div className="portal-page-header">
-        <h1>My Awards & Honors</h1>
+        <h1>{viewMode === 'institutional' ? 'Institutional Awards & Prize Funding' : 'My Awards & Honors'}</h1>
+        <p style={{ color: '#64748b', fontSize: '0.9rem', marginTop: 4 }}>
+          {viewMode === 'institutional'
+            ? 'Monitor prize funding, staff and student awards, and financial allocations.'
+            : 'Track earned institutional awards, excellence recognition, and prize allocations.'}
+        </p>
       </div>
 
-      <div className="portal-card" style={{ borderRadius: '40px', border: '2px solid #f1f5f9', overflow: 'hidden', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.04)' }}>
-        <div className="portal-card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px', padding: '24px 30px', borderBottom: '1px solid #f1f5f9' }}>
-          <h2 style={{ color: '#1e3a8a', margin: 0, fontSize: '1.4rem', fontWeight: 900 }}>
-            <i className="fas fa-award mr-2"></i>My Awards & Trophies
+      {isPrivileged && (
+        <div style={{ display: 'flex', gap: 10, marginBottom: 16 }}>
+          <button
+            className={viewMode === 'institutional' ? 'portal-btn-primary' : 'portal-btn-secondary'}
+            onClick={() => setViewMode('institutional')}
+            style={{ padding: '8px 18px', fontSize: '0.9rem', fontWeight: 700 }}
+          >
+            <i className="fas fa-trophy mr-2" />Institutional Awards & Prizes
+          </button>
+          <button
+            className={viewMode === 'my' ? 'portal-btn-primary' : 'portal-btn-secondary'}
+            onClick={() => setViewMode('my')}
+            style={{ padding: '8px 18px', fontSize: '0.9rem', fontWeight: 700 }}
+          >
+            <i className="fas fa-user-graduate mr-2" />My Awards
+          </button>
+        </div>
+      )}
+
+      <div className="portal-card" style={{ borderRadius: '16px', border: '1px solid #e2e8f0', overflow: 'hidden', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)' }}>
+        <div className="portal-card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px', padding: '20px 24px', borderBottom: '1px solid #f1f5f9' }}>
+          <h2 style={{ color: '#1e3a8a', margin: 0, fontSize: '1.25rem', fontWeight: 900 }}>
+            <i className="fas fa-award mr-2"></i>{viewMode === 'institutional' ? 'INSTITUTIONAL AWARDS & PRIZES' : 'MY AWARDS & TROPHIES'}
           </h2>
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }} className="no-print">
             <button 
@@ -161,15 +189,16 @@ export default function MyAwards() {
             <thead>
               <tr>
                 <th>AWARD NAME</th>
-                <th>GIFT</th>
-                <th>AMOUNT</th>
-                <th>DATE</th>
+                {viewMode === 'institutional' && <th>RECIPIENT / HONOREE</th>}
+                <th>GIFT / PRIZE</th>
+                <th>FUNDED AMOUNT</th>
+                <th>DATE AWARDED</th>
               </tr>
             </thead>
             <tbody>
               {filteredAwards.length === 0 ? (
                 <tr>
-                  <td colSpan={4} style={{ textAlign: 'center', padding: 50, color: '#a0aec0' }}>
+                  <td colSpan={viewMode === 'institutional' ? 5 : 4} style={{ textAlign: 'center', padding: 50, color: '#a0aec0' }}>
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                       <div style={{ background: '#ebf8fa', borderRadius: '50%', padding: 20, marginBottom: 15 }}>
                         <i className="fas fa-folder-open fa-3x" style={{ color: '#ecc94b' }}></i>
@@ -181,10 +210,18 @@ export default function MyAwards() {
               ) : (
                 paginatedAwards.map((award) => (
                   <tr key={award.id}>
-                    <td style={{ fontWeight: 600 }}>{award.awardName}</td>
-                    <td>{award.gift || '-'}</td>
-                    <td>${award.amount?.toFixed(2)}</td>
-                    <td>{format(new Date(award.date), 'yyyy-MM-dd')}</td>
+                    <td style={{ fontWeight: 600 }}>{award.awardName || award.title}</td>
+                    {viewMode === 'institutional' && (
+                      <td>
+                        <strong>{award.recipientName || award.user?.name || award.student?.name || 'Staff Member'}</strong>
+                        {award.user?.role && <span style={{ fontSize: '0.75rem', color: '#64748b', display: 'block' }}>{award.user.role}</span>}
+                      </td>
+                    )}
+                    <td>{award.gift || award.prize || '-'}</td>
+                    <td style={{ color: '#059669', fontWeight: 600 }}>
+                      ${(award.amount || award.cashPrize || 0).toFixed(2)}
+                    </td>
+                    <td>{award.date ? format(new Date(award.date), 'yyyy-MM-dd') : '—'}</td>
                   </tr>
                 ))
               )}
