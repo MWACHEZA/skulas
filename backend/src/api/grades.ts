@@ -220,6 +220,22 @@ router.post('/bulk', requireAuth, requireRole('TEACHER', 'SCHOOL_ADMIN'), async 
       let totalScore = 0;
       if (typeof res.score === 'number' && !isNaN(res.score)) {
         totalScore = res.score;
+      } else if (Array.isArray(res.assessmentEntries) && res.assessmentEntries.length > 0) {
+        // Weighted dynamic assessment entries calculation
+        const included = res.assessmentEntries.filter((e: any) => e.selectedForReport !== false);
+        const totalWeight = included.reduce((sum: number, e: any) => sum + (parseFloat(e.weight) || 0), 0);
+        if (totalWeight > 0) {
+          totalScore = included.reduce((sum: number, e: any) => {
+            const max = parseFloat(e.maxScore) || 100;
+            const score = parseFloat(e.score) || 0;
+            const weight = parseFloat(e.weight) || 0;
+            return sum + (max > 0 ? (score / max) * weight : 0);
+          }, 0);
+        } else {
+          const totalObtained = included.reduce((sum: number, e: any) => sum + (parseFloat(e.score) || 0), 0);
+          const totalMax = included.reduce((sum: number, e: any) => sum + (parseFloat(e.maxScore) || 100), 0);
+          totalScore = totalMax > 0 ? (totalObtained / totalMax) * 100 : 0;
+        }
       } else if (subject.isIndustrial) {
         const ind = res.industrialScores || {};
         const ca = ((ind.industrialSup || 0) + (ind.academicSup || 0)) / 2;

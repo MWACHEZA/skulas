@@ -7,10 +7,13 @@ import { useAcademicConfig } from '../../../hooks/useAcademicConfig';
 interface AssessmentColumn {
   id: string;
   name: string;
-  type: 'Test' | 'Exercise' | 'Quiz' | 'Mid-Year Exam' | 'End-of-Term Exam' | 'End-of-Year Exam' | 'Homework' | 'Assignment';
+  type: 'Test' | 'Exercise' | 'Quiz' | 'Mid-Year Exam' | 'End-of-Term Exam' | 'End-of-Year Exam' | 'Homework' | 'Assignment' | 'CAT' | 'Practical' | 'Project' | 'Exam';
+  date?: string;
   maxScore: number;
+  weight: number;
   selectedForReport: boolean;
   isCustom?: boolean;
+  category?: 'CA' | 'EXAM';
 }
 
 interface GradingScaleBand {
@@ -63,10 +66,10 @@ interface StudentMarksRecord {
 }
 
 const DEFAULT_K12_ASSESSMENTS: AssessmentColumn[] = [
-  { id: 'cat-1', name: 'Continuous Assessment Test 1 (CAT)', type: 'Test', maxScore: 30, selectedForReport: true },
-  { id: 'cat-2', name: 'Continuous Assessment Test 2 (CAT)', type: 'Test', maxScore: 30, selectedForReport: true },
-  { id: 'mid-exam', name: 'Mid-Year Exam', type: 'Mid-Year Exam', maxScore: 50, selectedForReport: false },
-  { id: 'final-exam', name: 'End-of-Term Exam', type: 'End-of-Term Exam', maxScore: 100, selectedForReport: true },
+  { id: 'cat-1', name: 'Continuous Assessment Test 1 (CAT)', type: 'CAT', date: '2026-02-15', maxScore: 30, weight: 20, selectedForReport: true, category: 'CA' },
+  { id: 'cat-2', name: 'Continuous Assessment Test 2 (CAT)', type: 'CAT', date: '2026-03-20', maxScore: 30, weight: 20, selectedForReport: true, category: 'CA' },
+  { id: 'practical-1', name: 'Practical Lab / Assignment', type: 'Practical', date: '2026-03-01', maxScore: 50, weight: 20, selectedForReport: true, category: 'CA' },
+  { id: 'final-exam', name: 'End-of-Term Examination', type: 'Exam', date: '2026-04-10', maxScore: 100, weight: 40, selectedForReport: true, category: 'EXAM' },
 ];
 
 export default function MarksEntryPage() {
@@ -100,12 +103,21 @@ export default function MarksEntryPage() {
   const [assessmentColumns, setAssessmentColumns] = useState<AssessmentColumn[]>(DEFAULT_K12_ASSESSMENTS);
   const [marks, setMarks] = useState<Record<string, StudentMarksRecord>>({});
 
-  // Add Assessment Column Modal
+  // Add / Manage Assessment Column Modal
   const [isAddColumnModalOpen, setIsAddColumnModalOpen] = useState(false);
+  const [isManageColumnsModalOpen, setIsManageColumnsModalOpen] = useState(false);
   const [newColName, setNewColName] = useState('');
-  const [newColType, setNewColType] = useState<AssessmentColumn['type']>('Test');
+  const [newColType, setNewColType] = useState<AssessmentColumn['type']>('CAT');
+  const [newColDate, setNewColDate] = useState<string>(new Date().toISOString().slice(0, 10));
   const [newColMax, setNewColMax] = useState<number>(50);
+  const [newColWeight, setNewColWeight] = useState<number>(20);
+  const [newColCategory, setNewColCategory] = useState<'CA' | 'EXAM'>('CA');
   const [newColCountInReport, setNewColCountInReport] = useState<boolean>(true);
+
+  // HOD Submission Modal
+  const [isHodApprovalModalOpen, setIsHodApprovalModalOpen] = useState(false);
+  const [hodNotes, setHodNotes] = useState('');
+  const [isSubmittingHod, setIsSubmittingHod] = useState(false);
 
   // Grading Scale & Moderation Modal
   const [isScaleModalOpen, setIsScaleModalOpen] = useState(false);
@@ -204,8 +216,17 @@ export default function MarksEntryPage() {
       const studentData: Student[] = Array.isArray(res.data) ? res.data : [];
       setStudents(studentData);
 
-      // Inspect if existing saved assessments exist in student grades
+      // Fetch saved subject columns or fallback to default
       let discoveredColumns: AssessmentColumn[] = [...DEFAULT_K12_ASSESSMENTS];
+      try {
+        const colRes = await api.get(`/api/marks/columns/${selectedSubjectId}`);
+        if (colRes.data?.columns && Array.isArray(colRes.data.columns) && colRes.data.columns.length > 0) {
+          discoveredColumns = colRes.data.columns;
+        }
+      } catch (colErr) {
+        // Fallback
+      }
+
       const initialMarks: Record<string, StudentMarksRecord> = {};
 
       studentData.forEach(student => {
@@ -223,8 +244,11 @@ export default function MarksEntryPage() {
                   id: entry.id,
                   name: entry.name || 'Assessment',
                   type: entry.type || 'Test',
+                  date: entry.date || new Date().toISOString().slice(0, 10),
                   maxScore: entry.maxScore || 50,
+                  weight: entry.weight || 20,
                   selectedForReport: entry.selectedForReport !== undefined ? entry.selectedForReport : true,
+                  category: entry.category || 'CA',
                   isCustom: true
                 });
               }
@@ -288,13 +312,20 @@ export default function MarksEntryPage() {
       toast.error('Maximum score must be greater than 0');
       return;
     }
+    if (newColWeight <= 0) {
+      toast.error('Assessment weight % must be greater than 0');
+      return;
+    }
 
     const newId = `col-${Date.now()}`;
     const newCol: AssessmentColumn = {
       id: newId,
       name: newColName.trim(),
       type: newColType,
+      date: newColDate || new Date().toISOString().slice(0, 10),
       maxScore: Number(newColMax),
+      weight: Number(newColWeight),
+      category: newColCategory,
       selectedForReport: newColCountInReport,
       isCustom: true
     };
@@ -303,13 +334,97 @@ export default function MarksEntryPage() {
     setIsAddColumnModalOpen(false);
     setNewColName('');
     setNewColMax(50);
+    setNewColWeight(20);
+    setNewColCategory('CA');
     setNewColCountInReport(true);
-    toast.success(`Added "${newCol.name}" assessment column`);
+    toast.success(`Added "${newCol.name}" (${newCol.weight}%) assessment column`);
   };
 
   const handleDeleteColumn = (colId: string) => {
     setAssessmentColumns(prev => prev.filter(c => c.id !== colId));
     toast.success('Column removed');
+  };
+
+  const totalAllocatedWeight = useMemo(() => {
+    return (
+      Math.round(
+        assessmentColumns
+          .filter(c => c.selectedForReport)
+          .reduce((sum, c) => sum + (parseFloat(String(c.weight)) || 0), 0) * 10
+      ) / 10
+    );
+  }, [assessmentColumns]);
+
+  const handleAutoBalanceWeights = () => {
+    const activeCols = assessmentColumns.filter(c => c.selectedForReport);
+    if (activeCols.length === 0) return;
+    const currentSum = activeCols.reduce((sum, c) => sum + (parseFloat(String(c.weight)) || 0), 0);
+    if (currentSum === 0) {
+      const even = Math.floor(100 / activeCols.length);
+      const rem = 100 - even * activeCols.length;
+      setAssessmentColumns(prev =>
+        prev.map((c, i) => (c.selectedForReport ? { ...c, weight: even + (i === 0 ? rem : 0) } : c))
+      );
+      toast.success('Weights distributed evenly to 100%');
+      return;
+    }
+    let allocated = 0;
+    const updated = assessmentColumns.map((c, idx) => {
+      if (!c.selectedForReport) return c;
+      if (idx === assessmentColumns.length - 1) {
+        return { ...c, weight: Math.max(0, Math.round((100 - allocated) * 10) / 10) };
+      }
+      const newW = Math.round(((c.weight / currentSum) * 100) * 10) / 10;
+      allocated += newW;
+      return { ...c, weight: newW };
+    });
+    setAssessmentColumns(updated);
+    toast.success('Weights auto-balanced proportionally to 100%');
+  };
+
+  const handleSaveColumnsConfiguration = async () => {
+    if (!selectedSubjectId) {
+      toast.error('Please select a subject first');
+      return;
+    }
+    const includedCols = assessmentColumns.filter(c => c.selectedForReport);
+    const sumW = Math.round(includedCols.reduce((s, c) => s + (parseFloat(String(c.weight)) || 0), 0) * 10) / 10;
+    if (Math.abs(sumW - 100) > 0.05) {
+      toast.error(`Columns included in the final report must sum to exactly 100% (currently ${sumW}%). Please adjust weights or use Auto-Balance.`);
+      return;
+    }
+
+    try {
+      await api.post(`/api/marks/columns/${selectedSubjectId}`, { columns: assessmentColumns });
+      toast.success('Assessment columns and weights saved successfully!');
+      setIsManageColumnsModalOpen(false);
+    } catch (err: any) {
+      toast.error(err.response?.data?.error || 'Failed to save assessment configuration');
+    }
+  };
+
+  const submitForHodApproval = async () => {
+    if (!selectedClassId || !selectedSubjectId) {
+      toast.error('Please select both class and subject');
+      return;
+    }
+    setIsSubmittingHod(true);
+    try {
+      await api.post('/api/marks/submit-approval', {
+        classId: selectedClassId,
+        subjectId: selectedSubjectId,
+        term,
+        year,
+        notes: hodNotes
+      });
+      toast.success('Marksheet submitted for HOD review and approval!');
+      setIsHodApprovalModalOpen(false);
+      setHodNotes('');
+    } catch (err: any) {
+      toast.error(err.response?.data?.error || 'Failed to submit marks for approval');
+    } finally {
+      setIsSubmittingHod(false);
+    }
   };
 
   // Active Subject details
@@ -351,12 +466,15 @@ export default function MarksEntryPage() {
   // Auto-calculate scores, percentages, grades, and positions for all students
   const computedStudentMetrics = useMemo(() => {
     const selectedCols = assessmentColumns.filter(c => c.selectedForReport);
-    const totalSelectedMax = selectedCols.reduce((sum, c) => sum + c.maxScore, 0);
+    const totalIncludedWeight = selectedCols.reduce((sum, c) => sum + (parseFloat(String(c.weight)) || 0), 0);
 
     const calculated: Record<
       string,
       {
         compositeScore: number;
+        caSubtotal: number;
+        examSubtotal: number;
+        gpaPoints: number;
         grade: string;
         classPosition: number;
       }
@@ -368,30 +486,51 @@ export default function MarksEntryPage() {
     students.forEach(student => {
       const data = marks[student.id] || { caScore: '', examScore: '', comment: '', assessmentScores: {} };
       let compositeScore = 0;
+      let caSubtotal = 0;
+      let examSubtotal = 0;
 
-      if (isK12Effective && selectedCols.length > 0 && totalSelectedMax > 0) {
-        // K12 calculation from selected tests/exercises/exams
-        const obtainedTotal = selectedCols.reduce((sum, col) => {
-          const val = parseFloat(data.assessmentScores[col.id]) || 0;
-          return sum + val;
+      if (selectedCols.length > 0 && totalIncludedWeight > 0) {
+        compositeScore = selectedCols.reduce((sum, col) => {
+          const raw = parseFloat(data.assessmentScores[col.id]) || 0;
+          const max = col.maxScore || 100;
+          const w = parseFloat(String(col.weight)) || 0;
+          const weightedContribution = max > 0 ? (raw / max) * w : 0;
+
+          if (col.category === 'CA' || col.type !== 'Exam') {
+            caSubtotal += weightedContribution;
+          } else {
+            examSubtotal += weightedContribution;
+          }
+          return sum + weightedContribution;
         }, 0);
-        compositeScore = Math.round((obtainedTotal / totalSelectedMax) * 1000) / 10;
+        compositeScore = Math.round(compositeScore * 10) / 10;
+        caSubtotal = Math.round(caSubtotal * 10) / 10;
+        examSubtotal = Math.round(examSubtotal * 10) / 10;
       } else {
-        // Tertiary or fallback CA + Exam weighted calculation
+        // Fallback CA + Exam weighted calculation
         const ca = parseFloat(data.caScore) || 0;
         const exam = parseFloat(data.examScore) || 0;
         compositeScore = Math.round(((ca * (caWeight / 100)) + (exam * (examWeight / 100))) * 10) / 10;
+        caSubtotal = ca;
+        examSubtotal = exam;
       }
 
       const grade = computeGrade(compositeScore);
+
+      let gpaPoints = 0;
+      if (compositeScore >= 75) gpaPoints = 4.0;
+      else if (compositeScore >= 65) gpaPoints = 3.0;
+      else if (compositeScore >= 50) gpaPoints = 2.0;
+      else if (compositeScore >= 40) gpaPoints = 1.0;
+      else gpaPoints = 0.0;
+
       studentScoresList.push({ studentId: student.id, score: compositeScore });
-      calculated[student.id] = { compositeScore, grade, classPosition: 1 };
+      calculated[student.id] = { compositeScore, caSubtotal, examSubtotal, gpaPoints, grade, classPosition: 1 };
     });
 
-    // 2. Compute Class Position (Ranks) based on sorted composite scores
+    // 2. Compute Class Position (Ranks) based on sorted composite scores (standard competition ranking: 1, 2, 2, 4)
     studentScoresList.sort((a, b) => b.score - a.score);
     studentScoresList.forEach((item, index) => {
-      // Find rank handling ties
       if (index > 0 && item.score === studentScoresList[index - 1].score) {
         calculated[item.studentId].classPosition = calculated[studentScoresList[index - 1].studentId].classPosition;
       } else {
@@ -439,7 +578,10 @@ export default function MarksEntryPage() {
           id: col.id,
           name: col.name,
           type: col.type,
+          date: col.date || new Date().toISOString().slice(0, 10),
           maxScore: col.maxScore,
+          weight: col.weight,
+          category: col.category || 'CA',
           selectedForReport: col.selectedForReport,
           score: parseFloat(d.assessmentScores[col.id]) || 0
         }));
@@ -796,22 +938,50 @@ export default function MarksEntryPage() {
                 <i className="fas fa-balance-scale mr-2"></i>Moderate Grading Scale
               </button>
 
-              {isK12Effective && (
-                <button
-                  onClick={() => setIsAddColumnModalOpen(true)}
-                  className="portal-btn-ghost"
-                  style={{
-                    padding: '10px 18px',
-                    fontWeight: 800,
-                    borderRadius: '10px',
-                    border: '1px dashed #6366f1',
-                    color: '#6366f1',
-                    background: '#eef2ff'
-                  }}
-                >
-                  <i className="fas fa-plus-circle mr-2"></i>Add Test / Exam Column
-                </button>
-              )}
+              <button
+                onClick={() => setIsManageColumnsModalOpen(true)}
+                className="portal-btn-ghost"
+                style={{
+                  padding: '10px 16px',
+                  fontWeight: 800,
+                  borderRadius: '10px',
+                  border: '1px solid #cbd5e1',
+                  color: '#1e293b',
+                  background: '#fff',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px'
+                }}
+              >
+                <i className="fas fa-sliders-h" style={{ color: '#6366f1' }}></i>
+                Setup Columns &amp; Weights
+              </button>
+
+              <button
+                onClick={() => setIsAddColumnModalOpen(true)}
+                className="portal-btn-ghost"
+                style={{
+                  padding: '10px 18px',
+                  fontWeight: 800,
+                  borderRadius: '10px',
+                  border: '1px dashed #6366f1',
+                  color: '#6366f1',
+                  background: '#eef2ff'
+                }}
+              >
+                <i className="fas fa-plus-circle mr-2"></i>Add Column
+              </button>
+
+              <button
+                onClick={() => setIsHodApprovalModalOpen(true)}
+                disabled={saving || students.length === 0}
+                className="portal-btn-neutral"
+                style={{ fontWeight: 800, padding: '12px 18px', height: '48px', display: 'flex', alignItems: 'center', gap: '8px' }}
+              >
+                <i className="fas fa-paper-plane" style={{ color: '#2563eb' }}></i>
+                Submit for HOD Approval
+              </button>
+
               <button
                 onClick={() => saveMarks(false)}
                 disabled={saving}
@@ -824,83 +994,230 @@ export default function MarksEntryPage() {
             </div>
           </div>
 
+          {/* LIVE ASSESSMENT WEIGHT ALLOCATION BANNER */}
+          <div
+            style={{
+              background: Math.abs(totalAllocatedWeight - 100) < 0.05 ? '#f0fdf4' : totalAllocatedWeight < 100 ? '#fffbeb' : '#fef2f2',
+              border: `1px solid ${Math.abs(totalAllocatedWeight - 100) < 0.05 ? '#86efac' : totalAllocatedWeight < 100 ? '#fde68a' : '#fca5a5'}`,
+              borderRadius: '12px',
+              padding: '12px 18px',
+              marginBottom: '16px',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              flexWrap: 'wrap',
+              gap: '12px'
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+              <div
+                style={{
+                  width: '38px',
+                  height: '38px',
+                  borderRadius: '8px',
+                  background: Math.abs(totalAllocatedWeight - 100) < 0.05 ? '#dcfce7' : totalAllocatedWeight < 100 ? '#fef3c7' : '#fee2e2',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: Math.abs(totalAllocatedWeight - 100) < 0.05 ? '#16a34a' : totalAllocatedWeight < 100 ? '#d97706' : '#dc2626'
+                }}
+              >
+                <i className={`fas ${Math.abs(totalAllocatedWeight - 100) < 0.05 ? 'fa-check-circle' : 'fa-balance-scale'}`}></i>
+              </div>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <span style={{ fontWeight: 800, color: '#1e293b', fontSize: '0.95rem' }}>
+                    Assessment Weight Allocation:
+                  </span>
+                  <span
+                    style={{
+                      fontWeight: 900,
+                      fontSize: '1rem',
+                      color: Math.abs(totalAllocatedWeight - 100) < 0.05 ? '#16a34a' : totalAllocatedWeight < 100 ? '#d97706' : '#dc2626'
+                    }}
+                  >
+                    {totalAllocatedWeight}% / 100%
+                  </span>
+                  <span
+                    style={{
+                      padding: '2px 8px',
+                      borderRadius: '6px',
+                      fontSize: '0.75rem',
+                      fontWeight: 800,
+                      background: Math.abs(totalAllocatedWeight - 100) < 0.05 ? '#22c55e' : totalAllocatedWeight < 100 ? '#f59e0b' : '#ef4444',
+                      color: '#fff'
+                    }}
+                  >
+                    {Math.abs(totalAllocatedWeight - 100) < 0.05
+                      ? '100% Weight Balanced'
+                      : totalAllocatedWeight < 100
+                      ? `Under-allocated (-${(100 - totalAllocatedWeight).toFixed(1)}% remaining)`
+                      : `Over-allocated (+${(totalAllocatedWeight - 100).toFixed(1)}% excess)`}
+                  </span>
+                </div>
+                <p style={{ margin: '2px 0 0 0', fontSize: '0.8rem', color: '#64748b' }}>
+                  {isTertiary
+                    ? `Tertiary Breakdown: CA Components (${assessmentColumns.filter(c => c.selectedForReport && (c.category === 'CA' || c.type !== 'Exam')).reduce((s, c) => s + (c.weight || 0), 0)}%) + Exam (${assessmentColumns.filter(c => c.selectedForReport && (c.category === 'EXAM' || c.type === 'Exam')).reduce((s, c) => s + (c.weight || 0), 0)}%).`
+                    : 'The sum of weights for columns included in the terminal report must equal 100% for valid ranking & grade calculations.'}
+                </p>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+              {Math.abs(totalAllocatedWeight - 100) >= 0.05 && (
+                <button
+                  type="button"
+                  onClick={handleAutoBalanceWeights}
+                  className="portal-btn-ghost"
+                  style={{
+                    padding: '6px 12px',
+                    fontSize: '0.82rem',
+                    fontWeight: 700,
+                    background: '#fff',
+                    border: '1px solid #cbd5e1',
+                    color: '#334155',
+                    borderRadius: '8px'
+                  }}
+                >
+                  <i className="fas fa-magic" style={{ marginRight: '6px', color: '#6366f1' }}></i>
+                  Auto-Balance to 100%
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={() => setIsManageColumnsModalOpen(true)}
+                className="portal-btn-neutral"
+                style={{
+                  padding: '6px 14px',
+                  fontSize: '0.82rem',
+                  fontWeight: 800,
+                  borderRadius: '8px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px'
+                }}
+              >
+                <i className="fas fa-cog"></i>
+                Setup Columns
+              </button>
+            </div>
+          </div>
+
           {/* TABLE */}
           <div className="table-responsive">
             <table className="management-table">
               <thead>
                 <tr>
-                  <th style={{ width: '22%', minWidth: '180px' }}>Student Identity</th>
+                  <th style={{ width: '20%', minWidth: '180px' }}>Student Identity</th>
 
-                  {isK12Effective ? (
-                    // K12 Dynamic Assessment Columns
-                    assessmentColumns.map(col => (
-                      <th key={col.id} style={{ textAlign: 'center', minWidth: '130px', padding: '10px 8px' }}>
-                        <div style={{ fontWeight: 800, color: '#1e293b', fontSize: '0.82rem' }}>
-                          {col.name}
-                        </div>
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', marginTop: '4px' }}>
+                  {/* Dynamic Assessment Columns */}
+                  {assessmentColumns.map(col => (
+                    <th key={col.id} style={{ textAlign: 'center', minWidth: '135px', padding: '10px 8px' }}>
+                      <div style={{ fontWeight: 800, color: '#1e293b', fontSize: '0.82rem' }}>
+                        {col.name}
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', marginTop: '4px', flexWrap: 'wrap' }}>
+                        <span
+                          style={{
+                            fontSize: '0.65rem',
+                            padding: '1px 5px',
+                            borderRadius: '4px',
+                            background: '#e0e7ff',
+                            color: '#3730a3',
+                            fontWeight: 700
+                          }}
+                        >
+                          {col.type}
+                        </span>
+                        <span
+                          style={{
+                            fontSize: '0.65rem',
+                            padding: '1px 5px',
+                            borderRadius: '4px',
+                            background: '#f1f5f9',
+                            color: '#475569',
+                            fontWeight: 700
+                          }}
+                        >
+                          Max: {col.maxScore}
+                        </span>
+                        <span
+                          style={{
+                            fontSize: '0.65rem',
+                            padding: '1px 5px',
+                            borderRadius: '4px',
+                            background: col.selectedForReport ? '#dcfce7' : '#fee2e2',
+                            color: col.selectedForReport ? '#15803d' : '#991b1b',
+                            fontWeight: 800
+                          }}
+                        >
+                          {col.weight}%
+                        </span>
+                        {col.category && (
                           <span
                             style={{
-                              fontSize: '0.65rem',
-                              padding: '2px 6px',
+                              fontSize: '0.62rem',
+                              padding: '1px 4px',
                               borderRadius: '4px',
-                              background: col.type.includes('Exam') ? '#fef3c7' : '#e0e7ff',
-                              color: col.type.includes('Exam') ? '#92400e' : '#3730a3',
+                              background: col.category === 'EXAM' ? '#fef3c7' : '#ede9fe',
+                              color: col.category === 'EXAM' ? '#92400e' : '#5b21b6',
                               fontWeight: 800
                             }}
                           >
-                            Max: {col.maxScore}
+                            {col.category}
                           </span>
-                          {col.isCustom && (
-                            <button
-                              onClick={() => handleDeleteColumn(col.id)}
-                              title="Delete column"
-                              style={{ border: 'none', background: 'transparent', color: '#dc2626', cursor: 'pointer', padding: '0 2px' }}
-                            >
-                              <i className="fas fa-times"></i>
-                            </button>
-                          )}
+                        )}
+                      </div>
+                      {col.date && (
+                        <div style={{ fontSize: '0.65rem', color: '#94a3b8', marginTop: '2px' }}>
+                          {col.date}
                         </div>
-                        {/* Checkbox: Count in Report */}
-                        <div style={{ marginTop: '6px', fontSize: '0.7rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
-                          <input
-                            type="checkbox"
-                            checked={col.selectedForReport}
-                            onChange={() => toggleColumnSelectedForReport(col.id)}
-                            id={`check-${col.id}`}
-                            style={{ cursor: 'pointer' }}
-                          />
-                          <label
-                            htmlFor={`check-${col.id}`}
-                            style={{
-                              cursor: 'pointer',
-                              fontWeight: 700,
-                              color: col.selectedForReport ? '#059669' : '#94a3b8'
-                            }}
-                          >
-                            Count in Report
-                          </label>
-                        </div>
-                      </th>
-                    ))
-                  ) : (
-                    // Tertiary CA & Exam Columns
+                      )}
+                      <div style={{ marginTop: '4px', fontSize: '0.7rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
+                        <input
+                          type="checkbox"
+                          checked={col.selectedForReport}
+                          onChange={() => toggleColumnSelectedForReport(col.id)}
+                          id={`check-${col.id}`}
+                          style={{ cursor: 'pointer' }}
+                        />
+                        <label
+                          htmlFor={`check-${col.id}`}
+                          style={{
+                            cursor: 'pointer',
+                            fontWeight: 700,
+                            color: col.selectedForReport ? '#059669' : '#94a3b8'
+                          }}
+                        >
+                          In Final
+                        </label>
+                      </div>
+                    </th>
+                  ))}
+
+                  {/* Framework Mode Columns */}
+                  {isTertiary ? (
                     <>
-                      <th style={{ textAlign: 'center', width: '15%' }}>Continuous Assess. ({caWeight}%)</th>
-                      <th style={{ textAlign: 'center', width: '15%' }}>Cycle Examination ({examWeight}%)</th>
+                      <th style={{ textAlign: 'center', width: '9%' }}>CA Total</th>
+                      <th style={{ textAlign: 'center', width: '9%' }}>Exam Total</th>
+                      <th style={{ width: '20%', minWidth: '150px' }}>Lecturer Remarks</th>
+                      <th style={{ textAlign: 'center', width: '9%' }}>Final (%)</th>
+                      <th style={{ textAlign: 'center', width: '10%' }}>Classif. / GPA</th>
+                    </>
+                  ) : (
+                    <>
+                      <th style={{ width: '22%', minWidth: '160px' }}>Teacher Remarks</th>
+                      <th style={{ textAlign: 'center', width: '8%' }}>Position</th>
+                      <th style={{ textAlign: 'center', width: '9%' }}>Composite</th>
+                      <th style={{ textAlign: 'right', width: '9%' }}>Grade</th>
                     </>
                   )}
-
-                  <th style={{ width: '24%', minWidth: '180px' }}>Subject Teacher Remarks</th>
-                  <th style={{ textAlign: 'center', width: '9%' }}>Position</th>
-                  <th style={{ textAlign: 'center', width: '10%' }}>Composite</th>
-                  <th style={{ textAlign: 'right', width: '10%' }}>Grade</th>
                 </tr>
               </thead>
               <tbody>
                 {students.map(student => {
                   const data = marks[student.id] || { caScore: '', examScore: '', comment: '', assessmentScores: {} };
-                  const computed = computedStudentMetrics[student.id] || { compositeScore: 0, grade: 'F', classPosition: 1 };
+                  const computed = computedStudentMetrics[student.id] || { compositeScore: 0, caSubtotal: 0, examSubtotal: 0, gpaPoints: 0, grade: 'F', classPosition: 1 };
 
                   return (
                     <tr key={student.id}>
@@ -913,15 +1230,18 @@ export default function MarksEntryPage() {
                       </td>
 
                       {/* Marks inputs */}
-                      {isK12Effective ? (
-                        // K12 Assessment Inputs
-                        assessmentColumns.map(col => (
+                      {assessmentColumns.map(col => {
+                        const rawScore = data.assessmentScores[col.id] || '';
+                        const numVal = parseFloat(rawScore);
+                        const isOverMax = !isNaN(numVal) && numVal > col.maxScore;
+
+                        return (
                           <td key={col.id} style={{ textAlign: 'center' }}>
                             <input
                               type="number"
                               min={0}
                               max={col.maxScore}
-                              value={data.assessmentScores[col.id] || ''}
+                              value={rawScore}
                               onChange={e => handleAssessmentScoreChange(student.id, col.id, e.target.value)}
                               className="portal-input"
                               style={{
@@ -930,110 +1250,138 @@ export default function MarksEntryPage() {
                                 padding: '8px 4px',
                                 fontWeight: 900,
                                 fontSize: '1rem',
-                                color: col.selectedForReport ? '#3730a3' : '#64748b',
-                                background: col.selectedForReport ? '#f5f7ff' : '#f8fafc',
-                                border: col.selectedForReport ? '1px solid #c7d2fe' : '1px solid #e2e8f0'
+                                color: isOverMax ? '#dc2626' : col.selectedForReport ? '#3730a3' : '#64748b',
+                                background: isOverMax ? '#fef2f2' : col.selectedForReport ? '#f5f7ff' : '#f8fafc',
+                                border: isOverMax ? '2px solid #ef4444' : col.selectedForReport ? '1px solid #c7d2fe' : '1px solid #e2e8f0'
                               }}
+                              title={isOverMax ? `Score exceeds maximum (${col.maxScore})` : ''}
                               placeholder="0"
                             />
                           </td>
-                        ))
-                      ) : (
-                        // Tertiary CA and Exam Inputs
+                        );
+                      })}
+
+                      {/* Framework Branching for Row Tail */}
+                      {isTertiary ? (
                         <>
-                          <td style={{ textAlign: 'center' }}>
-                            <input
-                              type="number"
-                              value={data.caScore}
-                              onChange={e => handleMarkChange(student.id, 'caScore', e.target.value)}
+                          <td style={{ textAlign: 'center', fontWeight: 700, color: '#4338ca' }}>
+                            {computed.caSubtotal.toFixed(1)}%
+                          </td>
+                          <td style={{ textAlign: 'center', fontWeight: 700, color: '#d97706' }}>
+                            {computed.examSubtotal.toFixed(1)}%
+                          </td>
+                          <td>
+                            <textarea
+                              rows={1}
+                              value={data.comment}
+                              onChange={e => handleMarkChange(student.id, 'comment', e.target.value)}
                               className="portal-input"
-                              style={{ width: '90px', textAlign: 'center', padding: '10px', fontWeight: 900, fontSize: '1.05rem', color: '#4338ca', background: '#f5f7ff' }}
-                              placeholder="0"
+                              style={{ minHeight: '44px', resize: 'none', fontSize: '0.82rem', fontWeight: 600, background: '#f8fafc', padding: '10px 14px' }}
+                              placeholder="Lecturer feedback..."
                             />
                           </td>
                           <td style={{ textAlign: 'center' }}>
-                            <input
-                              type="number"
-                              value={data.examScore}
-                              onChange={e => handleMarkChange(student.id, 'examScore', e.target.value)}
+                            <div style={{ fontWeight: 900, color: '#1e293b', fontSize: '1.15rem' }}>
+                              {computed.compositeScore.toFixed(1)}%
+                            </div>
+                          </td>
+                          <td style={{ textAlign: 'center' }}>
+                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px' }}>
+                              <span
+                                className="status-badge"
+                                style={{
+                                  fontWeight: 900,
+                                  padding: '4px 10px',
+                                  fontSize: '0.78rem',
+                                  background:
+                                    computed.compositeScore >= 75
+                                      ? '#ecfdf5'
+                                      : computed.compositeScore >= 65
+                                      ? '#eff6ff'
+                                      : computed.compositeScore >= 50
+                                      ? '#fffbeb'
+                                      : '#fef2f2',
+                                  color:
+                                    computed.compositeScore >= 75
+                                      ? '#059669'
+                                      : computed.compositeScore >= 65
+                                      ? '#2563eb'
+                                      : computed.compositeScore >= 50
+                                      ? '#d97706'
+                                      : '#dc2626'
+                                }}
+                              >
+                                {computed.grade}
+                              </span>
+                              <small style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: 700 }}>
+                                {computed.gpaPoints.toFixed(1)} GPA
+                              </small>
+                            </div>
+                          </td>
+                        </>
+                      ) : (
+                        <>
+                          {/* Remarks */}
+                          <td>
+                            <textarea
+                              rows={1}
+                              value={data.comment}
+                              onChange={e => handleMarkChange(student.id, 'comment', e.target.value)}
                               className="portal-input"
-                              style={{ width: '90px', textAlign: 'center', padding: '10px', fontWeight: 900, fontSize: '1.05rem', color: '#4338ca', background: '#f5f7ff' }}
-                              placeholder="0"
+                              style={{ minHeight: '44px', resize: 'none', fontSize: '0.82rem', fontWeight: 600, background: '#f8fafc', padding: '10px 14px' }}
+                              placeholder="Teacher feedback..."
                             />
+                          </td>
+
+                          {/* Position */}
+                          <td style={{ textAlign: 'center' }}>
+                            <span
+                              style={{
+                                fontWeight: 900,
+                                padding: '4px 10px',
+                                borderRadius: '12px',
+                                background: computed.classPosition === 1 ? '#fef3c7' : computed.classPosition <= 3 ? '#e0e7ff' : '#f1f5f9',
+                                color: computed.classPosition === 1 ? '#92400e' : computed.classPosition <= 3 ? '#3730a3' : '#64748b',
+                                fontSize: '0.85rem'
+                              }}
+                            >
+                              #{computed.classPosition}
+                            </span>
+                          </td>
+
+                          {/* Composite Percentage */}
+                          <td style={{ textAlign: 'center' }}>
+                            <div style={{ fontWeight: 900, color: '#1e293b', fontSize: '1.15rem' }}>
+                              {computed.compositeScore.toFixed(1)}%
+                            </div>
+                          </td>
+
+                          {/* Grade */}
+                          <td style={{ textAlign: 'right' }}>
+                            <span
+                              className="status-badge"
+                              style={{
+                                fontWeight: 900,
+                                padding: '6px 14px',
+                                background:
+                                  computed.compositeScore >= 70
+                                    ? '#ecfdf5'
+                                    : computed.compositeScore >= 50
+                                    ? '#fffbeb'
+                                    : '#fef2f2',
+                                color:
+                                  computed.compositeScore >= 70
+                                    ? '#059669'
+                                    : computed.compositeScore >= 50
+                                    ? '#d97706'
+                                    : '#dc2626'
+                              }}
+                            >
+                              {computed.grade}
+                            </span>
                           </td>
                         </>
                       )}
-
-                      {/* Remarks */}
-                      <td>
-                        <textarea
-                          rows={1}
-                          value={data.comment}
-                          onChange={e => handleMarkChange(student.id, 'comment', e.target.value)}
-                          className="portal-input"
-                          style={{ minHeight: '44px', resize: 'none', fontSize: '0.82rem', fontWeight: 600, background: '#f8fafc', padding: '10px 14px' }}
-                          placeholder="Provide performance feedback..."
-                        />
-                      </td>
-
-                      {/* Position */}
-                      <td style={{ textAlign: 'center' }}>
-                        <span
-                          style={{
-                            fontWeight: 900,
-                            padding: '4px 10px',
-                            borderRadius: '12px',
-                            background: computed.classPosition === 1 ? '#fef3c7' : computed.classPosition <= 3 ? '#e0e7ff' : '#f1f5f9',
-                            color: computed.classPosition === 1 ? '#92400e' : computed.classPosition <= 3 ? '#3730a3' : '#64748b',
-                            fontSize: '0.85rem'
-                          }}
-                        >
-                          #{computed.classPosition}
-                        </span>
-                      </td>
-
-                      {/* Composite Percentage */}
-                      <td style={{ textAlign: 'center' }}>
-                        <div style={{ fontWeight: 900, color: '#1e293b', fontSize: '1.15rem' }}>
-                          {computed.compositeScore.toFixed(1)}%
-                        </div>
-                      </td>
-
-                      {/* Grade */}
-                      <td style={{ textAlign: 'right' }}>
-                        <span
-                          className="status-badge"
-                          style={{
-                            fontWeight: 900,
-                            padding: '6px 14px',
-                            background:
-                              computed.compositeScore >= 70
-                                ? '#ecfdf5'
-                                : computed.compositeScore >= 50
-                                ? '#fffbeb'
-                                : '#fef2f2',
-                            color:
-                              computed.compositeScore >= 70
-                                ? '#059669'
-                                : computed.compositeScore >= 50
-                                ? '#d97706'
-                                : '#dc2626',
-                            border: `1px solid ${
-                              computed.compositeScore >= 70
-                                ? '#d1fae5'
-                                : computed.compositeScore >= 50
-                                ? '#fef3c7'
-                                : '#fee2e8'
-                            }`,
-                            fontSize: '0.9rem',
-                            minWidth: '42px',
-                            display: 'inline-flex',
-                            justifyContent: 'center'
-                          }}
-                        >
-                          {computed.grade}
-                        </span>
-                      </td>
                     </tr>
                   );
                 })}
@@ -1133,33 +1481,76 @@ export default function MarksEntryPage() {
               />
             </div>
 
-            <div className="form-group" style={{ marginBottom: '16px' }}>
-              <label className="portal-label">Assessment Classification</label>
-              <select
-                value={newColType}
-                onChange={e => setNewColType(e.target.value as any)}
-                className="portal-input"
-                style={{ fontWeight: 700 }}
-              >
-                <option value="Test">Continuous Assessment Test (CAT)</option>
-                <option value="Exercise">Class Exercise / Assignment</option>
-                <option value="Quiz">Quiz / Pop Test</option>
-                <option value="Mid-Year Exam">Mid-Year Exam</option>
-                <option value="End-of-Term Exam">End-of-Term Exam</option>
-                <option value="End-of-Year Exam">End-of-Year Exam</option>
-              </select>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginBottom: '16px' }}>
+              <div>
+                <label className="portal-label">Assessment Type</label>
+                <select
+                  value={newColType}
+                  onChange={e => setNewColType(e.target.value as any)}
+                  className="portal-input"
+                  style={{ fontWeight: 700 }}
+                >
+                  <option value="CAT">Continuous Assessment Test (CAT)</option>
+                  <option value="Assignment">Assignment</option>
+                  <option value="Test">Class Test</option>
+                  <option value="Project">Project / Coursework</option>
+                  <option value="Practical">Practical Lab</option>
+                  <option value="Exam">Terminal / End Exam</option>
+                  <option value="Quiz">Quiz</option>
+                  <option value="Homework">Homework</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="portal-label">Component Category</label>
+                <select
+                  value={newColCategory}
+                  onChange={e => setNewColCategory(e.target.value as any)}
+                  className="portal-input"
+                  style={{ fontWeight: 700 }}
+                >
+                  <option value="CA">Continuous Assessment (CA)</option>
+                  <option value="EXAM">Examination Component</option>
+                </select>
+              </div>
             </div>
 
-            <div className="form-group" style={{ marginBottom: '20px' }}>
-              <label className="portal-label">Maximum Obtainable Score</label>
-              <input
-                type="number"
-                min={1}
-                value={newColMax}
-                onChange={e => setNewColMax(parseInt(e.target.value) || 0)}
-                className="portal-input"
-                style={{ fontWeight: 700 }}
-              />
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px', marginBottom: '20px' }}>
+              <div>
+                <label className="portal-label">Assessment Date</label>
+                <input
+                  type="date"
+                  value={newColDate}
+                  onChange={e => setNewColDate(e.target.value)}
+                  className="portal-input"
+                  style={{ fontWeight: 700 }}
+                />
+              </div>
+
+              <div>
+                <label className="portal-label">Max Score</label>
+                <input
+                  type="number"
+                  min={1}
+                  value={newColMax}
+                  onChange={e => setNewColMax(parseInt(e.target.value) || 0)}
+                  className="portal-input"
+                  style={{ fontWeight: 700 }}
+                />
+              </div>
+
+              <div>
+                <label className="portal-label">Weight (%)</label>
+                <input
+                  type="number"
+                  min={1}
+                  max={100}
+                  value={newColWeight}
+                  onChange={e => setNewColWeight(parseFloat(e.target.value) || 0)}
+                  className="portal-input"
+                  style={{ fontWeight: 700 }}
+                />
+              </div>
             </div>
 
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '28px', padding: '12px', background: '#f8fafc', borderRadius: '10px' }}>
@@ -1350,6 +1741,327 @@ export default function MarksEntryPage() {
                   Apply Moderated Scale
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL 3: CONFIGURE COLUMNS & WEIGHTS MODAL */}
+      {isManageColumnsModalOpen && (
+        <div className="modal-overlay" style={{ zIndex: 1100 }}>
+          <div className="modal-content animate-in zoom-in-95 duration-200" style={{ maxWidth: '900px', width: '95%', padding: '28px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: '#eef2ff', color: '#4338ca', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <i className="fas fa-sliders-h fa-lg"></i>
+                </div>
+                <div>
+                  <h3 style={{ margin: 0, fontWeight: 900, fontSize: '1.25rem', color: '#1e293b' }}>
+                    Configure Assessment Columns &amp; Weights
+                  </h3>
+                  <p style={{ margin: '2px 0 0 0', fontSize: '0.8rem', color: '#64748b' }}>
+                    Subject: <strong>{currentSubject?.name}</strong> • Define test dates, maximum marks, and weight percentages.
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setIsManageColumnsModalOpen(false)}
+                style={{ border: 'none', background: 'transparent', color: '#94a3b8', cursor: 'pointer', fontSize: '1.2rem' }}
+              >
+                <i className="fas fa-times"></i>
+              </button>
+            </div>
+
+            {/* Live Weight Status in Modal */}
+            <div
+              style={{
+                background: Math.abs(totalAllocatedWeight - 100) < 0.05 ? '#f0fdf4' : totalAllocatedWeight < 100 ? '#fffbeb' : '#fef2f2',
+                border: `1px solid ${Math.abs(totalAllocatedWeight - 100) < 0.05 ? '#86efac' : totalAllocatedWeight < 100 ? '#fde68a' : '#fca5a5'}`,
+                borderRadius: '10px',
+                padding: '12px 16px',
+                marginBottom: '16px',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                flexWrap: 'wrap',
+                gap: '10px'
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <span style={{ fontWeight: 800, color: '#1e293b', fontSize: '0.9rem' }}>Allocated Weight:</span>
+                <span style={{ fontWeight: 900, fontSize: '1.1rem', color: Math.abs(totalAllocatedWeight - 100) < 0.05 ? '#16a34a' : totalAllocatedWeight < 100 ? '#d97706' : '#dc2626' }}>
+                  {totalAllocatedWeight}% / 100%
+                </span>
+                <span
+                  style={{
+                    padding: '2px 8px',
+                    borderRadius: '6px',
+                    fontSize: '0.75rem',
+                    fontWeight: 800,
+                    background: Math.abs(totalAllocatedWeight - 100) < 0.05 ? '#22c55e' : totalAllocatedWeight < 100 ? '#f59e0b' : '#ef4444',
+                    color: '#fff'
+                  }}
+                >
+                  {Math.abs(totalAllocatedWeight - 100) < 0.05 ? 'Balanced (100%)' : totalAllocatedWeight < 100 ? `Under-allocated (-${(100 - totalAllocatedWeight).toFixed(1)}%)` : `Over-allocated (+${(totalAllocatedWeight - 100).toFixed(1)}%)`}
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={handleAutoBalanceWeights}
+                className="portal-btn-ghost"
+                style={{ padding: '6px 12px', fontSize: '0.8rem', fontWeight: 700, background: '#fff', border: '1px solid #cbd5e1', color: '#4338ca', borderRadius: '6px' }}
+              >
+                <i className="fas fa-magic mr-1"></i> Auto-Balance to 100%
+              </button>
+            </div>
+
+            {/* Columns List Table */}
+            <div style={{ maxHeight: '380px', overflowY: 'auto', border: '1px solid #e2e8f0', borderRadius: '10px', marginBottom: '20px' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
+                <thead>
+                  <tr style={{ background: '#f8fafc', color: '#475569', borderBottom: '1px solid #e2e8f0' }}>
+                    <th style={{ padding: '10px 12px', textAlign: 'left' }}>Assessment Name</th>
+                    <th style={{ padding: '10px 8px', textAlign: 'left', width: '110px' }}>Type</th>
+                    <th style={{ padding: '10px 8px', textAlign: 'left', width: '90px' }}>Category</th>
+                    <th style={{ padding: '10px 8px', textAlign: 'left', width: '120px' }}>Date</th>
+                    <th style={{ padding: '10px 8px', textAlign: 'center', width: '80px' }}>Max Score</th>
+                    <th style={{ padding: '10px 8px', textAlign: 'center', width: '80px' }}>Weight %</th>
+                    <th style={{ padding: '10px 8px', textAlign: 'center', width: '80px' }}>In Final</th>
+                    <th style={{ padding: '10px 8px', textAlign: 'center', width: '50px' }}>Del</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {assessmentColumns.map((col, idx) => (
+                    <tr key={col.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                      <td style={{ padding: '8px 12px' }}>
+                        <input
+                          type="text"
+                          value={col.name}
+                          onChange={e => {
+                            const val = e.target.value;
+                            setAssessmentColumns(prev => prev.map((c, i) => i === idx ? { ...c, name: val } : c));
+                          }}
+                          className="portal-input"
+                          style={{ padding: '6px 8px', fontSize: '0.82rem', fontWeight: 700 }}
+                        />
+                      </td>
+                      <td style={{ padding: '8px 6px' }}>
+                        <select
+                          value={col.type}
+                          onChange={e => {
+                            const val = e.target.value as any;
+                            setAssessmentColumns(prev => prev.map((c, i) => i === idx ? { ...c, type: val } : c));
+                          }}
+                          className="portal-input"
+                          style={{ padding: '6px 4px', fontSize: '0.78rem', fontWeight: 600 }}
+                        >
+                          <option value="CAT">CAT</option>
+                          <option value="Assignment">Assignment</option>
+                          <option value="Test">Test</option>
+                          <option value="Project">Project</option>
+                          <option value="Practical">Practical</option>
+                          <option value="Exam">Exam</option>
+                          <option value="Quiz">Quiz</option>
+                          <option value="Homework">Homework</option>
+                        </select>
+                      </td>
+                      <td style={{ padding: '8px 6px' }}>
+                        <select
+                          value={col.category || 'CA'}
+                          onChange={e => {
+                            const val = e.target.value as any;
+                            setAssessmentColumns(prev => prev.map((c, i) => i === idx ? { ...c, category: val } : c));
+                          }}
+                          className="portal-input"
+                          style={{ padding: '6px 4px', fontSize: '0.78rem', fontWeight: 700 }}
+                        >
+                          <option value="CA">CA</option>
+                          <option value="EXAM">EXAM</option>
+                        </select>
+                      </td>
+                      <td style={{ padding: '8px 6px' }}>
+                        <input
+                          type="date"
+                          value={col.date || ''}
+                          onChange={e => {
+                            const val = e.target.value;
+                            setAssessmentColumns(prev => prev.map((c, i) => i === idx ? { ...c, date: val } : c));
+                          }}
+                          className="portal-input"
+                          style={{ padding: '6px 4px', fontSize: '0.78rem' }}
+                        />
+                      </td>
+                      <td style={{ padding: '8px 6px', textAlign: 'center' }}>
+                        <input
+                          type="number"
+                          min={1}
+                          value={col.maxScore}
+                          onChange={e => {
+                            const val = parseInt(e.target.value) || 1;
+                            setAssessmentColumns(prev => prev.map((c, i) => i === idx ? { ...c, maxScore: val } : c));
+                          }}
+                          className="portal-input"
+                          style={{ width: '64px', textAlign: 'center', padding: '6px 2px', fontWeight: 800 }}
+                        />
+                      </td>
+                      <td style={{ padding: '8px 6px', textAlign: 'center' }}>
+                        <input
+                          type="number"
+                          min={0}
+                          max={100}
+                          value={col.weight}
+                          onChange={e => {
+                            const val = parseFloat(e.target.value) || 0;
+                            setAssessmentColumns(prev => prev.map((c, i) => i === idx ? { ...c, weight: val } : c));
+                          }}
+                          className="portal-input"
+                          style={{ width: '64px', textAlign: 'center', padding: '6px 2px', fontWeight: 800, color: col.selectedForReport ? '#15803d' : '#64748b' }}
+                        />
+                      </td>
+                      <td style={{ padding: '8px 6px', textAlign: 'center' }}>
+                        <input
+                          type="checkbox"
+                          checked={col.selectedForReport}
+                          onChange={e => {
+                            const val = e.target.checked;
+                            setAssessmentColumns(prev => prev.map((c, i) => i === idx ? { ...c, selectedForReport: val } : c));
+                          }}
+                          style={{ cursor: 'pointer', width: '16px', height: '16px' }}
+                        />
+                      </td>
+                      <td style={{ padding: '8px 6px', textAlign: 'center' }}>
+                        <button
+                          type="button"
+                          onClick={() => setAssessmentColumns(prev => prev.filter((_, i) => i !== idx))}
+                          className="portal-btn-ghost"
+                          style={{ padding: '4px', color: '#dc2626' }}
+                          title="Delete column"
+                        >
+                          <i className="fas fa-trash"></i>
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Modal Footer Actions */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <button
+                type="button"
+                onClick={() => {
+                  const newId = `col-${Date.now()}`;
+                  setAssessmentColumns(prev => [
+                    ...prev,
+                    {
+                      id: newId,
+                      name: `Assessment ${prev.length + 1}`,
+                      type: 'CAT',
+                      date: new Date().toISOString().slice(0, 10),
+                      maxScore: 50,
+                      weight: 10,
+                      selectedForReport: true,
+                      category: 'CA',
+                      isCustom: true
+                    }
+                  ]);
+                }}
+                className="portal-btn-ghost"
+                style={{ color: '#4338ca', border: '1px dashed #6366f1', background: '#eef2ff', fontWeight: 700 }}
+              >
+                <i className="fas fa-plus mr-1"></i> Add Another Column
+              </button>
+
+              <div style={{ display: 'flex', gap: '10px' }}>
+                <button
+                  type="button"
+                  onClick={() => setIsManageColumnsModalOpen(false)}
+                  className="portal-btn-ghost"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handleSaveColumnsConfiguration}
+                  className="portal-btn-primary"
+                  style={{ background: '#4338ca', fontWeight: 800 }}
+                >
+                  <i className="fas fa-check mr-2"></i> Save &amp; Sync Columns
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL 4: SUBMIT FOR HOD APPROVAL MODAL */}
+      {isHodApprovalModalOpen && (
+        <div className="modal-overlay" style={{ zIndex: 1100 }}>
+          <div className="modal-content animate-in zoom-in-95 duration-200" style={{ maxWidth: '520px', padding: '28px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: '#eff6ff', color: '#2563eb', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <i className="fas fa-paper-plane"></i>
+                </div>
+                <div>
+                  <h3 style={{ margin: 0, fontWeight: 900, fontSize: '1.2rem', color: '#1e293b' }}>
+                    Submit for HOD Approval
+                  </h3>
+                  <p style={{ margin: '2px 0 0 0', fontSize: '0.8rem', color: '#64748b' }}>
+                    Send mark sheet to Head of Department for certification
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setIsHodApprovalModalOpen(false)}
+                style={{ border: 'none', background: 'transparent', color: '#94a3b8', cursor: 'pointer', fontSize: '1.2rem' }}
+              >
+                <i className="fas fa-times"></i>
+              </button>
+            </div>
+
+            <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '10px', padding: '14px', marginBottom: '18px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', fontSize: '0.82rem' }}>
+                <div><strong>Subject:</strong> {currentSubject?.name}</div>
+                <div><strong>Class:</strong> {classes.find(c => c.id === selectedClassId)?.name}</div>
+                <div><strong>Cycle:</strong> {term} {year}</div>
+                <div><strong>Students:</strong> {students.length} Enrolled</div>
+                <div><strong>Class Average:</strong> {classAverage}%</div>
+                <div><strong>Weight Allocated:</strong> {totalAllocatedWeight}%</div>
+              </div>
+            </div>
+
+            <div className="form-group" style={{ marginBottom: '20px' }}>
+              <label className="portal-label">Submission Remarks / Notes for HOD</label>
+              <textarea
+                rows={3}
+                value={hodNotes}
+                onChange={e => setHodNotes(e.target.value)}
+                placeholder="e.g. All coursework tests and practical marks finalized; ready for review."
+                className="portal-input"
+                style={{ resize: 'none', fontSize: '0.85rem', fontWeight: 600, padding: '10px' }}
+              />
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+              <button
+                type="button"
+                onClick={() => setIsHodApprovalModalOpen(false)}
+                className="portal-btn-ghost"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={submitForHodApproval}
+                disabled={isSubmittingHod}
+                className="portal-btn-primary"
+                style={{ background: '#2563eb', fontWeight: 800 }}
+              >
+                {isSubmittingHod ? <i className="fas fa-spinner fa-spin mr-2"></i> : <i className="fas fa-paper-plane mr-2"></i>}
+                Confirm Submission to HOD
+              </button>
             </div>
           </div>
         </div>
