@@ -4796,6 +4796,8 @@ model StudentAward {
   reason        String?
   evidenceUrl   String?
   points        Int      @default(0)
+  rewardType    String?  @default("CERTIFICATE") // CERTIFICATE, FEES_CREDIT, CASH_PRIZE
+  amount        Float?   @default(0)
   status        String   @default("pending") // pending, approved, rejected
   approvedById  String?
   approver      User?    @relation("AwardApprover", fields: [approvedById], references: [id])
@@ -4804,6 +4806,28 @@ model StudentAward {
 
   @@index([schoolId])
   @@index([studentId])
+}
+
+model StaffAward {
+  id                        String   @id @default(cuid())
+  schoolId                  String
+  employeeId                String
+  awardedById               String
+  awardType                 String   // Long Service, Best Teacher, Attendance, Innovation, Employee of Month, Recognition
+  title                     String
+  reason                    String?
+  rewardType                String   @default("Certificate Only") // Certificate Only, Cash Bonus, Gift
+  amount                    Float    @default(0)
+  fundingSource             String   @default("School Income") // School Income, Donor, Governance Fund
+  status                    String   @default("approved") // pending, approved, rejected
+  certificateUrl            String?
+  complianceOverrideReason  String?
+  payrollAllowanceCreated   Boolean  @default(false)
+  createdAt                 DateTime @default(now())
+  updatedAt                 DateTime @updatedAt
+
+  @@index([schoolId])
+  @@index([employeeId])
 }
 
 // --- Phase 5: Bursaries & Scholarships ---

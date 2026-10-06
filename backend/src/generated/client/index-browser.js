@@ -3185,8 +3185,29 @@ exports.Prisma.StudentAwardScalarFieldEnum = {
   reason: 'reason',
   evidenceUrl: 'evidenceUrl',
   points: 'points',
+  rewardType: 'rewardType',
+  amount: 'amount',
   status: 'status',
   approvedById: 'approvedById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.StaffAwardScalarFieldEnum = {
+  id: 'id',
+  schoolId: 'schoolId',
+  employeeId: 'employeeId',
+  awardedById: 'awardedById',
+  awardType: 'awardType',
+  title: 'title',
+  reason: 'reason',
+  rewardType: 'rewardType',
+  amount: 'amount',
+  fundingSource: 'fundingSource',
+  status: 'status',
+  certificateUrl: 'certificateUrl',
+  complianceOverrideReason: 'complianceOverrideReason',
+  payrollAllowanceCreated: 'payrollAllowanceCreated',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -3481,6 +3502,7 @@ exports.Prisma.ModelName = {
   CateringRequest: 'CateringRequest',
   AwardConfig: 'AwardConfig',
   StudentAward: 'StudentAward',
+  StaffAward: 'StaffAward',
   BursaryType: 'BursaryType',
   StudentBursary: 'StudentBursary'
 };
