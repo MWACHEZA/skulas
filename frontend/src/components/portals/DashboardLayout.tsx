@@ -70,6 +70,13 @@ export default function DashboardLayout({
 
   const storageKey = `portal_nav_groups_${portalName.toLowerCase().replace(/[^a-z0-9]/g, '_')}`;
 
+  // Retain last valid navigation groups to guard against transient empty nav evaluations during route changes
+  const lastValidNavGroupsRef = React.useRef<NavGroup[]>(navGroups && navGroups.length > 0 ? navGroups : []);
+  if (navGroups && navGroups.length > 0) {
+    lastValidNavGroupsRef.current = navGroups;
+  }
+  const effectiveNavGroups = (navGroups && navGroups.length > 0) ? navGroups : lastValidNavGroupsRef.current;
+
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>(() => {
     try {
       const saved = localStorage.getItem(storageKey);
@@ -78,8 +85,8 @@ export default function DashboardLayout({
       // ignore
     }
     const initial: Record<string, boolean> = {};
-    if (navGroups && navGroups.length > 0) {
-      navGroups.forEach((g, idx) => {
+    if (effectiveNavGroups && effectiveNavGroups.length > 0) {
+      effectiveNavGroups.forEach((g, idx) => {
         const hasActiveChild = g.items.some(item => 
           location.pathname === item.to || (item.to !== '/' && item.to !== '/admin' && location.pathname.startsWith(item.to + '/'))
         );
@@ -101,8 +108,8 @@ export default function DashboardLayout({
 
   // Auto-expand group if active child route changes
   useEffect(() => {
-    if (!navGroups) return;
-    navGroups.forEach(g => {
+    if (!effectiveNavGroups) return;
+    effectiveNavGroups.forEach(g => {
       const hasActiveChild = g.items.some(item => 
         location.pathname === item.to || (item.to !== '/' && item.to !== '/admin' && location.pathname.startsWith(item.to + '/'))
       );
@@ -116,7 +123,7 @@ export default function DashboardLayout({
         });
       }
     });
-  }, [location.pathname, navGroups]);
+  }, [location.pathname, effectiveNavGroups]);
 
   // Keyboard shortcut Ctrl+K / Cmd+K to focus nav search
   useEffect(() => {
@@ -131,11 +138,11 @@ export default function DashboardLayout({
   }, []);
 
   const filteredGroups = React.useMemo(() => {
-    if (!navGroups) return null;
+    if (!effectiveNavGroups || effectiveNavGroups.length === 0) return null;
     const q = navSearch.trim().toLowerCase();
-    if (!q) return navGroups;
+    if (!q) return effectiveNavGroups;
 
-    return navGroups
+    return effectiveNavGroups
       .map(group => {
         const matchingItems = group.items.filter(item => {
           const labelMatch = item.label.toLowerCase().includes(q);
@@ -152,7 +159,7 @@ export default function DashboardLayout({
         };
       })
       .filter(group => group.items.length > 0);
-  }, [navGroups, navSearch]);
+  }, [effectiveNavGroups, navSearch]);
 
   // Initialize tenant-scoped SSE stream for accounting & stock real-time sync
   useLedgerSSE();

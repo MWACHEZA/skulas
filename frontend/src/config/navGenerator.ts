@@ -327,11 +327,42 @@ export function generatePortalNavigation(
   user: UserContext | null | undefined,
   currentPath: string = ''
 ): NavGroup[] {
+  // Fallback to local storage or portal default role if user is temporarily null/unhydrated
+  let effectiveUser = user;
+  if (!effectiveUser || !effectiveUser.role) {
+    try {
+      const stored = localStorage.getItem('acadex_user') || localStorage.getItem('user');
+      if (stored) {
+        effectiveUser = JSON.parse(stored);
+      }
+    } catch (e) {
+      // ignore
+    }
+  }
+
+  if (!effectiveUser?.role) {
+    const portalRoleMap: Record<string, string> = {
+      admin: 'ADMIN',
+      teacher: 'TEACHER',
+      bursar: 'BURSAR',
+      librarian: 'LIBRARIAN',
+      ancillary: 'ANCILLARY',
+      clinic: 'NURSE',
+      sdc: 'SDC',
+      student: 'STUDENT',
+      parent: 'PARENT'
+    };
+    effectiveUser = {
+      role: portalRoleMap[portal] || 'ADMIN',
+      secondaryRoles: effectiveUser?.secondaryRoles || []
+    } as UserContext;
+  }
+
   if (portal === 'parent') {
-    return generateParentPortalNavigation(user, currentPath);
+    return generateParentPortalNavigation(effectiveUser, currentPath);
   }
   if (portal === 'student') {
-    return generateStudentPortalNavigation(user, currentPath);
+    return generateStudentPortalNavigation(effectiveUser, currentPath);
   }
 
   // 1. Filter raw registry pages
@@ -343,14 +374,14 @@ export function generatePortalNavigation(
 
     // Role check
     if (page.requiredRoles && page.requiredRoles.length > 0) {
-      if (!user?.role || !page.requiredRoles.includes(user.role)) {
+      if (!effectiveUser?.role || !page.requiredRoles.includes(effectiveUser.role)) {
         return false;
       }
     }
 
     // Secondary roles check
     if (page.requiredSecondaryRoles && page.requiredSecondaryRoles.length > 0) {
-      const userSecRoles = user?.secondaryRoles || [];
+      const userSecRoles = effectiveUser?.secondaryRoles || [];
       const hasSecRole = page.requiredSecondaryRoles.some(r => userSecRoles.includes(r));
       if (!hasSecRole) {
         return false;
@@ -358,7 +389,7 @@ export function generatePortalNavigation(
     }
 
     // Granular permission check
-    if (page.permissionKey && !hasPermission(user, page.permissionKey)) {
+    if (page.permissionKey && !hasPermission(effectiveUser, page.permissionKey)) {
       return false;
     }
 

@@ -108,10 +108,41 @@ const canViewReports = (user) => {
 router.get('/menu', async (req, res) => {
     const schoolId = req.user.schoolId;
     try {
-        const menu = await prisma_1.default.weeklyMenu.findFirst({
+        let menu = await prisma_1.default.weeklyMenu.findFirst({
             where: { schoolId, published: true },
             orderBy: { weekStarting: 'desc' }
         });
+        if (!menu) {
+            const defaultMenuData = {
+                Monday: { breakfast: 'Oatmeal Porridge & Fresh Fruits', lunch: 'Sadza with Beef Stew & Cabbage', dinner: 'Rice & Roast Chicken with Gravy' },
+                Tuesday: { breakfast: 'Scrambled Eggs & Toasted Bread', lunch: 'Chicken Stew & Rice with Garden Salad', dinner: 'Spaghetti Bolognaise & Greens' },
+                Wednesday: { breakfast: 'Pancakes with Syrup & Tea', lunch: 'Fish & Chips with Tartar Sauce', dinner: 'Sadza & Beef Curry with Braised Spinach' },
+                Thursday: { breakfast: 'Cornflakes & Fresh Milk', lunch: 'Pork Chops & Creamy Mashed Potatoes', dinner: 'Vegetable Stew & Steamed Brown Rice' },
+                Friday: { breakfast: 'French Toast & Hot Beverage', lunch: 'Sadza & Mixed Braai Meats with Chakalaka', dinner: 'Beef Burger & Potato Wedges' },
+                Saturday: { breakfast: 'Boiled Eggs, Sausage & Toast', lunch: 'Jollof Rice & Grilled Chicken Drumsticks', dinner: 'Pasta Alfredo with Peas & Carrots' },
+                Sunday: { breakfast: 'Full English Breakfast (Bacon, Eggs & Beans)', lunch: 'Sunday Roast Beef, Roast Potatoes & Gravy', dinner: 'Creamy Vegetable Soup & Fresh Bread Rolls' }
+            };
+            try {
+                menu = await prisma_1.default.weeklyMenu.create({
+                    data: {
+                        schoolId,
+                        weekStarting: new Date(),
+                        menuData: defaultMenuData,
+                        published: true
+                    }
+                });
+            }
+            catch (createErr) {
+                // Fallback in-memory response if create fails
+                return res.json({
+                    id: 'default-menu',
+                    schoolId,
+                    weekStarting: new Date(),
+                    published: true,
+                    menuData: defaultMenuData
+                });
+            }
+        }
         res.json(menu);
     }
     catch (error) {

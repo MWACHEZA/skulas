@@ -7,7 +7,6 @@ const express_1 = require("express");
 const prisma_1 = __importDefault(require("../lib/prisma"));
 const auth_1 = require("../middleware/auth");
 const ledger_service_1 = require("../services/ledger.service");
-const coa_seeder_1 = require("../../prisma/seeders/coa.seeder");
 const ledger_events_1 = require("../services/ledger-events");
 const till_service_1 = require("../services/till.service");
 const fiscal_service_1 = require("../services/fiscal.service");
@@ -18,14 +17,14 @@ router.use(auth_1.requireAuth);
 // ─────────────────────────────────────────────────────────────────────────────
 function paymentAccountCode(paymentMethod) {
     switch ((paymentMethod || '').toUpperCase()) {
-        case 'WALLET': return '3200'; // Student Deposits (liability reduced on spend)
+        case 'WALLET': return '2110'; // Student Pocket Money / Digital Wallets (liability reduced on spend)
         case 'CARD':
-        case 'POS': return '1130'; // Card / POS Terminal
+        case 'POS': return '1010'; // Bank Account — Main Operations
         case 'MOBILE':
-        case 'ECOCASH': return '1120'; // Mobile Money Account
-        case 'BANK': return '1110'; // Bank Account (Main)
+        case 'ECOCASH': return '1022'; // Mobile Money Float (EcoCash / OneMoney)
+        case 'BANK': return '1010'; // Bank Account — Main Operations
         case 'CASH':
-        default: return '1100'; // Cash on Hand
+        default: return '1023'; // Tuckshop Cash Till
     }
 }
 // ─────────────────────────────────────────────────────────────────────────────
@@ -238,29 +237,17 @@ router.post('/sales', async (req, res) => {
                 return sum + costPerUnit * item.quantity;
             }, 0);
             if (totalCost > 0) {
-                const [cogsId, inventoryId] = await Promise.all([
-                    (0, coa_seeder_1.getAccountId)(schoolId, '5020', prisma_1.default).catch(() => (0, coa_seeder_1.getAccountId)(schoolId, '5070', prisma_1.default)),
-                    (0, coa_seeder_1.getAccountId)(schoolId, '1200', prisma_1.default)
-                ]);
-                await ledger_service_1.LedgerService.postEntry({
-                    schoolId,
-                    date: new Date(),
+                await ledger_service_1.LedgerService.postDoubleEntry({
+                    tenantId: schoolId,
+                    debitCode: '5080', // Cost of Goods Sold — Tuckshop
+                    creditCode: '1200', // Inventory — Tuckshop Stock
+                    amount: Math.round(totalCost * 100) / 100,
                     description: `Tuckshop COGS — ${items.length} item(s)`,
-                    sourceType: 'tuckshop_cogs',
-                    sourceId: saleSourceId,
-                    createdByUserId: req.user?.id,
-                    lines: [
-                        {
-                            accountId: cogsId,
-                            debit: totalCost,
-                            description: 'Cost of tuckshop goods sold'
-                        },
-                        {
-                            accountId: inventoryId,
-                            credit: totalCost,
-                            description: 'Reduce tuckshop inventory at cost'
-                        }
-                    ]
+                    sourceModule: 'tuckshop_cogs',
+                    reference: saleSourceId,
+                    userId: req.user?.id,
+                    ipAddress: req.ip,
+                    bypassApprovalCheck: true
                 });
             }
             // Broadcast real-time ledger event
@@ -296,6 +283,50 @@ router.post('/sales', async (req, res) => {
     catch (error) {
         console.error('POS Sale error:', error);
         res.status(400).json({ error: error.message || 'Failed to process sale' });
+    }
+});
+// ─────────────────────────────────────────────────────────────────────────────
+// GET /api/tuckshop/sales (Full directory for FinanceWallets.tsx)
+// ─────────────────────────────────────────────────────────────────────────────
+router.get('/sales', async (req, res) => {
+    try {
+        const schoolId = req.user?.schoolId;
+        if (!schoolId)
+            return res.status(400).json({ error: 'Missing school context' });
+        const sales = await prisma_1.default.tuckshopSale.findMany({
+            where: { schoolId },
+            orderBy: { soldAt: 'desc' },
+            take: 200,
+            include: {
+                item: true
+            }
+        });
+        const studentIds = sales.map(s => s.studentId).filter((id) => Boolean(id));
+        const students = studentIds.length > 0
+            ? await prisma_1.default.student.findMany({
+                where: { id: { in: studentIds } },
+                select: { id: true, name: true, studentId: true, user: { select: { name: true, email: true } } }
+            })
+            : [];
+        const studentMap = new Map(students.map(st => [st.id, st]));
+        const formatted = sales.map(s => {
+            const student = s.studentId ? studentMap.get(s.studentId) : null;
+            return {
+                id: s.id,
+                itemNames: s.item?.name || 'Tuckshop Item',
+                totalAmount: s.totalAmount,
+                quantity: s.quantity,
+                paymentMethod: 'CASH',
+                soldAt: s.soldAt,
+                studentName: student?.user?.name || student?.name || 'Counter Sale',
+                student: student || null
+            };
+        });
+        res.json(formatted);
+    }
+    catch (error) {
+        console.error('Fetch sales error:', error);
+        res.status(500).json({ error: 'Failed to fetch sales' });
     }
 });
 // ─────────────────────────────────────────────────────────────────────────────

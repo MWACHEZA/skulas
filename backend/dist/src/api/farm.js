@@ -68,6 +68,18 @@ router.get('/crops', (0, moduleAccess_1.requireModuleAccess)('farm', 'scoped'), 
         res.status(500).json({ error: 'Failed to fetch crop cycles' });
     }
 });
+router.get('/plots', (0, moduleAccess_1.requireModuleAccess)('farm', 'scoped'), async (req, res) => {
+    try {
+        const crops = await prisma_1.default.farmCropCycle.findMany({
+            where: { schoolId: req.user.schoolId },
+            orderBy: { datePlanted: 'desc' }
+        });
+        res.json(crops);
+    }
+    catch (error) {
+        res.status(500).json({ error: 'Failed to fetch crop cycles' });
+    }
+});
 router.post('/crops', (0, moduleAccess_1.requireModuleAccess)('farm', 'scoped'), async (req, res) => {
     const { name, type, sector, datePlanted, expectedHarvest, status } = req.body;
     if (!name || !type || !sector || !datePlanted || !expectedHarvest) {

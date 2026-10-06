@@ -184,23 +184,33 @@ router.get('/hall-of-fame', requireAuth, async (req: AuthRequest, res: Response)
 // STAFF AWARDS
 // ============================================================================
 
-// List Staff Awards
+// List Awards (Student and Staff)
 router.get('/', requireAuth, async (req: AuthRequest, res: Response): Promise<any> => {
   const schoolId = req.user!.schoolId!;
+  const { type } = req.query;
   try {
-    const staffAwards = await prisma.staffAward.findMany({
-      where: { schoolId },
-      orderBy: { createdAt: 'desc' }
-    });
+    const [staffAwards, studentAwards] = await Promise.all([
+      type === 'student' ? [] : prisma.staffAward.findMany({
+        where: { schoolId },
+        orderBy: { createdAt: 'desc' }
+      }),
+      type === 'staff' ? [] : prisma.studentAward.findMany({
+        where: { schoolId },
+        include: {
+          student: { select: { id: true, name: true, studentId: true, class: { select: { name: true } } } }
+        },
+        orderBy: { createdAt: 'desc' }
+      })
+    ]);
 
     const employeeIds = [...new Set(staffAwards.map(a => a.employeeId))];
-    const users = await prisma.user.findMany({
+    const users = employeeIds.length > 0 ? await prisma.user.findMany({
       where: { id: { in: employeeIds } },
       select: { id: true, name: true, email: true, role: true }
-    });
+    }) : [];
     const userMap = new Map(users.map(u => [u.id, u]));
 
-    const response = staffAwards.map(a => ({
+    const staffMapped = staffAwards.map(a => ({
       id: a.id,
       awardName: a.title,
       title: a.title,
@@ -218,7 +228,29 @@ router.get('/', requireAuth, async (req: AuthRequest, res: Response): Promise<an
       employee: userMap.get(a.employeeId) || { name: 'Unknown Staff' }
     }));
 
-    res.json(response);
+    const studentMapped = studentAwards.map(sa => ({
+      id: sa.id,
+      awardName: sa.title,
+      title: sa.title,
+      awardType: 'Student Merit',
+      gift: sa.rewardType || 'Certificate',
+      rewardType: sa.rewardType,
+      amount: sa.amount || 0,
+      fundingSource: 'School',
+      status: sa.status,
+      date: sa.createdAt.toISOString(),
+      createdAt: sa.createdAt,
+      user: {
+        id: sa.student.id,
+        name: sa.student.name,
+        studentId: sa.student.studentId,
+        class: sa.student.class
+      },
+      student: sa.student
+    }));
+
+    const combined = [...studentMapped, ...staffMapped].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    res.json(combined);
   } catch (error) {
     res.status(500).json({ message: 'Failed to fetch awards', error });
   }
@@ -316,6 +348,25 @@ router.post(['/', '/staff'], requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN', 
   }
 
   try {
+    const student = await prisma.student.findUnique({ where: { id: empId } });
+    if (student) {
+      const newStudentAward = await prisma.studentAward.create({
+        data: {
+          schoolId,
+          studentId: empId,
+          nominatedById: awardedById,
+          category: 'General Merit',
+          title: awardTitle,
+          reason: reason || gift || '',
+          rewardType: rewardType || 'CERTIFICATE',
+          amount: numAmount,
+          status: 'approved',
+          approvedById: awardedById
+        }
+      });
+      return res.status(201).json(newStudentAward);
+    }
+
     const newAward = await prisma.staffAward.create({
       data: {
         schoolId,

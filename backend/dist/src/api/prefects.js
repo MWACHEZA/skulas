@@ -4,10 +4,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
-const prisma_1 = __importDefault(require("../lib/prisma")); // Ensure this matches actual db import
-const moduleAccess_1 = require("../middleware/moduleAccess"); // Ensure this is the right import path for auth middleware
+const prisma_1 = __importDefault(require("../lib/prisma"));
+const auth_1 = require("../middleware/auth");
+const moduleAccess_1 = require("../middleware/moduleAccess");
 const router = (0, express_1.Router)();
-// Gating middleware
+// Gating middleware: require authentication, then module access
+router.use(auth_1.requireAuth);
 router.use((0, moduleAccess_1.requireModuleAccess)('prefects'));
 // Duty Roster
 router.get('/duty', async (req, res) => {
@@ -40,8 +42,72 @@ router.post('/meetings', async (req, res) => {
 // Conduct Reports (DisciplineRecord)
 router.get('/conduct', async (req, res) => {
     const { schoolId } = req.user;
-    const reports = await prisma_1.default.disciplineRecord.findMany({ where: { schoolId } });
-    res.json(reports);
+    const reports = await prisma_1.default.disciplineRecord.findMany({
+        where: { schoolId },
+        orderBy: { date: 'desc' }
+    });
+    const studentIds = [...new Set(reports.map(r => r.studentId))];
+    const reporterIds = [...new Set(reports.map(r => r.reporterId))];
+    const [students, reporters] = await Promise.all([
+        prisma_1.default.student.findMany({
+            where: { id: { in: studentIds } },
+            select: { id: true, name: true, studentId: true, class: { select: { name: true } } }
+        }),
+        prisma_1.default.user.findMany({
+            where: { id: { in: reporterIds } },
+            select: { id: true, name: true, role: true }
+        })
+    ]);
+    const sMap = new Map(students.map(s => [s.id, s]));
+    const rMap = new Map(reporters.map(r => [r.id, r]));
+    res.json(reports.map(r => ({
+        ...r,
+        student: sMap.get(r.studentId) || null,
+        reporter: rMap.get(r.reporterId) || null
+    })));
+});
+router.get('/reports', async (req, res) => {
+    const { schoolId } = req.user;
+    const reports = await prisma_1.default.disciplineRecord.findMany({
+        where: { schoolId },
+        orderBy: { date: 'desc' }
+    });
+    const studentIds = [...new Set(reports.map(r => r.studentId))];
+    const reporterIds = [...new Set(reports.map(r => r.reporterId))];
+    const [students, reporters] = await Promise.all([
+        prisma_1.default.student.findMany({
+            where: { id: { in: studentIds } },
+            select: { id: true, name: true, studentId: true, class: { select: { name: true } } }
+        }),
+        prisma_1.default.user.findMany({
+            where: { id: { in: reporterIds } },
+            select: { id: true, name: true, role: true }
+        })
+    ]);
+    const sMap = new Map(students.map(s => [s.id, s]));
+    const rMap = new Map(reporters.map(r => [r.id, r]));
+    res.json(reports.map(r => ({
+        ...r,
+        student: sMap.get(r.studentId) || null,
+        reporter: rMap.get(r.reporterId) || null
+    })));
+});
+router.patch('/reports/:id/status', async (req, res) => {
+    const { id } = req.params;
+    const { status, resolution } = req.body;
+    try {
+        const updated = await prisma_1.default.disciplineRecord.update({
+            where: { id: id },
+            data: {
+                actionTaken: resolution || status,
+                updatedAt: new Date()
+            }
+        });
+        res.json(updated);
+    }
+    catch (error) {
+        res.status(500).json({ error: 'Failed to update report status' });
+    }
 });
 router.post('/conduct', async (req, res) => {
     const { schoolId, id: reporterId } = req.user;

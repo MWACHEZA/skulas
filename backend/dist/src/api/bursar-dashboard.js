@@ -7,7 +7,7 @@ const express_1 = require("express");
 const prisma_1 = __importDefault(require("../lib/prisma"));
 const auth_1 = require("../middleware/auth");
 const router = (0, express_1.Router)();
-router.get('/metrics', auth_1.requireAuth, (0, auth_1.requireRole)('BURSAR', 'SCHOOL_ADMIN'), async (req, res) => {
+router.get('/metrics', auth_1.requireAuth, (0, auth_1.requireRole)('BURSAR', 'SCHOOL_ADMIN', 'SUPER_ADMIN', 'FINANCE'), async (req, res) => {
     try {
         const schoolId = req.user.schoolId;
         // 1. Calculate Expected (Total Fees Assessed)

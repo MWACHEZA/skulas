@@ -1,13 +1,40 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.enforceTenantIsolation = exports.tenantContext = void 0;
+exports.enforceTenantIsolation = exports.tenantContext = exports.extractSubdomain = void 0;
 const security_logger_1 = require("../lib/security-logger");
 /**
- * Extracts school/tenant context from headers or URL parameters.
+ * Extract tenant subdomain from Host or hostname.
+ * Handles *.eduportal.co.zw, *.skulas.co.zw, *.localhost, etc.
+ */
+const extractSubdomain = (hostname) => {
+    if (!hostname)
+        return null;
+    const host = hostname.split(':')[0].toLowerCase().trim();
+    if (!host || /^(\d{1,3}\.){3}\d{1,3}$/.test(host))
+        return null;
+    if (host.endsWith('.localhost')) {
+        const sub = host.replace('.localhost', '');
+        return sub && sub !== 'www' ? sub : null;
+    }
+    const parts = host.split('.');
+    if (parts.length >= 3) {
+        const reserved = new Set(['www', 'api', 'app', 'admin', 'portal', 'mail', 'staging', 'dev', 'acadex', 'cdn']);
+        const candidate = parts[0].toLowerCase();
+        if (!reserved.has(candidate)) {
+            return candidate;
+        }
+    }
+    return null;
+};
+exports.extractSubdomain = extractSubdomain;
+/**
+ * Extracts school/tenant context from Host subdomain, headers, or URL parameters.
  * For authenticated requests, JWT user school is authoritative.
  */
 const tenantContext = (req, res, next) => {
-    const tenantCode = req.headers['x-school-code'] || req.query.schoolCode;
+    const hostHeader = req.headers['x-forwarded-host'] || req.headers.host || req.hostname;
+    const subdomain = (0, exports.extractSubdomain)(hostHeader);
+    const tenantCode = req.headers['x-school-code'] || req.query.schoolCode || subdomain;
     if (tenantCode) {
         req.tenantCode = tenantCode.toUpperCase();
     }

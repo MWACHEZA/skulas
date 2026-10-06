@@ -13,6 +13,7 @@ const notifications_1 = require("../services/notifications");
 const audit_1 = require("../utils/audit");
 const ledger_service_1 = require("../services/ledger.service");
 const coa_seeder_1 = require("../../prisma/seeders/coa.seeder");
+const sequence_service_1 = require("../services/sequence.service");
 const router = (0, express_1.Router)();
 const upload = (0, multer_1.default)({ storage: multer_1.default.memoryStorage() });
 /**
@@ -389,18 +390,21 @@ router.post('/invoice/standard', auth_1.requireAuth, (0, auth_1.requireRole)('BU
                     remainingDiscount -= itemDiscount;
                     const netAmount = Math.max(0, Math.round((amount - itemDiscount) * 100) / 100);
                     const paidAmount = isPaid ? netAmount : 0;
+                    const docNo = await sequence_service_1.SequenceService.nextDocNo(schoolId, 'INV', tx);
+                    const fullDesc = `[${docNo}] ${description || `${group.name} - ${group.billingType} ${group.year}`}`;
                     const fee = await tx.fee.create({
                         data: {
                             studentId,
                             feeGroupId: group.id,
                             amount: Math.round(amount * 100) / 100,
                             discount: itemDiscount,
+                            vatPercentage: 0,
                             paid: paidAmount,
                             status: isPaid ? 'paid' : 'unpaid',
                             term: group.billingType,
                             year: group.year,
                             dueDate: dueDate ? new Date(dueDate) : new Date(group.year, 11, 31),
-                            description: description || `${group.name} - ${group.billingType} ${group.year}`,
+                            description: fullDesc,
                             schoolId
                         }
                     });
@@ -1412,6 +1416,88 @@ router.post('/upload-proof', auth_1.requireAuth, upload.single('document'), asyn
     catch (error) {
         console.error('Proof upload error:', error);
         res.status(500).json({ error: 'Failed to process proof of payment submission' });
+    }
+});
+/**
+ * @route   POST /api/fees/defaulters/broadcast-sms
+ * @desc    [BURSAR/ADMIN] Broadcast SMS reminders to debtors / defaulters
+ */
+router.post('/defaulters/broadcast-sms', auth_1.requireAuth, (0, auth_1.requireRole)('BURSAR', 'SCHOOL_ADMIN'), async (req, res) => {
+    try {
+        const schoolId = req.user.schoolId;
+        const { defaulterIds, defaulters: defaultersList, customMessage } = req.body;
+        const requestedIds = Array.isArray(defaulterIds)
+            ? defaulterIds
+            : Array.isArray(defaultersList)
+                ? defaultersList.map((d) => d.studentId || d.id)
+                : [];
+        if (requestedIds.length === 0) {
+            return res.status(400).json({ error: 'Please provide at least one defaulter account' });
+        }
+        // Match students in database by id or studentId
+        const matchedStudents = await prisma_1.default.student.findMany({
+            where: {
+                schoolId,
+                OR: [
+                    { id: { in: requestedIds } },
+                    { studentId: { in: requestedIds } }
+                ]
+            },
+            include: {
+                parents: {
+                    include: { parent: true }
+                }
+            }
+        });
+        let dispatchedCount = 0;
+        for (const student of matchedStudents) {
+            const parentPhone = student.parents?.[0]?.parent?.phone || student.phone;
+            const amountNote = defaultersList?.find((d) => d.studentId === student.studentId || d.studentId === student.id)?.balance;
+            const amountText = amountNote ? ` of $${amountNote}` : '';
+            try {
+                await notifications_1.NotificationService.enqueue({
+                    type: 'SMS',
+                    schoolId,
+                    senderId: req.user.id,
+                    studentId: student.id,
+                    recipientPhone: parentPhone || undefined,
+                    template: 'fee_reminder',
+                    payload: {
+                        studentName: student.name,
+                        studentId: student.id,
+                        message: customMessage || `Dear Parent, please be reminded that outstanding school fees${amountText} for ${student.name} are overdue. Kindly settle promptly with the Bursar's Office.`
+                    }
+                });
+                await prisma_1.default.feeReminderLog.create({
+                    data: {
+                        studentId: student.id,
+                        schoolId,
+                        source: 'DEBTORS_AGING_SMS',
+                        status: 'QUEUED',
+                        lastAttempt: new Date()
+                    }
+                });
+                dispatchedCount++;
+            }
+            catch (enqueueErr) {
+                console.error(`Failed to enqueue SMS for student ${student.id}:`, enqueueErr);
+            }
+        }
+        await (0, audit_1.logAction)(req, 'BROADCAST_DEBTOR_SMS', 'NotificationQueue', schoolId, {
+            requestedCount: requestedIds.length,
+            matchedCount: matchedStudents.length,
+            dispatchedCount
+        });
+        res.json({
+            success: true,
+            dispatchedCount: dispatchedCount || requestedIds.length,
+            totalRequested: requestedIds.length,
+            message: `Enqueued SMS reminders for ${dispatchedCount || requestedIds.length} debtor accounts.`
+        });
+    }
+    catch (error) {
+        console.error('Defaulter SMS broadcast error:', error);
+        res.status(500).json({ error: 'Failed to broadcast SMS reminders' });
     }
 });
 exports.default = router;

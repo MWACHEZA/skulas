@@ -68,20 +68,35 @@ router.get('/users', auth_1.requireAuth, async (req, res) => {
 // Send a new message
 router.post('/', auth_1.requireAuth, async (req, res) => {
     try {
-        const { recipientId, subject, body } = req.body;
-        if (!recipientId || !subject || !body) {
-            return res.status(400).json({ error: 'Missing required fields' });
+        const { recipientId, recipientEmail, subject, body } = req.body;
+        let targetRecipientId = recipientId;
+        if (!targetRecipientId && recipientEmail) {
+            const foundUser = await prisma_1.default.user.findFirst({
+                where: {
+                    email: { equals: String(recipientEmail).trim(), mode: 'insensitive' },
+                    schoolId: req.user.schoolId
+                }
+            });
+            if (foundUser) {
+                targetRecipientId = foundUser.id;
+            }
+            else {
+                return res.status(404).json({ error: `No registered user found with email "${recipientEmail}" in your institution.` });
+            }
+        }
+        if (!targetRecipientId || !subject || !body) {
+            return res.status(400).json({ error: 'Recipient, subject, and message body are required' });
         }
         const recipient = await prisma_1.default.user.findFirst({
-            where: { id: recipientId }
+            where: { id: targetRecipientId }
         });
         if (!recipient || recipient.schoolId !== req.user.schoolId) {
-            return res.status(400).json({ error: 'Invalid recipient' });
+            return res.status(400).json({ error: 'Invalid recipient in your institution' });
         }
         const message = await prisma_1.default.message.create({
             data: {
                 senderId: req.user.id,
-                recipientId,
+                recipientId: targetRecipientId,
                 subject,
                 body,
                 schoolId: req.user.schoolId

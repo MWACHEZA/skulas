@@ -49,7 +49,7 @@ const MODULE_ACCESS_MAP: Record<string, {
 
 export function getModuleAccess(user: any, module: string): ModuleAccessResult {
   const map = MODULE_ACCESS_MAP[module];
-  if (!map) return { level: 'none' };
+  if (!map || !user) return { level: 'none' };
 
   const primaryRole = user.role || '';
   const secondaryRoles: string[] = user.secondaryRoles || [];

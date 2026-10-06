@@ -21,6 +21,7 @@ interface CacheEntry<T> {
   data: T;
   timestamp: number;
   fetching: boolean;
+  error?: any;
 }
 
 const globalCache = new Map<CacheKey, CacheEntry<any>>();
@@ -91,6 +92,8 @@ export interface QueryOptions<T> {
 export function useAccountingQuery<T>({ key, fetcher, staleTimeMs = 15000, enabled = true }: QueryOptions<T>) {
   const [, setTick] = useState(0);
   const isMounted = useRef(true);
+  const fetcherRef = useRef(fetcher);
+  fetcherRef.current = fetcher;
 
   useEffect(() => {
     isMounted.current = true;
@@ -118,29 +121,32 @@ export function useAccountingQuery<T>({ key, fetcher, staleTimeMs = 15000, enabl
     globalCache.set(key, {
       data: existing?.data,
       timestamp: now,
-      fetching: true
+      fetching: true,
+      error: null
     });
 
     notifySubscribers(key);
 
     try {
-      const data = await fetcher();
+      const data = await fetcherRef.current();
       globalCache.set(key, {
         data,
         timestamp: Date.now(),
-        fetching: false
+        fetching: false,
+        error: null
       });
       notifySubscribers(key);
     } catch (error) {
       globalCache.set(key, {
         data: existing?.data,
         timestamp: existing?.timestamp ?? 0,
-        fetching: false
+        fetching: false,
+        error
       });
       notifySubscribers(key);
       console.warn(`[useAccountingQuery] fetch error for key "${key}":`, error);
     }
-  }, [key, fetcher, staleTimeMs, enabled]);
+  }, [key, staleTimeMs, enabled]);
 
   // Subscribe to key changes
   useEffect(() => {
@@ -170,8 +176,9 @@ export function useAccountingQuery<T>({ key, fetcher, staleTimeMs = 15000, enabl
 
   return {
     data: entry?.data as T | undefined,
-    isLoading: !entry?.data && (entry?.fetching ?? false),
+    isLoading: !entry?.data && !entry?.error && (entry?.fetching ?? false),
     isFetching: entry?.fetching ?? false,
+    error: entry?.error,
     refetch: () => fetchData(true)
   };
 }

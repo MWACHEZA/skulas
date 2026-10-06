@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import '../../../styles/portal.css';
 
-type BoardingTab = 'hostels' | 'rooms' | 'allocations' | 'roll-call' | 'house-points';
+type BoardingTab = 'hostels' | 'rooms' | 'allocations' | 'roll-call' | 'house-points' | 'meals';
 
 interface Hostel {
   id: string;
@@ -58,6 +58,7 @@ export default function AdminBoarding() {
   const [hostels, setHostels] = useState<Hostel[]>([]);
   const [rooms, setRooms] = useState<HostelRoom[]>([]);
   const [students, setStudents] = useState<any[]>([]);
+  const [menuSchedule, setMenuSchedule] = useState<any>(null);
 
   // Night Roll-Call State
   const [rollCallList, setRollCallList] = useState<RollCallRecord[]>([
@@ -161,6 +162,9 @@ export default function AdminBoarding() {
         ]);
         setStudents(Array.isArray(sRes.data) ? sRes.data : []);
         setHostels(Array.isArray(hRes.data) ? hRes.data : []);
+      } else if (activeTab === 'meals') {
+        const res = await api.get('/api/dining-hall/menu');
+        setMenuSchedule(res.data);
       }
     } catch (err) {
       console.error('Boarding data load error:', err);
@@ -309,6 +313,7 @@ export default function AdminBoarding() {
           { id: 'hostels', label: `Hostels & Dorms (${hostels.length})`, icon: 'fas fa-building' },
           { id: 'rooms', label: `Dorm Rooms (${rooms.length})`, icon: 'fas fa-door-open' },
           { id: 'allocations', label: 'Boarder Allocations', icon: 'fas fa-bed' },
+          { id: 'meals', label: 'Meal Services & Dining', icon: 'fas fa-utensils' },
           { id: 'roll-call', label: 'Night Roll-Call Audit', icon: 'fas fa-clipboard-check' },
           { id: 'house-points', label: 'Inter-House Shield Leaderboard', icon: 'fas fa-trophy' }
         ].map(t => (
@@ -430,7 +435,7 @@ export default function AdminBoarding() {
             </table>
           )}
         </div>
-      ) : (
+      ) : activeTab === 'allocations' ? (
         /* Allocations Table */
         <div style={{ background: '#fff', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)', overflow: 'hidden' }}>
           {students.filter(s => s.boardingStatus === 'Boarder').length === 0 ? (
@@ -471,6 +476,168 @@ export default function AdminBoarding() {
               </tbody>
             </table>
           )}
+        </div>
+      ) : null}
+
+      {/* Tab: Meal Services & Dining */}
+      {activeTab === 'meals' && (
+        <div>
+          {/* Meal Services Overview Header */}
+          <div style={{ background: '#fff', borderRadius: 8, padding: '20px 24px', marginBottom: 20, border: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16 }}>
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 700, color: '#1e293b' }}>
+                  <i className="fas fa-utensils" style={{ color: '#0284c7', marginRight: 8 }}></i>
+                  Weekly Boarding Dining & Meal Service Schedule
+                </h3>
+                <span style={{ background: '#dcfce7', color: '#166534', padding: '3px 10px', borderRadius: 20, fontSize: '0.78rem', fontWeight: 700 }}>
+                  <i className="fas fa-check-circle mr-1"></i> Active Menu Published
+                </span>
+              </div>
+              <p style={{ margin: '6px 0 0', fontSize: '0.88rem', color: '#64748b' }}>
+                Nutritional dining schedules for resident boarders. Three balanced daily sessions served in the main dining hall.
+              </p>
+            </div>
+            <div style={{ display: 'flex', gap: 10 }}>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={() => {
+                  fetchData();
+                  showToast('Refreshed dining hall menu schedule', 'info');
+                }}
+                style={{ padding: '8px 14px', background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: 6, fontSize: '0.85rem', cursor: 'pointer' }}
+              >
+                <i className="fas fa-sync-alt mr-1"></i> Refresh Menu
+              </button>
+              <a
+                href="/admin/dining"
+                className="btn btn-primary"
+                style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 16px', background: '#0284c7', color: '#fff', borderRadius: 6, fontSize: '0.85rem', textDecoration: 'none', fontWeight: 600 }}
+              >
+                <i className="fas fa-sliders-h"></i> Manage in Dining Hall Module
+              </a>
+            </div>
+          </div>
+
+          {/* Daily Schedule Cards */}
+          {(() => {
+            const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+            const menuData = menuSchedule?.menuData || {
+              Monday: { breakfast: 'Oatmeal Porridge & Fresh Fruits', lunch: 'Sadza with Beef Stew & Cabbage', dinner: 'Rice & Roast Chicken with Gravy' },
+              Tuesday: { breakfast: 'Scrambled Eggs & Toasted Bread', lunch: 'Chicken Stew & Rice with Garden Salad', dinner: 'Spaghetti Bolognaise & Greens' },
+              Wednesday: { breakfast: 'Pancakes with Syrup & Tea', lunch: 'Fish & Chips with Tartar Sauce', dinner: 'Sadza & Beef Curry with Braised Spinach' },
+              Thursday: { breakfast: 'Cornflakes & Fresh Milk', lunch: 'Pork Chops & Creamy Mashed Potatoes', dinner: 'Vegetable Stew & Steamed Brown Rice' },
+              Friday: { breakfast: 'French Toast & Hot Beverage', lunch: 'Sadza & Mixed Braai Meats with Chakalaka', dinner: 'Beef Burger & Potato Wedges' },
+              Saturday: { breakfast: 'Boiled Eggs, Sausage & Toast', lunch: 'Jollof Rice & Grilled Chicken Drumsticks', dinner: 'Pasta Alfredo with Peas & Carrots' },
+              Sunday: { breakfast: 'Full English Breakfast (Bacon, Eggs & Beans)', lunch: 'Sunday Roast Beef, Roast Potatoes & Gravy', dinner: 'Creamy Vegetable Soup & Fresh Bread Rolls' }
+            };
+
+            return (
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 16 }}>
+                {days.map(day => {
+                  const dayMeals = menuData[day] || { breakfast: 'Standard Breakfast', lunch: 'Standard Lunch', dinner: 'Standard Dinner' };
+                  const isWeekend = day === 'Saturday' || day === 'Sunday';
+
+                  return (
+                    <div
+                      key={day}
+                      className="portal-card"
+                      style={{
+                        background: '#fff',
+                        borderRadius: 8,
+                        border: '1px solid #e2e8f0',
+                        overflow: 'hidden',
+                        boxShadow: '0 1px 3px rgba(0,0,0,0.04)'
+                      }}
+                    >
+                      <div
+                        style={{
+                          background: isWeekend ? '#f0fdf4' : '#f8fafc',
+                          padding: '12px 16px',
+                          borderBottom: '1px solid #e2e8f0',
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center'
+                        }}
+                      >
+                        <span style={{ fontWeight: 700, fontSize: '0.95rem', color: isWeekend ? '#166534' : '#1e293b' }}>
+                          <i className={`fas fa-calendar-day mr-2`} style={{ marginRight: 8, color: isWeekend ? '#16a34a' : '#0284c7' }}></i>
+                          {day}
+                        </span>
+                        <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#64748b', background: '#fff', padding: '2px 8px', borderRadius: 4, border: '1px solid #e2e8f0' }}>
+                          3 Meals Configured
+                        </span>
+                      </div>
+
+                      <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: 12 }}>
+                        {/* Breakfast */}
+                        <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+                          <div style={{ width: 32, height: 32, borderRadius: 6, background: '#fef3c7', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#d97706', flexShrink: 0, marginTop: 2 }}>
+                            <i className="fas fa-coffee" style={{ fontSize: '0.85rem' }}></i>
+                          </div>
+                          <div style={{ flex: 1 }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                              <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#b45309', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Breakfast</span>
+                              <span style={{ fontSize: '0.72rem', color: '#94a3b8' }}>06:30 - 07:30</span>
+                            </div>
+                            <div style={{ fontSize: '0.88rem', color: '#334155', fontWeight: 500, marginTop: 2 }}>
+                              {dayMeals.breakfast || 'Porridge & Tea/Bread'}
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Lunch */}
+                        <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start', paddingTop: 8, borderTop: '1px solid #f1f5f9' }}>
+                          <div style={{ width: 32, height: 32, borderRadius: 6, background: '#e0f2fe', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#0284c7', flexShrink: 0, marginTop: 2 }}>
+                            <i className="fas fa-utensils" style={{ fontSize: '0.85rem' }}></i>
+                          </div>
+                          <div style={{ flex: 1 }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                              <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#0369a1', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Lunch</span>
+                              <span style={{ fontSize: '0.72rem', color: '#94a3b8' }}>12:30 - 13:45</span>
+                            </div>
+                            <div style={{ fontSize: '0.88rem', color: '#334155', fontWeight: 500, marginTop: 2 }}>
+                              {dayMeals.lunch || 'Sadza / Rice & Relish'}
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Dinner / Supper */}
+                        <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start', paddingTop: 8, borderTop: '1px solid #f1f5f9' }}>
+                          <div style={{ width: 32, height: 32, borderRadius: 6, background: '#ede9fe', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#7c3aed', flexShrink: 0, marginTop: 2 }}>
+                            <i className="fas fa-moon" style={{ fontSize: '0.85rem' }}></i>
+                          </div>
+                          <div style={{ flex: 1 }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                              <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#6d28d9', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Supper / Dinner</span>
+                              <span style={{ fontSize: '0.72rem', color: '#94a3b8' }}>18:00 - 19:15</span>
+                            </div>
+                            <div style={{ fontSize: '0.88rem', color: '#334155', fontWeight: 500, marginTop: 2 }}>
+                              {dayMeals.dinner || 'Evening Balanced Meal'}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            );
+          })()}
+
+          {/* Dietary Compliance Notice Card */}
+          <div style={{ marginTop: 20, background: '#f8fafc', border: '1px dashed #cbd5e1', borderRadius: 8, padding: '16px 20px', display: 'flex', alignItems: 'center', gap: 14 }}>
+            <div style={{ width: 40, height: 40, borderRadius: '50%', background: '#eff6ff', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#2563eb', flexShrink: 0 }}>
+              <i className="fas fa-notes-medical" style={{ fontSize: '1.1rem' }}></i>
+            </div>
+            <div>
+              <div style={{ fontWeight: 700, color: '#1e293b', fontSize: '0.9rem' }}>Dietary Alerts & Medical Compliance</div>
+              <div style={{ fontSize: '0.82rem', color: '#64748b', marginTop: 2 }}>
+                Special dietary requirements (halal, vegetarian, lactose intolerance, diabetic, nut allergies) recorded in student health profiles are displayed in the kitchen service queue during meal issuance.
+              </div>
+            </div>
+          </div>
         </div>
       )}
 

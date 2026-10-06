@@ -417,66 +417,95 @@ export default function AdminDepartments() {
 
       {isModalOpen && (
         <div className="portal-modal-overlay">
-          <div className="portal-modal" style={{ maxWidth: 450, maxHeight: '90vh', overflowY: 'auto' }}>
-            <div className="modal-header">
-              <h2>{editingDept ? 'Edit Department' : 'New Department'}</h2>
-              <button onClick={() => setIsModalOpen(false)} className="close-modal">&times;</button>
+          <div className="portal-modal" style={{ maxWidth: 580, width: '100%', maxHeight: '90vh', overflowY: 'auto' }}>
+            <div className="portal-modal-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '18px 24px', borderBottom: '1px solid #e2e8f0' }}>
+              <h2 style={{ fontSize: '1.25rem', fontWeight: 700, margin: 0, color: '#1e293b', display: 'flex', alignItems: 'center', gap: 10 }}>
+                <i className="fas fa-sitemap" style={{ color: '#0284c7' }} />
+                {editingDept ? 'Edit Academic Department' : 'Create Academic Department'}
+              </h2>
+              <button 
+                type="button" 
+                onClick={() => setIsModalOpen(false)} 
+                className="portal-modal-close"
+                style={{ background: 'none', border: 'none', fontSize: '1.4rem', color: '#94a3b8', cursor: 'pointer', lineHeight: 1 }}
+              >
+                &times;
+              </button>
             </div>
-            <form onSubmit={handleSubmit} style={{ padding: 20 }}>
-              <div className="form-group" style={{ marginBottom: 15 }}>
-                <label>Department Name</label>
-                <input 
-                  className="form-control" 
-                  value={formData.name} 
-                  required
-                  placeholder="e.g. Science, Humanities"
-                  onChange={e => {
-                    const name = e.target.value;
-                    const generateAdminCode = (str: string) => {
-                      if (!str) return '';
-                      const words = str.trim().split(/\s+/);
-                      if (words.length === 1) return str.substring(0, 3).toUpperCase();
-                      return words.map(w => w[0]).join('').substring(0, 3).toUpperCase();
-                    };
-                    setFormData({
-                      ...formData, 
-                      name,
-                      code: generateShortCode(name),
-                      deptCode: generateAdminCode(name)
-                    });
-                  }} 
-                />
-              </div>
-              <div className="form-group" style={{ marginBottom: 20 }}>
-                <label>Head of Department (HOD)</label>
-                <select 
-                  className="form-control" 
-                  value={formData.headId}
-                  onChange={e => setFormData({ ...formData, headId: e.target.value })}
-                >
-                  <option value="">No HOD Assigned</option>
-                  {staffList.map(s => (
-                    <option key={s.id} value={s.id}>{s.name} ({s.role.replace('_', ' ')})</option>
-                  ))}
-                </select>
-              </div>
-
-                <div style={{ display: 'grid', gridTemplateColumns: isUniversity ? '1fr 1fr' : '1fr', gap: 15, marginBottom: 20 }}>
-                  <div className="form-group">
-                    <label>Department Admin Code</label>
+            
+            <form onSubmit={handleSubmit}>
+              <div className="portal-modal-body" style={{ padding: '20px 24px', display: 'flex', flexDirection: 'column', gap: 16 }}>
+                {/* 2-Column row: Name & HOD */}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 16 }}>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#334155', marginBottom: 6 }}>
+                      Department Name *
+                    </label>
                     <input 
-                      className="form-control" 
+                      className="portal-input" 
+                      style={{ width: '100%' }}
+                      value={formData.name} 
+                      required
+                      placeholder="e.g. Sciences & Mathematics"
+                      onChange={e => {
+                        const name = e.target.value;
+                        const generateAdminCode = (str: string) => {
+                          if (!str) return '';
+                          const words = str.trim().split(/\s+/);
+                          if (words.length === 1) return str.substring(0, 3).toUpperCase();
+                          return words.map(w => w[0]).join('').substring(0, 3).toUpperCase();
+                        };
+                        setFormData({
+                          ...formData, 
+                          name,
+                          code: generateShortCode(name),
+                          deptCode: generateAdminCode(name)
+                        });
+                      }} 
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#334155', marginBottom: 6 }}>
+                      Head of Department (HOD)
+                    </label>
+                    <select 
+                      className="portal-select" 
+                      style={{ width: '100%' }}
+                      value={formData.headId}
+                      onChange={e => setFormData({ ...formData, headId: e.target.value })}
+                    >
+                      <option value="">No HOD Assigned</option>
+                      {staffList.map(s => (
+                        <option key={s.id} value={s.id}>{s.name} ({s.role.replace('_', ' ')})</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                {/* 2-Column row: Dept Admin Code & System Code / Duration */}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 16 }}>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#334155', marginBottom: 6 }}>
+                      Department Admin Code
+                    </label>
+                    <input 
+                      className="portal-input" 
+                      style={{ width: '100%', textTransform: 'uppercase', background: '#f8fafc', color: '#64748b', cursor: 'not-allowed' }}
                       value={formData.deptCode}
                       readOnly
                       placeholder="Auto-generated"
-                      style={{ textTransform: 'uppercase', background: '#f7fafc', cursor: 'not-allowed' }}
                     />
                   </div>
-                  {isUniversity && (
-                    <div className="form-group">
-                      <label>Program Duration (Years)</label>
+
+                  {isUniversity ? (
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#334155', marginBottom: 6 }}>
+                        Program Duration (Years)
+                      </label>
                       <select 
-                        className="form-control" 
+                        className="portal-select" 
+                        style={{ width: '100%' }}
                         value={formData.duration}
                         onChange={e => setFormData({ ...formData, duration: e.target.value })}
                       >
@@ -485,34 +514,61 @@ export default function AdminDepartments() {
                         ))}
                       </select>
                     </div>
+                  ) : (
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#334155', marginBottom: 6 }}>
+                        System Short Code
+                      </label>
+                      <input 
+                        className="portal-input" 
+                        style={{ width: '100%', background: '#f8fafc', color: '#64748b', cursor: 'not-allowed' }}
+                        value={formData.code}
+                        readOnly
+                        placeholder="Generated from name"
+                      />
+                    </div>
                   )}
                 </div>
 
-                  <div className="form-group" style={{ marginBottom: 15 }}>
-                    <label>Services (Comma-separated)</label>
-                    <textarea 
-                      className="form-control" 
-                      value={formData.services}
-                      placeholder="e.g. Academic counseling, Extra tuition, Lab accessibility"
-                      onChange={e => setFormData({ ...formData, services: e.target.value })}
-                      rows={2}
-                    />
-                  </div>
-                  <div className="form-group" style={{ marginBottom: 15 }}>
-                    <label>Facilities (Comma-separated)</label>
-                    <textarea 
-                      className="form-control" 
-                      value={formData.facilities}
-                      placeholder="e.g. Physics Lab, Biology Greenhouse, Computer Center"
-                      onChange={e => setFormData({ ...formData, facilities: e.target.value })}
-                      rows={2}
-                    />
-                  </div>
-                  <div className="form-group" style={{ marginBottom: 15 }}>
-                    <label>Department Pictures</label>
-                    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 10 }}>
+                {/* Services */}
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#334155', marginBottom: 6 }}>
+                    Services Offered (Comma-separated)
+                  </label>
+                  <textarea 
+                    className="portal-textarea" 
+                    style={{ width: '100%', resize: 'vertical' }}
+                    value={formData.services}
+                    placeholder="e.g. Academic counseling, Extra tuition, Lab practicals, STEM clubs"
+                    onChange={e => setFormData({ ...formData, services: e.target.value })}
+                    rows={2}
+                  />
+                </div>
+
+                {/* Facilities */}
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#334155', marginBottom: 6 }}>
+                    Department Facilities (Comma-separated)
+                  </label>
+                  <textarea 
+                    className="portal-textarea" 
+                    style={{ width: '100%', resize: 'vertical' }}
+                    value={formData.facilities}
+                    placeholder="e.g. Physics Laboratory, Biology Greenhouse, Computer Center"
+                    onChange={e => setFormData({ ...formData, facilities: e.target.value })}
+                    rows={2}
+                  />
+                </div>
+
+                {/* Pictures Upload */}
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#334155', marginBottom: 6 }}>
+                    Department Gallery & Pictures
+                  </label>
+                  {formData.pictures.length > 0 && (
+                    <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 10 }}>
                       {formData.pictures.map((pic: string, idx: number) => (
-                        <div key={idx} style={{ position: 'relative', width: 60, height: 60, border: '1px solid #e2e8f0', borderRadius: 6, overflow: 'hidden' }}>
+                        <div key={idx} style={{ position: 'relative', width: 68, height: 68, border: '1px solid #e2e8f0', borderRadius: 8, overflow: 'hidden' }}>
                           <img 
                             src={`${api.defaults.baseURL}/api/storage/media/${currentCode}/${pic}`} 
                             alt="preview" 
@@ -524,37 +580,49 @@ export default function AdminDepartments() {
                           <button 
                             type="button" 
                             onClick={() => handleRemovePicture(idx)}
-                            style={{ position: 'absolute', top: 0, right: 0, background: 'rgba(229, 62, 62, 0.85)', color: 'white', border: 'none', width: 18, height: 18, fontSize: 10, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '0 0 0 4px' }}
+                            style={{ position: 'absolute', top: 0, right: 0, background: 'rgba(220, 38, 38, 0.9)', color: 'white', border: 'none', width: 20, height: 20, fontSize: 11, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '0 0 0 6px' }}
+                            title="Remove picture"
                           >
                             &times;
                           </button>
                         </div>
                       ))}
                     </div>
-                    <input 
-                      type="file" 
-                      multiple 
-                      accept="image/*"
-                      onChange={handleFileUpload} 
-                      disabled={uploading}
-                      style={{ fontSize: 12, display: 'block', width: '100%' }}
-                    />
-                    {uploading && <div style={{ fontSize: 12, color: '#718096', marginTop: 4 }}><i className="fas fa-spinner fa-spin"></i> Uploading images...</div>}
-                  </div>
-
-              <div className="form-group" style={{ marginBottom: 20 }}>
-                <label>Department Code (System Generated)</label>
-                <input 
-                  className="form-control" 
-                  value={formData.code}
-                  readOnly
-                  placeholder="Generated from name"
-                  style={{ background: '#f7fafc', cursor: 'not-allowed' }}
-                />
+                  )}
+                  <input 
+                    type="file" 
+                    multiple 
+                    accept="image/*"
+                    onChange={handleFileUpload} 
+                    disabled={uploading}
+                    style={{ fontSize: '0.85rem', display: 'block', width: '100%' }}
+                  />
+                  {uploading && (
+                    <div style={{ fontSize: '0.8rem', color: '#0284c7', marginTop: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <i className="fas fa-spinner fa-spin"></i> Uploading images to media storage...
+                    </div>
+                  )}
+                </div>
               </div>
-              <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
-                <button type="button" onClick={() => setIsModalOpen(false)} className="btn btn-secondary">Cancel</button>
-                <button type="submit" className="portal-btn-primary">Save Department</button>
+
+              {/* Modal Footer */}
+              <div className="portal-modal-footer" style={{ padding: '16px 24px', borderTop: '1px solid #e2e8f0', display: 'flex', justifyContent: 'flex-end', gap: 12, background: '#f8fafc', borderRadius: '0 0 8px 8px' }}>
+                <button 
+                  type="button" 
+                  onClick={() => setIsModalOpen(false)} 
+                  className="portal-btn-secondary"
+                  style={{ padding: '8px 16px' }}
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="submit" 
+                  className="portal-btn-primary"
+                  style={{ padding: '8px 20px', background: '#0284c7', color: '#fff', fontWeight: 600 }}
+                >
+                  <i className="fas fa-save mr-2" style={{ marginRight: 6 }}></i>
+                  {editingDept ? 'Update Department' : 'Save Department'}
+                </button>
               </div>
             </form>
           </div>

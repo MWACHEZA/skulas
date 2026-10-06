@@ -91,11 +91,11 @@ router.post('/hostels', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMI
     try {
         const hostel = await prisma_1.default.hostel.create({
             data: {
-                name: req.body.name,
+                name: req.body.name || req.body.hostelName || 'Hostel',
                 categoryId: req.body.categoryId,
                 roomId: req.body.roomId,
-                capacity: parseInt(req.body.capacity) || 0,
-                location: req.body.location,
+                capacity: parseInt(req.body.capacity || req.body.intake) || 0,
+                location: req.body.location || req.body.address,
                 description: req.body.description,
                 schoolId: req.user.schoolId
             }
@@ -103,6 +103,7 @@ router.post('/hostels', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMI
         res.json(hostel);
     }
     catch (error) {
+        console.error('Failed to create hostel:', error);
         res.status(500).json({ error: 'Failed to create hostel' });
     }
 });

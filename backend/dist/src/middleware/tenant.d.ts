@@ -6,7 +6,12 @@ export interface TenantRequest extends Request {
     user?: any;
 }
 /**
- * Extracts school/tenant context from headers or URL parameters.
+ * Extract tenant subdomain from Host or hostname.
+ * Handles *.eduportal.co.zw, *.skulas.co.zw, *.localhost, etc.
+ */
+export declare const extractSubdomain: (hostname?: string) => string | null;
+/**
+ * Extracts school/tenant context from Host subdomain, headers, or URL parameters.
  * For authenticated requests, JWT user school is authoritative.
  */
 export declare const tenantContext: (req: TenantRequest, res: Response, next: NextFunction) => void;

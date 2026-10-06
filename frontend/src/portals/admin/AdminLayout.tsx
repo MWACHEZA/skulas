@@ -1,3 +1,4 @@
+import React, { useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import DashboardLayout from '../../components/portals/DashboardLayout';
 import ProtectedRoute from '../../components/portals/ProtectedRoute';
@@ -8,7 +9,10 @@ export default function AdminLayout() {
   const { user } = useAuth();
   const location = useLocation();
 
-  const navGroups = generatePortalNavigation('admin', user, location.pathname);
+  const secRolesStr = JSON.stringify(user?.secondaryRoles || []);
+  const navGroups = useMemo(() => {
+    return generatePortalNavigation('admin', user, location.pathname);
+  }, [user?.id, user?.role, secRolesStr, location.pathname]);
 
   return (
     <ProtectedRoute allowedRoles={['SCHOOL_ADMIN']} redirectTo="/admin/login">

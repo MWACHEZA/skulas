@@ -149,6 +149,8 @@ exports.ZIMBABWE_BOARDING_COA_TEMPLATE = [
     { code: '5076', name: 'Depreciation — Vehicles & Buses', type: 'EXPENSE', parentCode: '5070', description: 'Annual vehicular depreciation charge' },
     { code: '5077', name: 'Depreciation — Equipment & ICT', type: 'EXPENSE', parentCode: '5070', description: 'Annual machinery and computer depreciation' },
     { code: '5078', name: 'Bad Debts Expense / Fee Write-Offs', type: 'EXPENSE', parentCode: '5070', description: 'Authorized student arrears write-offs' },
+    { code: '5080', name: 'Cost of Goods Sold — Tuckshop', type: 'EXPENSE', parentCode: '5070', description: 'Direct inventory cost of tuckshop items sold' },
+    { code: '5081', name: 'Cost of Goods Sold — Uniforms', type: 'EXPENSE', parentCode: '5070', description: 'Direct acquisition cost of school uniforms sold' },
     { code: '5090', name: 'General Office & Sundry Administrative Costs', type: 'EXPENSE', parentCode: '5070', description: 'Printing, postage, and administrative sundries' },
     { code: '5910', name: 'Till Cash Shortage / Deficit', type: 'EXPENSE', parentCode: '5070', description: 'Cash drawer shortage on till session reconciliation' }
 ];
@@ -215,7 +217,14 @@ async function getAccountId(schoolId, code, db) {
         '7100': '5010', // Salaries & Wages -> Salaries Academic/Staff
         '3400': '2020', // PAYE Payable -> PAYE Tax Payable
         '3100': '2010', // Accounts Payable -> Trade Creditors
+        '3110': '2010', // Supplier Payable -> Trade Creditors
+        '3200': '2110', // Student Deposits -> Student Pocket Money / Digital Wallets
+        '2050': '2110', // Wallets Liability -> Student Pocket Money
         '1110': '1010', // Bank Main -> Bank Account Main
+        '1300': '1201', // Inventory Uniforms -> Inventory Uniforms & Apparel
+        '1310': '1200', // Inventory Tuckshop -> Inventory Tuckshop Stock
+        '6100': '5081', // COGS Uniforms -> Cost of Goods Sold Uniforms
+        '6110': '5080', // COGS Tuckshop -> Cost of Goods Sold Tuckshop
     };
     // Try direct code match first
     let account = await db.chartOfAccount.findUnique({

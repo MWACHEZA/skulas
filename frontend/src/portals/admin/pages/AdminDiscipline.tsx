@@ -208,7 +208,7 @@ export default function AdminDiscipline() {
           api.get('/api/students')
         ]);
         setAwards(Array.isArray(aRes.data) ? aRes.data : []);
-        setStudents(Array.isArray(sRes.data) ? sRes.data : []);
+        setStudents(Array.isArray(sRes.data?.students) ? sRes.data.students : (Array.isArray(sRes.data) ? sRes.data : []));
       }
     } catch (err) {
       console.error('Failed to load discipline data', err);

@@ -1,10 +1,12 @@
 import { Router, Request, Response } from 'express';
-import prisma from '../lib/prisma'; // Ensure this matches actual db import
-import { requireModuleAccess } from '../middleware/moduleAccess'; // Ensure this is the right import path for auth middleware
+import prisma from '../lib/prisma';
+import { requireAuth, AuthRequest } from '../middleware/auth';
+import { requireModuleAccess } from '../middleware/moduleAccess';
 
 const router = Router();
 
-// Gating middleware
+// Gating middleware: require authentication, then module access
+router.use(requireAuth);
 router.use(requireModuleAccess('prefects'));
 
 // Duty Roster

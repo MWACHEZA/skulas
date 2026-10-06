@@ -430,13 +430,26 @@ router.post('/generate', auth_1.requireAuth, (0, auth_1.requireRole)('BURSAR', '
                 }
             }
             leaveDeduction = Math.round(leaveDeduction * 100) / 100;
-            // 2. Allowances (e.g. HOD allowance, Boarding allowance if secondary roles present)
+            // 2. Allowances (e.g. HOD allowance, Boarding allowance, and Staff Award Cash Bonuses)
             let allowances = 0;
             if (emp.secondaryRoles?.some((r) => ['HOD', 'DEPARTMENT_HEAD'].includes(r.toUpperCase()))) {
                 allowances += 150; // standard HOD allowance
             }
             if (emp.secondaryRoles?.some((r) => ['HOUSE_MASTER', 'BOARDING_STAFF'].includes(r.toUpperCase()))) {
                 allowances += 100;
+            }
+            // Check for approved staff award cash bonuses that need to be processed in payroll
+            const empStaffAwards = await prisma_1.default.staffAward.findMany({
+                where: {
+                    schoolId,
+                    employeeId: emp.id,
+                    rewardType: 'Cash Bonus',
+                    status: 'approved',
+                    payrollAllowanceCreated: false
+                }
+            });
+            for (const sa of empStaffAwards) {
+                allowances += sa.amount;
             }
             // 3. Tax / PAYE Calculation (progressive brackets fallback)
             const taxableGross = Math.max(0, basicSalary + allowances - leaveDeduction);
@@ -470,6 +483,13 @@ router.post('/generate', auth_1.requireAuth, (0, auth_1.requireRole)('BURSAR', '
             totalGross += basicSalary + allowances;
             totalDeductions += empDeductions;
             totalNet += netSalary;
+            // Mark the employee's processed staff awards as incorporated into payroll
+            if (empStaffAwards.length > 0) {
+                await prisma_1.default.staffAward.updateMany({
+                    where: { id: { in: empStaffAwards.map(a => a.id) } },
+                    data: { payrollAllowanceCreated: true }
+                });
+            }
         }
         await prisma_1.default.payrollEntry.createMany({
             data: entries

@@ -733,7 +733,7 @@ router.get('/houses/:id/members', auth_1.requireAuth, async (req, res) => {
     }
 });
 // ── STUDENT CLUBS ──
-router.get('/clubs-list', auth_1.requireAuth, async (req, res) => {
+router.get(['/clubs-list', '/clubs'], auth_1.requireAuth, async (req, res) => {
     try {
         const clubs = await prisma_1.default.club.findMany({
             where: { schoolId: req.user.schoolId },
@@ -745,14 +745,14 @@ router.get('/clubs-list', auth_1.requireAuth, async (req, res) => {
         res.status(500).json({ error: 'Failed to fetch clubs' });
     }
 });
-router.post('/clubs-list', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN'), upload_1.clubsUpload.single('logo'), (0, validation_1.validate)(school_schema_1.ClubSchema), async (req, res) => {
+router.post(['/clubs-list', '/clubs'], auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN'), upload_1.clubsUpload.single('logo'), (0, validation_1.validate)(school_schema_1.ClubSchema), async (req, res) => {
     try {
         const { name, description, date, category, patron, chairperson } = req.body;
         const logoFilename = req.file ? req.file.filename : undefined;
         const club = await prisma_1.default.club.create({
             data: {
                 name,
-                description,
+                description: description || null,
                 date: date ? new Date(date) : new Date(),
                 icon: logoFilename || null,
                 category: category || null,
@@ -768,7 +768,7 @@ router.post('/clubs-list', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_A
         res.status(500).json({ error: 'Failed to create club' });
     }
 });
-router.patch('/clubs-list/:id', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN'), upload_1.clubsUpload.single('logo'), (0, validation_1.validate)(school_schema_1.ClubSchema), async (req, res) => {
+router.patch(['/clubs-list/:id', '/clubs/:id'], auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN'), upload_1.clubsUpload.single('logo'), (0, validation_1.validate)(school_schema_1.ClubSchema), async (req, res) => {
     try {
         const { id } = req.params;
         const { name, description, date, category, patron, chairperson } = req.body;
@@ -795,7 +795,7 @@ router.patch('/clubs-list/:id', auth_1.requireAuth, (0, auth_1.requireRole)('SCH
         res.status(500).json({ error: 'Failed to update club' });
     }
 });
-router.delete('/clubs-list/:id', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN'), async (req, res) => {
+router.delete(['/clubs-list/:id', '/clubs/:id'], auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN'), async (req, res) => {
     try {
         const club = await prisma_1.default.club.findFirst({
             where: { id: req.params.id, schoolId: req.user.schoolId }

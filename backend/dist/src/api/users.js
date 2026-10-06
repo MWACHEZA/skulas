@@ -45,6 +45,7 @@ router.get('/search', auth_1.requireAuth, async (req, res) => {
                 secondaryRoles: true,
                 email: true,
                 staffId: true,
+                phone: true,
             },
             take: 20,
             orderBy: { name: 'asc' }

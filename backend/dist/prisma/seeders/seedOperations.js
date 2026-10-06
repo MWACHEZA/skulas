@@ -164,7 +164,7 @@ async function seedOperations(prisma, school, students, staff, clinicStaff) {
             data: { name: `Equipment ${i + 1}`, quantity: 10, condition: 'Good', sportId: sport.id, schoolId: school.id }
         });
         await prisma.prefectDuty.create({
-            data: { studentId: 'dummy', role: `Zone ${i + 1}`, date: new Date(), timeSlot: 'Lunch Time', day: 'Monday', schoolId: school.id }
+            data: { studentId: 'dummy', role: `Zone ${i + 1}`, date: new Date(), schoolId: school.id }
         });
     }
     // 4. Library

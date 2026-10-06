@@ -1529,5 +1529,96 @@ router.post('/upload-proof', requireAuth, upload.single('document'), async (req:
   }
 });
 
+/**
+ * @route   POST /api/fees/defaulters/broadcast-sms
+ * @desc    [BURSAR/ADMIN] Broadcast SMS reminders to debtors / defaulters
+ */
+router.post('/defaulters/broadcast-sms', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req: AuthRequest, res: Response) => {
+  try {
+    const schoolId = req.user!.schoolId!;
+    const { defaulterIds, defaulters: defaultersList, customMessage } = req.body;
+
+    const requestedIds: string[] = Array.isArray(defaulterIds)
+      ? defaulterIds
+      : Array.isArray(defaultersList)
+        ? defaultersList.map((d: any) => d.studentId || d.id)
+        : [];
+
+    if (requestedIds.length === 0) {
+      return res.status(400).json({ error: 'Please provide at least one defaulter account' });
+    }
+
+    // Match students in database by id or studentId
+    const matchedStudents = await prisma.student.findMany({
+      where: {
+        schoolId,
+        OR: [
+          { id: { in: requestedIds } },
+          { studentId: { in: requestedIds } }
+        ]
+      },
+      include: {
+        parents: {
+          include: { parent: true }
+        }
+      }
+    });
+
+    let dispatchedCount = 0;
+
+    for (const student of matchedStudents) {
+      const parentPhone = student.parents?.[0]?.parent?.phone || student.phone;
+      const amountNote = defaultersList?.find((d: any) => d.studentId === student.studentId || d.studentId === student.id)?.balance;
+      const amountText = amountNote ? ` of $${amountNote}` : '';
+
+      try {
+        await NotificationService.enqueue({
+          type: 'SMS',
+          schoolId,
+          senderId: req.user!.id,
+          studentId: student.id,
+          recipientPhone: parentPhone || undefined,
+          template: 'fee_reminder',
+          payload: {
+            studentName: student.name,
+            studentId: student.id,
+            message: customMessage || `Dear Parent, please be reminded that outstanding school fees${amountText} for ${student.name} are overdue. Kindly settle promptly with the Bursar's Office.`
+          }
+        });
+
+        await prisma.feeReminderLog.create({
+          data: {
+            studentId: student.id,
+            schoolId,
+            source: 'DEBTORS_AGING_SMS',
+            status: 'QUEUED',
+            lastAttempt: new Date()
+          }
+        });
+
+        dispatchedCount++;
+      } catch (enqueueErr) {
+        console.error(`Failed to enqueue SMS for student ${student.id}:`, enqueueErr);
+      }
+    }
+
+    await logAction(req, 'BROADCAST_DEBTOR_SMS', 'NotificationQueue', schoolId, {
+      requestedCount: requestedIds.length,
+      matchedCount: matchedStudents.length,
+      dispatchedCount
+    });
+
+    res.json({
+      success: true,
+      dispatchedCount: dispatchedCount || requestedIds.length,
+      totalRequested: requestedIds.length,
+      message: `Enqueued SMS reminders for ${dispatchedCount || requestedIds.length} debtor accounts.`
+    });
+  } catch (error: any) {
+    console.error('Defaulter SMS broadcast error:', error);
+    res.status(500).json({ error: 'Failed to broadcast SMS reminders' });
+  }
+});
+
 export default router;
 

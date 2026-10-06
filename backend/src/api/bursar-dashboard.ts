@@ -4,7 +4,7 @@ import { requireAuth, requireRole, AuthRequest } from '../middleware/auth';
 
 const router = Router();
 
-router.get('/metrics', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req: AuthRequest, res: Response) => {
+router.get('/metrics', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN', 'SUPER_ADMIN', 'FINANCE'), async (req: AuthRequest, res: Response) => {
   try {
     const schoolId = req.user!.schoolId!;
 
