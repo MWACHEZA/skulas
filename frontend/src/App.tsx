@@ -79,6 +79,7 @@ import TeacherCurriculum from './portals/teacher/pages/TeacherCurriculum';
 import AdminFinance from './portals/admin/pages/AdminFinance';
 import BursarFeesUnified from './portals/bursar/pages/BursarFeesUnified';
 import BursarTuckshopUnified from './portals/bursar/pages/BursarTuckshopUnified';
+import FastPOSTerminal from './portals/shared/pages/FastPOSTerminal';
 
 //  Clinic Portal pages 
 import ClinicLayout from './portals/clinic/ClinicLayout';
@@ -307,7 +308,7 @@ const RESERVED_PATHS = new Set([
   'student', 'teacher', 'admin', 'bursar', 'library', 'librarian',
   'alumni', 'ancillary', 'parent', 'supplier', 'clinic', 'acadex',
   'register', 'login', 'school', 'api', 'apply', 'check-status',
-  'features', 'pricing', 'contact'
+  'features', 'pricing', 'contact', 'pos', 'tuckshop'
 ]);
 
 function SchoolCodeRedirect() {
@@ -407,6 +408,10 @@ export default function App() {
             <Route path="/features" element={<AcadexFeatures />} />
             <Route path="/pricing" element={<AcadexPricing />} />
             <Route path="/contact" element={<AcadexContact />} />
+
+            {/* Standalone Fast Touchscreen POS */}
+            <Route path="/pos" element={<FastPOSTerminal />} />
+            <Route path="/tuckshop/pos" element={<FastPOSTerminal />} />
 
             {/*
               Short school URL: localhost/AX-SEMINARY  → /school/AX-SEMINARY
@@ -811,6 +816,7 @@ export default function App() {
                 <Route path="employees" element={<EmployeeManagementPage />} />
               </Route>
               <Route path="tuckshop" element={<BursarTuckshopUnified />} />
+              <Route path="tuckshop/pos" element={<FastPOSTerminal />} />
               <Route path="tuckshop/inventory" element={<Navigate to="/bursar/tuckshop?tab=inventory" replace />} />
               <Route path="tuckshop/sales" element={<Navigate to="/bursar/tuckshop?tab=sales" replace />} />
               <Route path="tuckshop/reports" element={<Navigate to="/bursar/tuckshop?tab=reports" replace />} />

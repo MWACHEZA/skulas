@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, Link } from 'react-router-dom';
 import BursarTuckshopSales from './TuckshopSales';
 import BursarTuckshopInventory from './TuckshopInventory';
 import BursarTuckshopReports from './TuckshopReports';
 import TillCashupComponent from './TillCashupComponent';
+import FinanceWallets from '../../admin/pages/FinanceWallets';
 
-export type TuckshopTab = 'sales' | 'cashup' | 'inventory' | 'reports';
+export type TuckshopTab = 'sales' | 'cashup' | 'inventory' | 'wallets' | 'reports';
 
 export default function BursarTuckshopUnified() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -14,7 +15,7 @@ export default function BursarTuckshopUnified() {
 
   useEffect(() => {
     const tabParam = searchParams.get('tab') as TuckshopTab;
-    if (tabParam && ['sales', 'cashup', 'inventory', 'reports'].includes(tabParam)) {
+    if (tabParam && ['sales', 'cashup', 'inventory', 'wallets', 'reports'].includes(tabParam)) {
       setActiveTab(tabParam);
     }
   }, [searchParams]);
@@ -27,13 +28,35 @@ export default function BursarTuckshopUnified() {
   return (
     <div className="portal-container" style={{ padding: '24px', maxWidth: '1400px', margin: '0 auto' }}>
       <div className="portal-page-header" style={{ marginBottom: 20 }}>
-        <h1 style={{ fontSize: '1.6rem', fontWeight: 700, color: '#0f172a', display: 'flex', alignItems: 'center', gap: 10 }}>
-          <i className="fas fa-shopping-basket" style={{ color: 'var(--school-primary, #0284c7)' }} />
-          Tuckshop & Canteen Point of Sale
-        </h1>
-        <p style={{ color: '#64748b', fontSize: '0.95rem', marginTop: 4 }}>
-          Log counter cash & wallet sales, track canteen stock levels, and review daily sales reports.
-        </p>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 12 }}>
+          <div>
+            <h1 style={{ fontSize: '1.6rem', fontWeight: 700, color: '#0f172a', display: 'flex', alignItems: 'center', gap: 10, margin: 0 }}>
+              <i className="fas fa-shopping-basket" style={{ color: 'var(--school-primary, #0284c7)' }} />
+              Tuckshop, Tills & Student Wallets
+            </h1>
+            <p style={{ color: '#64748b', fontSize: '0.95rem', marginTop: 4, margin: '4px 0 0 0' }}>
+              Touchscreen POS counter, till session cash-up reconciliation, inventory procurement, and student wallet deposits.
+            </p>
+          </div>
+          <Link
+            to="/tuckshop/pos"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 8,
+              backgroundColor: '#0284c7',
+              color: '#ffffff',
+              padding: '10px 18px',
+              borderRadius: 8,
+              fontWeight: 700,
+              fontSize: '0.9rem',
+              textDecoration: 'none',
+              boxShadow: '0 2px 6px rgba(2, 132, 199, 0.3)'
+            }}
+          >
+            <i className="fas fa-desktop" /> Open POS Terminal
+          </Link>
+        </div>
       </div>
 
       {/* Tabs */}
@@ -117,6 +140,28 @@ export default function BursarTuckshopUnified() {
 
         <button
           type="button"
+          onClick={() => handleTabChange('wallets')}
+          style={{
+            padding: '10px 18px',
+            border: 'none',
+            background: 'none',
+            cursor: 'pointer',
+            fontWeight: activeTab === 'wallets' ? 700 : 500,
+            color: activeTab === 'wallets' ? '#0284c7' : '#64748b',
+            borderBottom: activeTab === 'wallets' ? '3px solid #0284c7' : '3px solid transparent',
+            marginBottom: -2,
+            fontSize: '0.95rem',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8
+          }}
+        >
+          <i className="fas fa-wallet" />
+          Student Wallets & Top-Ups
+        </button>
+
+        <button
+          type="button"
           onClick={() => handleTabChange('reports')}
           style={{
             padding: '10px 18px',
@@ -142,6 +187,7 @@ export default function BursarTuckshopUnified() {
         {activeTab === 'sales' && <BursarTuckshopSales />}
         {activeTab === 'cashup' && <TillCashupComponent />}
         {activeTab === 'inventory' && <BursarTuckshopInventory />}
+        {activeTab === 'wallets' && <FinanceWallets />}
         {activeTab === 'reports' && <BursarTuckshopReports />}
       </div>
     </div>
