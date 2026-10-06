@@ -174,30 +174,20 @@ router.post('/stock-orders', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'),
         });
       }
 
-      // Post double-entry: DR Inventory — Uniforms / CR Uniform Supplier Payable
-      const inventoryAccountId = await getAccountId(schoolId, '1300', tx as any);
-      const apAccountId = await getAccountId(schoolId, '3110', tx as any);
-
-      const je = await LedgerService.postEntry({
-        schoolId,
-        date: new Date(),
+      // Post double-entry: DR Inventory — Uniforms & Apparel (1201) / CR Supplier Payable (2010)
+      const je = await LedgerService.postDoubleEntry({
+        tenantId: schoolId,
+        debitCode: '1201', // Inventory — Uniforms & Apparel
+        creditCode: '2010', // Trade Creditors / Accounts Payable
+        amount: Math.round(totalAmount * 100) / 100,
         description: `Uniform stock purchase — Order #${order.id.slice(-6)}`,
-        sourceType: 'uniform_purchase',
-        sourceId: order.id,
-        createdByUserId: req.user!.id,
-        lines: [
-          {
-            accountId: inventoryAccountId,
-            debit: totalAmount,
-            description: `Uniform inventory — ${items.length} item type(s)`
-          },
-          {
-            accountId: apAccountId,
-            credit: totalAmount,
-            description: `Payable to supplier — Order ${order.id.slice(-6)}`
-          }
-        ],
-        tx
+        sourceModule: 'uniform_procurement',
+        reference: order.id,
+        supplierId: rest.supplierId || undefined,
+        userId: req.user!.id,
+        ipAddress: req.ip,
+        tx,
+        bypassApprovalCheck: true
       });
 
       // Link JE to each stock movement
@@ -317,58 +307,43 @@ router.post('/sales', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async 
         });
       }
 
-      // Resolve accounts
-      const cashAccountId = await getAccountId(schoolId, '1100', tx as any); // Cash on Hand
-      const salesIncomeId = await getAccountId(schoolId, '5200', tx as any);  // Uniform Sales Income
-      const cogsAccountId = await getAccountId(schoolId, '6100', tx as any);  // COGS — Uniforms
-      const inventoryId = await getAccountId(schoolId, '1300', tx as any);    // Inventory — Uniforms
+      // Determine payment account code
+      const payMode = (rest.paymentMode || '').toUpperCase();
+      let debitCode = '1024'; // Uniform Store Cash Till
+      if (payMode === 'WALLET') debitCode = '2110'; // Student Pocket Money / Digital Wallets
+      else if (payMode === 'ECOCASH' || payMode === 'MOBILE') debitCode = '1022'; // Mobile Money Float
+      else if (payMode === 'BANK' || payMode === 'CARD') debitCode = '1010'; // Bank Account — Main Operations
 
-      // Post Entry 1: Revenue entry (Cash DR / Sales Income CR)
-      const revenueJe = await LedgerService.postEntry({
-        schoolId,
-        date: new Date(),
+      // Post Entry 1: Revenue entry (Payment DR / Uniform Store Sales CR 4041)
+      const revenueJe = await LedgerService.postDoubleEntry({
+        tenantId: schoolId,
+        debitCode,
+        creditCode: '4041', // Uniform Store Sales
+        amount: Math.round(totalAmount * 100) / 100,
         description: `Uniform sale — ${items.length} item(s) to ${(rest as any).studentId ?? 'walk-in'}`,
-        sourceType: 'uniform_sale',
-        sourceId: sale.id,
-        createdByUserId: req.user!.id,
-        lines: [
-          {
-            accountId: cashAccountId,
-            debit: totalAmount,
-            description: 'Cash received for uniform sale',
-            studentId: (rest as any).studentId
-          },
-          {
-            accountId: salesIncomeId,
-            credit: totalAmount,
-            description: 'Uniform sales revenue'
-          }
-        ],
-        tx
+        sourceModule: 'uniform_sale',
+        reference: sale.id,
+        studentId: (rest as any).studentId || undefined,
+        userId: req.user!.id,
+        ipAddress: req.ip,
+        tx,
+        bypassApprovalCheck: true
       });
 
-      // Post Entry 2: COGS entry (COGS DR / Inventory CR)
+      // Post Entry 2: COGS entry (COGS DR 5081 / Inventory CR 1201)
       if (totalCogs > 0) {
-        await LedgerService.postEntry({
-          schoolId,
-          date: new Date(),
+        await LedgerService.postDoubleEntry({
+          tenantId: schoolId,
+          debitCode: '5081', // Cost of Goods Sold — Uniforms
+          creditCode: '1201', // Inventory — Uniforms & Apparel
+          amount: Math.round(totalCogs * 100) / 100,
           description: `COGS — Uniform sale ${sale.id.slice(-6)}`,
-          sourceType: 'cogs',
-          sourceId: sale.id,
-          createdByUserId: req.user!.id,
-          lines: [
-            {
-              accountId: cogsAccountId,
-              debit: totalCogs,
-              description: 'Cost of uniforms sold'
-            },
-            {
-              accountId: inventoryId,
-              credit: totalCogs,
-              description: 'Inventory reduction at cost'
-            }
-          ],
-          tx
+          sourceModule: 'uniform_cogs',
+          reference: sale.id,
+          userId: req.user!.id,
+          ipAddress: req.ip,
+          tx,
+          bypassApprovalCheck: true
         });
       }
 
@@ -494,31 +469,20 @@ router.post('/supplier-payments', requireAuth, requireRole('BURSAR', 'SCHOOL_ADM
         }
       });
 
-      // Post: DR Uniform Supplier Payable / CR Bank Account
-      const apAccountId = await getAccountId(schoolId, '3110', tx as any);
-      const bankAccountId = await getAccountId(schoolId, '1110', tx as any);
-
-      await LedgerService.postEntry({
-        schoolId,
-        date: new Date(),
+      // Post: DR Trade Creditors (2010) / CR Bank Account (1010)
+      await LedgerService.postDoubleEntry({
+        tenantId: schoolId,
+        debitCode: '2010', // Trade Creditors / Accounts Payable
+        creditCode: '1010', // Bank Account — Main Operations
+        amount: Math.round(payment.amount * 100) / 100,
         description: `Supplier payment — ${payment.id.slice(-6)}`,
-        sourceType: 'expense',
-        sourceId: payment.id,
-        createdByUserId: req.user!.id,
-        lines: [
-          {
-            accountId: apAccountId,
-            debit: payment.amount,
-            description: 'Settle uniform supplier payable',
-            supplierId: payment.supplierId
-          },
-          {
-            accountId: bankAccountId,
-            credit: payment.amount,
-            description: 'Payment from bank account'
-          }
-        ],
-        tx
+        sourceModule: 'procurement',
+        reference: payment.id,
+        supplierId: payment.supplierId,
+        userId: req.user!.id,
+        ipAddress: req.ip,
+        tx,
+        bypassApprovalCheck: true
       });
 
       return payment;

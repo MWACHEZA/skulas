@@ -16,14 +16,14 @@ router.use(requireAuth);
 // ─────────────────────────────────────────────────────────────────────────────
 function paymentAccountCode(paymentMethod: string): string {
   switch ((paymentMethod || '').toUpperCase()) {
-    case 'WALLET':      return '3200'; // Student Deposits (liability reduced on spend)
+    case 'WALLET':      return '2110'; // Student Pocket Money / Digital Wallets (liability reduced on spend)
     case 'CARD':
-    case 'POS':         return '1130'; // Card / POS Terminal
+    case 'POS':         return '1010'; // Bank Account — Main Operations
     case 'MOBILE':
-    case 'ECOCASH':     return '1120'; // Mobile Money Account
-    case 'BANK':        return '1110'; // Bank Account (Main)
+    case 'ECOCASH':     return '1022'; // Mobile Money Float (EcoCash / OneMoney)
+    case 'BANK':        return '1010'; // Bank Account — Main Operations
     case 'CASH':
-    default:            return '1100'; // Cash on Hand
+    default:            return '1023'; // Tuckshop Cash Till
   }
 }
 
@@ -256,30 +256,17 @@ router.post('/sales', async (req: AuthRequest, res) => {
       }, 0);
 
       if (totalCost > 0) {
-        const [cogsId, inventoryId] = await Promise.all([
-          getAccountId(schoolId, '5020', prisma).catch(() => getAccountId(schoolId, '5070', prisma)),
-          getAccountId(schoolId, '1200', prisma)
-        ]);
-
-        await LedgerService.postEntry({
-          schoolId,
-          date: new Date(),
+        await LedgerService.postDoubleEntry({
+          tenantId: schoolId,
+          debitCode: '5080', // Cost of Goods Sold — Tuckshop
+          creditCode: '1200', // Inventory — Tuckshop Stock
+          amount: Math.round(totalCost * 100) / 100,
           description: `Tuckshop COGS — ${items.length} item(s)`,
-          sourceType: 'tuckshop_cogs',
-          sourceId: saleSourceId,
-          createdByUserId: req.user?.id,
-          lines: [
-            {
-              accountId: cogsId,
-              debit: totalCost,
-              description: 'Cost of tuckshop goods sold'
-            },
-            {
-              accountId: inventoryId,
-              credit: totalCost,
-              description: 'Reduce tuckshop inventory at cost'
-            }
-          ]
+          sourceModule: 'tuckshop_cogs',
+          reference: saleSourceId,
+          userId: req.user?.id,
+          ipAddress: req.ip,
+          bypassApprovalCheck: true
         });
       }
 

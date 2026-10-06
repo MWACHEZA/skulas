@@ -169,24 +169,28 @@ router.post('/fund', async (req: AuthRequest, res) => {
     });
 
     // Post ledger entry AFTER the transaction commits:
-    //   DR 1100 Cash on Hand         [amount]
-    //   CR 3200 Student Deposits     [amount]
+    //   DR Cash/Bank/EcoCash (1020/1010/1022) [amount]
+    //   CR 2110 Student Pocket Money / Digital Wallets (Liability) [amount]
     try {
-      const [cashId, depositsId] = await Promise.all([
-        getAccountId(schoolId, '1100', prisma),
-        getAccountId(schoolId, '3200', prisma)
-      ]);
-      await LedgerService.postEntry({
-        schoolId,
-        date: new Date(),
+      const debitCode = (() => {
+        const pm = (paymentMethod || '').toUpperCase();
+        if (pm === 'CASH') return '1020'; // Cash Office Vault
+        if (pm === 'ECOCASH' || pm === 'MOBILE' || pm === 'ONEMONEY') return '1022'; // Mobile Money Float
+        return '1010'; // Bank Account — Main Operations (Card / Transfer / Online)
+      })();
+
+      await LedgerService.postDoubleEntry({
+        tenantId: schoolId,
+        debitCode,
+        creditCode: '2110', // Student Pocket Money / Digital Wallets
+        amount: Math.round(amount * 100) / 100,
         description: `Wallet deposit — student ${studentId} via ${paymentMethod || 'Online'}`,
-        sourceType: 'wallet_deposit',
-        sourceId: updatedWallet.id,
-        createdByUserId: req.user?.id,
-        lines: [
-          { accountId: cashId, debit: amount, description: `Payment via ${paymentMethod || 'Online'}`, studentId },
-          { accountId: depositsId, credit: amount, description: 'Student wallet deposit liability', studentId }
-        ]
+        sourceModule: 'wallet_deposit',
+        reference: updatedWallet.id,
+        studentId,
+        userId: req.user?.id,
+        ipAddress: req.ip,
+        bypassApprovalCheck: true
       });
 
       LedgerEvents.broadcast({
@@ -254,24 +258,21 @@ router.post('/spend', async (req: AuthRequest, res) => {
     });
 
     // Post ledger entry after commit:
-    //   DR 3200 Student Deposits  (reduce liability — deposit used)
-    //   CR 1210 Student AR        (reduce receivable — payment applied)
+    //   DR 2110 Student Pocket Money / Digital Wallets (reduce liability)
+    //   CR 1100 Student Debtors Control (AR) (reduce receivable)
     try {
-      const [depositsId, arId] = await Promise.all([
-        getAccountId(schoolId, '3200', prisma),
-        getAccountId(schoolId, '1210', prisma)
-      ]);
-      await LedgerService.postEntry({
-        schoolId,
-        date: new Date(),
+      await LedgerService.postDoubleEntry({
+        tenantId: schoolId,
+        debitCode: '2110', // Student Pocket Money / Digital Wallets
+        creditCode: '1100', // Student Debtors Control (AR)
+        amount: Math.round(amount * 100) / 100,
         description: description || `Wallet payment — ${referenceType || 'purchase'}`,
-        sourceType: 'wallet_spend',
-        sourceId: referenceId || studentId,
-        createdByUserId: req.user?.id,
-        lines: [
-          { accountId: depositsId, debit: amount, description: 'Use wallet deposit', studentId },
-          { accountId: arId, credit: amount, description: 'Reduce student AR', studentId }
-        ]
+        sourceModule: 'wallet_spend',
+        reference: referenceId || studentId,
+        studentId,
+        userId: req.user?.id,
+        ipAddress: req.ip,
+        bypassApprovalCheck: true
       });
 
       LedgerEvents.broadcast({
