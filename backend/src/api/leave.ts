@@ -5,10 +5,41 @@ import { logAction } from '../utils/audit';
 
 const router = Router();
 
-// Helper to calculate days (simple implementation excluding weekends if desired, here just diff)
-const calculateDays = (start: Date, end: Date) => {
-  const diffTime = Math.abs(end.getTime() - start.getTime());
-  return Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+// Zimbabwe statutory public holidays defaults
+const getZimbabwePublicHolidays = (year: number): Set<string> => {
+  return new Set([
+    `${year}-01-01`, // New Year's Day
+    `${year}-02-21`, // Robert Gabriel Mugabe National Youth Day
+    `${year}-04-18`, // Independence Day
+    `${year}-05-01`, // Workers' Day
+    `${year}-05-25`, // Africa Day
+    `${year}-08-10`, // Heroes' Day
+    `${year}-08-11`, // Defense Forces Day
+    `${year}-12-22`, // National Unity Day
+    `${year}-12-25`, // Christmas Day
+    `${year}-12-26`, // Boxing Day
+  ]);
+};
+
+// Working-day calculator: auto-computes leave days excluding weekends and public holidays
+export const calculateWorkingDays = (start: Date, end: Date, customHolidays?: Set<string>): number => {
+  const year = start.getFullYear();
+  const holidays = customHolidays || getZimbabwePublicHolidays(year);
+  let count = 0;
+  const cur = new Date(start);
+  cur.setHours(0, 0, 0, 0);
+  const finish = new Date(end);
+  finish.setHours(0, 0, 0, 0);
+
+  while (cur <= finish) {
+    const dayOfWeek = cur.getDay(); // 0 = Sun, 6 = Sat
+    const dateStr = cur.toISOString().split('T')[0];
+    if (dayOfWeek !== 0 && dayOfWeek !== 6 && !holidays.has(dateStr)) {
+      count++;
+    }
+    cur.setDate(cur.getDate() + 1);
+  }
+  return count > 0 ? count : 1;
 };
 
 // Ensure default balance exists
@@ -23,6 +54,36 @@ const ensureBalance = async (schoolId: string, userId: string, academicYear: str
   }
   return balance;
 };
+
+/**
+ * GET /api/leave/types
+ * Tenant-configurable leave-type catalog with editable defaults
+ */
+router.get('/types', requireAuth, async (req: AuthRequest, res: Response) => {
+  const schoolId = req.user!.schoolId!;
+  const school = await prisma.school.findUnique({
+    where: { id: schoolId },
+    select: { customContent: true, type: true }
+  });
+  const customTypes = (school?.customContent as any)?.leaveTypes;
+  if (customTypes && Array.isArray(customTypes)) {
+    return res.json(customTypes);
+  }
+
+  // Default statutory & institutional catalog
+  const defaults = [
+    { code: 'annual', name: 'Annual Leave', defaultDays: 30, paid: true, requiresAttachment: false, description: 'Statutory annual leave (school holidays for teaching staff, 30 days for others)' },
+    { code: 'sick', name: 'Sick Leave', defaultDays: 90, paid: true, requiresAttachment: true, attachmentThresholdDays: 2, description: 'Medical recovery (up to 30 days full pay, 60 days half pay)' },
+    { code: 'maternity', name: 'Maternity Leave', defaultDays: 98, paid: true, requiresAttachment: true, attachmentThresholdDays: 0, description: '98 days fully paid with minimum 1-year service' },
+    { code: 'paternity', name: 'Paternity Leave', defaultDays: 5, paid: true, requiresAttachment: false, description: '5 days paternity leave upon birth of child' },
+    { code: 'compassionate', name: 'Compassionate Leave', defaultDays: 5, paid: true, requiresAttachment: false, description: 'Bereavement or critical family emergency' },
+    { code: 'study', name: 'Study & Exam Leave', defaultDays: 14, paid: true, requiresAttachment: true, attachmentThresholdDays: 0, description: 'Professional development, degree exams, or academic workshops' },
+    { code: 'unpaid', name: 'Unpaid Leave', defaultDays: 365, paid: false, requiresAttachment: false, description: 'Approved leave of absence with pro-rated payroll deduction' },
+    { code: 'in_lieu', name: 'Day-Off-in-Lieu', defaultDays: 5, paid: true, requiresAttachment: false, description: 'Compensatory day off for weekend duty or tour oversight' },
+    { code: 'special', name: 'Special Leave', defaultDays: 10, paid: true, requiresAttachment: false, description: 'Court witness, sports national representation, or governance duty' }
+  ];
+  res.json(defaults);
+});
 
 router.get('/my', requireAuth, async (req: AuthRequest, res: Response) => {
   try {
@@ -47,10 +108,10 @@ router.get('/balance', requireAuth, async (req: AuthRequest, res: Response) => {
 
 router.post('/', requireAuth, async (req: AuthRequest, res: Response) => {
   try {
-    const { leaveType, startDate, endDate, reason, coverTeacherId, attachmentUrl, department } = req.body;
+    const { leaveType, startDate, endDate, reason, coverTeacherId, attachmentUrl, department, dutiesAffected } = req.body;
     const start = new Date(startDate);
     const end = new Date(endDate);
-    const days = calculateDays(start, end);
+    const days = calculateWorkingDays(start, end);
 
     const year = start.getFullYear().toString();
     const balance = await ensureBalance(req.user!.schoolId!, req.user!.id, year);
@@ -62,14 +123,23 @@ router.post('/', requireAuth, async (req: AuthRequest, res: Response) => {
     if (balance[typeKey] !== undefined) {
       const remaining = (balance[typeKey] as number) - (balance[usedKey] as number);
       if (remaining < days) {
-        return res.status(400).json({ error: `Insufficient ${leaveType} balance. You need ${days} days but have ${remaining} left.` });
+        return res.status(400).json({ error: `Insufficient ${leaveType} balance. You need ${days} working day(s) but have ${remaining} left.` });
       }
     }
 
-    // Sick-leave document requirement: mandatory attachment for sick leave > 2 days
-    if (leaveType.toLowerCase() === 'sick' && days > 2 && !attachmentUrl) {
+    // Attachment requirement rules:
+    const typeLower = (leaveType || '').toLowerCase();
+    if (typeLower === 'sick' && days > 2 && !attachmentUrl) {
       return res.status(400).json({ error: 'Medical certificate/document attachment is mandatory for sick leave exceeding 2 days.' });
     }
+    if (typeLower === 'maternity' && !attachmentUrl) {
+      return res.status(400).json({ error: 'Expected delivery date confirmation / medical scan attachment is required for maternity leave.' });
+    }
+    if (typeLower === 'study' && !attachmentUrl) {
+      return res.status(400).json({ error: 'Enrollment letter or examination schedule attachment is required for study leave.' });
+    }
+
+    const formattedReason = dutiesAffected ? `[Duties/Classes Affected: ${dutiesAffected}] ${reason || ''}`.trim() : reason;
 
     const leave = await prisma.staffLeave.create({
       data: {
@@ -78,9 +148,9 @@ router.post('/', requireAuth, async (req: AuthRequest, res: Response) => {
         leaveType,
         startDate: start,
         endDate: end,
-        reason,
-        coverTeacherId,
-        attachmentUrl,
+        reason: formattedReason,
+        coverTeacherId: coverTeacherId || null,
+        attachmentUrl: attachmentUrl || null,
         department,
         days,
         status: 'pending_hod'
@@ -193,7 +263,31 @@ router.get('/all', requireAuth, requireRole('SCHOOL_ADMIN', 'SUPER_ADMIN'), asyn
 router.patch('/:id/approve', requireAuth, requireRole('SCHOOL_ADMIN', 'SUPER_ADMIN'), async (req: AuthRequest, res: Response) => {
   try {
     const id = req.params.id as string;
-    const leave = await prisma.staffLeave.update({
+    const leave = await prisma.staffLeave.findUnique({ where: { id } });
+    if (!leave) return res.status(404).json({ error: 'Leave not found' });
+
+    // Check if governance approval is required for long leaves
+    const school = await prisma.school.findUnique({
+      where: { id: req.user!.schoolId! },
+      select: { customContent: true, type: true }
+    });
+    const govThreshold = (school?.customContent as any)?.governanceLeaveThreshold ?? 14;
+    const requiresGovernance = Boolean((school?.customContent as any)?.requireGovernanceLeaveApproval);
+
+    if (requiresGovernance && (leave.days || 1) > govThreshold) {
+      const updated = await prisma.staffLeave.update({
+        where: { id, schoolId: req.user!.schoolId! },
+        data: {
+          status: 'pending_governance',
+          headApprovedAt: new Date(),
+          approvedBy: req.user!.id
+        }
+      });
+      await logAction(req, 'HEAD_APPROVE_LEAVE_PENDING_GOVERNANCE', 'StaffLeave', leave.id, { days: leave.days, threshold: govThreshold });
+      return res.json({ leave: updated, pendingGovernance: true });
+    }
+
+    const updated = await prisma.staffLeave.update({
       where: { id, schoolId: req.user!.schoolId! },
       data: { status: 'approved', approvedBy: req.user!.id, headApprovedAt: new Date() }
     });
@@ -207,9 +301,70 @@ router.patch('/:id/approve', requireAuth, requireRole('SCHOOL_ADMIN', 'SUPER_ADM
       data: { [usedKey]: { increment: leave.days || 1 } }
     });
 
-    res.json(leave);
+    await logAction(req, 'HEAD_APPROVE_LEAVE', 'StaffLeave', leave.id, { days: leave.days });
+    res.json(updated);
   } catch (error) {
     res.status(500).json({ error: 'Failed to approve leave' });
+  }
+});
+
+router.patch('/:id/governance-approve', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    const isGov = req.user!.role === 'SCHOOL_ADMIN' || req.user!.role === 'SUPER_ADMIN' ||
+      req.user!.secondaryRoles?.some(r => ['SDC_CHAIR', 'BOARD_CHAIR', 'COUNCIL_CHAIR', 'BURSAR'].includes(r.toUpperCase()));
+    if (!isGov) return res.status(403).json({ error: 'Not authorized for governance signoff' });
+
+    const id = req.params.id as string;
+    const leave = await prisma.staffLeave.findUnique({ where: { id } });
+    if (!leave) return res.status(404).json({ error: 'Leave not found' });
+    if (leave.status !== 'pending_governance') {
+      return res.status(400).json({ error: 'Leave application is not awaiting governance approval' });
+    }
+
+    const updated = await prisma.staffLeave.update({
+      where: { id, schoolId: req.user!.schoolId! },
+      data: { status: 'approved', approvedBy: req.user!.id }
+    });
+
+    // Update balance
+    const year = leave.startDate.getFullYear().toString();
+    const usedKey = `${(leave.leaveType || 'annual').toLowerCase()}Used`;
+    await prisma.leaveBalance.updateMany({
+      where: { schoolId: req.user!.schoolId!, userId: leave.userId, academicYear: year },
+      data: { [usedKey]: { increment: leave.days || 1 } }
+    });
+
+    await logAction(req, 'GOVERNANCE_APPROVE_LEAVE', 'StaffLeave', leave.id, { days: leave.days });
+    res.json(updated);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to complete governance approval' });
+  }
+});
+
+router.get('/:id/print-data', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    const id = req.params.id as string;
+    const leave = await prisma.staffLeave.findFirst({
+      where: { id, schoolId: req.user!.schoolId! }
+    });
+    if (!leave) return res.status(404).json({ error: 'Leave not found' });
+
+    const [applicant, coverTeacher, hodApprover, school] = await Promise.all([
+      prisma.user.findUnique({ where: { id: leave.userId }, select: { name: true, email: true, role: true } }),
+      leave.coverTeacherId ? prisma.user.findUnique({ where: { id: leave.coverTeacherId }, select: { name: true, email: true } }) : null,
+      leave.hodApprovedById ? prisma.user.findUnique({ where: { id: leave.hodApprovedById }, select: { name: true } }) : null,
+      prisma.school.findUnique({ where: { id: req.user!.schoolId! }, select: { name: true, address: true, phone: true } })
+    ]);
+
+    res.json({
+      leave,
+      applicant,
+      coverTeacher,
+      hodApprover,
+      school
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch print data' });
   }
 });
 
@@ -309,7 +464,7 @@ router.get('/payroll-consequences', requireAuth, requireRole('BURSAR', 'SCHOOL_A
 
       const basePay = user?.employeeProfile?.basePay || 0;
       const dailyRate = basePay > 0 ? basePay / 30 : 0;
-      const days = leave.days || calculateDays(leave.startDate, leave.endDate);
+      const days = leave.days || calculateWorkingDays(leave.startDate, leave.endDate);
 
       let impactType: 'PAID' | 'UNPAID_DEDUCTION' | 'HALF_PAY' = 'PAID';
       let estimatedDeduction = 0;
