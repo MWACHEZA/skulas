@@ -9,7 +9,7 @@ interface ProtectedRouteProps {
 }
 
 export default function ProtectedRoute({ children, allowedRoles, redirectTo = '/' }: ProtectedRouteProps) {
-  const { isAuthenticated, hasRole } = useAuth();
+  const { user, isAuthenticated, hasRole } = useAuth();
   const location = useLocation();
 
   if (!isAuthenticated) {
