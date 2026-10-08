@@ -57,6 +57,7 @@ interface AuthUser {
   };
   isImpersonated?: boolean;
   impersonatorId?: string;
+  isOnboarded?: boolean;
   metadata?: any;
 }
 

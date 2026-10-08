@@ -71,7 +71,7 @@ interface Props {
 
 const ReportGeneratorWizard: React.FC<Props> = ({ role: _role, allowedTypes }) => {
   const [step, setStep] = useState(1);
-  const { t, isMedical: _isMedical, isPoly } = useTerminology();
+  const { t, isMedical, isPoly } = useTerminology();
   const { showToast } = useToast();
   const [loading, setLoading] = useState(false);
   const [classes, setClasses] = useState<any[]>([]);

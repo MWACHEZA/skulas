@@ -66,6 +66,11 @@ router.get('/preview', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN
         let data = [];
         switch (type) {
             case 'ACADEMIC':
+            case 'TERMLY_REPORTS':
+            case 'BROADSHEET':
+            case 'SUBJECT_ANALYSIS':
+            case 'MERIT_FAILURE':
+            case 'CA_SUMMARY':
             case 'ATTENDANCE':
             case 'ENROLLMENT':
                 const students = await prisma_1.default.user.findMany({
@@ -94,16 +99,36 @@ router.get('/preview', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN
                         }
                     }
                 });
-                data = students.map(u => ({
-                    id: u.id,
-                    name: u.name,
-                    studentId: u.student?.studentId,
-                    complete: type === 'ACADEMIC' ? (u.student?.grades.length || 0) > 0 : true,
-                    statusText: type === 'ACADEMIC' ? `${u.student?.grades.length || 0} subjects graded` : (type === 'ATTENDANCE' ? `${u.student?.attendance.length || 0} records` : 'Enrolled'),
-                    grades: u.student?.grades,
-                    attendance: u.student?.attendance,
-                    class: u.student?.class
-                }));
+                data = students.map(u => {
+                    const grades = u.student?.grades || [];
+                    const avgScore = grades.length > 0
+                        ? Math.round(grades.reduce((acc, g) => acc + (g.score || 0), 0) / grades.length)
+                        : 0;
+                    let statusText = `${grades.length} subjects graded`;
+                    if (type === 'BROADSHEET')
+                        statusText = `${grades.length} entries (Avg: ${avgScore}%)`;
+                    else if (type === 'SUBJECT_ANALYSIS')
+                        statusText = grades.length > 0 ? `Avg: ${avgScore}%` : 'No marks yet';
+                    else if (type === 'MERIT_FAILURE')
+                        statusText = avgScore >= 50 ? `Pass (${avgScore}%)` : `Needs Support (${avgScore}%)`;
+                    else if (type === 'CA_SUMMARY')
+                        statusText = `${grades.length} assessments on record`;
+                    else if (type === 'ATTENDANCE')
+                        statusText = `${u.student?.attendance.length || 0} records`;
+                    else if (type === 'ENROLLMENT')
+                        statusText = 'Enrolled';
+                    return {
+                        id: u.id,
+                        name: u.name,
+                        studentId: u.student?.studentId,
+                        complete: grades.length > 0,
+                        statusText,
+                        grades,
+                        attendance: u.student?.attendance,
+                        class: u.student?.class,
+                        averageScore: avgScore
+                    };
+                });
                 break;
             case 'FEES':
                 const feeStudents = await prisma_1.default.student.findMany({

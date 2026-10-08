@@ -135,6 +135,7 @@ app.use('/api/classes', classes_1.default);
 app.use('/api/timetable', timetable_1.default);
 app.use('/api/chat', chat_1.default);
 app.use('/api/users', users_1.default);
+app.use('/api/me', users_1.default);
 app.use('/api/teachers', teachers_1.default);
 app.use('/api/students', students_1.default);
 app.use('/api/applications', applications_1.default);

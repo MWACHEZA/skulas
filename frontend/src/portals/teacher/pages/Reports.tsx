@@ -9,8 +9,8 @@ import { useToast } from '../../../context/ToastContext';
 const TEACHER_ALLOWED_REPORTS = ['TERMLY_REPORTS', 'BROADSHEET', 'SUBJECT_ANALYSIS', 'MERIT_FAILURE', 'CA_SUMMARY'];
 
 export default function TeacherReports() {
-  const { t, isMedical: _isMedical } = useTerminology();
-  const { showToast: _showToast } = useToast();
+  const { t, isMedical } = useTerminology();
+  const { showToast } = useToast();
   const [activeTab, setActiveTab] = useState<'generation' | 'analytics'>('generation');
   const [filters, setFilters] = useState({ term: 'Term 1', year: new Date().getFullYear().toString() });
   const [stats, setStats] = useState({ studentCount: 0, classCount: 0, attendanceRate: 0, passRate: 0 });

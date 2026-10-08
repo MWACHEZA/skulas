@@ -279,12 +279,14 @@ router.post('/:id/approve-hod', auth_1.requireAuth, async (req, res) => {
         const asset = await prisma_1.default.asset.findFirst({ where: { id: String(id), schoolId } });
         if (!asset)
             return res.status(404).json({ error: 'Asset not found' });
-        // Must be HOD or Admin
+        // Must be HOD, have HOD secondary role, or Admin/Bursar
+        const userSecRoles = (Array.isArray(req.user?.secondaryRoles) ? req.user.secondaryRoles : []).map((r) => String(r).toUpperCase());
+        const hasHodSecRole = userSecRoles.some((r) => ['HOD', 'DEPARTMENT_HEAD', 'HEAD OF DEPARTMENT', 'SENIOR_TEACHER'].includes(r));
         const headedDepts = await prisma_1.default.department.findMany({ where: { schoolId, headId: req.user.id } });
-        const isHod = headedDepts.some(d => d.name.toLowerCase() === (asset.department || '').toLowerCase());
-        const isAdmin = role === 'SCHOOL_ADMIN' || role === 'SUPER_ADMIN';
-        if (!isHod && !isAdmin) {
-            return res.status(403).json({ error: 'Only the relevant Department HOD or School Admin can perform this approval' });
+        const isDeptHead = headedDepts.some(d => d.name.toLowerCase() === (asset.department || '').toLowerCase());
+        const isAdmin = role === 'SCHOOL_ADMIN' || role === 'SUPER_ADMIN' || role === 'BURSAR';
+        if (!isDeptHead && !hasHodSecRole && !isAdmin) {
+            return res.status(403).json({ error: 'Only the relevant Department HOD, staff with HOD role, or School Admin/Bursar can perform this approval' });
         }
         const updated = await prisma_1.default.asset.update({
             where: { id: String(id) },
