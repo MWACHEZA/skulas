@@ -132,8 +132,27 @@ router.get('/me', requireAuth, async (req: AuthRequest, res: Response) => {
         }));
     }
 
+    const schoolData = user.school ? {
+      ...user.school,
+      subscription: {
+        plan: (user.school as any)?.plan?.name || 'Starter',
+        status: (user.school as any)?.status || 'active',
+        modules: ((user.school as any)?.subscription as any)?.modules || {
+          boarding: true,
+          clinic: true,
+          tuckshop: true,
+          uniforms: true,
+          transport: true,
+          farm: true,
+          sports: true
+        },
+        ...(((user.school as any)?.subscription as any) || {})
+      }
+    } : null;
+
     res.json({
         ...user,
+        school: schoolData,
         schoolPlan: (user.school as any)?.plan?.name || null,
         linkedEntities
     });
@@ -305,6 +324,12 @@ router.get('/', requireAuth, requireRole('SCHOOL_ADMIN', 'SUPER_ADMIN', 'CLINIC'
         metadata: true,
         isLocked: true,
         employeeProfile: true, // Added
+        teacher: {
+          include: {
+            subjects: { include: { subject: true } },
+            classes: true
+          }
+        },
         createdAt: true
       },
       orderBy: { name: 'asc' }

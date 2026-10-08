@@ -1,5 +1,6 @@
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import { PAGE_REGISTRY } from '../../config/pageRegistry';
 import type { ReactNode } from 'react';
 
 interface ProtectedRouteProps {
@@ -35,6 +36,35 @@ export default function ProtectedRoute({ children, allowedRole, allowedRoles, lo
           ? '/bursar/dashboard'
           : '/admin/dashboard';
       return <Navigate to={fallback} replace />;
+    }
+  }
+
+  // Modular Tenancy Check
+  const userModules: Record<string, boolean> | undefined =
+    (user as any)?.modules ||
+    user?.school?.subscription?.modules ||
+    user?.school?.modules;
+
+  if (userModules) {
+    const currentPath = location.pathname;
+    const matchedPage = PAGE_REGISTRY.find((p) => {
+      const base = p.route.split('?')[0];
+      return currentPath === base || (base !== '/' && currentPath.startsWith(base + '/'));
+    });
+    if (matchedPage?.module && matchedPage.module !== 'core') {
+      if (userModules[matchedPage.module] === false) {
+        const fallback =
+          user?.role === 'TEACHER'
+            ? '/teacher/dashboard'
+            : user?.role === 'STUDENT'
+            ? '/student/dashboard'
+            : user?.role === 'BURSAR'
+            ? '/bursar/dashboard'
+            : user?.role === 'PARENT'
+            ? '/parent/dashboard'
+            : '/admin/dashboard';
+        return <Navigate to={fallback} replace />;
+      }
     }
   }
 

@@ -1,11 +1,14 @@
 import { PERMISSIONS } from './permissions';
 
+export type TenantModule = 'core' | 'boarding' | 'clinic' | 'tuckshop' | 'transport' | 'uniforms' | 'farm' | 'sports';
+
 export interface PageDefinition {
   id: string;
   label: string;
   route: string;
   group: CanonicalGroupId;
   icon: string;
+  module?: TenantModule;
   permissionKey?: string;
   portalVisibility: ('admin' | 'teacher' | 'bursar' | 'librarian' | 'ancillary' | 'clinic' | 'student' | 'parent' | 'sdc')[];
   requiredRoles?: string[];
@@ -104,6 +107,16 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     searchKeywords: ['applications', 'inquiries', 'intake', 'pipeline']
   },
   {
+    id: 'admin-staff',
+    label: 'Staff Directory',
+    route: '/admin/staff',
+    group: 'PEOPLE_ENROLLMENT',
+    icon: 'fas fa-chalkboard-teacher',
+    permissionKey: PERMISSIONS.PEOPLE_USERS_MANAGE,
+    portalVisibility: ['admin'],
+    searchKeywords: ['staff', 'teachers', 'employees', 'faculty', 'roster', 'directory', 'personnel']
+  },
+  {
     id: 'admin-finance-overview',
     label: 'Finance Overview',
     route: '/admin/finance/overview',
@@ -144,6 +157,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     route: '/admin/finance/wallets',
     group: 'FINANCE_BILLING',
     icon: 'fas fa-wallet',
+    module: 'tuckshop',
     permissionKey: PERMISSIONS.FINANCE_FEES_BILLING,
     portalVisibility: ['admin'],
     tabs: [
@@ -222,6 +236,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     route: '/admin/clinic',
     group: 'CLINIC_HEALTH',
     icon: 'fas fa-notes-medical',
+    module: 'clinic',
     permissionKey: PERMISSIONS.CLINIC_DASHBOARD_VIEW,
     portalVisibility: ['admin'],
     tabs: [
@@ -251,6 +266,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     route: '/admin/transport',
     group: 'TRANSPORT',
     icon: 'fas fa-bus',
+    module: 'transport',
     permissionKey: PERMISSIONS.TRANSPORT_ROUTES_MANAGE,
     portalVisibility: ['admin'],
     tabs: [
@@ -267,6 +283,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     route: '/admin/uniforms',
     group: 'PROCUREMENT_ASSETS',
     icon: 'fas fa-boxes',
+    module: 'uniforms',
     permissionKey: PERMISSIONS.PEOPLE_UNIFORMS_MANAGE,
     portalVisibility: ['admin'],
     tabs: [
@@ -322,6 +339,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     route: '/admin/boarding',
     group: 'STUDENT_LIFE',
     icon: 'fas fa-hotel',
+    module: 'boarding',
     permissionKey: PERMISSIONS.PEOPLE_HOUSES_MANAGE,
     portalVisibility: ['admin'],
     tabs: [
@@ -347,6 +365,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     route: '/admin/dining',
     group: 'STUDENT_LIFE',
     icon: 'fas fa-utensils',
+    module: 'boarding',
     permissionKey: PERMISSIONS.STUDENT_LIFE_PREFECTS,
     portalVisibility: ['admin'],
     tabs: [
@@ -354,6 +373,28 @@ export const PAGE_REGISTRY: PageDefinition[] = [
       { id: 'reports', label: 'Dietary Records' }
     ],
     searchKeywords: ['dining hall', 'weekly menu', 'food service', 'special diets']
+  },
+  {
+    id: 'admin-sports',
+    label: 'Sports Management',
+    route: '/admin/sports',
+    group: 'STUDENT_LIFE',
+    icon: 'fas fa-running',
+    module: 'sports',
+    permissionKey: PERMISSIONS.STUDENT_LIFE_SPORTS,
+    portalVisibility: ['admin'],
+    searchKeywords: ['athletics', 'games', 'matches', 'sports']
+  },
+  {
+    id: 'admin-farm',
+    label: 'School Farm',
+    route: '/admin/farm',
+    group: 'PROCUREMENT_ASSETS',
+    icon: 'fas fa-tractor',
+    module: 'farm',
+    permissionKey: PERMISSIONS.FARM_PROJECTS_MANAGE,
+    portalVisibility: ['admin'],
+    searchKeywords: ['agriculture', 'school farm', 'crops', 'livestock']
   },
   {
     id: 'admin-procurement',
@@ -409,6 +450,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     route: '/bursar/accounts/uniforms',
     group: 'PEOPLE_ENROLLMENT',
     icon: 'fas fa-tshirt',
+    module: 'uniforms',
     permissionKey: PERMISSIONS.PEOPLE_UNIFORMS_MANAGE,
     portalVisibility: ['bursar'],
     searchKeywords: ['uniforms', 'attire', 'clothing', 'stock']
@@ -437,6 +479,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     route: '/bursar/tuckshop',
     group: 'FINANCE_BILLING',
     icon: 'fas fa-cash-register',
+    module: 'tuckshop',
     permissionKey: PERMISSIONS.FINANCE_FEES_BILLING,
     portalVisibility: ['bursar'],
     tabs: [
@@ -710,6 +753,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     route: '/teacher/sports',
     group: 'STUDENT_LIFE',
     icon: 'fas fa-running',
+    module: 'sports',
     permissionKey: PERMISSIONS.STUDENT_LIFE_SPORTS,
     portalVisibility: ['teacher'],
     searchKeywords: ['athletics', 'games', 'matches', 'sports']
@@ -720,6 +764,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     route: '/teacher/dining-hall',
     group: 'STUDENT_LIFE',
     icon: 'fas fa-utensils',
+    module: 'boarding',
     permissionKey: PERMISSIONS.STUDENT_LIFE_PREFECTS,
     portalVisibility: ['teacher'],
     searchKeywords: ['dining hall', 'meals', 'menu']
@@ -755,6 +800,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     route: '/teacher/clinic',
     group: 'CLINIC_HEALTH',
     icon: 'fas fa-notes-medical',
+    module: 'clinic',
     permissionKey: PERMISSIONS.CLINIC_TRIAGE_MANAGE,
     portalVisibility: ['teacher'],
     tabs: [
@@ -789,6 +835,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     route: '/teacher/farm',
     group: 'PROCUREMENT_ASSETS',
     icon: 'fas fa-tractor',
+    module: 'farm',
     permissionKey: PERMISSIONS.FARM_PROJECTS_MANAGE,
     portalVisibility: ['teacher'],
     searchKeywords: ['agriculture', 'school farm', 'projects']
@@ -838,6 +885,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     route: '/ancillary/boarding',
     group: 'STUDENT_LIFE',
     icon: 'fas fa-hotel',
+    module: 'boarding',
     permissionKey: PERMISSIONS.PEOPLE_HOUSES_MANAGE,
     portalVisibility: ['ancillary'],
     tabs: [
@@ -856,6 +904,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     route: '/ancillary/dining-hall',
     group: 'STUDENT_LIFE',
     icon: 'fas fa-utensils',
+    module: 'boarding',
     permissionKey: PERMISSIONS.STUDENT_LIFE_PREFECTS,
     portalVisibility: ['ancillary'],
     searchKeywords: ['kitchen', 'meals', 'dining hall', 'catering']
@@ -866,6 +915,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     route: '/ancillary/sports',
     group: 'STUDENT_LIFE',
     icon: 'fas fa-running',
+    module: 'sports',
     permissionKey: PERMISSIONS.STUDENT_LIFE_SPORTS,
     portalVisibility: ['ancillary'],
     searchKeywords: ['grounds', 'pitches', 'maintenance', 'sports']
@@ -876,6 +926,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     route: '/ancillary/transportation/vehicles',
     group: 'TRANSPORT',
     icon: 'fas fa-bus',
+    module: 'transport',
     permissionKey: PERMISSIONS.TRANSPORT_VEHICLES_MANAGE,
     portalVisibility: ['ancillary'],
     searchKeywords: ['fleet', 'buses', 'transport', 'vehicles']
@@ -906,6 +957,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     route: '/ancillary/farm',
     group: 'PROCUREMENT_ASSETS',
     icon: 'fas fa-tractor',
+    module: 'farm',
     permissionKey: PERMISSIONS.FARM_PROJECTS_MANAGE,
     portalVisibility: ['ancillary'],
     searchKeywords: ['farm', 'agriculture', 'livestock', 'crops']
@@ -1024,6 +1076,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     route: '/clinic/dashboard',
     group: 'CLINIC_HEALTH',
     icon: 'fas fa-stethoscope',
+    module: 'clinic',
     permissionKey: PERMISSIONS.CLINIC_DASHBOARD_VIEW,
     portalVisibility: ['clinic'],
     tabs: [
@@ -1041,6 +1094,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     route: '/clinic/triage',
     group: 'CLINIC_HEALTH',
     icon: 'fas fa-heartbeat',
+    module: 'clinic',
     permissionKey: PERMISSIONS.CLINIC_TRIAGE_MANAGE,
     portalVisibility: ['clinic'],
     searchKeywords: ['triage', 'vitals', 'temperature', 'blood pressure', 'spo2', 'intake']
@@ -1051,6 +1105,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     route: '/clinic/consultations',
     group: 'CLINIC_HEALTH',
     icon: 'fas fa-user-md',
+    module: 'clinic',
     permissionKey: PERMISSIONS.CLINIC_PATIENTS_MANAGE,
     portalVisibility: ['clinic'],
     tabs: [
@@ -1066,6 +1121,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     route: '/clinic/hospitalization',
     group: 'CLINIC_HEALTH',
     icon: 'fas fa-bed',
+    module: 'clinic',
     permissionKey: PERMISSIONS.CLINIC_PATIENTS_MANAGE,
     portalVisibility: ['clinic'],
     tabs: [
@@ -1081,6 +1137,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     route: '/clinic/pharmacy',
     group: 'CLINIC_HEALTH',
     icon: 'fas fa-pills',
+    module: 'clinic',
     permissionKey: PERMISSIONS.CLINIC_PHARMACY_MANAGE,
     portalVisibility: ['clinic'],
     tabs: [
@@ -1096,6 +1153,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     route: '/clinic/wellness',
     group: 'CLINIC_HEALTH',
     icon: 'fas fa-syringe',
+    module: 'clinic',
     permissionKey: PERMISSIONS.CLINIC_PATIENTS_MANAGE,
     portalVisibility: ['clinic'],
     tabs: [
@@ -1111,6 +1169,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     route: '/clinic/emergency',
     group: 'CLINIC_HEALTH',
     icon: 'fas fa-ambulance',
+    module: 'clinic',
     permissionKey: PERMISSIONS.CLINIC_TRIAGE_MANAGE,
     portalVisibility: ['clinic'],
     tabs: [
@@ -1125,6 +1184,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     route: '/clinic/reports',
     group: 'CLINIC_HEALTH',
     icon: 'fas fa-chart-line',
+    module: 'clinic',
     permissionKey: PERMISSIONS.CLINIC_REPORTS_VIEW,
     portalVisibility: ['clinic'],
     tabs: [
@@ -1208,6 +1268,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     route: '/student/cleaning-requests',
     group: 'STUDENT_LIFE',
     icon: 'fas fa-broom',
+    module: 'boarding',
     permissionKey: PERMISSIONS.STUDENT_CLEANING_REQUESTS,
     portalVisibility: ['student'],
     badge: 'Leader',
@@ -1259,6 +1320,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     route: '/parent/wallet',
     group: 'FINANCE_BILLING',
     icon: 'fas fa-utensils',
+    module: 'tuckshop',
     permissionKey: PERMISSIONS.FINANCE_FEES_BILLING,
     portalVisibility: ['parent'],
     searchKeywords: ['tuckshop', 'dining', 'wallet', 'pocket money', 'canteen', 'allowance', 'topup']
@@ -1269,6 +1331,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     route: '/parent/uniforms',
     group: 'FINANCE_BILLING',
     icon: 'fas fa-tshirt',
+    module: 'uniforms',
     permissionKey: PERMISSIONS.PEOPLE_UNIFORMS_MANAGE,
     portalVisibility: ['parent'],
     searchKeywords: ['uniforms', 'blazer', 'shirts', 'stationery', 'books', 'order', 'clothing']
@@ -1279,6 +1342,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     route: '/parent/transport',
     group: 'TRANSPORT',
     icon: 'fas fa-bus',
+    module: 'transport',
     permissionKey: PERMISSIONS.TRANSPORT_ROUTES_MANAGE,
     portalVisibility: ['parent'],
     searchKeywords: ['transport', 'bus', 'route', 'driver', 'pickup', 'tracking', 'drop-off']
@@ -1289,6 +1353,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     route: '/parent/clinic',
     group: 'CLINIC_HEALTH',
     icon: 'fas fa-notes-medical',
+    module: 'clinic',
     permissionKey: PERMISSIONS.CLINIC_DASHBOARD_VIEW,
     portalVisibility: ['parent'],
     tabs: [

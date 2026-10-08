@@ -267,6 +267,65 @@ Thank you for partnering with Acadex!
             </div>
           </div>
 
+          {/* Active Modules & Modular Tenancy */}
+          <div className="portal-card" style={{ marginTop: 8 }}>
+            <div className="portal-card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div>
+                <h2>School Operational Modules</h2>
+                <p style={{ margin: '4px 0 0', fontSize: '0.85rem', color: '#64748b' }}>
+                  Specialized campus modules activated for this school subscription
+                </p>
+              </div>
+              <a
+                href="/admin/system-config?tab=modules"
+                className="portal-btn-secondary"
+                style={{ fontSize: '0.85rem', textDecoration: 'none' }}
+              >
+                <i className="fas fa-sliders-h mr-2" style={{ marginRight: 6 }}></i> Manage Modules
+              </a>
+            </div>
+            <div className="portal-card-body">
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(210px, 1fr))', gap: '12px' }}>
+                {[
+                  { key: 'boarding', label: 'Boarding & Hostels', icon: 'fas fa-bed' },
+                  { key: 'clinic', label: 'School Clinic', icon: 'fas fa-notes-medical' },
+                  { key: 'tuckshop', label: 'Wallets & Tuckshop', icon: 'fas fa-cash-register' },
+                  { key: 'uniforms', label: 'Uniform Store', icon: 'fas fa-tshirt' },
+                  { key: 'transport', label: 'Fleet & Transport', icon: 'fas fa-bus' },
+                  { key: 'farm', label: 'School Farm', icon: 'fas fa-tractor' },
+                  { key: 'sports', label: 'Sports & Fixtures', icon: 'fas fa-trophy' }
+                ].map(m => {
+                  const subModules = (schoolData as any)?.subscription?.modules || (user as any)?.school?.subscription?.modules || {};
+                  const isEnabled = subModules[m.key] !== false;
+                  return (
+                    <div
+                      key={m.key}
+                      style={{
+                        padding: '12px 14px',
+                        borderRadius: '8px',
+                        border: `1px solid ${isEnabled ? '#cbd5e1' : '#e2e8f0'}`,
+                        background: isEnabled ? '#f8fafc' : '#f1f5f9',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between'
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <i className={`${m.icon} ${isEnabled ? 'text-indigo-600' : 'text-slate-400'}`}></i>
+                        <span style={{ fontSize: '0.85rem', fontWeight: 600, color: isEnabled ? '#1e293b' : '#64748b' }}>
+                          {m.label}
+                        </span>
+                      </div>
+                      <span className={`portal-badge ${isEnabled ? 'success' : 'default'}`} style={{ fontSize: '0.7rem' }}>
+                        {isEnabled ? 'Active' : 'Off'}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+
           {/* Billing History */}
           <div className="portal-card" style={{ marginTop: 8 }}>
             <div className="portal-card-header">

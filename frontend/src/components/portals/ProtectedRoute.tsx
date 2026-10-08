@@ -1,6 +1,7 @@
 import type React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import { PAGE_REGISTRY } from '../../config/pageRegistry';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -45,6 +46,35 @@ export default function ProtectedRoute({ children, allowedRoles, redirectTo = '/
       // If already onboarded, redirect away from /admin/setup to dashboard
       if (isSetupRoute) {
         return <Navigate to="/admin/dashboard" replace />;
+      }
+    }
+  }
+
+  // Modular Tenancy Check
+  const userModules: Record<string, boolean> | undefined =
+    (user as any)?.modules ||
+    user?.school?.subscription?.modules ||
+    user?.school?.modules;
+
+  if (userModules) {
+    const currentPath = location.pathname;
+    const matchedPage = PAGE_REGISTRY.find((p) => {
+      const base = p.route.split('?')[0];
+      return currentPath === base || (base !== '/' && currentPath.startsWith(base + '/'));
+    });
+    if (matchedPage?.module && matchedPage.module !== 'core') {
+      if (userModules[matchedPage.module] === false) {
+        const fallback =
+          user?.role === 'TEACHER'
+            ? '/teacher/dashboard'
+            : user?.role === 'STUDENT'
+            ? '/student/dashboard'
+            : user?.role === 'BURSAR'
+            ? '/bursar/dashboard'
+            : user?.role === 'PARENT'
+            ? '/parent/dashboard'
+            : '/admin/dashboard';
+        return <Navigate to={fallback} replace />;
       }
     }
   }

@@ -144,6 +144,7 @@ model School {
 
   idCardTemplate              String? // Path to ID card template image
   settings                    Json? // Institutional settings (SMTP, WhatsApp, Currencies, etc.)
+  subscription                Json? // Modular tenancy & subscription { plan, status, modules: { boarding, clinic, tuckshop, uniforms, transport, farm, sports } }
   faculties                   Faculty[]
   paymentMethods              PaymentMethod[]
   feeGroups                   FeeGroup[]

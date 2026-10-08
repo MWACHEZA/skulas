@@ -10,6 +10,8 @@ export interface UserContext {
   role?: string;
   secondaryRoles?: string[];
   schoolId?: string;
+  school?: any;
+  modules?: Record<string, boolean>;
   isLeader?: boolean;
   leadershipAssignment?: any;
 }

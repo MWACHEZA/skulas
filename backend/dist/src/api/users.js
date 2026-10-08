@@ -131,8 +131,26 @@ router.get('/me', auth_1.requireAuth, async (req, res) => {
                 status: ps.status
             }));
         }
+        const schoolData = user.school ? {
+            ...user.school,
+            subscription: {
+                plan: user.school?.plan?.name || 'Starter',
+                status: user.school?.status || 'active',
+                modules: user.school?.subscription?.modules || {
+                    boarding: true,
+                    clinic: true,
+                    tuckshop: true,
+                    uniforms: true,
+                    transport: true,
+                    farm: true,
+                    sports: true
+                },
+                ...(user.school?.subscription || {})
+            }
+        } : null;
         res.json({
             ...user,
+            school: schoolData,
             schoolPlan: user.school?.plan?.name || null,
             linkedEntities
         });
@@ -292,6 +310,12 @@ router.get('/', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'SUP
                 metadata: true,
                 isLocked: true,
                 employeeProfile: true, // Added
+                teacher: {
+                    include: {
+                        subjects: { include: { subject: true } },
+                        classes: true
+                    }
+                },
                 createdAt: true
             },
             orderBy: { name: 'asc' }

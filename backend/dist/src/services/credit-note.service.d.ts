@@ -239,6 +239,7 @@ export declare class CreditNoteService {
             hexcoCenterNumber: string | null;
             idCardTemplate: string | null;
             settings: Prisma.JsonValue | null;
+            subscription: Prisma.JsonValue | null;
         };
         fiscalInvoice: {
             paymentMethod: string;

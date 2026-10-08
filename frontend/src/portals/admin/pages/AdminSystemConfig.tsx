@@ -1,18 +1,80 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import api from '../../../lib/api';
+import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
 import SystemConfigCommunication from './SystemConfigCommunication';
 import '../../../styles/portal.css';
 
-type ConfigTab = 'branding' | 'gateways' | 'notifications' | 'backup';
+type ConfigTab = 'branding' | 'gateways' | 'notifications' | 'backup' | 'modules';
 
 export default function AdminSystemConfig() {
+  const { user, updateUser } = useAuth();
   const { showToast, toastConfirm } = useToast();
   const [searchParams, setSearchParams] = useSearchParams();
   const activeTab: ConfigTab = (searchParams.get('tab') as ConfigTab) || 'branding';
 
   const [saving, setSaving] = useState(false);
   const [backingUp, setBackingUp] = useState(false);
+
+  // Modules & Features state
+  const [modules, setModules] = useState<Record<string, boolean>>({
+    boarding: true,
+    clinic: true,
+    tuckshop: true,
+    uniforms: true,
+    transport: true,
+    farm: true,
+    sports: true
+  });
+  const [modulesLoading, setModulesLoading] = useState(false);
+  const [togglingModule, setTogglingModule] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchModules();
+  }, []);
+
+  const fetchModules = async () => {
+    setModulesLoading(true);
+    try {
+      const { data } = await api.get('/api/schools/modules');
+      if (data?.modules) {
+        setModules(data.modules);
+      }
+    } catch (err) {
+      console.error('Failed to load school modules', err);
+    } finally {
+      setModulesLoading(false);
+    }
+  };
+
+  const handleToggleModule = async (moduleKey: string) => {
+    const currentValue = modules[moduleKey] !== false;
+    const newValue = !currentValue;
+    setTogglingModule(moduleKey);
+    try {
+      const { data } = await api.patch('/api/schools/modules', {
+        [moduleKey]: newValue
+      });
+      setModules(data.modules);
+      showToast(`Module "${moduleKey}" ${newValue ? 'enabled' : 'disabled'} successfully`, 'success');
+      if (user?.school) {
+        updateUser({
+          school: {
+            ...user.school,
+            subscription: {
+              ...(user.school.subscription || {}),
+              modules: data.modules
+            }
+          }
+        });
+      }
+    } catch (err: any) {
+      showToast(err.response?.data?.error || `Failed to update ${moduleKey} module`, 'error');
+    } finally {
+      setTogglingModule(null);
+    }
+  };
 
   // 1. School Profile & Receipt Branding
   const [profile, setProfile] = useState({
@@ -128,7 +190,8 @@ export default function AdminSystemConfig() {
           { id: 'branding', label: '1. School Profile & Receipts', icon: 'fas fa-school' },
           { id: 'gateways', label: '2. SMS & Email Gateways', icon: 'fas fa-broadcast-tower' },
           { id: 'notifications', label: '3. Notification Triggers', icon: 'fas fa-bell' },
-          { id: 'backup', label: '4. Backup & Data Exports', icon: 'fas fa-database' }
+          { id: 'backup', label: '4. Backup & Data Exports', icon: 'fas fa-database' },
+          { id: 'modules', label: '5. Modules & Modular Tenancy', icon: 'fas fa-cubes' }
         ].map(tab => (
           <button
             key={tab.id}
@@ -528,6 +591,196 @@ export default function AdminSystemConfig() {
               </tbody>
             </table>
           </div>
+        </div>
+      )}
+
+      {/* 5. Modules & Modular Tenancy Tab */}
+      {activeTab === 'modules' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: '8px', padding: '16px 20px', display: 'flex', alignItems: 'center', gap: '16px' }}>
+            <div style={{ width: '42px', height: '42px', borderRadius: '8px', background: '#dbeafe', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#2563eb', fontSize: '1.2rem', flexShrink: 0 }}>
+              <i className="fas fa-cubes"></i>
+            </div>
+            <div>
+              <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: 700, color: '#1e40af' }}>Modular Tenancy Controls</h3>
+              <p style={{ margin: '4px 0 0 0', fontSize: '0.875rem', color: '#1e3a8a', lineHeight: 1.5 }}>
+                Configure which specialized operational modules are enabled for your school. When a module is turned OFF, its navigation links, sub-pages, and direct URLs are hidden from all user roles across all portals. Core features (Students, Staff, Marks, Fees, Timetable) always remain active.
+              </p>
+            </div>
+          </div>
+
+          {modulesLoading ? (
+            <div style={{ padding: '60px', textAlign: 'center', color: '#64748b' }}>
+              <i className="fas fa-circle-notch fa-spin fa-2x mb-3 text-primary"></i>
+              <p>Loading school module configuration...</p>
+            </div>
+          ) : (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))', gap: '20px' }}>
+              {[
+                {
+                  key: 'boarding',
+                  title: 'Boarding & Hostels',
+                  icon: 'fas fa-bed',
+                  color: '#6366f1',
+                  bg: '#eef2ff',
+                  routes: ['/admin/boarding', '/admin/dining', 'Hostel Cleaning Requests', 'Exeat Approvals'],
+                  desc: 'Hostel dormitory allocations, night roll call, dining hall weekly meal menus, and boarding master workflows.'
+                },
+                {
+                  key: 'clinic',
+                  title: 'School Clinic & Health',
+                  icon: 'fas fa-notes-medical',
+                  color: '#059669',
+                  bg: '#ecfdf5',
+                  routes: ['/clinic/*', '/admin/clinic', '/parent/clinic', 'Student Medical Records'],
+                  desc: 'Inpatient wards, outpatient triage queue, dispensaries, vital monitoring, vaccinations, and clinician consulting.'
+                },
+                {
+                  key: 'tuckshop',
+                  title: 'Tuckshop & Wallets',
+                  icon: 'fas fa-cash-register',
+                  color: '#d97706',
+                  bg: '#fffbeb',
+                  routes: ['/bursar/tuckshop', '/pos', '/parent/wallet', 'Pocket Money'],
+                  desc: 'Touchscreen till point-of-sale (POS), student smart wallets, daily till cashups, and tuckshop inventory.'
+                },
+                {
+                  key: 'uniforms',
+                  title: 'Uniform Store',
+                  icon: 'fas fa-tshirt',
+                  color: '#7c3aed',
+                  bg: '#f5f3ff',
+                  routes: ['/admin/uniforms', '/parent/uniforms', 'Bursar Uniforms'],
+                  desc: 'Uniform inventory items, blazer & sportswear sizing, stock replenishments, and parent uniform orders.'
+                },
+                {
+                  key: 'transport',
+                  title: 'Fleet & Bus Transport',
+                  icon: 'fas fa-bus',
+                  color: '#0284c7',
+                  bg: '#f0f9ff',
+                  routes: ['/admin/transport', '/parent/transport', 'Vehicle Fleet'],
+                  desc: 'School bus routes, pickup stops, student passenger manifests, bus fees, and vehicle maintenance tracking.'
+                },
+                {
+                  key: 'farm',
+                  title: 'School Farm & Agriculture',
+                  icon: 'fas fa-tractor',
+                  color: '#16a34a',
+                  bg: '#f0fdf4',
+                  routes: ['/admin/farm', 'Teacher Farm', 'Ancillary Farm'],
+                  desc: 'Livestock inventory, seasonal crop cycles, farm harvests, produce transfer to dining hall, and equipment logs.'
+                },
+                {
+                  key: 'sports',
+                  title: 'Sports & Fixtures',
+                  icon: 'fas fa-trophy',
+                  color: '#ea580c',
+                  bg: '#fff7ed',
+                  routes: ['/admin/sports', 'Teacher Sports', 'Student Fixtures'],
+                  desc: 'Inter-school fixtures, house leagues, athletic teams, match scoring, team rosters, and sports gear.'
+                }
+              ].map(mod => {
+                const isEnabled = modules[mod.key] !== false;
+                const isToggling = togglingModule === mod.key;
+
+                return (
+                  <div
+                    key={mod.key}
+                    style={{
+                      background: '#fff',
+                      border: `1px solid ${isEnabled ? '#cbd5e1' : '#e2e8f0'}`,
+                      borderRadius: '12px',
+                      padding: '20px',
+                      boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'space-between',
+                      opacity: isEnabled ? 1 : 0.75,
+                      transition: 'all 0.2s ease'
+                    }}
+                  >
+                    <div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '14px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                          <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: mod.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', color: mod.color, fontSize: '1.2rem' }}>
+                            <i className={mod.icon}></i>
+                          </div>
+                          <div>
+                            <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: 700, color: '#1e293b' }}>{mod.title}</h4>
+                            <span style={{ fontSize: '0.75rem', fontWeight: 600, color: isEnabled ? '#16a34a' : '#64748b' }}>
+                              <i className={`fas fa-circle mr-1 text-[8px] ${isEnabled ? 'text-emerald-500' : 'text-slate-400'}`}></i>
+                              {isEnabled ? 'ACTIVE MODULE' : 'DISABLED'}
+                            </span>
+                          </div>
+                        </div>
+
+                        <button
+                          type="button"
+                          disabled={isToggling}
+                          onClick={() => handleToggleModule(mod.key)}
+                          style={{
+                            cursor: 'pointer',
+                            padding: '6px 14px',
+                            borderRadius: '20px',
+                            border: 'none',
+                            fontWeight: 700,
+                            fontSize: '0.8rem',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '6px',
+                            background: isEnabled ? '#fee2e2' : '#dcfce7',
+                            color: isEnabled ? '#991b1b' : '#166534',
+                            transition: 'background 0.2s'
+                          }}
+                        >
+                          {isToggling ? (
+                            <i className="fas fa-circle-notch fa-spin"></i>
+                          ) : isEnabled ? (
+                            <>
+                              <i className="fas fa-power-off"></i> Disable
+                            </>
+                          ) : (
+                            <>
+                              <i className="fas fa-check"></i> Enable
+                            </>
+                          )}
+                        </button>
+                      </div>
+
+                      <p style={{ fontSize: '0.875rem', color: '#475569', lineHeight: 1.5, margin: '0 0 14px 0' }}>
+                        {mod.desc}
+                      </p>
+
+                      <div>
+                        <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', marginBottom: '6px', letterSpacing: '0.04em' }}>
+                          Included Features & Routes:
+                        </div>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                          {mod.routes.map(r => (
+                            <span
+                              key={r}
+                              style={{
+                                fontSize: '0.75rem',
+                                padding: '2px 8px',
+                                background: '#f8fafc',
+                                border: '1px solid #e2e8f0',
+                                borderRadius: '4px',
+                                color: '#334155',
+                                fontFamily: r.startsWith('/') ? 'monospace' : 'inherit'
+                              }}
+                            >
+                              {r}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       )}
     </div>

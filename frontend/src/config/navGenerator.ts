@@ -89,8 +89,13 @@ const PORTAL_ROUTE_REWRITES: Record<string, Record<string, string>> = {
   }
 };
 
-function generateParentPortalNavigation(_user: UserContext | null | undefined, currentPath: string = ''): NavGroup[] {
-  const groups: NavGroup[] = [
+function generateParentPortalNavigation(user: UserContext | null | undefined, currentPath: string = ''): NavGroup[] {
+  const userModules: Record<string, boolean> | undefined =
+    user?.modules ||
+    user?.school?.subscription?.modules ||
+    user?.school?.modules;
+
+  const rawGroups: NavGroup[] = [
     {
       id: 'ACADEMICS',
       label: 'Academics & Performance',
@@ -138,9 +143,9 @@ function generateParentPortalNavigation(_user: UserContext | null | undefined, c
           ],
           searchKeywords: ['billing', 'payments', 'statements', 'receipts', 'invoices', 'payment plans', 'installments', 'tuition', 'zig'] 
         },
-        { id: 'parent-wallet', label: 'Tuckshop & Dining', to: '/parent/wallet', icon: 'fas fa-utensils', searchKeywords: ['pocket money', 'canteen', 'topup', 'tuckshop', 'dining', 'food', 'meals'] },
-        { id: 'parent-uniforms', label: 'Uniforms', to: '/parent/uniforms', icon: 'fas fa-tshirt', searchKeywords: ['clothing', 'shop', 'books', 'supplies'] },
-        { id: 'parent-transport', label: 'Transport', to: '/parent/transport', icon: 'fas fa-bus', searchKeywords: ['bus', 'route', 'tracking', 'pickup'] }
+        ...(userModules?.tuckshop === false ? [] : [{ id: 'parent-wallet', label: 'Tuckshop & Dining', to: '/parent/wallet', icon: 'fas fa-utensils', searchKeywords: ['pocket money', 'canteen', 'topup', 'tuckshop', 'dining', 'food', 'meals'] }]),
+        ...(userModules?.uniforms === false ? [] : [{ id: 'parent-uniforms', label: 'Uniforms', to: '/parent/uniforms', icon: 'fas fa-tshirt', searchKeywords: ['clothing', 'shop', 'books', 'supplies'] }]),
+        ...(userModules?.transport === false ? [] : [{ id: 'parent-transport', label: 'Transport', to: '/parent/transport', icon: 'fas fa-bus', searchKeywords: ['bus', 'route', 'tracking', 'pickup'] }])
       ]
     },
     {
@@ -154,26 +159,28 @@ function generateParentPortalNavigation(_user: UserContext | null | undefined, c
         { id: 'parent-approvals', label: 'Approvals', to: '/parent/approvals', icon: 'fas fa-file-signature', searchKeywords: ['permission', 'consent', 'excursions'] }
       ]
     },
-    {
-      id: 'CLINIC_HEALTH',
-      label: 'Clinic & Wellbeing',
-      icon: 'fas fa-notes-medical',
-      order: 4,
-      items: [
-        { 
-          id: 'parent-clinic', 
-          label: 'Clinic & Wellbeing', 
-          to: '/parent/clinic', 
-          icon: 'fas fa-heartbeat', 
-          tabs: [
-            { id: 'visits', label: 'Clinic Visits' },
-            { id: 'profile', label: 'Health Profile' },
-            { id: 'wellbeing', label: 'Wellbeing & Conduct' }
-          ],
-          searchKeywords: ['health', 'clinic', 'visits', 'allergies', 'profile', 'blood group', 'nurse', 'wellbeing', 'conduct', 'merits', 'counselor'] 
-        }
-      ]
-    },
+    ...(userModules?.clinic === false ? [] : [
+      {
+        id: 'CLINIC_HEALTH' as CanonicalGroupId,
+        label: 'Clinic & Wellbeing',
+        icon: 'fas fa-notes-medical',
+        order: 4,
+        items: [
+          { 
+            id: 'parent-clinic', 
+            label: 'Clinic & Wellbeing', 
+            to: '/parent/clinic', 
+            icon: 'fas fa-heartbeat', 
+            tabs: [
+              { id: 'visits', label: 'Clinic Visits' },
+              { id: 'profile', label: 'Health Profile' },
+              { id: 'wellbeing', label: 'Wellbeing & Conduct' }
+            ],
+            searchKeywords: ['health', 'clinic', 'visits', 'allergies', 'profile', 'blood group', 'nurse', 'wellbeing', 'conduct', 'merits', 'counselor'] 
+          }
+        ]
+      }
+    ]),
     {
       id: 'SYSTEM',
       label: 'Settings',
@@ -186,13 +193,20 @@ function generateParentPortalNavigation(_user: UserContext | null | undefined, c
     }
   ];
 
-  return groups.map(group => ({
-    ...group,
-    defaultExpanded: group.defaultExpanded || group.items.some(item => currentPath.startsWith(item.to) || currentPath === item.to)
-  }));
+  return rawGroups
+    .filter(group => group.items.length > 0)
+    .map(group => ({
+      ...group,
+      defaultExpanded: group.defaultExpanded || group.items.some(item => currentPath.startsWith(item.to) || currentPath === item.to)
+    }));
 }
 
 function generateStudentPortalNavigation(user: UserContext | null | undefined, currentPath: string = ''): NavGroup[] {
+  const userModules: Record<string, boolean> | undefined =
+    user?.modules ||
+    user?.school?.subscription?.modules ||
+    user?.school?.modules;
+
   const userSecRoles = user?.secondaryRoles || [];
   const isStudentLibrarian = userSecRoles.includes('Student Librarian');
   const isClassMonitor = userSecRoles.includes('Class Monitor');
@@ -202,7 +216,7 @@ function generateStudentPortalNavigation(user: UserContext | null | undefined, c
 
   const isLeader = !!user?.isLeader;
 
-  const groups: NavGroup[] = [
+  const rawGroups: NavGroup[] = [
     {
       id: 'ACADEMICS',
       label: 'Academics',
@@ -249,7 +263,7 @@ function generateStudentPortalNavigation(user: UserContext | null | undefined, c
       items: [
         { id: 'student-events', label: 'Events & Calendar', to: '/student/events', icon: 'fas fa-calendar-day', searchKeywords: ['activities', 'calendar'] },
         { id: 'student-prefects', label: 'Prefects Board / SRC', to: '/student/prefects', icon: 'fas fa-user-tie', searchKeywords: ['leadership', 'council'] },
-        ...(isLeader ? [
+        ...(isLeader && userModules?.boarding !== false ? [
           { 
             id: 'student-cleaning-requests', 
             label: 'Cleaning Requests', 
@@ -262,10 +276,12 @@ function generateStudentPortalNavigation(user: UserContext | null | undefined, c
         ...(isClassMonitor ? [
           { id: 'student-class-monitor', label: 'Class Monitor Tool', to: '/student/class-monitor', icon: 'fas fa-clipboard-check', badge: 'Monitor', searchKeywords: ['register', 'attendance'] }
         ] : []),
-        ...(isSportsCaptain ? [
+        ...(isSportsCaptain && userModules?.sports !== false ? [
           { id: 'student-sports', label: 'Sports & Fixtures', to: '/student/sports', icon: 'fas fa-trophy', badge: 'Captain', searchKeywords: ['athletics', 'matches', 'games'] }
         ] : []),
-        { id: 'student-dining-hall', label: 'Dining Hall (DH)', to: '/student/dining-hall', icon: 'fas fa-utensils', searchKeywords: ['meals', 'menu', 'food'] },
+        ...(userModules?.boarding !== false ? [
+          { id: 'student-dining-hall', label: 'Dining Hall (DH)', to: '/student/dining-hall', icon: 'fas fa-utensils', searchKeywords: ['meals', 'menu', 'food'] }
+        ] : []),
         ...(isChurchPrefect ? [
           { id: 'student-chaplaincy', label: 'Church & Chaplaincy', to: '/student/chaplaincy', icon: 'fas fa-church', badge: 'Prefect', searchKeywords: ['service', 'spiritual'] }
         ] : [])
@@ -278,28 +294,32 @@ function generateStudentPortalNavigation(user: UserContext | null | undefined, c
       order: 4,
       items: [
         { id: 'student-fees', label: 'Fees & Payments', to: '/student/fees', icon: 'fas fa-money-bill-wave', searchKeywords: ['tuition', 'receipts', 'billing'] },
-        { id: 'student-uniforms', label: 'Uniforms', to: '/student/uniforms', icon: 'fas fa-tshirt', searchKeywords: ['attire', 'store'] }
+        ...(userModules?.uniforms === false ? [] : [
+          { id: 'student-uniforms', label: 'Uniforms', to: '/student/uniforms', icon: 'fas fa-tshirt', searchKeywords: ['attire', 'store'] }
+        ])
       ]
     },
-    {
-      id: 'CLINIC_HEALTH',
-      label: 'Health & Clinic',
-      icon: 'fas fa-notes-medical',
-      order: 5,
-      items: [
-        { 
-          id: 'student-clinic', 
-          label: 'Health & Clinic', 
-          to: '/student/clinic', 
-          icon: 'fas fa-notes-medical', 
-          tabs: [
-            { id: 'visits', label: 'My Visits' },
-            { id: 'book', label: 'Book Appointment' }
-          ],
-          searchKeywords: ['clinic', 'doctor', 'nurse', 'visits', 'appointments', 'sick'] 
-        }
-      ]
-    },
+    ...(userModules?.clinic === false ? [] : [
+      {
+        id: 'CLINIC_HEALTH' as CanonicalGroupId,
+        label: 'Health & Clinic',
+        icon: 'fas fa-notes-medical',
+        order: 5,
+        items: [
+          { 
+            id: 'student-clinic', 
+            label: 'Health & Clinic', 
+            to: '/student/clinic', 
+            icon: 'fas fa-notes-medical', 
+            tabs: [
+              { id: 'visits', label: 'My Visits' },
+              { id: 'book', label: 'Book Appointment' }
+            ],
+            searchKeywords: ['clinic', 'doctor', 'nurse', 'visits', 'appointments', 'sick'] 
+          }
+        ]
+      }
+    ]),
     {
       id: 'SYSTEM',
       label: 'Messages & Support',
@@ -313,10 +333,12 @@ function generateStudentPortalNavigation(user: UserContext | null | undefined, c
     }
   ];
 
-  return groups.map(group => ({
-    ...group,
-    defaultExpanded: group.defaultExpanded || group.items.some(item => currentPath.startsWith(item.to) || currentPath === item.to)
-  }));
+  return rawGroups
+    .filter(group => group.items.length > 0)
+    .map(group => ({
+      ...group,
+      defaultExpanded: group.defaultExpanded || group.items.some(item => currentPath.startsWith(item.to) || currentPath === item.to)
+    }));
 }
 
 /**
@@ -365,8 +387,20 @@ export function generatePortalNavigation(
     return generateStudentPortalNavigation(effectiveUser, currentPath);
   }
 
+  const userModules: Record<string, boolean> | undefined =
+    effectiveUser?.modules ||
+    effectiveUser?.school?.subscription?.modules ||
+    effectiveUser?.school?.modules;
+
   // 1. Filter raw registry pages
   const allowedPages = PAGE_REGISTRY.filter((page: PageDefinition) => {
+    // Modular Tenancy check
+    if (page.module && page.module !== 'core') {
+      if (userModules && userModules[page.module] === false) {
+        return false;
+      }
+    }
+
     // Portal visibility check
     if (!page.portalVisibility.includes(portal)) {
       return false;

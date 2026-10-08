@@ -121,6 +121,7 @@ import AdminSetupWizard from './portals/admin/pages/AdminSetupWizard';
 
 import PayrollList from './portals/shared/pages/human-resources/PayrollList';
 import AdminStudents from './portals/admin/pages/Students';
+import StaffDirectory from './portals/admin/pages/StaffDirectory';
 import AdminStudentDetail from './portals/admin/pages/StudentDetail';
 import AdminAcademicsSetup from './portals/admin/pages/AcademicsSetup';
 import AdminAcademicsMarks from './portals/admin/pages/AcademicsMarks';
@@ -625,9 +626,12 @@ export default function App() {
               <Route path="onboarding" element={<Navigate to="/admin/setup" replace />} />
 
               {/* CORE CONSOLIDATED ADMIN PAGES (16 PAGES + TENANT CONDITIONALS) */}
-              {/* 1. Students Module */}
+              {/* 1. People & Enrollment Module */}
               <Route path="students" element={<AdminStudents />} />
               <Route path="students/:id" element={<AdminStudentDetail />} />
+              <Route path="staff" element={<StaffDirectory />} />
+              <Route path="teachers" element={<Navigate to="/admin/staff?role=TEACHER" replace />} />
+              <Route path="hr/staff" element={<Navigate to="/admin/staff" replace />} />
               <Route path="admissions" element={<AdminApplications />} />
 
               {/* 2. Finance Module */}
@@ -669,6 +673,8 @@ export default function App() {
               {/* Tenant-Conditional Additions */}
               <Route path="boarding" element={<AdminBoarding />} />
               <Route path="dining" element={<AdminDining />} />
+              <Route path="sports" element={<SportsManagement />} />
+              <Route path="farm" element={<FarmManagement />} />
 
               {/* Remaining operational / governance child routes */}
               <Route path="cbt/manage" element={<ManageCBT />} />
@@ -771,14 +777,12 @@ export default function App() {
               <Route path="announcements" element={<Navigate to="/admin/communication?tab=announcements" replace />} />
               <Route path="approvals" element={<Navigate to="/admin/communication?tab=approvals" replace />} />
 
-              <Route path="users" element={<Navigate to="/admin/system" replace />} />
-              <Route path="staff" element={<Navigate to="/admin/system" replace />} />
+              <Route path="users" element={<Navigate to="/admin/staff" replace />} />
               <Route path="roles" element={<Navigate to="/admin/system" replace />} />
-              <Route path="teachers" element={<Navigate to="/admin/system?role=TEACHER" replace />} />
-              <Route path="bursars" element={<Navigate to="/admin/system?role=BURSAR" replace />} />
-              <Route path="librarians" element={<Navigate to="/admin/system?role=LIBRARIAN" replace />} />
-              <Route path="ancillary" element={<Navigate to="/admin/system?role=ANCILLARY" replace />} />
-              <Route path="staff-admins" element={<Navigate to="/admin/system?role=SCHOOL_ADMIN" replace />} />
+              <Route path="bursars" element={<Navigate to="/admin/staff?role=BURSAR" replace />} />
+              <Route path="librarians" element={<Navigate to="/admin/staff?role=LIBRARIAN" replace />} />
+              <Route path="ancillary" element={<Navigate to="/admin/staff?role=ANCILLARY" replace />} />
+              <Route path="staff-admins" element={<Navigate to="/admin/staff?role=SCHOOL_ADMIN" replace />} />
               <Route path="parents" element={<Navigate to="/admin/system?role=PARENT" replace />} />
               <Route path="alumni" element={<Navigate to="/admin/system?role=ALUMNI" replace />} />
               <Route path="accounts/gl" element={<Navigate to="/bursar/accounts/gl" replace />} />

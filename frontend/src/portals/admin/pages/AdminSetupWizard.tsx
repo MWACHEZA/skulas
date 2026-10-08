@@ -15,11 +15,12 @@ interface SetupStep {
 const STEPS: SetupStep[] = [
   { id: 1, title: 'School Identity', description: 'Core branding, contact details, currency, and academic calendar' },
   { id: 2, title: 'Academic Structure', description: 'Levels, grade streams, student houses, and grading scales' },
-  { id: 3, title: 'Subjects & Departments', description: 'Subject catalog, faculties, and class curricular linkages' },
-  { id: 4, title: 'Users & Roles', description: 'Establish foundational administrators and bulk import teaching faculty' },
-  { id: 5, title: 'Fee Structure', description: 'Standard billing items, class fees, and approved payment methods' },
-  { id: 6, title: 'Timetable Defaults', description: 'Daily period structure, bell schedule, and instruction days' },
-  { id: 7, title: 'Go Live', description: 'Verification summary and system activation for campus operations' }
+  { id: 3, title: 'School Profile', description: 'Campus levels, active facilities & modular services, and curriculum' },
+  { id: 4, title: 'Subjects & Departments', description: 'Subject catalog, faculties, and class curricular linkages' },
+  { id: 5, title: 'Users & Roles', description: 'Establish foundational administrators and bulk import teaching faculty' },
+  { id: 6, title: 'Fee Structure', description: 'Standard billing items, class fees, and approved payment methods' },
+  { id: 7, title: 'Timetable Defaults', description: 'Daily period structure, bell schedule, and instruction days' },
+  { id: 8, title: 'Go Live', description: 'Verification summary and system activation for campus operations' }
 ];
 
 export default function AdminSetupWizard() {
@@ -59,7 +60,22 @@ export default function AdminSetupWizard() {
   const [newClassInput, setNewClassInput] = useState('');
   const [newHouseInput, setNewHouseInput] = useState('');
 
-  // Step 3: Subjects & Departments
+  // Step 3: School Profile (Q1 Levels, Q2 Campus Services & Modules, Q3 Curriculum)
+  const [profileStep, setProfileStep] = useState({
+    levels: ['Primary School (Grade 1 - 7)'],
+    curriculum: 'ZIMSEC',
+    services: {
+      boarding: false,
+      clinic: true,
+      tuckshop: true,
+      uniforms: true,
+      transport: false,
+      farm: false,
+      sports: true
+    }
+  });
+
+  // Step 4: Subjects & Departments
   const [step3, setStep3] = useState({
     departments: ['Languages & Humanities', 'Mathematics & Science', 'Practical Arts & Commercials'],
     subjects: [
@@ -141,10 +157,11 @@ export default function AdminSetupWizard() {
       if (setupProgress) {
         if (setupProgress.step1) setStep1(prev => ({ ...prev, ...setupProgress.step1 }));
         if (setupProgress.step2) setStep2(prev => ({ ...prev, ...setupProgress.step2 }));
-        if (setupProgress.step3) setStep3(prev => ({ ...prev, ...setupProgress.step3 }));
-        if (setupProgress.step4) setStep4(prev => ({ ...prev, ...setupProgress.step4 }));
-        if (setupProgress.step5) setStep5(prev => ({ ...prev, ...setupProgress.step5 }));
-        if (setupProgress.step6) setStep6(prev => ({ ...prev, ...setupProgress.step6 }));
+        if (setupProgress.step3) setProfileStep(prev => ({ ...prev, ...setupProgress.step3 }));
+        if (setupProgress.step4) setStep3(prev => ({ ...prev, ...setupProgress.step4 }));
+        if (setupProgress.step5) setStep4(prev => ({ ...prev, ...setupProgress.step5 }));
+        if (setupProgress.step6) setStep5(prev => ({ ...prev, ...setupProgress.step6 }));
+        if (setupProgress.step7) setStep6(prev => ({ ...prev, ...setupProgress.step7 }));
       }
     } catch (err) {
       console.error('Failed to load setup status:', err);
@@ -171,6 +188,12 @@ export default function AdminSetupWizard() {
       }
     }
     if (currentStep === 3) {
+      if (profileStep.levels.length === 0) {
+        showToast('Please select at least one educational level.', 'error');
+        return false;
+      }
+    }
+    if (currentStep === 4) {
       if (step3.subjects.length === 0) {
         showToast('Please specify at least one academic subject.', 'error');
         return false;
@@ -187,17 +210,18 @@ export default function AdminSetupWizard() {
       let stepData: any = {};
       if (currentStep === 1) stepData = step1;
       else if (currentStep === 2) stepData = step2;
-      else if (currentStep === 3) stepData = step3;
-      else if (currentStep === 4) stepData = { ...step4, teacherCount: uploadedTeachers.length };
-      else if (currentStep === 5) stepData = step5;
-      else if (currentStep === 6) stepData = step6;
+      else if (currentStep === 3) stepData = { ...profileStep, modules: profileStep.services };
+      else if (currentStep === 4) stepData = step3;
+      else if (currentStep === 5) stepData = { ...step4, teacherCount: uploadedTeachers.length };
+      else if (currentStep === 6) stepData = step5;
+      else if (currentStep === 7) stepData = step6;
 
       await api.post('/api/schools/setup-step', {
         step: currentStep,
         data: stepData
       });
 
-      if (currentStep < 7) {
+      if (currentStep < 8) {
         setCurrentStep(prev => prev + 1);
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }
@@ -617,8 +641,191 @@ export default function AdminSetupWizard() {
           </div>
         )}
 
-        {/* STEP 3: Subjects & Departments */}
+        {/* STEP 3: School Profile & Modular Tenancy */}
         {currentStep === 3 && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+            {/* Q1: School Levels */}
+            <div>
+              <label style={{ display: 'block', fontWeight: 700, marginBottom: 8, color: '#334155' }}>
+                1. Educational Levels Offered
+              </label>
+              <p style={{ margin: '0 0 12px 0', fontSize: '0.875rem', color: '#64748b' }}>
+                Select all levels catered for on your campus:
+              </p>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 12 }}>
+                {[
+                  'Early Childhood (ECD A & B)',
+                  'Primary School (Grade 1 - 7)',
+                  'Junior Secondary (Form 1 - 2)',
+                  'O-Level Secondary (Form 3 - 4)',
+                  'A-Level High School (Lower & Upper 6)',
+                  'Combined Campus (Primary & Secondary)',
+                  'Vocational / Polytechnic / College'
+                ].map(level => {
+                  const isChecked = profileStep.levels.includes(level);
+                  return (
+                    <label
+                      key={level}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 10,
+                        padding: '12px 14px',
+                        borderRadius: 8,
+                        border: `1px solid ${isChecked ? '#4f46e5' : '#e2e8f0'}`,
+                        background: isChecked ? '#eef2ff' : '#fff',
+                        cursor: 'pointer',
+                        fontSize: '0.9rem',
+                        fontWeight: isChecked ? 600 : 500,
+                        color: isChecked ? '#3730a3' : '#334155'
+                      }}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={isChecked}
+                        onChange={() => {
+                          const updated = isChecked
+                            ? profileStep.levels.filter(l => l !== level)
+                            : [...profileStep.levels, level];
+                          setProfileStep({ ...profileStep, levels: updated });
+                        }}
+                      />
+                      <span>{level}</span>
+                    </label>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Q2: Campus Facilities & Modular Services */}
+            <div>
+              <label style={{ display: 'block', fontWeight: 700, marginBottom: 8, color: '#334155' }}>
+                2. Campus Services & Operational Facilities (Modular Tenancy)
+              </label>
+              <p style={{ margin: '0 0 12px 0', fontSize: '0.875rem', color: '#64748b' }}>
+                Toggle which specialized facilities your institution runs. Unchecked services will be completely hidden from sidebars and direct URLs:
+              </p>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 12 }}>
+                {[
+                  { key: 'boarding', label: 'Boarding & Dormitories', desc: 'Hostels, dorm bed spaces, night roll-call & dining hall menus', icon: 'fas fa-bed', color: '#4f46e5' },
+                  { key: 'clinic', label: 'Sick Bay & Campus Clinic', desc: 'Inpatient beds, triage vitals, drug pharmacy & consults', icon: 'fas fa-notes-medical', color: '#059669' },
+                  { key: 'tuckshop', label: 'Canteen & Tuckshop Wallets', desc: 'Touchscreen till POS, grocery top-ups & pocket money', icon: 'fas fa-cash-register', color: '#d97706' },
+                  { key: 'uniforms', label: 'Uniform Store & Apparel', desc: 'Uniform stocks, sportswear, sizing & stationery store', icon: 'fas fa-tshirt', color: '#7c3aed' },
+                  { key: 'transport', label: 'Bus Fleet & Transport Routes', desc: 'Daily bus routes, pickup stops & passenger manifests', icon: 'fas fa-bus', color: '#0284c7' },
+                  { key: 'farm', label: 'School Farm & Agriculture', desc: 'Livestock, crop cycles, harvests & dining hall produce', icon: 'fas fa-tractor', color: '#16a34a' },
+                  { key: 'sports', label: 'Competitive Sports Teams', desc: 'Inter-school fixtures, athletic leagues & sports equipment', icon: 'fas fa-trophy', color: '#ea580c' }
+                ].map(service => {
+                  const isEnabled = (profileStep.services as any)[service.key] !== false;
+                  return (
+                    <div
+                      key={service.key}
+                      onClick={() => {
+                        setProfileStep({
+                          ...profileStep,
+                          services: {
+                            ...profileStep.services,
+                            [service.key]: !isEnabled
+                          }
+                        });
+                      }}
+                      style={{
+                        padding: '14px',
+                        borderRadius: 10,
+                        border: `1px solid ${isEnabled ? '#cbd5e1' : '#e2e8f0'}`,
+                        background: isEnabled ? '#fff' : '#f8fafc',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'flex-start',
+                        gap: 12,
+                        boxShadow: isEnabled ? '0 1px 3px rgba(0,0,0,0.05)' : 'none',
+                        opacity: isEnabled ? 1 : 0.65,
+                        transition: 'all 0.15s ease'
+                      }}
+                    >
+                      <div style={{
+                        width: 36,
+                        height: 36,
+                        borderRadius: 8,
+                        background: isEnabled ? `${service.color}15` : '#e2e8f0',
+                        color: isEnabled ? service.color : '#94a3b8',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        flexShrink: 0
+                      }}>
+                        <i className={service.icon}></i>
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <span style={{ fontWeight: 700, fontSize: '0.9rem', color: '#1e293b' }}>{service.label}</span>
+                          <span style={{
+                            fontSize: '0.7rem',
+                            fontWeight: 700,
+                            padding: '2px 8px',
+                            borderRadius: 12,
+                            background: isEnabled ? '#dcfce7' : '#f1f5f9',
+                            color: isEnabled ? '#15803d' : '#64748b'
+                          }}>
+                            {isEnabled ? 'Enabled' : 'Off'}
+                          </span>
+                        </div>
+                        <p style={{ margin: '4px 0 0 0', fontSize: '0.8rem', color: '#64748b', lineHeight: 1.4 }}>
+                          {service.desc}
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Q3: Curriculum System */}
+            <div>
+              <label style={{ display: 'block', fontWeight: 700, marginBottom: 8, color: '#334155' }}>
+                3. Primary Curriculum & Examination System
+              </label>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12 }}>
+                {[
+                  { id: 'ZIMSEC', label: 'ZIMSEC (Zimbabwe National Curriculum)' },
+                  { id: 'CAMBRIDGE', label: 'Cambridge Assessment International (CIE)' },
+                  { id: 'DUAL', label: 'Dual System (ZIMSEC & Cambridge Streams)' },
+                  { id: 'HEXCO', label: 'HEXCO (Higher Education Examinations)' }
+                ].map(curr => {
+                  const isSelected = profileStep.curriculum === curr.id;
+                  return (
+                    <label
+                      key={curr.id}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 10,
+                        padding: '12px 14px',
+                        borderRadius: 8,
+                        border: `1px solid ${isSelected ? '#4f46e5' : '#e2e8f0'}`,
+                        background: isSelected ? '#eef2ff' : '#fff',
+                        cursor: 'pointer',
+                        fontSize: '0.9rem',
+                        fontWeight: isSelected ? 600 : 500,
+                        color: isSelected ? '#3730a3' : '#334155'
+                      }}
+                    >
+                      <input
+                        type="radio"
+                        name="setupCurriculum"
+                        checked={isSelected}
+                        onChange={() => setProfileStep({ ...profileStep, curriculum: curr.id })}
+                      />
+                      <span>{curr.label}</span>
+                    </label>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* STEP 4: Subjects & Departments */}
+        {currentStep === 4 && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
             <div>
               <label style={{ display: 'block', fontWeight: 700, marginBottom: 8, color: '#334155' }}>
@@ -735,8 +942,8 @@ export default function AdminSetupWizard() {
           </div>
         )}
 
-        {/* STEP 4: Users & Roles */}
-        {currentStep === 4 && (
+        {/* STEP 5: Users & Roles */}
+        {currentStep === 5 && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
             <div style={{ background: '#f8fafc', padding: 20, borderRadius: 12, border: '1px solid #e2e8f0' }}>
               <h3 style={{ margin: '0 0 12px', fontSize: '1rem', fontWeight: 800 }}>Foundational Officers</h3>
@@ -826,8 +1033,8 @@ export default function AdminSetupWizard() {
           </div>
         )}
 
-        {/* STEP 5: Fee Structure */}
-        {currentStep === 5 && (
+        {/* STEP 6: Fee Structure */}
+        {currentStep === 6 && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
               <div className="portal-form-group">
@@ -887,8 +1094,8 @@ export default function AdminSetupWizard() {
           </div>
         )}
 
-        {/* STEP 6: Timetable Defaults */}
-        {currentStep === 6 && (
+        {/* STEP 7: Timetable Defaults */}
+        {currentStep === 7 && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
               <div className="portal-form-group">
@@ -943,8 +1150,8 @@ export default function AdminSetupWizard() {
           </div>
         )}
 
-        {/* STEP 7: Go Live Verification */}
-        {currentStep === 7 && (
+        {/* STEP 8: Go Live Verification */}
+        {currentStep === 8 && (
           <div style={{ textAlign: 'center', padding: '10px 0' }}>
             <div style={{ width: 70, height: 70, borderRadius: '50%', background: '#ecfdf5', color: '#059669', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', fontSize: '2rem' }}>
               <i className="fas fa-rocket" />
@@ -953,7 +1160,7 @@ export default function AdminSetupWizard() {
               Your School Configuration is Ready!
             </h2>
             <p style={{ color: '#475569', fontSize: '0.95rem', maxWidth: 600, margin: '0 auto 25px' }}>
-              All 6 structural stages have been verified and synchronized. Finalizing setup will unlock the full master administration suite.
+              All 7 structural stages have been verified and synchronized. Finalizing setup will unlock the full master administration suite.
             </p>
 
             {/* Live Counts Grid */}
@@ -993,7 +1200,7 @@ export default function AdminSetupWizard() {
         )}
 
         {/* Footer Navigation Buttons */}
-        {currentStep < 7 && (
+        {currentStep < 8 && (
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 32, paddingTop: 20, borderTop: '1px solid #e2e8f0' }}>
             <button 
               className="portal-btn-secondary" 

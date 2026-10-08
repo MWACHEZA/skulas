@@ -204,9 +204,131 @@ router.patch('/settings', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR'), va
   }
 });
 
+export interface TenantModules {
+  boarding: boolean;
+  clinic: boolean;
+  tuckshop: boolean;
+  uniforms: boolean;
+  transport: boolean;
+  farm: boolean;
+  sports: boolean;
+}
+
+export const DEFAULT_TENANT_MODULES: TenantModules = {
+  boarding: true,
+  clinic: true,
+  tuckshop: true,
+  uniforms: true,
+  transport: true,
+  farm: true,
+  sports: true
+};
+
+export async function resolveSchoolSubscription(schoolId: string) {
+  const school = await prisma.school.findUnique({
+    where: { id: schoolId },
+    include: { plan: true }
+  });
+  if (!school) return null;
+
+  let subscription = (school.subscription as Record<string, any>) || {};
+  let modules = subscription.modules;
+
+  if (!modules || typeof modules !== 'object') {
+    // Backfill existing school modules by checking existing data to avoid hiding active resources
+    const [hostelCount, clinicCount, tuckshopCount, uniformCount, sportCount, farmCount] = await Promise.all([
+      prisma.hostel.count({ where: { schoolId } }),
+      prisma.clinicVisit.count({ where: { schoolId } }),
+      prisma.tuckshopItem.count({ where: { schoolId } }),
+      prisma.uniformItem.count({ where: { schoolId } }),
+      prisma.sport.count({ where: { schoolId } }),
+      prisma.farmCropCycle.count({ where: { schoolId } })
+    ]);
+
+    modules = {
+      boarding: hostelCount > 0 || (school.type || '').toLowerCase().includes('board') || true,
+      clinic: clinicCount > 0 || true,
+      tuckshop: tuckshopCount > 0 || true,
+      uniforms: uniformCount > 0 || true,
+      transport: true,
+      farm: farmCount > 0 || true,
+      sports: sportCount > 0 || true
+    };
+
+    subscription = {
+      plan: school.plan?.name || 'Professional',
+      status: school.status || 'active',
+      modules,
+      ...subscription
+    };
+
+    await prisma.school.update({
+      where: { id: schoolId },
+      data: { subscription }
+    });
+  }
+
+  return { ...subscription, modules };
+}
+
+/**
+ * @route   GET /api/schools/modules
+ * @desc    Get active tenant modules for current school
+ */
+router.get('/modules', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    const schoolId = req.user!.schoolId!;
+    const subscription = await resolveSchoolSubscription(schoolId);
+    res.json({
+      modules: subscription?.modules || DEFAULT_TENANT_MODULES,
+      subscription
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch school modules' });
+  }
+});
+
+/**
+ * @route   PATCH /api/schools/modules
+ * @desc    [SCHOOL_ADMIN] Toggle active modules for school
+ */
+router.patch('/modules', requireAuth, requireRole('SCHOOL_ADMIN', 'SUPER_ADMIN'), async (req: AuthRequest, res: Response) => {
+  try {
+    const schoolId = req.user!.schoolId!;
+    const { modules } = req.body;
+    if (!modules || typeof modules !== 'object') {
+      return res.status(400).json({ error: 'Modules object is required' });
+    }
+
+    const school = await prisma.school.findUnique({ where: { id: schoolId } });
+    if (!school) return res.status(404).json({ error: 'School not found' });
+
+    const currentSub = (school.subscription as Record<string, any>) || {};
+    const updatedModules = {
+      ...(currentSub.modules || DEFAULT_TENANT_MODULES),
+      ...modules
+    };
+
+    const updatedSub = {
+      ...currentSub,
+      modules: updatedModules
+    };
+
+    await prisma.school.update({
+      where: { id: schoolId },
+      data: { subscription: updatedSub }
+    });
+
+    await logAction(req, 'UPDATE_SCHOOL_MODULES', 'School', schoolId, { modules: updatedModules });
+    res.json({ success: true, modules: updatedModules, subscription: updatedSub });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to update school modules' });
+  }
+});
+
 /**
  * @route   GET /api/schools/me
- * @desc    [SCHOOL_ADMIN] Get own school details with plan
+ * @desc    [SCHOOL_ADMIN] Get own school details with plan and subscription modules
  */
 router.get('/me', requireAuth, requireRole('SCHOOL_ADMIN'), async (req: AuthRequest, res: Response) => {
   try {
@@ -218,6 +340,8 @@ router.get('/me', requireAuth, requireRole('SCHOOL_ADMIN'), async (req: AuthRequ
       }
     });
     if (!school) return res.status(404).json({ error: 'School not found' });
+
+    const subscription = await resolveSchoolSubscription(school.id);
 
     const activeStudents = await prisma.student.count({
       where: {
@@ -231,6 +355,7 @@ router.get('/me', requireAuth, requireRole('SCHOOL_ADMIN'), async (req: AuthRequ
 
     res.json({
       ...school,
+      subscription,
       billing: {
         ratePerStudent: PLATFORM_STUDENT_RATE,
         activeStudents,
@@ -336,6 +461,21 @@ router.post('/setup-step', requireAuth, requireRole('SCHOOL_ADMIN', 'SUPER_ADMIN
           email: data.email || school.email,
           branding: data.branding ? { ...(school.branding as any || {}), ...data.branding } : school.branding
         }
+      });
+    }
+
+    if (data?.modules && typeof data.modules === 'object') {
+      const existingSub = await resolveSchoolSubscription(schoolId);
+      const updatedSub = {
+        ...(existingSub || {}),
+        modules: {
+          ...((existingSub as any)?.modules || DEFAULT_TENANT_MODULES),
+          ...data.modules
+        }
+      };
+      await prisma.school.update({
+        where: { id: schoolId },
+        data: { subscription: updatedSub }
       });
     }
 

@@ -3,6 +3,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.DEFAULT_TENANT_MODULES = void 0;
+exports.resolveSchoolSubscription = resolveSchoolSubscription;
 const express_1 = require("express");
 const prisma_1 = __importDefault(require("../lib/prisma"));
 const auth_1 = require("../middleware/auth");
@@ -192,9 +194,110 @@ router.patch('/settings', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_AD
         res.status(500).json({ error: 'Failed to update system settings' });
     }
 });
+exports.DEFAULT_TENANT_MODULES = {
+    boarding: true,
+    clinic: true,
+    tuckshop: true,
+    uniforms: true,
+    transport: true,
+    farm: true,
+    sports: true
+};
+async function resolveSchoolSubscription(schoolId) {
+    const school = await prisma_1.default.school.findUnique({
+        where: { id: schoolId },
+        include: { plan: true }
+    });
+    if (!school)
+        return null;
+    let subscription = school.subscription || {};
+    let modules = subscription.modules;
+    if (!modules || typeof modules !== 'object') {
+        // Backfill existing school modules by checking existing data to avoid hiding active resources
+        const [hostelCount, clinicCount, tuckshopCount, uniformCount, sportCount, farmCount] = await Promise.all([
+            prisma_1.default.hostel.count({ where: { schoolId } }),
+            prisma_1.default.clinicVisit.count({ where: { schoolId } }),
+            prisma_1.default.tuckshopItem.count({ where: { schoolId } }),
+            prisma_1.default.uniformItem.count({ where: { schoolId } }),
+            prisma_1.default.sport.count({ where: { schoolId } }),
+            prisma_1.default.farmCropCycle.count({ where: { schoolId } })
+        ]);
+        modules = {
+            boarding: hostelCount > 0 || (school.type || '').toLowerCase().includes('board') || true,
+            clinic: clinicCount > 0 || true,
+            tuckshop: tuckshopCount > 0 || true,
+            uniforms: uniformCount > 0 || true,
+            transport: true,
+            farm: farmCount > 0 || true,
+            sports: sportCount > 0 || true
+        };
+        subscription = {
+            plan: school.plan?.name || 'Professional',
+            status: school.status || 'active',
+            modules,
+            ...subscription
+        };
+        await prisma_1.default.school.update({
+            where: { id: schoolId },
+            data: { subscription }
+        });
+    }
+    return { ...subscription, modules };
+}
+/**
+ * @route   GET /api/schools/modules
+ * @desc    Get active tenant modules for current school
+ */
+router.get('/modules', auth_1.requireAuth, async (req, res) => {
+    try {
+        const schoolId = req.user.schoolId;
+        const subscription = await resolveSchoolSubscription(schoolId);
+        res.json({
+            modules: subscription?.modules || exports.DEFAULT_TENANT_MODULES,
+            subscription
+        });
+    }
+    catch (error) {
+        res.status(500).json({ error: 'Failed to fetch school modules' });
+    }
+});
+/**
+ * @route   PATCH /api/schools/modules
+ * @desc    [SCHOOL_ADMIN] Toggle active modules for school
+ */
+router.patch('/modules', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'SUPER_ADMIN'), async (req, res) => {
+    try {
+        const schoolId = req.user.schoolId;
+        const { modules } = req.body;
+        if (!modules || typeof modules !== 'object') {
+            return res.status(400).json({ error: 'Modules object is required' });
+        }
+        const school = await prisma_1.default.school.findUnique({ where: { id: schoolId } });
+        if (!school)
+            return res.status(404).json({ error: 'School not found' });
+        const currentSub = school.subscription || {};
+        const updatedModules = {
+            ...(currentSub.modules || exports.DEFAULT_TENANT_MODULES),
+            ...modules
+        };
+        const updatedSub = {
+            ...currentSub,
+            modules: updatedModules
+        };
+        await prisma_1.default.school.update({
+            where: { id: schoolId },
+            data: { subscription: updatedSub }
+        });
+        await (0, audit_1.logAction)(req, 'UPDATE_SCHOOL_MODULES', 'School', schoolId, { modules: updatedModules });
+        res.json({ success: true, modules: updatedModules, subscription: updatedSub });
+    }
+    catch (error) {
+        res.status(500).json({ error: 'Failed to update school modules' });
+    }
+});
 /**
  * @route   GET /api/schools/me
- * @desc    [SCHOOL_ADMIN] Get own school details with plan
+ * @desc    [SCHOOL_ADMIN] Get own school details with plan and subscription modules
  */
 router.get('/me', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN'), async (req, res) => {
     try {
@@ -207,6 +310,7 @@ router.get('/me', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN'), a
         });
         if (!school)
             return res.status(404).json({ error: 'School not found' });
+        const subscription = await resolveSchoolSubscription(school.id);
         const activeStudents = await prisma_1.default.student.count({
             where: {
                 schoolId: school.id,
@@ -217,6 +321,7 @@ router.get('/me', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN'), a
         const monthlyPlatformBill = activeStudents * PLATFORM_STUDENT_RATE;
         res.json({
             ...school,
+            subscription,
             billing: {
                 ratePerStudent: PLATFORM_STUDENT_RATE,
                 activeStudents,
@@ -317,6 +422,20 @@ router.post('/setup-step', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_A
                     email: data.email || school.email,
                     branding: data.branding ? { ...(school.branding || {}), ...data.branding } : school.branding
                 }
+            });
+        }
+        if (data?.modules && typeof data.modules === 'object') {
+            const existingSub = await resolveSchoolSubscription(schoolId);
+            const updatedSub = {
+                ...(existingSub || {}),
+                modules: {
+                    ...(existingSub?.modules || exports.DEFAULT_TENANT_MODULES),
+                    ...data.modules
+                }
+            };
+            await prisma_1.default.school.update({
+                where: { id: schoolId },
+                data: { subscription: updatedSub }
             });
         }
         await prisma_1.default.school.update({

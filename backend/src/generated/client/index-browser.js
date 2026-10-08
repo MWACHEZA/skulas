@@ -151,7 +151,8 @@ exports.Prisma.SchoolScalarFieldEnum = {
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   idCardTemplate: 'idCardTemplate',
-  settings: 'settings'
+  settings: 'settings',
+  subscription: 'subscription'
 };
 
 exports.Prisma.GradingScaleScalarFieldEnum = {
