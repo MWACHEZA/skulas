@@ -29,7 +29,7 @@ export default function AttendanceHistory() {
 
   return (
     <div className="portal-container">
-      <div className="portal-page-header">
+      <div className="portal-page-header" data-tour="parent-students-card">
         <div className="header-content">
           <h1>Attendance History</h1>
           <p>A detailed log of daily presence, tardiness, and absences to monitor academic consistency.</p>

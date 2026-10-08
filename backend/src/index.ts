@@ -132,6 +132,7 @@ app.use('/api/classes', classRoutes);
 app.use('/api/timetable', timetableRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/me', userRoutes);
 app.use('/api/teachers', teacherRoutes);
 app.use('/api/students', studentRoutes);
 app.use('/api/applications', applicationRoutes);

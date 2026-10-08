@@ -117,6 +117,7 @@ import StudentStudyMaterial from './portals/student/pages/academics/StudentStudy
 import RevenueReport from './portals/teacher/pages/online-learning/RevenueReport';
 import MyPaymentSlip from './portals/shared/pages/hr/MyPaymentSlip';
 import AdminDashboard from './portals/admin/pages/Dashboard';
+import AdminSetupWizard from './portals/admin/pages/AdminSetupWizard';
 
 import PayrollList from './portals/shared/pages/human-resources/PayrollList';
 import AdminStudents from './portals/admin/pages/Students';
@@ -529,6 +530,7 @@ export default function App() {
               <Route path="grades" element={<TeacherGradesUnified />} />
               <Route path="assignments" element={<TeacherAssignments />} />
               <Route path="attendance" element={<TeacherAttendanceUnified />} />
+              <Route path="marks" element={<Navigate to="/teacher/grades?tab=marks-entry" replace />} />
 
               <Route path="curriculum" element={<TeacherCurriculum />} />
               <Route path="clinic" element={<TeacherClinicUnified />} />
@@ -619,6 +621,8 @@ export default function App() {
             }>
               <Route index element={<AdminDashboard />} />
               <Route path="dashboard" element={<AdminDashboard />} />
+              <Route path="setup" element={<AdminSetupWizard />} />
+              <Route path="onboarding" element={<Navigate to="/admin/setup" replace />} />
 
               {/* CORE CONSOLIDATED ADMIN PAGES (16 PAGES + TENANT CONDITIONALS) */}
               {/* 1. Students Module */}

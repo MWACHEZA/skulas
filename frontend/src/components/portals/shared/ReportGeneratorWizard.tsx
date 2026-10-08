@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import api from '../../../lib/api';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
@@ -10,6 +10,60 @@ import ReportDocument from './ReportDocument';
 import { useTerminology } from '../../../hooks/useTerminology';
 import { useToast } from '../../../context/ToastContext';
 
+export interface AcademicReportCategory {
+  id: string;
+  label: string;
+  description: string;
+  icon: string;
+  requiredFilters: Array<'class' | 'term' | 'year' | 'examType' | 'subject'>;
+}
+
+export const ACADEMIC_REPORT_CATEGORIES: AcademicReportCategory[] = [
+  {
+    id: 'TERMLY_REPORTS',
+    label: 'Termly Report Cards',
+    description: 'Comprehensive student report cards with subject grades, remarks, and GPA summaries',
+    icon: 'fa-graduation-cap',
+    requiredFilters: ['term', 'year', 'class', 'examType']
+  },
+  {
+    id: 'BROADSHEET',
+    label: 'Class Broadsheet / Marksheet',
+    description: 'Cross-subject master marksheet, totals, averages, and class position rankings',
+    icon: 'fa-table',
+    requiredFilters: ['term', 'year', 'class', 'examType']
+  },
+  {
+    id: 'SUBJECT_ANALYSIS',
+    label: 'Subject Analysis',
+    description: 'Subject-specific pass rates, grade distribution charts, and cohort variance',
+    icon: 'fa-chart-pie',
+    requiredFilters: ['term', 'year', 'class', 'subject', 'examType']
+  },
+  {
+    id: 'MERIT_FAILURE',
+    label: 'Failure / Merit List',
+    description: 'Honor roll academic merit lists and academic intervention / failure tracking',
+    icon: 'fa-award',
+    requiredFilters: ['term', 'year', 'class', 'examType']
+  },
+  {
+    id: 'CA_SUMMARY',
+    label: 'Continuous Assessment Summary',
+    description: 'Cumulative aggregates of assignments, coursework, tests, and practicals',
+    icon: 'fa-tasks',
+    requiredFilters: ['term', 'year', 'class']
+  }
+];
+
+export const EXAM_TYPES = [
+  'End-of-Term Examination',
+  'Mid-Term Assessment',
+  'Continuous Assessment (CA)',
+  'Mock / Trial Examination',
+  'National Exam Preparedness'
+] as const;
+
 interface Props {
   role: 'ADMIN' | 'TEACHER';
   allowedTypes?: string[];
@@ -17,15 +71,18 @@ interface Props {
 
 const ReportGeneratorWizard: React.FC<Props> = ({ role: _role, allowedTypes }) => {
   const [step, setStep] = useState(1);
-  const { t, isMedical, isPoly } = useTerminology();
+  const { t, isMedical: _isMedical, isPoly } = useTerminology();
   const { showToast } = useToast();
   const [loading, setLoading] = useState(false);
   const [classes, setClasses] = useState<any[]>([]);
-  const [reportType, setReportType] = useState('ACADEMIC');
+  const [subjects, setSubjects] = useState<any[]>([]);
+  const [reportType, setReportType] = useState('TERMLY_REPORTS');
   const [filters, setFilters] = useState({ 
     classId: '', 
     term: '', 
-    year: new Date().getFullYear().toString() 
+    year: new Date().getFullYear().toString(),
+    examType: 'End-of-Term Examination',
+    subjectId: ''
   });
 
   useEffect(() => {
@@ -33,6 +90,7 @@ const ReportGeneratorWizard: React.FC<Props> = ({ role: _role, allowedTypes }) =
        setFilters(prev => ({ ...prev, term: isPoly ? 'Semester 1' : 'Term 1' }));
     }
   }, [isPoly]);
+
   const [dataList, setDataList] = useState<any[]>([]);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [template, setTemplate] = useState<any>(null);
@@ -47,24 +105,22 @@ const ReportGeneratorWizard: React.FC<Props> = ({ role: _role, allowedTypes }) =
   const [globalComment, setGlobalComment] = useState('');
   const [autoPublish, setAutoPublish] = useState(false);
 
-  const allReportTypes = [
-    { id: 'ACADEMIC', label: isMedical ? `${t('grades')} Analysis` : 'Academic Performance', icon: isMedical ? 'fa-hospital-user' : 'fa-graduation-cap' },
-    { id: 'ENROLLMENT', label: 'Enrollment Summary', icon: 'fa-users' },
-    { id: 'FEES', label: 'Fee Collection Report', icon: 'fa-hand-holding-usd' },
-    { id: 'ATTENDANCE', label: 'Attendance Report', icon: 'fa-calendar-check' },
-    { id: 'STAFF', label: 'Staff Directory', icon: 'fa-user-tie' },
-    { id: 'ASSETS', label: 'Asset Inventory', icon: 'fa-boxes' },
-  ];
+  const categories = useMemo(() => {
+    return allowedTypes
+      ? ACADEMIC_REPORT_CATEGORIES.filter(c => allowedTypes.includes(c.id) || (c.id === 'TERMLY_REPORTS' && allowedTypes.includes('ACADEMIC')))
+      : ACADEMIC_REPORT_CATEGORIES;
+  }, [allowedTypes]);
 
-  const reportTypes = allowedTypes
-    ? allReportTypes.filter(r => allowedTypes.includes(r.id))
-    : allReportTypes;
+  const activeCategory = useMemo(() => {
+    return categories.find(c => c.id === reportType) || categories[0] || ACADEMIC_REPORT_CATEGORIES[0];
+  }, [categories, reportType]);
 
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: 15 }, (_, i) => (currentYear - 5 + i).toString());
 
   useEffect(() => {
     fetchClasses();
+    fetchSubjects();
     fetchTemplate();
   }, []);
 
@@ -83,6 +139,16 @@ const ReportGeneratorWizard: React.FC<Props> = ({ role: _role, allowedTypes }) =
     }
   };
 
+  const fetchSubjects = async () => {
+    try {
+      const res = await api.get('/api/subjects');
+      const subData = Array.isArray(res.data) ? res.data : [];
+      setSubjects(subData);
+    } catch (err) {
+      console.error('Failed to fetch subjects');
+    }
+  };
+
   const fetchTemplate = async () => {
     try {
       const res = await api.get('/api/reports/template');
@@ -95,21 +161,19 @@ const ReportGeneratorWizard: React.FC<Props> = ({ role: _role, allowedTypes }) =
   const fetchReportData = async () => {
     setLoading(true);
     try {
-      let endpoint = `/api/reports/preview?type=${reportType}&term=${filters.term}&year=${filters.year}`;
-      if (['ACADEMIC', 'ATTENDANCE'].includes(reportType)) {
-        if (!filters.classId) {
-          showToast('Please select a class for this report type.', 'warning');
-          setLoading(false);
-          return;
-        }
+      let endpoint = `/api/reports/preview?type=${reportType}&term=${filters.term}&year=${filters.year}&examType=${encodeURIComponent(filters.examType)}`;
+      if (filters.classId) {
         endpoint += `&classId=${filters.classId}`;
+      }
+      if (filters.subjectId) {
+        endpoint += `&subjectId=${filters.subjectId}`;
       }
 
       const res = await api.get(endpoint);
       setDataList(Array.isArray(res.data) ? res.data : []);
       setStep(2);
     } catch (err) {
-      showToast('Failed to fetch data for report. Ensure all filters are set.', 'error');
+      showToast('Failed to fetch data for academic report. Ensure all filters are set.', 'error');
     } finally {
       setLoading(false);
     }
@@ -304,30 +368,60 @@ const ReportGeneratorWizard: React.FC<Props> = ({ role: _role, allowedTypes }) =
       </div>
       <div className="portal-card-body">
         {step === 1 ? (
-          <div style={{ maxWidth: '800px', margin: '0 auto', padding: '10px 0' }}>
-            <label style={{ display: 'block', marginBottom: '15px', fontWeight: 600 }}>1. Select Report Category</label>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '15px', marginBottom: '30px' }}>
-              {reportTypes.map(t => (
-                <div 
-                  key={t.id} 
-                  onClick={() => setReportType(t.id)}
-                  style={{ 
-                    padding: '20px', 
-                    border: `2px solid ${reportType === t.id ? '#3182ce' : '#e2e8f0'}`,
-                    background: reportType === t.id ? '#ebf8ff' : '#fff',
-                    borderRadius: '12px',
-                    textAlign: 'center',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s'
-                  }}
-                >
-                  <i className={`fas ${t.icon}`} style={{ fontSize: '1.5rem', marginBottom: '10px', color: reportType === t.id ? '#3182ce' : '#718096' }}></i>
-                  <div style={{ fontWeight: 600, fontSize: '0.85rem' }}>{t.label}</div>
-                </div>
-              ))}
+          <div style={{ maxWidth: '850px', margin: '0 auto', padding: '10px 0' }}>
+            <label style={{ display: 'block', marginBottom: '15px', fontWeight: 700, fontSize: '0.95rem', color: '#1e293b' }}>
+              1. Select Report Category
+            </label>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '15px', marginBottom: '30px' }}>
+              {categories.map(t => {
+                const isSelected = reportType === t.id;
+                return (
+                  <div 
+                    key={t.id} 
+                    onClick={() => setReportType(t.id)}
+                    style={{ 
+                      padding: '18px', 
+                      border: `2px solid ${isSelected ? '#2563eb' : '#e2e8f0'}`,
+                      background: isSelected ? '#eff6ff' : '#fff',
+                      borderRadius: '12px',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: 8,
+                      boxShadow: isSelected ? '0 4px 12px rgba(37,99,235,0.1)' : 'none'
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                      <div style={{
+                        width: 38,
+                        height: 38,
+                        borderRadius: 8,
+                        background: isSelected ? '#2563eb' : '#f1f5f9',
+                        color: isSelected ? '#ffffff' : '#64748b',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: '1.1rem'
+                      }}>
+                        <i className={`fas ${t.icon}`}></i>
+                      </div>
+                      <div style={{ fontWeight: 800, fontSize: '0.9rem', color: isSelected ? '#1e3a8a' : '#1e293b' }}>
+                        {t.label}
+                      </div>
+                    </div>
+                    <div style={{ fontSize: '0.78rem', color: '#64748b', lineHeight: 1.4 }}>
+                      {t.description}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
 
-            <div style={{ padding: '25px', background: '#f8fafc', borderRadius: '12px' }}>
+            <div style={{ padding: '25px', background: '#f8fafc', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+              <div style={{ marginBottom: 16, fontWeight: 700, color: '#334155', fontSize: '0.9rem' }}>
+                2. Configure Report Parameters & Target
+              </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px' }}>
                 <div className="portal-form-group">
                   <label>Academic Period</label>
@@ -363,19 +457,48 @@ const ReportGeneratorWizard: React.FC<Props> = ({ role: _role, allowedTypes }) =
                 </div>
               </div>
 
-              {['ACADEMIC', 'ATTENDANCE', 'FEES'].includes(reportType) && (
-                <div className="portal-form-group">
-                  <label>Target {t('class')} (Optional for Fees)</label>
-                  <select 
-                    className="portal-input"
-                    value={filters.classId}
-                    onChange={e => setFilters({...filters, classId: e.target.value})}
-                  >
-                    <option value="">Apply to all {t('student').toLowerCase()}s</option>
-                    {classes.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-                  </select>
-                </div>
-              )}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px' }}>
+                {activeCategory.requiredFilters.includes('class') && (
+                  <div className="portal-form-group">
+                    <label>Target {t('class')} / Stream</label>
+                    <select 
+                      className="portal-input"
+                      value={filters.classId}
+                      onChange={e => setFilters({...filters, classId: e.target.value})}
+                    >
+                      <option value="">Apply to all {t('student').toLowerCase()}s</option>
+                      {classes.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                    </select>
+                  </div>
+                )}
+
+                {activeCategory.requiredFilters.includes('examType') && (
+                  <div className="portal-form-group">
+                    <label>Exam Type</label>
+                    <select 
+                      className="portal-input"
+                      value={filters.examType}
+                      onChange={e => setFilters({...filters, examType: e.target.value})}
+                    >
+                      {EXAM_TYPES.map(et => <option key={et} value={et}>{et}</option>)}
+                    </select>
+                  </div>
+                )}
+
+                {activeCategory.requiredFilters.includes('subject') && (
+                  <div className="portal-form-group" style={{ gridColumn: 'span 2' }}>
+                    <label>Target Subject</label>
+                    <select 
+                      className="portal-input"
+                      value={filters.subjectId}
+                      onChange={e => setFilters({...filters, subjectId: e.target.value})}
+                    >
+                      <option value="">All Assessed Subjects</option>
+                      {subjects.map(s => <option key={s.id} value={s.id}>{s.name} ({s.code})</option>)}
+                    </select>
+                  </div>
+                )}
+              </div>
 
               <button 
                 className="portal-btn-primary" 

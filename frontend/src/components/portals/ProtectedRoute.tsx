@@ -31,5 +31,23 @@ export default function ProtectedRoute({ children, allowedRoles, redirectTo = '/
     return <Navigate to={fallback} replace />;
   }
 
+  // Admin Setup Wizard Gating
+  if (user?.role === 'SCHOOL_ADMIN') {
+    const isOnboarded = user?.isOnboarded !== false && user?.school?.settings?.isOnboarded !== false;
+    const isSetupRoute = location.pathname === '/admin/setup' || location.pathname === '/admin/onboarding';
+
+    // If new school (isOnboarded is false), redirect to /admin/setup
+    if (!isOnboarded) {
+      if (!isSetupRoute) {
+        return <Navigate to="/admin/setup" replace />;
+      }
+    } else {
+      // If already onboarded, redirect away from /admin/setup to dashboard
+      if (isSetupRoute) {
+        return <Navigate to="/admin/dashboard" replace />;
+      }
+    }
+  }
+
   return <>{children}</>;
 }

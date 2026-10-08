@@ -245,6 +245,147 @@ router.get('/me', requireAuth, requireRole('SCHOOL_ADMIN'), async (req: AuthRequ
 });
 
 /**
+ * @route   GET /api/schools/setup-status
+ * @desc    [SCHOOL_ADMIN] Check onboarding completion status, progress and school stats
+ */
+router.get('/setup-status', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    const schoolId = req.user!.schoolId!;
+    const school = await prisma.school.findUnique({
+      where: { id: schoolId },
+      include: {
+        _count: { select: { classes: true, subjects: true, teachers: true, departments: true, students: true } }
+      }
+    });
+    if (!school) return res.status(404).json({ error: 'School not found' });
+
+    const settingsJson = (school.settings as Record<string, any>) || {};
+    
+    // Backfill rule: if isOnboarded is undefined, check if the school has existing records (classes, teachers, or students)
+    // Existing schools are treated as onboarded so current staff are not interrupted
+    let isOnboarded = settingsJson.isOnboarded;
+    if (isOnboarded === undefined) {
+      isOnboarded = true;
+      // Persist the backfill
+      await prisma.school.update({
+        where: { id: schoolId },
+        data: { settings: { ...settingsJson, isOnboarded: true } }
+      });
+    }
+
+    const currentStep = settingsJson.setupStep || 1;
+    const setupProgress = settingsJson.setupProgress || {};
+
+    res.json({
+      isOnboarded: Boolean(isOnboarded),
+      currentStep,
+      setupProgress,
+      school: {
+        id: school.id,
+        name: school.name,
+        code: school.code,
+        type: school.type,
+        address: school.address,
+        phone: school.phone,
+        email: school.email,
+        branding: school.branding,
+        levels: school.levels
+      },
+      counts: {
+        classes: school._count.classes,
+        subjects: school._count.subjects,
+        teachers: school._count.teachers,
+        departments: school._count.departments,
+        students: school._count.students
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch setup status' });
+  }
+});
+
+/**
+ * @route   POST /api/schools/setup-step
+ * @desc    [SCHOOL_ADMIN] Save progress for a specific step of the setup wizard
+ */
+router.post('/setup-step', requireAuth, requireRole('SCHOOL_ADMIN', 'SUPER_ADMIN'), async (req: AuthRequest, res: Response) => {
+  try {
+    const schoolId = req.user!.schoolId!;
+    const { step, data } = req.body;
+    if (!step || typeof step !== 'number') {
+      return res.status(400).json({ error: 'Valid step number is required' });
+    }
+
+    const school = await prisma.school.findUnique({ where: { id: schoolId } });
+    if (!school) return res.status(404).json({ error: 'School not found' });
+
+    const currentSettings = (school.settings as Record<string, any>) || {};
+    const updatedProgress = {
+      ...(currentSettings.setupProgress || {}),
+      [`step${step}`]: data
+    };
+
+    // If step 1 (School Identity), update core School table record
+    if (step === 1 && data) {
+      await prisma.school.update({
+        where: { id: schoolId },
+        data: {
+          name: data.name || school.name,
+          phone: data.phone || school.phone,
+          address: data.address || school.address,
+          email: data.email || school.email,
+          branding: data.branding ? { ...(school.branding as any || {}), ...data.branding } : school.branding
+        }
+      });
+    }
+
+    await prisma.school.update({
+      where: { id: schoolId },
+      data: {
+        settings: {
+          ...currentSettings,
+          setupStep: Math.min(7, step + 1),
+          setupProgress: updatedProgress
+        }
+      }
+    });
+
+    res.json({ success: true, nextStep: Math.min(7, step + 1), message: `Step ${step} progress saved` });
+  } catch (error) {
+    console.error('Setup step error:', error);
+    res.status(500).json({ error: 'Failed to save setup step' });
+  }
+});
+
+/**
+ * @route   POST /api/schools/setup-complete
+ * @desc    [SCHOOL_ADMIN] Complete onboarding and unlock admin dashboard
+ */
+router.post('/setup-complete', requireAuth, requireRole('SCHOOL_ADMIN', 'SUPER_ADMIN'), async (req: AuthRequest, res: Response) => {
+  try {
+    const schoolId = req.user!.schoolId!;
+    const school = await prisma.school.findUnique({ where: { id: schoolId } });
+    if (!school) return res.status(404).json({ error: 'School not found' });
+
+    const currentSettings = (school.settings as Record<string, any>) || {};
+    await prisma.school.update({
+      where: { id: schoolId },
+      data: {
+        settings: {
+          ...currentSettings,
+          isOnboarded: true,
+          onboardedAt: new Date().toISOString()
+        }
+      }
+    });
+
+    res.json({ success: true, message: 'Setup completed successfully. Dashboard is now unlocked!' });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to finalize setup' });
+  }
+});
+
+/**
  * @route   PATCH /api/schools/me/plan
  * @desc    [SCHOOL_ADMIN] Change own school's subscription plan
  */

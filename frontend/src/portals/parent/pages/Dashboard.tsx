@@ -287,7 +287,9 @@ export default function ParentDashboard() {
   return (
     <div style={{ maxWidth: 1040, margin: '0 auto', paddingBottom: 40 }}>
       {/* ── CHILD SWITCHER (Sticky Top Glance Header) ── */}
-      <div style={{
+      <div 
+        data-tour="parent-students-card"
+        style={{
         position: 'sticky',
         top: 0,
         zIndex: 30,

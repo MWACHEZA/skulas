@@ -5,12 +5,12 @@ import { useTerminology } from '../../../hooks/useTerminology';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 
-// Teacher-relevant reports only (no Enrollment, Fees, Staff, Assets)
-const TEACHER_ALLOWED_REPORTS = ['ACADEMIC', 'ATTENDANCE'];
+// Academic-only report categories for classroom teachers
+const TEACHER_ALLOWED_REPORTS = ['TERMLY_REPORTS', 'BROADSHEET', 'SUBJECT_ANALYSIS', 'MERIT_FAILURE', 'CA_SUMMARY'];
 
 export default function TeacherReports() {
-  const { t, isMedical } = useTerminology();
-  const { showToast } = useToast();
+  const { t, isMedical: _isMedical } = useTerminology();
+  const { showToast: _showToast } = useToast();
   const [activeTab, setActiveTab] = useState<'generation' | 'analytics'>('generation');
   const [filters, setFilters] = useState({ term: 'Term 1', year: new Date().getFullYear().toString() });
   const [stats, setStats] = useState({ studentCount: 0, classCount: 0, attendanceRate: 0, passRate: 0 });
@@ -38,19 +38,40 @@ export default function TeacherReports() {
 
   const reports = [
     {
-      name: isMedical ? `${t('grades')} Analysis` : 'Academic Performance',
-      desc: `Grade distributions and average scores per ${t('subject').toLowerCase()} for your ${t('classes').toLowerCase()}`,
-      icon: isMedical ? 'fa-hospital-user' : 'fa-chart-line',
-      color: '#805ad5',
-      id: 'ACADEMIC'
+      name: 'Termly Report Cards',
+      desc: `Terminal student report cards and remarks for your ${t('classes').toLowerCase()}`,
+      icon: 'fa-graduation-cap',
+      color: '#2563eb',
+      id: 'TERMLY_REPORTS'
     },
     {
-      name: `${t('attendance')} Report`,
-      desc: `Daily and weekly presence statistics for your ${t('classes').toLowerCase()}`,
-      icon: 'fa-clipboard-check',
-      color: 'var(--portal-warning)',
-      id: 'ATTENDANCE'
+      name: 'Class Broadsheet / Marksheet',
+      desc: `Master marksheet across subjects and rankings for your ${t('classes').toLowerCase()}`,
+      icon: 'fa-table',
+      color: '#7c3aed',
+      id: 'BROADSHEET'
     },
+    {
+      name: 'Subject Analysis',
+      desc: `Pass rates and grade distributions for your assigned ${t('subject').toLowerCase()}s`,
+      icon: 'fa-chart-pie',
+      color: '#0891b2',
+      id: 'SUBJECT_ANALYSIS'
+    },
+    {
+      name: 'Failure / Merit List',
+      desc: `Honor roll standings and academic intervention tracking`,
+      icon: 'fa-award',
+      color: '#d97706',
+      id: 'MERIT_FAILURE'
+    },
+    {
+      name: 'Continuous Assessment Summary',
+      desc: `Aggregated coursework and assignment scores for your ${t('classes').toLowerCase()}`,
+      icon: 'fa-tasks',
+      color: '#059669',
+      id: 'CA_SUMMARY'
+    }
   ];
 
   return (

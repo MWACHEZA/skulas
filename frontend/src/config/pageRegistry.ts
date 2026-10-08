@@ -16,6 +16,8 @@ export interface PageDefinition {
   department?: string;
   approvalChain?: string[];
   condition?: (user: any) => boolean;
+  isSetupRequired?: boolean;
+  showTour?: boolean;
 }
 
 export type CanonicalGroupId = 

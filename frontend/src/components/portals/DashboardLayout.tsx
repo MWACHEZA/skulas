@@ -9,7 +9,28 @@ import ClockInModal from '../attendance/ClockInModal';
 import { useLedgerSSE } from '../../hooks/useLedgerSSE';
 import ErrorBoundary from '../shared/ErrorBoundary';
 import type { NavGroup } from '../../config/navGenerator';
+import { PAGE_REGISTRY } from '../../config/pageRegistry';
+import { getTutorialForRole } from '../../tutorials';
+import TutorialChecklist from './shared/TutorialChecklist';
+import TutorialRunner from './shared/TutorialRunner';
 import './portal.css';
+
+const getTourAttr = (to?: string): string | undefined => {
+  if (!to) return undefined;
+  if (to.includes('/teacher/classes')) return 'teacher-classes-link';
+  if (to.includes('/bursar/fees')) return 'bursar-fees-link';
+  if (to.includes('/bursar/reports')) return 'reports-collection-link';
+  if (to.includes('/student/timetable')) return 'student-timetable-link';
+  if (to.includes('/student/assignments')) return 'student-assignments-link';
+  if (to.includes('/student/grades')) return 'student-grades-link';
+  if (to.includes('/parent/academics')) return 'parent-reports-link';
+  if (to.includes('/parent/fees')) return 'parent-fees-link';
+  if (to.includes('/parent/attendance')) return 'parent-students-card';
+  if (to.includes('/teacher/curriculum')) return 'hod-curriculum-link';
+  if (to.includes('/admin/reception')) return 'clerk-reception-link';
+  if (to.includes('/admin/document-templates')) return 'clerk-documents-link';
+  return undefined;
+};
 
 export interface NavItem {
   label: string;
@@ -170,6 +191,93 @@ export default function DashboardLayout({
   const [clockActionType, setClockActionType] = useState<'IN' | 'OUT'>('IN');
 
   const isStaffUser = user && !['STUDENT', 'PARENT', 'SUPPLIER', 'ALUMNI', 'SUPER_ADMIN'].includes(user.role);
+
+  // ── Role Tutorial State ──
+  const secRolesStr = JSON.stringify(user?.secondaryRoles || []);
+  const tutorialConfig = React.useMemo(() => {
+    return getTutorialForRole(user?.role, user?.secondaryRoles || []);
+  }, [user?.role, secRolesStr]);
+
+  const [tutorialState, setTutorialState] = useState<{
+    status: 'pending' | 'in_progress' | 'completed' | 'dismissed';
+    completedStepIds: string[];
+  }>({ status: 'dismissed', completedStepIds: [] });
+
+  const [activeTourStep, setActiveTourStep] = useState<any | null>(null);
+
+  useEffect(() => {
+    if (!user) return;
+    api.get('/api/users/me/tutorial')
+      .then(res => {
+        if (res.data) {
+          setTutorialState({
+            status: res.data.status || 'pending',
+            completedStepIds: Array.isArray(res.data.completedStepIds) ? res.data.completedStepIds : []
+          });
+        }
+      })
+      .catch(() => {});
+  }, [user?.id, user?.role]);
+
+  const isTourLandingRoute = React.useMemo(() => {
+    const currentPath = location.pathname;
+    const match = PAGE_REGISTRY.find(p => p.route === currentPath);
+    return Boolean(match?.showTour);
+  }, [location.pathname]);
+
+  const shouldShowTutorialChecklist = Boolean(
+    tutorialConfig &&
+    isTourLandingRoute &&
+    (tutorialState.status === 'pending' || tutorialState.status === 'in_progress') &&
+    (user?.role !== 'SCHOOL_ADMIN' || (user?.isOnboarded !== false && location.pathname !== '/admin/setup'))
+  );
+
+  const handleStartTourStep = (stepId: string) => {
+    const step = tutorialConfig?.steps.find(s => s.id === stepId);
+    if (step) {
+      setActiveTourStep(step);
+    }
+  };
+
+  const handleCompleteTourStep = async (stepId: string) => {
+    const updatedIds = Array.from(new Set([...tutorialState.completedStepIds, stepId]));
+    const isAllDone = tutorialConfig?.steps.every(s => updatedIds.includes(s.id));
+    const nextStatus = isAllDone ? 'completed' : 'in_progress';
+    
+    setTutorialState({ status: nextStatus, completedStepIds: updatedIds });
+    setActiveTourStep(null);
+
+    try {
+      await api.patch('/api/users/me/tutorial', {
+        status: nextStatus,
+        completedStepIds: updatedIds
+      });
+    } catch (e) {
+      console.error('Failed to persist tutorial progress', e);
+    }
+  };
+
+  const handleDismissTutorialForever = async () => {
+    setTutorialState(prev => ({ ...prev, status: 'dismissed' }));
+    setActiveTourStep(null);
+    try {
+      await api.patch('/api/users/me/tutorial', { status: 'dismissed' });
+    } catch (e) {
+      console.error('Failed to dismiss tutorial', e);
+    }
+  };
+
+  const handleReplayTutorial = async () => {
+    try {
+      await api.post('/api/users/me/tutorial/reset');
+      setTutorialState({ status: 'pending', completedStepIds: [] });
+      if (tutorialConfig?.landingRoute) {
+        navigate(tutorialConfig.landingRoute);
+      }
+    } catch (e) {
+      console.error('Failed to reset tutorial for replay', e);
+    }
+  };
 
   const fetchTodayAttendance = useCallback(async () => {
     if (!isStaffUser) {
@@ -334,6 +442,7 @@ export default function DashboardLayout({
                               <li key={item.id} className="portal-nav-item">
                                 <NavLink
                                   to={item.to}
+                                  data-tour={getTourAttr(item.to)}
                                   className={({ isActive }) => (isActive ? 'active' : '')}
                                   onClick={() => setMobileOpen(false)}
                                   end={item.to.split('/').length <= 2}
@@ -385,6 +494,7 @@ export default function DashboardLayout({
                               <li key={subIdx} style={{ margin: '4px 0' }}>
                                 <NavLink
                                   to={subItem.to}
+                                  data-tour={getTourAttr(subItem.to)}
                                   className={({ isActive }) => `portal-nav-link sub-link ${isActive ? 'active' : ''}`}
                                   style={{ padding: '8px 12px', fontSize: '0.9rem', color: '#a0aec0', display: 'block', borderRadius: 4, textDecoration: 'none' }}
                                   onClick={() => setMobileOpen(false)}
@@ -401,6 +511,7 @@ export default function DashboardLayout({
                       <li className="portal-nav-item">
                         <NavLink
                           to={item.to}
+                          data-tour={getTourAttr(item.to)}
                           className={({ isActive }) => {
                              return isActive ? 'active' : '';
                           }}
@@ -503,6 +614,17 @@ export default function DashboardLayout({
             </div>
           </div>
           <div className="portal-topbar-right">
+            {tutorialConfig && (
+              <button
+                type="button"
+                className="portal-btn-ghost"
+                onClick={handleReplayTutorial}
+                style={{ padding: '6px 12px', fontSize: '0.8rem', color: '#2563eb', fontWeight: 700, display: 'flex', alignItems: 'center', gap: 6 }}
+                title="Replay role onboarding tutorial"
+              >
+                <i className="fas fa-redo-alt" /> Replay Tutorial
+              </button>
+            )}
             <div className="portal-topbar-user">
               <div style={{ width: 32, height: 32, borderRadius: '50%', overflow: 'hidden', background: '#e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem', fontWeight: 900, color: '#64748b' }}>
                 {user?.avatar ? (
@@ -523,6 +645,17 @@ export default function DashboardLayout({
 
         {/* Page content */}
         <div className="portal-content" style={{ display: 'flex', flexDirection: 'column', minHeight: 'calc(100vh - var(--portal-header-height))' }}>
+          {shouldShowTutorialChecklist && tutorialConfig && (
+            <div className="no-print" style={{ padding: '0 24px', marginTop: 16 }}>
+              <TutorialChecklist
+                tutorial={tutorialConfig}
+                completedStepIds={tutorialState.completedStepIds}
+                onStartStep={handleStartTourStep}
+                onDismissForever={handleDismissTutorialForever}
+              />
+            </div>
+          )}
+
           {isStaffUser && (
             <div className="no-print" style={{ padding: '0 24px', marginTop: '16px' }}>
               {!todayAttendance ? (
@@ -672,6 +805,13 @@ export default function DashboardLayout({
           onSuccess={fetchTodayAttendance}
         />
       )}
+
+      {/* Role Onboarding Tooltip Runner */}
+      <TutorialRunner
+        activeStep={activeTourStep}
+        onCompleteStep={handleCompleteTourStep}
+        onCloseTooltip={() => setActiveTourStep(null)}
+      />
 
       <style>{`
         .maint-btn-hover:hover {

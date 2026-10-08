@@ -143,6 +143,136 @@ router.get('/me', requireAuth, async (req: AuthRequest, res: Response) => {
 });
 
 /**
+ * @route   GET /api/users/me/tutorial
+ * @desc    Get user's tutorial state for their active role
+ */
+router.get('/me/tutorial', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    const userId = req.user!.id;
+    const role = (req.user!.role || '').toUpperCase();
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { metadata: true, createdAt: true }
+    });
+    if (!user) return res.status(404).json({ error: 'User not found' });
+
+    const metadata = (user.metadata as Record<string, any>) || {};
+    const tutorialStates = metadata.tutorialState || {};
+    let roleTutorial = tutorialStates[role];
+
+    if (!roleTutorial) {
+      // Default / backfill state: 'dismissed' for existing users so current staff aren't interrupted
+      roleTutorial = {
+        userId,
+        role,
+        status: 'dismissed',
+        completedStepIds: [],
+        updatedAt: new Date().toISOString()
+      };
+      await prisma.user.update({
+        where: { id: userId },
+        data: {
+          metadata: {
+            ...metadata,
+            tutorialState: { ...tutorialStates, [role]: roleTutorial }
+          }
+        }
+      });
+    }
+
+    res.json(roleTutorial);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch tutorial state' });
+  }
+});
+
+/**
+ * @route   PATCH /api/users/me/tutorial
+ * @desc    Update tutorial status or completed steps for active role
+ */
+router.patch('/me/tutorial', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    const userId = req.user!.id;
+    const role = (req.user!.role || '').toUpperCase();
+    const { status, completedStepIds } = req.body;
+
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { metadata: true }
+    });
+    if (!user) return res.status(404).json({ error: 'User not found' });
+
+    const metadata = (user.metadata as Record<string, any>) || {};
+    const tutorialStates = metadata.tutorialState || {};
+    const currentRoleState = tutorialStates[role] || { completedStepIds: [] };
+
+    const updatedRoleState = {
+      userId,
+      role,
+      status: status || currentRoleState.status || 'in_progress',
+      completedStepIds: Array.isArray(completedStepIds) ? completedStepIds : currentRoleState.completedStepIds || [],
+      updatedAt: new Date().toISOString()
+    };
+
+    await prisma.user.update({
+      where: { id: userId },
+      data: {
+        metadata: {
+          ...metadata,
+          tutorialState: { ...tutorialStates, [role]: updatedRoleState }
+        }
+      }
+    });
+
+    res.json({ success: true, tutorial: updatedRoleState });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to update tutorial state' });
+  }
+});
+
+/**
+ * @route   POST /api/users/me/tutorial/reset
+ * @desc    Reset tutorial state for replay
+ */
+router.post('/me/tutorial/reset', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    const userId = req.user!.id;
+    const role = (req.user!.role || '').toUpperCase();
+
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { metadata: true }
+    });
+    if (!user) return res.status(404).json({ error: 'User not found' });
+
+    const metadata = (user.metadata as Record<string, any>) || {};
+    const tutorialStates = metadata.tutorialState || {};
+
+    const resetState = {
+      userId,
+      role,
+      status: 'pending',
+      completedStepIds: [],
+      updatedAt: new Date().toISOString()
+    };
+
+    await prisma.user.update({
+      where: { id: userId },
+      data: {
+        metadata: {
+          ...metadata,
+          tutorialState: { ...tutorialStates, [role]: resetState }
+        }
+      }
+    });
+
+    res.json({ success: true, tutorial: resetState, message: 'Tutorial reset for replay' });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to reset tutorial' });
+  }
+});
+
+/**
  * @route   GET /api/users
  * @desc    [ADMIN] Get all users with optional role filter
  */

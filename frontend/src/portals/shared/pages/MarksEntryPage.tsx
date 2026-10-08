@@ -958,6 +958,7 @@ export default function MarksEntryPage() {
               </button>
 
               <button
+                data-tour="marks-add-btn"
                 onClick={() => setIsAddColumnModalOpen(true)}
                 className="portal-btn-ghost"
                 style={{
@@ -973,6 +974,7 @@ export default function MarksEntryPage() {
               </button>
 
               <button
+                data-tour="hod-marks-approve-btn"
                 onClick={() => setIsHodApprovalModalOpen(true)}
                 disabled={saving || students.length === 0}
                 className="portal-btn-neutral"

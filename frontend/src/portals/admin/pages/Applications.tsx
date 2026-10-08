@@ -234,6 +234,7 @@ export default function AdminApplications() {
         {['all', 'pending', 'review', 'interview', 'accepted', 'rejected'].map(tab => (
           <button 
             key={tab}
+            {...(tab === 'pending' ? { 'data-tour': 'clerk-admissions-btn' } : {})}
             onClick={() => { setActiveTab(tab); setCurrentPage(1); }} 
             style={{ 
               padding: '8px 20px', 

@@ -656,6 +656,7 @@ export default function BursarFeesUnified() {
 
               <button
                 type="submit"
+                data-tour="fees-receipt-new-btn"
                 className="portal-btn-primary"
                 style={{ width: '100%', padding: 14, fontSize: '1rem', fontWeight: 800, justifyContent: 'center' }}
                 disabled={processingPayment || !selectedStudent}

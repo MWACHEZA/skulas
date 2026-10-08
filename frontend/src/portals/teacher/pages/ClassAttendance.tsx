@@ -201,6 +201,7 @@ export default function TeacherClassAttendance() {
           )}
           <div style={{ padding: 20, textAlign: 'right', borderTop: '1px solid #edf2f7' }}>
              <button 
+               data-tour="attendance-take-btn"
                onClick={handleSave}
                disabled={students.length === 0}
                className="portal-btn-primary" 

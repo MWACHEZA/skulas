@@ -147,6 +147,7 @@ export default function TeacherCurriculum() {
         <div style={{ display: 'flex', gap: 10 }}>
           {activeTab === 'observations' && isHodOrAdmin && (
             <button
+              data-tour="hod-observation-btn"
               style={{
                 background: '#0284c7', color: '#fff', border: 'none', padding: '8px 16px', borderRadius: '6px', cursor: 'pointer', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 8
               }}
@@ -228,6 +229,7 @@ export default function TeacherCurriculum() {
 
         <button
           type="button"
+          {...(activeTab !== 'observations' ? { 'data-tour': 'hod-observation-btn' } : {})}
           onClick={() => handleTabChange('observations')}
           style={{
             padding: '10px 18px', border: 'none', background: 'none', cursor: 'pointer',

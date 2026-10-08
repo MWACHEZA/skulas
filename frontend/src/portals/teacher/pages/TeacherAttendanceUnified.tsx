@@ -50,6 +50,7 @@ export default function TeacherAttendanceUnified() {
       >
         <button
           type="button"
+          data-tour="attendance-take-btn"
           onClick={() => handleTabChange('roll-call')}
           style={{
             padding: '10px 18px',

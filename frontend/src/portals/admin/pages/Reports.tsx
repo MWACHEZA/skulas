@@ -18,12 +18,11 @@ export default function AdminReports() {
   }, []);
   
   const reports = [
-    { name: 'Enrollment Summary Report', type: 'enrollment', desc: `Student enrollment by form and gender`, icon: 'fa-user-graduate', color: 'var(--school-primary, #3182ce)' },
-    { name: 'Fee Collection Report', type: 'fees', desc: 'Breakdown of fees by term and payment method', icon: 'fa-money-bill-wave', color: 'var(--portal-success)' },
-    { name: 'Attendance Report', type: 'attendance', desc: 'Daily, weekly, and term attendance statistics', icon: 'fa-clipboard-check', color: 'var(--portal-warning)' },
-    { name: 'Academic Performance', type: 'academic', desc: 'Grade distributions per subject and form', icon: 'fa-chart-line', color: '#805ad5' },
-    { name: 'Staff Report', type: 'staff', desc: 'Teacher and support staff summary', icon: 'fa-users', color: 'var(--portal-danger)' },
-    { name: 'Asset Inventory Report', type: 'assets', desc: 'School property and equipment register', icon: 'fa-boxes', color: '#38b2ac' },
+    { name: 'Termly Report Cards', type: 'TERMLY_REPORTS', desc: 'Official terminal student report cards with teacher comments', icon: 'fa-graduation-cap', color: '#2563eb' },
+    { name: 'Class Broadsheet / Marksheet', type: 'BROADSHEET', desc: 'Master tabulation of all subjects and student rankings per stream', icon: 'fa-table', color: '#7c3aed' },
+    { name: 'Subject Analysis', type: 'SUBJECT_ANALYSIS', desc: 'Subject pass rates, grade distribution charts, and cohort variance', icon: 'fa-chart-pie', color: '#0891b2' },
+    { name: 'Failure / Merit List', type: 'MERIT_FAILURE', desc: 'Top-performing honor roll and academic probation / failure lists', icon: 'fa-award', color: '#d97706' },
+    { name: 'Continuous Assessment Summary', type: 'CA_SUMMARY', desc: 'Coursework, homework, and practical assessment aggregates', icon: 'fa-tasks', color: '#059669' },
   ];
 
   return (
