@@ -226,6 +226,8 @@ model School {
   studentAwards    StudentAward[]
   bursaryTypes     BursaryType[]
   studentBursaries StudentBursary[]
+  studentInvoices  StudentInvoice[]
+  receipts         Receipt[]
 
   @@index([code])
 }
@@ -723,6 +725,8 @@ model Student {
   cbtAttempts       CbtAttempt[]
   awards            StudentAward[]
   bursaries         StudentBursary[]
+  studentInvoices   StudentInvoice[]
+  receipts          Receipt[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -1004,6 +1008,102 @@ model FeeLineItem {
   item   String
   amount Float
   date   DateTime @default(now())
+}
+
+/// Central Student Fee Invoice for multi-module billing
+model StudentInvoice {
+  id             String               @id @default(cuid())
+  schoolId       String
+  school         School               @relation(fields: [schoolId], references: [id])
+  studentId      String
+  student        Student              @relation(fields: [studentId], references: [id])
+  termId         String?
+  term           String?
+  year           Int?
+  batchId        String?
+  invoiceNumber  String
+  totalAmount    Float
+  currency       String               @default("USD")
+  status         String               @default("posted") // draft, posted, cancelled, paid, partial
+  sourceModule   String               @default("bulk_billing") // boarding | uniforms | transport | trips | bulk_billing | library_fine
+  sourceId       String?
+  idempotencyKey String               @unique
+  dueDate        DateTime?
+  createdBy      String?
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
+
+  items          StudentInvoiceItem[]
+  allocations    PaymentAllocation[]
+
+  @@index([schoolId])
+  @@index([studentId])
+  @@index([sourceModule, sourceId])
+  @@index([batchId])
+  @@index([invoiceNumber])
+}
+
+model StudentInvoiceItem {
+  id                 String              @id @default(cuid())
+  invoiceId          String
+  invoice            StudentInvoice      @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  billingItemCode    String?
+  description        String
+  quantity           Int                 @default(1)
+  unitPrice          Float
+  totalAmount        Float
+  revenueAccountCode String              @default("4010")
+  createdAt          DateTime            @default(now())
+
+  allocations        PaymentAllocation[]
+
+  @@index([invoiceId])
+}
+
+/// Central Student Payment Receipt
+model Receipt {
+  id                  String              @id @default(cuid())
+  schoolId            String
+  school              School              @relation(fields: [schoolId], references: [id])
+  studentId           String
+  student             Student             @relation(fields: [studentId], references: [id])
+  receiptNumber       String
+  amount              Float
+  paymentCurrency     String              @default("USD")
+  invoiceCurrency     String              @default("USD")
+  exchangeRate        Float               @default(1.0)
+  paymentMethod       String              // cash_usd, cash_zig, ecocash, bank_usd, bank_zig, wallet
+  idempotencyKey      String              @unique
+  fiscalSignature     String?
+  fiscalQr            String?
+  fiscalReceiptNumber String?
+  receivedBy          String?
+  status              String              @default("completed") // completed, cancelled, refunded
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+
+  allocations         PaymentAllocation[]
+
+  @@index([schoolId])
+  @@index([studentId])
+  @@index([receiptNumber])
+}
+
+/// Allocation of receipt amounts to specific invoices or unallocated credit
+model PaymentAllocation {
+  id              String              @id @default(cuid())
+  receiptId       String
+  receipt         Receipt             @relation(fields: [receiptId], references: [id], onDelete: Cascade)
+  invoiceId       String?
+  invoice         StudentInvoice?     @relation(fields: [invoiceId], references: [id])
+  invoiceItemId   String?
+  invoiceItem     StudentInvoiceItem? @relation(fields: [invoiceItemId], references: [id])
+  allocatedAmount Float
+  type            String              @default("INVOICE") // INVOICE | UNALLOCATED_CREDIT
+  createdAt       DateTime            @default(now())
+
+  @@index([receiptId])
+  @@index([invoiceId])
 }
 
 model Assignment {
@@ -2468,6 +2568,12 @@ model FeeGroup {
 
   incomeAccountId String? // Account to credit (e.g., 5100 Tuition Fees)
   arAccountId     String? // Account to debit (e.g., 1210 Student Accounts Receivable)
+
+  itemCode            String?
+  revenueAccountCode String? // COA code to credit (e.g. 4010, 4020, 4033)
+  applicableTo        String? // ALL, BOARDERS, DAY_SCHOLARS, SPECIFIC_CLASS
+  frequency           String? // TERMLY, MONTHLY, ONCE_OFF, ANNUAL
+  module              String? // core | boarding | transport | tuckshop | uniforms | etc.
 
   revenueAllocations RevenueAllocation[]   @relation("AllocatedFeeGroups")
   classAmounts       FeeGroupClassAmount[]

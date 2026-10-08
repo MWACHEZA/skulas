@@ -46,18 +46,8 @@ export default function BursarFeesUnified() {
   const [processingPayment, setProcessingPayment] = useState(false);
   const [lastReceipt, setLastReceipt] = useState<any>(null);
 
-  // Sample students database for instant keyboard-friendly search
-  const studentDatabase = [
-    { id: 'ST-001', name: 'Tanaka Ndlovu', form: 'Form 3A', boarding: 'Boarder', billed: 950, paid: 600, balance: 350, parentPhone: '+263771123456' },
-    { id: 'ST-002', name: 'Ruvimbo Chitepo', form: 'Form 3A', boarding: 'Day', billed: 450, paid: 450, balance: 0, parentPhone: '+263772234567' },
-    { id: 'ST-003', name: 'Blessing Sibanda', form: 'Form 3A', boarding: 'Boarder', billed: 950, paid: 200, balance: 750, parentPhone: '+263773345678' },
-    { id: 'ST-004', name: 'Tadiwa Mutasa', form: 'Form 4B', boarding: 'Boarder', billed: 1050, paid: 500, balance: 550, parentPhone: '+263774456789' },
-    { id: 'ST-005', name: 'Farai Moyo', form: 'Form 2C', boarding: 'Day', billed: 450, paid: 150, balance: 300, parentPhone: '+263775567890' },
-  ];
-
-  const searchResults = searchQuery.trim().length > 1
-    ? studentDatabase.filter(s => s.name.toLowerCase().includes(searchQuery.toLowerCase()) || s.id.toLowerCase().includes(searchQuery.toLowerCase()) || s.form.toLowerCase().includes(searchQuery.toLowerCase()))
-    : [];
+  const [studentDatabase, setStudentDatabase] = useState<any[]>([]);
+  const [loadingStudents, setLoadingStudents] = useState(false);
 
   // -------------------------------------------------------------
   // TAB: Defaulters / Debtors Aging State
@@ -68,13 +58,70 @@ export default function BursarFeesUnified() {
   const [defaulterSearchQuery, setDefaulterSearchQuery] = useState('');
   const [selectedDefaulterIds, setSelectedDefaulterIds] = useState<string[]>([]);
   const [broadcastingSms, setBroadcastingSms] = useState(false);
+  const [loadingDefaulters, setLoadingDefaulters] = useState(false);
+  const [defaulters, setDefaulters] = useState<DefaulterRecord[]>([]);
 
-  const [defaulters, setDefaulters] = useState<DefaulterRecord[]>([
-    { id: 'def-1', studentId: 'ST-003', name: 'Blessing Sibanda', form: 'Form 3A', boarding: 'Boarder', totalBilled: 950, totalPaid: 200, balance: 750, daysOverdue: 92, status: '90+ Days', guardianPhone: '+263773345678', examBlocked: false },
-    { id: 'def-2', studentId: 'ST-004', name: 'Tadiwa Mutasa', form: 'Form 4B', boarding: 'Boarder', totalBilled: 1050, totalPaid: 500, balance: 550, daysOverdue: 64, status: '60 Days', guardianPhone: '+263774456789', examBlocked: false },
-    { id: 'def-3', studentId: 'ST-001', name: 'Tanaka Ndlovu', form: 'Form 3A', boarding: 'Boarder', totalBilled: 950, totalPaid: 600, balance: 350, daysOverdue: 35, status: '30 Days', guardianPhone: '+263771123456', examBlocked: false },
-    { id: 'def-4', studentId: 'ST-005', name: 'Farai Moyo', form: 'Form 2C', boarding: 'Day', totalBilled: 450, totalPaid: 150, balance: 300, daysOverdue: 14, status: 'Current', guardianPhone: '+263775567890', examBlocked: false },
-  ]);
+  // Load live students and balances from Bursar API
+  const loadStudents = async () => {
+    try {
+      setLoadingStudents(true);
+      const res = await api.get('/api/bursar/students-balance');
+      if (Array.isArray(res.data)) {
+        setStudentDatabase(res.data.map((s: any) => ({
+          id: s.studentId,
+          studentId: s.studentId,
+          name: s.studentName,
+          form: s.className || 'General',
+          boarding: 'Day',
+          billed: s.totalBilled,
+          paid: s.totalPaid,
+          balance: s.balance,
+          parentPhone: '+26377xxxxxxx'
+        })));
+      }
+    } catch (err) {
+      console.warn('Could not load student balances:', err);
+    } finally {
+      setLoadingStudents(false);
+    }
+  };
+
+  // Load live defaulters aging from Bursar API
+  const loadDefaulters = async () => {
+    try {
+      setLoadingDefaulters(true);
+      const res = await api.get('/api/bursar/defaulters');
+      if (Array.isArray(res.data)) {
+        setDefaulters(res.data.map((d: any) => ({
+          id: d.studentId,
+          studentId: d.studentCode,
+          name: d.studentName,
+          form: d.className || 'Unassigned',
+          boarding: d.boardingStatus as any,
+          totalBilled: d.totalArrears,
+          totalPaid: 0,
+          balance: d.totalArrears,
+          daysOverdue: d.over90 > 0 ? 95 : d.days61_90 > 0 ? 65 : d.days31_60 > 0 ? 35 : 15,
+          status: (d.over90 > 0 ? '90+ Days' : d.days61_90 > 0 ? '60 Days' : d.days31_60 > 0 ? '30 Days' : 'Current') as any,
+          guardianPhone: d.parentPhone || 'No phone',
+          examBlocked: false
+        })));
+      }
+    } catch (err) {
+      console.warn('Could not load defaulters:', err);
+    } finally {
+      setLoadingDefaulters(false);
+    }
+  };
+
+  useEffect(() => {
+    loadStudents();
+    loadDefaulters();
+  }, []);
+
+  const searchResults = searchQuery.trim().length > 1
+    ? studentDatabase.filter(s => s.name.toLowerCase().includes(searchQuery.toLowerCase()) || s.id.toLowerCase().includes(searchQuery.toLowerCase()) || s.form.toLowerCase().includes(searchQuery.toLowerCase()))
+    : [];
 
   useEffect(() => {
     const tabParam = searchParams.get('tab') as BursarFeesTab;
@@ -88,8 +135,8 @@ export default function BursarFeesUnified() {
     setSearchParams({ tab });
   };
 
-  // Payment Handler
-  const handleProcessPayment = (e: React.FormEvent) => {
+  // Real Payment Handler calling /api/bursar/receipts
+  const handleProcessPayment = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedStudent) {
       showToast('Please search and select a student first', 'warning');
@@ -102,13 +149,32 @@ export default function BursarFeesUnified() {
     }
 
     setProcessingPayment(true);
-    setTimeout(() => {
-      // Calculate base USD equivalent
+    try {
+      const methodMap: Record<string, string> = {
+        'Cash': paymentCurrency === 'ZiG' ? 'cash_zig' : 'cash_usd',
+        'EcoCash': 'ecocash',
+        'Bank Transfer': paymentCurrency === 'ZiG' ? 'bank_zig' : 'bank_usd',
+        'POS Swipe': paymentCurrency === 'ZiG' ? 'bank_zig' : 'bank_usd'
+      };
+
+      const idempotencyKey = `rcpt_${Date.now()}_${selectedStudent.id}`;
+      const res = await api.post('/api/bursar/receipts', {
+        idempotencyKey,
+        studentId: selectedStudent.id,
+        amount: amt,
+        paymentCurrency,
+        invoiceCurrency: 'USD',
+        exchangeRate,
+        paymentMethod: methodMap[paymentMethod] || 'cash_usd',
+        fiscalize: true,
+        allocateStrategy: 'oldest_first'
+      });
+
+      const rcptData = res.data?.receipt || res.data;
       const baseUSD = paymentCurrency === 'ZiG' ? Number((amt / exchangeRate).toFixed(2)) : amt;
-      const receiptNo = `RCPT-2026-${Math.floor(10000 + Math.random() * 90000)}`;
 
       const receipt = {
-        receiptNo,
+        receiptNo: rcptData.receiptNumber || `RCPT-${Date.now()}`,
         studentName: selectedStudent.name,
         studentId: selectedStudent.id,
         form: selectedStudent.form,
@@ -116,18 +182,29 @@ export default function BursarFeesUnified() {
         currency: paymentCurrency,
         baseUSD,
         method: paymentMethod,
-        reference: referenceCode || 'CASH-TILL-1',
+        reference: referenceCode || rcptData.receiptNumber || 'COUNTER-CASH',
         newBalance: Math.max(0, selectedStudent.balance - baseUSD),
         timestamp: new Date().toLocaleString(),
-        smsSent: sendSmsReceipt
+        smsSent: sendSmsReceipt,
+        fiscalSignature: rcptData.fiscalSignature,
+        fiscalQr: rcptData.fiscalQr,
+        fiscalReceiptNumber: rcptData.fiscalReceiptNumber
       };
 
       setLastReceipt(receipt);
-      setProcessingPayment(false);
-      showToast(`Payment processed: ${receiptNo} for ${selectedStudent.name}. ${sendSmsReceipt ? 'SMS dispatch confirmed.' : ''}`, 'success');
+      showToast(`Payment processed: ${receipt.receiptNo} for ${selectedStudent.name}. ${sendSmsReceipt ? 'SMS dispatch confirmed.' : ''}`, 'success');
       setPaymentAmount('');
       setReferenceCode('');
-    }, 800);
+
+      // Refresh balances
+      loadStudents();
+      loadDefaulters();
+    } catch (err: any) {
+      console.error('Payment receipt processing error:', err);
+      showToast('Payment processing failed: ' + (err.response?.data?.error || err.message), 'error');
+    } finally {
+      setProcessingPayment(false);
+    }
   };
 
   const filteredDefaulters = defaulters.filter(d => {
@@ -712,6 +789,15 @@ export default function BursarFeesUnified() {
                   <div style={{ borderTop: '1px dashed #cbd5e1', paddingTop: 8, marginTop: 8 }}>
                     <strong>Remaining Ledger Balance:</strong> ${lastReceipt.newBalance} USD
                   </div>
+                  {lastReceipt.fiscalReceiptNumber && (
+                    <div style={{ marginTop: 6, padding: '6px 8px', background: '#ecfdf5', borderRadius: 4, border: '1px solid #a7f3d0' }}>
+                      <div style={{ fontSize: '0.72rem', fontWeight: 800, color: '#065f46' }}>ZIMRA FISCAL VERIFIED</div>
+                      <div style={{ fontSize: '0.68rem', color: '#047857' }}>Fiscal No: {lastReceipt.fiscalReceiptNumber}</div>
+                      {lastReceipt.fiscalSignature && (
+                        <div style={{ fontSize: '0.65rem', color: '#047857', wordBreak: 'break-all' }}>Sig: {lastReceipt.fiscalSignature}</div>
+                      )}
+                    </div>
+                  )}
                   <div style={{ marginTop: 8, fontSize: '0.7rem', color: '#15803d' }}>
                     {lastReceipt.smsSent ? '✓ SMS notification successfully dispatched' : 'SMS not requested'}
                   </div>

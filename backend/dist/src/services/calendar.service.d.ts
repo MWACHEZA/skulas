@@ -15,8 +15,8 @@ export declare function syncModuleEventToCalendar(eventData: {
     schoolId: string;
     date: Date;
     title: string;
+    sourceModule: string;
+    sourceId: string;
     endTime: Date | null;
     location: string | null;
-    sourceId: string;
-    sourceModule: string;
 }>;

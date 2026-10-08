@@ -4,10 +4,27 @@ import { requireAuth, AuthRequest } from '../middleware/auth';
 import { LedgerService } from '../services/ledger.service';
 import { getAccountId } from '../../prisma/seeders/coa.seeder';
 import { LedgerEvents } from '../services/ledger-events';
+import { resolveSchoolSubscription } from './schools';
 
 const router = Router();
 
 router.use(requireAuth);
+
+// Enforce tuckshop module toggle
+router.use(async (req: AuthRequest, res, next) => {
+  const schoolId = req.user?.schoolId;
+  if (schoolId) {
+    try {
+      const sub = await resolveSchoolSubscription(schoolId);
+      if (sub && sub.modules && sub.modules.tuckshop === false) {
+        return res.status(403).json({ error: 'Tuckshop & Wallets module is disabled for this institution.' });
+      }
+    } catch {
+      // Allow fallback if lookup fails
+    }
+  }
+  next();
+});
 
 /**
  * @route   GET /api/wallets

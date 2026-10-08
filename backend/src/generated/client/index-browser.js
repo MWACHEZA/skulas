@@ -583,6 +583,69 @@ exports.Prisma.FeeLineItemScalarFieldEnum = {
   date: 'date'
 };
 
+exports.Prisma.StudentInvoiceScalarFieldEnum = {
+  id: 'id',
+  schoolId: 'schoolId',
+  studentId: 'studentId',
+  termId: 'termId',
+  term: 'term',
+  year: 'year',
+  batchId: 'batchId',
+  invoiceNumber: 'invoiceNumber',
+  totalAmount: 'totalAmount',
+  currency: 'currency',
+  status: 'status',
+  sourceModule: 'sourceModule',
+  sourceId: 'sourceId',
+  idempotencyKey: 'idempotencyKey',
+  dueDate: 'dueDate',
+  createdBy: 'createdBy',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.StudentInvoiceItemScalarFieldEnum = {
+  id: 'id',
+  invoiceId: 'invoiceId',
+  billingItemCode: 'billingItemCode',
+  description: 'description',
+  quantity: 'quantity',
+  unitPrice: 'unitPrice',
+  totalAmount: 'totalAmount',
+  revenueAccountCode: 'revenueAccountCode',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.ReceiptScalarFieldEnum = {
+  id: 'id',
+  schoolId: 'schoolId',
+  studentId: 'studentId',
+  receiptNumber: 'receiptNumber',
+  amount: 'amount',
+  paymentCurrency: 'paymentCurrency',
+  invoiceCurrency: 'invoiceCurrency',
+  exchangeRate: 'exchangeRate',
+  paymentMethod: 'paymentMethod',
+  idempotencyKey: 'idempotencyKey',
+  fiscalSignature: 'fiscalSignature',
+  fiscalQr: 'fiscalQr',
+  fiscalReceiptNumber: 'fiscalReceiptNumber',
+  receivedBy: 'receivedBy',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.PaymentAllocationScalarFieldEnum = {
+  id: 'id',
+  receiptId: 'receiptId',
+  invoiceId: 'invoiceId',
+  invoiceItemId: 'invoiceItemId',
+  allocatedAmount: 'allocatedAmount',
+  type: 'type',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.AssignmentScalarFieldEnum = {
   id: 'id',
   title: 'title',
@@ -1612,6 +1675,11 @@ exports.Prisma.FeeGroupScalarFieldEnum = {
   schoolId: 'schoolId',
   incomeAccountId: 'incomeAccountId',
   arAccountId: 'arAccountId',
+  itemCode: 'itemCode',
+  revenueAccountCode: 'revenueAccountCode',
+  applicableTo: 'applicableTo',
+  frequency: 'frequency',
+  module: 'module',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -3326,6 +3394,10 @@ exports.Prisma.ModelName = {
   StaffAttendance: 'StaffAttendance',
   Fee: 'Fee',
   FeeLineItem: 'FeeLineItem',
+  StudentInvoice: 'StudentInvoice',
+  StudentInvoiceItem: 'StudentInvoiceItem',
+  Receipt: 'Receipt',
+  PaymentAllocation: 'PaymentAllocation',
   Assignment: 'Assignment',
   QuestionPaper: 'QuestionPaper',
   TimetableSlot: 'TimetableSlot',

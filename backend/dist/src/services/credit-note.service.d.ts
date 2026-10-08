@@ -63,6 +63,7 @@ export declare class CreditNoteService {
             currency: string;
             isLocked: boolean;
             ipAddress: string | null;
+            sourceId: string;
             period: string;
             entryNumber: string;
             exchangeRateUsed: number;
@@ -71,7 +72,6 @@ export declare class CreditNoteService {
             isReversed: boolean;
             reversedByCnId: string | null;
             sourceType: string;
-            sourceId: string;
             createdByUserId: string | null;
         };
         originalEntryNumber: string;

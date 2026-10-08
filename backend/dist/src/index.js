@@ -209,6 +209,8 @@ app.use('/api/setup', setup_1.default);
 app.use('/api/student-requests', student_requests_1.default);
 const bursar_dashboard_1 = __importDefault(require("./api/bursar-dashboard"));
 app.use('/api/bursar-dashboard', bursar_dashboard_1.default);
+const bursar_1 = __importDefault(require("./api/bursar"));
+app.use('/api/bursar', bursar_1.default);
 app.use('/api/fiscal', fiscal_1.default);
 app.use('/fiscal', fiscal_1.default);
 app.use('/api/tills', tills_1.default);

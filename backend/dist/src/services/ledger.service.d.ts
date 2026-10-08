@@ -128,6 +128,7 @@ export declare const LedgerService: {
         currency: string;
         isLocked: boolean;
         ipAddress: string | null;
+        sourceId: string;
         period: string;
         entryNumber: string;
         exchangeRateUsed: number;
@@ -136,7 +137,6 @@ export declare const LedgerService: {
         isReversed: boolean;
         reversedByCnId: string | null;
         sourceType: string;
-        sourceId: string;
         createdByUserId: string | null;
     }>;
     /**
@@ -176,6 +176,7 @@ export declare const LedgerService: {
         currency: string;
         isLocked: boolean;
         ipAddress: string | null;
+        sourceId: string;
         period: string;
         entryNumber: string;
         exchangeRateUsed: number;
@@ -184,7 +185,6 @@ export declare const LedgerService: {
         isReversed: boolean;
         reversedByCnId: string | null;
         sourceType: string;
-        sourceId: string;
         createdByUserId: string | null;
     }>;
     /**
@@ -225,6 +225,7 @@ export declare const LedgerService: {
         currency: string;
         isLocked: boolean;
         ipAddress: string | null;
+        sourceId: string;
         period: string;
         entryNumber: string;
         exchangeRateUsed: number;
@@ -233,7 +234,6 @@ export declare const LedgerService: {
         isReversed: boolean;
         reversedByCnId: string | null;
         sourceType: string;
-        sourceId: string;
         createdByUserId: string | null;
     }>;
     /**

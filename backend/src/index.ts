@@ -206,6 +206,8 @@ app.use('/api/setup', setupRoutes);
 app.use('/api/student-requests', studentRequestsRoutes);
 import bursarDashboardRoutes from './api/bursar-dashboard';
 app.use('/api/bursar-dashboard', bursarDashboardRoutes);
+import bursarRoutes from './api/bursar';
+app.use('/api/bursar', bursarRoutes);
 app.use('/api/fiscal', fiscalRoutes);
 app.use('/fiscal', fiscalRoutes);
 app.use('/api/tills', tillsRoutes);

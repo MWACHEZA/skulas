@@ -9,6 +9,7 @@ import { logAction } from '../utils/audit';
 import { LedgerService } from '../services/ledger.service';
 import { getAccountId } from '../../prisma/seeders/coa.seeder';
 import { SequenceService } from '../services/sequence.service';
+import { BursarService } from '../services/bursar.service';
 
 const router = Router();
 const upload = multer({ storage: multer.memoryStorage() });
@@ -748,7 +749,7 @@ router.post('/bulk-invoices', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN')
 
     if (students.length > 0) {
       const feesData = students.map(s => ({
-        id: require('crypto').randomUUID(), // we need IDs to potentially link to sourceId, but since it's createMany, we might just use the feeGroup.id as the sourceId for the aggregate ledger entry
+        id: require('crypto').randomUUID(),
         studentId: s.id,
         feeGroupId: feeGroup.id,
         amount: parsedAmount,
@@ -764,22 +765,34 @@ router.post('/bulk-invoices', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN')
         skipDuplicates: true
       });
 
-      // Aggregate ledger entry for the entire bulk invoice run
-      const totalAmount = parsedAmount * students.length;
-      const arAccountId = feeGroup.arAccountId || (await getAccountId(schoolId, '1210', prisma));
-      const incomeAccountId = feeGroup.incomeAccountId || (await getAccountId(schoolId, '5100', prisma));
-
-      await LedgerService.postEntry({
-        schoolId,
-        date: new Date(),
-        description: `Bulk Invoice: ${description || `${name} - ${billingLabel} ${year}`}`,
-        sourceType: 'fee_group',
-        sourceId: feeGroup.id,
-        lines: [
-          { accountId: arAccountId, debit: totalAmount, description: `Student AR — bulk fee billed for ${students.length} students` },
-          { accountId: incomeAccountId, credit: totalAmount, description: feeGroup.name }
-        ]
-      });
+      // Also create centralized StudentInvoice per student with idempotency keys
+      for (const s of students) {
+        try {
+          await BursarService.createStudentInvoice({
+            schoolId,
+            idempotencyKey: `bulk_${feeGroup.id}_${s.id}`,
+            studentId: s.id,
+            term: billingLabel,
+            year,
+            sourceModule: 'bulk_billing',
+            sourceId: feeGroup.id,
+            dueDate: new Date(year, 11, 31),
+            items: [
+              {
+                description: `${name} (${billingLabel})`,
+                quantity: 1,
+                unitPrice: parsedAmount,
+                totalAmount: parsedAmount,
+                revenueAccountCode: feeGroup.revenueAccountCode || '4010'
+              }
+            ],
+            createdBy: req.user!.id,
+            batchId: feeGroup.id
+          });
+        } catch (invErr) {
+          console.warn(`Bulk student invoice failed for ${s.id}:`, invErr);
+        }
+      }
     }
 
     res.status(201).json({

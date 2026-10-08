@@ -8,8 +8,25 @@ const prisma_1 = __importDefault(require("../lib/prisma"));
 const auth_1 = require("../middleware/auth");
 const ledger_service_1 = require("../services/ledger.service");
 const ledger_events_1 = require("../services/ledger-events");
+const schools_1 = require("./schools");
 const router = (0, express_1.Router)();
 router.use(auth_1.requireAuth);
+// Enforce tuckshop module toggle
+router.use(async (req, res, next) => {
+    const schoolId = req.user?.schoolId;
+    if (schoolId) {
+        try {
+            const sub = await (0, schools_1.resolveSchoolSubscription)(schoolId);
+            if (sub && sub.modules && sub.modules.tuckshop === false) {
+                return res.status(403).json({ error: 'Tuckshop & Wallets module is disabled for this institution.' });
+            }
+        }
+        catch {
+            // Allow fallback if lookup fails
+        }
+    }
+    next();
+});
 /**
  * @route   GET /api/wallets
  * @desc    Get all student wallets with balances for the school
