@@ -130,6 +130,7 @@ import AdminAttendance from './portals/admin/pages/Attendance';
 import AdminStaffAttendance from './portals/admin/pages/AdminStaffAttendance';
 import AdminClinic from './portals/admin/pages/AdminClinic';
 import AdminDiscipline from './portals/admin/pages/AdminDiscipline';
+import AdminTrips from './portals/admin/pages/AdminTrips';
 import AdminTransport from './portals/admin/pages/AdminTransport';
 import AdminUniformsInventory from './portals/admin/pages/AdminUniformsInventory';
 import AdminCommunication from './portals/admin/pages/AdminCommunication';
@@ -651,9 +652,12 @@ export default function App() {
               <Route path="attendance" element={<AdminAttendance />} />
               <Route path="attendance/staff" element={<AdminStaffAttendance />} />
 
-              {/* 5. Welfare Module */}
+              {/* 5. Welfare & Student Life Module */}
               <Route path="clinic" element={<AdminClinic />} />
               <Route path="discipline" element={<AdminDiscipline />} />
+              <Route path="trips" element={<AdminTrips />} />
+              <Route path="trips/create" element={<AdminTrips defaultTab="create" />} />
+              <Route path="trips/:id" element={<AdminTrips defaultTab="details" />} />
 
               {/* 6. Operations Module */}
               <Route path="transport" element={<AdminTransport />} />

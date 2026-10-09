@@ -51,6 +51,7 @@ export const PERMISSIONS = {
   STUDENT_LIFE_CLUBS: 'student_life.clubs:manage',
   STUDENT_LIFE_SPORTS: 'student_life.sports:manage',
   STUDENT_LIFE_CLOCK_LOGS: 'student_life.clock_logs:view',
+  STUDENT_LIFE_TRIPS: 'student_life.trips:manage',
   STUDENT_CLEANING_REQUESTS: 'student.cleaning_requests:manage',
   BOARDING_STUDENT_APPROVALS: 'boarding.approvals.student_leader:manage',
   ADMIN_LEADERSHIP_ASSIGN: 'admin.leadership:assign',

@@ -232,6 +232,7 @@ model School {
   transportAllocations   StudentTransportAllocation[]
   schoolTrips            SchoolTrip[]
   tripConsents           TripConsent[]
+  medicalConsents        MedicalConsent[]
   bookLoanFines          BookLoanFine[]
   boardingRollCalls      BoardingRollCall[]
   exeats                 Exeat[]
@@ -596,6 +597,10 @@ model User {
   staffAttendanceDailies   StaffAttendanceDaily[]
   biometricRawLogs         BiometricRawLog[]
   hrTardinessLogs          HrTardinessLog[]
+  tripLeadTrips            SchoolTrip[]              @relation("TripLeadStaff")
+  tripNurseTrips           SchoolTrip[]              @relation("TripNurseStaff")
+  parentTripConsents       TripConsent[]             @relation("ParentTripConsents")
+  parentMedicalConsents    MedicalConsent[]          @relation("ParentMedicalConsents")
 
   @@index([schoolId])
 }
@@ -756,6 +761,7 @@ model Student {
   bedAllocations           HostelBedAllocation[]
   transportAllocations     StudentTransportAllocation[]
   tripConsents             TripConsent[]
+  medicalConsents          MedicalConsent[]
   bookLoanFines            BookLoanFine[]
   boardingRollCalls        BoardingRollCall[]
   exeats                   Exeat[]
@@ -3299,6 +3305,7 @@ model SchoolVehicle {
 
   school     School            @relation(fields: [schoolId], references: [id], onDelete: Cascade)
   transports SchoolTransport[]
+  trips      SchoolTrip[]
 
   @@index([schoolId])
 }
@@ -5081,44 +5088,103 @@ model StudentTransportAllocation {
 }
 
 model SchoolTrip {
-  id          String        @id @default(cuid())
-  schoolId    String
-  school      School        @relation(fields: [schoolId], references: [id], onDelete: Cascade)
-  title       String
-  destination String
-  date        DateTime
-  cost        Float         @default(0)
-  currency    String        @default("USD")
-  description String?
-  transport   String?
-  status      String        @default("PLANNED") // PLANNED | COMPLETED | CANCELLED
-  consents    TripConsent[]
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  id                 String         @id @default(cuid())
+  schoolId           String
+  school             School         @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  title              String
+  type               String         @default("academic") // academic, sports, club, religious
+  destination        String
+  purpose            String?
+  date               DateTime
+  departureTime      String? // e.g. "07:30"
+  returnTime         String? // e.g. "17:00"
+  cost               Float          @default(0)
+  currency           String         @default("USD")
+  description        String?
+  transport          String? // "School Bus #1", "Private transport", etc.
+  busId              String?
+  bus                SchoolVehicle? @relation(fields: [busId], references: [id], onDelete: SetNull)
+  staffId            String?
+  staff              User?          @relation("TripLeadStaff", fields: [staffId], references: [id], onDelete: SetNull)
+  nurseStaffId       String?
+  nurseStaff         User?          @relation("TripNurseStaff", fields: [nurseStaffId], references: [id], onDelete: SetNull)
+  requiredDocuments  String? // Passport, Medical clearance, Indemnity form
+  consentDeadline    DateTime?
+  riskAssessmentFile String?
+  riskLevel          String         @default("LOW") // LOW, MEDIUM, HIGH
+  itinerary          String?
+  seatLimit          Int?
+  status             String         @default("DRAFT") // DRAFT, PUBLISHED, COMPLETED, CANCELLED
+  publishedAt        DateTime?
+  consents           TripConsent[]
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
 
   @@index([schoolId])
+  @@index([date])
+  @@index([status])
+  @@map("trips")
 }
 
 model TripConsent {
-  id           String     @id @default(cuid())
-  schoolId     String
-  school       School     @relation(fields: [schoolId], references: [id], onDelete: Cascade)
-  tripId       String
-  trip         SchoolTrip @relation(fields: [tripId], references: [id], onDelete: Cascade)
-  studentId    String
-  student      Student    @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  parentName   String?
-  parentPhone  String?
-  status       String     @default("APPROVED") // PENDING | APPROVED | DECLINED | CANCELLED
-  invoiceId    String?
-  creditNoteId String?
-  consentedAt  DateTime   @default(now())
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
+  id                   String     @id @default(cuid())
+  schoolId             String
+  school               School     @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  tripId               String
+  trip                 SchoolTrip @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  studentId            String
+  student              Student    @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  parentId             String?
+  parent               User?      @relation("ParentTripConsents", fields: [parentId], references: [id], onDelete: SetNull)
+  parentName           String?
+  parentPhone          String?
+  status               String     @default("pending") // pending, approved, declined, expired
+  signatureName        String?
+  signatureIp          String?
+  consentedAt          DateTime?
+  consentedBy          String?
+  agreedRiskAssessment Boolean    @default(false)
+  agreedToPay          Boolean    @default(false)
+  paymentStatus        String     @default("unpaid") // unpaid, paid, waived, na
+  invoiceId            String?
+  creditNoteId         String?
+  boardedAt            DateTime?
+  seatNumber           Int?
+  notes                String?
+  createdAt            DateTime   @default(now())
+  updatedAt            DateTime   @updatedAt
 
+  @@unique([tripId, studentId])
   @@index([schoolId])
   @@index([studentId])
   @@index([tripId])
+  @@index([status])
+  @@map("trip_consents")
+}
+
+model MedicalConsent {
+  id                    String    @id @default(cuid())
+  schoolId              String
+  school                School    @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  studentId             String
+  student               Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  parentId              String?
+  parent                User?     @relation("ParentMedicalConsents", fields: [parentId], references: [id], onDelete: SetNull)
+  consentType           String    @default("emergency_treatment") // emergency_treatment, triage_basic, hospital_transfer
+  status                String    @default("pending") // pending, approved, declined
+  allergiesConfirmed    Boolean   @default(false)
+  emergencyContactName  String?
+  emergencyContactPhone String?
+  signatureName         String?
+  signatureIp           String?
+  consentedAt           DateTime?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@unique([schoolId, studentId, consentType])
+  @@index([schoolId])
+  @@index([studentId])
+  @@map("medical_consents")
 }
 
 model BookLoanFine {

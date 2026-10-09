@@ -284,6 +284,21 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     searchKeywords: ['conduct', 'detention', 'punishment', 'infractions', 'merits', 'awards', 'certificates']
   },
   {
+    id: 'admin-trips',
+    label: 'Trips & Excursions',
+    route: '/admin/trips',
+    group: 'STUDENT_LIFE',
+    icon: 'fas fa-route',
+    permissionKey: PERMISSIONS.STUDENT_LIFE_TRIPS,
+    portalVisibility: ['admin'],
+    tabs: [
+      { id: 'all-trips', label: 'All Trips' },
+      { id: 'details', label: 'Trip Roster & Manifest' },
+      { id: 'create', label: 'Create Excursion' }
+    ],
+    searchKeywords: ['trips', 'excursions', 'field trips', 'gate manifest', 'legal consent', 'parent approvals', 'bus seating']
+  },
+  {
     id: 'admin-transport',
     label: 'Transport & Fleet',
     route: '/admin/transport',

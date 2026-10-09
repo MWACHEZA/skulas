@@ -220,6 +220,10 @@ app.use('/api/compliance', compliance_1.default);
 app.use('/compliance', compliance_1.default);
 app.use('/public', public_1.default);
 app.use('/api/public', public_1.default);
+const trips_1 = __importDefault(require("./api/trips"));
+app.use('/api/trips', trips_1.default);
+const parent_approvals_1 = __importDefault(require("./api/parent-approvals"));
+app.use('/api/parent/approvals', parent_approvals_1.default);
 // Health check endpoint
 app.get('/api/health', (req, res) => {
     res.status(200).send('OK');

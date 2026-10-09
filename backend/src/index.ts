@@ -217,6 +217,10 @@ app.use('/api/compliance', complianceRoutes);
 app.use('/compliance', complianceRoutes);
 app.use('/public', publicRoutes);
 app.use('/api/public', publicRoutes);
+import tripsRoutes from './api/trips';
+app.use('/api/trips', tripsRoutes);
+import parentApprovalsRoutes from './api/parent-approvals';
+app.use('/api/parent/approvals', parentApprovalsRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
