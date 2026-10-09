@@ -233,6 +233,15 @@ model School {
   schoolTrips          SchoolTrip[]
   tripConsents         TripConsent[]
   bookLoanFines        BookLoanFine[]
+  boardingRollCalls    BoardingRollCall[]
+  exeats               Exeat[]
+  diningPantryItems    DiningPantryItem[]
+  diningRecipes        DiningRecipe[]
+  uniformCategories    UniformCategory[]
+  uniformProducts      UniformProduct[]
+  uniformKits          UniformKit[]
+  uniformIssuances     UniformIssuance[]
+  uniformStockLedgers  UniformStockLedger[]
 
   @@index([code])
 }
@@ -572,9 +581,12 @@ model User {
   createdQuestions        Question[]            @relation("QuestionCreatedBy")
   createdCbtExams         CbtExam[]             @relation("CbtExamCreatedBy")
 
-  nominatedAwards   StudentAward[]   @relation("AwardNominator")
-  approvedAwards    StudentAward[]   @relation("AwardApprover")
-  approvedBursaries StudentBursary[] @relation("BursaryApprover")
+  nominatedAwards         StudentAward[]     @relation("AwardNominator")
+  approvedAwards          StudentAward[]     @relation("AwardApprover")
+  approvedBursaries       StudentBursary[]   @relation("BursaryApprover")
+  approvedExeats          Exeat[]            @relation("ExeatApprovedBy")
+  markedBoardingRollCalls BoardingRollCall[] @relation("BoardingRollCallMarkedBy")
+  uniformsIssued          UniformIssuance[]  @relation("UniformIssuedBy")
 
   @@index([schoolId])
 }
@@ -736,6 +748,9 @@ model Student {
   transportAllocations StudentTransportAllocation[]
   tripConsents         TripConsent[]
   bookLoanFines        BookLoanFine[]
+  boardingRollCalls    BoardingRollCall[]
+  exeats               Exeat[]
+  uniformIssuances     UniformIssuance[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -1043,8 +1058,10 @@ model StudentInvoice {
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
 
-  items       StudentInvoiceItem[]
-  allocations PaymentAllocation[]
+  items            StudentInvoiceItem[]
+  allocations      PaymentAllocation[]
+  bedAllocations   HostelBedAllocation[]
+  uniformIssuances UniformIssuance[]
 
   @@index([schoolId])
   @@index([studentId])
@@ -2345,19 +2362,23 @@ model Hostel {
   leadershipAssignments LeadershipAssignment[] @relation("LeadershipHostel")
   requisitionsAsHostel  Requisition[]          @relation("RequisitionHostel")
   bedAllocations        HostelBedAllocation[]
+  boardingRollCalls     BoardingRollCall[]
 
   @@index([schoolId])
 }
 
 model Room {
-  id             String                @id @default(cuid())
-  name           String // Room Number/Name
-  capacity       Int
-  hostelId       String
-  hostel         Hostel                @relation(fields: [hostelId], references: [id])
-  students       Student[]
-  bedAllocations HostelBedAllocation[]
-  createdAt      DateTime              @default(now())
+  id              String                @id @default(cuid())
+  name            String // Room Number/Name
+  roomNumber      String?
+  capacity        Int
+  bedCount        Int                   @default(0)
+  conditionStatus String                @default("GOOD") // GOOD | NEEDS_REPAIR | UNDER_MAINTENANCE
+  hostelId        String
+  hostel          Hostel                @relation(fields: [hostelId], references: [id])
+  students        Student[]
+  bedAllocations  HostelBedAllocation[]
+  createdAt       DateTime              @default(now())
 
   @@index([hostelId])
 }
@@ -2949,7 +2970,7 @@ model PayrollEntry {
   @@index([userId])
 }
 
-// ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢��¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚Â CBT (Computer Based Test) ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚Â
+// ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚Â CBT (Computer Based Test) ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚Â
 
 model CBTExam {
   id             String       @id @default(cuid())
@@ -4994,27 +5015,28 @@ model StudentBursary {
 // ═══════════════════════════════════════════════════════════════════
 
 model HostelBedAllocation {
-  id            String    @id @default(cuid())
+  id            String          @id @default(cuid())
   schoolId      String
-  school        School    @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  school        School          @relation(fields: [schoolId], references: [id], onDelete: Cascade)
   studentId     String
-  student       Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  student       Student         @relation(fields: [studentId], references: [id], onDelete: Cascade)
   hostelId      String
-  hostel        Hostel    @relation(fields: [hostelId], references: [id], onDelete: Cascade)
+  hostel        Hostel          @relation(fields: [hostelId], references: [id], onDelete: Cascade)
   roomId        String?
-  room          Room?     @relation(fields: [roomId], references: [id], onDelete: SetNull)
+  room          Room?           @relation(fields: [roomId], references: [id], onDelete: SetNull)
   termId        String?
-  term          String?   @default("Term 1")
-  year          Int       @default(2026)
-  feeAmount     Float     @default(0)
+  term          String?         @default("Term 1")
+  year          Int             @default(2026)
+  feeAmount     Float           @default(0)
   invoiceId     String?
-  status        String    @default("ACTIVE") // ACTIVE | VACATED | CANCELLED
-  allocatedAt   DateTime  @default(now())
+  invoice       StudentInvoice? @relation(fields: [invoiceId], references: [id], onDelete: SetNull)
+  status        String          @default("ACTIVE") // ACTIVE | VACATED | CANCELLED | SUSPENDED
+  allocatedAt   DateTime        @default(now())
   vacatedAt     DateTime?
   vacatedReason String?
   creditNoteId  String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
 
   @@index([schoolId])
   @@index([studentId])
@@ -5108,4 +5130,187 @@ model BookLoanFine {
   @@index([schoolId])
   @@index([studentId])
   @@index([loanId])
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// Phase 3: Boarding & Ancillary Operations Models
+// ═══════════════════════════════════════════════════════════════════
+
+model BoardingRollCall {
+  id                    String   @id @default(cuid())
+  schoolId              String
+  school                School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  hostelId              String
+  hostel                Hostel   @relation(fields: [hostelId], references: [id], onDelete: Cascade)
+  date                  DateTime @default(now())
+  time                  String // "18:00" | "21:00"
+  studentId             String
+  student               Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  status                String // "present" | "absent" | "on_exeat" | "sick_bay"
+  markedById            String?
+  markedBy              User?    @relation("BoardingRollCallMarkedBy", fields: [markedById], references: [id], onDelete: SetNull)
+  notes                 String?
+  smsDispatched         Boolean  @default(false)
+  disciplineCaseCreated Boolean  @default(false)
+  clinicAdmitted        Boolean  @default(false)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@index([schoolId])
+  @@index([hostelId, date, time])
+  @@index([studentId])
+}
+
+model Exeat {
+  id                      String    @id @default(cuid())
+  schoolId                String
+  school                  School    @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  studentId               String
+  student                 Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  type                    String // "weekend" | "emergency" | "medical"
+  reason                  String
+  departureAt             DateTime
+  returnAt                DateTime
+  status                  String    @default("pending_parent") // pending_parent | approved | rejected | expired | returned
+  parentSignature         String?
+  parentIp                String?
+  parentSignedAt          DateTime?
+  approvedByHousemasterId String?
+  approvedByHousemaster   User?     @relation("ExeatApprovedBy", fields: [approvedByHousemasterId], references: [id], onDelete: SetNull)
+  approvalNotes           String?
+  returnedAt              DateTime?
+  createdAt               DateTime  @default(now())
+  updatedAt               DateTime  @updatedAt
+
+  @@index([schoolId])
+  @@index([studentId])
+  @@index([status])
+}
+
+model DiningPantryItem {
+  id          String   @id @default(cuid())
+  schoolId    String
+  school      School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  itemName    String
+  unit        String // kg, litres, bags, trays, loaves
+  stockQty    Float    @default(0)
+  minAlertQty Float    @default(10)
+  unitCost    Float    @default(1.0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([schoolId])
+}
+
+model DiningRecipe {
+  id          String   @id @default(cuid())
+  schoolId    String
+  school      School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  mealType    String // BREAKFAST | LUNCH | DINNER
+  recipeName  String
+  description String?
+  ingredients Json // [{ pantryItemId?: string, itemName: string, perHeadQty: number, unit: string }]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([schoolId])
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// Phase 4: Uniforms Store, Kits Builder & Stock Ledger Models
+// ═══════════════════════════════════════════════════════════════════
+
+model UniformCategory {
+  id          String           @id @default(cuid())
+  schoolId    String
+  school      School           @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  name        String // Blazers, Shirts, Trousers, Skirts, Ties, Sportswear, Shoes
+  description String?
+  products    UniformProduct[]
+  createdAt   DateTime         @default(now())
+
+  @@index([schoolId])
+}
+
+model UniformProduct {
+  id            String               @id @default(cuid())
+  schoolId      String
+  school        School               @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  name          String // e.g. "Senior Boys Navy Blazer"
+  categoryId    String?
+  category      UniformCategory?     @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  gender        String               @default("UNISEX") // BOYS | GIRLS | UNISEX
+  size          String // "30", "32", "34", "S", "M", "L", "XL"
+  ageRange      String? // "5-7", "8-10", "11-13", "14-16", "17+"
+  costPrice     Float                @default(0)
+  sellingPrice  Float                @default(0)
+  stockQty      Int                  @default(0)
+  minStockAlert Int                  @default(10)
+  barcode       String?
+  ledgerEntries UniformStockLedger[]
+  createdAt     DateTime             @default(now())
+  updatedAt     DateTime             @updatedAt
+
+  @@index([schoolId])
+  @@index([barcode])
+  @@index([categoryId])
+}
+
+model UniformKit {
+  id         String   @id @default(cuid())
+  schoolId   String
+  school     School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  name       String // e.g. "Form 1 Boys Full Winter Kit", "Junior Girls Starter Kit"
+  classLevel String // "Form 1", "Grade 1", "All Classes"
+  gender     String   @default("UNISEX")
+  items      Json // [{ productId: string, productName: string, qty: number, defaultSize?: string, unitPrice: number }]
+  totalPrice Float    @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([schoolId])
+}
+
+model UniformIssuance {
+  id               String          @id @default(cuid())
+  schoolId         String
+  school           School          @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  studentId        String
+  student          Student         @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  termId           String          @default("term_1")
+  term             String          @default("Term 1")
+  year             Int             @default(2026)
+  items            Json // [{ productId: string, productName: string, size: string, qty: number, unitPrice: number, total: number }]
+  totalAmount      Float           @default(0)
+  invoiceId        String?
+  invoice          StudentInvoice? @relation(fields: [invoiceId], references: [id], onDelete: SetNull)
+  issuedById       String?
+  issuedBy         User?           @relation("UniformIssuedBy", fields: [issuedById], references: [id], onDelete: SetNull)
+  issuedAt         DateTime        @default(now())
+  paymentStatus    String          @default("INVOICED") // INVOICED | PAID | WAIVED
+  collectionStatus String          @default("COLLECTED") // COLLECTED | PENDING_PICKUP | PARTIALLY_COLLECTED
+  notes            String?
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+
+  @@index([schoolId])
+  @@index([studentId])
+}
+
+model UniformStockLedger {
+  id           String         @id @default(cuid())
+  schoolId     String
+  school       School         @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  productId    String
+  product      UniformProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
+  type         String // purchase | issuance | return | adjustment
+  qtyChange    Int // positive for purchase/return, negative for issuance
+  referenceId  String? // e.g. GRN-001, ISS-002, RET-003
+  balanceAfter Int
+  unitCost     Float          @default(0)
+  notes        String?
+  createdAt    DateTime       @default(now())
+
+  @@index([schoolId])
+  @@index([productId])
 }

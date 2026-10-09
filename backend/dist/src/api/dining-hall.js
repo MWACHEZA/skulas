@@ -321,5 +321,278 @@ router.get('/meal-deductions', async (req, res) => {
         res.status(500).json({ error: 'Failed to fetch meal deductions' });
     }
 });
+// ═══════════ DINING PANTRY STOCK & RECIPES (PHASE 3) ═══════════
+/**
+ * @route   GET /api/dining-hall/pantry
+ * @desc    Get all pantry stock items with low stock alerts
+ */
+router.get('/pantry', async (req, res) => {
+    const schoolId = req.user.schoolId;
+    try {
+        const items = await prisma_1.default.diningPantryItem.findMany({
+            where: { schoolId },
+            orderBy: { itemName: 'asc' }
+        });
+        const enriched = items.map(item => ({
+            ...item,
+            isLowStock: item.stockQty <= item.minAlertQty
+        }));
+        res.json(enriched);
+    }
+    catch (error) {
+        console.error('Fetch pantry error:', error);
+        res.status(500).json({ error: 'Failed to fetch pantry items' });
+    }
+});
+/**
+ * @route   POST /api/dining-hall/pantry
+ * @desc    Create or restock a dining pantry item
+ */
+router.post('/pantry', async (req, res) => {
+    if (!canManageMenu(req.user)) {
+        return res.status(403).json({ error: 'Unauthorized to manage dining pantry' });
+    }
+    const schoolId = req.user.schoolId;
+    const { itemName, unit = 'kg', stockQty = 0, minAlertQty = 10, unitCost = 1.0 } = req.body;
+    if (!itemName) {
+        return res.status(400).json({ error: 'itemName is required' });
+    }
+    try {
+        const existing = await prisma_1.default.diningPantryItem.findFirst({
+            where: { schoolId, itemName: { equals: itemName, mode: 'insensitive' } }
+        });
+        let item;
+        if (existing) {
+            item = await prisma_1.default.diningPantryItem.update({
+                where: { id: existing.id },
+                data: {
+                    stockQty: existing.stockQty + (parseFloat(stockQty) || 0),
+                    unitCost: parseFloat(unitCost) || existing.unitCost,
+                    minAlertQty: parseFloat(minAlertQty) || existing.minAlertQty
+                }
+            });
+        }
+        else {
+            item = await prisma_1.default.diningPantryItem.create({
+                data: {
+                    schoolId,
+                    itemName,
+                    unit,
+                    stockQty: parseFloat(stockQty) || 0,
+                    minAlertQty: parseFloat(minAlertQty) || 10,
+                    unitCost: parseFloat(unitCost) || 1.0
+                }
+            });
+        }
+        res.json({ success: true, item });
+    }
+    catch (error) {
+        console.error('Save pantry item error:', error);
+        res.status(500).json({ error: 'Failed to save pantry item' });
+    }
+});
+/**
+ * @route   PATCH /api/dining-hall/pantry/:id
+ * @desc    Update pantry item stock or settings
+ */
+router.patch('/pantry/:id', async (req, res) => {
+    if (!canManageMenu(req.user)) {
+        return res.status(403).json({ error: 'Unauthorized to modify dining pantry' });
+    }
+    const schoolId = req.user.schoolId;
+    const { stockQty, minAlertQty, unitCost, unit } = req.body;
+    try {
+        const updated = await prisma_1.default.diningPantryItem.update({
+            where: { id: req.params.id },
+            data: {
+                ...(stockQty !== undefined ? { stockQty: parseFloat(stockQty) } : {}),
+                ...(minAlertQty !== undefined ? { minAlertQty: parseFloat(minAlertQty) } : {}),
+                ...(unitCost !== undefined ? { unitCost: parseFloat(unitCost) } : {}),
+                ...(unit ? { unit } : {})
+            }
+        });
+        res.json(updated);
+    }
+    catch (error) {
+        res.status(500).json({ error: 'Failed to update pantry item' });
+    }
+});
+/**
+ * @route   GET /api/dining-hall/recipes
+ * @desc    Fetch meal recipes configured with per-head quantities
+ */
+router.get('/recipes', async (req, res) => {
+    const schoolId = req.user.schoolId;
+    try {
+        const recipes = await prisma_1.default.diningRecipe.findMany({
+            where: { schoolId },
+            orderBy: { recipeName: 'asc' }
+        });
+        res.json(recipes);
+    }
+    catch (error) {
+        res.status(500).json({ error: 'Failed to fetch recipes' });
+    }
+});
+/**
+ * @route   POST /api/dining-hall/recipes
+ * @desc    Create or update a dining recipe with ingredients per head
+ */
+router.post('/recipes', async (req, res) => {
+    if (!canManageMenu(req.user)) {
+        return res.status(403).json({ error: 'Unauthorized to manage recipes' });
+    }
+    const schoolId = req.user.schoolId;
+    const { recipeName, mealType = 'LUNCH', description, ingredients = [] } = req.body;
+    if (!recipeName || !ingredients.length) {
+        return res.status(400).json({ error: 'recipeName and ingredients array are required' });
+    }
+    try {
+        const recipe = await prisma_1.default.diningRecipe.create({
+            data: {
+                schoolId,
+                recipeName,
+                mealType: mealType.toUpperCase(),
+                description,
+                ingredients
+            }
+        });
+        res.json({ success: true, recipe });
+    }
+    catch (error) {
+        console.error('Save recipe error:', error);
+        res.status(500).json({ error: 'Failed to save recipe' });
+    }
+});
+/**
+ * @route   POST /api/dining-hall/scheduled-meal-deduction
+ * @desc    Deduct scheduled meal ingredients from dining pantry stock based on per-head recipe & post to general ledger
+ */
+router.post('/scheduled-meal-deduction', async (req, res) => {
+    if (!canManageMenu(req.user)) {
+        return res.status(403).json({ error: 'Unauthorized to post scheduled meal deductions' });
+    }
+    const schoolId = req.user.schoolId;
+    const { mealType, date = new Date().toISOString().split('T')[0], headCount, recipeId, notes } = req.body;
+    if (!mealType || !headCount) {
+        return res.status(400).json({ error: 'mealType and headCount are required' });
+    }
+    const count = parseInt(headCount);
+    if (isNaN(count) || count <= 0) {
+        return res.status(400).json({ error: 'headCount must be a positive integer' });
+    }
+    try {
+        // 1. Fetch recipe or default fallback institutional proportions
+        let recipe = recipeId
+            ? await prisma_1.default.diningRecipe.findFirst({ where: { id: recipeId, schoolId } })
+            : await prisma_1.default.diningRecipe.findFirst({ where: { schoolId, mealType: { equals: mealType, mode: 'insensitive' } } });
+        let ingredientsToDeduct = [];
+        if (recipe && Array.isArray(recipe.ingredients)) {
+            ingredientsToDeduct = recipe.ingredients;
+        }
+        else {
+            // Institutional default boarding recipe per head
+            if (mealType.toLowerCase() === 'breakfast') {
+                ingredientsToDeduct = [
+                    { itemName: 'Meal Meal / Oatmeal', perHeadQty: 0.15, unit: 'kg' },
+                    { itemName: 'Sugar', perHeadQty: 0.04, unit: 'kg' },
+                    { itemName: 'Milk', perHeadQty: 0.2, unit: 'litres' }
+                ];
+            }
+            else if (mealType.toLowerCase() === 'lunch') {
+                ingredientsToDeduct = [
+                    { itemName: 'Maize Meal (Sadza)', perHeadQty: 0.25, unit: 'kg' },
+                    { itemName: 'Beef / Protein', perHeadQty: 0.15, unit: 'kg' },
+                    { itemName: 'Cooking Oil', perHeadQty: 0.03, unit: 'litres' },
+                    { itemName: 'Vegetables / Greens', perHeadQty: 0.1, unit: 'kg' }
+                ];
+            }
+            else {
+                ingredientsToDeduct = [
+                    { itemName: 'Rice / Sadza', perHeadQty: 0.22, unit: 'kg' },
+                    { itemName: 'Chicken / Stew', perHeadQty: 0.15, unit: 'kg' },
+                    { itemName: 'Cooking Oil', perHeadQty: 0.03, unit: 'litres' }
+                ];
+            }
+        }
+        // 2. Deduct from pantry and compute total food cost
+        let totalFoodCost = 0;
+        const deductionsSummary = [];
+        for (const ing of ingredientsToDeduct) {
+            const requiredQty = Math.round(count * ing.perHeadQty * 100) / 100;
+            // Find or create pantry item
+            let pantryItem = ing.pantryItemId
+                ? await prisma_1.default.diningPantryItem.findFirst({ where: { id: ing.pantryItemId, schoolId } })
+                : await prisma_1.default.diningPantryItem.findFirst({
+                    where: { schoolId, itemName: { equals: ing.itemName, mode: 'insensitive' } }
+                });
+            if (!pantryItem) {
+                pantryItem = await prisma_1.default.diningPantryItem.create({
+                    data: {
+                        schoolId,
+                        itemName: ing.itemName,
+                        unit: ing.unit,
+                        stockQty: 500, // initialized stock
+                        minAlertQty: 25,
+                        unitCost: ing.unit === 'kg' ? 1.5 : 2.0
+                    }
+                });
+            }
+            const cost = Math.round(requiredQty * pantryItem.unitCost * 100) / 100;
+            totalFoodCost += cost;
+            const remainingStock = Math.max(0, pantryItem.stockQty - requiredQty);
+            await prisma_1.default.diningPantryItem.update({
+                where: { id: pantryItem.id },
+                data: { stockQty: remainingStock }
+            });
+            deductionsSummary.push({
+                pantryItemId: pantryItem.id,
+                itemName: pantryItem.itemName,
+                deductedQty: requiredQty,
+                unit: pantryItem.unit,
+                unitCost: pantryItem.unitCost,
+                cost,
+                remainingStock,
+                isLowStock: remainingStock <= pantryItem.minAlertQty
+            });
+        }
+        totalFoodCost = Math.round(totalFoodCost * 100) / 100;
+        // 3. Post double entry: DR 5030 (Food Provisions Expense) / CR 1220 (Inventory - Dining Provisions)
+        const journalEntry = await ledger_service_1.LedgerService.postDoubleEntry({
+            tenantId: schoolId,
+            debitCode: '5030',
+            creditCode: '1220',
+            amount: totalFoodCost,
+            description: `Scheduled meal pantry deduction: ${mealType} on ${date} (${count} boarders served, ${ingredientsToDeduct.length} ingredients)`,
+            sourceModule: 'dining_pantry_deduction',
+            reference: `PANTRY-${mealType.toUpperCase()}-${Date.now()}`,
+            userId: req.user.id,
+            ipAddress: req.ip,
+            bypassApprovalCheck: true
+        });
+        await (0, audit_1.logAction)(req, 'PANTRY_MEAL_DEDUCTION_POSTED', 'JournalEntry', journalEntry.id, {
+            mealType,
+            headCount: count,
+            totalCost: totalFoodCost,
+            ingredientsCount: ingredientsToDeduct.length,
+            notes
+        });
+        res.json({
+            success: true,
+            mealType,
+            date,
+            headCount: count,
+            recipeName: recipe?.recipeName || `${mealType} Standard Boarding Proportions`,
+            totalFoodCost,
+            journalEntryId: journalEntry.id,
+            entryNumber: journalEntry.entryNumber,
+            deductionsSummary
+        });
+    }
+    catch (error) {
+        console.error('Scheduled meal deduction error:', error);
+        res.status(500).json({ error: error.message || 'Failed to post scheduled meal deduction' });
+    }
+});
 exports.default = router;
 //# sourceMappingURL=dining-hall.js.map

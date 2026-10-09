@@ -279,18 +279,21 @@ export const PAGE_REGISTRY: PageDefinition[] = [
   },
   {
     id: 'admin-uniforms',
-    label: 'Uniforms & Supplies',
+    label: 'Uniforms Store & Supplies',
     route: '/admin/uniforms',
     group: 'PROCUREMENT_ASSETS',
-    icon: 'fas fa-boxes',
+    icon: 'fas fa-tshirt',
     module: 'uniforms',
     permissionKey: PERMISSIONS.PEOPLE_UNIFORMS_MANAGE,
     portalVisibility: ['admin'],
     tabs: [
-      { id: 'uniforms', label: 'Uniforms Stock' },
-      { id: 'bookstore', label: 'Bookstore' }
+      { id: 'stock', label: 'Stock Dashboard' },
+      { id: 'kits', label: 'Kits Builder' },
+      { id: 'issue', label: 'Issue Uniform' },
+      { id: 'alerts', label: 'Low Stock Alerts' },
+      { id: 'reports', label: 'Sales & Ledger' }
     ],
-    searchKeywords: ['uniforms', 'blazers', 'books', 'stationery', 'stock inventory']
+    searchKeywords: ['uniforms', 'blazers', 'kits', 'stationery', 'stock inventory', 'issuance', 'ledger']
   },
   {
     id: 'admin-communication',

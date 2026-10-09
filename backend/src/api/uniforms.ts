@@ -967,4 +967,735 @@ router.post('/parent-order', requireAuth, async (req: AuthRequest, res: Response
   }
 });
 
+// ══════════════════════════════════════════════════════════════════════════════
+// PHASE 4: UNIFORM STORE, KITS BUILDER, POS BARCODE MODE & STOCK LEDGER
+// ══════════════════════════════════════════════════════════════════════════════
+
+// 1. Categories
+router.get('/categories', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    const schoolId = req.user!.schoolId!;
+    const categories = await prisma.uniformCategory.findMany({
+      where: { schoolId },
+      include: {
+        _count: { select: { products: true } }
+      },
+      orderBy: { name: 'asc' }
+    });
+    res.json(categories);
+  } catch (error: any) {
+    res.status(500).json({ error: 'Failed to fetch uniform categories: ' + error.message });
+  }
+});
+
+router.post('/categories', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req: AuthRequest, res: Response) => {
+  try {
+    const schoolId = req.user!.schoolId!;
+    const { name, description } = req.body;
+    if (!name) return res.status(400).json({ error: 'Name is required' });
+
+    const category = await prisma.uniformCategory.create({
+      data: { schoolId, name, description }
+    });
+    res.status(201).json(category);
+  } catch (error: any) {
+    res.status(500).json({ error: 'Failed to create category: ' + error.message });
+  }
+});
+
+// 2. Products
+router.get('/products', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    const schoolId = req.user!.schoolId!;
+    const { categoryId, gender, size, search } = req.query;
+
+    const where: any = { schoolId };
+    if (categoryId) where.categoryId = String(categoryId);
+    if (gender) where.gender = String(gender);
+    if (size) where.size = String(size);
+    if (search) {
+      where.OR = [
+        { name: { contains: String(search), mode: 'insensitive' } },
+        { barcode: { contains: String(search), mode: 'insensitive' } },
+        { size: { contains: String(search), mode: 'insensitive' } }
+      ];
+    }
+
+    const products = await prisma.uniformProduct.findMany({
+      where,
+      include: { category: true },
+      orderBy: [{ name: 'asc' }, { size: 'asc' }]
+    });
+    res.json(products);
+  } catch (error: any) {
+    res.status(500).json({ error: 'Failed to fetch uniform products: ' + error.message });
+  }
+});
+
+router.post('/products', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req: AuthRequest, res: Response) => {
+  try {
+    const schoolId = req.user!.schoolId!;
+    const {
+      name,
+      categoryId,
+      gender = 'UNISEX',
+      size = 'Standard',
+      ageRange,
+      costPrice = 0,
+      sellingPrice = 0,
+      stockQty = 0,
+      minStockAlert = 5,
+      barcode
+    } = req.body;
+
+    if (!name) return res.status(400).json({ error: 'Product name is required' });
+
+    const product = await prisma.$transaction(async (tx) => {
+      const created = await tx.uniformProduct.create({
+        data: {
+          schoolId,
+          name,
+          categoryId: categoryId || null,
+          gender,
+          size,
+          ageRange: ageRange || null,
+          costPrice: Number(costPrice) || 0,
+          sellingPrice: Number(sellingPrice) || 0,
+          stockQty: Number(stockQty) || 0,
+          minStockAlert: Number(minStockAlert) || 5,
+          barcode: barcode || null
+        }
+      });
+
+      if (Number(stockQty) > 0) {
+        await tx.uniformStockLedger.create({
+          data: {
+            schoolId,
+            productId: created.id,
+            type: 'purchase',
+            qtyChange: Number(stockQty),
+            referenceId: 'INITIAL_STOCK',
+            balanceAfter: Number(stockQty),
+            unitCost: Number(costPrice) || 0,
+            notes: 'Initial stock intake'
+          }
+        });
+      }
+
+      return created;
+    });
+
+    res.status(201).json(product);
+  } catch (error: any) {
+    res.status(500).json({ error: 'Failed to create uniform product: ' + error.message });
+  }
+});
+
+router.patch('/products/:id', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req: AuthRequest, res: Response) => {
+  try {
+    const schoolId = req.user!.schoolId!;
+    const { id } = req.params;
+    const {
+      name,
+      categoryId,
+      gender,
+      size,
+      ageRange,
+      costPrice,
+      sellingPrice,
+      minStockAlert,
+      barcode
+    } = req.body;
+
+    const updated = await prisma.uniformProduct.updateMany({
+      where: { id: String(id), schoolId },
+      data: {
+        ...(name !== undefined && { name }),
+        ...(categoryId !== undefined && { categoryId }),
+        ...(gender !== undefined && { gender }),
+        ...(size !== undefined && { size }),
+        ...(ageRange !== undefined && { ageRange }),
+        ...(costPrice !== undefined && { costPrice: Number(costPrice) }),
+        ...(sellingPrice !== undefined && { sellingPrice: Number(sellingPrice) }),
+        ...(minStockAlert !== undefined && { minStockAlert: Number(minStockAlert) }),
+        ...(barcode !== undefined && { barcode })
+      }
+    });
+
+    res.json({ success: true, count: updated.count });
+  } catch (error: any) {
+    res.status(500).json({ error: 'Failed to update uniform product: ' + error.message });
+  }
+});
+
+// Barcode scanner lookup (for POS and inventory)
+router.get('/barcode/:barcode', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    const schoolId = req.user!.schoolId!;
+    const { barcode } = req.params;
+
+    const product = await prisma.uniformProduct.findFirst({
+      where: { schoolId, barcode: String(barcode) },
+      include: { category: true }
+    });
+
+    if (!product) {
+      return res.status(404).json({ error: `No uniform product found for barcode ${barcode}` });
+    }
+
+    res.json(product);
+  } catch (error: any) {
+    res.status(500).json({ error: 'Failed to lookup barcode: ' + error.message });
+  }
+});
+
+// 3. Kits Builder
+router.get('/kits', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    const schoolId = req.user!.schoolId!;
+    const { classLevel, gender } = req.query;
+
+    const where: any = { schoolId };
+    if (classLevel) where.classLevel = String(classLevel);
+    if (gender) where.gender = String(gender);
+
+    const kits = await prisma.uniformKit.findMany({
+      where,
+      orderBy: { name: 'asc' }
+    });
+    res.json(kits);
+  } catch (error: any) {
+    res.status(500).json({ error: 'Failed to fetch uniform kits: ' + error.message });
+  }
+});
+
+router.post('/kits', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req: AuthRequest, res: Response) => {
+  try {
+    const schoolId = req.user!.schoolId!;
+    const { name, classLevel, gender = 'UNISEX', items = [], totalPrice } = req.body;
+
+    if (!name || !classLevel) {
+      return res.status(400).json({ error: 'Kit name and classLevel are required' });
+    }
+
+    const calculatedTotal = (Array.isArray(items) && items.length > 0)
+      ? items.reduce((sum: number, it: any) => sum + (Number(it.unitPrice || 0) * Number(it.qty || 1)), 0)
+      : (Number(totalPrice) || 0);
+
+    const kit = await prisma.uniformKit.create({
+      data: {
+        schoolId,
+        name,
+        classLevel,
+        gender,
+        items,
+        totalPrice: calculatedTotal
+      }
+    });
+
+    res.status(201).json(kit);
+  } catch (error: any) {
+    res.status(500).json({ error: 'Failed to create uniform kit: ' + error.message });
+  }
+});
+
+router.patch('/kits/:id', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req: AuthRequest, res: Response) => {
+  try {
+    const schoolId = req.user!.schoolId!;
+    const { id } = req.params;
+    const { name, classLevel, gender, items, totalPrice } = req.body;
+
+    const data: any = {};
+    if (name !== undefined) data.name = name;
+    if (classLevel !== undefined) data.classLevel = classLevel;
+    if (gender !== undefined) data.gender = gender;
+    if (items !== undefined) {
+      data.items = items;
+      if (totalPrice === undefined && Array.isArray(items)) {
+        data.totalPrice = items.reduce((sum: number, it: any) => sum + (Number(it.unitPrice || 0) * Number(it.qty || 1)), 0);
+      }
+    }
+    if (totalPrice !== undefined) data.totalPrice = Number(totalPrice);
+
+    const updated = await prisma.uniformKit.updateMany({
+      where: { id: String(id), schoolId },
+      data
+    });
+
+    res.json({ success: true, count: updated.count });
+  } catch (error: any) {
+    res.status(500).json({ error: 'Failed to update uniform kit: ' + error.message });
+  }
+});
+
+router.delete('/kits/:id', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req: AuthRequest, res: Response) => {
+  try {
+    const schoolId = req.user!.schoolId!;
+    const { id } = req.params;
+
+    await prisma.uniformKit.deleteMany({
+      where: { id: String(id), schoolId }
+    });
+
+    res.json({ success: true });
+  } catch (error: any) {
+    res.status(500).json({ error: 'Failed to delete uniform kit: ' + error.message });
+  }
+});
+
+// 4. Issue Uniform / Kit to Student
+router.post('/issue-kit', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req: AuthRequest, res: Response) => {
+  try {
+    const schoolId = req.user!.schoolId!;
+    const {
+      studentId,
+      kitId,
+      items, // array of { productId, qty, unitPrice, size }
+      termId = 'term_1',
+      term = 'Term 1',
+      year = 2026,
+      notes,
+      autoInvoice = true
+    } = req.body;
+
+    if (!studentId) {
+      return res.status(400).json({ error: 'studentId is required' });
+    }
+
+    const student = await prisma.student.findFirst({
+      where: { id: studentId, schoolId },
+      include: { class: true }
+    });
+    if (!student) {
+      return res.status(404).json({ error: 'Student not found in this school' });
+    }
+
+    // Prepare line items
+    let issuanceItems: any[] = [];
+    if (Array.isArray(items) && items.length > 0) {
+      issuanceItems = items;
+    } else if (kitId) {
+      const kit = await prisma.uniformKit.findFirst({ where: { id: kitId, schoolId } });
+      if (!kit) return res.status(404).json({ error: 'Uniform kit not found' });
+      issuanceItems = (kit.items as any[]) || [];
+    } else {
+      return res.status(400).json({ error: 'Provide either kitId or items list' });
+    }
+
+    if (issuanceItems.length === 0) {
+      return res.status(400).json({ error: 'No items to issue' });
+    }
+
+    // Process issuance transactionally
+    const result = await prisma.$transaction(async (tx) => {
+      let grandTotal = 0;
+      let totalCogs = 0;
+      const normalizedItems: any[] = [];
+
+      for (const it of issuanceItems) {
+        const prod = await tx.uniformProduct.findFirst({
+          where: { id: it.productId, schoolId }
+        });
+        if (!prod) {
+          throw new Error(`Product not found with id ${it.productId}`);
+        }
+
+        const qty = Number(it.qty) || 1;
+        if (prod.stockQty < qty) {
+          throw new Error(`Insufficient stock for ${prod.name} (${prod.size}): available ${prod.stockQty}, requested ${qty}`);
+        }
+
+        const unitPrice = Number(it.unitPrice ?? prod.sellingPrice);
+        const lineTotal = unitPrice * qty;
+        grandTotal += lineTotal;
+        totalCogs += prod.costPrice * qty;
+
+        const updatedProd = await tx.uniformProduct.update({
+          where: { id: prod.id },
+          data: { stockQty: { decrement: qty } }
+        });
+
+        await tx.uniformStockLedger.create({
+          data: {
+            schoolId,
+            productId: prod.id,
+            type: 'issuance',
+            qtyChange: -qty,
+            referenceId: `STUDENT-${student.studentId || student.id.slice(-4)}`,
+            balanceAfter: updatedProd.stockQty,
+            unitCost: prod.costPrice,
+            notes: `Issued to ${student.name} (${student.studentId || ''})`
+          }
+        });
+
+        normalizedItems.push({
+          productId: prod.id,
+          productName: prod.name,
+          size: it.size || prod.size,
+          qty,
+          unitPrice,
+          total: lineTotal
+        });
+      }
+
+      // Create issuance record
+      const issuance = await tx.uniformIssuance.create({
+        data: {
+          schoolId,
+          studentId: student.id,
+          termId,
+          term,
+          year: Number(year) || 2026,
+          items: normalizedItems,
+          totalAmount: grandTotal,
+          issuedById: req.user!.id,
+          paymentStatus: autoInvoice ? 'INVOICED' : 'PENDING',
+          collectionStatus: 'COLLECTED',
+          notes: notes || null
+        }
+      });
+
+      let invoice = null;
+      if (autoInvoice && grandTotal > 0) {
+        const invResult = await BursarService.createStudentInvoice({
+          schoolId,
+          idempotencyKey: `uniform_${issuance.id}`,
+          studentId: student.id,
+          termId,
+          term,
+          year: Number(year) || 2026,
+          currency: 'USD',
+          sourceModule: 'uniforms',
+          sourceId: issuance.id,
+          dueDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
+          items: normalizedItems.map(item => ({
+            billingItemCode: 'UNIF',
+            description: `Uniform: ${item.productName} (${item.size}) x${item.qty}`,
+            quantity: item.qty,
+            unitPrice: item.unitPrice,
+            revenueAccountCode: '4041', // Uniform Store Sales
+            totalAmount: item.total
+          })),
+          createdBy: req.user!.id,
+          tx
+        });
+        invoice = invResult.invoice;
+
+        await tx.uniformIssuance.update({
+          where: { id: issuance.id },
+          data: { invoiceId: invoice.id }
+        });
+
+        // Record COGS double-entry: DR COGS (5041) / CR Inventory Uniform Store (1210)
+        if (totalCogs > 0) {
+          await LedgerService.postDoubleEntry({
+            tenantId: schoolId,
+            debitCode: '5041', // Uniform Cost of Goods Sold
+            creditCode: '1210', // Inventory — Uniform Store
+            amount: Math.round(totalCogs * 100) / 100,
+            description: `COGS: Uniform issuance to ${student.name} (${issuance.id.slice(-6)})`,
+            sourceModule: 'uniform_cogs',
+            reference: issuance.id,
+            userId: req.user!.id,
+            ipAddress: req.ip,
+            tx,
+            bypassApprovalCheck: true
+          });
+        }
+      }
+
+      return { issuance, invoice };
+    });
+
+    res.status(201).json({
+      success: true,
+      issuance: result.issuance,
+      invoice: result.invoice
+    });
+  } catch (error: any) {
+    res.status(400).json({ error: error.message || 'Failed to issue uniform' });
+  }
+});
+
+// 5. Returns & Exchanges with Credit Note Reversal
+router.post('/issuances/:id/return', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req: AuthRequest, res: Response) => {
+  try {
+    const schoolId = req.user!.schoolId!;
+    const { id } = req.params;
+    const { returnItems = [], reason = 'Uniform return / sizing exchange' } = req.body;
+
+    const issuance = await prisma.uniformIssuance.findFirst({
+      where: { id: String(id), schoolId },
+      include: {
+        student: true,
+        invoice: {
+          include: { items: true }
+        }
+      }
+    });
+
+    if (!issuance) {
+      return res.status(404).json({ error: 'Issuance record not found' });
+    }
+
+    const itemsOnRecord = (issuance.items as any[]) || [];
+    let returnTotal = 0;
+    let restockedCogs = 0;
+
+    const result = await prisma.$transaction(async (tx) => {
+      for (const ret of returnItems) {
+        const prod = await tx.uniformProduct.findFirst({
+          where: { id: ret.productId, schoolId }
+        });
+        if (!prod) continue;
+
+        const qty = Number(ret.qty) || 1;
+        const matchingRecord = itemsOnRecord.find(it => it.productId === ret.productId);
+        const unitPrice = matchingRecord ? Number(matchingRecord.unitPrice) : prod.sellingPrice;
+        const lineTotal = unitPrice * qty;
+        returnTotal += lineTotal;
+        restockedCogs += prod.costPrice * qty;
+
+        const updatedProd = await tx.uniformProduct.update({
+          where: { id: prod.id },
+          data: { stockQty: { increment: qty } }
+        });
+
+        await tx.uniformStockLedger.create({
+          data: {
+            schoolId,
+            productId: prod.id,
+            type: 'return',
+            qtyChange: qty,
+            referenceId: `RET-${issuance.id.slice(-6)}`,
+            balanceAfter: updatedProd.stockQty,
+            unitCost: prod.costPrice,
+            notes: `Return from ${issuance.student?.name || 'student'}: ${reason}`
+          }
+        });
+      }
+
+      // If invoiced, issue credit note or adjust receivable
+      let creditNote = null;
+      if (issuance.invoice && returnTotal > 0) {
+        // Find journal entry associated with the invoice if posted
+        const journal = await tx.journalEntry.findFirst({
+          where: {
+            schoolId,
+            sourceModule: 'invoicing',
+            reference: issuance.invoice.id,
+            isReversed: false
+          }
+        });
+
+        if (journal) {
+          const proRataRatio = issuance.totalAmount > 0
+            ? Math.min(1.0, returnTotal / issuance.totalAmount)
+            : 1.0;
+
+          creditNote = await CreditNoteService.createCreditNote({
+            schoolId,
+            originalJournalEntryId: journal.id,
+            reason: `Uniform return reversal: ${reason}`,
+            issuedByUserId: req.user!.id,
+            ipAddress: req.ip,
+            proRataRatio
+          });
+        }
+
+        // Restock COGS reversal entry: DR Inventory (1210) / CR COGS (5041)
+        if (restockedCogs > 0) {
+          await LedgerService.postDoubleEntry({
+            tenantId: schoolId,
+            debitCode: '1210', // Inventory Uniform Store
+            creditCode: '5041', // Uniform COGS
+            amount: Math.round(restockedCogs * 100) / 100,
+            description: `COGS Return reversal: ${issuance.student?.name} (${issuance.id.slice(-6)})`,
+            sourceModule: 'uniform_cogs_return',
+            reference: issuance.id,
+            userId: req.user!.id,
+            ipAddress: req.ip,
+            tx,
+            bypassApprovalCheck: true
+          });
+        }
+      }
+
+      return { returnTotal, creditNote };
+    });
+
+    res.json({
+      success: true,
+      message: `Processed return of $${result.returnTotal.toFixed(2)}`,
+      creditNote: result.creditNote
+    });
+  } catch (error: any) {
+    res.status(500).json({ error: 'Failed to process return: ' + error.message });
+  }
+});
+
+// 6. Low stock alerts
+router.get('/low-stock-alerts', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    const schoolId = req.user!.schoolId!;
+    const allProducts = await prisma.uniformProduct.findMany({
+      where: { schoolId },
+      include: { category: true },
+      orderBy: { stockQty: 'asc' }
+    });
+    const filtered = allProducts.filter(p => p.stockQty <= p.minStockAlert);
+
+    res.json(filtered);
+  } catch (error: any) {
+    res.status(500).json({ error: 'Failed to fetch low stock alerts: ' + error.message });
+  }
+});
+
+// Reorder Requisition creation
+router.post('/reorder-requisition', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req: AuthRequest, res: Response) => {
+  try {
+    const schoolId = req.user!.schoolId!;
+    const { items, supplierId, notes } = req.body;
+
+    if (!Array.isArray(items) || items.length === 0) {
+      return res.status(400).json({ error: 'At least one item required for requisition' });
+    }
+
+    const estimatedTotal = items.reduce((sum: number, it: any) => sum + (Number(it.costPrice || 0) * Number(it.reorderQty || 1)), 0);
+    const refNumber = `REQ-UNIF-${Date.now().toString().slice(-6)}`;
+
+    const requisition = await prisma.requisition.create({
+      data: {
+        schoolId,
+        refNumber,
+        title: `Uniform Stock Reorder (${items.length} items)`,
+        description: notes || `Uniform stock replenishment`,
+        estimatedAmount: estimatedTotal,
+        requisitionType: 'UNIFORM_STOCK_RESTOCK',
+        requesterId: req.user!.id,
+        status: 'PENDING',
+        items: items.map((it: any) => ({
+          productId: it.productId,
+          name: it.name,
+          size: it.size,
+          quantity: it.reorderQty,
+          estimatedCost: it.costPrice
+        }))
+      }
+    });
+
+    res.status(201).json({
+      success: true,
+      requisitionId: requisition.id,
+      refNumber: requisition.refNumber,
+      estimatedTotal
+    });
+  } catch (error: any) {
+    res.status(500).json({ error: 'Failed to create reorder requisition: ' + error.message });
+  }
+});
+
+// 7. GRN Restock intake with Double-Entry posting
+router.post('/grn-receive', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req: AuthRequest, res: Response) => {
+  try {
+    const schoolId = req.user!.schoolId!;
+    const { supplierId, grnNumber, items = [], notes } = req.body;
+
+    if (!Array.isArray(items) || items.length === 0) {
+      return res.status(400).json({ error: 'items list is required' });
+    }
+
+    const result = await prisma.$transaction(async (tx) => {
+      let totalAmount = 0;
+      const ref = grnNumber || `GRN-${Date.now().toString().slice(-6)}`;
+
+      for (const it of items) {
+        const prod = await tx.uniformProduct.findFirst({
+          where: { id: it.productId, schoolId }
+        });
+        if (!prod) continue;
+
+        const qty = Number(it.qty) || 0;
+        const unitCost = Number(it.unitCost ?? prod.costPrice) || 0;
+        totalAmount += unitCost * qty;
+
+        const updatedProd = await tx.uniformProduct.update({
+          where: { id: prod.id },
+          data: {
+            stockQty: { increment: qty },
+            costPrice: unitCost > 0 ? unitCost : prod.costPrice
+          }
+        });
+
+        await tx.uniformStockLedger.create({
+          data: {
+            schoolId,
+            productId: prod.id,
+            type: 'purchase',
+            qtyChange: qty,
+            referenceId: ref,
+            balanceAfter: updatedProd.stockQty,
+            unitCost,
+            notes: notes || `GRN Received: ${ref}`
+          }
+        });
+      }
+
+      // Post double entry: DR Inventory Uniforms (1210) / CR Accounts Payable (2010)
+      let journal = null;
+      if (totalAmount > 0) {
+        journal = await LedgerService.postDoubleEntry({
+          tenantId: schoolId,
+          debitCode: '1210', // Inventory — Uniform Store
+          creditCode: '2010', // Trade Creditors / Accounts Payable
+          amount: Math.round(totalAmount * 100) / 100,
+          description: `GRN Restock: ${ref} (${items.length} items)`,
+          sourceModule: 'uniform_grn',
+          reference: ref,
+          supplierId: supplierId || undefined,
+          userId: req.user!.id,
+          ipAddress: req.ip,
+          tx,
+          bypassApprovalCheck: true
+        });
+      }
+
+      return { ref, totalAmount, journal };
+    });
+
+    res.status(201).json({
+      success: true,
+      grnNumber: result.ref,
+      totalAmount: result.totalAmount,
+      journalEntryId: result.journal?.id
+    });
+  } catch (error: any) {
+    res.status(500).json({ error: 'Failed to receive GRN stock: ' + error.message });
+  }
+});
+
+// 8. Stock Ledger History
+router.get('/stock-ledger', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    const schoolId = req.user!.schoolId!;
+    const { productId, type } = req.query;
+
+    const where: any = { schoolId };
+    if (productId) where.productId = String(productId);
+    if (type) where.type = String(type);
+
+    const history = await prisma.uniformStockLedger.findMany({
+      where,
+      include: { product: true },
+      orderBy: { createdAt: 'desc' },
+      take: 100
+    });
+
+    res.json(history);
+  } catch (error: any) {
+    res.status(500).json({ error: 'Failed to fetch stock ledger: ' + error.message });
+  }
+});
+
 export default router;
+

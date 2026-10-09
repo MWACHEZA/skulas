@@ -1520,7 +1520,10 @@ exports.Prisma.HostelScalarFieldEnum = {
 exports.Prisma.RoomScalarFieldEnum = {
   id: 'id',
   name: 'name',
+  roomNumber: 'roomNumber',
   capacity: 'capacity',
+  bedCount: 'bedCount',
+  conditionStatus: 'conditionStatus',
   hostelId: 'hostelId',
   createdAt: 'createdAt'
 };
@@ -3392,6 +3395,134 @@ exports.Prisma.BookLoanFineScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.BoardingRollCallScalarFieldEnum = {
+  id: 'id',
+  schoolId: 'schoolId',
+  hostelId: 'hostelId',
+  date: 'date',
+  time: 'time',
+  studentId: 'studentId',
+  status: 'status',
+  markedById: 'markedById',
+  notes: 'notes',
+  smsDispatched: 'smsDispatched',
+  disciplineCaseCreated: 'disciplineCaseCreated',
+  clinicAdmitted: 'clinicAdmitted',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ExeatScalarFieldEnum = {
+  id: 'id',
+  schoolId: 'schoolId',
+  studentId: 'studentId',
+  type: 'type',
+  reason: 'reason',
+  departureAt: 'departureAt',
+  returnAt: 'returnAt',
+  status: 'status',
+  parentSignature: 'parentSignature',
+  parentIp: 'parentIp',
+  parentSignedAt: 'parentSignedAt',
+  approvedByHousemasterId: 'approvedByHousemasterId',
+  approvalNotes: 'approvalNotes',
+  returnedAt: 'returnedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.DiningPantryItemScalarFieldEnum = {
+  id: 'id',
+  schoolId: 'schoolId',
+  itemName: 'itemName',
+  unit: 'unit',
+  stockQty: 'stockQty',
+  minAlertQty: 'minAlertQty',
+  unitCost: 'unitCost',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.DiningRecipeScalarFieldEnum = {
+  id: 'id',
+  schoolId: 'schoolId',
+  mealType: 'mealType',
+  recipeName: 'recipeName',
+  description: 'description',
+  ingredients: 'ingredients',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.UniformCategoryScalarFieldEnum = {
+  id: 'id',
+  schoolId: 'schoolId',
+  name: 'name',
+  description: 'description',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.UniformProductScalarFieldEnum = {
+  id: 'id',
+  schoolId: 'schoolId',
+  name: 'name',
+  categoryId: 'categoryId',
+  gender: 'gender',
+  size: 'size',
+  ageRange: 'ageRange',
+  costPrice: 'costPrice',
+  sellingPrice: 'sellingPrice',
+  stockQty: 'stockQty',
+  minStockAlert: 'minStockAlert',
+  barcode: 'barcode',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.UniformKitScalarFieldEnum = {
+  id: 'id',
+  schoolId: 'schoolId',
+  name: 'name',
+  classLevel: 'classLevel',
+  gender: 'gender',
+  items: 'items',
+  totalPrice: 'totalPrice',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.UniformIssuanceScalarFieldEnum = {
+  id: 'id',
+  schoolId: 'schoolId',
+  studentId: 'studentId',
+  termId: 'termId',
+  term: 'term',
+  year: 'year',
+  items: 'items',
+  totalAmount: 'totalAmount',
+  invoiceId: 'invoiceId',
+  issuedById: 'issuedById',
+  issuedAt: 'issuedAt',
+  paymentStatus: 'paymentStatus',
+  collectionStatus: 'collectionStatus',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.UniformStockLedgerScalarFieldEnum = {
+  id: 'id',
+  schoolId: 'schoolId',
+  productId: 'productId',
+  type: 'type',
+  qtyChange: 'qtyChange',
+  referenceId: 'referenceId',
+  balanceAfter: 'balanceAfter',
+  unitCost: 'unitCost',
+  notes: 'notes',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -3668,7 +3799,16 @@ exports.Prisma.ModelName = {
   StudentTransportAllocation: 'StudentTransportAllocation',
   SchoolTrip: 'SchoolTrip',
   TripConsent: 'TripConsent',
-  BookLoanFine: 'BookLoanFine'
+  BookLoanFine: 'BookLoanFine',
+  BoardingRollCall: 'BoardingRollCall',
+  Exeat: 'Exeat',
+  DiningPantryItem: 'DiningPantryItem',
+  DiningRecipe: 'DiningRecipe',
+  UniformCategory: 'UniformCategory',
+  UniformProduct: 'UniformProduct',
+  UniformKit: 'UniformKit',
+  UniformIssuance: 'UniformIssuance',
+  UniformStockLedger: 'UniformStockLedger'
 };
 
 /**

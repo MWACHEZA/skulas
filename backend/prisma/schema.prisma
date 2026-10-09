@@ -237,6 +237,11 @@ model School {
   exeats               Exeat[]
   diningPantryItems    DiningPantryItem[]
   diningRecipes        DiningRecipe[]
+  uniformCategories    UniformCategory[]
+  uniformProducts      UniformProduct[]
+  uniformKits          UniformKit[]
+  uniformIssuances     UniformIssuance[]
+  uniformStockLedgers  UniformStockLedger[]
 
   @@index([code])
 }
@@ -581,6 +586,7 @@ model User {
   approvedBursaries StudentBursary[] @relation("BursaryApprover")
   approvedExeats          Exeat[]               @relation("ExeatApprovedBy")
   markedBoardingRollCalls BoardingRollCall[]    @relation("BoardingRollCallMarkedBy")
+  uniformsIssued          UniformIssuance[]     @relation("UniformIssuedBy")
 
   @@index([schoolId])
 }
@@ -744,6 +750,7 @@ model Student {
   bookLoanFines        BookLoanFine[]
   boardingRollCalls    BoardingRollCall[]
   exeats               Exeat[]
+  uniformIssuances     UniformIssuance[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -1054,6 +1061,7 @@ model StudentInvoice {
   items          StudentInvoiceItem[]
   allocations    PaymentAllocation[]
   bedAllocations HostelBedAllocation[]
+  uniformIssuances UniformIssuance[]
 
   @@index([schoolId])
   @@index([studentId])
@@ -5207,5 +5215,105 @@ model DiningRecipe {
 
   @@index([schoolId])
 }
+
+// ═══════════════════════════════════════════════════════════════════
+// Phase 4: Uniforms Store, Kits Builder & Stock Ledger Models
+// ═══════════════════════════════════════════════════════════════════
+
+model UniformCategory {
+  id          String           @id @default(cuid())
+  schoolId    String
+  school      School           @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  name        String           // Blazers, Shirts, Trousers, Skirts, Ties, Sportswear, Shoes
+  description String?
+  products    UniformProduct[]
+  createdAt   DateTime         @default(now())
+
+  @@index([schoolId])
+}
+
+model UniformProduct {
+  id            String               @id @default(cuid())
+  schoolId      String
+  school        School               @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  name          String               // e.g. "Senior Boys Navy Blazer"
+  categoryId    String?
+  category      UniformCategory?     @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  gender        String               @default("UNISEX") // BOYS | GIRLS | UNISEX
+  size          String               // "30", "32", "34", "S", "M", "L", "XL"
+  ageRange      String?              // "5-7", "8-10", "11-13", "14-16", "17+"
+  costPrice     Float                @default(0)
+  sellingPrice  Float                @default(0)
+  stockQty      Int                  @default(0)
+  minStockAlert Int                  @default(10)
+  barcode       String?
+  ledgerEntries UniformStockLedger[]
+  createdAt     DateTime             @default(now())
+  updatedAt     DateTime             @updatedAt
+
+  @@index([schoolId])
+  @@index([barcode])
+  @@index([categoryId])
+}
+
+model UniformKit {
+  id          String   @id @default(cuid())
+  schoolId    String
+  school      School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  name        String   // e.g. "Form 1 Boys Full Winter Kit", "Junior Girls Starter Kit"
+  classLevel  String   // "Form 1", "Grade 1", "All Classes"
+  gender      String   @default("UNISEX")
+  items       Json     // [{ productId: string, productName: string, qty: number, defaultSize?: string, unitPrice: number }]
+  totalPrice  Float    @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([schoolId])
+}
+
+model UniformIssuance {
+  id               String          @id @default(cuid())
+  schoolId         String
+  school           School          @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  studentId        String
+  student          Student         @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  termId           String          @default("term_1")
+  term             String          @default("Term 1")
+  year             Int             @default(2026)
+  items            Json            // [{ productId: string, productName: string, size: string, qty: number, unitPrice: number, total: number }]
+  totalAmount      Float           @default(0)
+  invoiceId        String?
+  invoice          StudentInvoice? @relation(fields: [invoiceId], references: [id], onDelete: SetNull)
+  issuedById       String?
+  issuedBy         User?           @relation("UniformIssuedBy", fields: [issuedById], references: [id], onDelete: SetNull)
+  issuedAt         DateTime        @default(now())
+  paymentStatus    String          @default("INVOICED") // INVOICED | PAID | WAIVED
+  collectionStatus String          @default("COLLECTED") // COLLECTED | PENDING_PICKUP | PARTIALLY_COLLECTED
+  notes            String?
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+
+  @@index([schoolId])
+  @@index([studentId])
+}
+
+model UniformStockLedger {
+  id           String         @id @default(cuid())
+  schoolId     String
+  school       School         @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  productId    String
+  product      UniformProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
+  type         String         // purchase | issuance | return | adjustment
+  qtyChange    Int            // positive for purchase/return, negative for issuance
+  referenceId  String?        // e.g. GRN-001, ISS-002, RET-003
+  balanceAfter Int
+  unitCost     Float          @default(0)
+  notes        String?
+  createdAt    DateTime       @default(now())
+
+  @@index([schoolId])
+  @@index([productId])
+}
+
 
 

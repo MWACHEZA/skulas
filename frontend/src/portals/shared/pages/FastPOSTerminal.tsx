@@ -34,6 +34,9 @@ export default function FastPOSTerminal() {
 
   const exchangeRate = 26.5; // USD to ZiG rate
 
+  // POS Mode: Tuckshop vs Uniforms Store
+  const [posMode, setPosMode] = useState<'TUCKSHOP' | 'UNIFORMS'>('TUCKSHOP');
+
   // Till status
   const [tillSession, setTillSession] = useState<any>({
     sessionNumber: 'TILL-2026-001',
@@ -69,39 +72,73 @@ export default function FastPOSTerminal() {
   useEffect(() => {
     fetchItems();
     checkTill();
-  }, []);
+  }, [posMode]);
 
   const fetchItems = async () => {
     setLoading(true);
     try {
-      const res = await api.get('/api/tuckshop/items');
-      const data = Array.isArray(res.data) ? res.data : [];
-      if (data.length > 0) {
-        setItems(data);
+      if (posMode === 'UNIFORMS') {
+        const res = await api.get('/api/uniforms/products');
+        const prods = Array.isArray(res.data) ? res.data : [];
+        if (prods.length > 0) {
+          setItems(prods.map((p: any) => ({
+            id: p.id,
+            name: `${p.name} (${p.size})`,
+            category: p.category?.name || 'Apparel',
+            price: Number(p.sellingPrice) || 0,
+            stock: Number(p.stockQty) || 0,
+            barcode: p.barcode || undefined
+          })));
+        } else {
+          // Fallback standard uniform items
+          setItems([
+            { id: 'uni-1', name: 'Boys Grey Shorts (Size 30)', category: 'Boys Wear', price: 15.00, stock: 24, barcode: 'UNI-B-S30' },
+            { id: 'uni-2', name: 'White Collared Shirt (Size 14)', category: 'Shirts', price: 10.00, stock: 40, barcode: 'UNI-S-14' },
+            { id: 'uni-3', name: 'Girls Pleated Skirt (Size 28)', category: 'Girls Wear', price: 18.00, stock: 30, barcode: 'UNI-G-S28' },
+            { id: 'uni-4', name: 'Winter Woollen Blazer (Size 34)', category: 'Blazers', price: 45.00, stock: 15, barcode: 'UNI-BLZ-34' },
+            { id: 'uni-5', name: 'Official Striped Tie', category: 'Accessories', price: 6.00, stock: 50, barcode: 'UNI-TIE' }
+          ]);
+        }
       } else {
-        // Fallback default sample inventory
+        const res = await api.get('/api/tuckshop/items');
+        const data = Array.isArray(res.data) ? res.data : [];
+        if (data.length > 0) {
+          setItems(data);
+        } else {
+          // Fallback default sample inventory
+          setItems([
+            { id: 'item-1', name: 'Fresh Meat Pie', category: 'Bakery', price: 1.50, stock: 45 },
+            { id: 'item-2', name: 'Sausage Roll', category: 'Bakery', price: 1.25, stock: 30 },
+            { id: 'item-3', name: 'Chilled Fruit Juice 350ml', category: 'Drinks', price: 1.00, stock: 60 },
+            { id: 'item-4', name: 'Mineral Water 500ml', category: 'Drinks', price: 0.75, stock: 80 },
+            { id: 'item-5', name: 'Chocolate Muffin', category: 'Bakery', price: 1.20, stock: 25 },
+            { id: 'item-6', name: 'Potato Chips / Crisps', category: 'Snacks', price: 1.00, stock: 50 },
+            { id: 'item-7', name: 'Biscuits Pack', category: 'Snacks', price: 0.80, stock: 40 },
+            { id: 'item-8', name: 'Ballpoint Pen (Blue)', category: 'Stationery', price: 0.50, stock: 100 },
+            { id: 'item-9', name: 'Exercise Book A4', category: 'Stationery', price: 1.50, stock: 70 },
+            { id: 'item-10', name: 'Apple / Banana Fruit', category: 'Snacks', price: 0.50, stock: 35 }
+          ]);
+        }
+      }
+    } catch {
+      // Offline fallback
+      if (posMode === 'UNIFORMS') {
+        setItems([
+          { id: 'uni-1', name: 'Boys Grey Shorts (Size 30)', category: 'Boys Wear', price: 15.00, stock: 24, barcode: 'UNI-B-S30' },
+          { id: 'uni-2', name: 'White Collared Shirt (Size 14)', category: 'Shirts', price: 10.00, stock: 40, barcode: 'UNI-S-14' },
+          { id: 'uni-3', name: 'Girls Pleated Skirt (Size 28)', category: 'Girls Wear', price: 18.00, stock: 30, barcode: 'UNI-G-S28' },
+          { id: 'uni-4', name: 'Winter Woollen Blazer (Size 34)', category: 'Blazers', price: 45.00, stock: 15, barcode: 'UNI-BLZ-34' },
+          { id: 'uni-5', name: 'Official Striped Tie', category: 'Accessories', price: 6.00, stock: 50, barcode: 'UNI-TIE' }
+        ]);
+      } else {
         setItems([
           { id: 'item-1', name: 'Fresh Meat Pie', category: 'Bakery', price: 1.50, stock: 45 },
           { id: 'item-2', name: 'Sausage Roll', category: 'Bakery', price: 1.25, stock: 30 },
           { id: 'item-3', name: 'Chilled Fruit Juice 350ml', category: 'Drinks', price: 1.00, stock: 60 },
           { id: 'item-4', name: 'Mineral Water 500ml', category: 'Drinks', price: 0.75, stock: 80 },
-          { id: 'item-5', name: 'Chocolate Muffin', category: 'Bakery', price: 1.20, stock: 25 },
-          { id: 'item-6', name: 'Potato Chips / Crisps', category: 'Snacks', price: 1.00, stock: 50 },
-          { id: 'item-7', name: 'Biscuits Pack', category: 'Snacks', price: 0.80, stock: 40 },
-          { id: 'item-8', name: 'Ballpoint Pen (Blue)', category: 'Stationery', price: 0.50, stock: 100 },
-          { id: 'item-9', name: 'Exercise Book A4', category: 'Stationery', price: 1.50, stock: 70 },
-          { id: 'item-10', name: 'Apple / Banana Fruit', category: 'Snacks', price: 0.50, stock: 35 }
+          { id: 'item-5', name: 'Ballpoint Pen (Blue)', category: 'Stationery', price: 0.50, stock: 100 }
         ]);
       }
-    } catch {
-      // Offline fallback
-      setItems([
-        { id: 'item-1', name: 'Fresh Meat Pie', category: 'Bakery', price: 1.50, stock: 45 },
-        { id: 'item-2', name: 'Sausage Roll', category: 'Bakery', price: 1.25, stock: 30 },
-        { id: 'item-3', name: 'Chilled Fruit Juice 350ml', category: 'Drinks', price: 1.00, stock: 60 },
-        { id: 'item-4', name: 'Mineral Water 500ml', category: 'Drinks', price: 0.75, stock: 80 },
-        { id: 'item-5', name: 'Ballpoint Pen (Blue)', category: 'Stationery', price: 0.50, stock: 100 }
-      ]);
     } finally {
       setLoading(false);
     }
@@ -228,15 +265,23 @@ export default function FastPOSTerminal() {
         paymentMethod === 'CARD' ? 'CARD' :
         paymentMethod === 'ECOCASH' ? 'ECOCASH' : 'CASH';
 
-      await api.post('/api/tuckshop/sales', {
-        items: cart.map(c => ({ itemId: c.id, quantity: c.quantity, price: c.price })),
-        paymentMethod: payloadMethod,
-        studentId: selectedStudent?.id || null
-      });
+      if (posMode === 'UNIFORMS') {
+        await api.post('/api/uniforms/sales', {
+          items: cart.map(c => ({ itemId: c.id, quantity: c.quantity, unitPrice: c.price })),
+          paymentMode: payloadMethod,
+          studentId: selectedStudent?.id || null
+        });
+      } else {
+        await api.post('/api/tuckshop/sales', {
+          items: cart.map(c => ({ itemId: c.id, quantity: c.quantity, price: c.price })),
+          paymentMethod: payloadMethod,
+          studentId: selectedStudent?.id || null
+        });
+      }
 
       // Receipt data
       const saleReceipt = {
-        receiptNo: `POS-${Date.now().toString().slice(-6)}`,
+        receiptNo: `${posMode === 'UNIFORMS' ? 'UNI' : 'POS'}-${Date.now().toString().slice(-6)}`,
         date: new Date().toLocaleString(),
         items: [...cart],
         subtotalUSD,
@@ -249,7 +294,7 @@ export default function FastPOSTerminal() {
       };
 
       setReceipt(saleReceipt);
-      showToast('Sale completed and posted to ledger', 'success');
+      showToast(`${posMode === 'UNIFORMS' ? 'Uniform' : 'Tuckshop'} sale completed and posted to ledger`, 'success');
       clearCart();
       fetchItems();
     } catch (err: any) {
@@ -259,10 +304,14 @@ export default function FastPOSTerminal() {
     }
   };
 
-  const categories = ['ALL', 'Bakery', 'Drinks', 'Snacks', 'Stationery'];
+  const categories = posMode === 'UNIFORMS'
+    ? ['ALL', 'Boys Wear', 'Girls Wear', 'Shirts', 'Blazers', 'Accessories', 'Apparel']
+    : ['ALL', 'Bakery', 'Drinks', 'Snacks', 'Stationery'];
+
   const filteredItems = items.filter(i => {
     const matchCat = selectedCategory === 'ALL' || i.category.toLowerCase() === selectedCategory.toLowerCase();
-    const matchSearch = i.name.toLowerCase().includes(itemSearch.toLowerCase());
+    const matchSearch = i.name.toLowerCase().includes(itemSearch.toLowerCase()) ||
+      (i.barcode && i.barcode.toLowerCase().includes(itemSearch.toLowerCase()));
     return matchCat && matchSearch;
   });
 
@@ -281,18 +330,54 @@ export default function FastPOSTerminal() {
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
           <button
-            onClick={() => navigate('/bursar/tuckshop')}
+            onClick={() => navigate(posMode === 'UNIFORMS' ? '/admin/uniforms' : '/bursar/tuckshop')}
             style={{ background: '#1e293b', border: '1px solid #334155', color: '#cbd5e1', padding: '6px 12px', borderRadius: 6, cursor: 'pointer', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: 6 }}
           >
             <i className="fas fa-arrow-left" /> Exit POS
           </button>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <i className="fas fa-cash-register" style={{ color: '#38bdf8', fontSize: '1.25rem' }} />
-            <span style={{ fontWeight: 800, fontSize: '1.1rem', letterSpacing: '-0.02em' }}>Tuckshop Express POS</span>
+            <i className={posMode === 'UNIFORMS' ? "fas fa-tshirt" : "fas fa-cash-register"} style={{ color: '#38bdf8', fontSize: '1.25rem' }} />
+            <span style={{ fontWeight: 800, fontSize: '1.1rem', letterSpacing: '-0.02em' }}>
+              {posMode === 'UNIFORMS' ? 'Uniforms Store POS' : 'Tuckshop Express POS'}
+            </span>
           </div>
           <span style={{ backgroundColor: '#1e293b', color: '#94a3b8', padding: '4px 8px', borderRadius: 4, fontSize: '0.8rem', border: '1px solid #334155' }}>
             {tillSession.sessionNumber}
           </span>
+
+          {/* Mode Switcher */}
+          <div style={{ display: 'flex', background: '#020617', padding: 3, borderRadius: 8, border: '1px solid #1e293b' }}>
+            <button
+              onClick={() => { setPosMode('TUCKSHOP'); setSelectedCategory('ALL'); }}
+              style={{
+                border: 'none',
+                background: posMode === 'TUCKSHOP' ? '#0284c7' : 'transparent',
+                color: posMode === 'TUCKSHOP' ? '#ffffff' : '#94a3b8',
+                padding: '4px 10px',
+                borderRadius: 6,
+                fontSize: '0.8rem',
+                fontWeight: 600,
+                cursor: 'pointer'
+              }}
+            >
+              <i className="fas fa-cookie-bite" style={{ marginRight: 5 }} /> Tuckshop
+            </button>
+            <button
+              onClick={() => { setPosMode('UNIFORMS'); setSelectedCategory('ALL'); }}
+              style={{
+                border: 'none',
+                background: posMode === 'UNIFORMS' ? '#0284c7' : 'transparent',
+                color: posMode === 'UNIFORMS' ? '#ffffff' : '#94a3b8',
+                padding: '4px 10px',
+                borderRadius: 6,
+                fontSize: '0.8rem',
+                fontWeight: 600,
+                cursor: 'pointer'
+              }}
+            >
+              <i className="fas fa-tshirt" style={{ marginRight: 5 }} /> Uniforms Store
+            </button>
+          </div>
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
