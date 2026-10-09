@@ -15,7 +15,7 @@ export interface PageDefinition {
   requiredSecondaryRoles?: string[];
   badge?: string;
   searchKeywords?: string[];
-  tabs?: { id: string; label: string; route?: string }[];
+  tabs?: { id: string; label: string; route?: string; module?: TenantModule }[];
   department?: string;
   approvalChain?: string[];
   condition?: (user: any) => boolean;
@@ -222,13 +222,36 @@ export const PAGE_REGISTRY: PageDefinition[] = [
   },
   {
     id: 'admin-attendance',
-    label: 'Attendance & Clock-In',
+    label: 'Student Attendance',
     route: '/admin/attendance',
     group: 'STUDENT_LIFE',
-    icon: 'fas fa-fingerprint',
+    icon: 'fas fa-user-check',
     permissionKey: PERMISSIONS.STUDENT_LIFE_CLOCK_LOGS,
     portalVisibility: ['admin'],
-    searchKeywords: ['presence', 'roll call', 'clock-in logs', 'staff register', 'student attendance']
+    tabs: [
+      { id: 'daily-roll-call', label: 'Daily Roll Call' },
+      { id: 'period', label: 'Period Attendance' },
+      { id: 'boarding', label: 'Boarding Roll Call', module: 'boarding' },
+      { id: 'absentee-report', label: 'Absentee Report' },
+      { id: 'sms-log', label: 'SMS Log' }
+    ],
+    searchKeywords: ['presence', 'roll call', 'student attendance', 'absentee report', 'sms log']
+  },
+  {
+    id: 'admin-staff-attendance',
+    label: 'Staff Attendance',
+    route: '/admin/attendance/staff',
+    group: 'HR_PAYROLL',
+    icon: 'fas fa-id-badge',
+    permissionKey: PERMISSIONS.STUDENT_LIFE_CLOCK_LOGS,
+    portalVisibility: ['admin'],
+    tabs: [
+      { id: 'daily-summary', label: 'Daily Summary' },
+      { id: 'late-comers', label: 'Late Comers' },
+      { id: 'raw-logs', label: 'Raw Device Logs' },
+      { id: 'leave-cross-check', label: 'Leave Cross-Check' }
+    ],
+    searchKeywords: ['staff attendance', 'biometrics', 'clock-in logs', 'tardiness', 'leave cross-check']
   },
   {
     id: 'admin-clinic',

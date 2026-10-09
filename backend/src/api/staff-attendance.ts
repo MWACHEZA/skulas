@@ -280,4 +280,515 @@ router.get('/all', requireAuth, async (req: AuthRequest, res) => {
   }
 });
 
+// ==========================================
+// PHASE 5: UNIFIED STAFF ATTENDANCE & BIOMETRIC SERVICES
+// ==========================================
+
+/**
+ * 15-Minute Punch Processor: converts raw biometric punches to daily records.
+ * Rules:
+ * - first punch = firstIn, last punch = lastOut
+ * - calculates totalHours
+ * - benchmark arrival: 08:00 AM.
+ * - late over 30 minutes is flagged to the HR tardiness log.
+ * - absent with no approved leave in /admin/leave is marked absent (UNAUTHORIZED_ABSENCE).
+ */
+export async function processStaffPunches(schoolId: string, queryDate: Date) {
+  const dateStr = queryDate.toISOString().slice(0, 10);
+  const dayStart = new Date(`${dateStr}T00:00:00.000Z`);
+  const dayEnd = new Date(`${dateStr}T23:59:59.999Z`);
+
+  // 1. Fetch all active staff users in the school
+  const staffUsers = await prisma.user.findMany({
+    where: {
+      schoolId,
+      role: { in: ['SUPER_ADMIN', 'SCHOOL_ADMIN', 'TEACHER', 'BURSAR', 'LIBRARIAN', 'ANCILLARY', 'CLINIC'] }
+    },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      role: true,
+      staffId: true,
+      departmentId: true
+    }
+  });
+
+  // 2. Fetch raw punches for the date
+  const punches = await prisma.biometricRawLog.findMany({
+    where: {
+      schoolId,
+      punchTime: { gte: dayStart, lte: dayEnd }
+    },
+    orderBy: { punchTime: 'asc' }
+  });
+
+  // Group punches by staffId
+  const punchesByStaff = new Map<string, typeof punches>();
+  for (const p of punches) {
+    if (!punchesByStaff.has(p.staffId)) {
+      punchesByStaff.set(p.staffId, []);
+    }
+    punchesByStaff.get(p.staffId)!.push(p);
+  }
+
+  // Benchmark time: 08:00 AM UTC on queryDate
+  const benchmarkTime = new Date(`${dateStr}T08:00:00.000Z`);
+
+  let processedCount = 0;
+  let flaggedTardinessCount = 0;
+  let unauthorizedAbsencesCount = 0;
+
+  for (const staff of staffUsers) {
+    const staffPunches = punchesByStaff.get(staff.id);
+
+    if (staffPunches && staffPunches.length > 0) {
+      const firstIn = staffPunches[0].punchTime;
+      const lastOut = staffPunches.length > 1 ? staffPunches[staffPunches.length - 1].punchTime : null;
+
+      let totalHours = 0;
+      if (lastOut) {
+        const diffMs = lastOut.getTime() - firstIn.getTime();
+        totalHours = parseFloat((diffMs / (1000 * 60 * 60)).toFixed(2));
+      }
+
+      let lateMinutes = 0;
+      if (firstIn.getTime() > benchmarkTime.getTime()) {
+        lateMinutes = Math.floor((firstIn.getTime() - benchmarkTime.getTime()) / (1000 * 60));
+      }
+
+      let status = 'present';
+      if (lateMinutes > 0) {
+        status = 'late';
+      } else if (totalHours > 0 && totalHours < 4) {
+        status = 'half_day';
+      }
+
+      const flaggedTardiness = lateMinutes > 30;
+
+      if (flaggedTardiness) {
+        await prisma.hrTardinessLog.upsert({
+          where: {
+            schoolId_staffId_date: {
+              schoolId,
+              staffId: staff.id,
+              date: dayStart
+            }
+          },
+          update: {
+            lateMinutes,
+            actionStatus: 'FLAGGED',
+            notes: `Clocked in at ${firstIn.toLocaleTimeString()} (${lateMinutes} mins late, exceeding 30-min threshold)`
+          },
+          create: {
+            schoolId,
+            staffId: staff.id,
+            date: dayStart,
+            lateMinutes,
+            actionStatus: 'FLAGGED',
+            notes: `Clocked in at ${firstIn.toLocaleTimeString()} (${lateMinutes} mins late, exceeding 30-min threshold)`
+          }
+        });
+        flaggedTardinessCount++;
+      }
+
+      await prisma.staffAttendanceDaily.upsert({
+        where: {
+          schoolId_staffId_date: {
+            schoolId,
+            staffId: staff.id,
+            date: dayStart
+          }
+        },
+        update: {
+          firstIn,
+          lastOut,
+          totalHours,
+          status,
+          lateMinutes,
+          flaggedTardiness,
+          leaveCrossCheck: 'PRESENT'
+        },
+        create: {
+          schoolId,
+          staffId: staff.id,
+          date: dayStart,
+          firstIn,
+          lastOut,
+          totalHours,
+          status,
+          lateMinutes,
+          flaggedTardiness,
+          leaveCrossCheck: 'PRESENT'
+        }
+      });
+
+      processedCount++;
+    } else {
+      // Check if on approved leave
+      const approvedLeave = await prisma.staffLeave.findFirst({
+        where: {
+          schoolId,
+          userId: staff.id,
+          status: 'approved',
+          startDate: { lte: dayEnd },
+          endDate: { gte: dayStart }
+        }
+      });
+
+      const leaveCrossCheck = approvedLeave ? 'APPROVED_LEAVE' : 'UNAUTHORIZED_ABSENCE';
+      if (!approvedLeave) unauthorizedAbsencesCount++;
+
+      await prisma.staffAttendanceDaily.upsert({
+        where: {
+          schoolId_staffId_date: {
+            schoolId,
+            staffId: staff.id,
+            date: dayStart
+          }
+        },
+        update: {
+          firstIn: null,
+          lastOut: null,
+          totalHours: 0,
+          status: 'absent',
+          lateMinutes: 0,
+          flaggedTardiness: false,
+          leaveCrossCheck
+        },
+        create: {
+          schoolId,
+          staffId: staff.id,
+          date: dayStart,
+          firstIn: null,
+          lastOut: null,
+          totalHours: 0,
+          status: 'absent',
+          lateMinutes: 0,
+          flaggedTardiness: false,
+          leaveCrossCheck
+        }
+      });
+    }
+  }
+
+  // Mark processed
+  if (punches.length > 0) {
+    await prisma.biometricRawLog.updateMany({
+      where: {
+        schoolId,
+        punchTime: { gte: dayStart, lte: dayEnd }
+      },
+      data: { processed: true }
+    });
+  }
+
+  return { processedCount, flaggedTardinessCount, unauthorizedAbsencesCount };
+}
+
+// Background punch converter: runs every 15 minutes
+setInterval(async () => {
+  try {
+    const schools = await prisma.school.findMany({ select: { id: true } });
+    const today = new Date();
+    for (const sc of schools) {
+      await processStaffPunches(sc.id, today);
+    }
+  } catch (err) {
+    console.error('Background punch processor error:', err);
+  }
+}, 15 * 60 * 1000);
+
+// Endpoint to trigger punch processing on demand
+router.post('/process-punches', requireAuth, async (req: AuthRequest, res) => {
+  try {
+    const schoolId = req.user!.schoolId!;
+    const { date } = req.body;
+    const queryDate = date ? new Date(date) : new Date();
+
+    const result = await processStaffPunches(schoolId, queryDate);
+    res.json({ success: true, ...result });
+  } catch (error) {
+    console.error('Error processing staff punches:', error);
+    res.status(500).json({ error: 'Failed to process staff punches' });
+  }
+});
+
+// Endpoint to ingest raw biometric punches
+router.post('/raw-punches', requireAuth, async (req: AuthRequest, res) => {
+  try {
+    const schoolId = req.user!.schoolId!;
+    const { punches, deviceId, staffId, punchTime, punchType } = req.body;
+
+    const punchList: any[] = [];
+    if (Array.isArray(punches)) {
+      punchList.push(...punches);
+    } else if (staffId) {
+      punchList.push({
+        deviceId: deviceId || 'DEVICE_DEFAULT',
+        staffId,
+        punchTime: punchTime ? new Date(punchTime) : new Date(),
+        punchType: punchType || 'RAW'
+      });
+    } else {
+      return res.status(400).json({ error: 'punches array or staffId is required' });
+    }
+
+    const created = await Promise.all(
+      punchList.map(p =>
+        prisma.biometricRawLog.create({
+          data: {
+            schoolId,
+            deviceId: p.deviceId || 'DEVICE_DEFAULT',
+            staffId: p.staffId,
+            punchTime: p.punchTime ? new Date(p.punchTime) : new Date(),
+            punchType: p.punchType || 'RAW',
+            processed: false
+          }
+        })
+      )
+    );
+
+    // Process immediately for the date of the punches
+    const firstDate = punchList[0]?.punchTime ? new Date(punchList[0].punchTime) : new Date();
+    const procResult = await processStaffPunches(schoolId, firstDate);
+
+    res.json({
+      success: true,
+      ingested: created.length,
+      ...procResult
+    });
+  } catch (error) {
+    console.error('Error ingesting raw punches:', error);
+    res.status(500).json({ error: 'Failed to ingest biometric punches' });
+  }
+});
+
+// GET Raw Device Logs
+router.get('/raw-logs', requireAuth, async (req: AuthRequest, res) => {
+  try {
+    const schoolId = req.user!.schoolId!;
+    const { date, deviceId, staffId } = req.query;
+
+    const where: any = { schoolId };
+    if (date) {
+      const qDate = new Date(date as string);
+      where.punchTime = {
+        gte: startOfDay(qDate),
+        lte: endOfDay(qDate)
+      };
+    }
+    if (deviceId) where.deviceId = deviceId as string;
+    if (staffId) where.staffId = staffId as string;
+
+    const logs = await prisma.biometricRawLog.findMany({
+      where,
+      include: {
+        staff: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            role: true,
+            staffId: true
+          }
+        }
+      },
+      orderBy: { punchTime: 'desc' },
+      take: 200
+    });
+
+    res.json(logs);
+  } catch (error) {
+    console.error('Error fetching raw device logs:', error);
+    res.status(500).json({ error: 'Failed to fetch raw device logs' });
+  }
+});
+
+// GET Daily Summary (StaffAttendanceDaily)
+router.get('/daily-summary', requireAuth, async (req: AuthRequest, res) => {
+  try {
+    const schoolId = req.user!.schoolId!;
+    const { date } = req.query;
+    const queryDate = date ? new Date(date as string) : new Date();
+    const dateStr = queryDate.toISOString().slice(0, 10);
+    const dayStart = new Date(`${dateStr}T00:00:00.000Z`);
+
+    // Check if daily records exist, if not process first
+    let dailyRecords = await prisma.staffAttendanceDaily.findMany({
+      where: {
+        schoolId,
+        date: dayStart
+      },
+      include: {
+        staff: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            role: true,
+            staffId: true
+          }
+        }
+      },
+      orderBy: { staff: { name: 'asc' } }
+    });
+
+    if (dailyRecords.length === 0) {
+      await processStaffPunches(schoolId, queryDate);
+      dailyRecords = await prisma.staffAttendanceDaily.findMany({
+        where: {
+          schoolId,
+          date: dayStart
+        },
+        include: {
+          staff: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              role: true,
+              staffId: true
+            }
+          }
+        },
+        orderBy: { staff: { name: 'asc' } }
+      });
+    }
+
+    const totalStaff = dailyRecords.length;
+    const presentCount = dailyRecords.filter(r => ['present', 'late', 'half_day'].includes(r.status)).length;
+    const absentCount = dailyRecords.filter(r => r.status === 'absent').length;
+    const lateCount = dailyRecords.filter(r => r.lateMinutes > 0).length;
+
+    res.json({
+      records: dailyRecords,
+      stats: {
+        totalStaff,
+        presentCount,
+        absentCount,
+        lateCount,
+        presenceRate: totalStaff > 0 ? parseFloat(((presentCount / totalStaff) * 100).toFixed(1)) : 100.0
+      }
+    });
+  } catch (error) {
+    console.error('Error fetching daily staff summary:', error);
+    res.status(500).json({ error: 'Failed to load staff attendance summary' });
+  }
+});
+
+// GET Late Comers & Tardiness
+router.get('/late-comers', requireAuth, async (req: AuthRequest, res) => {
+  try {
+    const schoolId = req.user!.schoolId!;
+    const { date } = req.query;
+    const queryDate = date ? new Date(date as string) : new Date();
+    const dateStr = queryDate.toISOString().slice(0, 10);
+    const dayStart = new Date(`${dateStr}T00:00:00.000Z`);
+
+    const lateRecords = await prisma.staffAttendanceDaily.findMany({
+      where: {
+        schoolId,
+        date: dayStart,
+        lateMinutes: { gt: 0 }
+      },
+      include: {
+        staff: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            role: true,
+            staffId: true
+          }
+        }
+      },
+      orderBy: { lateMinutes: 'desc' }
+    });
+
+    const tardinessLogs = await prisma.hrTardinessLog.findMany({
+      where: {
+        schoolId,
+        date: dayStart
+      }
+    });
+
+    res.json({
+      lateComers: lateRecords.map(r => ({
+        ...r,
+        hrTardinessLog: tardinessLogs.find(t => t.staffId === r.staffId) || null
+      })),
+      totalLate: lateRecords.length,
+      flaggedOver30Mins: lateRecords.filter(r => r.lateMinutes > 30).length
+    });
+  } catch (error) {
+    console.error('Error fetching late comers:', error);
+    res.status(500).json({ error: 'Failed to fetch late comers' });
+  }
+});
+
+// GET Leave Cross-Check
+router.get('/leave-cross-check', requireAuth, async (req: AuthRequest, res) => {
+  try {
+    const schoolId = req.user!.schoolId!;
+    const { date } = req.query;
+    const queryDate = date ? new Date(date as string) : new Date();
+    const dateStr = queryDate.toISOString().slice(0, 10);
+    const dayStart = new Date(`${dateStr}T00:00:00.000Z`);
+    const dayEnd = new Date(`${dateStr}T23:59:59.999Z`);
+
+    // Get staff absent from daily records
+    const absentStaff = await prisma.staffAttendanceDaily.findMany({
+      where: {
+        schoolId,
+        date: dayStart,
+        status: 'absent'
+      },
+      include: {
+        staff: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            role: true,
+            staffId: true
+          }
+        }
+      }
+    });
+
+    // Fetch approved leaves on that date
+    const approvedLeaves = await prisma.staffLeave.findMany({
+      where: {
+        schoolId,
+        status: 'approved',
+        startDate: { lte: dayEnd },
+        endDate: { gte: dayStart }
+      }
+    });
+
+    const leaveByStaff = new Map<string, any>();
+    for (const l of approvedLeaves) {
+      leaveByStaff.set(l.userId, l);
+    }
+
+    const items = absentStaff.map(ab => ({
+      staff: ab.staff,
+      status: ab.status,
+      leaveCrossCheck: ab.leaveCrossCheck,
+      approvedLeave: leaveByStaff.get(ab.staffId) || null
+    }));
+
+    res.json({
+      absentStaff: items,
+      totalAbsent: items.length,
+      approvedLeaveCount: items.filter(i => i.leaveCrossCheck === 'APPROVED_LEAVE').length,
+      unauthorizedAbsenceCount: items.filter(i => i.leaveCrossCheck === 'UNAUTHORIZED_ABSENCE').length
+    });
+  } catch (error) {
+    console.error('Error fetching leave cross-check:', error);
+    res.status(500).json({ error: 'Failed to cross-check staff leave' });
+  }
+});
+
 export default router;

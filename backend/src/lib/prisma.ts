@@ -41,7 +41,9 @@ const prisma = basePrisma.$extends({
           'FarmLivestockBatch', 'FarmCropCycle', 'FarmInventoryItem', 'DiningHallReport', 'PrefectDuty', 'PrefectMeeting',
           'PrefectReport', 'WalletTransaction', 'SchoolSequence', 'ChartOfAccount', 'JournalEntry', 'JournalEntryLine',
           'AccountingPeriod', 'UniformStockMovement', 'BankStatement',
-          'LeadershipAssignment', 'StudentAllowedItem'
+          'LeadershipAssignment', 'StudentAllowedItem',
+          'UniformCategory', 'UniformProduct', 'UniformKit', 'UniformIssuance', 'UniformStockLedger',
+          'AttendanceSession', 'AttendanceSessionRecord', 'StaffAttendanceDaily', 'BiometricRawLog', 'HrTardinessLog'
         ];
 
         if (context?.schoolId && tenantScopedModels.includes(model)) {

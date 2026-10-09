@@ -222,26 +222,30 @@ model School {
   FacilitiesRequest     FacilitiesRequest[]
   CateringRequest       CateringRequest[]
 
-  awardConfigs         AwardConfig[]
-  studentAwards        StudentAward[]
-  bursaryTypes         BursaryType[]
-  studentBursaries     StudentBursary[]
-  studentInvoices      StudentInvoice[]
-  receipts             Receipt[]
-  bedAllocations       HostelBedAllocation[]
-  transportAllocations StudentTransportAllocation[]
-  schoolTrips          SchoolTrip[]
-  tripConsents         TripConsent[]
-  bookLoanFines        BookLoanFine[]
-  boardingRollCalls    BoardingRollCall[]
-  exeats               Exeat[]
-  diningPantryItems    DiningPantryItem[]
-  diningRecipes        DiningRecipe[]
-  uniformCategories    UniformCategory[]
-  uniformProducts      UniformProduct[]
-  uniformKits          UniformKit[]
-  uniformIssuances     UniformIssuance[]
-  uniformStockLedgers  UniformStockLedger[]
+  awardConfigs           AwardConfig[]
+  studentAwards          StudentAward[]
+  bursaryTypes           BursaryType[]
+  studentBursaries       StudentBursary[]
+  studentInvoices        StudentInvoice[]
+  receipts               Receipt[]
+  bedAllocations         HostelBedAllocation[]
+  transportAllocations   StudentTransportAllocation[]
+  schoolTrips            SchoolTrip[]
+  tripConsents           TripConsent[]
+  bookLoanFines          BookLoanFine[]
+  boardingRollCalls      BoardingRollCall[]
+  exeats                 Exeat[]
+  diningPantryItems      DiningPantryItem[]
+  diningRecipes          DiningRecipe[]
+  uniformCategories      UniformCategory[]
+  uniformProducts        UniformProduct[]
+  uniformKits            UniformKit[]
+  uniformIssuances       UniformIssuance[]
+  uniformStockLedgers    UniformStockLedger[]
+  attendanceSessions     AttendanceSession[]
+  staffAttendanceDailies StaffAttendanceDaily[]
+  biometricRawLogs       BiometricRawLog[]
+  hrTardinessLogs        HrTardinessLog[]
 
   @@index([code])
 }
@@ -581,12 +585,17 @@ model User {
   createdQuestions        Question[]            @relation("QuestionCreatedBy")
   createdCbtExams         CbtExam[]             @relation("CbtExamCreatedBy")
 
-  nominatedAwards         StudentAward[]     @relation("AwardNominator")
-  approvedAwards          StudentAward[]     @relation("AwardApprover")
-  approvedBursaries       StudentBursary[]   @relation("BursaryApprover")
-  approvedExeats          Exeat[]            @relation("ExeatApprovedBy")
-  markedBoardingRollCalls BoardingRollCall[] @relation("BoardingRollCallMarkedBy")
-  uniformsIssued          UniformIssuance[]  @relation("UniformIssuedBy")
+  nominatedAwards          StudentAward[]            @relation("AwardNominator")
+  approvedAwards           StudentAward[]            @relation("AwardApprover")
+  approvedBursaries        StudentBursary[]          @relation("BursaryApprover")
+  approvedExeats           Exeat[]                   @relation("ExeatApprovedBy")
+  markedBoardingRollCalls  BoardingRollCall[]        @relation("BoardingRollCallMarkedBy")
+  uniformsIssued           UniformIssuance[]         @relation("UniformIssuedBy")
+  markedAttendanceSessions AttendanceSession[]       @relation("AttendanceSessionTeacher")
+  markedSessionRecords     AttendanceSessionRecord[] @relation("SessionRecordMarkedBy")
+  staffAttendanceDailies   StaffAttendanceDaily[]
+  biometricRawLogs         BiometricRawLog[]
+  hrTardinessLogs          HrTardinessLog[]
 
   @@index([schoolId])
 }
@@ -733,24 +742,25 @@ model Student {
   clubId String?
   club   Club?   @relation(fields: [clubId], references: [id])
 
-  payments             StudentPayment[]
-  communicationLogs    CommunicationLog[]
-  paymentPlans         PaymentPlan[]
-  houseCaptained       StudentHouse[]               @relation("HouseCaptain")
-  wallet               StudentWallet?
-  clearances           StudentClearance[]
-  cbtAttempts          CbtAttempt[]
-  awards               StudentAward[]
-  bursaries            StudentBursary[]
-  studentInvoices      StudentInvoice[]
-  receipts             Receipt[]
-  bedAllocations       HostelBedAllocation[]
-  transportAllocations StudentTransportAllocation[]
-  tripConsents         TripConsent[]
-  bookLoanFines        BookLoanFine[]
-  boardingRollCalls    BoardingRollCall[]
-  exeats               Exeat[]
-  uniformIssuances     UniformIssuance[]
+  payments                 StudentPayment[]
+  communicationLogs        CommunicationLog[]
+  paymentPlans             PaymentPlan[]
+  houseCaptained           StudentHouse[]               @relation("HouseCaptain")
+  wallet                   StudentWallet?
+  clearances               StudentClearance[]
+  cbtAttempts              CbtAttempt[]
+  awards                   StudentAward[]
+  bursaries                StudentBursary[]
+  studentInvoices          StudentInvoice[]
+  receipts                 Receipt[]
+  bedAllocations           HostelBedAllocation[]
+  transportAllocations     StudentTransportAllocation[]
+  tripConsents             TripConsent[]
+  bookLoanFines            BookLoanFine[]
+  boardingRollCalls        BoardingRollCall[]
+  exeats                   Exeat[]
+  uniformIssuances         UniformIssuance[]
+  attendanceSessionRecords AttendanceSessionRecord[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -784,6 +794,7 @@ model SchoolClass {
   AdmissionInquiry    AdmissionInquiry[]
   announcements       Announcement[]
   cbtExams            CbtExam[]
+  attendanceSessions  AttendanceSession[]
 
   @@unique([schoolId, name])
   @@index([schoolId])
@@ -5313,4 +5324,112 @@ model UniformStockLedger {
 
   @@index([schoolId])
   @@index([productId])
+}
+
+// ==========================================
+// PHASE 5: UNIFIED ATTENDANCE & BIOMETRIC MODELS
+// ==========================================
+
+model AttendanceSession {
+  id        String                    @id @default(cuid())
+  schoolId  String
+  school    School                    @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  date      DateTime                  @db.Date
+  classId   String?
+  class     SchoolClass?              @relation(fields: [classId], references: [id], onDelete: SetNull)
+  period    String // 1-8, Homeroom, Boarding_18_00, Boarding_21_00
+  teacherId String?
+  teacher   User?                     @relation("AttendanceSessionTeacher", fields: [teacherId], references: [id], onDelete: SetNull)
+  type      String // daily, period, boarding
+  submitted Boolean                   @default(false)
+  records   AttendanceSessionRecord[]
+  createdAt DateTime                  @default(now())
+  updatedAt DateTime                  @updatedAt
+
+  @@unique([schoolId, classId, date, period, type])
+  @@index([schoolId])
+  @@index([date])
+  @@index([classId])
+  @@map("attendance_sessions")
+}
+
+model AttendanceSessionRecord {
+  id               String            @id @default(cuid())
+  sessionId        String
+  session          AttendanceSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  studentId        String
+  student          Student           @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  status           String // present, absent, late, on_trip, on_exeat, sick_bay, suspended
+  notes            String?
+  markedById       String?
+  markedBy         User?             @relation("SessionRecordMarkedBy", fields: [markedById], references: [id], onDelete: SetNull)
+  markedAt         DateTime          @default(now())
+  parentNotifiedAt DateTime?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+
+  @@unique([sessionId, studentId])
+  @@index([studentId])
+  @@index([sessionId])
+  @@map("attendance_records")
+}
+
+model StaffAttendanceDaily {
+  id               String    @id @default(cuid())
+  schoolId         String
+  school           School    @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  staffId          String
+  staff            User      @relation(fields: [staffId], references: [id], onDelete: Cascade)
+  date             DateTime  @db.Date
+  firstIn          DateTime?
+  lastOut          DateTime?
+  totalHours       Float     @default(0)
+  status           String // present, absent, late, half_day
+  lateMinutes      Int       @default(0)
+  leaveCrossCheck  String? // APPROVED_LEAVE, UNAUTHORIZED_ABSENCE, PRESENT
+  flaggedTardiness Boolean   @default(false)
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  @@unique([schoolId, staffId, date])
+  @@index([schoolId])
+  @@index([staffId])
+  @@index([date])
+  @@map("staff_attendance_daily")
+}
+
+model BiometricRawLog {
+  id        String   @id @default(cuid())
+  schoolId  String
+  school    School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  deviceId  String
+  staffId   String
+  staff     User     @relation(fields: [staffId], references: [id], onDelete: Cascade)
+  punchTime DateTime
+  punchType String // CHECK_IN, CHECK_OUT, RAW
+  processed Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([schoolId])
+  @@index([staffId])
+  @@index([punchTime])
+  @@map("biometric_raw_logs")
+}
+
+model HrTardinessLog {
+  id           String   @id @default(cuid())
+  schoolId     String
+  school       School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  staffId      String
+  staff        User     @relation(fields: [staffId], references: [id], onDelete: Cascade)
+  date         DateTime @db.Date
+  lateMinutes  Int
+  actionStatus String   @default("FLAGGED") // FLAGGED, EXCUSED, DEDUCTED, WARNED
+  notes        String?
+  createdAt    DateTime @default(now())
+
+  @@unique([schoolId, staffId, date])
+  @@index([schoolId])
+  @@index([staffId])
+  @@map("hr_tardiness_logs")
 }

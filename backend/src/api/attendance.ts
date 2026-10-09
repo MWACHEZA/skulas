@@ -4,6 +4,7 @@ import { requireAuth, requireRole, AuthRequest } from '../middleware/auth';
 import { startOfDay, endOfDay } from 'date-fns';
 import fs from 'fs';
 import path from 'path';
+import { NotificationService } from '../services/notifications';
 
 const router = Router();
 
@@ -552,6 +553,574 @@ router.post('/qr/scan', requireAuth, async (req: AuthRequest, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Failed to record scan' });
+  }
+});
+
+// ==========================================
+// PHASE 5: UNIFIED ATTENDANCE ENDPOINTS
+// ==========================================
+
+// 1. Get or initialize an attendance session (Daily / Period / Boarding)
+router.get('/sessions', requireAuth, async (req: AuthRequest, res) => {
+  try {
+    const schoolId = req.user!.schoolId!;
+    const { date, classId, period = 'Homeroom', type = 'daily' } = req.query;
+
+    if (!date) {
+      return res.status(400).json({ error: 'date is required' });
+    }
+
+    const queryDate = new Date(date as string);
+
+    // Look for existing session
+    const existingSession = await prisma.attendanceSession.findFirst({
+      where: {
+        schoolId,
+        date: queryDate,
+        classId: (classId as string) || null,
+        period: period as string,
+        type: type as string
+      },
+      include: {
+        records: {
+          include: {
+            student: {
+              select: {
+                id: true,
+                studentId: true,
+                name: true,
+                gender: true,
+                status: true
+              }
+            }
+          }
+        }
+      }
+    });
+
+    if (existingSession) {
+      return res.json({ session: existingSession, isNew: false });
+    }
+
+    // If no session exists yet, return student roster with default 'present'
+    const students = await prisma.student.findMany({
+      where: {
+        schoolId,
+        status: 'ACTIVE',
+        ...(classId ? { classId: classId as string } : {})
+      },
+      orderBy: { name: 'asc' },
+      select: {
+        id: true,
+        studentId: true,
+        name: true,
+        gender: true,
+        status: true
+      }
+    });
+
+    res.json({
+      session: {
+        schoolId,
+        date: queryDate,
+        classId: classId || null,
+        period,
+        type,
+        submitted: false,
+        records: students.map(s => ({
+          studentId: s.id,
+          student: s,
+          status: 'present',
+          notes: ''
+        }))
+      },
+      isNew: true
+    });
+  } catch (error) {
+    console.error('Error fetching attendance session:', error);
+    res.status(500).json({ error: 'Failed to load attendance session' });
+  }
+});
+
+// 2. Save Attendance Session with Auto-SMS and 3-Consecutive-Absence Welfare Check
+router.post('/sessions/save', requireAuth, async (req: AuthRequest, res) => {
+  try {
+    const schoolId = req.user!.schoolId!;
+    const userId = req.user!.id;
+    const { date, classId, period = 'Homeroom', type = 'daily', records } = req.body;
+
+    if (!date || !records || !Array.isArray(records)) {
+      return res.status(400).json({ error: 'date and records array are required' });
+    }
+
+    const sessionDate = new Date(date);
+
+    // Upsert the AttendanceSession
+    let session = await prisma.attendanceSession.findFirst({
+      where: {
+        schoolId,
+        date: sessionDate,
+        classId: classId || null,
+        period,
+        type
+      }
+    });
+
+    if (session) {
+      session = await prisma.attendanceSession.update({
+        where: { id: session.id },
+        data: {
+          submitted: true,
+          teacherId: userId
+        }
+      });
+    } else {
+      session = await prisma.attendanceSession.create({
+        data: {
+          schoolId,
+          date: sessionDate,
+          classId: classId || null,
+          period,
+          type,
+          teacherId: userId,
+          submitted: true
+        }
+      });
+    }
+
+    let smsDispatchedCount = 0;
+    let disciplineCasesCreated = 0;
+
+    for (const rec of records) {
+      const studentId = rec.studentId;
+      const status = (rec.status || 'present').toLowerCase();
+      const notes = rec.notes || null;
+
+      let parentNotifiedAt: Date | null = null;
+
+      if (status === 'absent') {
+        const student = await prisma.student.findUnique({
+          where: { id: studentId },
+          include: {
+            user: true,
+            parents: {
+              include: {
+                parent: {
+                  include: {
+                    user: true
+                  }
+                }
+              }
+            }
+          }
+        });
+
+        if (student) {
+          const parentPhone =
+            student.parents?.[0]?.parent?.phone ||
+            student.parents?.[0]?.parent?.user?.phone ||
+            student.user?.phone;
+
+          if (parentPhone) {
+            try {
+              await NotificationService.enqueue({
+                type: 'SMS',
+                schoolId,
+                senderId: userId,
+                studentId: student.id,
+                recipientPhone: parentPhone,
+                payload: {
+                  message: `Attendance Alert: ${student.name} was marked ABSENT today (${sessionDate.toISOString().slice(0, 10)}). If this is in error, please contact administration.`
+                }
+              });
+
+              await NotificationService.logCommunication({
+                schoolId,
+                senderId: userId,
+                studentId: student.id,
+                type: 'SMS',
+                description: `Daily Roll Call Absence Alert for ${student.name} sent to ${parentPhone}`,
+                status: 'SENT'
+              });
+
+              parentNotifiedAt = new Date();
+              smsDispatchedCount++;
+            } catch (err) {
+              console.error('Error dispatching absence SMS:', err);
+            }
+          }
+
+          // Check for 3 consecutive absences in daily sessions
+          if (type === 'daily') {
+            const previousAbsences = await prisma.attendanceSessionRecord.findMany({
+              where: {
+                studentId: student.id,
+                session: {
+                  schoolId,
+                  type: 'daily',
+                  date: { lt: sessionDate }
+                }
+              },
+              orderBy: { session: { date: 'desc' } },
+              take: 2,
+              include: { session: true }
+            });
+
+            if (
+              previousAbsences.length === 2 &&
+              previousAbsences.every(p => p.status.toLowerCase() === 'absent')
+            ) {
+              const existingRecord = await prisma.disciplineRecord.findFirst({
+                where: {
+                  schoolId,
+                  studentId: student.id,
+                  offenceType: 'TRUANCY / CHRONIC ABSENCE',
+                  date: {
+                    gte: startOfDay(sessionDate),
+                    lte: endOfDay(sessionDate)
+                  }
+                }
+              });
+
+              if (!existingRecord) {
+                await prisma.disciplineRecord.create({
+                  data: {
+                    schoolId,
+                    studentId: student.id,
+                    reporterId: userId,
+                    date: sessionDate,
+                    offenceType: 'TRUANCY / CHRONIC ABSENCE',
+                    description: `Automated Welfare Flag: ${student.name} has been marked absent for 3 consecutive days. Flagged for welfare check.`,
+                    severity: 'MEDIUM',
+                    status: 'PENDING',
+                    actionTaken: 'Parent alerted via SMS; referred to Class Teacher & Welfare Head.'
+                  }
+                });
+                disciplineCasesCreated++;
+              }
+            }
+          }
+        }
+      }
+
+      await prisma.attendanceSessionRecord.upsert({
+        where: {
+          sessionId_studentId: {
+            sessionId: session.id,
+            studentId
+          }
+        },
+        update: {
+          status,
+          notes,
+          markedById: userId,
+          markedAt: new Date(),
+          ...(parentNotifiedAt ? { parentNotifiedAt } : {})
+        },
+        create: {
+          sessionId: session.id,
+          studentId,
+          status,
+          notes,
+          markedById: userId,
+          markedAt: new Date(),
+          parentNotifiedAt
+        }
+      });
+    }
+
+    // If type is boarding, also sync to BoardingRollCall
+    if (type === 'boarding') {
+      const timeSlot = period.includes('21') ? '21:00' : '18:00';
+      for (const rec of records) {
+        const allocation = await prisma.hostelBedAllocation.findFirst({
+          where: { studentId: rec.studentId, status: 'ACTIVE' }
+        });
+        if (allocation?.hostelId) {
+          const existingRoll = await prisma.boardingRollCall.findFirst({
+            where: {
+              schoolId,
+              hostelId: allocation.hostelId,
+              date: sessionDate,
+              time: timeSlot,
+              studentId: rec.studentId
+            }
+          });
+          if (existingRoll) {
+            await prisma.boardingRollCall.update({
+              where: { id: existingRoll.id },
+              data: {
+                status: rec.status,
+                notes: rec.notes,
+                markedById: userId
+              }
+            });
+          } else {
+            await prisma.boardingRollCall.create({
+              data: {
+                schoolId,
+                hostelId: allocation.hostelId,
+                date: sessionDate,
+                time: timeSlot,
+                studentId: rec.studentId,
+                status: rec.status,
+                notes: rec.notes,
+                markedById: userId
+              }
+            });
+          }
+        }
+      }
+    }
+
+    const allRecords = await prisma.attendanceSessionRecord.findMany({
+      where: { sessionId: session.id }
+    });
+    const total = allRecords.length;
+    const present = allRecords.filter(r => r.status.toLowerCase() === 'present').length;
+    const absent = allRecords.filter(r => r.status.toLowerCase() === 'absent').length;
+    const late = allRecords.filter(r => r.status.toLowerCase() === 'late').length;
+    const attendanceRate = total > 0 ? parseFloat(((present / total) * 100).toFixed(1)) : 100.0;
+
+    res.json({
+      success: true,
+      session,
+      stats: { total, present, absent, late, attendanceRate },
+      smsDispatchedCount,
+      disciplineCasesCreated
+    });
+  } catch (error) {
+    console.error('Error saving attendance session:', error);
+    res.status(500).json({ error: 'Failed to save attendance session' });
+  }
+});
+
+// 3. Absentee Report with chronic absentee detection
+router.get('/absentee-report', requireAuth, async (req: AuthRequest, res) => {
+  try {
+    const schoolId = req.user!.schoolId!;
+    const { startDate, endDate, classId, threshold = '80' } = req.query;
+    const thresholdNum = parseFloat(threshold as string) || 80.0;
+
+    const fromDate = startDate ? new Date(startDate as string) : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+    const toDate = endDate ? new Date(endDate as string) : new Date();
+
+    const students = await prisma.student.findMany({
+      where: {
+        schoolId,
+        status: 'ACTIVE',
+        ...(classId ? { classId: classId as string } : {})
+      },
+      include: {
+        class: true
+      }
+    });
+
+    const report = [];
+    for (const s of students) {
+      const records = await prisma.attendanceSessionRecord.findMany({
+        where: {
+          studentId: s.id,
+          session: {
+            schoolId,
+            type: 'daily',
+            date: { gte: fromDate, lte: toDate }
+          }
+        }
+      });
+
+      const disciplineRecords = await prisma.disciplineRecord.findMany({
+        where: {
+          schoolId,
+          studentId: s.id,
+          offenceType: 'TRUANCY / CHRONIC ABSENCE'
+        },
+        orderBy: { date: 'desc' }
+      });
+
+      const totalSessions = records.length;
+      const absentCount = records.filter(r => r.status.toLowerCase() === 'absent').length;
+      const lateCount = records.filter(r => r.status.toLowerCase() === 'late').length;
+      const presentCount = records.filter(r => r.status.toLowerCase() === 'present').length;
+      const rate = totalSessions > 0 ? parseFloat(((presentCount / totalSessions) * 100).toFixed(1)) : 100.0;
+
+      const isChronic = rate < thresholdNum || absentCount >= 3;
+
+      report.push({
+        studentId: s.studentId,
+        id: s.id,
+        name: s.name,
+        className: s.class?.name || 'Unassigned',
+        totalSessions,
+        presentCount,
+        absentCount,
+        lateCount,
+        rate,
+        isChronic,
+        welfareCases: disciplineRecords.length,
+        lastWelfareCase: disciplineRecords[0] || null
+      });
+    }
+
+    report.sort((a, b) => a.rate - b.rate);
+
+    res.json({
+      students: report,
+      summary: {
+        totalEvaluated: report.length,
+        chronicAbsentees: report.filter(r => r.isChronic).length,
+        averageRate: report.length > 0 ? parseFloat((report.reduce((sum, r) => sum + r.rate, 0) / report.length).toFixed(1)) : 100.0
+      }
+    });
+  } catch (error) {
+    console.error('Error fetching absentee report:', error);
+    res.status(500).json({ error: 'Failed to generate absentee report' });
+  }
+});
+
+// 4. Attendance SMS Log
+router.get('/sms-log', requireAuth, async (req: AuthRequest, res) => {
+  try {
+    const schoolId = req.user!.schoolId!;
+    const logs = await prisma.communicationLog.findMany({
+      where: {
+        schoolId,
+        type: 'SMS',
+        description: { contains: 'Absence' }
+      },
+      orderBy: { createdAt: 'desc' },
+      take: 100
+    });
+    res.json(logs);
+  } catch (error) {
+    console.error('Error fetching SMS log:', error);
+    res.status(500).json({ error: 'Failed to fetch attendance SMS logs' });
+  }
+});
+
+// 5. Daily Attendance Stats Overview
+router.get('/stats', requireAuth, async (req: AuthRequest, res) => {
+  try {
+    const schoolId = req.user!.schoolId!;
+    const { date } = req.query;
+    const queryDate = date ? new Date(date as string) : new Date();
+
+    const totalStudents = await prisma.student.count({
+      where: { schoolId, status: 'ACTIVE' }
+    });
+
+    const sessions = await prisma.attendanceSession.findMany({
+      where: {
+        schoolId,
+        date: queryDate,
+        type: 'daily'
+      },
+      include: {
+        records: true,
+        class: true
+      }
+    });
+
+    let totalMarked = 0;
+    let presentCount = 0;
+    let absentCount = 0;
+    let lateCount = 0;
+
+    const classBreakdown: any[] = [];
+
+    for (const sess of sessions) {
+      const sessTotal = sess.records.length;
+      const sessPresent = sess.records.filter(r => r.status.toLowerCase() === 'present').length;
+      const sessAbsent = sess.records.filter(r => r.status.toLowerCase() === 'absent').length;
+      const sessLate = sess.records.filter(r => r.status.toLowerCase() === 'late').length;
+
+      totalMarked += sessTotal;
+      presentCount += sessPresent;
+      absentCount += sessAbsent;
+      lateCount += sessLate;
+
+      classBreakdown.push({
+        classId: sess.classId,
+        className: sess.class?.name || 'Class',
+        total: sessTotal,
+        present: sessPresent,
+        absent: sessAbsent,
+        rate: sessTotal > 0 ? parseFloat(((sessPresent / sessTotal) * 100).toFixed(1)) : 100.0
+      });
+    }
+
+    const attendanceRate = totalMarked > 0 ? parseFloat(((presentCount / totalMarked) * 100).toFixed(1)) : 100.0;
+
+    res.json({
+      totalStudents,
+      totalMarked,
+      presentCount,
+      absentCount,
+      lateCount,
+      attendanceRate,
+      classBreakdown
+    });
+  } catch (error) {
+    console.error('Error fetching attendance stats:', error);
+    res.status(500).json({ error: 'Failed to load attendance stats' });
+  }
+});
+
+// 6. Report Card Attendance Comments Feed
+router.get('/report-card-comments', requireAuth, async (req: AuthRequest, res) => {
+  try {
+    const schoolId = req.user!.schoolId!;
+    const { classId, threshold = '80' } = req.query;
+    const minThreshold = parseFloat(threshold as string) || 80.0;
+
+    const students = await prisma.student.findMany({
+      where: {
+        schoolId,
+        status: 'ACTIVE',
+        ...(classId ? { classId: classId as string } : {})
+      },
+      include: { class: true }
+    });
+
+    const recommendations = [];
+    for (const s of students) {
+      const records = await prisma.attendanceSessionRecord.findMany({
+        where: {
+          studentId: s.id,
+          session: { schoolId, type: 'daily' }
+        }
+      });
+
+      const total = records.length;
+      const present = records.filter(r => r.status.toLowerCase() === 'present').length;
+      const rate = total > 0 ? parseFloat(((present / total) * 100).toFixed(1)) : 100.0;
+
+      let comment = '';
+      if (rate < minThreshold) {
+        comment = `Attendance is critically low at ${rate}% (below the ${minThreshold}% minimum requirement). Parent conference recommended.`;
+      } else if (rate >= 95.0) {
+        comment = `Exemplary attendance record of ${rate}%. Shows commendable punctuality and dedication.`;
+      } else {
+        comment = `Satisfactory attendance level of ${rate}%. Consistent attendance supports steady academic progress.`;
+      }
+
+      recommendations.push({
+        studentId: s.studentId,
+        id: s.id,
+        name: s.name,
+        className: s.class?.name || 'Unassigned',
+        totalSessions: total,
+        presentSessions: present,
+        rate,
+        comment,
+        belowThreshold: rate < minThreshold
+      });
+    }
+
+    res.json(recommendations);
+  } catch (error) {
+    console.error('Error generating report card comments:', error);
+    res.status(500).json({ error: 'Failed to generate comments' });
   }
 });
 

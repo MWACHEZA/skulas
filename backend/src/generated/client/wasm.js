@@ -3523,6 +3523,70 @@ exports.Prisma.UniformStockLedgerScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.AttendanceSessionScalarFieldEnum = {
+  id: 'id',
+  schoolId: 'schoolId',
+  date: 'date',
+  classId: 'classId',
+  period: 'period',
+  teacherId: 'teacherId',
+  type: 'type',
+  submitted: 'submitted',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.AttendanceSessionRecordScalarFieldEnum = {
+  id: 'id',
+  sessionId: 'sessionId',
+  studentId: 'studentId',
+  status: 'status',
+  notes: 'notes',
+  markedById: 'markedById',
+  markedAt: 'markedAt',
+  parentNotifiedAt: 'parentNotifiedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.StaffAttendanceDailyScalarFieldEnum = {
+  id: 'id',
+  schoolId: 'schoolId',
+  staffId: 'staffId',
+  date: 'date',
+  firstIn: 'firstIn',
+  lastOut: 'lastOut',
+  totalHours: 'totalHours',
+  status: 'status',
+  lateMinutes: 'lateMinutes',
+  leaveCrossCheck: 'leaveCrossCheck',
+  flaggedTardiness: 'flaggedTardiness',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.BiometricRawLogScalarFieldEnum = {
+  id: 'id',
+  schoolId: 'schoolId',
+  deviceId: 'deviceId',
+  staffId: 'staffId',
+  punchTime: 'punchTime',
+  punchType: 'punchType',
+  processed: 'processed',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.HrTardinessLogScalarFieldEnum = {
+  id: 'id',
+  schoolId: 'schoolId',
+  staffId: 'staffId',
+  date: 'date',
+  lateMinutes: 'lateMinutes',
+  actionStatus: 'actionStatus',
+  notes: 'notes',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -3808,7 +3872,12 @@ exports.Prisma.ModelName = {
   UniformProduct: 'UniformProduct',
   UniformKit: 'UniformKit',
   UniformIssuance: 'UniformIssuance',
-  UniformStockLedger: 'UniformStockLedger'
+  UniformStockLedger: 'UniformStockLedger',
+  AttendanceSession: 'AttendanceSession',
+  AttendanceSessionRecord: 'AttendanceSessionRecord',
+  StaffAttendanceDaily: 'StaffAttendanceDaily',
+  BiometricRawLog: 'BiometricRawLog',
+  HrTardinessLog: 'HrTardinessLog'
 };
 
 /**

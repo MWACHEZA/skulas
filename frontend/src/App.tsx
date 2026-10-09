@@ -127,6 +127,7 @@ import AdminAcademicsSetup from './portals/admin/pages/AcademicsSetup';
 import AdminAcademicsMarks from './portals/admin/pages/AcademicsMarks';
 import AdminAcademicsTimetable from './portals/admin/pages/AcademicsTimetable';
 import AdminAttendance from './portals/admin/pages/Attendance';
+import AdminStaffAttendance from './portals/admin/pages/AdminStaffAttendance';
 import AdminClinic from './portals/admin/pages/AdminClinic';
 import AdminDiscipline from './portals/admin/pages/AdminDiscipline';
 import AdminTransport from './portals/admin/pages/AdminTransport';
@@ -648,6 +649,7 @@ export default function App() {
 
               {/* 4. Attendance Module */}
               <Route path="attendance" element={<AdminAttendance />} />
+              <Route path="attendance/staff" element={<AdminStaffAttendance />} />
 
               {/* 5. Welfare Module */}
               <Route path="clinic" element={<AdminClinic />} />
@@ -741,8 +743,8 @@ export default function App() {
               <Route path="timetable" element={<Navigate to="/admin/academics/timetable?tab=schedule" replace />} />
               <Route path="calendar" element={<Navigate to="/admin/academics/timetable?tab=calendar" replace />} />
 
-              <Route path="hr/attendance" element={<Navigate to="/admin/attendance" replace />} />
-              <Route path="clock-in-logs" element={<Navigate to="/admin/attendance?audience=staff" replace />} />
+              <Route path="hr/attendance" element={<Navigate to="/admin/attendance/staff" replace />} />
+              <Route path="clock-in-logs" element={<Navigate to="/admin/attendance/staff?tab=raw-logs" replace />} />
 
               <Route path="clinic/dashboard" element={<Navigate to="/admin/clinic" replace />} />
               <Route path="clinic/patients" element={<Navigate to="/admin/clinic?tab=visits" replace />} />
