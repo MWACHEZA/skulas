@@ -222,12 +222,17 @@ model School {
   FacilitiesRequest     FacilitiesRequest[]
   CateringRequest       CateringRequest[]
 
-  awardConfigs     AwardConfig[]
-  studentAwards    StudentAward[]
-  bursaryTypes     BursaryType[]
-  studentBursaries StudentBursary[]
-  studentInvoices  StudentInvoice[]
-  receipts         Receipt[]
+  awardConfigs         AwardConfig[]
+  studentAwards        StudentAward[]
+  bursaryTypes         BursaryType[]
+  studentBursaries     StudentBursary[]
+  studentInvoices      StudentInvoice[]
+  receipts             Receipt[]
+  bedAllocations       HostelBedAllocation[]
+  transportAllocations StudentTransportAllocation[]
+  schoolTrips          SchoolTrip[]
+  tripConsents         TripConsent[]
+  bookLoanFines        BookLoanFine[]
 
   @@index([code])
 }
@@ -716,17 +721,21 @@ model Student {
   clubId String?
   club   Club?   @relation(fields: [clubId], references: [id])
 
-  payments          StudentPayment[]
-  communicationLogs CommunicationLog[]
-  paymentPlans      PaymentPlan[]
-  houseCaptained    StudentHouse[]     @relation("HouseCaptain")
-  wallet            StudentWallet?
-  clearances        StudentClearance[]
-  cbtAttempts       CbtAttempt[]
-  awards            StudentAward[]
-  bursaries         StudentBursary[]
-  studentInvoices   StudentInvoice[]
-  receipts          Receipt[]
+  payments             StudentPayment[]
+  communicationLogs    CommunicationLog[]
+  paymentPlans         PaymentPlan[]
+  houseCaptained       StudentHouse[]               @relation("HouseCaptain")
+  wallet               StudentWallet?
+  clearances           StudentClearance[]
+  cbtAttempts          CbtAttempt[]
+  awards               StudentAward[]
+  bursaries            StudentBursary[]
+  studentInvoices      StudentInvoice[]
+  receipts             Receipt[]
+  bedAllocations       HostelBedAllocation[]
+  transportAllocations StudentTransportAllocation[]
+  tripConsents         TripConsent[]
+  bookLoanFines        BookLoanFine[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -1028,6 +1037,7 @@ model StudentInvoice {
   sourceModule   String    @default("bulk_billing") // boarding | uniforms | transport | trips | bulk_billing | library_fine
   sourceId       String?
   idempotencyKey String    @unique
+  journalEntryId String?
   dueDate        DateTime?
   createdBy      String?
   createdAt      DateTime  @default(now())
@@ -1357,27 +1367,29 @@ model LibraryCategory {
 }
 
 model BookLoan {
-  id               String    @id @default(cuid())
+  id               String         @id @default(cuid())
   bookId           String
-  book             Book      @relation(fields: [bookId], references: [id])
+  book             Book           @relation(fields: [bookId], references: [id])
   studentId        String?
-  student          Student?  @relation(fields: [studentId], references: [id])
+  student          Student?       @relation(fields: [studentId], references: [id])
   userId           String?
-  user             User?     @relation(fields: [userId], references: [id])
-  borrowedAt       DateTime  @default(now())
+  user             User?          @relation(fields: [userId], references: [id])
+  borrowedAt       DateTime       @default(now())
   dueDate          DateTime
   returnedAt       DateTime?
-  status           String    @default("borrowed") // borrowed, returned, overdue
-  loanType         String    @default("LIBRARY") // LIBRARY, TEXTBOOK
+  status           String         @default("borrowed") // borrowed, returned, overdue
+  loanType         String         @default("LIBRARY") // LIBRARY, TEXTBOOK
   notes            String?
   accessionNumber  String?
-  waivedFine       Float?    @default(0)
-  paidFine         Float?    @default(0)
-  fineCalculated   Float?    @default(0)
+  waivedFine       Float?         @default(0)
+  paidFine         Float?         @default(0)
+  fineCalculated   Float?         @default(0)
   lastReminderDate DateTime?
   lastReminderType String?
+  invoiceId        String?
+  fines            BookLoanFine[]
   schoolId         String
-  school           School    @relation(fields: [schoolId], references: [id])
+  school           School         @relation(fields: [schoolId], references: [id])
 
   @@index([schoolId])
   @@index([studentId])
@@ -2091,7 +2103,8 @@ model TransportRoute {
   schoolId    String
   createdAt   DateTime @default(now())
 
-  schoolTransports SchoolTransport[]
+  schoolTransports     SchoolTransport[]
+  transportAllocations StudentTransportAllocation[]
 
   @@index([schoolId])
 }
@@ -2331,18 +2344,20 @@ model Hostel {
   warden                User?                  @relation("HostelWarden", fields: [wardenUserId], references: [id])
   leadershipAssignments LeadershipAssignment[] @relation("LeadershipHostel")
   requisitionsAsHostel  Requisition[]          @relation("RequisitionHostel")
+  bedAllocations        HostelBedAllocation[]
 
   @@index([schoolId])
 }
 
 model Room {
-  id        String    @id @default(cuid())
-  name      String // Room Number/Name
-  capacity  Int
-  hostelId  String
-  hostel    Hostel    @relation(fields: [hostelId], references: [id])
-  students  Student[]
-  createdAt DateTime  @default(now())
+  id             String                @id @default(cuid())
+  name           String // Room Number/Name
+  capacity       Int
+  hostelId       String
+  hostel         Hostel                @relation(fields: [hostelId], references: [id])
+  students       Student[]
+  bedAllocations HostelBedAllocation[]
+  createdAt      DateTime              @default(now())
 
   @@index([hostelId])
 }
@@ -2934,7 +2949,7 @@ model PayrollEntry {
   @@index([userId])
 }
 
-// ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚Â CBT (Computer Based Test) ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã��Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚Â
+// ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢��¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚Â CBT (Computer Based Test) ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚Â
 
 model CBTExam {
   id             String       @id @default(cuid())
@@ -3266,9 +3281,10 @@ model SchoolTransport {
   schoolId    String
   createdAt   DateTime @default(now())
 
-  school  School         @relation(fields: [schoolId], references: [id], onDelete: Cascade)
-  route   TransportRoute @relation(fields: [routeId], references: [id], onDelete: Restrict)
-  vehicle SchoolVehicle  @relation(fields: [vehicleId], references: [id], onDelete: Restrict)
+  school               School                       @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  route                TransportRoute               @relation(fields: [routeId], references: [id], onDelete: Restrict)
+  vehicle              SchoolVehicle                @relation(fields: [vehicleId], references: [id], onDelete: Restrict)
+  transportAllocations StudentTransportAllocation[]
 
   @@index([schoolId])
   @@index([routeId])
@@ -4971,4 +4987,125 @@ model StudentBursary {
 
   @@index([schoolId])
   @@index([studentId])
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// Phase 2: Billing Integration Models
+// ═══════════════════════════════════════════════════════════════════
+
+model HostelBedAllocation {
+  id            String    @id @default(cuid())
+  schoolId      String
+  school        School    @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  studentId     String
+  student       Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  hostelId      String
+  hostel        Hostel    @relation(fields: [hostelId], references: [id], onDelete: Cascade)
+  roomId        String?
+  room          Room?     @relation(fields: [roomId], references: [id], onDelete: SetNull)
+  termId        String?
+  term          String?   @default("Term 1")
+  year          Int       @default(2026)
+  feeAmount     Float     @default(0)
+  invoiceId     String?
+  status        String    @default("ACTIVE") // ACTIVE | VACATED | CANCELLED
+  allocatedAt   DateTime  @default(now())
+  vacatedAt     DateTime?
+  vacatedReason String?
+  creditNoteId  String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([schoolId])
+  @@index([studentId])
+  @@index([hostelId])
+}
+
+model StudentTransportAllocation {
+  id             String           @id @default(cuid())
+  schoolId       String
+  school         School           @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  studentId      String
+  student        Student          @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  transportId    String?
+  transport      SchoolTransport? @relation(fields: [transportId], references: [id], onDelete: SetNull)
+  routeId        String?
+  route          TransportRoute?  @relation(fields: [routeId], references: [id], onDelete: SetNull)
+  termId         String           @default("term_1")
+  year           Int              @default(2026)
+  feeAmount      Float            @default(0)
+  invoiceId      String?
+  status         String           @default("ACTIVE") // ACTIVE | CANCELLED
+  flaggedForDebt Boolean          @default(false)
+  allocatedAt    DateTime         @default(now())
+  cancelledAt    DateTime?
+  creditNoteId   String?
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  @@index([schoolId])
+  @@index([studentId])
+}
+
+model SchoolTrip {
+  id          String        @id @default(cuid())
+  schoolId    String
+  school      School        @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  title       String
+  destination String
+  date        DateTime
+  cost        Float         @default(0)
+  currency    String        @default("USD")
+  description String?
+  transport   String?
+  status      String        @default("PLANNED") // PLANNED | COMPLETED | CANCELLED
+  consents    TripConsent[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@index([schoolId])
+}
+
+model TripConsent {
+  id           String     @id @default(cuid())
+  schoolId     String
+  school       School     @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  tripId       String
+  trip         SchoolTrip @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  studentId    String
+  student      Student    @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  parentName   String?
+  parentPhone  String?
+  status       String     @default("APPROVED") // PENDING | APPROVED | DECLINED | CANCELLED
+  invoiceId    String?
+  creditNoteId String?
+  consentedAt  DateTime   @default(now())
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  @@index([schoolId])
+  @@index([studentId])
+  @@index([tripId])
+}
+
+model BookLoanFine {
+  id           String   @id @default(cuid())
+  schoolId     String
+  school       School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  loanId       String
+  loan         BookLoan @relation(fields: [loanId], references: [id], onDelete: Cascade)
+  studentId    String
+  student      Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  amount       Float
+  fineType     String   @default("OVERDUE") // OVERDUE | LOST_BOOK | DAMAGE
+  reason       String?
+  invoiceId    String?
+  status       String   @default("BILLED") // BILLED | WAIVED | PAID
+  waivedAmount Float    @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([schoolId])
+  @@index([studentId])
+  @@index([loanId])
 }

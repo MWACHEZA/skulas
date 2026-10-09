@@ -305,30 +305,43 @@ export class BursarService {
         tx: db
       });
 
-      // 7. Write Audit Log
-      try {
-        await db.auditLog.create({
-          data: {
-            schoolId,
-            actorId: createdBy && createdBy !== 'SYSTEM' ? createdBy : (student.userId || studentId),
-            action: 'CREATE_STUDENT_INVOICE',
-            entityType: 'StudentInvoice',
-            entityId: invoice.id,
-            details: {
-              invoiceNumber,
-              totalAmount: invoiceTotal,
-              currency,
-              sourceModule,
-              studentId,
-              journalEntryId: journalEntry.id,
-              idempotencyKey
-            },
-            status: 'SUCCESS',
-            ipAddress: '127.0.0.1'
+      // Update invoice with journalEntryId
+      await db.studentInvoice.update({
+        where: { id: invoice.id },
+        data: { journalEntryId: journalEntry.id }
+      });
+      (invoice as any).journalEntryId = journalEntry.id;
+
+      // 7. Write Audit Log (only if valid User actor exists)
+      const actorId = createdBy && createdBy !== 'SYSTEM' ? createdBy : student.userId;
+      if (actorId) {
+        const actorUser = await db.user.findFirst({ where: { id: actorId }, select: { id: true } });
+        if (actorUser) {
+          try {
+            await db.auditLog.create({
+              data: {
+                schoolId,
+                actorId: actorUser.id,
+                action: 'CREATE_STUDENT_INVOICE',
+                entityType: 'StudentInvoice',
+                entityId: invoice.id,
+                details: {
+                  invoiceNumber,
+                  totalAmount: invoiceTotal,
+                  currency,
+                  sourceModule,
+                  studentId,
+                  journalEntryId: journalEntry.id,
+                  idempotencyKey
+                },
+                status: 'SUCCESS',
+                ipAddress: '127.0.0.1'
+              }
+            });
+          } catch (auditErr) {
+            console.warn('Audit log write skipped:', auditErr);
           }
-        });
-      } catch (auditErr) {
-        console.warn('Audit log write skipped:', auditErr);
+        }
       }
 
       // 8. Broadcast Real-Time Ledger Event
@@ -637,31 +650,37 @@ export class BursarService {
         });
       }
 
-      // 10. Audit Log Write
-      try {
-        await db.auditLog.create({
-          data: {
-            schoolId,
-            actorId: receivedBy && receivedBy !== 'SYSTEM' ? receivedBy : (student.userId || studentId),
-            action: 'RECEIVE_STUDENT_PAYMENT',
-            entityType: 'Receipt',
-            entityId: receipt.id,
-            details: {
-              receiptNumber,
-              amount,
-              paymentCurrency,
-              invoiceCurrency,
-              exchangeRate,
-              paymentMethod,
-              journalEntryId: je.id,
-              fiscalReceiptNumber
-            },
-            status: 'SUCCESS',
-            ipAddress: '127.0.0.1'
+      // 10. Audit Log Write (only if valid User actor exists)
+      const payActorId = receivedBy && receivedBy !== 'SYSTEM' ? receivedBy : student.userId;
+      if (payActorId) {
+        const actorUser = await db.user.findFirst({ where: { id: payActorId }, select: { id: true } });
+        if (actorUser) {
+          try {
+            await db.auditLog.create({
+              data: {
+                schoolId,
+                actorId: actorUser.id,
+                action: 'RECEIVE_STUDENT_PAYMENT',
+                entityType: 'Receipt',
+                entityId: receipt.id,
+                details: {
+                  receiptNumber,
+                  amount,
+                  paymentCurrency,
+                  invoiceCurrency,
+                  exchangeRate,
+                  paymentMethod,
+                  journalEntryId: je.id,
+                  fiscalReceiptNumber
+                },
+                status: 'SUCCESS',
+                ipAddress: '127.0.0.1'
+              }
+            });
+          } catch (aErr) {
+            console.warn('Receipt audit log skipped:', aErr);
           }
-        });
-      } catch (aErr) {
-        console.warn('Receipt audit log skipped:', aErr);
+        }
       }
 
       // 11. Parent Notification / SMS

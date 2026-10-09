@@ -5,6 +5,7 @@ export interface CreateCreditNoteInput {
     reason: string;
     issuedByUserId?: string;
     ipAddress?: string;
+    proRataRatio?: number;
 }
 export declare class CreditNoteService {
     /**
@@ -290,5 +291,80 @@ export declare class CreditNoteService {
         fiscalInvoiceId: string | null;
         totalVat: number;
         issuedByUserId: string | null;
+    }>;
+    /**
+     * Reverses or pro-rata reverses a StudentInvoice by issuing a double-entry Credit Note.
+     * If proRataRatio < 1 (e.g. 0.5 for a 50% refund on vacating a hostel), scales reversal lines accordingly.
+     */
+    static createCreditNoteForInvoice(input: {
+        schoolId: string;
+        invoiceId: string;
+        reason: string;
+        proRataRatio?: number;
+        issuedByUserId?: string;
+    }): Promise<{
+        creditNote: {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            status: string;
+            schoolId: string;
+            totalAmount: number;
+            currency: string;
+            reason: string;
+            creditNoteNumber: string;
+            originalJournalEntryId: string;
+            reversalJournalEntryId: string | null;
+            fiscalInvoiceId: string | null;
+            totalVat: number;
+            issuedByUserId: string | null;
+        };
+        reversingEntry: {
+            lines: {
+                exchangeRate: number;
+                id: string;
+                createdAt: Date;
+                schoolId: string;
+                description: string | null;
+                studentId: string | null;
+                supplierId: string | null;
+                currency: string;
+                journalEntryId: string;
+                accountId: string;
+                coaCode: string | null;
+                debit: number;
+                credit: number;
+                baseAmount: number;
+                taxCode: string | null;
+                debitForeign: number;
+                creditForeign: number;
+                isReconciled: boolean;
+                reconciledAt: Date | null;
+                bankLineId: string | null;
+            }[];
+        } & {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            status: string;
+            schoolId: string;
+            description: string;
+            date: Date;
+            currency: string;
+            isLocked: boolean;
+            ipAddress: string | null;
+            sourceId: string;
+            period: string;
+            entryNumber: string;
+            exchangeRateUsed: number;
+            isReversing: boolean;
+            reversedById: string | null;
+            isReversed: boolean;
+            reversedByCnId: string | null;
+            sourceType: string;
+            createdByUserId: string | null;
+        };
+        originalEntryNumber: string;
+        fiscalCreditNote: any;
     }>;
 }

@@ -598,6 +598,7 @@ exports.Prisma.StudentInvoiceScalarFieldEnum = {
   sourceModule: 'sourceModule',
   sourceId: 'sourceId',
   idempotencyKey: 'idempotencyKey',
+  journalEntryId: 'journalEntryId',
   dueDate: 'dueDate',
   createdBy: 'createdBy',
   createdAt: 'createdAt',
@@ -834,6 +835,7 @@ exports.Prisma.BookLoanScalarFieldEnum = {
   fineCalculated: 'fineCalculated',
   lastReminderDate: 'lastReminderDate',
   lastReminderType: 'lastReminderType',
+  invoiceId: 'invoiceId',
   schoolId: 'schoolId'
 };
 
@@ -3306,6 +3308,90 @@ exports.Prisma.StudentBursaryScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.HostelBedAllocationScalarFieldEnum = {
+  id: 'id',
+  schoolId: 'schoolId',
+  studentId: 'studentId',
+  hostelId: 'hostelId',
+  roomId: 'roomId',
+  termId: 'termId',
+  term: 'term',
+  year: 'year',
+  feeAmount: 'feeAmount',
+  invoiceId: 'invoiceId',
+  status: 'status',
+  allocatedAt: 'allocatedAt',
+  vacatedAt: 'vacatedAt',
+  vacatedReason: 'vacatedReason',
+  creditNoteId: 'creditNoteId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.StudentTransportAllocationScalarFieldEnum = {
+  id: 'id',
+  schoolId: 'schoolId',
+  studentId: 'studentId',
+  transportId: 'transportId',
+  routeId: 'routeId',
+  termId: 'termId',
+  year: 'year',
+  feeAmount: 'feeAmount',
+  invoiceId: 'invoiceId',
+  status: 'status',
+  flaggedForDebt: 'flaggedForDebt',
+  allocatedAt: 'allocatedAt',
+  cancelledAt: 'cancelledAt',
+  creditNoteId: 'creditNoteId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.SchoolTripScalarFieldEnum = {
+  id: 'id',
+  schoolId: 'schoolId',
+  title: 'title',
+  destination: 'destination',
+  date: 'date',
+  cost: 'cost',
+  currency: 'currency',
+  description: 'description',
+  transport: 'transport',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.TripConsentScalarFieldEnum = {
+  id: 'id',
+  schoolId: 'schoolId',
+  tripId: 'tripId',
+  studentId: 'studentId',
+  parentName: 'parentName',
+  parentPhone: 'parentPhone',
+  status: 'status',
+  invoiceId: 'invoiceId',
+  creditNoteId: 'creditNoteId',
+  consentedAt: 'consentedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.BookLoanFineScalarFieldEnum = {
+  id: 'id',
+  schoolId: 'schoolId',
+  loanId: 'loanId',
+  studentId: 'studentId',
+  amount: 'amount',
+  fineType: 'fineType',
+  reason: 'reason',
+  invoiceId: 'invoiceId',
+  status: 'status',
+  waivedAmount: 'waivedAmount',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -3577,7 +3663,12 @@ exports.Prisma.ModelName = {
   StudentAward: 'StudentAward',
   StaffAward: 'StaffAward',
   BursaryType: 'BursaryType',
-  StudentBursary: 'StudentBursary'
+  StudentBursary: 'StudentBursary',
+  HostelBedAllocation: 'HostelBedAllocation',
+  StudentTransportAllocation: 'StudentTransportAllocation',
+  SchoolTrip: 'SchoolTrip',
+  TripConsent: 'TripConsent',
+  BookLoanFine: 'BookLoanFine'
 };
 
 /**

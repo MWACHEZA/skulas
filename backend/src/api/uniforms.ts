@@ -10,6 +10,8 @@ import {
 import { LedgerService } from '../services/ledger.service';
 import { getAccountId } from '../../prisma/seeders/coa.seeder';
 import { LedgerEvents } from '../services/ledger-events';
+import { BursarService } from '../services/bursar.service';
+import { CreditNoteService } from '../services/credit-note.service';
 
 const router = Router();
 
@@ -369,6 +371,31 @@ router.post('/sales', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async 
         data: { journalEntryId: revenueJe.id }
       });
 
+      // If billed to student invoice / account, also create central StudentInvoice
+      if ((rest as any).studentId && (payMode === 'INVOICE' || payMode === 'ACCOUNT')) {
+        try {
+          await BursarService.createStudentInvoice({
+            schoolId,
+            idempotencyKey: `uniform_${sale.id}`,
+            studentId: (rest as any).studentId,
+            sourceModule: 'uniforms',
+            sourceId: sale.id,
+            items: items.map(it => ({
+              billingItemCode: 'UNIF',
+              description: `Uniform Item #${it.itemId.slice(-6)} (Qty: ${it.quantity})`,
+              quantity: it.quantity,
+              unitPrice: it.unitPrice,
+              totalAmount: it.quantity * it.unitPrice,
+              revenueAccountCode: '4041'
+            })),
+            createdBy: req.user!.id,
+            tx
+          });
+        } catch (invErr) {
+          console.warn('Student invoice generation for uniform sale skipped or already exists:', invErr);
+        }
+      }
+
       LedgerEvents.broadcast({
         type: 'STOCK_CHANGED',
         schoolId,
@@ -387,8 +414,126 @@ router.post('/sales', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async 
 });
 
 /**
+ * @route   POST /api/uniforms/issue
+ * @desc    [BURSAR/ADMIN] Issue uniforms to a student with stock deduction and Bursar invoice
+ * Idempotency Key: uniform_{issuance_id}
+ * Revenue Account: 4041 (Uniform Store Sales)
+ */
+router.post('/issue', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req: AuthRequest, res: Response) => {
+  try {
+    const schoolId = req.user!.schoolId!;
+    const { studentId, items, issuanceId, termId, notes } = req.body;
+
+    if (!studentId || !items || !Array.isArray(items) || items.length === 0) {
+      return res.status(400).json({ error: 'studentId and a non-empty items array are required' });
+    }
+
+    const student = await prisma.student.findFirst({ where: { id: studentId, schoolId } });
+    if (!student) return res.status(404).json({ error: 'Student not found in this school' });
+
+    const totalAmount = items.reduce((sum: number, it: any) => sum + ((it.quantity || 1) * (it.unitPrice || it.price || 0)), 0);
+
+    const result = await prisma.$transaction(async (tx) => {
+      // 1. Create Sale record
+      const sale = await tx.uniformSale.create({
+        data: {
+          schoolId,
+          studentId,
+          paymentMode: 'INVOICE',
+          reference: issuanceId || `ISSUE-${Date.now().toString().slice(-6)}`,
+          totalAmount,
+          items: {
+            create: items.map((it: any) => ({
+              itemId: it.itemId || it.id,
+              quantity: it.quantity || 1,
+              unitPrice: it.unitPrice || it.price || 0
+            }))
+          }
+        },
+        include: { items: { include: { item: true } } }
+      });
+
+      // 2. Validate stock and record stock movements
+      let totalCogs = 0;
+      for (const it of sale.items) {
+        const uItem = it.item;
+        const qty = it.quantity;
+        const currentStock = await LedgerService.getStockLevel(it.itemId);
+        if (currentStock < qty) {
+          throw new Error(`Insufficient stock for ${uItem.name}: available ${currentStock}, requested ${qty}`);
+        }
+
+        const itemCogs = (uItem.costPrice || 0) * qty;
+        totalCogs += itemCogs;
+
+        await tx.uniformStockMovement.create({
+          data: {
+            schoolId,
+            itemId: it.itemId,
+            movementType: 'SALE_OUT',
+            quantity: -qty,
+            unitCost: uItem.costPrice || 0,
+            totalCost: itemCogs,
+            reference: sale.id,
+            sourceType: 'uniform_issuance',
+            sourceId: sale.id
+          }
+        });
+      }
+
+      // 3. Post central Bursar Student Invoice
+      const resolvedIssuanceId = issuanceId || sale.id;
+      const idempotencyKey = `uniform_${resolvedIssuanceId}`;
+
+      const invRes = await BursarService.createStudentInvoice({
+        schoolId,
+        idempotencyKey,
+        studentId,
+        termId: termId || 'term_1',
+        sourceModule: 'uniforms',
+        sourceId: resolvedIssuanceId,
+        items: sale.items.map(it => ({
+          billingItemCode: 'UNIF',
+          description: `Uniform: ${it.item.name}`,
+          quantity: it.quantity,
+          unitPrice: it.unitPrice,
+          totalAmount: it.quantity * it.unitPrice,
+          revenueAccountCode: '4041'
+        })),
+        createdBy: req.user!.id,
+        tx
+      });
+
+      // 4. Post COGS entry if inventory cost applies
+      if (totalCogs > 0) {
+        await LedgerService.postDoubleEntry({
+          tenantId: schoolId,
+          debitCode: '5081', // Cost of Goods Sold — Uniforms
+          creditCode: '1201', // Inventory — Uniforms & Apparel
+          amount: Math.round(totalCogs * 100) / 100,
+          description: `COGS — Uniform issuance to ${student.name}`,
+          sourceModule: 'uniform_cogs',
+          reference: sale.id,
+          userId: req.user!.id,
+          ipAddress: req.ip,
+          tx,
+          bypassApprovalCheck: true
+        });
+      }
+
+      return { sale, invoice: invRes.invoice };
+    });
+
+    res.status(201).json({ success: true, ...result });
+  } catch (error: any) {
+    console.error('Failed to issue uniforms:', error);
+    res.status(400).json({ error: error.message || 'Failed to issue uniforms' });
+  }
+});
+
+/**
  * @route   POST /api/uniforms/sales/:id/return
- * @desc    [BURSAR/ADMIN] Process a uniform sale return with reversal entries
+ * @desc    [BURSAR/ADMIN] Process a uniform sale return with reversal entries & credit note
  */
 router.post('/sales/:id/return', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req: AuthRequest, res: Response) => {
   try {
@@ -403,22 +548,7 @@ router.post('/sales/:id/return', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMI
 
     if (!sale) return res.status(404).json({ error: 'Sale not found' });
 
-    const journalEntries = await prisma.journalEntry.findMany({
-      where: { schoolId, sourceId: id, status: 'POSTED' }
-    });
-
-    if (journalEntries.length === 0) {
-      return res.status(400).json({ error: 'No journal entries found for this sale' });
-    }
-
-    // Reverse all related journal entries
-    const reversals = await Promise.all(
-      journalEntries.map(je =>
-        LedgerService.reverseEntry(je.id, reason || 'Uniform return', req.user!.id)
-      )
-    );
-
-    // Record return stock movements
+    // 1. Re-stock items (record return movements)
     await Promise.all(
       sale.items.map((saleItem: any) =>
         prisma.uniformStockMovement.create({
@@ -431,14 +561,47 @@ router.post('/sales/:id/return', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMI
             totalCost: saleItem.item.costPrice * saleItem.quantity,
             reference: id,
             sourceType: 'return',
-            sourceId: id,
-            journalEntryId: reversals[0]?.id
+            sourceId: id
           }
         })
       )
     );
 
-    res.json({ success: true, reversalCount: reversals.length });
+    // 2. Issue Credit Note / Reversal to Bursar
+    // Check if there is a StudentInvoice created for this issuance/sale
+    const studentInvoice = await prisma.studentInvoice.findFirst({
+      where: { schoolId, sourceModule: 'uniforms', sourceId: id }
+    });
+
+    let creditNoteResult: any = null;
+    if (studentInvoice) {
+      creditNoteResult = await CreditNoteService.createCreditNoteForInvoice({
+        schoolId,
+        invoiceId: studentInvoice.id,
+        reason: reason || 'Uniform return / wrong size',
+        issuedByUserId: req.user!.id
+      });
+    } else {
+      // Find posted journal entries for this sale and reverse via CreditNoteService
+      const journalEntries = await prisma.journalEntry.findMany({
+        where: { schoolId, sourceId: id, status: 'POSTED', isReversed: false }
+      });
+
+      if (journalEntries.length > 0) {
+        creditNoteResult = await CreditNoteService.createCreditNote({
+          schoolId,
+          originalJournalEntryId: journalEntries[0].id,
+          reason: reason || 'Uniform return / wrong size',
+          issuedByUserId: req.user!.id
+        });
+      }
+    }
+
+    res.json({
+      success: true,
+      message: 'Items restocked and credit note issued successfully',
+      creditNote: creditNoteResult?.creditNote || null
+    });
   } catch (error: any) {
     res.status(500).json({ error: error.message || 'Failed to process return' });
   }

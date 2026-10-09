@@ -8,6 +8,8 @@ import { LedgerService } from '../services/ledger.service';
 import { getAccountId } from '../../prisma/seeders/coa.seeder';
 import { computeLoanFine, runLibraryReminders } from '../jobs/library-reminder-job';
 import { NotificationService } from '../services/notifications';
+import { BursarService } from '../services/bursar.service';
+import { CreditNoteService } from '../services/credit-note.service';
 
 const router = Router();
 
@@ -1620,6 +1622,187 @@ router.post('/loans/:id/pay-fine', requireAuth, requireModuleAccess('library', '
   } catch (error: any) {
     console.error('Pay fine error:', error);
     res.status(500).json({ error: error.message || 'Failed to process fine payment' });
+  }
+});
+
+/**
+ * @route   POST /api/library/loans/:id/charge-fine
+ * @desc    Charge an overdue / damage fine directly to student's account via Bursar invoice
+ * Idempotency Key: libfine_{fine_id}
+ * Revenue Account: 4065 (Library Fines & Overdue Book Charges)
+ */
+router.post('/loans/:id/charge-fine', requireAuth, requireModuleAccess('library', 'full'), async (req: AuthRequest, res: Response) => {
+  const id = req.params.id as string;
+  const schoolId = req.user!.schoolId!;
+  const { amount, fineType = 'OVERDUE', reason } = req.body;
+
+  try {
+    const loan = await prisma.bookLoan.findFirst({
+      where: { id, schoolId },
+      include: { book: true, student: true }
+    });
+
+    if (!loan) return res.status(404).json({ error: 'Loan record not found' });
+    if (!loan.studentId) return res.status(400).json({ error: 'Loan is not associated with a student' });
+
+    let fineAmt = parseFloat(amount || 0);
+    if (!fineAmt || fineAmt <= 0) {
+      const setting = await getOrCreateLibrarySetting(schoolId);
+      const computed = computeLoanFine(loan, setting);
+      fineAmt = computed.fineAmount;
+    }
+
+    if (fineAmt <= 0) {
+      return res.status(400).json({ error: 'Fine amount must be greater than zero' });
+    }
+
+    fineAmt = Math.round(fineAmt * 100) / 100;
+
+    // 1. Create BookLoanFine record
+    const fine = await prisma.bookLoanFine.create({
+      data: {
+        schoolId,
+        loanId: loan.id,
+        studentId: loan.studentId,
+        amount: fineAmt,
+        fineType,
+        reason: reason || `Library ${fineType === 'LOST_BOOK' ? 'Lost Book Charge' : 'Overdue Fine'}: ${loan.book.title}`,
+        status: 'BILLED'
+      }
+    });
+
+    // 2. Post Central Student Invoice to Bursar
+    const idempotencyKey = `libfine_${fine.id}`;
+    const invoiceResult = await BursarService.createStudentInvoice({
+      schoolId,
+      idempotencyKey,
+      studentId: loan.studentId,
+      sourceModule: 'library_fine',
+      sourceId: fine.id,
+      items: [
+        {
+          billingItemCode: 'LIBFINE',
+          description: `Library Fine: ${loan.book.title} (${fineType})`,
+          quantity: 1,
+          unitPrice: fineAmt,
+          totalAmount: fineAmt,
+          revenueAccountCode: '4065'
+        }
+      ],
+      createdBy: req.user!.id
+    });
+
+    // 3. Link invoice to fine and update loan fine calculated
+    await prisma.bookLoanFine.update({
+      where: { id: fine.id },
+      data: { invoiceId: invoiceResult.invoice.id }
+    });
+
+    const updatedLoan = await prisma.bookLoan.update({
+      where: { id: loan.id },
+      data: {
+        fineCalculated: (loan.fineCalculated || 0) + fineAmt,
+        invoiceId: invoiceResult.invoice.id
+      }
+    });
+
+    res.json({
+      success: true,
+      fine,
+      invoice: invoiceResult.invoice,
+      loan: updatedLoan
+    });
+  } catch (error: any) {
+    console.error('Charge library fine error:', error);
+    res.status(500).json({ error: error.message || 'Failed to charge fine' });
+  }
+});
+
+/**
+ * @route   POST /api/library/loans/:id/mark-lost
+ * @desc    Mark book loan as lost, bill replacement cost to student via Bursar invoice
+ * Idempotency Key: libfine_{fine_id}
+ * Revenue Account: 4065 (Library Fines & Overdue Book Charges)
+ */
+router.post('/loans/:id/mark-lost', requireAuth, requireModuleAccess('library', 'full'), async (req: AuthRequest, res: Response) => {
+  const id = req.params.id as string;
+  const schoolId = req.user!.schoolId!;
+  const { replacementCost, reason = 'Book reported lost by borrower' } = req.body;
+
+  try {
+    const loan = await prisma.bookLoan.findFirst({
+      where: { id, schoolId },
+      include: { book: true, student: true }
+    });
+
+    if (!loan) return res.status(404).json({ error: 'Loan record not found' });
+    if (!loan.studentId) return res.status(400).json({ error: 'Loan is not linked to a student' });
+
+    const cost = (replacementCost !== undefined && parseFloat(replacementCost) > 0)
+      ? parseFloat(replacementCost)
+      : (loan.book.price || 15.00);
+
+    const roundedCost = Math.round(cost * 100) / 100;
+
+    // 1. Create BookLoanFine record
+    const fine = await prisma.bookLoanFine.create({
+      data: {
+        schoolId,
+        loanId: loan.id,
+        studentId: loan.studentId,
+        amount: roundedCost,
+        fineType: 'LOST_BOOK',
+        reason: `${reason}: ${loan.book.title}`,
+        status: 'BILLED'
+      }
+    });
+
+    // 2. Post Central Student Invoice to Bursar
+    const idempotencyKey = `libfine_${fine.id}`;
+    const invoiceResult = await BursarService.createStudentInvoice({
+      schoolId,
+      idempotencyKey,
+      studentId: loan.studentId,
+      sourceModule: 'library_fine',
+      sourceId: fine.id,
+      items: [
+        {
+          billingItemCode: 'LIBFINE',
+          description: `Lost Book Replacement Charge: ${loan.book.title}`,
+          quantity: 1,
+          unitPrice: roundedCost,
+          totalAmount: roundedCost,
+          revenueAccountCode: '4065'
+        }
+      ],
+      createdBy: req.user!.id
+    });
+
+    // 3. Link invoice to fine and update loan status to lost
+    await prisma.bookLoanFine.update({
+      where: { id: fine.id },
+      data: { invoiceId: invoiceResult.invoice.id }
+    });
+
+    const updatedLoan = await prisma.bookLoan.update({
+      where: { id: loan.id },
+      data: {
+        status: 'lost',
+        fineCalculated: (loan.fineCalculated || 0) + roundedCost,
+        invoiceId: invoiceResult.invoice.id
+      }
+    });
+
+    res.json({
+      success: true,
+      message: 'Book marked as lost and replacement cost invoiced to student',
+      fine,
+      invoice: invoiceResult.invoice,
+      loan: updatedLoan
+    });
+  } catch (error: any) {
+    console.error('Mark lost book error:', error);
+    res.status(500).json({ error: error.message || 'Failed to mark book as lost' });
   }
 });
 

@@ -52,19 +52,17 @@ export async function runBursarMoneyBackboneTests() {
     await getAccountId(schoolId, '4020', prisma as any); // Boarding
 
     // Ensure a test student exists
-    let student = await prisma.student.findFirst({ where: { schoolId } });
-    if (!student) {
-      student = await prisma.student.create({
-        data: {
-          schoolId,
-          studentId: 'ST-TEST-' + Date.now().toString().slice(-4),
-          name: 'Tatenda Muzorewa',
-          gender: 'Male',
-          dob: new Date('2008-05-15'),
-          enrollmentDate: new Date()
-        }
-      });
-    }
+    const testTag = Date.now().toString().slice(-6);
+    const student = await prisma.student.create({
+      data: {
+        schoolId,
+        studentId: 'ST-MB-' + testTag,
+        name: 'Tatenda Muzorewa ' + testTag,
+        gender: 'Male',
+        dob: new Date('2008-05-15'),
+        enrollmentDate: new Date()
+      }
+    });
 
     // ─────────────────────────────────────────────────────────────
     // TEST 1: createStudentInvoice() & Ledger Balancing

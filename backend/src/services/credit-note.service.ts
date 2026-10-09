@@ -10,6 +10,7 @@ export interface CreateCreditNoteInput {
   reason: string;
   issuedByUserId?: string;
   ipAddress?: string;
+  proRataRatio?: number;
 }
 
 export class CreditNoteService {
@@ -19,7 +20,8 @@ export class CreditNoteService {
    * If the original sale was fiscalised, emits a FiscalCreditNote to ZIMRA.
    */
   static async createCreditNote(input: CreateCreditNoteInput) {
-    const { schoolId, originalJournalEntryId, reason, issuedByUserId, ipAddress } = input;
+    const { schoolId, originalJournalEntryId, reason, issuedByUserId, ipAddress, proRataRatio } = input;
+    const ratio = (proRataRatio !== undefined && proRataRatio > 0 && proRataRatio <= 1) ? proRataRatio : 1.0;
 
     // 1. Fetch original JournalEntry and its lines
     const originalEntry = await prisma.journalEntry.findFirst({
@@ -62,17 +64,19 @@ export class CreditNoteService {
     // 3. Atomically generate Credit Note number
     const cnNumber = await SequenceService.nextDocNo(schoolId, 'CN');
 
-    // 4. Build exact opposite journal lines generically
+    // 4. Build exact opposite journal lines generically (scaled by ratio for pro-rata)
     const reversalLines = originalEntry.lines.map(line => ({
       accountId: line.accountId,
       coaCode: line.coaCode || undefined,
       // SWAP DEBIT AND CREDIT:
-      debit: line.credit,
-      credit: line.debit,
-      description: `Reversal of [${originalEntry.entryNumber}]: ${line.description || reason}`,
+      debit: Math.round(line.credit * ratio * 100) / 100,
+      credit: Math.round(line.debit * ratio * 100) / 100,
+      description: ratio < 1.0
+        ? `Pro-rata Reversal (${Math.round(ratio * 100)}%) of [${originalEntry.entryNumber}]: ${line.description || reason}`
+        : `Reversal of [${originalEntry.entryNumber}]: ${line.description || reason}`,
       studentId: line.studentId || undefined,
       supplierId: line.supplierId || undefined,
-      baseAmount: line.baseAmount,
+      baseAmount: line.baseAmount ? Math.round(line.baseAmount * ratio * 100) / 100 : undefined,
       taxCode: line.taxCode || undefined,
       currency: line.currency,
       exchangeRate: line.exchangeRate
@@ -81,7 +85,7 @@ export class CreditNoteService {
     // Calculate gross amount reversed and VAT portion
     let totalGrossReversed = 0;
     let totalVatReversed = 0;
-    for (const l of originalEntry.lines) {
+    for (const l of reversalLines) {
       if (l.debit > 0) totalGrossReversed += l.debit;
       if (l.coaCode === '2021') totalVatReversed += (l.credit - l.debit);
     }
@@ -106,15 +110,17 @@ export class CreditNoteService {
         tx
       });
 
-      // B) Update original entry to mark reversed
-      await tx.journalEntry.update({
-        where: { id: originalEntry.id },
-        data: {
-          isReversed: true,
-          reversedByCnId: cnNumber,
-          status: 'REVERSED'
-        }
-      });
+      // B) Update original entry to mark reversed if fully reversed (ratio >= 1.0)
+      if (ratio >= 1.0) {
+        await tx.journalEntry.update({
+          where: { id: originalEntry.id },
+          data: {
+            isReversed: true,
+            reversedByCnId: cnNumber,
+            status: 'REVERSED'
+          }
+        });
+      }
 
       // C) Create CreditNote record
       const creditNote = await tx.creditNote.create({
@@ -251,4 +257,55 @@ export class CreditNoteService {
     if (!cn) throw new Error('Credit Note not found');
     return cn;
   }
+
+  /**
+   * Reverses or pro-rata reverses a StudentInvoice by issuing a double-entry Credit Note.
+   * If proRataRatio < 1 (e.g. 0.5 for a 50% refund on vacating a hostel), scales reversal lines accordingly.
+   */
+  static async createCreditNoteForInvoice(input: {
+    schoolId: string;
+    invoiceId: string;
+    reason: string;
+    proRataRatio?: number;
+    issuedByUserId?: string;
+  }) {
+    const { schoolId, invoiceId, reason, proRataRatio = 1.0, issuedByUserId } = input;
+
+    const invoice = await prisma.studentInvoice.findFirst({
+      where: { id: invoiceId, schoolId },
+      include: { items: true }
+    });
+    if (!invoice) throw new Error(`Student fee invoice ${invoiceId} not found`);
+
+    let journalEntryId = invoice.journalEntryId;
+    if (!journalEntryId) {
+      const je = await prisma.journalEntry.findFirst({
+        where: { schoolId, sourceType: 'invoice', sourceId: invoice.id }
+      });
+      if (je) journalEntryId = je.id;
+    }
+
+    if (!journalEntryId) {
+      throw new Error(`Cannot reverse invoice ${invoice.invoiceNumber}: No linked journal entry found.`);
+    }
+
+    const cnResult = await this.createCreditNote({
+      schoolId,
+      originalJournalEntryId: journalEntryId,
+      reason: `${reason} (Invoice ${invoice.invoiceNumber})`,
+      issuedByUserId,
+      proRataRatio,
+      ipAddress: '127.0.0.1'
+    });
+
+    if (proRataRatio >= 1.0) {
+      await prisma.studentInvoice.update({
+        where: { id: invoice.id },
+        data: { status: 'cancelled' }
+      });
+    }
+
+    return cnResult;
+  }
 }
+

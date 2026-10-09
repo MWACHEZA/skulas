@@ -39,6 +39,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const auth_1 = require("../middleware/auth");
 const prisma_1 = __importDefault(require("../lib/prisma"));
+const bursar_service_1 = require("../services/bursar.service");
+const credit_note_service_1 = require("../services/credit-note.service");
 const router = express_1.default.Router();
 // GET all transports for user's school including route and vehicle relations
 router.get('/', auth_1.requireAuth, async (req, res) => {
@@ -121,6 +123,182 @@ router.delete('/:id', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN'
     }
     catch (error) {
         res.status(500).json({ error: 'Failed to delete transport assignment' });
+    }
+});
+// ═══════════════════════════════════════════════════════════════════
+// STUDENT TRANSPORT ALLOCATION & BURSAR INTEGRATION
+// ═══════════════════════════════════════════════════════════════════
+/**
+ * @route   GET /api/transports/allocations
+ * @desc    Get all student transport allocations
+ */
+router.get('/allocations', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'BURSAR', 'ANCILLARY'), async (req, res) => {
+    try {
+        const schoolId = req.user.schoolId;
+        const allocations = await prisma_1.default.studentTransportAllocation.findMany({
+            where: { schoolId },
+            include: {
+                student: { select: { id: true, studentId: true, name: true, class: true } },
+                transport: { include: { route: true, vehicle: true } },
+                route: true
+            },
+            orderBy: { allocatedAt: 'desc' }
+        });
+        res.json(allocations);
+    }
+    catch (error) {
+        res.status(500).json({ error: 'Failed to fetch transport allocations' });
+    }
+});
+/**
+ * @route   POST /api/transports/allocate-student
+ * @desc    Allocate a student to a transport route/bus with arrears policy check & Bursar billing
+ * Idempotency Key: transport_{allocation_id}_{term_id}
+ * Revenue Account: 4033 (School Transport & Bus Levies)
+ */
+router.post('/allocate-student', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'BURSAR', 'ANCILLARY'), async (req, res) => {
+    try {
+        const schoolId = req.user.schoolId;
+        const { studentId, routeId, transportId, termId = 'term_1', year = 2026, feeAmount, blockOnDebt = false } = req.body;
+        if (!studentId || (!routeId && !transportId)) {
+            return res.status(400).json({ error: 'studentId and routeId or transportId are required' });
+        }
+        const student = await prisma_1.default.student.findFirst({
+            where: { id: studentId, schoolId }
+        });
+        if (!student)
+            return res.status(404).json({ error: 'Student not found in this school' });
+        let route = routeId ? await prisma_1.default.transportRoute.findFirst({ where: { id: routeId, schoolId } }) : null;
+        let transport = transportId ? await prisma_1.default.schoolTransport.findFirst({ where: { id: transportId, schoolId }, include: { route: true } }) : null;
+        if (transport && !route) {
+            route = transport.route;
+        }
+        if (!route && !transport) {
+            return res.status(404).json({ error: 'Route or transport not found' });
+        }
+        // POLICY CHECK: Check outstanding student balance
+        let flaggedForDebt = false;
+        let balanceInfo = null;
+        try {
+            balanceInfo = await bursar_service_1.BursarService.getStudentBalance(schoolId, studentId);
+            if (balanceInfo.balance > 0) {
+                if (blockOnDebt) {
+                    return res.status(403).json({
+                        error: `Transport allocation blocked: Student has an outstanding balance of $${balanceInfo.balance.toFixed(2)} USD. Allocation is blocked per policy.`
+                    });
+                }
+                flaggedForDebt = true; // Default behavior: flag allocation without blocking
+            }
+        }
+        catch (balErr) {
+            console.warn('Debt check skipped or failed:', balErr);
+        }
+        // Determine Fare
+        let fare = 0;
+        if (feeAmount !== undefined && feeAmount !== null && parseFloat(feeAmount) >= 0) {
+            fare = parseFloat(feeAmount);
+        }
+        else if (transport?.routeFare) {
+            fare = transport.routeFare;
+        }
+        // 1. Create Allocation Record
+        const allocation = await prisma_1.default.studentTransportAllocation.create({
+            data: {
+                schoolId,
+                studentId,
+                transportId: transport?.id || null,
+                routeId: route?.id || null,
+                termId,
+                year,
+                feeAmount: fare,
+                status: 'ACTIVE',
+                flaggedForDebt
+            }
+        });
+        // 2. Post Central Student Invoice to Bursar
+        let invoiceResult = null;
+        if (fare > 0) {
+            const idempotencyKey = `transport_${allocation.id}_${termId}`;
+            invoiceResult = await bursar_service_1.BursarService.createStudentInvoice({
+                schoolId,
+                idempotencyKey,
+                studentId,
+                termId,
+                term: termId,
+                sourceModule: 'transport',
+                sourceId: allocation.id,
+                items: [
+                    {
+                        billingItemCode: 'TRANS',
+                        description: `School Transport & Bus Levy — ${route?.name || transport?.name || 'Bus Service'} (${termId})`,
+                        quantity: 1,
+                        unitPrice: fare,
+                        totalAmount: fare,
+                        revenueAccountCode: '4033'
+                    }
+                ],
+                createdBy: req.user.id
+            });
+            await prisma_1.default.studentTransportAllocation.update({
+                where: { id: allocation.id },
+                data: { invoiceId: invoiceResult.invoice.id }
+            });
+        }
+        res.json({
+            success: true,
+            allocation,
+            invoice: invoiceResult?.invoice || null,
+            flaggedForDebt,
+            warning: flaggedForDebt ? `Student has outstanding balance ($${balanceInfo?.balance?.toFixed(2)}). Allocation recorded with debt flag.` : undefined
+        });
+    }
+    catch (error) {
+        console.error('Failed to allocate student to transport:', error);
+        res.status(500).json({ error: error.message || 'Failed to allocate student to transport' });
+    }
+});
+/**
+ * @route   POST /api/transports/deallocate-student
+ * @desc    Deallocate / cancel student transport with optional pro-rata credit note
+ */
+router.post('/deallocate-student', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'BURSAR', 'ANCILLARY'), async (req, res) => {
+    try {
+        const schoolId = req.user.schoolId;
+        const { allocationId, reason = 'Cancelled transport service', proRataRatio } = req.body;
+        const allocation = await prisma_1.default.studentTransportAllocation.findFirst({
+            where: { id: allocationId, schoolId, status: 'ACTIVE' }
+        });
+        if (!allocation) {
+            return res.status(404).json({ error: 'Active transport allocation not found' });
+        }
+        let creditNoteResult = null;
+        const ratio = proRataRatio !== undefined ? parseFloat(proRataRatio) : 0;
+        if (ratio > 0 && allocation.invoiceId) {
+            creditNoteResult = await credit_note_service_1.CreditNoteService.createCreditNoteForInvoice({
+                schoolId,
+                invoiceId: allocation.invoiceId,
+                reason: `${reason} (Pro-rata ${Math.round(ratio * 100)}%)`,
+                proRataRatio: ratio,
+                issuedByUserId: req.user.id
+            });
+        }
+        const updated = await prisma_1.default.studentTransportAllocation.update({
+            where: { id: allocation.id },
+            data: {
+                status: 'CANCELLED',
+                cancelledAt: new Date(),
+                creditNoteId: creditNoteResult?.creditNote?.id || null
+            }
+        });
+        res.json({
+            success: true,
+            allocation: updated,
+            creditNote: creditNoteResult?.creditNote || null
+        });
+    }
+    catch (error) {
+        console.error('Failed to deallocate student from transport:', error);
+        res.status(500).json({ error: error.message || 'Failed to deallocate student from transport' });
     }
 });
 // ═══════════════════════════════════════════════════════════════════
