@@ -233,6 +233,10 @@ model School {
   schoolTrips          SchoolTrip[]
   tripConsents         TripConsent[]
   bookLoanFines        BookLoanFine[]
+  boardingRollCalls    BoardingRollCall[]
+  exeats               Exeat[]
+  diningPantryItems    DiningPantryItem[]
+  diningRecipes        DiningRecipe[]
 
   @@index([code])
 }
@@ -575,6 +579,8 @@ model User {
   nominatedAwards   StudentAward[]   @relation("AwardNominator")
   approvedAwards    StudentAward[]   @relation("AwardApprover")
   approvedBursaries StudentBursary[] @relation("BursaryApprover")
+  approvedExeats          Exeat[]               @relation("ExeatApprovedBy")
+  markedBoardingRollCalls BoardingRollCall[]    @relation("BoardingRollCallMarkedBy")
 
   @@index([schoolId])
 }
@@ -736,6 +742,8 @@ model Student {
   transportAllocations StudentTransportAllocation[]
   tripConsents         TripConsent[]
   bookLoanFines        BookLoanFine[]
+  boardingRollCalls    BoardingRollCall[]
+  exeats               Exeat[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -1045,6 +1053,7 @@ model StudentInvoice {
 
   items          StudentInvoiceItem[]
   allocations    PaymentAllocation[]
+  bedAllocations HostelBedAllocation[]
 
   @@index([schoolId])
   @@index([studentId])
@@ -2345,19 +2354,23 @@ model Hostel {
   leadershipAssignments LeadershipAssignment[] @relation("LeadershipHostel")
   requisitionsAsHostel  Requisition[]          @relation("RequisitionHostel")
   bedAllocations        HostelBedAllocation[]
+  boardingRollCalls     BoardingRollCall[]
 
   @@index([schoolId])
 }
 
 model Room {
-  id             String                @id @default(cuid())
-  name           String // Room Number/Name
-  capacity       Int
-  hostelId       String
-  hostel         Hostel                @relation(fields: [hostelId], references: [id])
-  students       Student[]
-  bedAllocations HostelBedAllocation[]
-  createdAt      DateTime              @default(now())
+  id              String                @id @default(cuid())
+  name            String // Room Number/Name
+  roomNumber      String?
+  capacity        Int
+  bedCount        Int                   @default(0)
+  conditionStatus String                @default("GOOD") // GOOD | NEEDS_REPAIR | UNDER_MAINTENANCE
+  hostelId        String
+  hostel          Hostel                @relation(fields: [hostelId], references: [id])
+  students        Student[]
+  bedAllocations  HostelBedAllocation[]
+  createdAt       DateTime              @default(now())
 
   @@index([hostelId])
 }
@@ -5006,9 +5019,10 @@ model HostelBedAllocation {
   termId        String?
   term          String?   @default("Term 1")
   year          Int       @default(2026)
-  feeAmount     Float     @default(0)
+  feeAmount     Float           @default(0)
   invoiceId     String?
-  status        String    @default("ACTIVE") // ACTIVE | VACATED | CANCELLED
+  invoice       StudentInvoice? @relation(fields: [invoiceId], references: [id], onDelete: SetNull)
+  status        String          @default("ACTIVE") // ACTIVE | VACATED | CANCELLED | SUSPENDED
   allocatedAt   DateTime  @default(now())
   vacatedAt     DateTime?
   vacatedReason String?
@@ -5109,4 +5123,89 @@ model BookLoanFine {
   @@index([studentId])
   @@index([loanId])
 }
+
+// ═══════════════════════════════════════════════════════════════════
+// Phase 3: Boarding & Ancillary Operations Models
+// ═══════════════════════════════════════════════════════════════════
+
+model BoardingRollCall {
+  id                    String    @id @default(cuid())
+  schoolId              String
+  school                School    @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  hostelId              String
+  hostel                Hostel    @relation(fields: [hostelId], references: [id], onDelete: Cascade)
+  date                  DateTime  @default(now())
+  time                  String    // "18:00" | "21:00"
+  studentId             String
+  student               Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  status                String    // "present" | "absent" | "on_exeat" | "sick_bay"
+  markedById            String?
+  markedBy              User?     @relation("BoardingRollCallMarkedBy", fields: [markedById], references: [id], onDelete: SetNull)
+  notes                 String?
+  smsDispatched         Boolean   @default(false)
+  disciplineCaseCreated Boolean   @default(false)
+  clinicAdmitted        Boolean   @default(false)
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([schoolId])
+  @@index([hostelId, date, time])
+  @@index([studentId])
+}
+
+model Exeat {
+  id                      String    @id @default(cuid())
+  schoolId                String
+  school                  School    @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  studentId               String
+  student                 Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  type                    String    // "weekend" | "emergency" | "medical"
+  reason                  String
+  departureAt             DateTime
+  returnAt                DateTime
+  status                  String    @default("pending_parent") // pending_parent | approved | rejected | expired | returned
+  parentSignature         String?
+  parentIp                String?
+  parentSignedAt          DateTime?
+  approvedByHousemasterId String?
+  approvedByHousemaster   User?     @relation("ExeatApprovedBy", fields: [approvedByHousemasterId], references: [id], onDelete: SetNull)
+  approvalNotes           String?
+  returnedAt              DateTime?
+  createdAt               DateTime  @default(now())
+  updatedAt               DateTime  @updatedAt
+
+  @@index([schoolId])
+  @@index([studentId])
+  @@index([status])
+}
+
+model DiningPantryItem {
+  id          String   @id @default(cuid())
+  schoolId    String
+  school      School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  itemName    String
+  unit        String   // kg, litres, bags, trays, loaves
+  stockQty    Float    @default(0)
+  minAlertQty Float    @default(10)
+  unitCost    Float    @default(1.0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([schoolId])
+}
+
+model DiningRecipe {
+  id          String   @id @default(cuid())
+  schoolId    String
+  school      School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  mealType    String   // BREAKFAST | LUNCH | DINNER
+  recipeName  String
+  description String?
+  ingredients Json     // [{ pantryItemId?: string, itemName: string, perHeadQty: number, unit: string }]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([schoolId])
+}
+
 

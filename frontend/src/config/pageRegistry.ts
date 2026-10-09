@@ -343,11 +343,12 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     permissionKey: PERMISSIONS.PEOPLE_HOUSES_MANAGE,
     portalVisibility: ['admin'],
     tabs: [
-      { id: 'hostels', label: 'Hostels' },
-      { id: 'rooms', label: 'Dorm Rooms' },
-      { id: 'allocations', label: 'Boarder Allocations' }
+      { id: 'hostels-rooms', label: 'Hostels & Rooms' },
+      { id: 'allocations', label: 'Allocations' },
+      { id: 'roll-call', label: 'Night Roll Call' },
+      { id: 'exeats', label: 'Exeats' }
     ],
-    searchKeywords: ['hostels', 'dorms', 'dormitory', 'houses', 'student houses', 'boarders', 'residential', 'boarding']
+    searchKeywords: ['hostels', 'dorms', 'dormitory', 'houses', 'student houses', 'boarders', 'residential', 'boarding', 'roll call', 'exeats']
   },
   {
     id: 'admin-clubs',
