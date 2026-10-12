@@ -616,6 +616,7 @@ model User {
   assessmentsModerated   Assessment[]        @relation("AssessmentModeratedBy")
   questionBankCreated    QuestionBank[]      @relation("QuestionBankCreatedBy")
   assessmentsMarked      StudentAssessment[] @relation("AssessmentMarker")
+  receivedGRNs           GoodsReceivedNote[] @relation("GRNReceivedBy")
 
   @@index([schoolId])
 }
@@ -1835,9 +1836,10 @@ model Supplier {
   // Junctions
   schools SchoolSupplier[]
 
-  tenders        TenderBid[]
-  purchaseOrders PurchaseOrder[]
-  invoices       Invoice[]
+  tenders            TenderBid[]
+  purchaseOrders     PurchaseOrder[]
+  invoices           Invoice[]
+  goodsReceivedNotes GoodsReceivedNote[]
 
   uniformStockOrders UniformStockOrder[]
   uniformPayments    UniformSupplierPayment[]
@@ -1932,35 +1934,83 @@ model TenderBid {
 }
 
 model PurchaseOrder {
-  id          String       @id @default(cuid())
-  poNumber    String       @unique
-  supplierId  String
-  supplier    Supplier     @relation(fields: [supplierId], references: [id])
-  description String
-  items       Json // [{name, qty, unitPrice}]
-  totalAmount Float
-  status      String       @default("draft") // draft, approved, delivered, cancelled
-  schoolId    String
-  requisition Requisition?
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+  id              String              @id @default(cuid())
+  poNumber        String              @unique
+  supplierId      String
+  supplier        Supplier            @relation(fields: [supplierId], references: [id])
+  description     String
+  items           Json // [{name, qty, unitPrice}]
+  totalAmount     Float
+  status          String              @default("draft") // draft, approved, delivered, partially_delivered, cancelled, rejected
+  schoolId        String
+  coaCode         String? // e.g. 5062, 5063 for budget tracking
+  department      String?
+  budgetChecked   Boolean             @default(false)
+  budgetOverrun   Boolean             @default(false)
+  budgetRemaining Float?
+  approvedById    String?
+  approvedAt      DateTime?
+  rejectionReason String?
+  requisition     Requisition?
+  grns            GoodsReceivedNote[]
+  invoices        Invoice[]
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
 
   @@index([schoolId])
 }
 
-model Invoice {
-  id         String   @id @default(cuid())
-  invoiceNo  String   @unique
-  supplierId String
-  supplier   Supplier @relation(fields: [supplierId], references: [id])
-  amount     Float
-  status     String   @default("pending") // pending, approved, paid, rejected
-  dueDate    DateTime
-  schoolId   String
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+model GoodsReceivedNote {
+  id                 String        @id @default(cuid())
+  grnNumber          String        @unique // e.g. GRN-2026-0001
+  schoolId           String
+  purchaseOrderId    String
+  purchaseOrder      PurchaseOrder @relation(fields: [purchaseOrderId], references: [id])
+  supplierId         String
+  supplier           Supplier      @relation(fields: [supplierId], references: [id])
+  receivedDate       DateTime      @default(now())
+  receivedById       String
+  receivedBy         User          @relation("GRNReceivedBy", fields: [receivedById], references: [id])
+  deliveryNoteNumber String?
+  status             String        @default("ACCEPTED") // ACCEPTED, PARTIAL, REJECTED
+  items              Json // [{ name, orderedQty, receivedQty, unitPrice, condition, notes }]
+  totalValueReceived Float         @default(0)
+  notes              String?
+  invoices           Invoice[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([schoolId])
+  @@index([purchaseOrderId])
+  @@index([supplierId])
+}
+
+model Invoice {
+  id              String             @id @default(cuid())
+  invoiceNo       String             @unique
+  supplierId      String
+  supplier        Supplier           @relation(fields: [supplierId], references: [id])
+  purchaseOrderId String?
+  purchaseOrder   PurchaseOrder?     @relation(fields: [purchaseOrderId], references: [id])
+  grnId           String?
+  grn             GoodsReceivedNote? @relation(fields: [grnId], references: [id])
+  amount          Float
+  items           Json? // [{ name, quantity, unitPrice, total }]
+  status          String             @default("pending") // pending, matched, approved, paid, rejected
+  matchingStatus  String             @default("PENDING") // PENDING, MATCHED, PRICE_VARIANCE, QUANTITY_VARIANCE, UNMATCHED
+  matchingNotes   String?
+  approvedById    String?
+  approvedAt      DateTime?
+  journalEntryId  String?
+  dueDate         DateTime
+  schoolId        String
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+
+  @@index([schoolId])
+  @@index([purchaseOrderId])
+  @@index([grnId])
 }
 
 // ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚Â MESSAGING ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚Â
@@ -2055,24 +2105,30 @@ model LeaveBalance {
 // ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚Â ASSET INVENTORY ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚Â
 
 model Asset {
-  id               String    @id @default(cuid())
-  assetNumber      String? // System-generated unique e.g. AX-EMBAKWE-AST-0001
-  name             String
-  category         String // furniture, electronics, vehicles, stationery, books, etc.
-  serialNumber     String?
-  location         String?
-  condition        String    @default("good") // good, fair, poor, condemned, damaged
-  status           String    @default("ACTIVE") // ACTIVE, PENDING_APPROVAL, UNDER_MAINTENANCE, DISPOSED, TRANSFERRED, DAMAGED, LOST
-  department       String? // library, clinic, science, kitchen, grounds, admin, etc.
-  departmentId     String?
-  quantity         Int       @default(1)
-  purchaseDate     DateTime?
-  purchasePrice    Float?
-  supplierName     String?
-  invoiceNumber    String?
-  depreciationRate Float? // e.g. 10.0 for 10%/year
-  warrantyExpiry   DateTime?
-  photoUrl         String?
+  id                      String              @id @default(cuid())
+  assetNumber             String? // System-generated unique e.g. AX-EMBAKWE-AST-0001
+  name                    String
+  category                String // furniture, electronics, vehicles, stationery, books, etc.
+  serialNumber            String?
+  location                String?
+  condition               String              @default("good") // good, fair, poor, condemned, damaged
+  status                  String              @default("ACTIVE") // ACTIVE, PENDING_APPROVAL, UNDER_MAINTENANCE, DISPOSED, TRANSFERRED, DAMAGED, LOST
+  department              String? // library, clinic, science, kitchen, grounds, admin, etc.
+  departmentId            String?
+  quantity                Int                 @default(1)
+  purchaseDate            DateTime?
+  purchasePrice           Float?
+  supplierName            String?
+  invoiceNumber           String?
+  depreciationRate        Float? // e.g. 10.0 for 10%/year
+  accumulatedDepreciation Float?              @default(0)
+  bookValue               Float?
+  lastDepreciationDate    DateTime?
+  coaExpenseCode          String?             @default("5077")
+  coaAccumulatedCode      String?             @default("1541")
+  depreciations           AssetDepreciation[]
+  warrantyExpiry          DateTime?
+  photoUrl                String?
 
   custodianId String?
   custodian   User?   @relation("AssetCustodian", fields: [custodianId], references: [id])
@@ -2106,6 +2162,29 @@ model Asset {
   @@index([custodianId])
   @@index([department])
   @@index([status])
+}
+
+model AssetDepreciation {
+  id                 String   @id @default(cuid())
+  schoolId           String
+  assetId            String
+  asset              Asset    @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  date               DateTime @default(now())
+  fiscalYear         Int
+  fiscalPeriod       String // "2026-03" or "Term 1"
+  depreciationAmount Float
+  bookValueBefore    Float
+  bookValueAfter     Float
+  rateUsed           Float
+  method             String   @default("STRAIGHT_LINE")
+  journalEntryId     String?
+  processedById      String?
+  notes              String?
+  createdAt          DateTime @default(now())
+
+  @@index([schoolId])
+  @@index([assetId])
+  @@index([schoolId, fiscalYear])
 }
 
 model AssetIncident {

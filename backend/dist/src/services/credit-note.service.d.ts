@@ -41,8 +41,8 @@ export declare class CreditNoteService {
                 supplierId: string | null;
                 currency: string;
                 journalEntryId: string;
-                accountId: string;
                 coaCode: string | null;
+                accountId: string;
                 debit: number;
                 credit: number;
                 baseAmount: number;
@@ -330,8 +330,8 @@ export declare class CreditNoteService {
                 supplierId: string | null;
                 currency: string;
                 journalEntryId: string;
-                accountId: string;
                 coaCode: string | null;
+                accountId: string;
                 debit: number;
                 credit: number;
                 baseAmount: number;

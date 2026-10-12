@@ -1,7 +1,15 @@
 import { Router, Response } from 'express';
 import prisma from '../lib/prisma';
-import { requireAuth, AuthRequest } from '../middleware/auth';
+import { requireAuth, requireRole, AuthRequest } from '../middleware/auth';
 import { logAction } from '../utils/audit';
+import { validate } from '../middleware/validation';
+import { ProcurementService } from '../services/procurement.service';
+import {
+  CreatePurchaseOrderSchema,
+  ApprovePurchaseOrderSchema,
+  CreateGRNSchema,
+  CreateSupplierInvoiceSchema
+} from '../schemas/procurement.schema';
 
 const router = Router();
 
@@ -578,6 +586,366 @@ router.post('/requisitions/:id/issue', requireAuth, async (req: AuthRequest, res
     res.status(500).json({ error: 'Failed to issue items' });
   }
 });
+
+// ═══════════════════════════════════════════════════════════════════════════
+// PURCHASE ORDERS & BUDGET CHECK
+// ═══════════════════════════════════════════════════════════════════════════
+
+/**
+ * @route   GET /api/procurement/purchase-orders
+ * @desc    List Purchase Orders with filters
+ */
+router.get('/purchase-orders', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    const schoolId = req.user?.schoolId;
+    if (!schoolId) return res.status(400).json({ error: 'School ID required' });
+
+    const { status, supplierId } = req.query;
+    const where: any = { schoolId };
+    if (status) where.status = String(status);
+    if (supplierId) where.supplierId = String(supplierId);
+
+    const purchaseOrders = await prisma.purchaseOrder.findMany({
+      where,
+      include: {
+        supplier: { select: { id: true, companyName: true, contactName: true, email: true } },
+        grns: { select: { id: true, grnNumber: true, status: true, receivedDate: true } },
+        invoices: { select: { id: true, invoiceNo: true, amount: true, matchingStatus: true, status: true } }
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+
+    res.json(purchaseOrders);
+  } catch (error: any) {
+    console.error('List PO error:', error);
+    res.status(500).json({ error: error.message || 'Failed to list purchase orders' });
+  }
+});
+
+/**
+ * @route   GET /api/procurement/purchase-orders/:id
+ * @desc    Get detailed Purchase Order with linked GRNs and Invoices
+ */
+router.get('/purchase-orders/:id', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    const schoolId = req.user?.schoolId;
+    const id = req.params.id as string;
+
+    const po = await prisma.purchaseOrder.findFirst({
+      where: { id, schoolId },
+      include: {
+        supplier: true,
+        grns: true,
+        invoices: true
+      }
+    });
+
+    if (!po) return res.status(404).json({ error: 'Purchase order not found' });
+    res.json(po);
+  } catch (error: any) {
+    console.error('Get PO error:', error);
+    res.status(500).json({ error: error.message || 'Failed to fetch purchase order' });
+  }
+});
+
+/**
+ * @route   POST /api/procurement/purchase-orders
+ * @desc    Create a Purchase Order in draft status
+ */
+router.post(
+  '/purchase-orders',
+  requireAuth,
+  validate(CreatePurchaseOrderSchema),
+  async (req: AuthRequest, res: Response) => {
+    try {
+      const schoolId = req.user?.schoolId;
+      if (!schoolId) return res.status(400).json({ error: 'School ID required' });
+
+      const po = await ProcurementService.createPurchaseOrder({
+        schoolId,
+        supplierId: req.body.supplierId,
+        description: req.body.description,
+        items: req.body.items,
+        totalAmount: req.body.totalAmount,
+        coaCode: req.body.coaCode,
+        department: req.body.department
+      });
+
+      res.status(201).json(po);
+    } catch (error: any) {
+      console.error('Create PO error:', error);
+      res.status(400).json({ error: error.message || 'Failed to create purchase order' });
+    }
+  }
+);
+
+/**
+ * @route   GET /api/procurement/purchase-orders/:id/budget-check
+ * @desc    Check available budget ceiling before approving Purchase Order
+ */
+router.get('/purchase-orders/:id/budget-check', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    const schoolId = req.user?.schoolId;
+    const id = req.params.id as string;
+
+    const po = await prisma.purchaseOrder.findFirst({
+      where: { id, schoolId }
+    });
+    if (!po) return res.status(404).json({ error: 'Purchase order not found' });
+
+    const check = await ProcurementService.checkBudget({
+      schoolId: schoolId!,
+      coaCode: po.coaCode || undefined,
+      amount: po.totalAmount,
+      excludePoId: po.id
+    });
+
+    res.json(check);
+  } catch (error: any) {
+    console.error('Budget check error:', error);
+    res.status(500).json({ error: error.message || 'Failed to check budget' });
+  }
+});
+
+/**
+ * @route   POST /api/procurement/purchase-orders/:id/approve
+ * @desc    Approve Purchase Order (with budget limit validation)
+ */
+router.post(
+  '/purchase-orders/:id/approve',
+  requireAuth,
+  requireRole('BURSAR', 'SCHOOL_ADMIN', 'SUPER_ADMIN'),
+  validate(ApprovePurchaseOrderSchema),
+  async (req: AuthRequest, res: Response) => {
+    try {
+      const schoolId = req.user?.schoolId;
+      const approverId = req.user?.id;
+      const id = req.params.id as string;
+      const { forceOverride, overrideReason } = req.body || {};
+
+      if (!schoolId || !approverId) {
+        return res.status(400).json({ error: 'School ID and user required' });
+      }
+
+      const approvedPO = await ProcurementService.approvePurchaseOrder(
+        schoolId,
+        id,
+        approverId,
+        Boolean(forceOverride),
+        overrideReason
+      );
+
+      res.json({
+        message: 'Purchase order approved successfully',
+        purchaseOrder: approvedPO
+      });
+    } catch (error: any) {
+      console.error('Approve PO error:', error);
+      res.status(400).json({ error: error.message || 'Failed to approve purchase order' });
+    }
+  }
+);
+
+// ═══════════════════════════════════════════════════════════════════════════
+// GOODS RECEIVED NOTE (GRN) & INVENTORY UPDATES
+// ═══════════════════════════════════════════════════════════════════════════
+
+/**
+ * @route   POST /api/procurement/grn
+ * @desc    Create Goods Received Note (GRN) and update stock & stock movements
+ */
+router.post(
+  '/grn',
+  requireAuth,
+  validate(CreateGRNSchema),
+  async (req: AuthRequest, res: Response) => {
+    try {
+      const schoolId = req.user?.schoolId;
+      const receivedById = req.user?.id;
+      if (!schoolId || !receivedById) {
+        return res.status(400).json({ error: 'School ID and user required' });
+      }
+
+      const grn = await ProcurementService.createGoodsReceivedNote({
+        schoolId,
+        purchaseOrderId: req.body.purchaseOrderId,
+        receivedById,
+        deliveryNoteNumber: req.body.deliveryNoteNumber,
+        items: req.body.items,
+        notes: req.body.notes
+      });
+
+      res.status(201).json(grn);
+    } catch (error: any) {
+      console.error('Create GRN error:', error);
+      res.status(400).json({ error: error.message || 'Failed to create Goods Received Note' });
+    }
+  }
+);
+
+/**
+ * @route   GET /api/procurement/grn
+ * @desc    List Goods Received Notes
+ */
+router.get('/grn', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    const schoolId = req.user?.schoolId;
+    if (!schoolId) return res.status(400).json({ error: 'School ID required' });
+
+    const grns = await prisma.goodsReceivedNote.findMany({
+      where: { schoolId },
+      include: {
+        purchaseOrder: { select: { id: true, poNumber: true, totalAmount: true } },
+        supplier: { select: { id: true, companyName: true, contactName: true } },
+        receivedBy: { select: { id: true, name: true } }
+      },
+      orderBy: { receivedDate: 'desc' }
+    });
+
+    res.json(grns);
+  } catch (error: any) {
+    console.error('List GRN error:', error);
+    res.status(500).json({ error: error.message || 'Failed to list Goods Received Notes' });
+  }
+});
+
+/**
+ * @route   GET /api/procurement/grn/:id
+ * @desc    Get detailed Goods Received Note
+ */
+router.get('/grn/:id', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    const schoolId = req.user?.schoolId;
+    const id = req.params.id as string;
+
+    const grn = await prisma.goodsReceivedNote.findFirst({
+      where: { id, schoolId },
+      include: {
+        purchaseOrder: true,
+        supplier: true,
+        receivedBy: { select: { id: true, name: true, role: true } },
+        invoices: true
+      }
+    });
+
+    if (!grn) return res.status(404).json({ error: 'GRN not found' });
+    res.json(grn);
+  } catch (error: any) {
+    console.error('Get GRN error:', error);
+    res.status(500).json({ error: error.message || 'Failed to fetch GRN' });
+  }
+});
+
+// ═══════════════════════════════════════════════════════════════════════════
+// SUPPLIER INVOICES & 3-WAY MATCHING (PO + GRN + INVOICE)
+// ═══════════════════════════════════════════════════════════════════════════
+
+/**
+ * @route   POST /api/procurement/invoices
+ * @desc    Register a supplier invoice linked to PO and GRN
+ */
+router.post(
+  '/invoices',
+  requireAuth,
+  validate(CreateSupplierInvoiceSchema),
+  async (req: AuthRequest, res: Response) => {
+    try {
+      const schoolId = req.user?.schoolId;
+      if (!schoolId) return res.status(400).json({ error: 'School ID required' });
+
+      const {
+        invoiceNo,
+        supplierId,
+        purchaseOrderId,
+        grnId,
+        amount,
+        dueDate,
+        items
+      } = req.body;
+
+      const invoice = await prisma.invoice.create({
+        data: {
+          invoiceNo,
+          supplierId,
+          purchaseOrderId: purchaseOrderId || null,
+          grnId: grnId || null,
+          amount,
+          items: items || null,
+          dueDate: new Date(dueDate),
+          schoolId,
+          status: 'pending',
+          matchingStatus: 'PENDING'
+        },
+        include: {
+          supplier: true,
+          purchaseOrder: true,
+          grn: true
+        }
+      });
+
+      res.status(201).json(invoice);
+    } catch (error: any) {
+      console.error('Register invoice error:', error);
+      res.status(400).json({ error: error.message || 'Failed to register invoice' });
+    }
+  }
+);
+
+/**
+ * @route   GET /api/procurement/invoices
+ * @desc    List supplier invoices with matching statuses
+ */
+router.get('/invoices', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    const schoolId = req.user?.schoolId;
+    if (!schoolId) return res.status(400).json({ error: 'School ID required' });
+
+    const invoices = await prisma.invoice.findMany({
+      where: { schoolId },
+      include: {
+        supplier: { select: { id: true, companyName: true, contactName: true } },
+        purchaseOrder: { select: { id: true, poNumber: true, totalAmount: true } },
+        grn: { select: { id: true, grnNumber: true, status: true } }
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+
+    res.json(invoices);
+  } catch (error: any) {
+    console.error('List invoices error:', error);
+    res.status(500).json({ error: error.message || 'Failed to list invoices' });
+  }
+});
+
+/**
+ * @route   POST /api/procurement/invoices/:id/3-way-match
+ * @desc    Perform 3-Way Match (PO + GRN + Invoice) & post to Accounts Payable on success
+ */
+router.post(
+  '/invoices/:id/3-way-match',
+  requireAuth,
+  requireRole('BURSAR', 'SCHOOL_ADMIN', 'SUPER_ADMIN'),
+  async (req: AuthRequest, res: Response) => {
+    try {
+      const schoolId = req.user?.schoolId;
+      const approverId = req.user?.id;
+      const id = req.params.id as string;
+
+      if (!schoolId) return res.status(400).json({ error: 'School ID required' });
+
+      const result = await ProcurementService.perform3WayMatch(
+        schoolId,
+        id,
+        approverId
+      );
+
+      res.json(result);
+    } catch (error: any) {
+      console.error('3-Way Match error:', error);
+      res.status(400).json({ error: error.message || 'Failed to perform 3-way match' });
+    }
+  }
+);
 
 export default router;
 

@@ -359,6 +359,11 @@ export type TenderBid = $Result.DefaultSelection<Prisma.$TenderBidPayload>
  */
 export type PurchaseOrder = $Result.DefaultSelection<Prisma.$PurchaseOrderPayload>
 /**
+ * Model GoodsReceivedNote
+ * 
+ */
+export type GoodsReceivedNote = $Result.DefaultSelection<Prisma.$GoodsReceivedNotePayload>
+/**
  * Model Invoice
  * 
  */
@@ -388,6 +393,11 @@ export type LeaveBalance = $Result.DefaultSelection<Prisma.$LeaveBalancePayload>
  * 
  */
 export type Asset = $Result.DefaultSelection<Prisma.$AssetPayload>
+/**
+ * Model AssetDepreciation
+ * 
+ */
+export type AssetDepreciation = $Result.DefaultSelection<Prisma.$AssetDepreciationPayload>
 /**
  * Model AssetIncident
  * 
@@ -2120,6 +2130,16 @@ export class PrismaClient<
   get purchaseOrder(): Prisma.PurchaseOrderDelegate<ExtArgs>;
 
   /**
+   * `prisma.goodsReceivedNote`: Exposes CRUD operations for the **GoodsReceivedNote** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more GoodsReceivedNotes
+    * const goodsReceivedNotes = await prisma.goodsReceivedNote.findMany()
+    * ```
+    */
+  get goodsReceivedNote(): Prisma.GoodsReceivedNoteDelegate<ExtArgs>;
+
+  /**
    * `prisma.invoice`: Exposes CRUD operations for the **Invoice** model.
     * Example usage:
     * ```ts
@@ -2178,6 +2198,16 @@ export class PrismaClient<
     * ```
     */
   get asset(): Prisma.AssetDelegate<ExtArgs>;
+
+  /**
+   * `prisma.assetDepreciation`: Exposes CRUD operations for the **AssetDepreciation** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more AssetDepreciations
+    * const assetDepreciations = await prisma.assetDepreciation.findMany()
+    * ```
+    */
+  get assetDepreciation(): Prisma.AssetDepreciationDelegate<ExtArgs>;
 
   /**
    * `prisma.assetIncident`: Exposes CRUD operations for the **AssetIncident** model.
@@ -4388,12 +4418,14 @@ export namespace Prisma {
     Tender: 'Tender',
     TenderBid: 'TenderBid',
     PurchaseOrder: 'PurchaseOrder',
+    GoodsReceivedNote: 'GoodsReceivedNote',
     Invoice: 'Invoice',
     Message: 'Message',
     SupportTicket: 'SupportTicket',
     StaffLeave: 'StaffLeave',
     LeaveBalance: 'LeaveBalance',
     Asset: 'Asset',
+    AssetDepreciation: 'AssetDepreciation',
     AssetIncident: 'AssetIncident',
     AssetMaintenance: 'AssetMaintenance',
     TransportRoute: 'TransportRoute',
@@ -4579,7 +4611,7 @@ export namespace Prisma {
 
   export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> = {
     meta: {
-      modelProps: "plan" | "school" | "gradingScale" | "hostelCategory" | "hostelRoom" | "leadershipAssignment" | "studentAllowedItem" | "uniformItem" | "uniformStockOrder" | "uniformStockOrderItem" | "uniformSale" | "uniformSaleItem" | "uniformSupplierPayment" | "accountCategory" | "liability" | "income" | "expense" | "user" | "userSession" | "teacher" | "student" | "schoolClass" | "section" | "subject" | "teacherSubject" | "classSubjectTeacher" | "grade" | "faculty" | "department" | "attendance" | "staffAttendance" | "fee" | "feeLineItem" | "studentInvoice" | "studentInvoiceItem" | "receipt" | "paymentAllocation" | "assignment" | "questionPaper" | "timetableSlot" | "announcement" | "announcementRead" | "auditLog" | "book" | "studentHouse" | "chaplaincyEvent" | "holiday" | "libraryCategory" | "bookLoan" | "librarySetting" | "bookReservation" | "libraryDigitalResource" | "assignmentSubmission" | "news" | "schoolSetting" | "paymentPlan" | "paymentPlanInstallment" | "gallery" | "club" | "sport" | "sportingEquipment" | "application" | "supplier" | "schoolSupplier" | "parent" | "parentStudent" | "tender" | "tenderBid" | "purchaseOrder" | "invoice" | "message" | "supportTicket" | "staffLeave" | "leaveBalance" | "asset" | "assetIncident" | "assetMaintenance" | "transportRoute" | "schoolEvent" | "tuckshopItem" | "tuckshopSale" | "digitalResource" | "salaryStub" | "shiftAssignment" | "applicantDocument" | "applicantTimeline" | "academicReport" | "reportTemplate" | "requisition" | "hostel" | "room" | "boardingLog" | "visitorLog" | "admissionInquiry" | "phoneCallLog" | "frontOfficeComplaint" | "securityIncident" | "weeklyMenu" | "transferAuthorization" | "supervisorAssignment" | "extensionRequest" | "progressReport" | "paymentMethod" | "feeGroup" | "feeGroupClassAmount" | "physicalProduct" | "physicalProductConsumption" | "feeReminderLog" | "studentPayment" | "communicationLog" | "notificationQueue" | "revenueAllocation" | "payrollAllowance" | "payrollDeduction" | "taxTable" | "taxBand" | "employeeProfile" | "termlyComment" | "payrollRun" | "payrollEntry" | "cBTExam" | "cBTQuestion" | "cBTResult" | "liveClass" | "award" | "course" | "courseEnrollment" | "studyMaterial" | "websiteSettings" | "websiteInquiry" | "noticeboard" | "vacancy" | "jobApplication" | "schoolVehicle" | "schoolTransport" | "meetingMinutes" | "projectFunding" | "clinicPatient" | "clinicAppointment" | "clinicComplaint" | "clinicEmergency" | "clinicImmunization" | "clinicReferral" | "clinicVisit" | "clinicInventoryItem" | "clinicDispensingLog" | "clinicHospitalization" | "farmLivestockBatch" | "farmCropCycle" | "farmInventoryItem" | "diningHallReport" | "prefectDuty" | "prefectMeeting" | "prefectReport" | "studentWallet" | "walletTransaction" | "schoolSequence" | "icd10Code" | "chartOfAccount" | "journalEntry" | "journalEntryLine" | "accountingPeriod" | "exchangeRate" | "approval" | "budget" | "stockMovement" | "taxBracket" | "uniformStockMovement" | "bankStatement" | "bankStatementLine" | "platformSetting" | "icd10ParentLabel" | "studentHealthProfile" | "clinicVital" | "clinicDiagnosis" | "clinicPrescription" | "pharmacyStock" | "pharmacyBatch" | "pharmacyDispense" | "clinicBed" | "clinicAdmission" | "clinicMonitoringLog" | "clinicAccessAudit" | "clinicEmergencyLog" | "clinicSetting" | "fiscalDevice" | "fiscalDeviceSecret" | "fiscalInvoice" | "documentSequence" | "creditNote" | "creditNoteLine" | "tillSession" | "cashupDenomination" | "cashupPayment" | "studentClearance" | "attendanceRegister" | "attendanceRecord" | "periodAttendance" | "qrCodeSession" | "syllabus" | "syllabusTopic" | "schemeOfWork" | "schemeItem" | "lessonPlan" | "lessonPlanResource" | "assessmentType" | "assessment" | "assessmentQuestion" | "questionBank" | "examTimetable" | "studentAssessment" | "question" | "cbtExam" | "cbtAttempt" | "disciplineRecord" | "calendarEvent" | "sportsEvent" | "transportRequest" | "facilitiesRequest" | "cateringRequest" | "awardConfig" | "studentAward" | "staffAward" | "bursaryType" | "studentBursary" | "hostelBedAllocation" | "studentTransportAllocation" | "schoolTrip" | "tripConsent" | "medicalConsent" | "bookLoanFine" | "boardingRollCall" | "exeat" | "diningPantryItem" | "diningRecipe" | "uniformCategory" | "uniformProduct" | "uniformKit" | "uniformIssuance" | "uniformStockLedger" | "attendanceSession" | "attendanceSessionRecord" | "staffAttendanceDaily" | "biometricRawLog" | "hrTardinessLog"
+      modelProps: "plan" | "school" | "gradingScale" | "hostelCategory" | "hostelRoom" | "leadershipAssignment" | "studentAllowedItem" | "uniformItem" | "uniformStockOrder" | "uniformStockOrderItem" | "uniformSale" | "uniformSaleItem" | "uniformSupplierPayment" | "accountCategory" | "liability" | "income" | "expense" | "user" | "userSession" | "teacher" | "student" | "schoolClass" | "section" | "subject" | "teacherSubject" | "classSubjectTeacher" | "grade" | "faculty" | "department" | "attendance" | "staffAttendance" | "fee" | "feeLineItem" | "studentInvoice" | "studentInvoiceItem" | "receipt" | "paymentAllocation" | "assignment" | "questionPaper" | "timetableSlot" | "announcement" | "announcementRead" | "auditLog" | "book" | "studentHouse" | "chaplaincyEvent" | "holiday" | "libraryCategory" | "bookLoan" | "librarySetting" | "bookReservation" | "libraryDigitalResource" | "assignmentSubmission" | "news" | "schoolSetting" | "paymentPlan" | "paymentPlanInstallment" | "gallery" | "club" | "sport" | "sportingEquipment" | "application" | "supplier" | "schoolSupplier" | "parent" | "parentStudent" | "tender" | "tenderBid" | "purchaseOrder" | "goodsReceivedNote" | "invoice" | "message" | "supportTicket" | "staffLeave" | "leaveBalance" | "asset" | "assetDepreciation" | "assetIncident" | "assetMaintenance" | "transportRoute" | "schoolEvent" | "tuckshopItem" | "tuckshopSale" | "digitalResource" | "salaryStub" | "shiftAssignment" | "applicantDocument" | "applicantTimeline" | "academicReport" | "reportTemplate" | "requisition" | "hostel" | "room" | "boardingLog" | "visitorLog" | "admissionInquiry" | "phoneCallLog" | "frontOfficeComplaint" | "securityIncident" | "weeklyMenu" | "transferAuthorization" | "supervisorAssignment" | "extensionRequest" | "progressReport" | "paymentMethod" | "feeGroup" | "feeGroupClassAmount" | "physicalProduct" | "physicalProductConsumption" | "feeReminderLog" | "studentPayment" | "communicationLog" | "notificationQueue" | "revenueAllocation" | "payrollAllowance" | "payrollDeduction" | "taxTable" | "taxBand" | "employeeProfile" | "termlyComment" | "payrollRun" | "payrollEntry" | "cBTExam" | "cBTQuestion" | "cBTResult" | "liveClass" | "award" | "course" | "courseEnrollment" | "studyMaterial" | "websiteSettings" | "websiteInquiry" | "noticeboard" | "vacancy" | "jobApplication" | "schoolVehicle" | "schoolTransport" | "meetingMinutes" | "projectFunding" | "clinicPatient" | "clinicAppointment" | "clinicComplaint" | "clinicEmergency" | "clinicImmunization" | "clinicReferral" | "clinicVisit" | "clinicInventoryItem" | "clinicDispensingLog" | "clinicHospitalization" | "farmLivestockBatch" | "farmCropCycle" | "farmInventoryItem" | "diningHallReport" | "prefectDuty" | "prefectMeeting" | "prefectReport" | "studentWallet" | "walletTransaction" | "schoolSequence" | "icd10Code" | "chartOfAccount" | "journalEntry" | "journalEntryLine" | "accountingPeriod" | "exchangeRate" | "approval" | "budget" | "stockMovement" | "taxBracket" | "uniformStockMovement" | "bankStatement" | "bankStatementLine" | "platformSetting" | "icd10ParentLabel" | "studentHealthProfile" | "clinicVital" | "clinicDiagnosis" | "clinicPrescription" | "pharmacyStock" | "pharmacyBatch" | "pharmacyDispense" | "clinicBed" | "clinicAdmission" | "clinicMonitoringLog" | "clinicAccessAudit" | "clinicEmergencyLog" | "clinicSetting" | "fiscalDevice" | "fiscalDeviceSecret" | "fiscalInvoice" | "documentSequence" | "creditNote" | "creditNoteLine" | "tillSession" | "cashupDenomination" | "cashupPayment" | "studentClearance" | "attendanceRegister" | "attendanceRecord" | "periodAttendance" | "qrCodeSession" | "syllabus" | "syllabusTopic" | "schemeOfWork" | "schemeItem" | "lessonPlan" | "lessonPlanResource" | "assessmentType" | "assessment" | "assessmentQuestion" | "questionBank" | "examTimetable" | "studentAssessment" | "question" | "cbtExam" | "cbtAttempt" | "disciplineRecord" | "calendarEvent" | "sportsEvent" | "transportRequest" | "facilitiesRequest" | "cateringRequest" | "awardConfig" | "studentAward" | "staffAward" | "bursaryType" | "studentBursary" | "hostelBedAllocation" | "studentTransportAllocation" | "schoolTrip" | "tripConsent" | "medicalConsent" | "bookLoanFine" | "boardingRollCall" | "exeat" | "diningPantryItem" | "diningRecipe" | "uniformCategory" | "uniformProduct" | "uniformKit" | "uniformIssuance" | "uniformStockLedger" | "attendanceSession" | "attendanceSessionRecord" | "staffAttendanceDaily" | "biometricRawLog" | "hrTardinessLog"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -9413,6 +9445,76 @@ export namespace Prisma {
           }
         }
       }
+      GoodsReceivedNote: {
+        payload: Prisma.$GoodsReceivedNotePayload<ExtArgs>
+        fields: Prisma.GoodsReceivedNoteFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.GoodsReceivedNoteFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GoodsReceivedNotePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.GoodsReceivedNoteFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GoodsReceivedNotePayload>
+          }
+          findFirst: {
+            args: Prisma.GoodsReceivedNoteFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GoodsReceivedNotePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.GoodsReceivedNoteFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GoodsReceivedNotePayload>
+          }
+          findMany: {
+            args: Prisma.GoodsReceivedNoteFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GoodsReceivedNotePayload>[]
+          }
+          create: {
+            args: Prisma.GoodsReceivedNoteCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GoodsReceivedNotePayload>
+          }
+          createMany: {
+            args: Prisma.GoodsReceivedNoteCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.GoodsReceivedNoteCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GoodsReceivedNotePayload>[]
+          }
+          delete: {
+            args: Prisma.GoodsReceivedNoteDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GoodsReceivedNotePayload>
+          }
+          update: {
+            args: Prisma.GoodsReceivedNoteUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GoodsReceivedNotePayload>
+          }
+          deleteMany: {
+            args: Prisma.GoodsReceivedNoteDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.GoodsReceivedNoteUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.GoodsReceivedNoteUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GoodsReceivedNotePayload>
+          }
+          aggregate: {
+            args: Prisma.GoodsReceivedNoteAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateGoodsReceivedNote>
+          }
+          groupBy: {
+            args: Prisma.GoodsReceivedNoteGroupByArgs<ExtArgs>
+            result: $Utils.Optional<GoodsReceivedNoteGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.GoodsReceivedNoteCountArgs<ExtArgs>
+            result: $Utils.Optional<GoodsReceivedNoteCountAggregateOutputType> | number
+          }
+        }
+      }
       Invoice: {
         payload: Prisma.$InvoicePayload<ExtArgs>
         fields: Prisma.InvoiceFieldRefs
@@ -9830,6 +9932,76 @@ export namespace Prisma {
           count: {
             args: Prisma.AssetCountArgs<ExtArgs>
             result: $Utils.Optional<AssetCountAggregateOutputType> | number
+          }
+        }
+      }
+      AssetDepreciation: {
+        payload: Prisma.$AssetDepreciationPayload<ExtArgs>
+        fields: Prisma.AssetDepreciationFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.AssetDepreciationFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AssetDepreciationPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.AssetDepreciationFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AssetDepreciationPayload>
+          }
+          findFirst: {
+            args: Prisma.AssetDepreciationFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AssetDepreciationPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.AssetDepreciationFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AssetDepreciationPayload>
+          }
+          findMany: {
+            args: Prisma.AssetDepreciationFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AssetDepreciationPayload>[]
+          }
+          create: {
+            args: Prisma.AssetDepreciationCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AssetDepreciationPayload>
+          }
+          createMany: {
+            args: Prisma.AssetDepreciationCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.AssetDepreciationCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AssetDepreciationPayload>[]
+          }
+          delete: {
+            args: Prisma.AssetDepreciationDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AssetDepreciationPayload>
+          }
+          update: {
+            args: Prisma.AssetDepreciationUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AssetDepreciationPayload>
+          }
+          deleteMany: {
+            args: Prisma.AssetDepreciationDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.AssetDepreciationUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.AssetDepreciationUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AssetDepreciationPayload>
+          }
+          aggregate: {
+            args: Prisma.AssetDepreciationAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateAssetDepreciation>
+          }
+          groupBy: {
+            args: Prisma.AssetDepreciationGroupByArgs<ExtArgs>
+            result: $Utils.Optional<AssetDepreciationGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.AssetDepreciationCountArgs<ExtArgs>
+            result: $Utils.Optional<AssetDepreciationCountAggregateOutputType> | number
           }
         }
       }
@@ -23761,6 +23933,7 @@ export namespace Prisma {
     assessmentsModerated: number
     questionBankCreated: number
     assessmentsMarked: number
+    receivedGRNs: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -23844,6 +24017,7 @@ export namespace Prisma {
     assessmentsModerated?: boolean | UserCountOutputTypeCountAssessmentsModeratedArgs
     questionBankCreated?: boolean | UserCountOutputTypeCountQuestionBankCreatedArgs
     assessmentsMarked?: boolean | UserCountOutputTypeCountAssessmentsMarkedArgs
+    receivedGRNs?: boolean | UserCountOutputTypeCountReceivedGRNsArgs
   }
 
   // Custom InputTypes
@@ -24415,6 +24589,13 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountAssessmentsMarkedArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: StudentAssessmentWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountReceivedGRNsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: GoodsReceivedNoteWhereInput
   }
 
 
@@ -25996,6 +26177,7 @@ export namespace Prisma {
     tenders: number
     purchaseOrders: number
     invoices: number
+    goodsReceivedNotes: number
     uniformStockOrders: number
     uniformPayments: number
   }
@@ -26005,6 +26187,7 @@ export namespace Prisma {
     tenders?: boolean | SupplierCountOutputTypeCountTendersArgs
     purchaseOrders?: boolean | SupplierCountOutputTypeCountPurchaseOrdersArgs
     invoices?: boolean | SupplierCountOutputTypeCountInvoicesArgs
+    goodsReceivedNotes?: boolean | SupplierCountOutputTypeCountGoodsReceivedNotesArgs
     uniformStockOrders?: boolean | SupplierCountOutputTypeCountUniformStockOrdersArgs
     uniformPayments?: boolean | SupplierCountOutputTypeCountUniformPaymentsArgs
   }
@@ -26046,6 +26229,13 @@ export namespace Prisma {
    */
   export type SupplierCountOutputTypeCountInvoicesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: InvoiceWhereInput
+  }
+
+  /**
+   * SupplierCountOutputType without action
+   */
+  export type SupplierCountOutputTypeCountGoodsReceivedNotesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: GoodsReceivedNoteWhereInput
   }
 
   /**
@@ -26135,15 +26325,88 @@ export namespace Prisma {
 
 
   /**
+   * Count Type PurchaseOrderCountOutputType
+   */
+
+  export type PurchaseOrderCountOutputType = {
+    grns: number
+    invoices: number
+  }
+
+  export type PurchaseOrderCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    grns?: boolean | PurchaseOrderCountOutputTypeCountGrnsArgs
+    invoices?: boolean | PurchaseOrderCountOutputTypeCountInvoicesArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * PurchaseOrderCountOutputType without action
+   */
+  export type PurchaseOrderCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PurchaseOrderCountOutputType
+     */
+    select?: PurchaseOrderCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * PurchaseOrderCountOutputType without action
+   */
+  export type PurchaseOrderCountOutputTypeCountGrnsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: GoodsReceivedNoteWhereInput
+  }
+
+  /**
+   * PurchaseOrderCountOutputType without action
+   */
+  export type PurchaseOrderCountOutputTypeCountInvoicesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: InvoiceWhereInput
+  }
+
+
+  /**
+   * Count Type GoodsReceivedNoteCountOutputType
+   */
+
+  export type GoodsReceivedNoteCountOutputType = {
+    invoices: number
+  }
+
+  export type GoodsReceivedNoteCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    invoices?: boolean | GoodsReceivedNoteCountOutputTypeCountInvoicesArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * GoodsReceivedNoteCountOutputType without action
+   */
+  export type GoodsReceivedNoteCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GoodsReceivedNoteCountOutputType
+     */
+    select?: GoodsReceivedNoteCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * GoodsReceivedNoteCountOutputType without action
+   */
+  export type GoodsReceivedNoteCountOutputTypeCountInvoicesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: InvoiceWhereInput
+  }
+
+
+  /**
    * Count Type AssetCountOutputType
    */
 
   export type AssetCountOutputType = {
+    depreciations: number
     incidents: number
     maintenance: number
   }
 
   export type AssetCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    depreciations?: boolean | AssetCountOutputTypeCountDepreciationsArgs
     incidents?: boolean | AssetCountOutputTypeCountIncidentsArgs
     maintenance?: boolean | AssetCountOutputTypeCountMaintenanceArgs
   }
@@ -26157,6 +26420,13 @@ export namespace Prisma {
      * Select specific fields to fetch from the AssetCountOutputType
      */
     select?: AssetCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * AssetCountOutputType without action
+   */
+  export type AssetCountOutputTypeCountDepreciationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AssetDepreciationWhereInput
   }
 
   /**
@@ -49892,6 +50162,7 @@ export namespace Prisma {
     assessmentsModerated?: boolean | User$assessmentsModeratedArgs<ExtArgs>
     questionBankCreated?: boolean | User$questionBankCreatedArgs<ExtArgs>
     assessmentsMarked?: boolean | User$assessmentsMarkedArgs<ExtArgs>
+    receivedGRNs?: boolean | User$receivedGRNsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -50030,6 +50301,7 @@ export namespace Prisma {
     assessmentsModerated?: boolean | User$assessmentsModeratedArgs<ExtArgs>
     questionBankCreated?: boolean | User$questionBankCreatedArgs<ExtArgs>
     assessmentsMarked?: boolean | User$assessmentsMarkedArgs<ExtArgs>
+    receivedGRNs?: boolean | User$receivedGRNsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -50128,6 +50400,7 @@ export namespace Prisma {
       assessmentsModerated: Prisma.$AssessmentPayload<ExtArgs>[]
       questionBankCreated: Prisma.$QuestionBankPayload<ExtArgs>[]
       assessmentsMarked: Prisma.$StudentAssessmentPayload<ExtArgs>[]
+      receivedGRNs: Prisma.$GoodsReceivedNotePayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -50601,6 +50874,7 @@ export namespace Prisma {
     assessmentsModerated<T extends User$assessmentsModeratedArgs<ExtArgs> = {}>(args?: Subset<T, User$assessmentsModeratedArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AssessmentPayload<ExtArgs>, T, "findMany"> | Null>
     questionBankCreated<T extends User$questionBankCreatedArgs<ExtArgs> = {}>(args?: Subset<T, User$questionBankCreatedArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$QuestionBankPayload<ExtArgs>, T, "findMany"> | Null>
     assessmentsMarked<T extends User$assessmentsMarkedArgs<ExtArgs> = {}>(args?: Subset<T, User$assessmentsMarkedArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StudentAssessmentPayload<ExtArgs>, T, "findMany"> | Null>
+    receivedGRNs<T extends User$receivedGRNsArgs<ExtArgs> = {}>(args?: Subset<T, User$receivedGRNsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GoodsReceivedNotePayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -52684,6 +52958,26 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: StudentAssessmentScalarFieldEnum | StudentAssessmentScalarFieldEnum[]
+  }
+
+  /**
+   * User.receivedGRNs
+   */
+  export type User$receivedGRNsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GoodsReceivedNote
+     */
+    select?: GoodsReceivedNoteSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GoodsReceivedNoteInclude<ExtArgs> | null
+    where?: GoodsReceivedNoteWhereInput
+    orderBy?: GoodsReceivedNoteOrderByWithRelationInput | GoodsReceivedNoteOrderByWithRelationInput[]
+    cursor?: GoodsReceivedNoteWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: GoodsReceivedNoteScalarFieldEnum | GoodsReceivedNoteScalarFieldEnum[]
   }
 
   /**
@@ -103872,6 +104166,7 @@ export namespace Prisma {
     tenders?: boolean | Supplier$tendersArgs<ExtArgs>
     purchaseOrders?: boolean | Supplier$purchaseOrdersArgs<ExtArgs>
     invoices?: boolean | Supplier$invoicesArgs<ExtArgs>
+    goodsReceivedNotes?: boolean | Supplier$goodsReceivedNotesArgs<ExtArgs>
     uniformStockOrders?: boolean | Supplier$uniformStockOrdersArgs<ExtArgs>
     uniformPayments?: boolean | Supplier$uniformPaymentsArgs<ExtArgs>
     _count?: boolean | SupplierCountOutputTypeDefaultArgs<ExtArgs>
@@ -103916,6 +104211,7 @@ export namespace Prisma {
     tenders?: boolean | Supplier$tendersArgs<ExtArgs>
     purchaseOrders?: boolean | Supplier$purchaseOrdersArgs<ExtArgs>
     invoices?: boolean | Supplier$invoicesArgs<ExtArgs>
+    goodsReceivedNotes?: boolean | Supplier$goodsReceivedNotesArgs<ExtArgs>
     uniformStockOrders?: boolean | Supplier$uniformStockOrdersArgs<ExtArgs>
     uniformPayments?: boolean | Supplier$uniformPaymentsArgs<ExtArgs>
     _count?: boolean | SupplierCountOutputTypeDefaultArgs<ExtArgs>
@@ -103932,6 +104228,7 @@ export namespace Prisma {
       tenders: Prisma.$TenderBidPayload<ExtArgs>[]
       purchaseOrders: Prisma.$PurchaseOrderPayload<ExtArgs>[]
       invoices: Prisma.$InvoicePayload<ExtArgs>[]
+      goodsReceivedNotes: Prisma.$GoodsReceivedNotePayload<ExtArgs>[]
       uniformStockOrders: Prisma.$UniformStockOrderPayload<ExtArgs>[]
       uniformPayments: Prisma.$UniformSupplierPaymentPayload<ExtArgs>[]
     }
@@ -104318,6 +104615,7 @@ export namespace Prisma {
     tenders<T extends Supplier$tendersArgs<ExtArgs> = {}>(args?: Subset<T, Supplier$tendersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TenderBidPayload<ExtArgs>, T, "findMany"> | Null>
     purchaseOrders<T extends Supplier$purchaseOrdersArgs<ExtArgs> = {}>(args?: Subset<T, Supplier$purchaseOrdersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PurchaseOrderPayload<ExtArgs>, T, "findMany"> | Null>
     invoices<T extends Supplier$invoicesArgs<ExtArgs> = {}>(args?: Subset<T, Supplier$invoicesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$InvoicePayload<ExtArgs>, T, "findMany"> | Null>
+    goodsReceivedNotes<T extends Supplier$goodsReceivedNotesArgs<ExtArgs> = {}>(args?: Subset<T, Supplier$goodsReceivedNotesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GoodsReceivedNotePayload<ExtArgs>, T, "findMany"> | Null>
     uniformStockOrders<T extends Supplier$uniformStockOrdersArgs<ExtArgs> = {}>(args?: Subset<T, Supplier$uniformStockOrdersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UniformStockOrderPayload<ExtArgs>, T, "findMany"> | Null>
     uniformPayments<T extends Supplier$uniformPaymentsArgs<ExtArgs> = {}>(args?: Subset<T, Supplier$uniformPaymentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UniformSupplierPaymentPayload<ExtArgs>, T, "findMany"> | Null>
     /**
@@ -104772,6 +105070,26 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: InvoiceScalarFieldEnum | InvoiceScalarFieldEnum[]
+  }
+
+  /**
+   * Supplier.goodsReceivedNotes
+   */
+  export type Supplier$goodsReceivedNotesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GoodsReceivedNote
+     */
+    select?: GoodsReceivedNoteSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GoodsReceivedNoteInclude<ExtArgs> | null
+    where?: GoodsReceivedNoteWhereInput
+    orderBy?: GoodsReceivedNoteOrderByWithRelationInput | GoodsReceivedNoteOrderByWithRelationInput[]
+    cursor?: GoodsReceivedNoteWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: GoodsReceivedNoteScalarFieldEnum | GoodsReceivedNoteScalarFieldEnum[]
   }
 
   /**
@@ -109887,10 +110205,12 @@ export namespace Prisma {
 
   export type PurchaseOrderAvgAggregateOutputType = {
     totalAmount: number | null
+    budgetRemaining: number | null
   }
 
   export type PurchaseOrderSumAggregateOutputType = {
     totalAmount: number | null
+    budgetRemaining: number | null
   }
 
   export type PurchaseOrderMinAggregateOutputType = {
@@ -109901,6 +110221,14 @@ export namespace Prisma {
     totalAmount: number | null
     status: string | null
     schoolId: string | null
+    coaCode: string | null
+    department: string | null
+    budgetChecked: boolean | null
+    budgetOverrun: boolean | null
+    budgetRemaining: number | null
+    approvedById: string | null
+    approvedAt: Date | null
+    rejectionReason: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -109913,6 +110241,14 @@ export namespace Prisma {
     totalAmount: number | null
     status: string | null
     schoolId: string | null
+    coaCode: string | null
+    department: string | null
+    budgetChecked: boolean | null
+    budgetOverrun: boolean | null
+    budgetRemaining: number | null
+    approvedById: string | null
+    approvedAt: Date | null
+    rejectionReason: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -109926,6 +110262,14 @@ export namespace Prisma {
     totalAmount: number
     status: number
     schoolId: number
+    coaCode: number
+    department: number
+    budgetChecked: number
+    budgetOverrun: number
+    budgetRemaining: number
+    approvedById: number
+    approvedAt: number
+    rejectionReason: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -109934,10 +110278,12 @@ export namespace Prisma {
 
   export type PurchaseOrderAvgAggregateInputType = {
     totalAmount?: true
+    budgetRemaining?: true
   }
 
   export type PurchaseOrderSumAggregateInputType = {
     totalAmount?: true
+    budgetRemaining?: true
   }
 
   export type PurchaseOrderMinAggregateInputType = {
@@ -109948,6 +110294,14 @@ export namespace Prisma {
     totalAmount?: true
     status?: true
     schoolId?: true
+    coaCode?: true
+    department?: true
+    budgetChecked?: true
+    budgetOverrun?: true
+    budgetRemaining?: true
+    approvedById?: true
+    approvedAt?: true
+    rejectionReason?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -109960,6 +110314,14 @@ export namespace Prisma {
     totalAmount?: true
     status?: true
     schoolId?: true
+    coaCode?: true
+    department?: true
+    budgetChecked?: true
+    budgetOverrun?: true
+    budgetRemaining?: true
+    approvedById?: true
+    approvedAt?: true
+    rejectionReason?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -109973,6 +110335,14 @@ export namespace Prisma {
     totalAmount?: true
     status?: true
     schoolId?: true
+    coaCode?: true
+    department?: true
+    budgetChecked?: true
+    budgetOverrun?: true
+    budgetRemaining?: true
+    approvedById?: true
+    approvedAt?: true
+    rejectionReason?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -110073,6 +110443,14 @@ export namespace Prisma {
     totalAmount: number
     status: string
     schoolId: string
+    coaCode: string | null
+    department: string | null
+    budgetChecked: boolean
+    budgetOverrun: boolean
+    budgetRemaining: number | null
+    approvedById: string | null
+    approvedAt: Date | null
+    rejectionReason: string | null
     createdAt: Date
     updatedAt: Date
     _count: PurchaseOrderCountAggregateOutputType | null
@@ -110105,10 +110483,21 @@ export namespace Prisma {
     totalAmount?: boolean
     status?: boolean
     schoolId?: boolean
+    coaCode?: boolean
+    department?: boolean
+    budgetChecked?: boolean
+    budgetOverrun?: boolean
+    budgetRemaining?: boolean
+    approvedById?: boolean
+    approvedAt?: boolean
+    rejectionReason?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     supplier?: boolean | SupplierDefaultArgs<ExtArgs>
     requisition?: boolean | PurchaseOrder$requisitionArgs<ExtArgs>
+    grns?: boolean | PurchaseOrder$grnsArgs<ExtArgs>
+    invoices?: boolean | PurchaseOrder$invoicesArgs<ExtArgs>
+    _count?: boolean | PurchaseOrderCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["purchaseOrder"]>
 
   export type PurchaseOrderSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -110120,6 +110509,14 @@ export namespace Prisma {
     totalAmount?: boolean
     status?: boolean
     schoolId?: boolean
+    coaCode?: boolean
+    department?: boolean
+    budgetChecked?: boolean
+    budgetOverrun?: boolean
+    budgetRemaining?: boolean
+    approvedById?: boolean
+    approvedAt?: boolean
+    rejectionReason?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     supplier?: boolean | SupplierDefaultArgs<ExtArgs>
@@ -110134,6 +110531,14 @@ export namespace Prisma {
     totalAmount?: boolean
     status?: boolean
     schoolId?: boolean
+    coaCode?: boolean
+    department?: boolean
+    budgetChecked?: boolean
+    budgetOverrun?: boolean
+    budgetRemaining?: boolean
+    approvedById?: boolean
+    approvedAt?: boolean
+    rejectionReason?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
@@ -110141,6 +110546,9 @@ export namespace Prisma {
   export type PurchaseOrderInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     supplier?: boolean | SupplierDefaultArgs<ExtArgs>
     requisition?: boolean | PurchaseOrder$requisitionArgs<ExtArgs>
+    grns?: boolean | PurchaseOrder$grnsArgs<ExtArgs>
+    invoices?: boolean | PurchaseOrder$invoicesArgs<ExtArgs>
+    _count?: boolean | PurchaseOrderCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type PurchaseOrderIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     supplier?: boolean | SupplierDefaultArgs<ExtArgs>
@@ -110151,6 +110559,8 @@ export namespace Prisma {
     objects: {
       supplier: Prisma.$SupplierPayload<ExtArgs>
       requisition: Prisma.$RequisitionPayload<ExtArgs> | null
+      grns: Prisma.$GoodsReceivedNotePayload<ExtArgs>[]
+      invoices: Prisma.$InvoicePayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -110161,6 +110571,14 @@ export namespace Prisma {
       totalAmount: number
       status: string
       schoolId: string
+      coaCode: string | null
+      department: string | null
+      budgetChecked: boolean
+      budgetOverrun: boolean
+      budgetRemaining: number | null
+      approvedById: string | null
+      approvedAt: Date | null
+      rejectionReason: string | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["purchaseOrder"]>
@@ -110529,6 +110947,8 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     supplier<T extends SupplierDefaultArgs<ExtArgs> = {}>(args?: Subset<T, SupplierDefaultArgs<ExtArgs>>): Prisma__SupplierClient<$Result.GetResult<Prisma.$SupplierPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
     requisition<T extends PurchaseOrder$requisitionArgs<ExtArgs> = {}>(args?: Subset<T, PurchaseOrder$requisitionArgs<ExtArgs>>): Prisma__RequisitionClient<$Result.GetResult<Prisma.$RequisitionPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    grns<T extends PurchaseOrder$grnsArgs<ExtArgs> = {}>(args?: Subset<T, PurchaseOrder$grnsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GoodsReceivedNotePayload<ExtArgs>, T, "findMany"> | Null>
+    invoices<T extends PurchaseOrder$invoicesArgs<ExtArgs> = {}>(args?: Subset<T, PurchaseOrder$invoicesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$InvoicePayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -110566,6 +110986,14 @@ export namespace Prisma {
     readonly totalAmount: FieldRef<"PurchaseOrder", 'Float'>
     readonly status: FieldRef<"PurchaseOrder", 'String'>
     readonly schoolId: FieldRef<"PurchaseOrder", 'String'>
+    readonly coaCode: FieldRef<"PurchaseOrder", 'String'>
+    readonly department: FieldRef<"PurchaseOrder", 'String'>
+    readonly budgetChecked: FieldRef<"PurchaseOrder", 'Boolean'>
+    readonly budgetOverrun: FieldRef<"PurchaseOrder", 'Boolean'>
+    readonly budgetRemaining: FieldRef<"PurchaseOrder", 'Float'>
+    readonly approvedById: FieldRef<"PurchaseOrder", 'String'>
+    readonly approvedAt: FieldRef<"PurchaseOrder", 'DateTime'>
+    readonly rejectionReason: FieldRef<"PurchaseOrder", 'String'>
     readonly createdAt: FieldRef<"PurchaseOrder", 'DateTime'>
     readonly updatedAt: FieldRef<"PurchaseOrder", 'DateTime'>
   }
@@ -110901,6 +111329,46 @@ export namespace Prisma {
   }
 
   /**
+   * PurchaseOrder.grns
+   */
+  export type PurchaseOrder$grnsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GoodsReceivedNote
+     */
+    select?: GoodsReceivedNoteSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GoodsReceivedNoteInclude<ExtArgs> | null
+    where?: GoodsReceivedNoteWhereInput
+    orderBy?: GoodsReceivedNoteOrderByWithRelationInput | GoodsReceivedNoteOrderByWithRelationInput[]
+    cursor?: GoodsReceivedNoteWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: GoodsReceivedNoteScalarFieldEnum | GoodsReceivedNoteScalarFieldEnum[]
+  }
+
+  /**
+   * PurchaseOrder.invoices
+   */
+  export type PurchaseOrder$invoicesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Invoice
+     */
+    select?: InvoiceSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InvoiceInclude<ExtArgs> | null
+    where?: InvoiceWhereInput
+    orderBy?: InvoiceOrderByWithRelationInput | InvoiceOrderByWithRelationInput[]
+    cursor?: InvoiceWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: InvoiceScalarFieldEnum | InvoiceScalarFieldEnum[]
+  }
+
+  /**
    * PurchaseOrder without action
    */
   export type PurchaseOrderDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -110912,6 +111380,1115 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: PurchaseOrderInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model GoodsReceivedNote
+   */
+
+  export type AggregateGoodsReceivedNote = {
+    _count: GoodsReceivedNoteCountAggregateOutputType | null
+    _avg: GoodsReceivedNoteAvgAggregateOutputType | null
+    _sum: GoodsReceivedNoteSumAggregateOutputType | null
+    _min: GoodsReceivedNoteMinAggregateOutputType | null
+    _max: GoodsReceivedNoteMaxAggregateOutputType | null
+  }
+
+  export type GoodsReceivedNoteAvgAggregateOutputType = {
+    totalValueReceived: number | null
+  }
+
+  export type GoodsReceivedNoteSumAggregateOutputType = {
+    totalValueReceived: number | null
+  }
+
+  export type GoodsReceivedNoteMinAggregateOutputType = {
+    id: string | null
+    grnNumber: string | null
+    schoolId: string | null
+    purchaseOrderId: string | null
+    supplierId: string | null
+    receivedDate: Date | null
+    receivedById: string | null
+    deliveryNoteNumber: string | null
+    status: string | null
+    totalValueReceived: number | null
+    notes: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type GoodsReceivedNoteMaxAggregateOutputType = {
+    id: string | null
+    grnNumber: string | null
+    schoolId: string | null
+    purchaseOrderId: string | null
+    supplierId: string | null
+    receivedDate: Date | null
+    receivedById: string | null
+    deliveryNoteNumber: string | null
+    status: string | null
+    totalValueReceived: number | null
+    notes: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type GoodsReceivedNoteCountAggregateOutputType = {
+    id: number
+    grnNumber: number
+    schoolId: number
+    purchaseOrderId: number
+    supplierId: number
+    receivedDate: number
+    receivedById: number
+    deliveryNoteNumber: number
+    status: number
+    items: number
+    totalValueReceived: number
+    notes: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type GoodsReceivedNoteAvgAggregateInputType = {
+    totalValueReceived?: true
+  }
+
+  export type GoodsReceivedNoteSumAggregateInputType = {
+    totalValueReceived?: true
+  }
+
+  export type GoodsReceivedNoteMinAggregateInputType = {
+    id?: true
+    grnNumber?: true
+    schoolId?: true
+    purchaseOrderId?: true
+    supplierId?: true
+    receivedDate?: true
+    receivedById?: true
+    deliveryNoteNumber?: true
+    status?: true
+    totalValueReceived?: true
+    notes?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type GoodsReceivedNoteMaxAggregateInputType = {
+    id?: true
+    grnNumber?: true
+    schoolId?: true
+    purchaseOrderId?: true
+    supplierId?: true
+    receivedDate?: true
+    receivedById?: true
+    deliveryNoteNumber?: true
+    status?: true
+    totalValueReceived?: true
+    notes?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type GoodsReceivedNoteCountAggregateInputType = {
+    id?: true
+    grnNumber?: true
+    schoolId?: true
+    purchaseOrderId?: true
+    supplierId?: true
+    receivedDate?: true
+    receivedById?: true
+    deliveryNoteNumber?: true
+    status?: true
+    items?: true
+    totalValueReceived?: true
+    notes?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type GoodsReceivedNoteAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which GoodsReceivedNote to aggregate.
+     */
+    where?: GoodsReceivedNoteWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of GoodsReceivedNotes to fetch.
+     */
+    orderBy?: GoodsReceivedNoteOrderByWithRelationInput | GoodsReceivedNoteOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: GoodsReceivedNoteWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` GoodsReceivedNotes from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` GoodsReceivedNotes.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned GoodsReceivedNotes
+    **/
+    _count?: true | GoodsReceivedNoteCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: GoodsReceivedNoteAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: GoodsReceivedNoteSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: GoodsReceivedNoteMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: GoodsReceivedNoteMaxAggregateInputType
+  }
+
+  export type GetGoodsReceivedNoteAggregateType<T extends GoodsReceivedNoteAggregateArgs> = {
+        [P in keyof T & keyof AggregateGoodsReceivedNote]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateGoodsReceivedNote[P]>
+      : GetScalarType<T[P], AggregateGoodsReceivedNote[P]>
+  }
+
+
+
+
+  export type GoodsReceivedNoteGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: GoodsReceivedNoteWhereInput
+    orderBy?: GoodsReceivedNoteOrderByWithAggregationInput | GoodsReceivedNoteOrderByWithAggregationInput[]
+    by: GoodsReceivedNoteScalarFieldEnum[] | GoodsReceivedNoteScalarFieldEnum
+    having?: GoodsReceivedNoteScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: GoodsReceivedNoteCountAggregateInputType | true
+    _avg?: GoodsReceivedNoteAvgAggregateInputType
+    _sum?: GoodsReceivedNoteSumAggregateInputType
+    _min?: GoodsReceivedNoteMinAggregateInputType
+    _max?: GoodsReceivedNoteMaxAggregateInputType
+  }
+
+  export type GoodsReceivedNoteGroupByOutputType = {
+    id: string
+    grnNumber: string
+    schoolId: string
+    purchaseOrderId: string
+    supplierId: string
+    receivedDate: Date
+    receivedById: string
+    deliveryNoteNumber: string | null
+    status: string
+    items: JsonValue
+    totalValueReceived: number
+    notes: string | null
+    createdAt: Date
+    updatedAt: Date
+    _count: GoodsReceivedNoteCountAggregateOutputType | null
+    _avg: GoodsReceivedNoteAvgAggregateOutputType | null
+    _sum: GoodsReceivedNoteSumAggregateOutputType | null
+    _min: GoodsReceivedNoteMinAggregateOutputType | null
+    _max: GoodsReceivedNoteMaxAggregateOutputType | null
+  }
+
+  type GetGoodsReceivedNoteGroupByPayload<T extends GoodsReceivedNoteGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<GoodsReceivedNoteGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof GoodsReceivedNoteGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], GoodsReceivedNoteGroupByOutputType[P]>
+            : GetScalarType<T[P], GoodsReceivedNoteGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type GoodsReceivedNoteSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    grnNumber?: boolean
+    schoolId?: boolean
+    purchaseOrderId?: boolean
+    supplierId?: boolean
+    receivedDate?: boolean
+    receivedById?: boolean
+    deliveryNoteNumber?: boolean
+    status?: boolean
+    items?: boolean
+    totalValueReceived?: boolean
+    notes?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    purchaseOrder?: boolean | PurchaseOrderDefaultArgs<ExtArgs>
+    supplier?: boolean | SupplierDefaultArgs<ExtArgs>
+    receivedBy?: boolean | UserDefaultArgs<ExtArgs>
+    invoices?: boolean | GoodsReceivedNote$invoicesArgs<ExtArgs>
+    _count?: boolean | GoodsReceivedNoteCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["goodsReceivedNote"]>
+
+  export type GoodsReceivedNoteSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    grnNumber?: boolean
+    schoolId?: boolean
+    purchaseOrderId?: boolean
+    supplierId?: boolean
+    receivedDate?: boolean
+    receivedById?: boolean
+    deliveryNoteNumber?: boolean
+    status?: boolean
+    items?: boolean
+    totalValueReceived?: boolean
+    notes?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    purchaseOrder?: boolean | PurchaseOrderDefaultArgs<ExtArgs>
+    supplier?: boolean | SupplierDefaultArgs<ExtArgs>
+    receivedBy?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["goodsReceivedNote"]>
+
+  export type GoodsReceivedNoteSelectScalar = {
+    id?: boolean
+    grnNumber?: boolean
+    schoolId?: boolean
+    purchaseOrderId?: boolean
+    supplierId?: boolean
+    receivedDate?: boolean
+    receivedById?: boolean
+    deliveryNoteNumber?: boolean
+    status?: boolean
+    items?: boolean
+    totalValueReceived?: boolean
+    notes?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type GoodsReceivedNoteInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    purchaseOrder?: boolean | PurchaseOrderDefaultArgs<ExtArgs>
+    supplier?: boolean | SupplierDefaultArgs<ExtArgs>
+    receivedBy?: boolean | UserDefaultArgs<ExtArgs>
+    invoices?: boolean | GoodsReceivedNote$invoicesArgs<ExtArgs>
+    _count?: boolean | GoodsReceivedNoteCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type GoodsReceivedNoteIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    purchaseOrder?: boolean | PurchaseOrderDefaultArgs<ExtArgs>
+    supplier?: boolean | SupplierDefaultArgs<ExtArgs>
+    receivedBy?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $GoodsReceivedNotePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "GoodsReceivedNote"
+    objects: {
+      purchaseOrder: Prisma.$PurchaseOrderPayload<ExtArgs>
+      supplier: Prisma.$SupplierPayload<ExtArgs>
+      receivedBy: Prisma.$UserPayload<ExtArgs>
+      invoices: Prisma.$InvoicePayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      grnNumber: string
+      schoolId: string
+      purchaseOrderId: string
+      supplierId: string
+      receivedDate: Date
+      receivedById: string
+      deliveryNoteNumber: string | null
+      status: string
+      items: Prisma.JsonValue
+      totalValueReceived: number
+      notes: string | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["goodsReceivedNote"]>
+    composites: {}
+  }
+
+  type GoodsReceivedNoteGetPayload<S extends boolean | null | undefined | GoodsReceivedNoteDefaultArgs> = $Result.GetResult<Prisma.$GoodsReceivedNotePayload, S>
+
+  type GoodsReceivedNoteCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<GoodsReceivedNoteFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: GoodsReceivedNoteCountAggregateInputType | true
+    }
+
+  export interface GoodsReceivedNoteDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['GoodsReceivedNote'], meta: { name: 'GoodsReceivedNote' } }
+    /**
+     * Find zero or one GoodsReceivedNote that matches the filter.
+     * @param {GoodsReceivedNoteFindUniqueArgs} args - Arguments to find a GoodsReceivedNote
+     * @example
+     * // Get one GoodsReceivedNote
+     * const goodsReceivedNote = await prisma.goodsReceivedNote.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends GoodsReceivedNoteFindUniqueArgs>(args: SelectSubset<T, GoodsReceivedNoteFindUniqueArgs<ExtArgs>>): Prisma__GoodsReceivedNoteClient<$Result.GetResult<Prisma.$GoodsReceivedNotePayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one GoodsReceivedNote that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {GoodsReceivedNoteFindUniqueOrThrowArgs} args - Arguments to find a GoodsReceivedNote
+     * @example
+     * // Get one GoodsReceivedNote
+     * const goodsReceivedNote = await prisma.goodsReceivedNote.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends GoodsReceivedNoteFindUniqueOrThrowArgs>(args: SelectSubset<T, GoodsReceivedNoteFindUniqueOrThrowArgs<ExtArgs>>): Prisma__GoodsReceivedNoteClient<$Result.GetResult<Prisma.$GoodsReceivedNotePayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first GoodsReceivedNote that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GoodsReceivedNoteFindFirstArgs} args - Arguments to find a GoodsReceivedNote
+     * @example
+     * // Get one GoodsReceivedNote
+     * const goodsReceivedNote = await prisma.goodsReceivedNote.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends GoodsReceivedNoteFindFirstArgs>(args?: SelectSubset<T, GoodsReceivedNoteFindFirstArgs<ExtArgs>>): Prisma__GoodsReceivedNoteClient<$Result.GetResult<Prisma.$GoodsReceivedNotePayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first GoodsReceivedNote that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GoodsReceivedNoteFindFirstOrThrowArgs} args - Arguments to find a GoodsReceivedNote
+     * @example
+     * // Get one GoodsReceivedNote
+     * const goodsReceivedNote = await prisma.goodsReceivedNote.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends GoodsReceivedNoteFindFirstOrThrowArgs>(args?: SelectSubset<T, GoodsReceivedNoteFindFirstOrThrowArgs<ExtArgs>>): Prisma__GoodsReceivedNoteClient<$Result.GetResult<Prisma.$GoodsReceivedNotePayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more GoodsReceivedNotes that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GoodsReceivedNoteFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all GoodsReceivedNotes
+     * const goodsReceivedNotes = await prisma.goodsReceivedNote.findMany()
+     * 
+     * // Get first 10 GoodsReceivedNotes
+     * const goodsReceivedNotes = await prisma.goodsReceivedNote.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const goodsReceivedNoteWithIdOnly = await prisma.goodsReceivedNote.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends GoodsReceivedNoteFindManyArgs>(args?: SelectSubset<T, GoodsReceivedNoteFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GoodsReceivedNotePayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a GoodsReceivedNote.
+     * @param {GoodsReceivedNoteCreateArgs} args - Arguments to create a GoodsReceivedNote.
+     * @example
+     * // Create one GoodsReceivedNote
+     * const GoodsReceivedNote = await prisma.goodsReceivedNote.create({
+     *   data: {
+     *     // ... data to create a GoodsReceivedNote
+     *   }
+     * })
+     * 
+     */
+    create<T extends GoodsReceivedNoteCreateArgs>(args: SelectSubset<T, GoodsReceivedNoteCreateArgs<ExtArgs>>): Prisma__GoodsReceivedNoteClient<$Result.GetResult<Prisma.$GoodsReceivedNotePayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many GoodsReceivedNotes.
+     * @param {GoodsReceivedNoteCreateManyArgs} args - Arguments to create many GoodsReceivedNotes.
+     * @example
+     * // Create many GoodsReceivedNotes
+     * const goodsReceivedNote = await prisma.goodsReceivedNote.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends GoodsReceivedNoteCreateManyArgs>(args?: SelectSubset<T, GoodsReceivedNoteCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many GoodsReceivedNotes and returns the data saved in the database.
+     * @param {GoodsReceivedNoteCreateManyAndReturnArgs} args - Arguments to create many GoodsReceivedNotes.
+     * @example
+     * // Create many GoodsReceivedNotes
+     * const goodsReceivedNote = await prisma.goodsReceivedNote.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many GoodsReceivedNotes and only return the `id`
+     * const goodsReceivedNoteWithIdOnly = await prisma.goodsReceivedNote.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends GoodsReceivedNoteCreateManyAndReturnArgs>(args?: SelectSubset<T, GoodsReceivedNoteCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GoodsReceivedNotePayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a GoodsReceivedNote.
+     * @param {GoodsReceivedNoteDeleteArgs} args - Arguments to delete one GoodsReceivedNote.
+     * @example
+     * // Delete one GoodsReceivedNote
+     * const GoodsReceivedNote = await prisma.goodsReceivedNote.delete({
+     *   where: {
+     *     // ... filter to delete one GoodsReceivedNote
+     *   }
+     * })
+     * 
+     */
+    delete<T extends GoodsReceivedNoteDeleteArgs>(args: SelectSubset<T, GoodsReceivedNoteDeleteArgs<ExtArgs>>): Prisma__GoodsReceivedNoteClient<$Result.GetResult<Prisma.$GoodsReceivedNotePayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one GoodsReceivedNote.
+     * @param {GoodsReceivedNoteUpdateArgs} args - Arguments to update one GoodsReceivedNote.
+     * @example
+     * // Update one GoodsReceivedNote
+     * const goodsReceivedNote = await prisma.goodsReceivedNote.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends GoodsReceivedNoteUpdateArgs>(args: SelectSubset<T, GoodsReceivedNoteUpdateArgs<ExtArgs>>): Prisma__GoodsReceivedNoteClient<$Result.GetResult<Prisma.$GoodsReceivedNotePayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more GoodsReceivedNotes.
+     * @param {GoodsReceivedNoteDeleteManyArgs} args - Arguments to filter GoodsReceivedNotes to delete.
+     * @example
+     * // Delete a few GoodsReceivedNotes
+     * const { count } = await prisma.goodsReceivedNote.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends GoodsReceivedNoteDeleteManyArgs>(args?: SelectSubset<T, GoodsReceivedNoteDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more GoodsReceivedNotes.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GoodsReceivedNoteUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many GoodsReceivedNotes
+     * const goodsReceivedNote = await prisma.goodsReceivedNote.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends GoodsReceivedNoteUpdateManyArgs>(args: SelectSubset<T, GoodsReceivedNoteUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one GoodsReceivedNote.
+     * @param {GoodsReceivedNoteUpsertArgs} args - Arguments to update or create a GoodsReceivedNote.
+     * @example
+     * // Update or create a GoodsReceivedNote
+     * const goodsReceivedNote = await prisma.goodsReceivedNote.upsert({
+     *   create: {
+     *     // ... data to create a GoodsReceivedNote
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the GoodsReceivedNote we want to update
+     *   }
+     * })
+     */
+    upsert<T extends GoodsReceivedNoteUpsertArgs>(args: SelectSubset<T, GoodsReceivedNoteUpsertArgs<ExtArgs>>): Prisma__GoodsReceivedNoteClient<$Result.GetResult<Prisma.$GoodsReceivedNotePayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of GoodsReceivedNotes.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GoodsReceivedNoteCountArgs} args - Arguments to filter GoodsReceivedNotes to count.
+     * @example
+     * // Count the number of GoodsReceivedNotes
+     * const count = await prisma.goodsReceivedNote.count({
+     *   where: {
+     *     // ... the filter for the GoodsReceivedNotes we want to count
+     *   }
+     * })
+    **/
+    count<T extends GoodsReceivedNoteCountArgs>(
+      args?: Subset<T, GoodsReceivedNoteCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], GoodsReceivedNoteCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a GoodsReceivedNote.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GoodsReceivedNoteAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends GoodsReceivedNoteAggregateArgs>(args: Subset<T, GoodsReceivedNoteAggregateArgs>): Prisma.PrismaPromise<GetGoodsReceivedNoteAggregateType<T>>
+
+    /**
+     * Group by GoodsReceivedNote.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GoodsReceivedNoteGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends GoodsReceivedNoteGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: GoodsReceivedNoteGroupByArgs['orderBy'] }
+        : { orderBy?: GoodsReceivedNoteGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, GoodsReceivedNoteGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetGoodsReceivedNoteGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the GoodsReceivedNote model
+   */
+  readonly fields: GoodsReceivedNoteFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for GoodsReceivedNote.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__GoodsReceivedNoteClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    purchaseOrder<T extends PurchaseOrderDefaultArgs<ExtArgs> = {}>(args?: Subset<T, PurchaseOrderDefaultArgs<ExtArgs>>): Prisma__PurchaseOrderClient<$Result.GetResult<Prisma.$PurchaseOrderPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    supplier<T extends SupplierDefaultArgs<ExtArgs> = {}>(args?: Subset<T, SupplierDefaultArgs<ExtArgs>>): Prisma__SupplierClient<$Result.GetResult<Prisma.$SupplierPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    receivedBy<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    invoices<T extends GoodsReceivedNote$invoicesArgs<ExtArgs> = {}>(args?: Subset<T, GoodsReceivedNote$invoicesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$InvoicePayload<ExtArgs>, T, "findMany"> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the GoodsReceivedNote model
+   */ 
+  interface GoodsReceivedNoteFieldRefs {
+    readonly id: FieldRef<"GoodsReceivedNote", 'String'>
+    readonly grnNumber: FieldRef<"GoodsReceivedNote", 'String'>
+    readonly schoolId: FieldRef<"GoodsReceivedNote", 'String'>
+    readonly purchaseOrderId: FieldRef<"GoodsReceivedNote", 'String'>
+    readonly supplierId: FieldRef<"GoodsReceivedNote", 'String'>
+    readonly receivedDate: FieldRef<"GoodsReceivedNote", 'DateTime'>
+    readonly receivedById: FieldRef<"GoodsReceivedNote", 'String'>
+    readonly deliveryNoteNumber: FieldRef<"GoodsReceivedNote", 'String'>
+    readonly status: FieldRef<"GoodsReceivedNote", 'String'>
+    readonly items: FieldRef<"GoodsReceivedNote", 'Json'>
+    readonly totalValueReceived: FieldRef<"GoodsReceivedNote", 'Float'>
+    readonly notes: FieldRef<"GoodsReceivedNote", 'String'>
+    readonly createdAt: FieldRef<"GoodsReceivedNote", 'DateTime'>
+    readonly updatedAt: FieldRef<"GoodsReceivedNote", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * GoodsReceivedNote findUnique
+   */
+  export type GoodsReceivedNoteFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GoodsReceivedNote
+     */
+    select?: GoodsReceivedNoteSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GoodsReceivedNoteInclude<ExtArgs> | null
+    /**
+     * Filter, which GoodsReceivedNote to fetch.
+     */
+    where: GoodsReceivedNoteWhereUniqueInput
+  }
+
+  /**
+   * GoodsReceivedNote findUniqueOrThrow
+   */
+  export type GoodsReceivedNoteFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GoodsReceivedNote
+     */
+    select?: GoodsReceivedNoteSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GoodsReceivedNoteInclude<ExtArgs> | null
+    /**
+     * Filter, which GoodsReceivedNote to fetch.
+     */
+    where: GoodsReceivedNoteWhereUniqueInput
+  }
+
+  /**
+   * GoodsReceivedNote findFirst
+   */
+  export type GoodsReceivedNoteFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GoodsReceivedNote
+     */
+    select?: GoodsReceivedNoteSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GoodsReceivedNoteInclude<ExtArgs> | null
+    /**
+     * Filter, which GoodsReceivedNote to fetch.
+     */
+    where?: GoodsReceivedNoteWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of GoodsReceivedNotes to fetch.
+     */
+    orderBy?: GoodsReceivedNoteOrderByWithRelationInput | GoodsReceivedNoteOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for GoodsReceivedNotes.
+     */
+    cursor?: GoodsReceivedNoteWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` GoodsReceivedNotes from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` GoodsReceivedNotes.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of GoodsReceivedNotes.
+     */
+    distinct?: GoodsReceivedNoteScalarFieldEnum | GoodsReceivedNoteScalarFieldEnum[]
+  }
+
+  /**
+   * GoodsReceivedNote findFirstOrThrow
+   */
+  export type GoodsReceivedNoteFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GoodsReceivedNote
+     */
+    select?: GoodsReceivedNoteSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GoodsReceivedNoteInclude<ExtArgs> | null
+    /**
+     * Filter, which GoodsReceivedNote to fetch.
+     */
+    where?: GoodsReceivedNoteWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of GoodsReceivedNotes to fetch.
+     */
+    orderBy?: GoodsReceivedNoteOrderByWithRelationInput | GoodsReceivedNoteOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for GoodsReceivedNotes.
+     */
+    cursor?: GoodsReceivedNoteWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` GoodsReceivedNotes from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` GoodsReceivedNotes.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of GoodsReceivedNotes.
+     */
+    distinct?: GoodsReceivedNoteScalarFieldEnum | GoodsReceivedNoteScalarFieldEnum[]
+  }
+
+  /**
+   * GoodsReceivedNote findMany
+   */
+  export type GoodsReceivedNoteFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GoodsReceivedNote
+     */
+    select?: GoodsReceivedNoteSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GoodsReceivedNoteInclude<ExtArgs> | null
+    /**
+     * Filter, which GoodsReceivedNotes to fetch.
+     */
+    where?: GoodsReceivedNoteWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of GoodsReceivedNotes to fetch.
+     */
+    orderBy?: GoodsReceivedNoteOrderByWithRelationInput | GoodsReceivedNoteOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing GoodsReceivedNotes.
+     */
+    cursor?: GoodsReceivedNoteWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` GoodsReceivedNotes from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` GoodsReceivedNotes.
+     */
+    skip?: number
+    distinct?: GoodsReceivedNoteScalarFieldEnum | GoodsReceivedNoteScalarFieldEnum[]
+  }
+
+  /**
+   * GoodsReceivedNote create
+   */
+  export type GoodsReceivedNoteCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GoodsReceivedNote
+     */
+    select?: GoodsReceivedNoteSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GoodsReceivedNoteInclude<ExtArgs> | null
+    /**
+     * The data needed to create a GoodsReceivedNote.
+     */
+    data: XOR<GoodsReceivedNoteCreateInput, GoodsReceivedNoteUncheckedCreateInput>
+  }
+
+  /**
+   * GoodsReceivedNote createMany
+   */
+  export type GoodsReceivedNoteCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many GoodsReceivedNotes.
+     */
+    data: GoodsReceivedNoteCreateManyInput | GoodsReceivedNoteCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * GoodsReceivedNote createManyAndReturn
+   */
+  export type GoodsReceivedNoteCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GoodsReceivedNote
+     */
+    select?: GoodsReceivedNoteSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many GoodsReceivedNotes.
+     */
+    data: GoodsReceivedNoteCreateManyInput | GoodsReceivedNoteCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GoodsReceivedNoteIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * GoodsReceivedNote update
+   */
+  export type GoodsReceivedNoteUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GoodsReceivedNote
+     */
+    select?: GoodsReceivedNoteSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GoodsReceivedNoteInclude<ExtArgs> | null
+    /**
+     * The data needed to update a GoodsReceivedNote.
+     */
+    data: XOR<GoodsReceivedNoteUpdateInput, GoodsReceivedNoteUncheckedUpdateInput>
+    /**
+     * Choose, which GoodsReceivedNote to update.
+     */
+    where: GoodsReceivedNoteWhereUniqueInput
+  }
+
+  /**
+   * GoodsReceivedNote updateMany
+   */
+  export type GoodsReceivedNoteUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update GoodsReceivedNotes.
+     */
+    data: XOR<GoodsReceivedNoteUpdateManyMutationInput, GoodsReceivedNoteUncheckedUpdateManyInput>
+    /**
+     * Filter which GoodsReceivedNotes to update
+     */
+    where?: GoodsReceivedNoteWhereInput
+  }
+
+  /**
+   * GoodsReceivedNote upsert
+   */
+  export type GoodsReceivedNoteUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GoodsReceivedNote
+     */
+    select?: GoodsReceivedNoteSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GoodsReceivedNoteInclude<ExtArgs> | null
+    /**
+     * The filter to search for the GoodsReceivedNote to update in case it exists.
+     */
+    where: GoodsReceivedNoteWhereUniqueInput
+    /**
+     * In case the GoodsReceivedNote found by the `where` argument doesn't exist, create a new GoodsReceivedNote with this data.
+     */
+    create: XOR<GoodsReceivedNoteCreateInput, GoodsReceivedNoteUncheckedCreateInput>
+    /**
+     * In case the GoodsReceivedNote was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<GoodsReceivedNoteUpdateInput, GoodsReceivedNoteUncheckedUpdateInput>
+  }
+
+  /**
+   * GoodsReceivedNote delete
+   */
+  export type GoodsReceivedNoteDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GoodsReceivedNote
+     */
+    select?: GoodsReceivedNoteSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GoodsReceivedNoteInclude<ExtArgs> | null
+    /**
+     * Filter which GoodsReceivedNote to delete.
+     */
+    where: GoodsReceivedNoteWhereUniqueInput
+  }
+
+  /**
+   * GoodsReceivedNote deleteMany
+   */
+  export type GoodsReceivedNoteDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which GoodsReceivedNotes to delete
+     */
+    where?: GoodsReceivedNoteWhereInput
+  }
+
+  /**
+   * GoodsReceivedNote.invoices
+   */
+  export type GoodsReceivedNote$invoicesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Invoice
+     */
+    select?: InvoiceSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InvoiceInclude<ExtArgs> | null
+    where?: InvoiceWhereInput
+    orderBy?: InvoiceOrderByWithRelationInput | InvoiceOrderByWithRelationInput[]
+    cursor?: InvoiceWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: InvoiceScalarFieldEnum | InvoiceScalarFieldEnum[]
+  }
+
+  /**
+   * GoodsReceivedNote without action
+   */
+  export type GoodsReceivedNoteDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GoodsReceivedNote
+     */
+    select?: GoodsReceivedNoteSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GoodsReceivedNoteInclude<ExtArgs> | null
   }
 
 
@@ -110939,8 +112516,15 @@ export namespace Prisma {
     id: string | null
     invoiceNo: string | null
     supplierId: string | null
+    purchaseOrderId: string | null
+    grnId: string | null
     amount: number | null
     status: string | null
+    matchingStatus: string | null
+    matchingNotes: string | null
+    approvedById: string | null
+    approvedAt: Date | null
+    journalEntryId: string | null
     dueDate: Date | null
     schoolId: string | null
     createdAt: Date | null
@@ -110951,8 +112535,15 @@ export namespace Prisma {
     id: string | null
     invoiceNo: string | null
     supplierId: string | null
+    purchaseOrderId: string | null
+    grnId: string | null
     amount: number | null
     status: string | null
+    matchingStatus: string | null
+    matchingNotes: string | null
+    approvedById: string | null
+    approvedAt: Date | null
+    journalEntryId: string | null
     dueDate: Date | null
     schoolId: string | null
     createdAt: Date | null
@@ -110963,8 +112554,16 @@ export namespace Prisma {
     id: number
     invoiceNo: number
     supplierId: number
+    purchaseOrderId: number
+    grnId: number
     amount: number
+    items: number
     status: number
+    matchingStatus: number
+    matchingNotes: number
+    approvedById: number
+    approvedAt: number
+    journalEntryId: number
     dueDate: number
     schoolId: number
     createdAt: number
@@ -110985,8 +112584,15 @@ export namespace Prisma {
     id?: true
     invoiceNo?: true
     supplierId?: true
+    purchaseOrderId?: true
+    grnId?: true
     amount?: true
     status?: true
+    matchingStatus?: true
+    matchingNotes?: true
+    approvedById?: true
+    approvedAt?: true
+    journalEntryId?: true
     dueDate?: true
     schoolId?: true
     createdAt?: true
@@ -110997,8 +112603,15 @@ export namespace Prisma {
     id?: true
     invoiceNo?: true
     supplierId?: true
+    purchaseOrderId?: true
+    grnId?: true
     amount?: true
     status?: true
+    matchingStatus?: true
+    matchingNotes?: true
+    approvedById?: true
+    approvedAt?: true
+    journalEntryId?: true
     dueDate?: true
     schoolId?: true
     createdAt?: true
@@ -111009,8 +112622,16 @@ export namespace Prisma {
     id?: true
     invoiceNo?: true
     supplierId?: true
+    purchaseOrderId?: true
+    grnId?: true
     amount?: true
+    items?: true
     status?: true
+    matchingStatus?: true
+    matchingNotes?: true
+    approvedById?: true
+    approvedAt?: true
+    journalEntryId?: true
     dueDate?: true
     schoolId?: true
     createdAt?: true
@@ -111108,8 +112729,16 @@ export namespace Prisma {
     id: string
     invoiceNo: string
     supplierId: string
+    purchaseOrderId: string | null
+    grnId: string | null
     amount: number
+    items: JsonValue | null
     status: string
+    matchingStatus: string
+    matchingNotes: string | null
+    approvedById: string | null
+    approvedAt: Date | null
+    journalEntryId: string | null
     dueDate: Date
     schoolId: string
     createdAt: Date
@@ -111139,34 +112768,62 @@ export namespace Prisma {
     id?: boolean
     invoiceNo?: boolean
     supplierId?: boolean
+    purchaseOrderId?: boolean
+    grnId?: boolean
     amount?: boolean
+    items?: boolean
     status?: boolean
+    matchingStatus?: boolean
+    matchingNotes?: boolean
+    approvedById?: boolean
+    approvedAt?: boolean
+    journalEntryId?: boolean
     dueDate?: boolean
     schoolId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     supplier?: boolean | SupplierDefaultArgs<ExtArgs>
+    purchaseOrder?: boolean | Invoice$purchaseOrderArgs<ExtArgs>
+    grn?: boolean | Invoice$grnArgs<ExtArgs>
   }, ExtArgs["result"]["invoice"]>
 
   export type InvoiceSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     invoiceNo?: boolean
     supplierId?: boolean
+    purchaseOrderId?: boolean
+    grnId?: boolean
     amount?: boolean
+    items?: boolean
     status?: boolean
+    matchingStatus?: boolean
+    matchingNotes?: boolean
+    approvedById?: boolean
+    approvedAt?: boolean
+    journalEntryId?: boolean
     dueDate?: boolean
     schoolId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     supplier?: boolean | SupplierDefaultArgs<ExtArgs>
+    purchaseOrder?: boolean | Invoice$purchaseOrderArgs<ExtArgs>
+    grn?: boolean | Invoice$grnArgs<ExtArgs>
   }, ExtArgs["result"]["invoice"]>
 
   export type InvoiceSelectScalar = {
     id?: boolean
     invoiceNo?: boolean
     supplierId?: boolean
+    purchaseOrderId?: boolean
+    grnId?: boolean
     amount?: boolean
+    items?: boolean
     status?: boolean
+    matchingStatus?: boolean
+    matchingNotes?: boolean
+    approvedById?: boolean
+    approvedAt?: boolean
+    journalEntryId?: boolean
     dueDate?: boolean
     schoolId?: boolean
     createdAt?: boolean
@@ -111175,22 +112832,36 @@ export namespace Prisma {
 
   export type InvoiceInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     supplier?: boolean | SupplierDefaultArgs<ExtArgs>
+    purchaseOrder?: boolean | Invoice$purchaseOrderArgs<ExtArgs>
+    grn?: boolean | Invoice$grnArgs<ExtArgs>
   }
   export type InvoiceIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     supplier?: boolean | SupplierDefaultArgs<ExtArgs>
+    purchaseOrder?: boolean | Invoice$purchaseOrderArgs<ExtArgs>
+    grn?: boolean | Invoice$grnArgs<ExtArgs>
   }
 
   export type $InvoicePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Invoice"
     objects: {
       supplier: Prisma.$SupplierPayload<ExtArgs>
+      purchaseOrder: Prisma.$PurchaseOrderPayload<ExtArgs> | null
+      grn: Prisma.$GoodsReceivedNotePayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
       invoiceNo: string
       supplierId: string
+      purchaseOrderId: string | null
+      grnId: string | null
       amount: number
+      items: Prisma.JsonValue | null
       status: string
+      matchingStatus: string
+      matchingNotes: string | null
+      approvedById: string | null
+      approvedAt: Date | null
+      journalEntryId: string | null
       dueDate: Date
       schoolId: string
       createdAt: Date
@@ -111560,6 +113231,8 @@ export namespace Prisma {
   export interface Prisma__InvoiceClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     supplier<T extends SupplierDefaultArgs<ExtArgs> = {}>(args?: Subset<T, SupplierDefaultArgs<ExtArgs>>): Prisma__SupplierClient<$Result.GetResult<Prisma.$SupplierPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    purchaseOrder<T extends Invoice$purchaseOrderArgs<ExtArgs> = {}>(args?: Subset<T, Invoice$purchaseOrderArgs<ExtArgs>>): Prisma__PurchaseOrderClient<$Result.GetResult<Prisma.$PurchaseOrderPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    grn<T extends Invoice$grnArgs<ExtArgs> = {}>(args?: Subset<T, Invoice$grnArgs<ExtArgs>>): Prisma__GoodsReceivedNoteClient<$Result.GetResult<Prisma.$GoodsReceivedNotePayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -111592,8 +113265,16 @@ export namespace Prisma {
     readonly id: FieldRef<"Invoice", 'String'>
     readonly invoiceNo: FieldRef<"Invoice", 'String'>
     readonly supplierId: FieldRef<"Invoice", 'String'>
+    readonly purchaseOrderId: FieldRef<"Invoice", 'String'>
+    readonly grnId: FieldRef<"Invoice", 'String'>
     readonly amount: FieldRef<"Invoice", 'Float'>
+    readonly items: FieldRef<"Invoice", 'Json'>
     readonly status: FieldRef<"Invoice", 'String'>
+    readonly matchingStatus: FieldRef<"Invoice", 'String'>
+    readonly matchingNotes: FieldRef<"Invoice", 'String'>
+    readonly approvedById: FieldRef<"Invoice", 'String'>
+    readonly approvedAt: FieldRef<"Invoice", 'DateTime'>
+    readonly journalEntryId: FieldRef<"Invoice", 'String'>
     readonly dueDate: FieldRef<"Invoice", 'DateTime'>
     readonly schoolId: FieldRef<"Invoice", 'String'>
     readonly createdAt: FieldRef<"Invoice", 'DateTime'>
@@ -111913,6 +113594,36 @@ export namespace Prisma {
      * Filter which Invoices to delete
      */
     where?: InvoiceWhereInput
+  }
+
+  /**
+   * Invoice.purchaseOrder
+   */
+  export type Invoice$purchaseOrderArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PurchaseOrder
+     */
+    select?: PurchaseOrderSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PurchaseOrderInclude<ExtArgs> | null
+    where?: PurchaseOrderWhereInput
+  }
+
+  /**
+   * Invoice.grn
+   */
+  export type Invoice$grnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GoodsReceivedNote
+     */
+    select?: GoodsReceivedNoteSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GoodsReceivedNoteInclude<ExtArgs> | null
+    where?: GoodsReceivedNoteWhereInput
   }
 
   /**
@@ -116118,6 +117829,8 @@ export namespace Prisma {
     quantity: number | null
     purchasePrice: number | null
     depreciationRate: number | null
+    accumulatedDepreciation: number | null
+    bookValue: number | null
     maintenanceInterval: number | null
   }
 
@@ -116125,6 +117838,8 @@ export namespace Prisma {
     quantity: number | null
     purchasePrice: number | null
     depreciationRate: number | null
+    accumulatedDepreciation: number | null
+    bookValue: number | null
     maintenanceInterval: number | null
   }
 
@@ -116145,6 +117860,11 @@ export namespace Prisma {
     supplierName: string | null
     invoiceNumber: string | null
     depreciationRate: number | null
+    accumulatedDepreciation: number | null
+    bookValue: number | null
+    lastDepreciationDate: Date | null
+    coaExpenseCode: string | null
+    coaAccumulatedCode: string | null
     warrantyExpiry: Date | null
     photoUrl: string | null
     custodianId: string | null
@@ -116181,6 +117901,11 @@ export namespace Prisma {
     supplierName: string | null
     invoiceNumber: string | null
     depreciationRate: number | null
+    accumulatedDepreciation: number | null
+    bookValue: number | null
+    lastDepreciationDate: Date | null
+    coaExpenseCode: string | null
+    coaAccumulatedCode: string | null
     warrantyExpiry: Date | null
     photoUrl: string | null
     custodianId: string | null
@@ -116217,6 +117942,11 @@ export namespace Prisma {
     supplierName: number
     invoiceNumber: number
     depreciationRate: number
+    accumulatedDepreciation: number
+    bookValue: number
+    lastDepreciationDate: number
+    coaExpenseCode: number
+    coaAccumulatedCode: number
     warrantyExpiry: number
     photoUrl: number
     custodianId: number
@@ -116243,6 +117973,8 @@ export namespace Prisma {
     quantity?: true
     purchasePrice?: true
     depreciationRate?: true
+    accumulatedDepreciation?: true
+    bookValue?: true
     maintenanceInterval?: true
   }
 
@@ -116250,6 +117982,8 @@ export namespace Prisma {
     quantity?: true
     purchasePrice?: true
     depreciationRate?: true
+    accumulatedDepreciation?: true
+    bookValue?: true
     maintenanceInterval?: true
   }
 
@@ -116270,6 +118004,11 @@ export namespace Prisma {
     supplierName?: true
     invoiceNumber?: true
     depreciationRate?: true
+    accumulatedDepreciation?: true
+    bookValue?: true
+    lastDepreciationDate?: true
+    coaExpenseCode?: true
+    coaAccumulatedCode?: true
     warrantyExpiry?: true
     photoUrl?: true
     custodianId?: true
@@ -116306,6 +118045,11 @@ export namespace Prisma {
     supplierName?: true
     invoiceNumber?: true
     depreciationRate?: true
+    accumulatedDepreciation?: true
+    bookValue?: true
+    lastDepreciationDate?: true
+    coaExpenseCode?: true
+    coaAccumulatedCode?: true
     warrantyExpiry?: true
     photoUrl?: true
     custodianId?: true
@@ -116342,6 +118086,11 @@ export namespace Prisma {
     supplierName?: true
     invoiceNumber?: true
     depreciationRate?: true
+    accumulatedDepreciation?: true
+    bookValue?: true
+    lastDepreciationDate?: true
+    coaExpenseCode?: true
+    coaAccumulatedCode?: true
     warrantyExpiry?: true
     photoUrl?: true
     custodianId?: true
@@ -116466,6 +118215,11 @@ export namespace Prisma {
     supplierName: string | null
     invoiceNumber: string | null
     depreciationRate: number | null
+    accumulatedDepreciation: number | null
+    bookValue: number | null
+    lastDepreciationDate: Date | null
+    coaExpenseCode: string | null
+    coaAccumulatedCode: string | null
     warrantyExpiry: Date | null
     photoUrl: string | null
     custodianId: string | null
@@ -116522,6 +118276,11 @@ export namespace Prisma {
     supplierName?: boolean
     invoiceNumber?: boolean
     depreciationRate?: boolean
+    accumulatedDepreciation?: boolean
+    bookValue?: boolean
+    lastDepreciationDate?: boolean
+    coaExpenseCode?: boolean
+    coaAccumulatedCode?: boolean
     warrantyExpiry?: boolean
     photoUrl?: boolean
     custodianId?: boolean
@@ -116540,6 +118299,7 @@ export namespace Prisma {
     attachments?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    depreciations?: boolean | Asset$depreciationsArgs<ExtArgs>
     custodian?: boolean | Asset$custodianArgs<ExtArgs>
     registeredBy?: boolean | Asset$registeredByArgs<ExtArgs>
     school?: boolean | SchoolDefaultArgs<ExtArgs>
@@ -116565,6 +118325,11 @@ export namespace Prisma {
     supplierName?: boolean
     invoiceNumber?: boolean
     depreciationRate?: boolean
+    accumulatedDepreciation?: boolean
+    bookValue?: boolean
+    lastDepreciationDate?: boolean
+    coaExpenseCode?: boolean
+    coaAccumulatedCode?: boolean
     warrantyExpiry?: boolean
     photoUrl?: boolean
     custodianId?: boolean
@@ -116605,6 +118370,11 @@ export namespace Prisma {
     supplierName?: boolean
     invoiceNumber?: boolean
     depreciationRate?: boolean
+    accumulatedDepreciation?: boolean
+    bookValue?: boolean
+    lastDepreciationDate?: boolean
+    coaExpenseCode?: boolean
+    coaAccumulatedCode?: boolean
     warrantyExpiry?: boolean
     photoUrl?: boolean
     custodianId?: boolean
@@ -116626,6 +118396,7 @@ export namespace Prisma {
   }
 
   export type AssetInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    depreciations?: boolean | Asset$depreciationsArgs<ExtArgs>
     custodian?: boolean | Asset$custodianArgs<ExtArgs>
     registeredBy?: boolean | Asset$registeredByArgs<ExtArgs>
     school?: boolean | SchoolDefaultArgs<ExtArgs>
@@ -116642,6 +118413,7 @@ export namespace Prisma {
   export type $AssetPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Asset"
     objects: {
+      depreciations: Prisma.$AssetDepreciationPayload<ExtArgs>[]
       custodian: Prisma.$UserPayload<ExtArgs> | null
       registeredBy: Prisma.$UserPayload<ExtArgs> | null
       school: Prisma.$SchoolPayload<ExtArgs>
@@ -116665,6 +118437,11 @@ export namespace Prisma {
       supplierName: string | null
       invoiceNumber: string | null
       depreciationRate: number | null
+      accumulatedDepreciation: number | null
+      bookValue: number | null
+      lastDepreciationDate: Date | null
+      coaExpenseCode: string | null
+      coaAccumulatedCode: string | null
       warrantyExpiry: Date | null
       photoUrl: string | null
       custodianId: string | null
@@ -117047,6 +118824,7 @@ export namespace Prisma {
    */
   export interface Prisma__AssetClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
+    depreciations<T extends Asset$depreciationsArgs<ExtArgs> = {}>(args?: Subset<T, Asset$depreciationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AssetDepreciationPayload<ExtArgs>, T, "findMany"> | Null>
     custodian<T extends Asset$custodianArgs<ExtArgs> = {}>(args?: Subset<T, Asset$custodianArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     registeredBy<T extends Asset$registeredByArgs<ExtArgs> = {}>(args?: Subset<T, Asset$registeredByArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     school<T extends SchoolDefaultArgs<ExtArgs> = {}>(args?: Subset<T, SchoolDefaultArgs<ExtArgs>>): Prisma__SchoolClient<$Result.GetResult<Prisma.$SchoolPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
@@ -117097,6 +118875,11 @@ export namespace Prisma {
     readonly supplierName: FieldRef<"Asset", 'String'>
     readonly invoiceNumber: FieldRef<"Asset", 'String'>
     readonly depreciationRate: FieldRef<"Asset", 'Float'>
+    readonly accumulatedDepreciation: FieldRef<"Asset", 'Float'>
+    readonly bookValue: FieldRef<"Asset", 'Float'>
+    readonly lastDepreciationDate: FieldRef<"Asset", 'DateTime'>
+    readonly coaExpenseCode: FieldRef<"Asset", 'String'>
+    readonly coaAccumulatedCode: FieldRef<"Asset", 'String'>
     readonly warrantyExpiry: FieldRef<"Asset", 'DateTime'>
     readonly photoUrl: FieldRef<"Asset", 'String'>
     readonly custodianId: FieldRef<"Asset", 'String'>
@@ -117433,6 +119216,26 @@ export namespace Prisma {
   }
 
   /**
+   * Asset.depreciations
+   */
+  export type Asset$depreciationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AssetDepreciation
+     */
+    select?: AssetDepreciationSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AssetDepreciationInclude<ExtArgs> | null
+    where?: AssetDepreciationWhereInput
+    orderBy?: AssetDepreciationOrderByWithRelationInput | AssetDepreciationOrderByWithRelationInput[]
+    cursor?: AssetDepreciationWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: AssetDepreciationScalarFieldEnum | AssetDepreciationScalarFieldEnum[]
+  }
+
+  /**
    * Asset.custodian
    */
   export type Asset$custodianArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -117514,6 +119317,1109 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: AssetInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model AssetDepreciation
+   */
+
+  export type AggregateAssetDepreciation = {
+    _count: AssetDepreciationCountAggregateOutputType | null
+    _avg: AssetDepreciationAvgAggregateOutputType | null
+    _sum: AssetDepreciationSumAggregateOutputType | null
+    _min: AssetDepreciationMinAggregateOutputType | null
+    _max: AssetDepreciationMaxAggregateOutputType | null
+  }
+
+  export type AssetDepreciationAvgAggregateOutputType = {
+    fiscalYear: number | null
+    depreciationAmount: number | null
+    bookValueBefore: number | null
+    bookValueAfter: number | null
+    rateUsed: number | null
+  }
+
+  export type AssetDepreciationSumAggregateOutputType = {
+    fiscalYear: number | null
+    depreciationAmount: number | null
+    bookValueBefore: number | null
+    bookValueAfter: number | null
+    rateUsed: number | null
+  }
+
+  export type AssetDepreciationMinAggregateOutputType = {
+    id: string | null
+    schoolId: string | null
+    assetId: string | null
+    date: Date | null
+    fiscalYear: number | null
+    fiscalPeriod: string | null
+    depreciationAmount: number | null
+    bookValueBefore: number | null
+    bookValueAfter: number | null
+    rateUsed: number | null
+    method: string | null
+    journalEntryId: string | null
+    processedById: string | null
+    notes: string | null
+    createdAt: Date | null
+  }
+
+  export type AssetDepreciationMaxAggregateOutputType = {
+    id: string | null
+    schoolId: string | null
+    assetId: string | null
+    date: Date | null
+    fiscalYear: number | null
+    fiscalPeriod: string | null
+    depreciationAmount: number | null
+    bookValueBefore: number | null
+    bookValueAfter: number | null
+    rateUsed: number | null
+    method: string | null
+    journalEntryId: string | null
+    processedById: string | null
+    notes: string | null
+    createdAt: Date | null
+  }
+
+  export type AssetDepreciationCountAggregateOutputType = {
+    id: number
+    schoolId: number
+    assetId: number
+    date: number
+    fiscalYear: number
+    fiscalPeriod: number
+    depreciationAmount: number
+    bookValueBefore: number
+    bookValueAfter: number
+    rateUsed: number
+    method: number
+    journalEntryId: number
+    processedById: number
+    notes: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type AssetDepreciationAvgAggregateInputType = {
+    fiscalYear?: true
+    depreciationAmount?: true
+    bookValueBefore?: true
+    bookValueAfter?: true
+    rateUsed?: true
+  }
+
+  export type AssetDepreciationSumAggregateInputType = {
+    fiscalYear?: true
+    depreciationAmount?: true
+    bookValueBefore?: true
+    bookValueAfter?: true
+    rateUsed?: true
+  }
+
+  export type AssetDepreciationMinAggregateInputType = {
+    id?: true
+    schoolId?: true
+    assetId?: true
+    date?: true
+    fiscalYear?: true
+    fiscalPeriod?: true
+    depreciationAmount?: true
+    bookValueBefore?: true
+    bookValueAfter?: true
+    rateUsed?: true
+    method?: true
+    journalEntryId?: true
+    processedById?: true
+    notes?: true
+    createdAt?: true
+  }
+
+  export type AssetDepreciationMaxAggregateInputType = {
+    id?: true
+    schoolId?: true
+    assetId?: true
+    date?: true
+    fiscalYear?: true
+    fiscalPeriod?: true
+    depreciationAmount?: true
+    bookValueBefore?: true
+    bookValueAfter?: true
+    rateUsed?: true
+    method?: true
+    journalEntryId?: true
+    processedById?: true
+    notes?: true
+    createdAt?: true
+  }
+
+  export type AssetDepreciationCountAggregateInputType = {
+    id?: true
+    schoolId?: true
+    assetId?: true
+    date?: true
+    fiscalYear?: true
+    fiscalPeriod?: true
+    depreciationAmount?: true
+    bookValueBefore?: true
+    bookValueAfter?: true
+    rateUsed?: true
+    method?: true
+    journalEntryId?: true
+    processedById?: true
+    notes?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type AssetDepreciationAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AssetDepreciation to aggregate.
+     */
+    where?: AssetDepreciationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AssetDepreciations to fetch.
+     */
+    orderBy?: AssetDepreciationOrderByWithRelationInput | AssetDepreciationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: AssetDepreciationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AssetDepreciations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AssetDepreciations.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned AssetDepreciations
+    **/
+    _count?: true | AssetDepreciationCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: AssetDepreciationAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: AssetDepreciationSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: AssetDepreciationMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: AssetDepreciationMaxAggregateInputType
+  }
+
+  export type GetAssetDepreciationAggregateType<T extends AssetDepreciationAggregateArgs> = {
+        [P in keyof T & keyof AggregateAssetDepreciation]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateAssetDepreciation[P]>
+      : GetScalarType<T[P], AggregateAssetDepreciation[P]>
+  }
+
+
+
+
+  export type AssetDepreciationGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AssetDepreciationWhereInput
+    orderBy?: AssetDepreciationOrderByWithAggregationInput | AssetDepreciationOrderByWithAggregationInput[]
+    by: AssetDepreciationScalarFieldEnum[] | AssetDepreciationScalarFieldEnum
+    having?: AssetDepreciationScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: AssetDepreciationCountAggregateInputType | true
+    _avg?: AssetDepreciationAvgAggregateInputType
+    _sum?: AssetDepreciationSumAggregateInputType
+    _min?: AssetDepreciationMinAggregateInputType
+    _max?: AssetDepreciationMaxAggregateInputType
+  }
+
+  export type AssetDepreciationGroupByOutputType = {
+    id: string
+    schoolId: string
+    assetId: string
+    date: Date
+    fiscalYear: number
+    fiscalPeriod: string
+    depreciationAmount: number
+    bookValueBefore: number
+    bookValueAfter: number
+    rateUsed: number
+    method: string
+    journalEntryId: string | null
+    processedById: string | null
+    notes: string | null
+    createdAt: Date
+    _count: AssetDepreciationCountAggregateOutputType | null
+    _avg: AssetDepreciationAvgAggregateOutputType | null
+    _sum: AssetDepreciationSumAggregateOutputType | null
+    _min: AssetDepreciationMinAggregateOutputType | null
+    _max: AssetDepreciationMaxAggregateOutputType | null
+  }
+
+  type GetAssetDepreciationGroupByPayload<T extends AssetDepreciationGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<AssetDepreciationGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof AssetDepreciationGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], AssetDepreciationGroupByOutputType[P]>
+            : GetScalarType<T[P], AssetDepreciationGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type AssetDepreciationSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    schoolId?: boolean
+    assetId?: boolean
+    date?: boolean
+    fiscalYear?: boolean
+    fiscalPeriod?: boolean
+    depreciationAmount?: boolean
+    bookValueBefore?: boolean
+    bookValueAfter?: boolean
+    rateUsed?: boolean
+    method?: boolean
+    journalEntryId?: boolean
+    processedById?: boolean
+    notes?: boolean
+    createdAt?: boolean
+    asset?: boolean | AssetDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["assetDepreciation"]>
+
+  export type AssetDepreciationSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    schoolId?: boolean
+    assetId?: boolean
+    date?: boolean
+    fiscalYear?: boolean
+    fiscalPeriod?: boolean
+    depreciationAmount?: boolean
+    bookValueBefore?: boolean
+    bookValueAfter?: boolean
+    rateUsed?: boolean
+    method?: boolean
+    journalEntryId?: boolean
+    processedById?: boolean
+    notes?: boolean
+    createdAt?: boolean
+    asset?: boolean | AssetDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["assetDepreciation"]>
+
+  export type AssetDepreciationSelectScalar = {
+    id?: boolean
+    schoolId?: boolean
+    assetId?: boolean
+    date?: boolean
+    fiscalYear?: boolean
+    fiscalPeriod?: boolean
+    depreciationAmount?: boolean
+    bookValueBefore?: boolean
+    bookValueAfter?: boolean
+    rateUsed?: boolean
+    method?: boolean
+    journalEntryId?: boolean
+    processedById?: boolean
+    notes?: boolean
+    createdAt?: boolean
+  }
+
+  export type AssetDepreciationInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    asset?: boolean | AssetDefaultArgs<ExtArgs>
+  }
+  export type AssetDepreciationIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    asset?: boolean | AssetDefaultArgs<ExtArgs>
+  }
+
+  export type $AssetDepreciationPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "AssetDepreciation"
+    objects: {
+      asset: Prisma.$AssetPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      schoolId: string
+      assetId: string
+      date: Date
+      fiscalYear: number
+      fiscalPeriod: string
+      depreciationAmount: number
+      bookValueBefore: number
+      bookValueAfter: number
+      rateUsed: number
+      method: string
+      journalEntryId: string | null
+      processedById: string | null
+      notes: string | null
+      createdAt: Date
+    }, ExtArgs["result"]["assetDepreciation"]>
+    composites: {}
+  }
+
+  type AssetDepreciationGetPayload<S extends boolean | null | undefined | AssetDepreciationDefaultArgs> = $Result.GetResult<Prisma.$AssetDepreciationPayload, S>
+
+  type AssetDepreciationCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<AssetDepreciationFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: AssetDepreciationCountAggregateInputType | true
+    }
+
+  export interface AssetDepreciationDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['AssetDepreciation'], meta: { name: 'AssetDepreciation' } }
+    /**
+     * Find zero or one AssetDepreciation that matches the filter.
+     * @param {AssetDepreciationFindUniqueArgs} args - Arguments to find a AssetDepreciation
+     * @example
+     * // Get one AssetDepreciation
+     * const assetDepreciation = await prisma.assetDepreciation.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends AssetDepreciationFindUniqueArgs>(args: SelectSubset<T, AssetDepreciationFindUniqueArgs<ExtArgs>>): Prisma__AssetDepreciationClient<$Result.GetResult<Prisma.$AssetDepreciationPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one AssetDepreciation that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {AssetDepreciationFindUniqueOrThrowArgs} args - Arguments to find a AssetDepreciation
+     * @example
+     * // Get one AssetDepreciation
+     * const assetDepreciation = await prisma.assetDepreciation.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends AssetDepreciationFindUniqueOrThrowArgs>(args: SelectSubset<T, AssetDepreciationFindUniqueOrThrowArgs<ExtArgs>>): Prisma__AssetDepreciationClient<$Result.GetResult<Prisma.$AssetDepreciationPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first AssetDepreciation that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AssetDepreciationFindFirstArgs} args - Arguments to find a AssetDepreciation
+     * @example
+     * // Get one AssetDepreciation
+     * const assetDepreciation = await prisma.assetDepreciation.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends AssetDepreciationFindFirstArgs>(args?: SelectSubset<T, AssetDepreciationFindFirstArgs<ExtArgs>>): Prisma__AssetDepreciationClient<$Result.GetResult<Prisma.$AssetDepreciationPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first AssetDepreciation that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AssetDepreciationFindFirstOrThrowArgs} args - Arguments to find a AssetDepreciation
+     * @example
+     * // Get one AssetDepreciation
+     * const assetDepreciation = await prisma.assetDepreciation.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends AssetDepreciationFindFirstOrThrowArgs>(args?: SelectSubset<T, AssetDepreciationFindFirstOrThrowArgs<ExtArgs>>): Prisma__AssetDepreciationClient<$Result.GetResult<Prisma.$AssetDepreciationPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more AssetDepreciations that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AssetDepreciationFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all AssetDepreciations
+     * const assetDepreciations = await prisma.assetDepreciation.findMany()
+     * 
+     * // Get first 10 AssetDepreciations
+     * const assetDepreciations = await prisma.assetDepreciation.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const assetDepreciationWithIdOnly = await prisma.assetDepreciation.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends AssetDepreciationFindManyArgs>(args?: SelectSubset<T, AssetDepreciationFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AssetDepreciationPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a AssetDepreciation.
+     * @param {AssetDepreciationCreateArgs} args - Arguments to create a AssetDepreciation.
+     * @example
+     * // Create one AssetDepreciation
+     * const AssetDepreciation = await prisma.assetDepreciation.create({
+     *   data: {
+     *     // ... data to create a AssetDepreciation
+     *   }
+     * })
+     * 
+     */
+    create<T extends AssetDepreciationCreateArgs>(args: SelectSubset<T, AssetDepreciationCreateArgs<ExtArgs>>): Prisma__AssetDepreciationClient<$Result.GetResult<Prisma.$AssetDepreciationPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many AssetDepreciations.
+     * @param {AssetDepreciationCreateManyArgs} args - Arguments to create many AssetDepreciations.
+     * @example
+     * // Create many AssetDepreciations
+     * const assetDepreciation = await prisma.assetDepreciation.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends AssetDepreciationCreateManyArgs>(args?: SelectSubset<T, AssetDepreciationCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many AssetDepreciations and returns the data saved in the database.
+     * @param {AssetDepreciationCreateManyAndReturnArgs} args - Arguments to create many AssetDepreciations.
+     * @example
+     * // Create many AssetDepreciations
+     * const assetDepreciation = await prisma.assetDepreciation.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many AssetDepreciations and only return the `id`
+     * const assetDepreciationWithIdOnly = await prisma.assetDepreciation.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends AssetDepreciationCreateManyAndReturnArgs>(args?: SelectSubset<T, AssetDepreciationCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AssetDepreciationPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a AssetDepreciation.
+     * @param {AssetDepreciationDeleteArgs} args - Arguments to delete one AssetDepreciation.
+     * @example
+     * // Delete one AssetDepreciation
+     * const AssetDepreciation = await prisma.assetDepreciation.delete({
+     *   where: {
+     *     // ... filter to delete one AssetDepreciation
+     *   }
+     * })
+     * 
+     */
+    delete<T extends AssetDepreciationDeleteArgs>(args: SelectSubset<T, AssetDepreciationDeleteArgs<ExtArgs>>): Prisma__AssetDepreciationClient<$Result.GetResult<Prisma.$AssetDepreciationPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one AssetDepreciation.
+     * @param {AssetDepreciationUpdateArgs} args - Arguments to update one AssetDepreciation.
+     * @example
+     * // Update one AssetDepreciation
+     * const assetDepreciation = await prisma.assetDepreciation.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends AssetDepreciationUpdateArgs>(args: SelectSubset<T, AssetDepreciationUpdateArgs<ExtArgs>>): Prisma__AssetDepreciationClient<$Result.GetResult<Prisma.$AssetDepreciationPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more AssetDepreciations.
+     * @param {AssetDepreciationDeleteManyArgs} args - Arguments to filter AssetDepreciations to delete.
+     * @example
+     * // Delete a few AssetDepreciations
+     * const { count } = await prisma.assetDepreciation.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends AssetDepreciationDeleteManyArgs>(args?: SelectSubset<T, AssetDepreciationDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more AssetDepreciations.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AssetDepreciationUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many AssetDepreciations
+     * const assetDepreciation = await prisma.assetDepreciation.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends AssetDepreciationUpdateManyArgs>(args: SelectSubset<T, AssetDepreciationUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one AssetDepreciation.
+     * @param {AssetDepreciationUpsertArgs} args - Arguments to update or create a AssetDepreciation.
+     * @example
+     * // Update or create a AssetDepreciation
+     * const assetDepreciation = await prisma.assetDepreciation.upsert({
+     *   create: {
+     *     // ... data to create a AssetDepreciation
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the AssetDepreciation we want to update
+     *   }
+     * })
+     */
+    upsert<T extends AssetDepreciationUpsertArgs>(args: SelectSubset<T, AssetDepreciationUpsertArgs<ExtArgs>>): Prisma__AssetDepreciationClient<$Result.GetResult<Prisma.$AssetDepreciationPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of AssetDepreciations.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AssetDepreciationCountArgs} args - Arguments to filter AssetDepreciations to count.
+     * @example
+     * // Count the number of AssetDepreciations
+     * const count = await prisma.assetDepreciation.count({
+     *   where: {
+     *     // ... the filter for the AssetDepreciations we want to count
+     *   }
+     * })
+    **/
+    count<T extends AssetDepreciationCountArgs>(
+      args?: Subset<T, AssetDepreciationCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], AssetDepreciationCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a AssetDepreciation.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AssetDepreciationAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends AssetDepreciationAggregateArgs>(args: Subset<T, AssetDepreciationAggregateArgs>): Prisma.PrismaPromise<GetAssetDepreciationAggregateType<T>>
+
+    /**
+     * Group by AssetDepreciation.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AssetDepreciationGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends AssetDepreciationGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: AssetDepreciationGroupByArgs['orderBy'] }
+        : { orderBy?: AssetDepreciationGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, AssetDepreciationGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetAssetDepreciationGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the AssetDepreciation model
+   */
+  readonly fields: AssetDepreciationFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for AssetDepreciation.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__AssetDepreciationClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    asset<T extends AssetDefaultArgs<ExtArgs> = {}>(args?: Subset<T, AssetDefaultArgs<ExtArgs>>): Prisma__AssetClient<$Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the AssetDepreciation model
+   */ 
+  interface AssetDepreciationFieldRefs {
+    readonly id: FieldRef<"AssetDepreciation", 'String'>
+    readonly schoolId: FieldRef<"AssetDepreciation", 'String'>
+    readonly assetId: FieldRef<"AssetDepreciation", 'String'>
+    readonly date: FieldRef<"AssetDepreciation", 'DateTime'>
+    readonly fiscalYear: FieldRef<"AssetDepreciation", 'Int'>
+    readonly fiscalPeriod: FieldRef<"AssetDepreciation", 'String'>
+    readonly depreciationAmount: FieldRef<"AssetDepreciation", 'Float'>
+    readonly bookValueBefore: FieldRef<"AssetDepreciation", 'Float'>
+    readonly bookValueAfter: FieldRef<"AssetDepreciation", 'Float'>
+    readonly rateUsed: FieldRef<"AssetDepreciation", 'Float'>
+    readonly method: FieldRef<"AssetDepreciation", 'String'>
+    readonly journalEntryId: FieldRef<"AssetDepreciation", 'String'>
+    readonly processedById: FieldRef<"AssetDepreciation", 'String'>
+    readonly notes: FieldRef<"AssetDepreciation", 'String'>
+    readonly createdAt: FieldRef<"AssetDepreciation", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * AssetDepreciation findUnique
+   */
+  export type AssetDepreciationFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AssetDepreciation
+     */
+    select?: AssetDepreciationSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AssetDepreciationInclude<ExtArgs> | null
+    /**
+     * Filter, which AssetDepreciation to fetch.
+     */
+    where: AssetDepreciationWhereUniqueInput
+  }
+
+  /**
+   * AssetDepreciation findUniqueOrThrow
+   */
+  export type AssetDepreciationFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AssetDepreciation
+     */
+    select?: AssetDepreciationSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AssetDepreciationInclude<ExtArgs> | null
+    /**
+     * Filter, which AssetDepreciation to fetch.
+     */
+    where: AssetDepreciationWhereUniqueInput
+  }
+
+  /**
+   * AssetDepreciation findFirst
+   */
+  export type AssetDepreciationFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AssetDepreciation
+     */
+    select?: AssetDepreciationSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AssetDepreciationInclude<ExtArgs> | null
+    /**
+     * Filter, which AssetDepreciation to fetch.
+     */
+    where?: AssetDepreciationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AssetDepreciations to fetch.
+     */
+    orderBy?: AssetDepreciationOrderByWithRelationInput | AssetDepreciationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AssetDepreciations.
+     */
+    cursor?: AssetDepreciationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AssetDepreciations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AssetDepreciations.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AssetDepreciations.
+     */
+    distinct?: AssetDepreciationScalarFieldEnum | AssetDepreciationScalarFieldEnum[]
+  }
+
+  /**
+   * AssetDepreciation findFirstOrThrow
+   */
+  export type AssetDepreciationFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AssetDepreciation
+     */
+    select?: AssetDepreciationSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AssetDepreciationInclude<ExtArgs> | null
+    /**
+     * Filter, which AssetDepreciation to fetch.
+     */
+    where?: AssetDepreciationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AssetDepreciations to fetch.
+     */
+    orderBy?: AssetDepreciationOrderByWithRelationInput | AssetDepreciationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AssetDepreciations.
+     */
+    cursor?: AssetDepreciationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AssetDepreciations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AssetDepreciations.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AssetDepreciations.
+     */
+    distinct?: AssetDepreciationScalarFieldEnum | AssetDepreciationScalarFieldEnum[]
+  }
+
+  /**
+   * AssetDepreciation findMany
+   */
+  export type AssetDepreciationFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AssetDepreciation
+     */
+    select?: AssetDepreciationSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AssetDepreciationInclude<ExtArgs> | null
+    /**
+     * Filter, which AssetDepreciations to fetch.
+     */
+    where?: AssetDepreciationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AssetDepreciations to fetch.
+     */
+    orderBy?: AssetDepreciationOrderByWithRelationInput | AssetDepreciationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing AssetDepreciations.
+     */
+    cursor?: AssetDepreciationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AssetDepreciations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AssetDepreciations.
+     */
+    skip?: number
+    distinct?: AssetDepreciationScalarFieldEnum | AssetDepreciationScalarFieldEnum[]
+  }
+
+  /**
+   * AssetDepreciation create
+   */
+  export type AssetDepreciationCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AssetDepreciation
+     */
+    select?: AssetDepreciationSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AssetDepreciationInclude<ExtArgs> | null
+    /**
+     * The data needed to create a AssetDepreciation.
+     */
+    data: XOR<AssetDepreciationCreateInput, AssetDepreciationUncheckedCreateInput>
+  }
+
+  /**
+   * AssetDepreciation createMany
+   */
+  export type AssetDepreciationCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many AssetDepreciations.
+     */
+    data: AssetDepreciationCreateManyInput | AssetDepreciationCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * AssetDepreciation createManyAndReturn
+   */
+  export type AssetDepreciationCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AssetDepreciation
+     */
+    select?: AssetDepreciationSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many AssetDepreciations.
+     */
+    data: AssetDepreciationCreateManyInput | AssetDepreciationCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AssetDepreciationIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * AssetDepreciation update
+   */
+  export type AssetDepreciationUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AssetDepreciation
+     */
+    select?: AssetDepreciationSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AssetDepreciationInclude<ExtArgs> | null
+    /**
+     * The data needed to update a AssetDepreciation.
+     */
+    data: XOR<AssetDepreciationUpdateInput, AssetDepreciationUncheckedUpdateInput>
+    /**
+     * Choose, which AssetDepreciation to update.
+     */
+    where: AssetDepreciationWhereUniqueInput
+  }
+
+  /**
+   * AssetDepreciation updateMany
+   */
+  export type AssetDepreciationUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update AssetDepreciations.
+     */
+    data: XOR<AssetDepreciationUpdateManyMutationInput, AssetDepreciationUncheckedUpdateManyInput>
+    /**
+     * Filter which AssetDepreciations to update
+     */
+    where?: AssetDepreciationWhereInput
+  }
+
+  /**
+   * AssetDepreciation upsert
+   */
+  export type AssetDepreciationUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AssetDepreciation
+     */
+    select?: AssetDepreciationSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AssetDepreciationInclude<ExtArgs> | null
+    /**
+     * The filter to search for the AssetDepreciation to update in case it exists.
+     */
+    where: AssetDepreciationWhereUniqueInput
+    /**
+     * In case the AssetDepreciation found by the `where` argument doesn't exist, create a new AssetDepreciation with this data.
+     */
+    create: XOR<AssetDepreciationCreateInput, AssetDepreciationUncheckedCreateInput>
+    /**
+     * In case the AssetDepreciation was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<AssetDepreciationUpdateInput, AssetDepreciationUncheckedUpdateInput>
+  }
+
+  /**
+   * AssetDepreciation delete
+   */
+  export type AssetDepreciationDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AssetDepreciation
+     */
+    select?: AssetDepreciationSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AssetDepreciationInclude<ExtArgs> | null
+    /**
+     * Filter which AssetDepreciation to delete.
+     */
+    where: AssetDepreciationWhereUniqueInput
+  }
+
+  /**
+   * AssetDepreciation deleteMany
+   */
+  export type AssetDepreciationDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AssetDepreciations to delete
+     */
+    where?: AssetDepreciationWhereInput
+  }
+
+  /**
+   * AssetDepreciation without action
+   */
+  export type AssetDepreciationDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AssetDepreciation
+     */
+    select?: AssetDepreciationSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AssetDepreciationInclude<ExtArgs> | null
   }
 
 
@@ -298741,6 +301647,14 @@ export namespace Prisma {
     totalAmount: 'totalAmount',
     status: 'status',
     schoolId: 'schoolId',
+    coaCode: 'coaCode',
+    department: 'department',
+    budgetChecked: 'budgetChecked',
+    budgetOverrun: 'budgetOverrun',
+    budgetRemaining: 'budgetRemaining',
+    approvedById: 'approvedById',
+    approvedAt: 'approvedAt',
+    rejectionReason: 'rejectionReason',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -298748,12 +301662,40 @@ export namespace Prisma {
   export type PurchaseOrderScalarFieldEnum = (typeof PurchaseOrderScalarFieldEnum)[keyof typeof PurchaseOrderScalarFieldEnum]
 
 
+  export const GoodsReceivedNoteScalarFieldEnum: {
+    id: 'id',
+    grnNumber: 'grnNumber',
+    schoolId: 'schoolId',
+    purchaseOrderId: 'purchaseOrderId',
+    supplierId: 'supplierId',
+    receivedDate: 'receivedDate',
+    receivedById: 'receivedById',
+    deliveryNoteNumber: 'deliveryNoteNumber',
+    status: 'status',
+    items: 'items',
+    totalValueReceived: 'totalValueReceived',
+    notes: 'notes',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type GoodsReceivedNoteScalarFieldEnum = (typeof GoodsReceivedNoteScalarFieldEnum)[keyof typeof GoodsReceivedNoteScalarFieldEnum]
+
+
   export const InvoiceScalarFieldEnum: {
     id: 'id',
     invoiceNo: 'invoiceNo',
     supplierId: 'supplierId',
+    purchaseOrderId: 'purchaseOrderId',
+    grnId: 'grnId',
     amount: 'amount',
+    items: 'items',
     status: 'status',
+    matchingStatus: 'matchingStatus',
+    matchingNotes: 'matchingNotes',
+    approvedById: 'approvedById',
+    approvedAt: 'approvedAt',
+    journalEntryId: 'journalEntryId',
     dueDate: 'dueDate',
     schoolId: 'schoolId',
     createdAt: 'createdAt',
@@ -298860,6 +301802,11 @@ export namespace Prisma {
     supplierName: 'supplierName',
     invoiceNumber: 'invoiceNumber',
     depreciationRate: 'depreciationRate',
+    accumulatedDepreciation: 'accumulatedDepreciation',
+    bookValue: 'bookValue',
+    lastDepreciationDate: 'lastDepreciationDate',
+    coaExpenseCode: 'coaExpenseCode',
+    coaAccumulatedCode: 'coaAccumulatedCode',
     warrantyExpiry: 'warrantyExpiry',
     photoUrl: 'photoUrl',
     custodianId: 'custodianId',
@@ -298881,6 +301828,27 @@ export namespace Prisma {
   };
 
   export type AssetScalarFieldEnum = (typeof AssetScalarFieldEnum)[keyof typeof AssetScalarFieldEnum]
+
+
+  export const AssetDepreciationScalarFieldEnum: {
+    id: 'id',
+    schoolId: 'schoolId',
+    assetId: 'assetId',
+    date: 'date',
+    fiscalYear: 'fiscalYear',
+    fiscalPeriod: 'fiscalPeriod',
+    depreciationAmount: 'depreciationAmount',
+    bookValueBefore: 'bookValueBefore',
+    bookValueAfter: 'bookValueAfter',
+    rateUsed: 'rateUsed',
+    method: 'method',
+    journalEntryId: 'journalEntryId',
+    processedById: 'processedById',
+    notes: 'notes',
+    createdAt: 'createdAt'
+  };
+
+  export type AssetDepreciationScalarFieldEnum = (typeof AssetDepreciationScalarFieldEnum)[keyof typeof AssetDepreciationScalarFieldEnum]
 
 
   export const AssetIncidentScalarFieldEnum: {
@@ -304062,6 +307030,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentListRelationFilter
     questionBankCreated?: QuestionBankListRelationFilter
     assessmentsMarked?: StudentAssessmentListRelationFilter
+    receivedGRNs?: GoodsReceivedNoteListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -304172,6 +307141,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentOrderByRelationAggregateInput
     questionBankCreated?: QuestionBankOrderByRelationAggregateInput
     assessmentsMarked?: StudentAssessmentOrderByRelationAggregateInput
+    receivedGRNs?: GoodsReceivedNoteOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -304285,6 +307255,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentListRelationFilter
     questionBankCreated?: QuestionBankListRelationFilter
     assessmentsMarked?: StudentAssessmentListRelationFilter
+    receivedGRNs?: GoodsReceivedNoteListRelationFilter
   }, "id" | "email">
 
   export type UserOrderByWithAggregationInput = {
@@ -309478,6 +312449,7 @@ export namespace Prisma {
     tenders?: TenderBidListRelationFilter
     purchaseOrders?: PurchaseOrderListRelationFilter
     invoices?: InvoiceListRelationFilter
+    goodsReceivedNotes?: GoodsReceivedNoteListRelationFilter
     uniformStockOrders?: UniformStockOrderListRelationFilter
     uniformPayments?: UniformSupplierPaymentListRelationFilter
   }
@@ -309501,6 +312473,7 @@ export namespace Prisma {
     tenders?: TenderBidOrderByRelationAggregateInput
     purchaseOrders?: PurchaseOrderOrderByRelationAggregateInput
     invoices?: InvoiceOrderByRelationAggregateInput
+    goodsReceivedNotes?: GoodsReceivedNoteOrderByRelationAggregateInput
     uniformStockOrders?: UniformStockOrderOrderByRelationAggregateInput
     uniformPayments?: UniformSupplierPaymentOrderByRelationAggregateInput
   }
@@ -309527,6 +312500,7 @@ export namespace Prisma {
     tenders?: TenderBidListRelationFilter
     purchaseOrders?: PurchaseOrderListRelationFilter
     invoices?: InvoiceListRelationFilter
+    goodsReceivedNotes?: GoodsReceivedNoteListRelationFilter
     uniformStockOrders?: UniformStockOrderListRelationFilter
     uniformPayments?: UniformSupplierPaymentListRelationFilter
   }, "id" | "globalId" | "email" | "userId">
@@ -309973,10 +312947,20 @@ export namespace Prisma {
     totalAmount?: FloatFilter<"PurchaseOrder"> | number
     status?: StringFilter<"PurchaseOrder"> | string
     schoolId?: StringFilter<"PurchaseOrder"> | string
+    coaCode?: StringNullableFilter<"PurchaseOrder"> | string | null
+    department?: StringNullableFilter<"PurchaseOrder"> | string | null
+    budgetChecked?: BoolFilter<"PurchaseOrder"> | boolean
+    budgetOverrun?: BoolFilter<"PurchaseOrder"> | boolean
+    budgetRemaining?: FloatNullableFilter<"PurchaseOrder"> | number | null
+    approvedById?: StringNullableFilter<"PurchaseOrder"> | string | null
+    approvedAt?: DateTimeNullableFilter<"PurchaseOrder"> | Date | string | null
+    rejectionReason?: StringNullableFilter<"PurchaseOrder"> | string | null
     createdAt?: DateTimeFilter<"PurchaseOrder"> | Date | string
     updatedAt?: DateTimeFilter<"PurchaseOrder"> | Date | string
     supplier?: XOR<SupplierRelationFilter, SupplierWhereInput>
     requisition?: XOR<RequisitionNullableRelationFilter, RequisitionWhereInput> | null
+    grns?: GoodsReceivedNoteListRelationFilter
+    invoices?: InvoiceListRelationFilter
   }
 
   export type PurchaseOrderOrderByWithRelationInput = {
@@ -309988,10 +312972,20 @@ export namespace Prisma {
     totalAmount?: SortOrder
     status?: SortOrder
     schoolId?: SortOrder
+    coaCode?: SortOrderInput | SortOrder
+    department?: SortOrderInput | SortOrder
+    budgetChecked?: SortOrder
+    budgetOverrun?: SortOrder
+    budgetRemaining?: SortOrderInput | SortOrder
+    approvedById?: SortOrderInput | SortOrder
+    approvedAt?: SortOrderInput | SortOrder
+    rejectionReason?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     supplier?: SupplierOrderByWithRelationInput
     requisition?: RequisitionOrderByWithRelationInput
+    grns?: GoodsReceivedNoteOrderByRelationAggregateInput
+    invoices?: InvoiceOrderByRelationAggregateInput
   }
 
   export type PurchaseOrderWhereUniqueInput = Prisma.AtLeast<{
@@ -310006,10 +313000,20 @@ export namespace Prisma {
     totalAmount?: FloatFilter<"PurchaseOrder"> | number
     status?: StringFilter<"PurchaseOrder"> | string
     schoolId?: StringFilter<"PurchaseOrder"> | string
+    coaCode?: StringNullableFilter<"PurchaseOrder"> | string | null
+    department?: StringNullableFilter<"PurchaseOrder"> | string | null
+    budgetChecked?: BoolFilter<"PurchaseOrder"> | boolean
+    budgetOverrun?: BoolFilter<"PurchaseOrder"> | boolean
+    budgetRemaining?: FloatNullableFilter<"PurchaseOrder"> | number | null
+    approvedById?: StringNullableFilter<"PurchaseOrder"> | string | null
+    approvedAt?: DateTimeNullableFilter<"PurchaseOrder"> | Date | string | null
+    rejectionReason?: StringNullableFilter<"PurchaseOrder"> | string | null
     createdAt?: DateTimeFilter<"PurchaseOrder"> | Date | string
     updatedAt?: DateTimeFilter<"PurchaseOrder"> | Date | string
     supplier?: XOR<SupplierRelationFilter, SupplierWhereInput>
     requisition?: XOR<RequisitionNullableRelationFilter, RequisitionWhereInput> | null
+    grns?: GoodsReceivedNoteListRelationFilter
+    invoices?: InvoiceListRelationFilter
   }, "id" | "poNumber">
 
   export type PurchaseOrderOrderByWithAggregationInput = {
@@ -310021,6 +313025,14 @@ export namespace Prisma {
     totalAmount?: SortOrder
     status?: SortOrder
     schoolId?: SortOrder
+    coaCode?: SortOrderInput | SortOrder
+    department?: SortOrderInput | SortOrder
+    budgetChecked?: SortOrder
+    budgetOverrun?: SortOrder
+    budgetRemaining?: SortOrderInput | SortOrder
+    approvedById?: SortOrderInput | SortOrder
+    approvedAt?: SortOrderInput | SortOrder
+    rejectionReason?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: PurchaseOrderCountOrderByAggregateInput
@@ -310042,8 +313054,127 @@ export namespace Prisma {
     totalAmount?: FloatWithAggregatesFilter<"PurchaseOrder"> | number
     status?: StringWithAggregatesFilter<"PurchaseOrder"> | string
     schoolId?: StringWithAggregatesFilter<"PurchaseOrder"> | string
+    coaCode?: StringNullableWithAggregatesFilter<"PurchaseOrder"> | string | null
+    department?: StringNullableWithAggregatesFilter<"PurchaseOrder"> | string | null
+    budgetChecked?: BoolWithAggregatesFilter<"PurchaseOrder"> | boolean
+    budgetOverrun?: BoolWithAggregatesFilter<"PurchaseOrder"> | boolean
+    budgetRemaining?: FloatNullableWithAggregatesFilter<"PurchaseOrder"> | number | null
+    approvedById?: StringNullableWithAggregatesFilter<"PurchaseOrder"> | string | null
+    approvedAt?: DateTimeNullableWithAggregatesFilter<"PurchaseOrder"> | Date | string | null
+    rejectionReason?: StringNullableWithAggregatesFilter<"PurchaseOrder"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"PurchaseOrder"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"PurchaseOrder"> | Date | string
+  }
+
+  export type GoodsReceivedNoteWhereInput = {
+    AND?: GoodsReceivedNoteWhereInput | GoodsReceivedNoteWhereInput[]
+    OR?: GoodsReceivedNoteWhereInput[]
+    NOT?: GoodsReceivedNoteWhereInput | GoodsReceivedNoteWhereInput[]
+    id?: StringFilter<"GoodsReceivedNote"> | string
+    grnNumber?: StringFilter<"GoodsReceivedNote"> | string
+    schoolId?: StringFilter<"GoodsReceivedNote"> | string
+    purchaseOrderId?: StringFilter<"GoodsReceivedNote"> | string
+    supplierId?: StringFilter<"GoodsReceivedNote"> | string
+    receivedDate?: DateTimeFilter<"GoodsReceivedNote"> | Date | string
+    receivedById?: StringFilter<"GoodsReceivedNote"> | string
+    deliveryNoteNumber?: StringNullableFilter<"GoodsReceivedNote"> | string | null
+    status?: StringFilter<"GoodsReceivedNote"> | string
+    items?: JsonFilter<"GoodsReceivedNote">
+    totalValueReceived?: FloatFilter<"GoodsReceivedNote"> | number
+    notes?: StringNullableFilter<"GoodsReceivedNote"> | string | null
+    createdAt?: DateTimeFilter<"GoodsReceivedNote"> | Date | string
+    updatedAt?: DateTimeFilter<"GoodsReceivedNote"> | Date | string
+    purchaseOrder?: XOR<PurchaseOrderRelationFilter, PurchaseOrderWhereInput>
+    supplier?: XOR<SupplierRelationFilter, SupplierWhereInput>
+    receivedBy?: XOR<UserRelationFilter, UserWhereInput>
+    invoices?: InvoiceListRelationFilter
+  }
+
+  export type GoodsReceivedNoteOrderByWithRelationInput = {
+    id?: SortOrder
+    grnNumber?: SortOrder
+    schoolId?: SortOrder
+    purchaseOrderId?: SortOrder
+    supplierId?: SortOrder
+    receivedDate?: SortOrder
+    receivedById?: SortOrder
+    deliveryNoteNumber?: SortOrderInput | SortOrder
+    status?: SortOrder
+    items?: SortOrder
+    totalValueReceived?: SortOrder
+    notes?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    purchaseOrder?: PurchaseOrderOrderByWithRelationInput
+    supplier?: SupplierOrderByWithRelationInput
+    receivedBy?: UserOrderByWithRelationInput
+    invoices?: InvoiceOrderByRelationAggregateInput
+  }
+
+  export type GoodsReceivedNoteWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    grnNumber?: string
+    AND?: GoodsReceivedNoteWhereInput | GoodsReceivedNoteWhereInput[]
+    OR?: GoodsReceivedNoteWhereInput[]
+    NOT?: GoodsReceivedNoteWhereInput | GoodsReceivedNoteWhereInput[]
+    schoolId?: StringFilter<"GoodsReceivedNote"> | string
+    purchaseOrderId?: StringFilter<"GoodsReceivedNote"> | string
+    supplierId?: StringFilter<"GoodsReceivedNote"> | string
+    receivedDate?: DateTimeFilter<"GoodsReceivedNote"> | Date | string
+    receivedById?: StringFilter<"GoodsReceivedNote"> | string
+    deliveryNoteNumber?: StringNullableFilter<"GoodsReceivedNote"> | string | null
+    status?: StringFilter<"GoodsReceivedNote"> | string
+    items?: JsonFilter<"GoodsReceivedNote">
+    totalValueReceived?: FloatFilter<"GoodsReceivedNote"> | number
+    notes?: StringNullableFilter<"GoodsReceivedNote"> | string | null
+    createdAt?: DateTimeFilter<"GoodsReceivedNote"> | Date | string
+    updatedAt?: DateTimeFilter<"GoodsReceivedNote"> | Date | string
+    purchaseOrder?: XOR<PurchaseOrderRelationFilter, PurchaseOrderWhereInput>
+    supplier?: XOR<SupplierRelationFilter, SupplierWhereInput>
+    receivedBy?: XOR<UserRelationFilter, UserWhereInput>
+    invoices?: InvoiceListRelationFilter
+  }, "id" | "grnNumber">
+
+  export type GoodsReceivedNoteOrderByWithAggregationInput = {
+    id?: SortOrder
+    grnNumber?: SortOrder
+    schoolId?: SortOrder
+    purchaseOrderId?: SortOrder
+    supplierId?: SortOrder
+    receivedDate?: SortOrder
+    receivedById?: SortOrder
+    deliveryNoteNumber?: SortOrderInput | SortOrder
+    status?: SortOrder
+    items?: SortOrder
+    totalValueReceived?: SortOrder
+    notes?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: GoodsReceivedNoteCountOrderByAggregateInput
+    _avg?: GoodsReceivedNoteAvgOrderByAggregateInput
+    _max?: GoodsReceivedNoteMaxOrderByAggregateInput
+    _min?: GoodsReceivedNoteMinOrderByAggregateInput
+    _sum?: GoodsReceivedNoteSumOrderByAggregateInput
+  }
+
+  export type GoodsReceivedNoteScalarWhereWithAggregatesInput = {
+    AND?: GoodsReceivedNoteScalarWhereWithAggregatesInput | GoodsReceivedNoteScalarWhereWithAggregatesInput[]
+    OR?: GoodsReceivedNoteScalarWhereWithAggregatesInput[]
+    NOT?: GoodsReceivedNoteScalarWhereWithAggregatesInput | GoodsReceivedNoteScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"GoodsReceivedNote"> | string
+    grnNumber?: StringWithAggregatesFilter<"GoodsReceivedNote"> | string
+    schoolId?: StringWithAggregatesFilter<"GoodsReceivedNote"> | string
+    purchaseOrderId?: StringWithAggregatesFilter<"GoodsReceivedNote"> | string
+    supplierId?: StringWithAggregatesFilter<"GoodsReceivedNote"> | string
+    receivedDate?: DateTimeWithAggregatesFilter<"GoodsReceivedNote"> | Date | string
+    receivedById?: StringWithAggregatesFilter<"GoodsReceivedNote"> | string
+    deliveryNoteNumber?: StringNullableWithAggregatesFilter<"GoodsReceivedNote"> | string | null
+    status?: StringWithAggregatesFilter<"GoodsReceivedNote"> | string
+    items?: JsonWithAggregatesFilter<"GoodsReceivedNote">
+    totalValueReceived?: FloatWithAggregatesFilter<"GoodsReceivedNote"> | number
+    notes?: StringNullableWithAggregatesFilter<"GoodsReceivedNote"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"GoodsReceivedNote"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"GoodsReceivedNote"> | Date | string
   }
 
   export type InvoiceWhereInput = {
@@ -310053,26 +313184,46 @@ export namespace Prisma {
     id?: StringFilter<"Invoice"> | string
     invoiceNo?: StringFilter<"Invoice"> | string
     supplierId?: StringFilter<"Invoice"> | string
+    purchaseOrderId?: StringNullableFilter<"Invoice"> | string | null
+    grnId?: StringNullableFilter<"Invoice"> | string | null
     amount?: FloatFilter<"Invoice"> | number
+    items?: JsonNullableFilter<"Invoice">
     status?: StringFilter<"Invoice"> | string
+    matchingStatus?: StringFilter<"Invoice"> | string
+    matchingNotes?: StringNullableFilter<"Invoice"> | string | null
+    approvedById?: StringNullableFilter<"Invoice"> | string | null
+    approvedAt?: DateTimeNullableFilter<"Invoice"> | Date | string | null
+    journalEntryId?: StringNullableFilter<"Invoice"> | string | null
     dueDate?: DateTimeFilter<"Invoice"> | Date | string
     schoolId?: StringFilter<"Invoice"> | string
     createdAt?: DateTimeFilter<"Invoice"> | Date | string
     updatedAt?: DateTimeFilter<"Invoice"> | Date | string
     supplier?: XOR<SupplierRelationFilter, SupplierWhereInput>
+    purchaseOrder?: XOR<PurchaseOrderNullableRelationFilter, PurchaseOrderWhereInput> | null
+    grn?: XOR<GoodsReceivedNoteNullableRelationFilter, GoodsReceivedNoteWhereInput> | null
   }
 
   export type InvoiceOrderByWithRelationInput = {
     id?: SortOrder
     invoiceNo?: SortOrder
     supplierId?: SortOrder
+    purchaseOrderId?: SortOrderInput | SortOrder
+    grnId?: SortOrderInput | SortOrder
     amount?: SortOrder
+    items?: SortOrderInput | SortOrder
     status?: SortOrder
+    matchingStatus?: SortOrder
+    matchingNotes?: SortOrderInput | SortOrder
+    approvedById?: SortOrderInput | SortOrder
+    approvedAt?: SortOrderInput | SortOrder
+    journalEntryId?: SortOrderInput | SortOrder
     dueDate?: SortOrder
     schoolId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     supplier?: SupplierOrderByWithRelationInput
+    purchaseOrder?: PurchaseOrderOrderByWithRelationInput
+    grn?: GoodsReceivedNoteOrderByWithRelationInput
   }
 
   export type InvoiceWhereUniqueInput = Prisma.AtLeast<{
@@ -310082,21 +313233,39 @@ export namespace Prisma {
     OR?: InvoiceWhereInput[]
     NOT?: InvoiceWhereInput | InvoiceWhereInput[]
     supplierId?: StringFilter<"Invoice"> | string
+    purchaseOrderId?: StringNullableFilter<"Invoice"> | string | null
+    grnId?: StringNullableFilter<"Invoice"> | string | null
     amount?: FloatFilter<"Invoice"> | number
+    items?: JsonNullableFilter<"Invoice">
     status?: StringFilter<"Invoice"> | string
+    matchingStatus?: StringFilter<"Invoice"> | string
+    matchingNotes?: StringNullableFilter<"Invoice"> | string | null
+    approvedById?: StringNullableFilter<"Invoice"> | string | null
+    approvedAt?: DateTimeNullableFilter<"Invoice"> | Date | string | null
+    journalEntryId?: StringNullableFilter<"Invoice"> | string | null
     dueDate?: DateTimeFilter<"Invoice"> | Date | string
     schoolId?: StringFilter<"Invoice"> | string
     createdAt?: DateTimeFilter<"Invoice"> | Date | string
     updatedAt?: DateTimeFilter<"Invoice"> | Date | string
     supplier?: XOR<SupplierRelationFilter, SupplierWhereInput>
+    purchaseOrder?: XOR<PurchaseOrderNullableRelationFilter, PurchaseOrderWhereInput> | null
+    grn?: XOR<GoodsReceivedNoteNullableRelationFilter, GoodsReceivedNoteWhereInput> | null
   }, "id" | "invoiceNo">
 
   export type InvoiceOrderByWithAggregationInput = {
     id?: SortOrder
     invoiceNo?: SortOrder
     supplierId?: SortOrder
+    purchaseOrderId?: SortOrderInput | SortOrder
+    grnId?: SortOrderInput | SortOrder
     amount?: SortOrder
+    items?: SortOrderInput | SortOrder
     status?: SortOrder
+    matchingStatus?: SortOrder
+    matchingNotes?: SortOrderInput | SortOrder
+    approvedById?: SortOrderInput | SortOrder
+    approvedAt?: SortOrderInput | SortOrder
+    journalEntryId?: SortOrderInput | SortOrder
     dueDate?: SortOrder
     schoolId?: SortOrder
     createdAt?: SortOrder
@@ -310115,8 +313284,16 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"Invoice"> | string
     invoiceNo?: StringWithAggregatesFilter<"Invoice"> | string
     supplierId?: StringWithAggregatesFilter<"Invoice"> | string
+    purchaseOrderId?: StringNullableWithAggregatesFilter<"Invoice"> | string | null
+    grnId?: StringNullableWithAggregatesFilter<"Invoice"> | string | null
     amount?: FloatWithAggregatesFilter<"Invoice"> | number
+    items?: JsonNullableWithAggregatesFilter<"Invoice">
     status?: StringWithAggregatesFilter<"Invoice"> | string
+    matchingStatus?: StringWithAggregatesFilter<"Invoice"> | string
+    matchingNotes?: StringNullableWithAggregatesFilter<"Invoice"> | string | null
+    approvedById?: StringNullableWithAggregatesFilter<"Invoice"> | string | null
+    approvedAt?: DateTimeNullableWithAggregatesFilter<"Invoice"> | Date | string | null
+    journalEntryId?: StringNullableWithAggregatesFilter<"Invoice"> | string | null
     dueDate?: DateTimeWithAggregatesFilter<"Invoice"> | Date | string
     schoolId?: StringWithAggregatesFilter<"Invoice"> | string
     createdAt?: DateTimeWithAggregatesFilter<"Invoice"> | Date | string
@@ -310545,6 +313722,11 @@ export namespace Prisma {
     supplierName?: StringNullableFilter<"Asset"> | string | null
     invoiceNumber?: StringNullableFilter<"Asset"> | string | null
     depreciationRate?: FloatNullableFilter<"Asset"> | number | null
+    accumulatedDepreciation?: FloatNullableFilter<"Asset"> | number | null
+    bookValue?: FloatNullableFilter<"Asset"> | number | null
+    lastDepreciationDate?: DateTimeNullableFilter<"Asset"> | Date | string | null
+    coaExpenseCode?: StringNullableFilter<"Asset"> | string | null
+    coaAccumulatedCode?: StringNullableFilter<"Asset"> | string | null
     warrantyExpiry?: DateTimeNullableFilter<"Asset"> | Date | string | null
     photoUrl?: StringNullableFilter<"Asset"> | string | null
     custodianId?: StringNullableFilter<"Asset"> | string | null
@@ -310563,6 +313745,7 @@ export namespace Prisma {
     attachments?: JsonNullableFilter<"Asset">
     createdAt?: DateTimeFilter<"Asset"> | Date | string
     updatedAt?: DateTimeFilter<"Asset"> | Date | string
+    depreciations?: AssetDepreciationListRelationFilter
     custodian?: XOR<UserNullableRelationFilter, UserWhereInput> | null
     registeredBy?: XOR<UserNullableRelationFilter, UserWhereInput> | null
     school?: XOR<SchoolRelationFilter, SchoolWhereInput>
@@ -310587,6 +313770,11 @@ export namespace Prisma {
     supplierName?: SortOrderInput | SortOrder
     invoiceNumber?: SortOrderInput | SortOrder
     depreciationRate?: SortOrderInput | SortOrder
+    accumulatedDepreciation?: SortOrderInput | SortOrder
+    bookValue?: SortOrderInput | SortOrder
+    lastDepreciationDate?: SortOrderInput | SortOrder
+    coaExpenseCode?: SortOrderInput | SortOrder
+    coaAccumulatedCode?: SortOrderInput | SortOrder
     warrantyExpiry?: SortOrderInput | SortOrder
     photoUrl?: SortOrderInput | SortOrder
     custodianId?: SortOrderInput | SortOrder
@@ -310605,6 +313793,7 @@ export namespace Prisma {
     attachments?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    depreciations?: AssetDepreciationOrderByRelationAggregateInput
     custodian?: UserOrderByWithRelationInput
     registeredBy?: UserOrderByWithRelationInput
     school?: SchoolOrderByWithRelationInput
@@ -310632,6 +313821,11 @@ export namespace Prisma {
     supplierName?: StringNullableFilter<"Asset"> | string | null
     invoiceNumber?: StringNullableFilter<"Asset"> | string | null
     depreciationRate?: FloatNullableFilter<"Asset"> | number | null
+    accumulatedDepreciation?: FloatNullableFilter<"Asset"> | number | null
+    bookValue?: FloatNullableFilter<"Asset"> | number | null
+    lastDepreciationDate?: DateTimeNullableFilter<"Asset"> | Date | string | null
+    coaExpenseCode?: StringNullableFilter<"Asset"> | string | null
+    coaAccumulatedCode?: StringNullableFilter<"Asset"> | string | null
     warrantyExpiry?: DateTimeNullableFilter<"Asset"> | Date | string | null
     photoUrl?: StringNullableFilter<"Asset"> | string | null
     custodianId?: StringNullableFilter<"Asset"> | string | null
@@ -310650,6 +313844,7 @@ export namespace Prisma {
     attachments?: JsonNullableFilter<"Asset">
     createdAt?: DateTimeFilter<"Asset"> | Date | string
     updatedAt?: DateTimeFilter<"Asset"> | Date | string
+    depreciations?: AssetDepreciationListRelationFilter
     custodian?: XOR<UserNullableRelationFilter, UserWhereInput> | null
     registeredBy?: XOR<UserNullableRelationFilter, UserWhereInput> | null
     school?: XOR<SchoolRelationFilter, SchoolWhereInput>
@@ -310674,6 +313869,11 @@ export namespace Prisma {
     supplierName?: SortOrderInput | SortOrder
     invoiceNumber?: SortOrderInput | SortOrder
     depreciationRate?: SortOrderInput | SortOrder
+    accumulatedDepreciation?: SortOrderInput | SortOrder
+    bookValue?: SortOrderInput | SortOrder
+    lastDepreciationDate?: SortOrderInput | SortOrder
+    coaExpenseCode?: SortOrderInput | SortOrder
+    coaAccumulatedCode?: SortOrderInput | SortOrder
     warrantyExpiry?: SortOrderInput | SortOrder
     photoUrl?: SortOrderInput | SortOrder
     custodianId?: SortOrderInput | SortOrder
@@ -310719,6 +313919,11 @@ export namespace Prisma {
     supplierName?: StringNullableWithAggregatesFilter<"Asset"> | string | null
     invoiceNumber?: StringNullableWithAggregatesFilter<"Asset"> | string | null
     depreciationRate?: FloatNullableWithAggregatesFilter<"Asset"> | number | null
+    accumulatedDepreciation?: FloatNullableWithAggregatesFilter<"Asset"> | number | null
+    bookValue?: FloatNullableWithAggregatesFilter<"Asset"> | number | null
+    lastDepreciationDate?: DateTimeNullableWithAggregatesFilter<"Asset"> | Date | string | null
+    coaExpenseCode?: StringNullableWithAggregatesFilter<"Asset"> | string | null
+    coaAccumulatedCode?: StringNullableWithAggregatesFilter<"Asset"> | string | null
     warrantyExpiry?: DateTimeNullableWithAggregatesFilter<"Asset"> | Date | string | null
     photoUrl?: StringNullableWithAggregatesFilter<"Asset"> | string | null
     custodianId?: StringNullableWithAggregatesFilter<"Asset"> | string | null
@@ -310737,6 +313942,113 @@ export namespace Prisma {
     attachments?: JsonNullableWithAggregatesFilter<"Asset">
     createdAt?: DateTimeWithAggregatesFilter<"Asset"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Asset"> | Date | string
+  }
+
+  export type AssetDepreciationWhereInput = {
+    AND?: AssetDepreciationWhereInput | AssetDepreciationWhereInput[]
+    OR?: AssetDepreciationWhereInput[]
+    NOT?: AssetDepreciationWhereInput | AssetDepreciationWhereInput[]
+    id?: StringFilter<"AssetDepreciation"> | string
+    schoolId?: StringFilter<"AssetDepreciation"> | string
+    assetId?: StringFilter<"AssetDepreciation"> | string
+    date?: DateTimeFilter<"AssetDepreciation"> | Date | string
+    fiscalYear?: IntFilter<"AssetDepreciation"> | number
+    fiscalPeriod?: StringFilter<"AssetDepreciation"> | string
+    depreciationAmount?: FloatFilter<"AssetDepreciation"> | number
+    bookValueBefore?: FloatFilter<"AssetDepreciation"> | number
+    bookValueAfter?: FloatFilter<"AssetDepreciation"> | number
+    rateUsed?: FloatFilter<"AssetDepreciation"> | number
+    method?: StringFilter<"AssetDepreciation"> | string
+    journalEntryId?: StringNullableFilter<"AssetDepreciation"> | string | null
+    processedById?: StringNullableFilter<"AssetDepreciation"> | string | null
+    notes?: StringNullableFilter<"AssetDepreciation"> | string | null
+    createdAt?: DateTimeFilter<"AssetDepreciation"> | Date | string
+    asset?: XOR<AssetRelationFilter, AssetWhereInput>
+  }
+
+  export type AssetDepreciationOrderByWithRelationInput = {
+    id?: SortOrder
+    schoolId?: SortOrder
+    assetId?: SortOrder
+    date?: SortOrder
+    fiscalYear?: SortOrder
+    fiscalPeriod?: SortOrder
+    depreciationAmount?: SortOrder
+    bookValueBefore?: SortOrder
+    bookValueAfter?: SortOrder
+    rateUsed?: SortOrder
+    method?: SortOrder
+    journalEntryId?: SortOrderInput | SortOrder
+    processedById?: SortOrderInput | SortOrder
+    notes?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    asset?: AssetOrderByWithRelationInput
+  }
+
+  export type AssetDepreciationWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: AssetDepreciationWhereInput | AssetDepreciationWhereInput[]
+    OR?: AssetDepreciationWhereInput[]
+    NOT?: AssetDepreciationWhereInput | AssetDepreciationWhereInput[]
+    schoolId?: StringFilter<"AssetDepreciation"> | string
+    assetId?: StringFilter<"AssetDepreciation"> | string
+    date?: DateTimeFilter<"AssetDepreciation"> | Date | string
+    fiscalYear?: IntFilter<"AssetDepreciation"> | number
+    fiscalPeriod?: StringFilter<"AssetDepreciation"> | string
+    depreciationAmount?: FloatFilter<"AssetDepreciation"> | number
+    bookValueBefore?: FloatFilter<"AssetDepreciation"> | number
+    bookValueAfter?: FloatFilter<"AssetDepreciation"> | number
+    rateUsed?: FloatFilter<"AssetDepreciation"> | number
+    method?: StringFilter<"AssetDepreciation"> | string
+    journalEntryId?: StringNullableFilter<"AssetDepreciation"> | string | null
+    processedById?: StringNullableFilter<"AssetDepreciation"> | string | null
+    notes?: StringNullableFilter<"AssetDepreciation"> | string | null
+    createdAt?: DateTimeFilter<"AssetDepreciation"> | Date | string
+    asset?: XOR<AssetRelationFilter, AssetWhereInput>
+  }, "id">
+
+  export type AssetDepreciationOrderByWithAggregationInput = {
+    id?: SortOrder
+    schoolId?: SortOrder
+    assetId?: SortOrder
+    date?: SortOrder
+    fiscalYear?: SortOrder
+    fiscalPeriod?: SortOrder
+    depreciationAmount?: SortOrder
+    bookValueBefore?: SortOrder
+    bookValueAfter?: SortOrder
+    rateUsed?: SortOrder
+    method?: SortOrder
+    journalEntryId?: SortOrderInput | SortOrder
+    processedById?: SortOrderInput | SortOrder
+    notes?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    _count?: AssetDepreciationCountOrderByAggregateInput
+    _avg?: AssetDepreciationAvgOrderByAggregateInput
+    _max?: AssetDepreciationMaxOrderByAggregateInput
+    _min?: AssetDepreciationMinOrderByAggregateInput
+    _sum?: AssetDepreciationSumOrderByAggregateInput
+  }
+
+  export type AssetDepreciationScalarWhereWithAggregatesInput = {
+    AND?: AssetDepreciationScalarWhereWithAggregatesInput | AssetDepreciationScalarWhereWithAggregatesInput[]
+    OR?: AssetDepreciationScalarWhereWithAggregatesInput[]
+    NOT?: AssetDepreciationScalarWhereWithAggregatesInput | AssetDepreciationScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"AssetDepreciation"> | string
+    schoolId?: StringWithAggregatesFilter<"AssetDepreciation"> | string
+    assetId?: StringWithAggregatesFilter<"AssetDepreciation"> | string
+    date?: DateTimeWithAggregatesFilter<"AssetDepreciation"> | Date | string
+    fiscalYear?: IntWithAggregatesFilter<"AssetDepreciation"> | number
+    fiscalPeriod?: StringWithAggregatesFilter<"AssetDepreciation"> | string
+    depreciationAmount?: FloatWithAggregatesFilter<"AssetDepreciation"> | number
+    bookValueBefore?: FloatWithAggregatesFilter<"AssetDepreciation"> | number
+    bookValueAfter?: FloatWithAggregatesFilter<"AssetDepreciation"> | number
+    rateUsed?: FloatWithAggregatesFilter<"AssetDepreciation"> | number
+    method?: StringWithAggregatesFilter<"AssetDepreciation"> | string
+    journalEntryId?: StringNullableWithAggregatesFilter<"AssetDepreciation"> | string | null
+    processedById?: StringNullableWithAggregatesFilter<"AssetDepreciation"> | string | null
+    notes?: StringNullableWithAggregatesFilter<"AssetDepreciation"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"AssetDepreciation"> | Date | string
   }
 
   export type AssetIncidentWhereInput = {
@@ -328978,6 +332290,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -329086,6 +332399,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUpdateInput = {
@@ -329194,6 +332508,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -329302,6 +332617,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -335149,6 +338465,7 @@ export namespace Prisma {
     tenders?: TenderBidCreateNestedManyWithoutSupplierInput
     purchaseOrders?: PurchaseOrderCreateNestedManyWithoutSupplierInput
     invoices?: InvoiceCreateNestedManyWithoutSupplierInput
+    goodsReceivedNotes?: GoodsReceivedNoteCreateNestedManyWithoutSupplierInput
     uniformStockOrders?: UniformStockOrderCreateNestedManyWithoutSupplierInput
     uniformPayments?: UniformSupplierPaymentCreateNestedManyWithoutSupplierInput
   }
@@ -335171,6 +338488,7 @@ export namespace Prisma {
     tenders?: TenderBidUncheckedCreateNestedManyWithoutSupplierInput
     purchaseOrders?: PurchaseOrderUncheckedCreateNestedManyWithoutSupplierInput
     invoices?: InvoiceUncheckedCreateNestedManyWithoutSupplierInput
+    goodsReceivedNotes?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutSupplierInput
     uniformStockOrders?: UniformStockOrderUncheckedCreateNestedManyWithoutSupplierInput
     uniformPayments?: UniformSupplierPaymentUncheckedCreateNestedManyWithoutSupplierInput
   }
@@ -335193,6 +338511,7 @@ export namespace Prisma {
     tenders?: TenderBidUpdateManyWithoutSupplierNestedInput
     purchaseOrders?: PurchaseOrderUpdateManyWithoutSupplierNestedInput
     invoices?: InvoiceUpdateManyWithoutSupplierNestedInput
+    goodsReceivedNotes?: GoodsReceivedNoteUpdateManyWithoutSupplierNestedInput
     uniformStockOrders?: UniformStockOrderUpdateManyWithoutSupplierNestedInput
     uniformPayments?: UniformSupplierPaymentUpdateManyWithoutSupplierNestedInput
   }
@@ -335215,6 +338534,7 @@ export namespace Prisma {
     tenders?: TenderBidUncheckedUpdateManyWithoutSupplierNestedInput
     purchaseOrders?: PurchaseOrderUncheckedUpdateManyWithoutSupplierNestedInput
     invoices?: InvoiceUncheckedUpdateManyWithoutSupplierNestedInput
+    goodsReceivedNotes?: GoodsReceivedNoteUncheckedUpdateManyWithoutSupplierNestedInput
     uniformStockOrders?: UniformStockOrderUncheckedUpdateManyWithoutSupplierNestedInput
     uniformPayments?: UniformSupplierPaymentUncheckedUpdateManyWithoutSupplierNestedInput
   }
@@ -335692,10 +339012,20 @@ export namespace Prisma {
     totalAmount: number
     status?: string
     schoolId: string
+    coaCode?: string | null
+    department?: string | null
+    budgetChecked?: boolean
+    budgetOverrun?: boolean
+    budgetRemaining?: number | null
+    approvedById?: string | null
+    approvedAt?: Date | string | null
+    rejectionReason?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     supplier: SupplierCreateNestedOneWithoutPurchaseOrdersInput
     requisition?: RequisitionCreateNestedOneWithoutPurchaseOrderInput
+    grns?: GoodsReceivedNoteCreateNestedManyWithoutPurchaseOrderInput
+    invoices?: InvoiceCreateNestedManyWithoutPurchaseOrderInput
   }
 
   export type PurchaseOrderUncheckedCreateInput = {
@@ -335707,9 +339037,19 @@ export namespace Prisma {
     totalAmount: number
     status?: string
     schoolId: string
+    coaCode?: string | null
+    department?: string | null
+    budgetChecked?: boolean
+    budgetOverrun?: boolean
+    budgetRemaining?: number | null
+    approvedById?: string | null
+    approvedAt?: Date | string | null
+    rejectionReason?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     requisition?: RequisitionUncheckedCreateNestedOneWithoutPurchaseOrderInput
+    grns?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutPurchaseOrderInput
+    invoices?: InvoiceUncheckedCreateNestedManyWithoutPurchaseOrderInput
   }
 
   export type PurchaseOrderUpdateInput = {
@@ -335720,10 +339060,20 @@ export namespace Prisma {
     totalAmount?: FloatFieldUpdateOperationsInput | number
     status?: StringFieldUpdateOperationsInput | string
     schoolId?: StringFieldUpdateOperationsInput | string
+    coaCode?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: NullableStringFieldUpdateOperationsInput | string | null
+    budgetChecked?: BoolFieldUpdateOperationsInput | boolean
+    budgetOverrun?: BoolFieldUpdateOperationsInput | boolean
+    budgetRemaining?: NullableFloatFieldUpdateOperationsInput | number | null
+    approvedById?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     supplier?: SupplierUpdateOneRequiredWithoutPurchaseOrdersNestedInput
     requisition?: RequisitionUpdateOneWithoutPurchaseOrderNestedInput
+    grns?: GoodsReceivedNoteUpdateManyWithoutPurchaseOrderNestedInput
+    invoices?: InvoiceUpdateManyWithoutPurchaseOrderNestedInput
   }
 
   export type PurchaseOrderUncheckedUpdateInput = {
@@ -335735,9 +339085,19 @@ export namespace Prisma {
     totalAmount?: FloatFieldUpdateOperationsInput | number
     status?: StringFieldUpdateOperationsInput | string
     schoolId?: StringFieldUpdateOperationsInput | string
+    coaCode?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: NullableStringFieldUpdateOperationsInput | string | null
+    budgetChecked?: BoolFieldUpdateOperationsInput | boolean
+    budgetOverrun?: BoolFieldUpdateOperationsInput | boolean
+    budgetRemaining?: NullableFloatFieldUpdateOperationsInput | number | null
+    approvedById?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     requisition?: RequisitionUncheckedUpdateOneWithoutPurchaseOrderNestedInput
+    grns?: GoodsReceivedNoteUncheckedUpdateManyWithoutPurchaseOrderNestedInput
+    invoices?: InvoiceUncheckedUpdateManyWithoutPurchaseOrderNestedInput
   }
 
   export type PurchaseOrderCreateManyInput = {
@@ -335749,6 +339109,14 @@ export namespace Prisma {
     totalAmount: number
     status?: string
     schoolId: string
+    coaCode?: string | null
+    department?: string | null
+    budgetChecked?: boolean
+    budgetOverrun?: boolean
+    budgetRemaining?: number | null
+    approvedById?: string | null
+    approvedAt?: Date | string | null
+    rejectionReason?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -335761,6 +339129,14 @@ export namespace Prisma {
     totalAmount?: FloatFieldUpdateOperationsInput | number
     status?: StringFieldUpdateOperationsInput | string
     schoolId?: StringFieldUpdateOperationsInput | string
+    coaCode?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: NullableStringFieldUpdateOperationsInput | string | null
+    budgetChecked?: BoolFieldUpdateOperationsInput | boolean
+    budgetOverrun?: BoolFieldUpdateOperationsInput | boolean
+    budgetRemaining?: NullableFloatFieldUpdateOperationsInput | number | null
+    approvedById?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -335774,6 +339150,134 @@ export namespace Prisma {
     totalAmount?: FloatFieldUpdateOperationsInput | number
     status?: StringFieldUpdateOperationsInput | string
     schoolId?: StringFieldUpdateOperationsInput | string
+    coaCode?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: NullableStringFieldUpdateOperationsInput | string | null
+    budgetChecked?: BoolFieldUpdateOperationsInput | boolean
+    budgetOverrun?: BoolFieldUpdateOperationsInput | boolean
+    budgetRemaining?: NullableFloatFieldUpdateOperationsInput | number | null
+    approvedById?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type GoodsReceivedNoteCreateInput = {
+    id?: string
+    grnNumber: string
+    schoolId: string
+    receivedDate?: Date | string
+    deliveryNoteNumber?: string | null
+    status?: string
+    items: JsonNullValueInput | InputJsonValue
+    totalValueReceived?: number
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    purchaseOrder: PurchaseOrderCreateNestedOneWithoutGrnsInput
+    supplier: SupplierCreateNestedOneWithoutGoodsReceivedNotesInput
+    receivedBy: UserCreateNestedOneWithoutReceivedGRNsInput
+    invoices?: InvoiceCreateNestedManyWithoutGrnInput
+  }
+
+  export type GoodsReceivedNoteUncheckedCreateInput = {
+    id?: string
+    grnNumber: string
+    schoolId: string
+    purchaseOrderId: string
+    supplierId: string
+    receivedDate?: Date | string
+    receivedById: string
+    deliveryNoteNumber?: string | null
+    status?: string
+    items: JsonNullValueInput | InputJsonValue
+    totalValueReceived?: number
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    invoices?: InvoiceUncheckedCreateNestedManyWithoutGrnInput
+  }
+
+  export type GoodsReceivedNoteUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    grnNumber?: StringFieldUpdateOperationsInput | string
+    schoolId?: StringFieldUpdateOperationsInput | string
+    receivedDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    deliveryNoteNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    items?: JsonNullValueInput | InputJsonValue
+    totalValueReceived?: FloatFieldUpdateOperationsInput | number
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    purchaseOrder?: PurchaseOrderUpdateOneRequiredWithoutGrnsNestedInput
+    supplier?: SupplierUpdateOneRequiredWithoutGoodsReceivedNotesNestedInput
+    receivedBy?: UserUpdateOneRequiredWithoutReceivedGRNsNestedInput
+    invoices?: InvoiceUpdateManyWithoutGrnNestedInput
+  }
+
+  export type GoodsReceivedNoteUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    grnNumber?: StringFieldUpdateOperationsInput | string
+    schoolId?: StringFieldUpdateOperationsInput | string
+    purchaseOrderId?: StringFieldUpdateOperationsInput | string
+    supplierId?: StringFieldUpdateOperationsInput | string
+    receivedDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    receivedById?: StringFieldUpdateOperationsInput | string
+    deliveryNoteNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    items?: JsonNullValueInput | InputJsonValue
+    totalValueReceived?: FloatFieldUpdateOperationsInput | number
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    invoices?: InvoiceUncheckedUpdateManyWithoutGrnNestedInput
+  }
+
+  export type GoodsReceivedNoteCreateManyInput = {
+    id?: string
+    grnNumber: string
+    schoolId: string
+    purchaseOrderId: string
+    supplierId: string
+    receivedDate?: Date | string
+    receivedById: string
+    deliveryNoteNumber?: string | null
+    status?: string
+    items: JsonNullValueInput | InputJsonValue
+    totalValueReceived?: number
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type GoodsReceivedNoteUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    grnNumber?: StringFieldUpdateOperationsInput | string
+    schoolId?: StringFieldUpdateOperationsInput | string
+    receivedDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    deliveryNoteNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    items?: JsonNullValueInput | InputJsonValue
+    totalValueReceived?: FloatFieldUpdateOperationsInput | number
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type GoodsReceivedNoteUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    grnNumber?: StringFieldUpdateOperationsInput | string
+    schoolId?: StringFieldUpdateOperationsInput | string
+    purchaseOrderId?: StringFieldUpdateOperationsInput | string
+    supplierId?: StringFieldUpdateOperationsInput | string
+    receivedDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    receivedById?: StringFieldUpdateOperationsInput | string
+    deliveryNoteNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    items?: JsonNullValueInput | InputJsonValue
+    totalValueReceived?: FloatFieldUpdateOperationsInput | number
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -335782,20 +339286,36 @@ export namespace Prisma {
     id?: string
     invoiceNo: string
     amount: number
+    items?: NullableJsonNullValueInput | InputJsonValue
     status?: string
+    matchingStatus?: string
+    matchingNotes?: string | null
+    approvedById?: string | null
+    approvedAt?: Date | string | null
+    journalEntryId?: string | null
     dueDate: Date | string
     schoolId: string
     createdAt?: Date | string
     updatedAt?: Date | string
     supplier: SupplierCreateNestedOneWithoutInvoicesInput
+    purchaseOrder?: PurchaseOrderCreateNestedOneWithoutInvoicesInput
+    grn?: GoodsReceivedNoteCreateNestedOneWithoutInvoicesInput
   }
 
   export type InvoiceUncheckedCreateInput = {
     id?: string
     invoiceNo: string
     supplierId: string
+    purchaseOrderId?: string | null
+    grnId?: string | null
     amount: number
+    items?: NullableJsonNullValueInput | InputJsonValue
     status?: string
+    matchingStatus?: string
+    matchingNotes?: string | null
+    approvedById?: string | null
+    approvedAt?: Date | string | null
+    journalEntryId?: string | null
     dueDate: Date | string
     schoolId: string
     createdAt?: Date | string
@@ -335806,20 +339326,36 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     invoiceNo?: StringFieldUpdateOperationsInput | string
     amount?: FloatFieldUpdateOperationsInput | number
+    items?: NullableJsonNullValueInput | InputJsonValue
     status?: StringFieldUpdateOperationsInput | string
+    matchingStatus?: StringFieldUpdateOperationsInput | string
+    matchingNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedById?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    journalEntryId?: NullableStringFieldUpdateOperationsInput | string | null
     dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
     schoolId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     supplier?: SupplierUpdateOneRequiredWithoutInvoicesNestedInput
+    purchaseOrder?: PurchaseOrderUpdateOneWithoutInvoicesNestedInput
+    grn?: GoodsReceivedNoteUpdateOneWithoutInvoicesNestedInput
   }
 
   export type InvoiceUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     invoiceNo?: StringFieldUpdateOperationsInput | string
     supplierId?: StringFieldUpdateOperationsInput | string
+    purchaseOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    grnId?: NullableStringFieldUpdateOperationsInput | string | null
     amount?: FloatFieldUpdateOperationsInput | number
+    items?: NullableJsonNullValueInput | InputJsonValue
     status?: StringFieldUpdateOperationsInput | string
+    matchingStatus?: StringFieldUpdateOperationsInput | string
+    matchingNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedById?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    journalEntryId?: NullableStringFieldUpdateOperationsInput | string | null
     dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
     schoolId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -335830,8 +339366,16 @@ export namespace Prisma {
     id?: string
     invoiceNo: string
     supplierId: string
+    purchaseOrderId?: string | null
+    grnId?: string | null
     amount: number
+    items?: NullableJsonNullValueInput | InputJsonValue
     status?: string
+    matchingStatus?: string
+    matchingNotes?: string | null
+    approvedById?: string | null
+    approvedAt?: Date | string | null
+    journalEntryId?: string | null
     dueDate: Date | string
     schoolId: string
     createdAt?: Date | string
@@ -335842,7 +339386,13 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     invoiceNo?: StringFieldUpdateOperationsInput | string
     amount?: FloatFieldUpdateOperationsInput | number
+    items?: NullableJsonNullValueInput | InputJsonValue
     status?: StringFieldUpdateOperationsInput | string
+    matchingStatus?: StringFieldUpdateOperationsInput | string
+    matchingNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedById?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    journalEntryId?: NullableStringFieldUpdateOperationsInput | string | null
     dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
     schoolId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -335853,8 +339403,16 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     invoiceNo?: StringFieldUpdateOperationsInput | string
     supplierId?: StringFieldUpdateOperationsInput | string
+    purchaseOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    grnId?: NullableStringFieldUpdateOperationsInput | string | null
     amount?: FloatFieldUpdateOperationsInput | number
+    items?: NullableJsonNullValueInput | InputJsonValue
     status?: StringFieldUpdateOperationsInput | string
+    matchingStatus?: StringFieldUpdateOperationsInput | string
+    matchingNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedById?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    journalEntryId?: NullableStringFieldUpdateOperationsInput | string | null
     dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
     schoolId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -336351,6 +339909,11 @@ export namespace Prisma {
     supplierName?: string | null
     invoiceNumber?: string | null
     depreciationRate?: number | null
+    accumulatedDepreciation?: number | null
+    bookValue?: number | null
+    lastDepreciationDate?: Date | string | null
+    coaExpenseCode?: string | null
+    coaAccumulatedCode?: string | null
     warrantyExpiry?: Date | string | null
     photoUrl?: string | null
     approvalStatus?: string
@@ -336366,6 +339929,7 @@ export namespace Prisma {
     attachments?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
+    depreciations?: AssetDepreciationCreateNestedManyWithoutAssetInput
     custodian?: UserCreateNestedOneWithoutAssignedAssetsInput
     registeredBy?: UserCreateNestedOneWithoutRegisteredAssetsInput
     school: SchoolCreateNestedOneWithoutAssetsInput
@@ -336390,6 +339954,11 @@ export namespace Prisma {
     supplierName?: string | null
     invoiceNumber?: string | null
     depreciationRate?: number | null
+    accumulatedDepreciation?: number | null
+    bookValue?: number | null
+    lastDepreciationDate?: Date | string | null
+    coaExpenseCode?: string | null
+    coaAccumulatedCode?: string | null
     warrantyExpiry?: Date | string | null
     photoUrl?: string | null
     custodianId?: string | null
@@ -336408,6 +339977,7 @@ export namespace Prisma {
     attachments?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
+    depreciations?: AssetDepreciationUncheckedCreateNestedManyWithoutAssetInput
     incidents?: AssetIncidentUncheckedCreateNestedManyWithoutAssetInput
     maintenance?: AssetMaintenanceUncheckedCreateNestedManyWithoutAssetInput
   }
@@ -336429,6 +339999,11 @@ export namespace Prisma {
     supplierName?: NullableStringFieldUpdateOperationsInput | string | null
     invoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
     depreciationRate?: NullableFloatFieldUpdateOperationsInput | number | null
+    accumulatedDepreciation?: NullableFloatFieldUpdateOperationsInput | number | null
+    bookValue?: NullableFloatFieldUpdateOperationsInput | number | null
+    lastDepreciationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    coaExpenseCode?: NullableStringFieldUpdateOperationsInput | string | null
+    coaAccumulatedCode?: NullableStringFieldUpdateOperationsInput | string | null
     warrantyExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     photoUrl?: NullableStringFieldUpdateOperationsInput | string | null
     approvalStatus?: StringFieldUpdateOperationsInput | string
@@ -336444,6 +340019,7 @@ export namespace Prisma {
     attachments?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    depreciations?: AssetDepreciationUpdateManyWithoutAssetNestedInput
     custodian?: UserUpdateOneWithoutAssignedAssetsNestedInput
     registeredBy?: UserUpdateOneWithoutRegisteredAssetsNestedInput
     school?: SchoolUpdateOneRequiredWithoutAssetsNestedInput
@@ -336468,6 +340044,11 @@ export namespace Prisma {
     supplierName?: NullableStringFieldUpdateOperationsInput | string | null
     invoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
     depreciationRate?: NullableFloatFieldUpdateOperationsInput | number | null
+    accumulatedDepreciation?: NullableFloatFieldUpdateOperationsInput | number | null
+    bookValue?: NullableFloatFieldUpdateOperationsInput | number | null
+    lastDepreciationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    coaExpenseCode?: NullableStringFieldUpdateOperationsInput | string | null
+    coaAccumulatedCode?: NullableStringFieldUpdateOperationsInput | string | null
     warrantyExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     photoUrl?: NullableStringFieldUpdateOperationsInput | string | null
     custodianId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -336486,6 +340067,7 @@ export namespace Prisma {
     attachments?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    depreciations?: AssetDepreciationUncheckedUpdateManyWithoutAssetNestedInput
     incidents?: AssetIncidentUncheckedUpdateManyWithoutAssetNestedInput
     maintenance?: AssetMaintenanceUncheckedUpdateManyWithoutAssetNestedInput
   }
@@ -336507,6 +340089,11 @@ export namespace Prisma {
     supplierName?: string | null
     invoiceNumber?: string | null
     depreciationRate?: number | null
+    accumulatedDepreciation?: number | null
+    bookValue?: number | null
+    lastDepreciationDate?: Date | string | null
+    coaExpenseCode?: string | null
+    coaAccumulatedCode?: string | null
     warrantyExpiry?: Date | string | null
     photoUrl?: string | null
     custodianId?: string | null
@@ -336544,6 +340131,11 @@ export namespace Prisma {
     supplierName?: NullableStringFieldUpdateOperationsInput | string | null
     invoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
     depreciationRate?: NullableFloatFieldUpdateOperationsInput | number | null
+    accumulatedDepreciation?: NullableFloatFieldUpdateOperationsInput | number | null
+    bookValue?: NullableFloatFieldUpdateOperationsInput | number | null
+    lastDepreciationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    coaExpenseCode?: NullableStringFieldUpdateOperationsInput | string | null
+    coaAccumulatedCode?: NullableStringFieldUpdateOperationsInput | string | null
     warrantyExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     photoUrl?: NullableStringFieldUpdateOperationsInput | string | null
     approvalStatus?: StringFieldUpdateOperationsInput | string
@@ -336578,6 +340170,11 @@ export namespace Prisma {
     supplierName?: NullableStringFieldUpdateOperationsInput | string | null
     invoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
     depreciationRate?: NullableFloatFieldUpdateOperationsInput | number | null
+    accumulatedDepreciation?: NullableFloatFieldUpdateOperationsInput | number | null
+    bookValue?: NullableFloatFieldUpdateOperationsInput | number | null
+    lastDepreciationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    coaExpenseCode?: NullableStringFieldUpdateOperationsInput | string | null
+    coaAccumulatedCode?: NullableStringFieldUpdateOperationsInput | string | null
     warrantyExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     photoUrl?: NullableStringFieldUpdateOperationsInput | string | null
     custodianId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -336596,6 +340193,131 @@ export namespace Prisma {
     attachments?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AssetDepreciationCreateInput = {
+    id?: string
+    schoolId: string
+    date?: Date | string
+    fiscalYear: number
+    fiscalPeriod: string
+    depreciationAmount: number
+    bookValueBefore: number
+    bookValueAfter: number
+    rateUsed: number
+    method?: string
+    journalEntryId?: string | null
+    processedById?: string | null
+    notes?: string | null
+    createdAt?: Date | string
+    asset: AssetCreateNestedOneWithoutDepreciationsInput
+  }
+
+  export type AssetDepreciationUncheckedCreateInput = {
+    id?: string
+    schoolId: string
+    assetId: string
+    date?: Date | string
+    fiscalYear: number
+    fiscalPeriod: string
+    depreciationAmount: number
+    bookValueBefore: number
+    bookValueAfter: number
+    rateUsed: number
+    method?: string
+    journalEntryId?: string | null
+    processedById?: string | null
+    notes?: string | null
+    createdAt?: Date | string
+  }
+
+  export type AssetDepreciationUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    schoolId?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    fiscalYear?: IntFieldUpdateOperationsInput | number
+    fiscalPeriod?: StringFieldUpdateOperationsInput | string
+    depreciationAmount?: FloatFieldUpdateOperationsInput | number
+    bookValueBefore?: FloatFieldUpdateOperationsInput | number
+    bookValueAfter?: FloatFieldUpdateOperationsInput | number
+    rateUsed?: FloatFieldUpdateOperationsInput | number
+    method?: StringFieldUpdateOperationsInput | string
+    journalEntryId?: NullableStringFieldUpdateOperationsInput | string | null
+    processedById?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    asset?: AssetUpdateOneRequiredWithoutDepreciationsNestedInput
+  }
+
+  export type AssetDepreciationUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    schoolId?: StringFieldUpdateOperationsInput | string
+    assetId?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    fiscalYear?: IntFieldUpdateOperationsInput | number
+    fiscalPeriod?: StringFieldUpdateOperationsInput | string
+    depreciationAmount?: FloatFieldUpdateOperationsInput | number
+    bookValueBefore?: FloatFieldUpdateOperationsInput | number
+    bookValueAfter?: FloatFieldUpdateOperationsInput | number
+    rateUsed?: FloatFieldUpdateOperationsInput | number
+    method?: StringFieldUpdateOperationsInput | string
+    journalEntryId?: NullableStringFieldUpdateOperationsInput | string | null
+    processedById?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AssetDepreciationCreateManyInput = {
+    id?: string
+    schoolId: string
+    assetId: string
+    date?: Date | string
+    fiscalYear: number
+    fiscalPeriod: string
+    depreciationAmount: number
+    bookValueBefore: number
+    bookValueAfter: number
+    rateUsed: number
+    method?: string
+    journalEntryId?: string | null
+    processedById?: string | null
+    notes?: string | null
+    createdAt?: Date | string
+  }
+
+  export type AssetDepreciationUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    schoolId?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    fiscalYear?: IntFieldUpdateOperationsInput | number
+    fiscalPeriod?: StringFieldUpdateOperationsInput | string
+    depreciationAmount?: FloatFieldUpdateOperationsInput | number
+    bookValueBefore?: FloatFieldUpdateOperationsInput | number
+    bookValueAfter?: FloatFieldUpdateOperationsInput | number
+    rateUsed?: FloatFieldUpdateOperationsInput | number
+    method?: StringFieldUpdateOperationsInput | string
+    journalEntryId?: NullableStringFieldUpdateOperationsInput | string | null
+    processedById?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AssetDepreciationUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    schoolId?: StringFieldUpdateOperationsInput | string
+    assetId?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    fiscalYear?: IntFieldUpdateOperationsInput | number
+    fiscalPeriod?: StringFieldUpdateOperationsInput | string
+    depreciationAmount?: FloatFieldUpdateOperationsInput | number
+    bookValueBefore?: FloatFieldUpdateOperationsInput | number
+    bookValueAfter?: FloatFieldUpdateOperationsInput | number
+    rateUsed?: FloatFieldUpdateOperationsInput | number
+    method?: StringFieldUpdateOperationsInput | string
+    journalEntryId?: NullableStringFieldUpdateOperationsInput | string | null
+    processedById?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type AssetIncidentCreateInput = {
@@ -356902,6 +360624,12 @@ export namespace Prisma {
     none?: AttendanceSessionRecordWhereInput
   }
 
+  export type GoodsReceivedNoteListRelationFilter = {
+    every?: GoodsReceivedNoteWhereInput
+    some?: GoodsReceivedNoteWhereInput
+    none?: GoodsReceivedNoteWhereInput
+  }
+
   export type SyllabusTopicOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
@@ -356963,6 +360691,10 @@ export namespace Prisma {
   }
 
   export type AttendanceSessionRecordOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type GoodsReceivedNoteOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -360389,12 +364121,21 @@ export namespace Prisma {
     totalAmount?: SortOrder
     status?: SortOrder
     schoolId?: SortOrder
+    coaCode?: SortOrder
+    department?: SortOrder
+    budgetChecked?: SortOrder
+    budgetOverrun?: SortOrder
+    budgetRemaining?: SortOrder
+    approvedById?: SortOrder
+    approvedAt?: SortOrder
+    rejectionReason?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
 
   export type PurchaseOrderAvgOrderByAggregateInput = {
     totalAmount?: SortOrder
+    budgetRemaining?: SortOrder
   }
 
   export type PurchaseOrderMaxOrderByAggregateInput = {
@@ -360405,6 +364146,14 @@ export namespace Prisma {
     totalAmount?: SortOrder
     status?: SortOrder
     schoolId?: SortOrder
+    coaCode?: SortOrder
+    department?: SortOrder
+    budgetChecked?: SortOrder
+    budgetOverrun?: SortOrder
+    budgetRemaining?: SortOrder
+    approvedById?: SortOrder
+    approvedAt?: SortOrder
+    rejectionReason?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -360417,20 +364166,109 @@ export namespace Prisma {
     totalAmount?: SortOrder
     status?: SortOrder
     schoolId?: SortOrder
+    coaCode?: SortOrder
+    department?: SortOrder
+    budgetChecked?: SortOrder
+    budgetOverrun?: SortOrder
+    budgetRemaining?: SortOrder
+    approvedById?: SortOrder
+    approvedAt?: SortOrder
+    rejectionReason?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
 
   export type PurchaseOrderSumOrderByAggregateInput = {
     totalAmount?: SortOrder
+    budgetRemaining?: SortOrder
+  }
+
+  export type PurchaseOrderRelationFilter = {
+    is?: PurchaseOrderWhereInput
+    isNot?: PurchaseOrderWhereInput
+  }
+
+  export type GoodsReceivedNoteCountOrderByAggregateInput = {
+    id?: SortOrder
+    grnNumber?: SortOrder
+    schoolId?: SortOrder
+    purchaseOrderId?: SortOrder
+    supplierId?: SortOrder
+    receivedDate?: SortOrder
+    receivedById?: SortOrder
+    deliveryNoteNumber?: SortOrder
+    status?: SortOrder
+    items?: SortOrder
+    totalValueReceived?: SortOrder
+    notes?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type GoodsReceivedNoteAvgOrderByAggregateInput = {
+    totalValueReceived?: SortOrder
+  }
+
+  export type GoodsReceivedNoteMaxOrderByAggregateInput = {
+    id?: SortOrder
+    grnNumber?: SortOrder
+    schoolId?: SortOrder
+    purchaseOrderId?: SortOrder
+    supplierId?: SortOrder
+    receivedDate?: SortOrder
+    receivedById?: SortOrder
+    deliveryNoteNumber?: SortOrder
+    status?: SortOrder
+    totalValueReceived?: SortOrder
+    notes?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type GoodsReceivedNoteMinOrderByAggregateInput = {
+    id?: SortOrder
+    grnNumber?: SortOrder
+    schoolId?: SortOrder
+    purchaseOrderId?: SortOrder
+    supplierId?: SortOrder
+    receivedDate?: SortOrder
+    receivedById?: SortOrder
+    deliveryNoteNumber?: SortOrder
+    status?: SortOrder
+    totalValueReceived?: SortOrder
+    notes?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type GoodsReceivedNoteSumOrderByAggregateInput = {
+    totalValueReceived?: SortOrder
+  }
+
+  export type PurchaseOrderNullableRelationFilter = {
+    is?: PurchaseOrderWhereInput | null
+    isNot?: PurchaseOrderWhereInput | null
+  }
+
+  export type GoodsReceivedNoteNullableRelationFilter = {
+    is?: GoodsReceivedNoteWhereInput | null
+    isNot?: GoodsReceivedNoteWhereInput | null
   }
 
   export type InvoiceCountOrderByAggregateInput = {
     id?: SortOrder
     invoiceNo?: SortOrder
     supplierId?: SortOrder
+    purchaseOrderId?: SortOrder
+    grnId?: SortOrder
     amount?: SortOrder
+    items?: SortOrder
     status?: SortOrder
+    matchingStatus?: SortOrder
+    matchingNotes?: SortOrder
+    approvedById?: SortOrder
+    approvedAt?: SortOrder
+    journalEntryId?: SortOrder
     dueDate?: SortOrder
     schoolId?: SortOrder
     createdAt?: SortOrder
@@ -360445,8 +364283,15 @@ export namespace Prisma {
     id?: SortOrder
     invoiceNo?: SortOrder
     supplierId?: SortOrder
+    purchaseOrderId?: SortOrder
+    grnId?: SortOrder
     amount?: SortOrder
     status?: SortOrder
+    matchingStatus?: SortOrder
+    matchingNotes?: SortOrder
+    approvedById?: SortOrder
+    approvedAt?: SortOrder
+    journalEntryId?: SortOrder
     dueDate?: SortOrder
     schoolId?: SortOrder
     createdAt?: SortOrder
@@ -360457,8 +364302,15 @@ export namespace Prisma {
     id?: SortOrder
     invoiceNo?: SortOrder
     supplierId?: SortOrder
+    purchaseOrderId?: SortOrder
+    grnId?: SortOrder
     amount?: SortOrder
     status?: SortOrder
+    matchingStatus?: SortOrder
+    matchingNotes?: SortOrder
+    approvedById?: SortOrder
+    approvedAt?: SortOrder
+    journalEntryId?: SortOrder
     dueDate?: SortOrder
     schoolId?: SortOrder
     createdAt?: SortOrder
@@ -360717,10 +364569,20 @@ export namespace Prisma {
     unpaidUsed?: SortOrder
   }
 
+  export type AssetDepreciationListRelationFilter = {
+    every?: AssetDepreciationWhereInput
+    some?: AssetDepreciationWhereInput
+    none?: AssetDepreciationWhereInput
+  }
+
   export type AssetMaintenanceListRelationFilter = {
     every?: AssetMaintenanceWhereInput
     some?: AssetMaintenanceWhereInput
     none?: AssetMaintenanceWhereInput
+  }
+
+  export type AssetDepreciationOrderByRelationAggregateInput = {
+    _count?: SortOrder
   }
 
   export type AssetMaintenanceOrderByRelationAggregateInput = {
@@ -360744,6 +364606,11 @@ export namespace Prisma {
     supplierName?: SortOrder
     invoiceNumber?: SortOrder
     depreciationRate?: SortOrder
+    accumulatedDepreciation?: SortOrder
+    bookValue?: SortOrder
+    lastDepreciationDate?: SortOrder
+    coaExpenseCode?: SortOrder
+    coaAccumulatedCode?: SortOrder
     warrantyExpiry?: SortOrder
     photoUrl?: SortOrder
     custodianId?: SortOrder
@@ -360768,6 +364635,8 @@ export namespace Prisma {
     quantity?: SortOrder
     purchasePrice?: SortOrder
     depreciationRate?: SortOrder
+    accumulatedDepreciation?: SortOrder
+    bookValue?: SortOrder
     maintenanceInterval?: SortOrder
   }
 
@@ -360788,6 +364657,11 @@ export namespace Prisma {
     supplierName?: SortOrder
     invoiceNumber?: SortOrder
     depreciationRate?: SortOrder
+    accumulatedDepreciation?: SortOrder
+    bookValue?: SortOrder
+    lastDepreciationDate?: SortOrder
+    coaExpenseCode?: SortOrder
+    coaAccumulatedCode?: SortOrder
     warrantyExpiry?: SortOrder
     photoUrl?: SortOrder
     custodianId?: SortOrder
@@ -360824,6 +364698,11 @@ export namespace Prisma {
     supplierName?: SortOrder
     invoiceNumber?: SortOrder
     depreciationRate?: SortOrder
+    accumulatedDepreciation?: SortOrder
+    bookValue?: SortOrder
+    lastDepreciationDate?: SortOrder
+    coaExpenseCode?: SortOrder
+    coaAccumulatedCode?: SortOrder
     warrantyExpiry?: SortOrder
     photoUrl?: SortOrder
     custodianId?: SortOrder
@@ -360847,12 +364726,84 @@ export namespace Prisma {
     quantity?: SortOrder
     purchasePrice?: SortOrder
     depreciationRate?: SortOrder
+    accumulatedDepreciation?: SortOrder
+    bookValue?: SortOrder
     maintenanceInterval?: SortOrder
   }
 
   export type AssetRelationFilter = {
     is?: AssetWhereInput
     isNot?: AssetWhereInput
+  }
+
+  export type AssetDepreciationCountOrderByAggregateInput = {
+    id?: SortOrder
+    schoolId?: SortOrder
+    assetId?: SortOrder
+    date?: SortOrder
+    fiscalYear?: SortOrder
+    fiscalPeriod?: SortOrder
+    depreciationAmount?: SortOrder
+    bookValueBefore?: SortOrder
+    bookValueAfter?: SortOrder
+    rateUsed?: SortOrder
+    method?: SortOrder
+    journalEntryId?: SortOrder
+    processedById?: SortOrder
+    notes?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type AssetDepreciationAvgOrderByAggregateInput = {
+    fiscalYear?: SortOrder
+    depreciationAmount?: SortOrder
+    bookValueBefore?: SortOrder
+    bookValueAfter?: SortOrder
+    rateUsed?: SortOrder
+  }
+
+  export type AssetDepreciationMaxOrderByAggregateInput = {
+    id?: SortOrder
+    schoolId?: SortOrder
+    assetId?: SortOrder
+    date?: SortOrder
+    fiscalYear?: SortOrder
+    fiscalPeriod?: SortOrder
+    depreciationAmount?: SortOrder
+    bookValueBefore?: SortOrder
+    bookValueAfter?: SortOrder
+    rateUsed?: SortOrder
+    method?: SortOrder
+    journalEntryId?: SortOrder
+    processedById?: SortOrder
+    notes?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type AssetDepreciationMinOrderByAggregateInput = {
+    id?: SortOrder
+    schoolId?: SortOrder
+    assetId?: SortOrder
+    date?: SortOrder
+    fiscalYear?: SortOrder
+    fiscalPeriod?: SortOrder
+    depreciationAmount?: SortOrder
+    bookValueBefore?: SortOrder
+    bookValueAfter?: SortOrder
+    rateUsed?: SortOrder
+    method?: SortOrder
+    journalEntryId?: SortOrder
+    processedById?: SortOrder
+    notes?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type AssetDepreciationSumOrderByAggregateInput = {
+    fiscalYear?: SortOrder
+    depreciationAmount?: SortOrder
+    bookValueBefore?: SortOrder
+    bookValueAfter?: SortOrder
+    rateUsed?: SortOrder
   }
 
   export type AssetIncidentCountOrderByAggregateInput = {
@@ -361377,11 +365328,6 @@ export namespace Prisma {
     in?: $Enums.RequesterRole[] | ListEnumRequesterRoleFieldRefInput<$PrismaModel> | null
     notIn?: $Enums.RequesterRole[] | ListEnumRequesterRoleFieldRefInput<$PrismaModel> | null
     not?: NestedEnumRequesterRoleNullableFilter<$PrismaModel> | $Enums.RequesterRole | null
-  }
-
-  export type PurchaseOrderNullableRelationFilter = {
-    is?: PurchaseOrderWhereInput | null
-    isNot?: PurchaseOrderWhereInput | null
   }
 
   export type RequisitionCountOrderByAggregateInput = {
@@ -378700,6 +382646,13 @@ export namespace Prisma {
     connect?: StudentAssessmentWhereUniqueInput | StudentAssessmentWhereUniqueInput[]
   }
 
+  export type GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput = {
+    create?: XOR<GoodsReceivedNoteCreateWithoutReceivedByInput, GoodsReceivedNoteUncheckedCreateWithoutReceivedByInput> | GoodsReceivedNoteCreateWithoutReceivedByInput[] | GoodsReceivedNoteUncheckedCreateWithoutReceivedByInput[]
+    connectOrCreate?: GoodsReceivedNoteCreateOrConnectWithoutReceivedByInput | GoodsReceivedNoteCreateOrConnectWithoutReceivedByInput[]
+    createMany?: GoodsReceivedNoteCreateManyReceivedByInputEnvelope
+    connect?: GoodsReceivedNoteWhereUniqueInput | GoodsReceivedNoteWhereUniqueInput[]
+  }
+
   export type SyllabusUncheckedCreateNestedManyWithoutUploadedByInput = {
     create?: XOR<SyllabusCreateWithoutUploadedByInput, SyllabusUncheckedCreateWithoutUploadedByInput> | SyllabusCreateWithoutUploadedByInput[] | SyllabusUncheckedCreateWithoutUploadedByInput[]
     connectOrCreate?: SyllabusCreateOrConnectWithoutUploadedByInput | SyllabusCreateOrConnectWithoutUploadedByInput[]
@@ -379294,6 +383247,13 @@ export namespace Prisma {
     connectOrCreate?: StudentAssessmentCreateOrConnectWithoutMarkedByInput | StudentAssessmentCreateOrConnectWithoutMarkedByInput[]
     createMany?: StudentAssessmentCreateManyMarkedByInputEnvelope
     connect?: StudentAssessmentWhereUniqueInput | StudentAssessmentWhereUniqueInput[]
+  }
+
+  export type GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput = {
+    create?: XOR<GoodsReceivedNoteCreateWithoutReceivedByInput, GoodsReceivedNoteUncheckedCreateWithoutReceivedByInput> | GoodsReceivedNoteCreateWithoutReceivedByInput[] | GoodsReceivedNoteUncheckedCreateWithoutReceivedByInput[]
+    connectOrCreate?: GoodsReceivedNoteCreateOrConnectWithoutReceivedByInput | GoodsReceivedNoteCreateOrConnectWithoutReceivedByInput[]
+    createMany?: GoodsReceivedNoteCreateManyReceivedByInputEnvelope
+    connect?: GoodsReceivedNoteWhereUniqueInput | GoodsReceivedNoteWhereUniqueInput[]
   }
 
   export type UserUpdatesecondaryRolesInput = {
@@ -380501,6 +384461,20 @@ export namespace Prisma {
     deleteMany?: StudentAssessmentScalarWhereInput | StudentAssessmentScalarWhereInput[]
   }
 
+  export type GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput = {
+    create?: XOR<GoodsReceivedNoteCreateWithoutReceivedByInput, GoodsReceivedNoteUncheckedCreateWithoutReceivedByInput> | GoodsReceivedNoteCreateWithoutReceivedByInput[] | GoodsReceivedNoteUncheckedCreateWithoutReceivedByInput[]
+    connectOrCreate?: GoodsReceivedNoteCreateOrConnectWithoutReceivedByInput | GoodsReceivedNoteCreateOrConnectWithoutReceivedByInput[]
+    upsert?: GoodsReceivedNoteUpsertWithWhereUniqueWithoutReceivedByInput | GoodsReceivedNoteUpsertWithWhereUniqueWithoutReceivedByInput[]
+    createMany?: GoodsReceivedNoteCreateManyReceivedByInputEnvelope
+    set?: GoodsReceivedNoteWhereUniqueInput | GoodsReceivedNoteWhereUniqueInput[]
+    disconnect?: GoodsReceivedNoteWhereUniqueInput | GoodsReceivedNoteWhereUniqueInput[]
+    delete?: GoodsReceivedNoteWhereUniqueInput | GoodsReceivedNoteWhereUniqueInput[]
+    connect?: GoodsReceivedNoteWhereUniqueInput | GoodsReceivedNoteWhereUniqueInput[]
+    update?: GoodsReceivedNoteUpdateWithWhereUniqueWithoutReceivedByInput | GoodsReceivedNoteUpdateWithWhereUniqueWithoutReceivedByInput[]
+    updateMany?: GoodsReceivedNoteUpdateManyWithWhereWithoutReceivedByInput | GoodsReceivedNoteUpdateManyWithWhereWithoutReceivedByInput[]
+    deleteMany?: GoodsReceivedNoteScalarWhereInput | GoodsReceivedNoteScalarWhereInput[]
+  }
+
   export type SyllabusUncheckedUpdateManyWithoutUploadedByNestedInput = {
     create?: XOR<SyllabusCreateWithoutUploadedByInput, SyllabusUncheckedCreateWithoutUploadedByInput> | SyllabusCreateWithoutUploadedByInput[] | SyllabusUncheckedCreateWithoutUploadedByInput[]
     connectOrCreate?: SyllabusCreateOrConnectWithoutUploadedByInput | SyllabusCreateOrConnectWithoutUploadedByInput[]
@@ -381679,6 +385653,20 @@ export namespace Prisma {
     update?: StudentAssessmentUpdateWithWhereUniqueWithoutMarkedByInput | StudentAssessmentUpdateWithWhereUniqueWithoutMarkedByInput[]
     updateMany?: StudentAssessmentUpdateManyWithWhereWithoutMarkedByInput | StudentAssessmentUpdateManyWithWhereWithoutMarkedByInput[]
     deleteMany?: StudentAssessmentScalarWhereInput | StudentAssessmentScalarWhereInput[]
+  }
+
+  export type GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput = {
+    create?: XOR<GoodsReceivedNoteCreateWithoutReceivedByInput, GoodsReceivedNoteUncheckedCreateWithoutReceivedByInput> | GoodsReceivedNoteCreateWithoutReceivedByInput[] | GoodsReceivedNoteUncheckedCreateWithoutReceivedByInput[]
+    connectOrCreate?: GoodsReceivedNoteCreateOrConnectWithoutReceivedByInput | GoodsReceivedNoteCreateOrConnectWithoutReceivedByInput[]
+    upsert?: GoodsReceivedNoteUpsertWithWhereUniqueWithoutReceivedByInput | GoodsReceivedNoteUpsertWithWhereUniqueWithoutReceivedByInput[]
+    createMany?: GoodsReceivedNoteCreateManyReceivedByInputEnvelope
+    set?: GoodsReceivedNoteWhereUniqueInput | GoodsReceivedNoteWhereUniqueInput[]
+    disconnect?: GoodsReceivedNoteWhereUniqueInput | GoodsReceivedNoteWhereUniqueInput[]
+    delete?: GoodsReceivedNoteWhereUniqueInput | GoodsReceivedNoteWhereUniqueInput[]
+    connect?: GoodsReceivedNoteWhereUniqueInput | GoodsReceivedNoteWhereUniqueInput[]
+    update?: GoodsReceivedNoteUpdateWithWhereUniqueWithoutReceivedByInput | GoodsReceivedNoteUpdateWithWhereUniqueWithoutReceivedByInput[]
+    updateMany?: GoodsReceivedNoteUpdateManyWithWhereWithoutReceivedByInput | GoodsReceivedNoteUpdateManyWithWhereWithoutReceivedByInput[]
+    deleteMany?: GoodsReceivedNoteScalarWhereInput | GoodsReceivedNoteScalarWhereInput[]
   }
 
   export type UserCreateNestedOneWithoutSessionsInput = {
@@ -388596,6 +392584,13 @@ export namespace Prisma {
     connect?: InvoiceWhereUniqueInput | InvoiceWhereUniqueInput[]
   }
 
+  export type GoodsReceivedNoteCreateNestedManyWithoutSupplierInput = {
+    create?: XOR<GoodsReceivedNoteCreateWithoutSupplierInput, GoodsReceivedNoteUncheckedCreateWithoutSupplierInput> | GoodsReceivedNoteCreateWithoutSupplierInput[] | GoodsReceivedNoteUncheckedCreateWithoutSupplierInput[]
+    connectOrCreate?: GoodsReceivedNoteCreateOrConnectWithoutSupplierInput | GoodsReceivedNoteCreateOrConnectWithoutSupplierInput[]
+    createMany?: GoodsReceivedNoteCreateManySupplierInputEnvelope
+    connect?: GoodsReceivedNoteWhereUniqueInput | GoodsReceivedNoteWhereUniqueInput[]
+  }
+
   export type UniformStockOrderCreateNestedManyWithoutSupplierInput = {
     create?: XOR<UniformStockOrderCreateWithoutSupplierInput, UniformStockOrderUncheckedCreateWithoutSupplierInput> | UniformStockOrderCreateWithoutSupplierInput[] | UniformStockOrderUncheckedCreateWithoutSupplierInput[]
     connectOrCreate?: UniformStockOrderCreateOrConnectWithoutSupplierInput | UniformStockOrderCreateOrConnectWithoutSupplierInput[]
@@ -388636,6 +392631,13 @@ export namespace Prisma {
     connectOrCreate?: InvoiceCreateOrConnectWithoutSupplierInput | InvoiceCreateOrConnectWithoutSupplierInput[]
     createMany?: InvoiceCreateManySupplierInputEnvelope
     connect?: InvoiceWhereUniqueInput | InvoiceWhereUniqueInput[]
+  }
+
+  export type GoodsReceivedNoteUncheckedCreateNestedManyWithoutSupplierInput = {
+    create?: XOR<GoodsReceivedNoteCreateWithoutSupplierInput, GoodsReceivedNoteUncheckedCreateWithoutSupplierInput> | GoodsReceivedNoteCreateWithoutSupplierInput[] | GoodsReceivedNoteUncheckedCreateWithoutSupplierInput[]
+    connectOrCreate?: GoodsReceivedNoteCreateOrConnectWithoutSupplierInput | GoodsReceivedNoteCreateOrConnectWithoutSupplierInput[]
+    createMany?: GoodsReceivedNoteCreateManySupplierInputEnvelope
+    connect?: GoodsReceivedNoteWhereUniqueInput | GoodsReceivedNoteWhereUniqueInput[]
   }
 
   export type UniformStockOrderUncheckedCreateNestedManyWithoutSupplierInput = {
@@ -388716,6 +392718,20 @@ export namespace Prisma {
     update?: InvoiceUpdateWithWhereUniqueWithoutSupplierInput | InvoiceUpdateWithWhereUniqueWithoutSupplierInput[]
     updateMany?: InvoiceUpdateManyWithWhereWithoutSupplierInput | InvoiceUpdateManyWithWhereWithoutSupplierInput[]
     deleteMany?: InvoiceScalarWhereInput | InvoiceScalarWhereInput[]
+  }
+
+  export type GoodsReceivedNoteUpdateManyWithoutSupplierNestedInput = {
+    create?: XOR<GoodsReceivedNoteCreateWithoutSupplierInput, GoodsReceivedNoteUncheckedCreateWithoutSupplierInput> | GoodsReceivedNoteCreateWithoutSupplierInput[] | GoodsReceivedNoteUncheckedCreateWithoutSupplierInput[]
+    connectOrCreate?: GoodsReceivedNoteCreateOrConnectWithoutSupplierInput | GoodsReceivedNoteCreateOrConnectWithoutSupplierInput[]
+    upsert?: GoodsReceivedNoteUpsertWithWhereUniqueWithoutSupplierInput | GoodsReceivedNoteUpsertWithWhereUniqueWithoutSupplierInput[]
+    createMany?: GoodsReceivedNoteCreateManySupplierInputEnvelope
+    set?: GoodsReceivedNoteWhereUniqueInput | GoodsReceivedNoteWhereUniqueInput[]
+    disconnect?: GoodsReceivedNoteWhereUniqueInput | GoodsReceivedNoteWhereUniqueInput[]
+    delete?: GoodsReceivedNoteWhereUniqueInput | GoodsReceivedNoteWhereUniqueInput[]
+    connect?: GoodsReceivedNoteWhereUniqueInput | GoodsReceivedNoteWhereUniqueInput[]
+    update?: GoodsReceivedNoteUpdateWithWhereUniqueWithoutSupplierInput | GoodsReceivedNoteUpdateWithWhereUniqueWithoutSupplierInput[]
+    updateMany?: GoodsReceivedNoteUpdateManyWithWhereWithoutSupplierInput | GoodsReceivedNoteUpdateManyWithWhereWithoutSupplierInput[]
+    deleteMany?: GoodsReceivedNoteScalarWhereInput | GoodsReceivedNoteScalarWhereInput[]
   }
 
   export type UniformStockOrderUpdateManyWithoutSupplierNestedInput = {
@@ -388800,6 +392816,20 @@ export namespace Prisma {
     update?: InvoiceUpdateWithWhereUniqueWithoutSupplierInput | InvoiceUpdateWithWhereUniqueWithoutSupplierInput[]
     updateMany?: InvoiceUpdateManyWithWhereWithoutSupplierInput | InvoiceUpdateManyWithWhereWithoutSupplierInput[]
     deleteMany?: InvoiceScalarWhereInput | InvoiceScalarWhereInput[]
+  }
+
+  export type GoodsReceivedNoteUncheckedUpdateManyWithoutSupplierNestedInput = {
+    create?: XOR<GoodsReceivedNoteCreateWithoutSupplierInput, GoodsReceivedNoteUncheckedCreateWithoutSupplierInput> | GoodsReceivedNoteCreateWithoutSupplierInput[] | GoodsReceivedNoteUncheckedCreateWithoutSupplierInput[]
+    connectOrCreate?: GoodsReceivedNoteCreateOrConnectWithoutSupplierInput | GoodsReceivedNoteCreateOrConnectWithoutSupplierInput[]
+    upsert?: GoodsReceivedNoteUpsertWithWhereUniqueWithoutSupplierInput | GoodsReceivedNoteUpsertWithWhereUniqueWithoutSupplierInput[]
+    createMany?: GoodsReceivedNoteCreateManySupplierInputEnvelope
+    set?: GoodsReceivedNoteWhereUniqueInput | GoodsReceivedNoteWhereUniqueInput[]
+    disconnect?: GoodsReceivedNoteWhereUniqueInput | GoodsReceivedNoteWhereUniqueInput[]
+    delete?: GoodsReceivedNoteWhereUniqueInput | GoodsReceivedNoteWhereUniqueInput[]
+    connect?: GoodsReceivedNoteWhereUniqueInput | GoodsReceivedNoteWhereUniqueInput[]
+    update?: GoodsReceivedNoteUpdateWithWhereUniqueWithoutSupplierInput | GoodsReceivedNoteUpdateWithWhereUniqueWithoutSupplierInput[]
+    updateMany?: GoodsReceivedNoteUpdateManyWithWhereWithoutSupplierInput | GoodsReceivedNoteUpdateManyWithWhereWithoutSupplierInput[]
+    deleteMany?: GoodsReceivedNoteScalarWhereInput | GoodsReceivedNoteScalarWhereInput[]
   }
 
   export type UniformStockOrderUncheckedUpdateManyWithoutSupplierNestedInput = {
@@ -389066,10 +393096,38 @@ export namespace Prisma {
     connect?: RequisitionWhereUniqueInput
   }
 
+  export type GoodsReceivedNoteCreateNestedManyWithoutPurchaseOrderInput = {
+    create?: XOR<GoodsReceivedNoteCreateWithoutPurchaseOrderInput, GoodsReceivedNoteUncheckedCreateWithoutPurchaseOrderInput> | GoodsReceivedNoteCreateWithoutPurchaseOrderInput[] | GoodsReceivedNoteUncheckedCreateWithoutPurchaseOrderInput[]
+    connectOrCreate?: GoodsReceivedNoteCreateOrConnectWithoutPurchaseOrderInput | GoodsReceivedNoteCreateOrConnectWithoutPurchaseOrderInput[]
+    createMany?: GoodsReceivedNoteCreateManyPurchaseOrderInputEnvelope
+    connect?: GoodsReceivedNoteWhereUniqueInput | GoodsReceivedNoteWhereUniqueInput[]
+  }
+
+  export type InvoiceCreateNestedManyWithoutPurchaseOrderInput = {
+    create?: XOR<InvoiceCreateWithoutPurchaseOrderInput, InvoiceUncheckedCreateWithoutPurchaseOrderInput> | InvoiceCreateWithoutPurchaseOrderInput[] | InvoiceUncheckedCreateWithoutPurchaseOrderInput[]
+    connectOrCreate?: InvoiceCreateOrConnectWithoutPurchaseOrderInput | InvoiceCreateOrConnectWithoutPurchaseOrderInput[]
+    createMany?: InvoiceCreateManyPurchaseOrderInputEnvelope
+    connect?: InvoiceWhereUniqueInput | InvoiceWhereUniqueInput[]
+  }
+
   export type RequisitionUncheckedCreateNestedOneWithoutPurchaseOrderInput = {
     create?: XOR<RequisitionCreateWithoutPurchaseOrderInput, RequisitionUncheckedCreateWithoutPurchaseOrderInput>
     connectOrCreate?: RequisitionCreateOrConnectWithoutPurchaseOrderInput
     connect?: RequisitionWhereUniqueInput
+  }
+
+  export type GoodsReceivedNoteUncheckedCreateNestedManyWithoutPurchaseOrderInput = {
+    create?: XOR<GoodsReceivedNoteCreateWithoutPurchaseOrderInput, GoodsReceivedNoteUncheckedCreateWithoutPurchaseOrderInput> | GoodsReceivedNoteCreateWithoutPurchaseOrderInput[] | GoodsReceivedNoteUncheckedCreateWithoutPurchaseOrderInput[]
+    connectOrCreate?: GoodsReceivedNoteCreateOrConnectWithoutPurchaseOrderInput | GoodsReceivedNoteCreateOrConnectWithoutPurchaseOrderInput[]
+    createMany?: GoodsReceivedNoteCreateManyPurchaseOrderInputEnvelope
+    connect?: GoodsReceivedNoteWhereUniqueInput | GoodsReceivedNoteWhereUniqueInput[]
+  }
+
+  export type InvoiceUncheckedCreateNestedManyWithoutPurchaseOrderInput = {
+    create?: XOR<InvoiceCreateWithoutPurchaseOrderInput, InvoiceUncheckedCreateWithoutPurchaseOrderInput> | InvoiceCreateWithoutPurchaseOrderInput[] | InvoiceUncheckedCreateWithoutPurchaseOrderInput[]
+    connectOrCreate?: InvoiceCreateOrConnectWithoutPurchaseOrderInput | InvoiceCreateOrConnectWithoutPurchaseOrderInput[]
+    createMany?: InvoiceCreateManyPurchaseOrderInputEnvelope
+    connect?: InvoiceWhereUniqueInput | InvoiceWhereUniqueInput[]
   }
 
   export type SupplierUpdateOneRequiredWithoutPurchaseOrdersNestedInput = {
@@ -389090,6 +393148,34 @@ export namespace Prisma {
     update?: XOR<XOR<RequisitionUpdateToOneWithWhereWithoutPurchaseOrderInput, RequisitionUpdateWithoutPurchaseOrderInput>, RequisitionUncheckedUpdateWithoutPurchaseOrderInput>
   }
 
+  export type GoodsReceivedNoteUpdateManyWithoutPurchaseOrderNestedInput = {
+    create?: XOR<GoodsReceivedNoteCreateWithoutPurchaseOrderInput, GoodsReceivedNoteUncheckedCreateWithoutPurchaseOrderInput> | GoodsReceivedNoteCreateWithoutPurchaseOrderInput[] | GoodsReceivedNoteUncheckedCreateWithoutPurchaseOrderInput[]
+    connectOrCreate?: GoodsReceivedNoteCreateOrConnectWithoutPurchaseOrderInput | GoodsReceivedNoteCreateOrConnectWithoutPurchaseOrderInput[]
+    upsert?: GoodsReceivedNoteUpsertWithWhereUniqueWithoutPurchaseOrderInput | GoodsReceivedNoteUpsertWithWhereUniqueWithoutPurchaseOrderInput[]
+    createMany?: GoodsReceivedNoteCreateManyPurchaseOrderInputEnvelope
+    set?: GoodsReceivedNoteWhereUniqueInput | GoodsReceivedNoteWhereUniqueInput[]
+    disconnect?: GoodsReceivedNoteWhereUniqueInput | GoodsReceivedNoteWhereUniqueInput[]
+    delete?: GoodsReceivedNoteWhereUniqueInput | GoodsReceivedNoteWhereUniqueInput[]
+    connect?: GoodsReceivedNoteWhereUniqueInput | GoodsReceivedNoteWhereUniqueInput[]
+    update?: GoodsReceivedNoteUpdateWithWhereUniqueWithoutPurchaseOrderInput | GoodsReceivedNoteUpdateWithWhereUniqueWithoutPurchaseOrderInput[]
+    updateMany?: GoodsReceivedNoteUpdateManyWithWhereWithoutPurchaseOrderInput | GoodsReceivedNoteUpdateManyWithWhereWithoutPurchaseOrderInput[]
+    deleteMany?: GoodsReceivedNoteScalarWhereInput | GoodsReceivedNoteScalarWhereInput[]
+  }
+
+  export type InvoiceUpdateManyWithoutPurchaseOrderNestedInput = {
+    create?: XOR<InvoiceCreateWithoutPurchaseOrderInput, InvoiceUncheckedCreateWithoutPurchaseOrderInput> | InvoiceCreateWithoutPurchaseOrderInput[] | InvoiceUncheckedCreateWithoutPurchaseOrderInput[]
+    connectOrCreate?: InvoiceCreateOrConnectWithoutPurchaseOrderInput | InvoiceCreateOrConnectWithoutPurchaseOrderInput[]
+    upsert?: InvoiceUpsertWithWhereUniqueWithoutPurchaseOrderInput | InvoiceUpsertWithWhereUniqueWithoutPurchaseOrderInput[]
+    createMany?: InvoiceCreateManyPurchaseOrderInputEnvelope
+    set?: InvoiceWhereUniqueInput | InvoiceWhereUniqueInput[]
+    disconnect?: InvoiceWhereUniqueInput | InvoiceWhereUniqueInput[]
+    delete?: InvoiceWhereUniqueInput | InvoiceWhereUniqueInput[]
+    connect?: InvoiceWhereUniqueInput | InvoiceWhereUniqueInput[]
+    update?: InvoiceUpdateWithWhereUniqueWithoutPurchaseOrderInput | InvoiceUpdateWithWhereUniqueWithoutPurchaseOrderInput[]
+    updateMany?: InvoiceUpdateManyWithWhereWithoutPurchaseOrderInput | InvoiceUpdateManyWithWhereWithoutPurchaseOrderInput[]
+    deleteMany?: InvoiceScalarWhereInput | InvoiceScalarWhereInput[]
+  }
+
   export type RequisitionUncheckedUpdateOneWithoutPurchaseOrderNestedInput = {
     create?: XOR<RequisitionCreateWithoutPurchaseOrderInput, RequisitionUncheckedCreateWithoutPurchaseOrderInput>
     connectOrCreate?: RequisitionCreateOrConnectWithoutPurchaseOrderInput
@@ -389100,10 +393186,134 @@ export namespace Prisma {
     update?: XOR<XOR<RequisitionUpdateToOneWithWhereWithoutPurchaseOrderInput, RequisitionUpdateWithoutPurchaseOrderInput>, RequisitionUncheckedUpdateWithoutPurchaseOrderInput>
   }
 
+  export type GoodsReceivedNoteUncheckedUpdateManyWithoutPurchaseOrderNestedInput = {
+    create?: XOR<GoodsReceivedNoteCreateWithoutPurchaseOrderInput, GoodsReceivedNoteUncheckedCreateWithoutPurchaseOrderInput> | GoodsReceivedNoteCreateWithoutPurchaseOrderInput[] | GoodsReceivedNoteUncheckedCreateWithoutPurchaseOrderInput[]
+    connectOrCreate?: GoodsReceivedNoteCreateOrConnectWithoutPurchaseOrderInput | GoodsReceivedNoteCreateOrConnectWithoutPurchaseOrderInput[]
+    upsert?: GoodsReceivedNoteUpsertWithWhereUniqueWithoutPurchaseOrderInput | GoodsReceivedNoteUpsertWithWhereUniqueWithoutPurchaseOrderInput[]
+    createMany?: GoodsReceivedNoteCreateManyPurchaseOrderInputEnvelope
+    set?: GoodsReceivedNoteWhereUniqueInput | GoodsReceivedNoteWhereUniqueInput[]
+    disconnect?: GoodsReceivedNoteWhereUniqueInput | GoodsReceivedNoteWhereUniqueInput[]
+    delete?: GoodsReceivedNoteWhereUniqueInput | GoodsReceivedNoteWhereUniqueInput[]
+    connect?: GoodsReceivedNoteWhereUniqueInput | GoodsReceivedNoteWhereUniqueInput[]
+    update?: GoodsReceivedNoteUpdateWithWhereUniqueWithoutPurchaseOrderInput | GoodsReceivedNoteUpdateWithWhereUniqueWithoutPurchaseOrderInput[]
+    updateMany?: GoodsReceivedNoteUpdateManyWithWhereWithoutPurchaseOrderInput | GoodsReceivedNoteUpdateManyWithWhereWithoutPurchaseOrderInput[]
+    deleteMany?: GoodsReceivedNoteScalarWhereInput | GoodsReceivedNoteScalarWhereInput[]
+  }
+
+  export type InvoiceUncheckedUpdateManyWithoutPurchaseOrderNestedInput = {
+    create?: XOR<InvoiceCreateWithoutPurchaseOrderInput, InvoiceUncheckedCreateWithoutPurchaseOrderInput> | InvoiceCreateWithoutPurchaseOrderInput[] | InvoiceUncheckedCreateWithoutPurchaseOrderInput[]
+    connectOrCreate?: InvoiceCreateOrConnectWithoutPurchaseOrderInput | InvoiceCreateOrConnectWithoutPurchaseOrderInput[]
+    upsert?: InvoiceUpsertWithWhereUniqueWithoutPurchaseOrderInput | InvoiceUpsertWithWhereUniqueWithoutPurchaseOrderInput[]
+    createMany?: InvoiceCreateManyPurchaseOrderInputEnvelope
+    set?: InvoiceWhereUniqueInput | InvoiceWhereUniqueInput[]
+    disconnect?: InvoiceWhereUniqueInput | InvoiceWhereUniqueInput[]
+    delete?: InvoiceWhereUniqueInput | InvoiceWhereUniqueInput[]
+    connect?: InvoiceWhereUniqueInput | InvoiceWhereUniqueInput[]
+    update?: InvoiceUpdateWithWhereUniqueWithoutPurchaseOrderInput | InvoiceUpdateWithWhereUniqueWithoutPurchaseOrderInput[]
+    updateMany?: InvoiceUpdateManyWithWhereWithoutPurchaseOrderInput | InvoiceUpdateManyWithWhereWithoutPurchaseOrderInput[]
+    deleteMany?: InvoiceScalarWhereInput | InvoiceScalarWhereInput[]
+  }
+
+  export type PurchaseOrderCreateNestedOneWithoutGrnsInput = {
+    create?: XOR<PurchaseOrderCreateWithoutGrnsInput, PurchaseOrderUncheckedCreateWithoutGrnsInput>
+    connectOrCreate?: PurchaseOrderCreateOrConnectWithoutGrnsInput
+    connect?: PurchaseOrderWhereUniqueInput
+  }
+
+  export type SupplierCreateNestedOneWithoutGoodsReceivedNotesInput = {
+    create?: XOR<SupplierCreateWithoutGoodsReceivedNotesInput, SupplierUncheckedCreateWithoutGoodsReceivedNotesInput>
+    connectOrCreate?: SupplierCreateOrConnectWithoutGoodsReceivedNotesInput
+    connect?: SupplierWhereUniqueInput
+  }
+
+  export type UserCreateNestedOneWithoutReceivedGRNsInput = {
+    create?: XOR<UserCreateWithoutReceivedGRNsInput, UserUncheckedCreateWithoutReceivedGRNsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutReceivedGRNsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type InvoiceCreateNestedManyWithoutGrnInput = {
+    create?: XOR<InvoiceCreateWithoutGrnInput, InvoiceUncheckedCreateWithoutGrnInput> | InvoiceCreateWithoutGrnInput[] | InvoiceUncheckedCreateWithoutGrnInput[]
+    connectOrCreate?: InvoiceCreateOrConnectWithoutGrnInput | InvoiceCreateOrConnectWithoutGrnInput[]
+    createMany?: InvoiceCreateManyGrnInputEnvelope
+    connect?: InvoiceWhereUniqueInput | InvoiceWhereUniqueInput[]
+  }
+
+  export type InvoiceUncheckedCreateNestedManyWithoutGrnInput = {
+    create?: XOR<InvoiceCreateWithoutGrnInput, InvoiceUncheckedCreateWithoutGrnInput> | InvoiceCreateWithoutGrnInput[] | InvoiceUncheckedCreateWithoutGrnInput[]
+    connectOrCreate?: InvoiceCreateOrConnectWithoutGrnInput | InvoiceCreateOrConnectWithoutGrnInput[]
+    createMany?: InvoiceCreateManyGrnInputEnvelope
+    connect?: InvoiceWhereUniqueInput | InvoiceWhereUniqueInput[]
+  }
+
+  export type PurchaseOrderUpdateOneRequiredWithoutGrnsNestedInput = {
+    create?: XOR<PurchaseOrderCreateWithoutGrnsInput, PurchaseOrderUncheckedCreateWithoutGrnsInput>
+    connectOrCreate?: PurchaseOrderCreateOrConnectWithoutGrnsInput
+    upsert?: PurchaseOrderUpsertWithoutGrnsInput
+    connect?: PurchaseOrderWhereUniqueInput
+    update?: XOR<XOR<PurchaseOrderUpdateToOneWithWhereWithoutGrnsInput, PurchaseOrderUpdateWithoutGrnsInput>, PurchaseOrderUncheckedUpdateWithoutGrnsInput>
+  }
+
+  export type SupplierUpdateOneRequiredWithoutGoodsReceivedNotesNestedInput = {
+    create?: XOR<SupplierCreateWithoutGoodsReceivedNotesInput, SupplierUncheckedCreateWithoutGoodsReceivedNotesInput>
+    connectOrCreate?: SupplierCreateOrConnectWithoutGoodsReceivedNotesInput
+    upsert?: SupplierUpsertWithoutGoodsReceivedNotesInput
+    connect?: SupplierWhereUniqueInput
+    update?: XOR<XOR<SupplierUpdateToOneWithWhereWithoutGoodsReceivedNotesInput, SupplierUpdateWithoutGoodsReceivedNotesInput>, SupplierUncheckedUpdateWithoutGoodsReceivedNotesInput>
+  }
+
+  export type UserUpdateOneRequiredWithoutReceivedGRNsNestedInput = {
+    create?: XOR<UserCreateWithoutReceivedGRNsInput, UserUncheckedCreateWithoutReceivedGRNsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutReceivedGRNsInput
+    upsert?: UserUpsertWithoutReceivedGRNsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutReceivedGRNsInput, UserUpdateWithoutReceivedGRNsInput>, UserUncheckedUpdateWithoutReceivedGRNsInput>
+  }
+
+  export type InvoiceUpdateManyWithoutGrnNestedInput = {
+    create?: XOR<InvoiceCreateWithoutGrnInput, InvoiceUncheckedCreateWithoutGrnInput> | InvoiceCreateWithoutGrnInput[] | InvoiceUncheckedCreateWithoutGrnInput[]
+    connectOrCreate?: InvoiceCreateOrConnectWithoutGrnInput | InvoiceCreateOrConnectWithoutGrnInput[]
+    upsert?: InvoiceUpsertWithWhereUniqueWithoutGrnInput | InvoiceUpsertWithWhereUniqueWithoutGrnInput[]
+    createMany?: InvoiceCreateManyGrnInputEnvelope
+    set?: InvoiceWhereUniqueInput | InvoiceWhereUniqueInput[]
+    disconnect?: InvoiceWhereUniqueInput | InvoiceWhereUniqueInput[]
+    delete?: InvoiceWhereUniqueInput | InvoiceWhereUniqueInput[]
+    connect?: InvoiceWhereUniqueInput | InvoiceWhereUniqueInput[]
+    update?: InvoiceUpdateWithWhereUniqueWithoutGrnInput | InvoiceUpdateWithWhereUniqueWithoutGrnInput[]
+    updateMany?: InvoiceUpdateManyWithWhereWithoutGrnInput | InvoiceUpdateManyWithWhereWithoutGrnInput[]
+    deleteMany?: InvoiceScalarWhereInput | InvoiceScalarWhereInput[]
+  }
+
+  export type InvoiceUncheckedUpdateManyWithoutGrnNestedInput = {
+    create?: XOR<InvoiceCreateWithoutGrnInput, InvoiceUncheckedCreateWithoutGrnInput> | InvoiceCreateWithoutGrnInput[] | InvoiceUncheckedCreateWithoutGrnInput[]
+    connectOrCreate?: InvoiceCreateOrConnectWithoutGrnInput | InvoiceCreateOrConnectWithoutGrnInput[]
+    upsert?: InvoiceUpsertWithWhereUniqueWithoutGrnInput | InvoiceUpsertWithWhereUniqueWithoutGrnInput[]
+    createMany?: InvoiceCreateManyGrnInputEnvelope
+    set?: InvoiceWhereUniqueInput | InvoiceWhereUniqueInput[]
+    disconnect?: InvoiceWhereUniqueInput | InvoiceWhereUniqueInput[]
+    delete?: InvoiceWhereUniqueInput | InvoiceWhereUniqueInput[]
+    connect?: InvoiceWhereUniqueInput | InvoiceWhereUniqueInput[]
+    update?: InvoiceUpdateWithWhereUniqueWithoutGrnInput | InvoiceUpdateWithWhereUniqueWithoutGrnInput[]
+    updateMany?: InvoiceUpdateManyWithWhereWithoutGrnInput | InvoiceUpdateManyWithWhereWithoutGrnInput[]
+    deleteMany?: InvoiceScalarWhereInput | InvoiceScalarWhereInput[]
+  }
+
   export type SupplierCreateNestedOneWithoutInvoicesInput = {
     create?: XOR<SupplierCreateWithoutInvoicesInput, SupplierUncheckedCreateWithoutInvoicesInput>
     connectOrCreate?: SupplierCreateOrConnectWithoutInvoicesInput
     connect?: SupplierWhereUniqueInput
+  }
+
+  export type PurchaseOrderCreateNestedOneWithoutInvoicesInput = {
+    create?: XOR<PurchaseOrderCreateWithoutInvoicesInput, PurchaseOrderUncheckedCreateWithoutInvoicesInput>
+    connectOrCreate?: PurchaseOrderCreateOrConnectWithoutInvoicesInput
+    connect?: PurchaseOrderWhereUniqueInput
+  }
+
+  export type GoodsReceivedNoteCreateNestedOneWithoutInvoicesInput = {
+    create?: XOR<GoodsReceivedNoteCreateWithoutInvoicesInput, GoodsReceivedNoteUncheckedCreateWithoutInvoicesInput>
+    connectOrCreate?: GoodsReceivedNoteCreateOrConnectWithoutInvoicesInput
+    connect?: GoodsReceivedNoteWhereUniqueInput
   }
 
   export type SupplierUpdateOneRequiredWithoutInvoicesNestedInput = {
@@ -389112,6 +393322,26 @@ export namespace Prisma {
     upsert?: SupplierUpsertWithoutInvoicesInput
     connect?: SupplierWhereUniqueInput
     update?: XOR<XOR<SupplierUpdateToOneWithWhereWithoutInvoicesInput, SupplierUpdateWithoutInvoicesInput>, SupplierUncheckedUpdateWithoutInvoicesInput>
+  }
+
+  export type PurchaseOrderUpdateOneWithoutInvoicesNestedInput = {
+    create?: XOR<PurchaseOrderCreateWithoutInvoicesInput, PurchaseOrderUncheckedCreateWithoutInvoicesInput>
+    connectOrCreate?: PurchaseOrderCreateOrConnectWithoutInvoicesInput
+    upsert?: PurchaseOrderUpsertWithoutInvoicesInput
+    disconnect?: PurchaseOrderWhereInput | boolean
+    delete?: PurchaseOrderWhereInput | boolean
+    connect?: PurchaseOrderWhereUniqueInput
+    update?: XOR<XOR<PurchaseOrderUpdateToOneWithWhereWithoutInvoicesInput, PurchaseOrderUpdateWithoutInvoicesInput>, PurchaseOrderUncheckedUpdateWithoutInvoicesInput>
+  }
+
+  export type GoodsReceivedNoteUpdateOneWithoutInvoicesNestedInput = {
+    create?: XOR<GoodsReceivedNoteCreateWithoutInvoicesInput, GoodsReceivedNoteUncheckedCreateWithoutInvoicesInput>
+    connectOrCreate?: GoodsReceivedNoteCreateOrConnectWithoutInvoicesInput
+    upsert?: GoodsReceivedNoteUpsertWithoutInvoicesInput
+    disconnect?: GoodsReceivedNoteWhereInput | boolean
+    delete?: GoodsReceivedNoteWhereInput | boolean
+    connect?: GoodsReceivedNoteWhereUniqueInput
+    update?: XOR<XOR<GoodsReceivedNoteUpdateToOneWithWhereWithoutInvoicesInput, GoodsReceivedNoteUpdateWithoutInvoicesInput>, GoodsReceivedNoteUncheckedUpdateWithoutInvoicesInput>
   }
 
   export type UserCreateNestedOneWithoutSupportTicketsInput = {
@@ -389156,6 +393386,13 @@ export namespace Prisma {
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutLeaveBalancesInput, UserUpdateWithoutLeaveBalancesInput>, UserUncheckedUpdateWithoutLeaveBalancesInput>
   }
 
+  export type AssetDepreciationCreateNestedManyWithoutAssetInput = {
+    create?: XOR<AssetDepreciationCreateWithoutAssetInput, AssetDepreciationUncheckedCreateWithoutAssetInput> | AssetDepreciationCreateWithoutAssetInput[] | AssetDepreciationUncheckedCreateWithoutAssetInput[]
+    connectOrCreate?: AssetDepreciationCreateOrConnectWithoutAssetInput | AssetDepreciationCreateOrConnectWithoutAssetInput[]
+    createMany?: AssetDepreciationCreateManyAssetInputEnvelope
+    connect?: AssetDepreciationWhereUniqueInput | AssetDepreciationWhereUniqueInput[]
+  }
+
   export type UserCreateNestedOneWithoutAssignedAssetsInput = {
     create?: XOR<UserCreateWithoutAssignedAssetsInput, UserUncheckedCreateWithoutAssignedAssetsInput>
     connectOrCreate?: UserCreateOrConnectWithoutAssignedAssetsInput
@@ -389188,6 +393425,13 @@ export namespace Prisma {
     connect?: AssetMaintenanceWhereUniqueInput | AssetMaintenanceWhereUniqueInput[]
   }
 
+  export type AssetDepreciationUncheckedCreateNestedManyWithoutAssetInput = {
+    create?: XOR<AssetDepreciationCreateWithoutAssetInput, AssetDepreciationUncheckedCreateWithoutAssetInput> | AssetDepreciationCreateWithoutAssetInput[] | AssetDepreciationUncheckedCreateWithoutAssetInput[]
+    connectOrCreate?: AssetDepreciationCreateOrConnectWithoutAssetInput | AssetDepreciationCreateOrConnectWithoutAssetInput[]
+    createMany?: AssetDepreciationCreateManyAssetInputEnvelope
+    connect?: AssetDepreciationWhereUniqueInput | AssetDepreciationWhereUniqueInput[]
+  }
+
   export type AssetIncidentUncheckedCreateNestedManyWithoutAssetInput = {
     create?: XOR<AssetIncidentCreateWithoutAssetInput, AssetIncidentUncheckedCreateWithoutAssetInput> | AssetIncidentCreateWithoutAssetInput[] | AssetIncidentUncheckedCreateWithoutAssetInput[]
     connectOrCreate?: AssetIncidentCreateOrConnectWithoutAssetInput | AssetIncidentCreateOrConnectWithoutAssetInput[]
@@ -389200,6 +393444,20 @@ export namespace Prisma {
     connectOrCreate?: AssetMaintenanceCreateOrConnectWithoutAssetInput | AssetMaintenanceCreateOrConnectWithoutAssetInput[]
     createMany?: AssetMaintenanceCreateManyAssetInputEnvelope
     connect?: AssetMaintenanceWhereUniqueInput | AssetMaintenanceWhereUniqueInput[]
+  }
+
+  export type AssetDepreciationUpdateManyWithoutAssetNestedInput = {
+    create?: XOR<AssetDepreciationCreateWithoutAssetInput, AssetDepreciationUncheckedCreateWithoutAssetInput> | AssetDepreciationCreateWithoutAssetInput[] | AssetDepreciationUncheckedCreateWithoutAssetInput[]
+    connectOrCreate?: AssetDepreciationCreateOrConnectWithoutAssetInput | AssetDepreciationCreateOrConnectWithoutAssetInput[]
+    upsert?: AssetDepreciationUpsertWithWhereUniqueWithoutAssetInput | AssetDepreciationUpsertWithWhereUniqueWithoutAssetInput[]
+    createMany?: AssetDepreciationCreateManyAssetInputEnvelope
+    set?: AssetDepreciationWhereUniqueInput | AssetDepreciationWhereUniqueInput[]
+    disconnect?: AssetDepreciationWhereUniqueInput | AssetDepreciationWhereUniqueInput[]
+    delete?: AssetDepreciationWhereUniqueInput | AssetDepreciationWhereUniqueInput[]
+    connect?: AssetDepreciationWhereUniqueInput | AssetDepreciationWhereUniqueInput[]
+    update?: AssetDepreciationUpdateWithWhereUniqueWithoutAssetInput | AssetDepreciationUpdateWithWhereUniqueWithoutAssetInput[]
+    updateMany?: AssetDepreciationUpdateManyWithWhereWithoutAssetInput | AssetDepreciationUpdateManyWithWhereWithoutAssetInput[]
+    deleteMany?: AssetDepreciationScalarWhereInput | AssetDepreciationScalarWhereInput[]
   }
 
   export type UserUpdateOneWithoutAssignedAssetsNestedInput = {
@@ -389258,6 +393516,20 @@ export namespace Prisma {
     deleteMany?: AssetMaintenanceScalarWhereInput | AssetMaintenanceScalarWhereInput[]
   }
 
+  export type AssetDepreciationUncheckedUpdateManyWithoutAssetNestedInput = {
+    create?: XOR<AssetDepreciationCreateWithoutAssetInput, AssetDepreciationUncheckedCreateWithoutAssetInput> | AssetDepreciationCreateWithoutAssetInput[] | AssetDepreciationUncheckedCreateWithoutAssetInput[]
+    connectOrCreate?: AssetDepreciationCreateOrConnectWithoutAssetInput | AssetDepreciationCreateOrConnectWithoutAssetInput[]
+    upsert?: AssetDepreciationUpsertWithWhereUniqueWithoutAssetInput | AssetDepreciationUpsertWithWhereUniqueWithoutAssetInput[]
+    createMany?: AssetDepreciationCreateManyAssetInputEnvelope
+    set?: AssetDepreciationWhereUniqueInput | AssetDepreciationWhereUniqueInput[]
+    disconnect?: AssetDepreciationWhereUniqueInput | AssetDepreciationWhereUniqueInput[]
+    delete?: AssetDepreciationWhereUniqueInput | AssetDepreciationWhereUniqueInput[]
+    connect?: AssetDepreciationWhereUniqueInput | AssetDepreciationWhereUniqueInput[]
+    update?: AssetDepreciationUpdateWithWhereUniqueWithoutAssetInput | AssetDepreciationUpdateWithWhereUniqueWithoutAssetInput[]
+    updateMany?: AssetDepreciationUpdateManyWithWhereWithoutAssetInput | AssetDepreciationUpdateManyWithWhereWithoutAssetInput[]
+    deleteMany?: AssetDepreciationScalarWhereInput | AssetDepreciationScalarWhereInput[]
+  }
+
   export type AssetIncidentUncheckedUpdateManyWithoutAssetNestedInput = {
     create?: XOR<AssetIncidentCreateWithoutAssetInput, AssetIncidentUncheckedCreateWithoutAssetInput> | AssetIncidentCreateWithoutAssetInput[] | AssetIncidentUncheckedCreateWithoutAssetInput[]
     connectOrCreate?: AssetIncidentCreateOrConnectWithoutAssetInput | AssetIncidentCreateOrConnectWithoutAssetInput[]
@@ -389284,6 +393556,20 @@ export namespace Prisma {
     update?: AssetMaintenanceUpdateWithWhereUniqueWithoutAssetInput | AssetMaintenanceUpdateWithWhereUniqueWithoutAssetInput[]
     updateMany?: AssetMaintenanceUpdateManyWithWhereWithoutAssetInput | AssetMaintenanceUpdateManyWithWhereWithoutAssetInput[]
     deleteMany?: AssetMaintenanceScalarWhereInput | AssetMaintenanceScalarWhereInput[]
+  }
+
+  export type AssetCreateNestedOneWithoutDepreciationsInput = {
+    create?: XOR<AssetCreateWithoutDepreciationsInput, AssetUncheckedCreateWithoutDepreciationsInput>
+    connectOrCreate?: AssetCreateOrConnectWithoutDepreciationsInput
+    connect?: AssetWhereUniqueInput
+  }
+
+  export type AssetUpdateOneRequiredWithoutDepreciationsNestedInput = {
+    create?: XOR<AssetCreateWithoutDepreciationsInput, AssetUncheckedCreateWithoutDepreciationsInput>
+    connectOrCreate?: AssetCreateOrConnectWithoutDepreciationsInput
+    upsert?: AssetUpsertWithoutDepreciationsInput
+    connect?: AssetWhereUniqueInput
+    update?: XOR<XOR<AssetUpdateToOneWithWhereWithoutDepreciationsInput, AssetUpdateWithoutDepreciationsInput>, AssetUncheckedUpdateWithoutDepreciationsInput>
   }
 
   export type AssetCreateNestedOneWithoutIncidentsInput = {
@@ -398936,6 +403222,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutSchoolInput = {
@@ -399043,6 +403330,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutSchoolInput = {
@@ -401045,6 +405333,11 @@ export namespace Prisma {
     supplierName?: string | null
     invoiceNumber?: string | null
     depreciationRate?: number | null
+    accumulatedDepreciation?: number | null
+    bookValue?: number | null
+    lastDepreciationDate?: Date | string | null
+    coaExpenseCode?: string | null
+    coaAccumulatedCode?: string | null
     warrantyExpiry?: Date | string | null
     photoUrl?: string | null
     approvalStatus?: string
@@ -401060,6 +405353,7 @@ export namespace Prisma {
     attachments?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
+    depreciations?: AssetDepreciationCreateNestedManyWithoutAssetInput
     custodian?: UserCreateNestedOneWithoutAssignedAssetsInput
     registeredBy?: UserCreateNestedOneWithoutRegisteredAssetsInput
     incidents?: AssetIncidentCreateNestedManyWithoutAssetInput
@@ -401083,6 +405377,11 @@ export namespace Prisma {
     supplierName?: string | null
     invoiceNumber?: string | null
     depreciationRate?: number | null
+    accumulatedDepreciation?: number | null
+    bookValue?: number | null
+    lastDepreciationDate?: Date | string | null
+    coaExpenseCode?: string | null
+    coaAccumulatedCode?: string | null
     warrantyExpiry?: Date | string | null
     photoUrl?: string | null
     custodianId?: string | null
@@ -401100,6 +405399,7 @@ export namespace Prisma {
     attachments?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
+    depreciations?: AssetDepreciationUncheckedCreateNestedManyWithoutAssetInput
     incidents?: AssetIncidentUncheckedCreateNestedManyWithoutAssetInput
     maintenance?: AssetMaintenanceUncheckedCreateNestedManyWithoutAssetInput
   }
@@ -407944,6 +412244,11 @@ export namespace Prisma {
     supplierName?: StringNullableFilter<"Asset"> | string | null
     invoiceNumber?: StringNullableFilter<"Asset"> | string | null
     depreciationRate?: FloatNullableFilter<"Asset"> | number | null
+    accumulatedDepreciation?: FloatNullableFilter<"Asset"> | number | null
+    bookValue?: FloatNullableFilter<"Asset"> | number | null
+    lastDepreciationDate?: DateTimeNullableFilter<"Asset"> | Date | string | null
+    coaExpenseCode?: StringNullableFilter<"Asset"> | string | null
+    coaAccumulatedCode?: StringNullableFilter<"Asset"> | string | null
     warrantyExpiry?: DateTimeNullableFilter<"Asset"> | Date | string | null
     photoUrl?: StringNullableFilter<"Asset"> | string | null
     custodianId?: StringNullableFilter<"Asset"> | string | null
@@ -415696,6 +420001,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutLeadershipAssignedInput = {
@@ -415803,6 +420109,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutLeadershipAssignedInput = {
@@ -416585,6 +420892,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutLeadershipAssignedInput = {
@@ -416692,6 +421000,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type SchoolCreateWithoutStudentAllowedItemsInput = {
@@ -418480,6 +422789,7 @@ export namespace Prisma {
     tenders?: TenderBidCreateNestedManyWithoutSupplierInput
     purchaseOrders?: PurchaseOrderCreateNestedManyWithoutSupplierInput
     invoices?: InvoiceCreateNestedManyWithoutSupplierInput
+    goodsReceivedNotes?: GoodsReceivedNoteCreateNestedManyWithoutSupplierInput
     uniformPayments?: UniformSupplierPaymentCreateNestedManyWithoutSupplierInput
   }
 
@@ -418501,6 +422811,7 @@ export namespace Prisma {
     tenders?: TenderBidUncheckedCreateNestedManyWithoutSupplierInput
     purchaseOrders?: PurchaseOrderUncheckedCreateNestedManyWithoutSupplierInput
     invoices?: InvoiceUncheckedCreateNestedManyWithoutSupplierInput
+    goodsReceivedNotes?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutSupplierInput
     uniformPayments?: UniformSupplierPaymentUncheckedCreateNestedManyWithoutSupplierInput
   }
 
@@ -418963,6 +423274,7 @@ export namespace Prisma {
     tenders?: TenderBidUpdateManyWithoutSupplierNestedInput
     purchaseOrders?: PurchaseOrderUpdateManyWithoutSupplierNestedInput
     invoices?: InvoiceUpdateManyWithoutSupplierNestedInput
+    goodsReceivedNotes?: GoodsReceivedNoteUpdateManyWithoutSupplierNestedInput
     uniformPayments?: UniformSupplierPaymentUpdateManyWithoutSupplierNestedInput
   }
 
@@ -418984,6 +423296,7 @@ export namespace Prisma {
     tenders?: TenderBidUncheckedUpdateManyWithoutSupplierNestedInput
     purchaseOrders?: PurchaseOrderUncheckedUpdateManyWithoutSupplierNestedInput
     invoices?: InvoiceUncheckedUpdateManyWithoutSupplierNestedInput
+    goodsReceivedNotes?: GoodsReceivedNoteUncheckedUpdateManyWithoutSupplierNestedInput
     uniformPayments?: UniformSupplierPaymentUncheckedUpdateManyWithoutSupplierNestedInput
   }
 
@@ -421020,6 +425333,7 @@ export namespace Prisma {
     tenders?: TenderBidCreateNestedManyWithoutSupplierInput
     purchaseOrders?: PurchaseOrderCreateNestedManyWithoutSupplierInput
     invoices?: InvoiceCreateNestedManyWithoutSupplierInput
+    goodsReceivedNotes?: GoodsReceivedNoteCreateNestedManyWithoutSupplierInput
     uniformStockOrders?: UniformStockOrderCreateNestedManyWithoutSupplierInput
   }
 
@@ -421041,6 +425355,7 @@ export namespace Prisma {
     tenders?: TenderBidUncheckedCreateNestedManyWithoutSupplierInput
     purchaseOrders?: PurchaseOrderUncheckedCreateNestedManyWithoutSupplierInput
     invoices?: InvoiceUncheckedCreateNestedManyWithoutSupplierInput
+    goodsReceivedNotes?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutSupplierInput
     uniformStockOrders?: UniformStockOrderUncheckedCreateNestedManyWithoutSupplierInput
   }
 
@@ -421475,6 +425790,7 @@ export namespace Prisma {
     tenders?: TenderBidUpdateManyWithoutSupplierNestedInput
     purchaseOrders?: PurchaseOrderUpdateManyWithoutSupplierNestedInput
     invoices?: InvoiceUpdateManyWithoutSupplierNestedInput
+    goodsReceivedNotes?: GoodsReceivedNoteUpdateManyWithoutSupplierNestedInput
     uniformStockOrders?: UniformStockOrderUpdateManyWithoutSupplierNestedInput
   }
 
@@ -421496,6 +425812,7 @@ export namespace Prisma {
     tenders?: TenderBidUncheckedUpdateManyWithoutSupplierNestedInput
     purchaseOrders?: PurchaseOrderUncheckedUpdateManyWithoutSupplierNestedInput
     invoices?: InvoiceUncheckedUpdateManyWithoutSupplierNestedInput
+    goodsReceivedNotes?: GoodsReceivedNoteUncheckedUpdateManyWithoutSupplierNestedInput
     uniformStockOrders?: UniformStockOrderUncheckedUpdateManyWithoutSupplierNestedInput
   }
 
@@ -426339,6 +430656,7 @@ export namespace Prisma {
     tenders?: TenderBidCreateNestedManyWithoutSupplierInput
     purchaseOrders?: PurchaseOrderCreateNestedManyWithoutSupplierInput
     invoices?: InvoiceCreateNestedManyWithoutSupplierInput
+    goodsReceivedNotes?: GoodsReceivedNoteCreateNestedManyWithoutSupplierInput
     uniformStockOrders?: UniformStockOrderCreateNestedManyWithoutSupplierInput
     uniformPayments?: UniformSupplierPaymentCreateNestedManyWithoutSupplierInput
   }
@@ -426360,6 +430678,7 @@ export namespace Prisma {
     tenders?: TenderBidUncheckedCreateNestedManyWithoutSupplierInput
     purchaseOrders?: PurchaseOrderUncheckedCreateNestedManyWithoutSupplierInput
     invoices?: InvoiceUncheckedCreateNestedManyWithoutSupplierInput
+    goodsReceivedNotes?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutSupplierInput
     uniformStockOrders?: UniformStockOrderUncheckedCreateNestedManyWithoutSupplierInput
     uniformPayments?: UniformSupplierPaymentUncheckedCreateNestedManyWithoutSupplierInput
   }
@@ -427060,6 +431379,11 @@ export namespace Prisma {
     supplierName?: string | null
     invoiceNumber?: string | null
     depreciationRate?: number | null
+    accumulatedDepreciation?: number | null
+    bookValue?: number | null
+    lastDepreciationDate?: Date | string | null
+    coaExpenseCode?: string | null
+    coaAccumulatedCode?: string | null
     warrantyExpiry?: Date | string | null
     photoUrl?: string | null
     approvalStatus?: string
@@ -427075,6 +431399,7 @@ export namespace Prisma {
     attachments?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
+    depreciations?: AssetDepreciationCreateNestedManyWithoutAssetInput
     registeredBy?: UserCreateNestedOneWithoutRegisteredAssetsInput
     school: SchoolCreateNestedOneWithoutAssetsInput
     incidents?: AssetIncidentCreateNestedManyWithoutAssetInput
@@ -427098,6 +431423,11 @@ export namespace Prisma {
     supplierName?: string | null
     invoiceNumber?: string | null
     depreciationRate?: number | null
+    accumulatedDepreciation?: number | null
+    bookValue?: number | null
+    lastDepreciationDate?: Date | string | null
+    coaExpenseCode?: string | null
+    coaAccumulatedCode?: string | null
     warrantyExpiry?: Date | string | null
     photoUrl?: string | null
     registeredById?: string | null
@@ -427115,6 +431445,7 @@ export namespace Prisma {
     attachments?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
+    depreciations?: AssetDepreciationUncheckedCreateNestedManyWithoutAssetInput
     incidents?: AssetIncidentUncheckedCreateNestedManyWithoutAssetInput
     maintenance?: AssetMaintenanceUncheckedCreateNestedManyWithoutAssetInput
   }
@@ -427146,6 +431477,11 @@ export namespace Prisma {
     supplierName?: string | null
     invoiceNumber?: string | null
     depreciationRate?: number | null
+    accumulatedDepreciation?: number | null
+    bookValue?: number | null
+    lastDepreciationDate?: Date | string | null
+    coaExpenseCode?: string | null
+    coaAccumulatedCode?: string | null
     warrantyExpiry?: Date | string | null
     photoUrl?: string | null
     approvalStatus?: string
@@ -427161,6 +431497,7 @@ export namespace Prisma {
     attachments?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
+    depreciations?: AssetDepreciationCreateNestedManyWithoutAssetInput
     custodian?: UserCreateNestedOneWithoutAssignedAssetsInput
     school: SchoolCreateNestedOneWithoutAssetsInput
     incidents?: AssetIncidentCreateNestedManyWithoutAssetInput
@@ -427184,6 +431521,11 @@ export namespace Prisma {
     supplierName?: string | null
     invoiceNumber?: string | null
     depreciationRate?: number | null
+    accumulatedDepreciation?: number | null
+    bookValue?: number | null
+    lastDepreciationDate?: Date | string | null
+    coaExpenseCode?: string | null
+    coaAccumulatedCode?: string | null
     warrantyExpiry?: Date | string | null
     photoUrl?: string | null
     custodianId?: string | null
@@ -427201,6 +431543,7 @@ export namespace Prisma {
     attachments?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
+    depreciations?: AssetDepreciationUncheckedCreateNestedManyWithoutAssetInput
     incidents?: AssetIncidentUncheckedCreateNestedManyWithoutAssetInput
     maintenance?: AssetMaintenanceUncheckedCreateNestedManyWithoutAssetInput
   }
@@ -430194,6 +434537,50 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type GoodsReceivedNoteCreateWithoutReceivedByInput = {
+    id?: string
+    grnNumber: string
+    schoolId: string
+    receivedDate?: Date | string
+    deliveryNoteNumber?: string | null
+    status?: string
+    items: JsonNullValueInput | InputJsonValue
+    totalValueReceived?: number
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    purchaseOrder: PurchaseOrderCreateNestedOneWithoutGrnsInput
+    supplier: SupplierCreateNestedOneWithoutGoodsReceivedNotesInput
+    invoices?: InvoiceCreateNestedManyWithoutGrnInput
+  }
+
+  export type GoodsReceivedNoteUncheckedCreateWithoutReceivedByInput = {
+    id?: string
+    grnNumber: string
+    schoolId: string
+    purchaseOrderId: string
+    supplierId: string
+    receivedDate?: Date | string
+    deliveryNoteNumber?: string | null
+    status?: string
+    items: JsonNullValueInput | InputJsonValue
+    totalValueReceived?: number
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    invoices?: InvoiceUncheckedCreateNestedManyWithoutGrnInput
+  }
+
+  export type GoodsReceivedNoteCreateOrConnectWithoutReceivedByInput = {
+    where: GoodsReceivedNoteWhereUniqueInput
+    create: XOR<GoodsReceivedNoteCreateWithoutReceivedByInput, GoodsReceivedNoteUncheckedCreateWithoutReceivedByInput>
+  }
+
+  export type GoodsReceivedNoteCreateManyReceivedByInputEnvelope = {
+    data: GoodsReceivedNoteCreateManyReceivedByInput | GoodsReceivedNoteCreateManyReceivedByInput[]
+    skipDuplicates?: boolean
+  }
+
   export type SyllabusUpsertWithWhereUniqueWithoutUploadedByInput = {
     where: SyllabusWhereUniqueInput
     update: XOR<SyllabusUpdateWithoutUploadedByInput, SyllabusUncheckedUpdateWithoutUploadedByInput>
@@ -431040,6 +435427,7 @@ export namespace Prisma {
     tenders?: TenderBidUpdateManyWithoutSupplierNestedInput
     purchaseOrders?: PurchaseOrderUpdateManyWithoutSupplierNestedInput
     invoices?: InvoiceUpdateManyWithoutSupplierNestedInput
+    goodsReceivedNotes?: GoodsReceivedNoteUpdateManyWithoutSupplierNestedInput
     uniformStockOrders?: UniformStockOrderUpdateManyWithoutSupplierNestedInput
     uniformPayments?: UniformSupplierPaymentUpdateManyWithoutSupplierNestedInput
   }
@@ -431061,6 +435449,7 @@ export namespace Prisma {
     tenders?: TenderBidUncheckedUpdateManyWithoutSupplierNestedInput
     purchaseOrders?: PurchaseOrderUncheckedUpdateManyWithoutSupplierNestedInput
     invoices?: InvoiceUncheckedUpdateManyWithoutSupplierNestedInput
+    goodsReceivedNotes?: GoodsReceivedNoteUncheckedUpdateManyWithoutSupplierNestedInput
     uniformStockOrders?: UniformStockOrderUncheckedUpdateManyWithoutSupplierNestedInput
     uniformPayments?: UniformSupplierPaymentUncheckedUpdateManyWithoutSupplierNestedInput
   }
@@ -432703,6 +437092,42 @@ export namespace Prisma {
     data: XOR<StudentAssessmentUpdateManyMutationInput, StudentAssessmentUncheckedUpdateManyWithoutMarkedByInput>
   }
 
+  export type GoodsReceivedNoteUpsertWithWhereUniqueWithoutReceivedByInput = {
+    where: GoodsReceivedNoteWhereUniqueInput
+    update: XOR<GoodsReceivedNoteUpdateWithoutReceivedByInput, GoodsReceivedNoteUncheckedUpdateWithoutReceivedByInput>
+    create: XOR<GoodsReceivedNoteCreateWithoutReceivedByInput, GoodsReceivedNoteUncheckedCreateWithoutReceivedByInput>
+  }
+
+  export type GoodsReceivedNoteUpdateWithWhereUniqueWithoutReceivedByInput = {
+    where: GoodsReceivedNoteWhereUniqueInput
+    data: XOR<GoodsReceivedNoteUpdateWithoutReceivedByInput, GoodsReceivedNoteUncheckedUpdateWithoutReceivedByInput>
+  }
+
+  export type GoodsReceivedNoteUpdateManyWithWhereWithoutReceivedByInput = {
+    where: GoodsReceivedNoteScalarWhereInput
+    data: XOR<GoodsReceivedNoteUpdateManyMutationInput, GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByInput>
+  }
+
+  export type GoodsReceivedNoteScalarWhereInput = {
+    AND?: GoodsReceivedNoteScalarWhereInput | GoodsReceivedNoteScalarWhereInput[]
+    OR?: GoodsReceivedNoteScalarWhereInput[]
+    NOT?: GoodsReceivedNoteScalarWhereInput | GoodsReceivedNoteScalarWhereInput[]
+    id?: StringFilter<"GoodsReceivedNote"> | string
+    grnNumber?: StringFilter<"GoodsReceivedNote"> | string
+    schoolId?: StringFilter<"GoodsReceivedNote"> | string
+    purchaseOrderId?: StringFilter<"GoodsReceivedNote"> | string
+    supplierId?: StringFilter<"GoodsReceivedNote"> | string
+    receivedDate?: DateTimeFilter<"GoodsReceivedNote"> | Date | string
+    receivedById?: StringFilter<"GoodsReceivedNote"> | string
+    deliveryNoteNumber?: StringNullableFilter<"GoodsReceivedNote"> | string | null
+    status?: StringFilter<"GoodsReceivedNote"> | string
+    items?: JsonFilter<"GoodsReceivedNote">
+    totalValueReceived?: FloatFilter<"GoodsReceivedNote"> | number
+    notes?: StringNullableFilter<"GoodsReceivedNote"> | string | null
+    createdAt?: DateTimeFilter<"GoodsReceivedNote"> | Date | string
+    updatedAt?: DateTimeFilter<"GoodsReceivedNote"> | Date | string
+  }
+
   export type UserCreateWithoutSessionsInput = {
     id?: string
     email: string
@@ -432808,6 +437233,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutSessionsInput = {
@@ -432915,6 +437341,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutSessionsInput = {
@@ -433038,6 +437465,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSessionsInput = {
@@ -433145,6 +437573,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type SchemeOfWorkCreateWithoutTeacherInput = {
@@ -433304,6 +437733,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutTeacherInput = {
@@ -433411,6 +437841,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutTeacherInput = {
@@ -434648,6 +439079,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTeacherInput = {
@@ -434755,6 +439187,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type SchoolUpsertWithoutTeachersInput = {
@@ -435575,6 +440008,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutStudentInput = {
@@ -435682,6 +440116,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutStudentInput = {
@@ -438181,6 +442616,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutStudentInput = {
@@ -438288,6 +442724,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type SchoolClassUpsertWithoutStudentsInput = {
@@ -443622,6 +448059,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutCreatedSubjectsInput = {
@@ -443729,6 +448167,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutCreatedSubjectsInput = {
@@ -445112,6 +449551,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCreatedSubjectsInput = {
@@ -445219,6 +449659,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type TeacherSubjectUpsertWithWhereUniqueWithoutSubjectInput = {
@@ -449250,6 +453691,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutDeptInput = {
@@ -449357,6 +453799,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutDeptInput = {
@@ -449474,6 +453917,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutHeadedDepartmentsInput = {
@@ -449581,6 +454025,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutHeadedDepartmentsInput = {
@@ -450270,6 +454715,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutHeadedDepartmentsInput = {
@@ -450377,6 +454823,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type RequisitionUpsertWithWhereUniqueWithoutDepartmentInput = {
@@ -451960,6 +456407,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutStaffAttendancesInput = {
@@ -452067,6 +456515,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutStaffAttendancesInput = {
@@ -452587,6 +457036,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutStaffAttendancesInput = {
@@ -452694,6 +457144,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type SchoolUpsertWithoutStaffAttendancesInput = {
@@ -461356,6 +465807,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutAnnouncementsCreatedInput = {
@@ -461463,6 +465915,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutAnnouncementsCreatedInput = {
@@ -462072,6 +466525,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAnnouncementsCreatedInput = {
@@ -462179,6 +466633,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type AnnouncementReadUpsertWithWhereUniqueWithoutAnnouncementInput = {
@@ -462754,6 +467209,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutAnnouncementReadsInput = {
@@ -462861,6 +467317,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutAnnouncementReadsInput = {
@@ -463039,6 +467496,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAnnouncementReadsInput = {
@@ -463146,6 +467604,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserCreateWithoutAuditLogsInput = {
@@ -463253,6 +467712,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutAuditLogsInput = {
@@ -463360,6 +467820,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutAuditLogsInput = {
@@ -463880,6 +468341,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAuditLogsInput = {
@@ -463987,6 +468449,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type SchoolUpsertWithoutAuditLogsInput = {
@@ -470367,6 +474830,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutBookLoansInput = {
@@ -470474,6 +474938,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutBookLoansInput = {
@@ -471320,6 +475785,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutBookLoansInput = {
@@ -471427,6 +475893,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type BookLoanFineUpsertWithWhereUniqueWithoutLoanInput = {
@@ -473029,6 +477496,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutBookReservationsInput = {
@@ -473136,6 +477604,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutBookReservationsInput = {
@@ -473944,6 +478413,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutBookReservationsInput = {
@@ -474051,6 +478521,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type SchoolUpsertWithoutBookReservationsInput = {
@@ -475056,6 +479527,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutLibraryDigitalResourcesInput = {
@@ -475163,6 +479635,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutLibraryDigitalResourcesInput = {
@@ -475799,6 +480272,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutLibraryDigitalResourcesInput = {
@@ -475906,6 +480380,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type AssignmentCreateWithoutSubmissionsInput = {
@@ -479515,6 +483990,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutPaymentPlansInput = {
@@ -479622,6 +484098,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutPaymentPlansInput = {
@@ -480383,6 +484860,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPaymentPlansInput = {
@@ -480490,6 +484968,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type PaymentPlanInstallmentUpsertWithWhereUniqueWithoutPlanInput = {
@@ -483401,6 +487880,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutAssignedSportingEquipmentsInput = {
@@ -483508,6 +487988,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutAssignedSportingEquipmentsInput = {
@@ -484071,6 +488552,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAssignedSportingEquipmentsInput = {
@@ -484178,6 +488660,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type SchoolUpsertWithoutSportingEquipmentInput = {
@@ -485593,6 +490076,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutSupplierInput = {
@@ -485700,6 +490184,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutSupplierInput = {
@@ -485773,9 +490258,19 @@ export namespace Prisma {
     totalAmount: number
     status?: string
     schoolId: string
+    coaCode?: string | null
+    department?: string | null
+    budgetChecked?: boolean
+    budgetOverrun?: boolean
+    budgetRemaining?: number | null
+    approvedById?: string | null
+    approvedAt?: Date | string | null
+    rejectionReason?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     requisition?: RequisitionCreateNestedOneWithoutPurchaseOrderInput
+    grns?: GoodsReceivedNoteCreateNestedManyWithoutPurchaseOrderInput
+    invoices?: InvoiceCreateNestedManyWithoutPurchaseOrderInput
   }
 
   export type PurchaseOrderUncheckedCreateWithoutSupplierInput = {
@@ -485786,9 +490281,19 @@ export namespace Prisma {
     totalAmount: number
     status?: string
     schoolId: string
+    coaCode?: string | null
+    department?: string | null
+    budgetChecked?: boolean
+    budgetOverrun?: boolean
+    budgetRemaining?: number | null
+    approvedById?: string | null
+    approvedAt?: Date | string | null
+    rejectionReason?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     requisition?: RequisitionUncheckedCreateNestedOneWithoutPurchaseOrderInput
+    grns?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutPurchaseOrderInput
+    invoices?: InvoiceUncheckedCreateNestedManyWithoutPurchaseOrderInput
   }
 
   export type PurchaseOrderCreateOrConnectWithoutSupplierInput = {
@@ -485805,18 +490310,34 @@ export namespace Prisma {
     id?: string
     invoiceNo: string
     amount: number
+    items?: NullableJsonNullValueInput | InputJsonValue
     status?: string
+    matchingStatus?: string
+    matchingNotes?: string | null
+    approvedById?: string | null
+    approvedAt?: Date | string | null
+    journalEntryId?: string | null
     dueDate: Date | string
     schoolId: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    purchaseOrder?: PurchaseOrderCreateNestedOneWithoutInvoicesInput
+    grn?: GoodsReceivedNoteCreateNestedOneWithoutInvoicesInput
   }
 
   export type InvoiceUncheckedCreateWithoutSupplierInput = {
     id?: string
     invoiceNo: string
+    purchaseOrderId?: string | null
+    grnId?: string | null
     amount: number
+    items?: NullableJsonNullValueInput | InputJsonValue
     status?: string
+    matchingStatus?: string
+    matchingNotes?: string | null
+    approvedById?: string | null
+    approvedAt?: Date | string | null
+    journalEntryId?: string | null
     dueDate: Date | string
     schoolId: string
     createdAt?: Date | string
@@ -485830,6 +490351,50 @@ export namespace Prisma {
 
   export type InvoiceCreateManySupplierInputEnvelope = {
     data: InvoiceCreateManySupplierInput | InvoiceCreateManySupplierInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type GoodsReceivedNoteCreateWithoutSupplierInput = {
+    id?: string
+    grnNumber: string
+    schoolId: string
+    receivedDate?: Date | string
+    deliveryNoteNumber?: string | null
+    status?: string
+    items: JsonNullValueInput | InputJsonValue
+    totalValueReceived?: number
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    purchaseOrder: PurchaseOrderCreateNestedOneWithoutGrnsInput
+    receivedBy: UserCreateNestedOneWithoutReceivedGRNsInput
+    invoices?: InvoiceCreateNestedManyWithoutGrnInput
+  }
+
+  export type GoodsReceivedNoteUncheckedCreateWithoutSupplierInput = {
+    id?: string
+    grnNumber: string
+    schoolId: string
+    purchaseOrderId: string
+    receivedDate?: Date | string
+    receivedById: string
+    deliveryNoteNumber?: string | null
+    status?: string
+    items: JsonNullValueInput | InputJsonValue
+    totalValueReceived?: number
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    invoices?: InvoiceUncheckedCreateNestedManyWithoutGrnInput
+  }
+
+  export type GoodsReceivedNoteCreateOrConnectWithoutSupplierInput = {
+    where: GoodsReceivedNoteWhereUniqueInput
+    create: XOR<GoodsReceivedNoteCreateWithoutSupplierInput, GoodsReceivedNoteUncheckedCreateWithoutSupplierInput>
+  }
+
+  export type GoodsReceivedNoteCreateManySupplierInputEnvelope = {
+    data: GoodsReceivedNoteCreateManySupplierInput | GoodsReceivedNoteCreateManySupplierInput[]
     skipDuplicates?: boolean
   }
 
@@ -486017,6 +490582,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSupplierInput = {
@@ -486124,6 +490690,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type SchoolSupplierUpsertWithWhereUniqueWithoutSupplierInput = {
@@ -486199,6 +490766,14 @@ export namespace Prisma {
     totalAmount?: FloatFilter<"PurchaseOrder"> | number
     status?: StringFilter<"PurchaseOrder"> | string
     schoolId?: StringFilter<"PurchaseOrder"> | string
+    coaCode?: StringNullableFilter<"PurchaseOrder"> | string | null
+    department?: StringNullableFilter<"PurchaseOrder"> | string | null
+    budgetChecked?: BoolFilter<"PurchaseOrder"> | boolean
+    budgetOverrun?: BoolFilter<"PurchaseOrder"> | boolean
+    budgetRemaining?: FloatNullableFilter<"PurchaseOrder"> | number | null
+    approvedById?: StringNullableFilter<"PurchaseOrder"> | string | null
+    approvedAt?: DateTimeNullableFilter<"PurchaseOrder"> | Date | string | null
+    rejectionReason?: StringNullableFilter<"PurchaseOrder"> | string | null
     createdAt?: DateTimeFilter<"PurchaseOrder"> | Date | string
     updatedAt?: DateTimeFilter<"PurchaseOrder"> | Date | string
   }
@@ -486226,12 +490801,36 @@ export namespace Prisma {
     id?: StringFilter<"Invoice"> | string
     invoiceNo?: StringFilter<"Invoice"> | string
     supplierId?: StringFilter<"Invoice"> | string
+    purchaseOrderId?: StringNullableFilter<"Invoice"> | string | null
+    grnId?: StringNullableFilter<"Invoice"> | string | null
     amount?: FloatFilter<"Invoice"> | number
+    items?: JsonNullableFilter<"Invoice">
     status?: StringFilter<"Invoice"> | string
+    matchingStatus?: StringFilter<"Invoice"> | string
+    matchingNotes?: StringNullableFilter<"Invoice"> | string | null
+    approvedById?: StringNullableFilter<"Invoice"> | string | null
+    approvedAt?: DateTimeNullableFilter<"Invoice"> | Date | string | null
+    journalEntryId?: StringNullableFilter<"Invoice"> | string | null
     dueDate?: DateTimeFilter<"Invoice"> | Date | string
     schoolId?: StringFilter<"Invoice"> | string
     createdAt?: DateTimeFilter<"Invoice"> | Date | string
     updatedAt?: DateTimeFilter<"Invoice"> | Date | string
+  }
+
+  export type GoodsReceivedNoteUpsertWithWhereUniqueWithoutSupplierInput = {
+    where: GoodsReceivedNoteWhereUniqueInput
+    update: XOR<GoodsReceivedNoteUpdateWithoutSupplierInput, GoodsReceivedNoteUncheckedUpdateWithoutSupplierInput>
+    create: XOR<GoodsReceivedNoteCreateWithoutSupplierInput, GoodsReceivedNoteUncheckedCreateWithoutSupplierInput>
+  }
+
+  export type GoodsReceivedNoteUpdateWithWhereUniqueWithoutSupplierInput = {
+    where: GoodsReceivedNoteWhereUniqueInput
+    data: XOR<GoodsReceivedNoteUpdateWithoutSupplierInput, GoodsReceivedNoteUncheckedUpdateWithoutSupplierInput>
+  }
+
+  export type GoodsReceivedNoteUpdateManyWithWhereWithoutSupplierInput = {
+    where: GoodsReceivedNoteScalarWhereInput
+    data: XOR<GoodsReceivedNoteUpdateManyMutationInput, GoodsReceivedNoteUncheckedUpdateManyWithoutSupplierInput>
   }
 
   export type UniformStockOrderUpsertWithWhereUniqueWithoutSupplierInput = {
@@ -486680,6 +491279,7 @@ export namespace Prisma {
     tenders?: TenderBidCreateNestedManyWithoutSupplierInput
     purchaseOrders?: PurchaseOrderCreateNestedManyWithoutSupplierInput
     invoices?: InvoiceCreateNestedManyWithoutSupplierInput
+    goodsReceivedNotes?: GoodsReceivedNoteCreateNestedManyWithoutSupplierInput
     uniformStockOrders?: UniformStockOrderCreateNestedManyWithoutSupplierInput
     uniformPayments?: UniformSupplierPaymentCreateNestedManyWithoutSupplierInput
   }
@@ -486701,6 +491301,7 @@ export namespace Prisma {
     tenders?: TenderBidUncheckedCreateNestedManyWithoutSupplierInput
     purchaseOrders?: PurchaseOrderUncheckedCreateNestedManyWithoutSupplierInput
     invoices?: InvoiceUncheckedCreateNestedManyWithoutSupplierInput
+    goodsReceivedNotes?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutSupplierInput
     uniformStockOrders?: UniformStockOrderUncheckedCreateNestedManyWithoutSupplierInput
     uniformPayments?: UniformSupplierPaymentUncheckedCreateNestedManyWithoutSupplierInput
   }
@@ -487141,6 +491742,7 @@ export namespace Prisma {
     tenders?: TenderBidUpdateManyWithoutSupplierNestedInput
     purchaseOrders?: PurchaseOrderUpdateManyWithoutSupplierNestedInput
     invoices?: InvoiceUpdateManyWithoutSupplierNestedInput
+    goodsReceivedNotes?: GoodsReceivedNoteUpdateManyWithoutSupplierNestedInput
     uniformStockOrders?: UniformStockOrderUpdateManyWithoutSupplierNestedInput
     uniformPayments?: UniformSupplierPaymentUpdateManyWithoutSupplierNestedInput
   }
@@ -487162,6 +491764,7 @@ export namespace Prisma {
     tenders?: TenderBidUncheckedUpdateManyWithoutSupplierNestedInput
     purchaseOrders?: PurchaseOrderUncheckedUpdateManyWithoutSupplierNestedInput
     invoices?: InvoiceUncheckedUpdateManyWithoutSupplierNestedInput
+    goodsReceivedNotes?: GoodsReceivedNoteUncheckedUpdateManyWithoutSupplierNestedInput
     uniformStockOrders?: UniformStockOrderUncheckedUpdateManyWithoutSupplierNestedInput
     uniformPayments?: UniformSupplierPaymentUncheckedUpdateManyWithoutSupplierNestedInput
   }
@@ -487271,6 +491874,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutParentInput = {
@@ -487378,6 +491982,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutParentInput = {
@@ -487567,6 +492172,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutParentInput = {
@@ -487674,6 +492280,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type ParentStudentUpsertWithWhereUniqueWithoutParentInput = {
@@ -488282,6 +492889,7 @@ export namespace Prisma {
     schools?: SchoolSupplierCreateNestedManyWithoutSupplierInput
     purchaseOrders?: PurchaseOrderCreateNestedManyWithoutSupplierInput
     invoices?: InvoiceCreateNestedManyWithoutSupplierInput
+    goodsReceivedNotes?: GoodsReceivedNoteCreateNestedManyWithoutSupplierInput
     uniformStockOrders?: UniformStockOrderCreateNestedManyWithoutSupplierInput
     uniformPayments?: UniformSupplierPaymentCreateNestedManyWithoutSupplierInput
   }
@@ -488303,6 +492911,7 @@ export namespace Prisma {
     schools?: SchoolSupplierUncheckedCreateNestedManyWithoutSupplierInput
     purchaseOrders?: PurchaseOrderUncheckedCreateNestedManyWithoutSupplierInput
     invoices?: InvoiceUncheckedCreateNestedManyWithoutSupplierInput
+    goodsReceivedNotes?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutSupplierInput
     uniformStockOrders?: UniformStockOrderUncheckedCreateNestedManyWithoutSupplierInput
     uniformPayments?: UniformSupplierPaymentUncheckedCreateNestedManyWithoutSupplierInput
   }
@@ -488379,6 +492988,7 @@ export namespace Prisma {
     schools?: SchoolSupplierUpdateManyWithoutSupplierNestedInput
     purchaseOrders?: PurchaseOrderUpdateManyWithoutSupplierNestedInput
     invoices?: InvoiceUpdateManyWithoutSupplierNestedInput
+    goodsReceivedNotes?: GoodsReceivedNoteUpdateManyWithoutSupplierNestedInput
     uniformStockOrders?: UniformStockOrderUpdateManyWithoutSupplierNestedInput
     uniformPayments?: UniformSupplierPaymentUpdateManyWithoutSupplierNestedInput
   }
@@ -488400,6 +493010,7 @@ export namespace Prisma {
     schools?: SchoolSupplierUncheckedUpdateManyWithoutSupplierNestedInput
     purchaseOrders?: PurchaseOrderUncheckedUpdateManyWithoutSupplierNestedInput
     invoices?: InvoiceUncheckedUpdateManyWithoutSupplierNestedInput
+    goodsReceivedNotes?: GoodsReceivedNoteUncheckedUpdateManyWithoutSupplierNestedInput
     uniformStockOrders?: UniformStockOrderUncheckedUpdateManyWithoutSupplierNestedInput
     uniformPayments?: UniformSupplierPaymentUncheckedUpdateManyWithoutSupplierNestedInput
   }
@@ -488421,6 +493032,7 @@ export namespace Prisma {
     schools?: SchoolSupplierCreateNestedManyWithoutSupplierInput
     tenders?: TenderBidCreateNestedManyWithoutSupplierInput
     invoices?: InvoiceCreateNestedManyWithoutSupplierInput
+    goodsReceivedNotes?: GoodsReceivedNoteCreateNestedManyWithoutSupplierInput
     uniformStockOrders?: UniformStockOrderCreateNestedManyWithoutSupplierInput
     uniformPayments?: UniformSupplierPaymentCreateNestedManyWithoutSupplierInput
   }
@@ -488442,6 +493054,7 @@ export namespace Prisma {
     schools?: SchoolSupplierUncheckedCreateNestedManyWithoutSupplierInput
     tenders?: TenderBidUncheckedCreateNestedManyWithoutSupplierInput
     invoices?: InvoiceUncheckedCreateNestedManyWithoutSupplierInput
+    goodsReceivedNotes?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutSupplierInput
     uniformStockOrders?: UniformStockOrderUncheckedCreateNestedManyWithoutSupplierInput
     uniformPayments?: UniformSupplierPaymentUncheckedCreateNestedManyWithoutSupplierInput
   }
@@ -488518,6 +493131,98 @@ export namespace Prisma {
     create: XOR<RequisitionCreateWithoutPurchaseOrderInput, RequisitionUncheckedCreateWithoutPurchaseOrderInput>
   }
 
+  export type GoodsReceivedNoteCreateWithoutPurchaseOrderInput = {
+    id?: string
+    grnNumber: string
+    schoolId: string
+    receivedDate?: Date | string
+    deliveryNoteNumber?: string | null
+    status?: string
+    items: JsonNullValueInput | InputJsonValue
+    totalValueReceived?: number
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    supplier: SupplierCreateNestedOneWithoutGoodsReceivedNotesInput
+    receivedBy: UserCreateNestedOneWithoutReceivedGRNsInput
+    invoices?: InvoiceCreateNestedManyWithoutGrnInput
+  }
+
+  export type GoodsReceivedNoteUncheckedCreateWithoutPurchaseOrderInput = {
+    id?: string
+    grnNumber: string
+    schoolId: string
+    supplierId: string
+    receivedDate?: Date | string
+    receivedById: string
+    deliveryNoteNumber?: string | null
+    status?: string
+    items: JsonNullValueInput | InputJsonValue
+    totalValueReceived?: number
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    invoices?: InvoiceUncheckedCreateNestedManyWithoutGrnInput
+  }
+
+  export type GoodsReceivedNoteCreateOrConnectWithoutPurchaseOrderInput = {
+    where: GoodsReceivedNoteWhereUniqueInput
+    create: XOR<GoodsReceivedNoteCreateWithoutPurchaseOrderInput, GoodsReceivedNoteUncheckedCreateWithoutPurchaseOrderInput>
+  }
+
+  export type GoodsReceivedNoteCreateManyPurchaseOrderInputEnvelope = {
+    data: GoodsReceivedNoteCreateManyPurchaseOrderInput | GoodsReceivedNoteCreateManyPurchaseOrderInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type InvoiceCreateWithoutPurchaseOrderInput = {
+    id?: string
+    invoiceNo: string
+    amount: number
+    items?: NullableJsonNullValueInput | InputJsonValue
+    status?: string
+    matchingStatus?: string
+    matchingNotes?: string | null
+    approvedById?: string | null
+    approvedAt?: Date | string | null
+    journalEntryId?: string | null
+    dueDate: Date | string
+    schoolId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    supplier: SupplierCreateNestedOneWithoutInvoicesInput
+    grn?: GoodsReceivedNoteCreateNestedOneWithoutInvoicesInput
+  }
+
+  export type InvoiceUncheckedCreateWithoutPurchaseOrderInput = {
+    id?: string
+    invoiceNo: string
+    supplierId: string
+    grnId?: string | null
+    amount: number
+    items?: NullableJsonNullValueInput | InputJsonValue
+    status?: string
+    matchingStatus?: string
+    matchingNotes?: string | null
+    approvedById?: string | null
+    approvedAt?: Date | string | null
+    journalEntryId?: string | null
+    dueDate: Date | string
+    schoolId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type InvoiceCreateOrConnectWithoutPurchaseOrderInput = {
+    where: InvoiceWhereUniqueInput
+    create: XOR<InvoiceCreateWithoutPurchaseOrderInput, InvoiceUncheckedCreateWithoutPurchaseOrderInput>
+  }
+
+  export type InvoiceCreateManyPurchaseOrderInputEnvelope = {
+    data: InvoiceCreateManyPurchaseOrderInput | InvoiceCreateManyPurchaseOrderInput[]
+    skipDuplicates?: boolean
+  }
+
   export type SupplierUpsertWithoutPurchaseOrdersInput = {
     update: XOR<SupplierUpdateWithoutPurchaseOrdersInput, SupplierUncheckedUpdateWithoutPurchaseOrdersInput>
     create: XOR<SupplierCreateWithoutPurchaseOrdersInput, SupplierUncheckedCreateWithoutPurchaseOrdersInput>
@@ -488546,6 +493251,7 @@ export namespace Prisma {
     schools?: SchoolSupplierUpdateManyWithoutSupplierNestedInput
     tenders?: TenderBidUpdateManyWithoutSupplierNestedInput
     invoices?: InvoiceUpdateManyWithoutSupplierNestedInput
+    goodsReceivedNotes?: GoodsReceivedNoteUpdateManyWithoutSupplierNestedInput
     uniformStockOrders?: UniformStockOrderUpdateManyWithoutSupplierNestedInput
     uniformPayments?: UniformSupplierPaymentUpdateManyWithoutSupplierNestedInput
   }
@@ -488567,6 +493273,7 @@ export namespace Prisma {
     schools?: SchoolSupplierUncheckedUpdateManyWithoutSupplierNestedInput
     tenders?: TenderBidUncheckedUpdateManyWithoutSupplierNestedInput
     invoices?: InvoiceUncheckedUpdateManyWithoutSupplierNestedInput
+    goodsReceivedNotes?: GoodsReceivedNoteUncheckedUpdateManyWithoutSupplierNestedInput
     uniformStockOrders?: UniformStockOrderUncheckedUpdateManyWithoutSupplierNestedInput
     uniformPayments?: UniformSupplierPaymentUncheckedUpdateManyWithoutSupplierNestedInput
   }
@@ -488644,6 +493351,762 @@ export namespace Prisma {
     receivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
+  export type GoodsReceivedNoteUpsertWithWhereUniqueWithoutPurchaseOrderInput = {
+    where: GoodsReceivedNoteWhereUniqueInput
+    update: XOR<GoodsReceivedNoteUpdateWithoutPurchaseOrderInput, GoodsReceivedNoteUncheckedUpdateWithoutPurchaseOrderInput>
+    create: XOR<GoodsReceivedNoteCreateWithoutPurchaseOrderInput, GoodsReceivedNoteUncheckedCreateWithoutPurchaseOrderInput>
+  }
+
+  export type GoodsReceivedNoteUpdateWithWhereUniqueWithoutPurchaseOrderInput = {
+    where: GoodsReceivedNoteWhereUniqueInput
+    data: XOR<GoodsReceivedNoteUpdateWithoutPurchaseOrderInput, GoodsReceivedNoteUncheckedUpdateWithoutPurchaseOrderInput>
+  }
+
+  export type GoodsReceivedNoteUpdateManyWithWhereWithoutPurchaseOrderInput = {
+    where: GoodsReceivedNoteScalarWhereInput
+    data: XOR<GoodsReceivedNoteUpdateManyMutationInput, GoodsReceivedNoteUncheckedUpdateManyWithoutPurchaseOrderInput>
+  }
+
+  export type InvoiceUpsertWithWhereUniqueWithoutPurchaseOrderInput = {
+    where: InvoiceWhereUniqueInput
+    update: XOR<InvoiceUpdateWithoutPurchaseOrderInput, InvoiceUncheckedUpdateWithoutPurchaseOrderInput>
+    create: XOR<InvoiceCreateWithoutPurchaseOrderInput, InvoiceUncheckedCreateWithoutPurchaseOrderInput>
+  }
+
+  export type InvoiceUpdateWithWhereUniqueWithoutPurchaseOrderInput = {
+    where: InvoiceWhereUniqueInput
+    data: XOR<InvoiceUpdateWithoutPurchaseOrderInput, InvoiceUncheckedUpdateWithoutPurchaseOrderInput>
+  }
+
+  export type InvoiceUpdateManyWithWhereWithoutPurchaseOrderInput = {
+    where: InvoiceScalarWhereInput
+    data: XOR<InvoiceUpdateManyMutationInput, InvoiceUncheckedUpdateManyWithoutPurchaseOrderInput>
+  }
+
+  export type PurchaseOrderCreateWithoutGrnsInput = {
+    id?: string
+    poNumber: string
+    description: string
+    items: JsonNullValueInput | InputJsonValue
+    totalAmount: number
+    status?: string
+    schoolId: string
+    coaCode?: string | null
+    department?: string | null
+    budgetChecked?: boolean
+    budgetOverrun?: boolean
+    budgetRemaining?: number | null
+    approvedById?: string | null
+    approvedAt?: Date | string | null
+    rejectionReason?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    supplier: SupplierCreateNestedOneWithoutPurchaseOrdersInput
+    requisition?: RequisitionCreateNestedOneWithoutPurchaseOrderInput
+    invoices?: InvoiceCreateNestedManyWithoutPurchaseOrderInput
+  }
+
+  export type PurchaseOrderUncheckedCreateWithoutGrnsInput = {
+    id?: string
+    poNumber: string
+    supplierId: string
+    description: string
+    items: JsonNullValueInput | InputJsonValue
+    totalAmount: number
+    status?: string
+    schoolId: string
+    coaCode?: string | null
+    department?: string | null
+    budgetChecked?: boolean
+    budgetOverrun?: boolean
+    budgetRemaining?: number | null
+    approvedById?: string | null
+    approvedAt?: Date | string | null
+    rejectionReason?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    requisition?: RequisitionUncheckedCreateNestedOneWithoutPurchaseOrderInput
+    invoices?: InvoiceUncheckedCreateNestedManyWithoutPurchaseOrderInput
+  }
+
+  export type PurchaseOrderCreateOrConnectWithoutGrnsInput = {
+    where: PurchaseOrderWhereUniqueInput
+    create: XOR<PurchaseOrderCreateWithoutGrnsInput, PurchaseOrderUncheckedCreateWithoutGrnsInput>
+  }
+
+  export type SupplierCreateWithoutGoodsReceivedNotesInput = {
+    id?: string
+    globalId?: string | null
+    companyName: string
+    contactName: string
+    email: string
+    phone?: string | null
+    address?: string | null
+    taxClearance?: string | null
+    prazCert?: string | null
+    status?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user?: UserCreateNestedOneWithoutSupplierInput
+    schools?: SchoolSupplierCreateNestedManyWithoutSupplierInput
+    tenders?: TenderBidCreateNestedManyWithoutSupplierInput
+    purchaseOrders?: PurchaseOrderCreateNestedManyWithoutSupplierInput
+    invoices?: InvoiceCreateNestedManyWithoutSupplierInput
+    uniformStockOrders?: UniformStockOrderCreateNestedManyWithoutSupplierInput
+    uniformPayments?: UniformSupplierPaymentCreateNestedManyWithoutSupplierInput
+  }
+
+  export type SupplierUncheckedCreateWithoutGoodsReceivedNotesInput = {
+    id?: string
+    globalId?: string | null
+    companyName: string
+    contactName: string
+    email: string
+    phone?: string | null
+    address?: string | null
+    taxClearance?: string | null
+    prazCert?: string | null
+    status?: string
+    userId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    schools?: SchoolSupplierUncheckedCreateNestedManyWithoutSupplierInput
+    tenders?: TenderBidUncheckedCreateNestedManyWithoutSupplierInput
+    purchaseOrders?: PurchaseOrderUncheckedCreateNestedManyWithoutSupplierInput
+    invoices?: InvoiceUncheckedCreateNestedManyWithoutSupplierInput
+    uniformStockOrders?: UniformStockOrderUncheckedCreateNestedManyWithoutSupplierInput
+    uniformPayments?: UniformSupplierPaymentUncheckedCreateNestedManyWithoutSupplierInput
+  }
+
+  export type SupplierCreateOrConnectWithoutGoodsReceivedNotesInput = {
+    where: SupplierWhereUniqueInput
+    create: XOR<SupplierCreateWithoutGoodsReceivedNotesInput, SupplierUncheckedCreateWithoutGoodsReceivedNotesInput>
+  }
+
+  export type UserCreateWithoutReceivedGRNsInput = {
+    id?: string
+    email: string
+    password: string
+    name: string
+    role: string
+    secondaryRoles?: UserCreatesecondaryRolesInput | string[]
+    avatar?: string | null
+    religion?: string | null
+    phone?: string | null
+    preferredLanguage?: string | null
+    staffId?: string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    isLocked?: boolean
+    mustChangePassword?: boolean
+    passwordLastChanged?: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    uploadedSyllabuses?: SyllabusCreateNestedManyWithoutUploadedByInput
+    coveredTopics?: SyllabusTopicCreateNestedManyWithoutCoveredByInput
+    recruitedVacancies?: VacancyCreateNestedManyWithoutRecruiterInput
+    sessions?: UserSessionCreateNestedManyWithoutUserInput
+    school?: SchoolCreateNestedOneWithoutUsersInput
+    teacher?: TeacherCreateNestedOneWithoutUserInput
+    student?: StudentCreateNestedOneWithoutUserInput
+    parent?: ParentCreateNestedOneWithoutUserInput
+    supplier?: SupplierCreateNestedOneWithoutUserInput
+    salaryStubs?: SalaryStubCreateNestedManyWithoutUserInput
+    shiftAssignments?: ShiftAssignmentCreateNestedManyWithoutUserInput
+    employeeProfile?: EmployeeProfileCreateNestedOneWithoutUserInput
+    awards?: AwardCreateNestedManyWithoutUserInput
+    courses?: CourseCreateNestedManyWithoutTeacherInput
+    bookLoans?: BookLoanCreateNestedManyWithoutUserInput
+    bookReservations?: BookReservationCreateNestedManyWithoutUserInput
+    libraryDigitalResources?: LibraryDigitalResourceCreateNestedManyWithoutAddedByInput
+    dept?: DepartmentCreateNestedOneWithoutUsersInput
+    headedDepartments?: DepartmentCreateNestedManyWithoutHeadInput
+    authorizedBoardingLogs?: BoardingLogCreateNestedManyWithoutAuthorizedByInput
+    visitorLogs?: VisitorLogCreateNestedManyWithoutGuardInput
+    securityIncidents?: SecurityIncidentCreateNestedManyWithoutReportedByInput
+    auditLogs?: AuditLogCreateNestedManyWithoutActorInput
+    diningHallReports?: DiningHallReportCreateNestedManyWithoutReportedByInput
+    prefectReports?: PrefectReportCreateNestedManyWithoutReportedByInput
+    assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
+    registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
+    assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
+    reportedIncidents?: AssetIncidentCreateNestedManyWithoutReporterInput
+    supportTickets?: SupportTicketCreateNestedManyWithoutRequesterInput
+    reports?: AcademicReportCreateNestedManyWithoutStudentInput
+    requisitions?: RequisitionCreateNestedManyWithoutRequesterInput
+    hodRequisitions?: RequisitionCreateNestedManyWithoutHodInput
+    bursarRequisitions?: RequisitionCreateNestedManyWithoutBursarInput
+    adminRequisitions?: RequisitionCreateNestedManyWithoutAdminInput
+    transfers?: TransferAuthorizationCreateNestedManyWithoutStudentUserInput
+    leadershipAssigned?: LeadershipAssignmentCreateNestedManyWithoutAssignedByInput
+    wardenOfHostels?: HostelCreateNestedManyWithoutWardenInput
+    matronApprovedRequisitions?: RequisitionCreateNestedManyWithoutMatronApprovedByInput
+    issuedRequisitions?: RequisitionCreateNestedManyWithoutIssuedByInput
+    communicationLogs?: CommunicationLogCreateNestedManyWithoutSenderInput
+    staffAttendances?: StaffAttendanceCreateNestedManyWithoutStaffInput
+    LiveClass?: LiveClassCreateNestedManyWithoutTeacherInput
+    StudyMaterial?: StudyMaterialCreateNestedManyWithoutTeacherInput
+    paymentPlans?: PaymentPlanCreateNestedManyWithoutParentUserInput
+    payrollEntries?: PayrollEntryCreateNestedManyWithoutUserInput
+    clinicAppointments?: ClinicAppointmentCreateNestedManyWithoutUserInput
+    clinicComplaints?: ClinicComplaintCreateNestedManyWithoutUserInput
+    clinicImmunizations?: ClinicImmunizationCreateNestedManyWithoutUserInput
+    clinicReferrals?: ClinicReferralCreateNestedManyWithoutUserInput
+    clinicVisits?: ClinicVisitCreateNestedManyWithoutUserInput
+    clinicHospitalizations?: ClinicHospitalizationCreateNestedManyWithoutUserInput
+    clinicPatient?: ClinicPatientCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectCreateNestedManyWithoutCreatedByInput
+    vitalsRecorded?: ClinicVitalCreateNestedManyWithoutRecordedByInput
+    prescriptionsWritten?: ClinicPrescriptionCreateNestedManyWithoutPrescribedByInput
+    pharmacyDispensingsMade?: PharmacyDispenseCreateNestedManyWithoutDispensedByInput
+    monitoringLogsRecorded?: ClinicMonitoringLogCreateNestedManyWithoutRecordedByInput
+    emergencyLogsRecorded?: ClinicEmergencyLogCreateNestedManyWithoutLoggedByInput
+    clinicAccessAudits?: ClinicAccessAuditCreateNestedManyWithoutUserInput
+    visitsTriaged?: ClinicVisitCreateNestedManyWithoutTriageByInput
+    visitsConsulted?: ClinicVisitCreateNestedManyWithoutConsultedByInput
+    leaveBalances?: LeaveBalanceCreateNestedManyWithoutUserInput
+    announcementsCreated?: AnnouncementCreateNestedManyWithoutCreatedByInput
+    announcementReads?: AnnouncementReadCreateNestedManyWithoutUserInput
+    createdQuestions?: QuestionCreateNestedManyWithoutCreatedByInput
+    createdCbtExams?: CbtExamCreateNestedManyWithoutCreatedByInput
+    nominatedAwards?: StudentAwardCreateNestedManyWithoutNominatorInput
+    approvedAwards?: StudentAwardCreateNestedManyWithoutApproverInput
+    approvedBursaries?: StudentBursaryCreateNestedManyWithoutApproverInput
+    approvedExeats?: ExeatCreateNestedManyWithoutApprovedByHousemasterInput
+    markedBoardingRollCalls?: BoardingRollCallCreateNestedManyWithoutMarkedByInput
+    uniformsIssued?: UniformIssuanceCreateNestedManyWithoutIssuedByInput
+    markedAttendanceSessions?: AttendanceSessionCreateNestedManyWithoutTeacherInput
+    markedSessionRecords?: AttendanceSessionRecordCreateNestedManyWithoutMarkedByInput
+    staffAttendanceDailies?: StaffAttendanceDailyCreateNestedManyWithoutStaffInput
+    biometricRawLogs?: BiometricRawLogCreateNestedManyWithoutStaffInput
+    hrTardinessLogs?: HrTardinessLogCreateNestedManyWithoutStaffInput
+    tripLeadTrips?: SchoolTripCreateNestedManyWithoutStaffInput
+    tripNurseTrips?: SchoolTripCreateNestedManyWithoutNurseStaffInput
+    parentTripConsents?: TripConsentCreateNestedManyWithoutParentInput
+    parentMedicalConsents?: MedicalConsentCreateNestedManyWithoutParentInput
+    schemesHodApproved?: SchemeOfWorkCreateNestedManyWithoutHodApprovedByInput
+    lessonPlansHodReviewed?: LessonPlanCreateNestedManyWithoutHodReviewedByInput
+    assessmentsCreated?: AssessmentCreateNestedManyWithoutCreatedByInput
+    assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
+    questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
+    assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+  }
+
+  export type UserUncheckedCreateWithoutReceivedGRNsInput = {
+    id?: string
+    email: string
+    password: string
+    name: string
+    role: string
+    secondaryRoles?: UserCreatesecondaryRolesInput | string[]
+    avatar?: string | null
+    religion?: string | null
+    phone?: string | null
+    preferredLanguage?: string | null
+    staffId?: string | null
+    schoolId?: string | null
+    departmentId?: string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    isLocked?: boolean
+    mustChangePassword?: boolean
+    passwordLastChanged?: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    uploadedSyllabuses?: SyllabusUncheckedCreateNestedManyWithoutUploadedByInput
+    coveredTopics?: SyllabusTopicUncheckedCreateNestedManyWithoutCoveredByInput
+    recruitedVacancies?: VacancyUncheckedCreateNestedManyWithoutRecruiterInput
+    sessions?: UserSessionUncheckedCreateNestedManyWithoutUserInput
+    teacher?: TeacherUncheckedCreateNestedOneWithoutUserInput
+    student?: StudentUncheckedCreateNestedOneWithoutUserInput
+    parent?: ParentUncheckedCreateNestedOneWithoutUserInput
+    supplier?: SupplierUncheckedCreateNestedOneWithoutUserInput
+    salaryStubs?: SalaryStubUncheckedCreateNestedManyWithoutUserInput
+    shiftAssignments?: ShiftAssignmentUncheckedCreateNestedManyWithoutUserInput
+    employeeProfile?: EmployeeProfileUncheckedCreateNestedOneWithoutUserInput
+    awards?: AwardUncheckedCreateNestedManyWithoutUserInput
+    courses?: CourseUncheckedCreateNestedManyWithoutTeacherInput
+    bookLoans?: BookLoanUncheckedCreateNestedManyWithoutUserInput
+    bookReservations?: BookReservationUncheckedCreateNestedManyWithoutUserInput
+    libraryDigitalResources?: LibraryDigitalResourceUncheckedCreateNestedManyWithoutAddedByInput
+    headedDepartments?: DepartmentUncheckedCreateNestedManyWithoutHeadInput
+    authorizedBoardingLogs?: BoardingLogUncheckedCreateNestedManyWithoutAuthorizedByInput
+    visitorLogs?: VisitorLogUncheckedCreateNestedManyWithoutGuardInput
+    securityIncidents?: SecurityIncidentUncheckedCreateNestedManyWithoutReportedByInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutActorInput
+    diningHallReports?: DiningHallReportUncheckedCreateNestedManyWithoutReportedByInput
+    prefectReports?: PrefectReportUncheckedCreateNestedManyWithoutReportedByInput
+    assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
+    registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
+    assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
+    reportedIncidents?: AssetIncidentUncheckedCreateNestedManyWithoutReporterInput
+    supportTickets?: SupportTicketUncheckedCreateNestedManyWithoutRequesterInput
+    reports?: AcademicReportUncheckedCreateNestedManyWithoutStudentInput
+    requisitions?: RequisitionUncheckedCreateNestedManyWithoutRequesterInput
+    hodRequisitions?: RequisitionUncheckedCreateNestedManyWithoutHodInput
+    bursarRequisitions?: RequisitionUncheckedCreateNestedManyWithoutBursarInput
+    adminRequisitions?: RequisitionUncheckedCreateNestedManyWithoutAdminInput
+    transfers?: TransferAuthorizationUncheckedCreateNestedManyWithoutStudentUserInput
+    leadershipAssigned?: LeadershipAssignmentUncheckedCreateNestedManyWithoutAssignedByInput
+    wardenOfHostels?: HostelUncheckedCreateNestedManyWithoutWardenInput
+    matronApprovedRequisitions?: RequisitionUncheckedCreateNestedManyWithoutMatronApprovedByInput
+    issuedRequisitions?: RequisitionUncheckedCreateNestedManyWithoutIssuedByInput
+    communicationLogs?: CommunicationLogUncheckedCreateNestedManyWithoutSenderInput
+    staffAttendances?: StaffAttendanceUncheckedCreateNestedManyWithoutStaffInput
+    LiveClass?: LiveClassUncheckedCreateNestedManyWithoutTeacherInput
+    StudyMaterial?: StudyMaterialUncheckedCreateNestedManyWithoutTeacherInput
+    paymentPlans?: PaymentPlanUncheckedCreateNestedManyWithoutParentUserInput
+    payrollEntries?: PayrollEntryUncheckedCreateNestedManyWithoutUserInput
+    clinicAppointments?: ClinicAppointmentUncheckedCreateNestedManyWithoutUserInput
+    clinicComplaints?: ClinicComplaintUncheckedCreateNestedManyWithoutUserInput
+    clinicImmunizations?: ClinicImmunizationUncheckedCreateNestedManyWithoutUserInput
+    clinicReferrals?: ClinicReferralUncheckedCreateNestedManyWithoutUserInput
+    clinicVisits?: ClinicVisitUncheckedCreateNestedManyWithoutUserInput
+    clinicHospitalizations?: ClinicHospitalizationUncheckedCreateNestedManyWithoutUserInput
+    clinicPatient?: ClinicPatientUncheckedCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectUncheckedCreateNestedManyWithoutCreatedByInput
+    vitalsRecorded?: ClinicVitalUncheckedCreateNestedManyWithoutRecordedByInput
+    prescriptionsWritten?: ClinicPrescriptionUncheckedCreateNestedManyWithoutPrescribedByInput
+    pharmacyDispensingsMade?: PharmacyDispenseUncheckedCreateNestedManyWithoutDispensedByInput
+    monitoringLogsRecorded?: ClinicMonitoringLogUncheckedCreateNestedManyWithoutRecordedByInput
+    emergencyLogsRecorded?: ClinicEmergencyLogUncheckedCreateNestedManyWithoutLoggedByInput
+    clinicAccessAudits?: ClinicAccessAuditUncheckedCreateNestedManyWithoutUserInput
+    visitsTriaged?: ClinicVisitUncheckedCreateNestedManyWithoutTriageByInput
+    visitsConsulted?: ClinicVisitUncheckedCreateNestedManyWithoutConsultedByInput
+    leaveBalances?: LeaveBalanceUncheckedCreateNestedManyWithoutUserInput
+    announcementsCreated?: AnnouncementUncheckedCreateNestedManyWithoutCreatedByInput
+    announcementReads?: AnnouncementReadUncheckedCreateNestedManyWithoutUserInput
+    createdQuestions?: QuestionUncheckedCreateNestedManyWithoutCreatedByInput
+    createdCbtExams?: CbtExamUncheckedCreateNestedManyWithoutCreatedByInput
+    nominatedAwards?: StudentAwardUncheckedCreateNestedManyWithoutNominatorInput
+    approvedAwards?: StudentAwardUncheckedCreateNestedManyWithoutApproverInput
+    approvedBursaries?: StudentBursaryUncheckedCreateNestedManyWithoutApproverInput
+    approvedExeats?: ExeatUncheckedCreateNestedManyWithoutApprovedByHousemasterInput
+    markedBoardingRollCalls?: BoardingRollCallUncheckedCreateNestedManyWithoutMarkedByInput
+    uniformsIssued?: UniformIssuanceUncheckedCreateNestedManyWithoutIssuedByInput
+    markedAttendanceSessions?: AttendanceSessionUncheckedCreateNestedManyWithoutTeacherInput
+    markedSessionRecords?: AttendanceSessionRecordUncheckedCreateNestedManyWithoutMarkedByInput
+    staffAttendanceDailies?: StaffAttendanceDailyUncheckedCreateNestedManyWithoutStaffInput
+    biometricRawLogs?: BiometricRawLogUncheckedCreateNestedManyWithoutStaffInput
+    hrTardinessLogs?: HrTardinessLogUncheckedCreateNestedManyWithoutStaffInput
+    tripLeadTrips?: SchoolTripUncheckedCreateNestedManyWithoutStaffInput
+    tripNurseTrips?: SchoolTripUncheckedCreateNestedManyWithoutNurseStaffInput
+    parentTripConsents?: TripConsentUncheckedCreateNestedManyWithoutParentInput
+    parentMedicalConsents?: MedicalConsentUncheckedCreateNestedManyWithoutParentInput
+    schemesHodApproved?: SchemeOfWorkUncheckedCreateNestedManyWithoutHodApprovedByInput
+    lessonPlansHodReviewed?: LessonPlanUncheckedCreateNestedManyWithoutHodReviewedByInput
+    assessmentsCreated?: AssessmentUncheckedCreateNestedManyWithoutCreatedByInput
+    assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
+    questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
+    assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+  }
+
+  export type UserCreateOrConnectWithoutReceivedGRNsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutReceivedGRNsInput, UserUncheckedCreateWithoutReceivedGRNsInput>
+  }
+
+  export type InvoiceCreateWithoutGrnInput = {
+    id?: string
+    invoiceNo: string
+    amount: number
+    items?: NullableJsonNullValueInput | InputJsonValue
+    status?: string
+    matchingStatus?: string
+    matchingNotes?: string | null
+    approvedById?: string | null
+    approvedAt?: Date | string | null
+    journalEntryId?: string | null
+    dueDate: Date | string
+    schoolId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    supplier: SupplierCreateNestedOneWithoutInvoicesInput
+    purchaseOrder?: PurchaseOrderCreateNestedOneWithoutInvoicesInput
+  }
+
+  export type InvoiceUncheckedCreateWithoutGrnInput = {
+    id?: string
+    invoiceNo: string
+    supplierId: string
+    purchaseOrderId?: string | null
+    amount: number
+    items?: NullableJsonNullValueInput | InputJsonValue
+    status?: string
+    matchingStatus?: string
+    matchingNotes?: string | null
+    approvedById?: string | null
+    approvedAt?: Date | string | null
+    journalEntryId?: string | null
+    dueDate: Date | string
+    schoolId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type InvoiceCreateOrConnectWithoutGrnInput = {
+    where: InvoiceWhereUniqueInput
+    create: XOR<InvoiceCreateWithoutGrnInput, InvoiceUncheckedCreateWithoutGrnInput>
+  }
+
+  export type InvoiceCreateManyGrnInputEnvelope = {
+    data: InvoiceCreateManyGrnInput | InvoiceCreateManyGrnInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type PurchaseOrderUpsertWithoutGrnsInput = {
+    update: XOR<PurchaseOrderUpdateWithoutGrnsInput, PurchaseOrderUncheckedUpdateWithoutGrnsInput>
+    create: XOR<PurchaseOrderCreateWithoutGrnsInput, PurchaseOrderUncheckedCreateWithoutGrnsInput>
+    where?: PurchaseOrderWhereInput
+  }
+
+  export type PurchaseOrderUpdateToOneWithWhereWithoutGrnsInput = {
+    where?: PurchaseOrderWhereInput
+    data: XOR<PurchaseOrderUpdateWithoutGrnsInput, PurchaseOrderUncheckedUpdateWithoutGrnsInput>
+  }
+
+  export type PurchaseOrderUpdateWithoutGrnsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    poNumber?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    items?: JsonNullValueInput | InputJsonValue
+    totalAmount?: FloatFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    schoolId?: StringFieldUpdateOperationsInput | string
+    coaCode?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: NullableStringFieldUpdateOperationsInput | string | null
+    budgetChecked?: BoolFieldUpdateOperationsInput | boolean
+    budgetOverrun?: BoolFieldUpdateOperationsInput | boolean
+    budgetRemaining?: NullableFloatFieldUpdateOperationsInput | number | null
+    approvedById?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    supplier?: SupplierUpdateOneRequiredWithoutPurchaseOrdersNestedInput
+    requisition?: RequisitionUpdateOneWithoutPurchaseOrderNestedInput
+    invoices?: InvoiceUpdateManyWithoutPurchaseOrderNestedInput
+  }
+
+  export type PurchaseOrderUncheckedUpdateWithoutGrnsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    poNumber?: StringFieldUpdateOperationsInput | string
+    supplierId?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    items?: JsonNullValueInput | InputJsonValue
+    totalAmount?: FloatFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    schoolId?: StringFieldUpdateOperationsInput | string
+    coaCode?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: NullableStringFieldUpdateOperationsInput | string | null
+    budgetChecked?: BoolFieldUpdateOperationsInput | boolean
+    budgetOverrun?: BoolFieldUpdateOperationsInput | boolean
+    budgetRemaining?: NullableFloatFieldUpdateOperationsInput | number | null
+    approvedById?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    requisition?: RequisitionUncheckedUpdateOneWithoutPurchaseOrderNestedInput
+    invoices?: InvoiceUncheckedUpdateManyWithoutPurchaseOrderNestedInput
+  }
+
+  export type SupplierUpsertWithoutGoodsReceivedNotesInput = {
+    update: XOR<SupplierUpdateWithoutGoodsReceivedNotesInput, SupplierUncheckedUpdateWithoutGoodsReceivedNotesInput>
+    create: XOR<SupplierCreateWithoutGoodsReceivedNotesInput, SupplierUncheckedCreateWithoutGoodsReceivedNotesInput>
+    where?: SupplierWhereInput
+  }
+
+  export type SupplierUpdateToOneWithWhereWithoutGoodsReceivedNotesInput = {
+    where?: SupplierWhereInput
+    data: XOR<SupplierUpdateWithoutGoodsReceivedNotesInput, SupplierUncheckedUpdateWithoutGoodsReceivedNotesInput>
+  }
+
+  export type SupplierUpdateWithoutGoodsReceivedNotesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    globalId?: NullableStringFieldUpdateOperationsInput | string | null
+    companyName?: StringFieldUpdateOperationsInput | string
+    contactName?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    taxClearance?: NullableStringFieldUpdateOperationsInput | string | null
+    prazCert?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneWithoutSupplierNestedInput
+    schools?: SchoolSupplierUpdateManyWithoutSupplierNestedInput
+    tenders?: TenderBidUpdateManyWithoutSupplierNestedInput
+    purchaseOrders?: PurchaseOrderUpdateManyWithoutSupplierNestedInput
+    invoices?: InvoiceUpdateManyWithoutSupplierNestedInput
+    uniformStockOrders?: UniformStockOrderUpdateManyWithoutSupplierNestedInput
+    uniformPayments?: UniformSupplierPaymentUpdateManyWithoutSupplierNestedInput
+  }
+
+  export type SupplierUncheckedUpdateWithoutGoodsReceivedNotesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    globalId?: NullableStringFieldUpdateOperationsInput | string | null
+    companyName?: StringFieldUpdateOperationsInput | string
+    contactName?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    taxClearance?: NullableStringFieldUpdateOperationsInput | string | null
+    prazCert?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    schools?: SchoolSupplierUncheckedUpdateManyWithoutSupplierNestedInput
+    tenders?: TenderBidUncheckedUpdateManyWithoutSupplierNestedInput
+    purchaseOrders?: PurchaseOrderUncheckedUpdateManyWithoutSupplierNestedInput
+    invoices?: InvoiceUncheckedUpdateManyWithoutSupplierNestedInput
+    uniformStockOrders?: UniformStockOrderUncheckedUpdateManyWithoutSupplierNestedInput
+    uniformPayments?: UniformSupplierPaymentUncheckedUpdateManyWithoutSupplierNestedInput
+  }
+
+  export type UserUpsertWithoutReceivedGRNsInput = {
+    update: XOR<UserUpdateWithoutReceivedGRNsInput, UserUncheckedUpdateWithoutReceivedGRNsInput>
+    create: XOR<UserCreateWithoutReceivedGRNsInput, UserUncheckedCreateWithoutReceivedGRNsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutReceivedGRNsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutReceivedGRNsInput, UserUncheckedUpdateWithoutReceivedGRNsInput>
+  }
+
+  export type UserUpdateWithoutReceivedGRNsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    secondaryRoles?: UserUpdatesecondaryRolesInput | string[]
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    religion?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    preferredLanguage?: NullableStringFieldUpdateOperationsInput | string | null
+    staffId?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    isLocked?: BoolFieldUpdateOperationsInput | boolean
+    mustChangePassword?: BoolFieldUpdateOperationsInput | boolean
+    passwordLastChanged?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    uploadedSyllabuses?: SyllabusUpdateManyWithoutUploadedByNestedInput
+    coveredTopics?: SyllabusTopicUpdateManyWithoutCoveredByNestedInput
+    recruitedVacancies?: VacancyUpdateManyWithoutRecruiterNestedInput
+    sessions?: UserSessionUpdateManyWithoutUserNestedInput
+    school?: SchoolUpdateOneWithoutUsersNestedInput
+    teacher?: TeacherUpdateOneWithoutUserNestedInput
+    student?: StudentUpdateOneWithoutUserNestedInput
+    parent?: ParentUpdateOneWithoutUserNestedInput
+    supplier?: SupplierUpdateOneWithoutUserNestedInput
+    salaryStubs?: SalaryStubUpdateManyWithoutUserNestedInput
+    shiftAssignments?: ShiftAssignmentUpdateManyWithoutUserNestedInput
+    employeeProfile?: EmployeeProfileUpdateOneWithoutUserNestedInput
+    awards?: AwardUpdateManyWithoutUserNestedInput
+    courses?: CourseUpdateManyWithoutTeacherNestedInput
+    bookLoans?: BookLoanUpdateManyWithoutUserNestedInput
+    bookReservations?: BookReservationUpdateManyWithoutUserNestedInput
+    libraryDigitalResources?: LibraryDigitalResourceUpdateManyWithoutAddedByNestedInput
+    dept?: DepartmentUpdateOneWithoutUsersNestedInput
+    headedDepartments?: DepartmentUpdateManyWithoutHeadNestedInput
+    authorizedBoardingLogs?: BoardingLogUpdateManyWithoutAuthorizedByNestedInput
+    visitorLogs?: VisitorLogUpdateManyWithoutGuardNestedInput
+    securityIncidents?: SecurityIncidentUpdateManyWithoutReportedByNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutActorNestedInput
+    diningHallReports?: DiningHallReportUpdateManyWithoutReportedByNestedInput
+    prefectReports?: PrefectReportUpdateManyWithoutReportedByNestedInput
+    assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
+    registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
+    assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
+    reportedIncidents?: AssetIncidentUpdateManyWithoutReporterNestedInput
+    supportTickets?: SupportTicketUpdateManyWithoutRequesterNestedInput
+    reports?: AcademicReportUpdateManyWithoutStudentNestedInput
+    requisitions?: RequisitionUpdateManyWithoutRequesterNestedInput
+    hodRequisitions?: RequisitionUpdateManyWithoutHodNestedInput
+    bursarRequisitions?: RequisitionUpdateManyWithoutBursarNestedInput
+    adminRequisitions?: RequisitionUpdateManyWithoutAdminNestedInput
+    transfers?: TransferAuthorizationUpdateManyWithoutStudentUserNestedInput
+    leadershipAssigned?: LeadershipAssignmentUpdateManyWithoutAssignedByNestedInput
+    wardenOfHostels?: HostelUpdateManyWithoutWardenNestedInput
+    matronApprovedRequisitions?: RequisitionUpdateManyWithoutMatronApprovedByNestedInput
+    issuedRequisitions?: RequisitionUpdateManyWithoutIssuedByNestedInput
+    communicationLogs?: CommunicationLogUpdateManyWithoutSenderNestedInput
+    staffAttendances?: StaffAttendanceUpdateManyWithoutStaffNestedInput
+    LiveClass?: LiveClassUpdateManyWithoutTeacherNestedInput
+    StudyMaterial?: StudyMaterialUpdateManyWithoutTeacherNestedInput
+    paymentPlans?: PaymentPlanUpdateManyWithoutParentUserNestedInput
+    payrollEntries?: PayrollEntryUpdateManyWithoutUserNestedInput
+    clinicAppointments?: ClinicAppointmentUpdateManyWithoutUserNestedInput
+    clinicComplaints?: ClinicComplaintUpdateManyWithoutUserNestedInput
+    clinicImmunizations?: ClinicImmunizationUpdateManyWithoutUserNestedInput
+    clinicReferrals?: ClinicReferralUpdateManyWithoutUserNestedInput
+    clinicVisits?: ClinicVisitUpdateManyWithoutUserNestedInput
+    clinicHospitalizations?: ClinicHospitalizationUpdateManyWithoutUserNestedInput
+    clinicPatient?: ClinicPatientUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUpdateManyWithoutCreatedByNestedInput
+    vitalsRecorded?: ClinicVitalUpdateManyWithoutRecordedByNestedInput
+    prescriptionsWritten?: ClinicPrescriptionUpdateManyWithoutPrescribedByNestedInput
+    pharmacyDispensingsMade?: PharmacyDispenseUpdateManyWithoutDispensedByNestedInput
+    monitoringLogsRecorded?: ClinicMonitoringLogUpdateManyWithoutRecordedByNestedInput
+    emergencyLogsRecorded?: ClinicEmergencyLogUpdateManyWithoutLoggedByNestedInput
+    clinicAccessAudits?: ClinicAccessAuditUpdateManyWithoutUserNestedInput
+    visitsTriaged?: ClinicVisitUpdateManyWithoutTriageByNestedInput
+    visitsConsulted?: ClinicVisitUpdateManyWithoutConsultedByNestedInput
+    leaveBalances?: LeaveBalanceUpdateManyWithoutUserNestedInput
+    announcementsCreated?: AnnouncementUpdateManyWithoutCreatedByNestedInput
+    announcementReads?: AnnouncementReadUpdateManyWithoutUserNestedInput
+    createdQuestions?: QuestionUpdateManyWithoutCreatedByNestedInput
+    createdCbtExams?: CbtExamUpdateManyWithoutCreatedByNestedInput
+    nominatedAwards?: StudentAwardUpdateManyWithoutNominatorNestedInput
+    approvedAwards?: StudentAwardUpdateManyWithoutApproverNestedInput
+    approvedBursaries?: StudentBursaryUpdateManyWithoutApproverNestedInput
+    approvedExeats?: ExeatUpdateManyWithoutApprovedByHousemasterNestedInput
+    markedBoardingRollCalls?: BoardingRollCallUpdateManyWithoutMarkedByNestedInput
+    uniformsIssued?: UniformIssuanceUpdateManyWithoutIssuedByNestedInput
+    markedAttendanceSessions?: AttendanceSessionUpdateManyWithoutTeacherNestedInput
+    markedSessionRecords?: AttendanceSessionRecordUpdateManyWithoutMarkedByNestedInput
+    staffAttendanceDailies?: StaffAttendanceDailyUpdateManyWithoutStaffNestedInput
+    biometricRawLogs?: BiometricRawLogUpdateManyWithoutStaffNestedInput
+    hrTardinessLogs?: HrTardinessLogUpdateManyWithoutStaffNestedInput
+    tripLeadTrips?: SchoolTripUpdateManyWithoutStaffNestedInput
+    tripNurseTrips?: SchoolTripUpdateManyWithoutNurseStaffNestedInput
+    parentTripConsents?: TripConsentUpdateManyWithoutParentNestedInput
+    parentMedicalConsents?: MedicalConsentUpdateManyWithoutParentNestedInput
+    schemesHodApproved?: SchemeOfWorkUpdateManyWithoutHodApprovedByNestedInput
+    lessonPlansHodReviewed?: LessonPlanUpdateManyWithoutHodReviewedByNestedInput
+    assessmentsCreated?: AssessmentUpdateManyWithoutCreatedByNestedInput
+    assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
+    questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
+    assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutReceivedGRNsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    secondaryRoles?: UserUpdatesecondaryRolesInput | string[]
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    religion?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    preferredLanguage?: NullableStringFieldUpdateOperationsInput | string | null
+    staffId?: NullableStringFieldUpdateOperationsInput | string | null
+    schoolId?: NullableStringFieldUpdateOperationsInput | string | null
+    departmentId?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    isLocked?: BoolFieldUpdateOperationsInput | boolean
+    mustChangePassword?: BoolFieldUpdateOperationsInput | boolean
+    passwordLastChanged?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    uploadedSyllabuses?: SyllabusUncheckedUpdateManyWithoutUploadedByNestedInput
+    coveredTopics?: SyllabusTopicUncheckedUpdateManyWithoutCoveredByNestedInput
+    recruitedVacancies?: VacancyUncheckedUpdateManyWithoutRecruiterNestedInput
+    sessions?: UserSessionUncheckedUpdateManyWithoutUserNestedInput
+    teacher?: TeacherUncheckedUpdateOneWithoutUserNestedInput
+    student?: StudentUncheckedUpdateOneWithoutUserNestedInput
+    parent?: ParentUncheckedUpdateOneWithoutUserNestedInput
+    supplier?: SupplierUncheckedUpdateOneWithoutUserNestedInput
+    salaryStubs?: SalaryStubUncheckedUpdateManyWithoutUserNestedInput
+    shiftAssignments?: ShiftAssignmentUncheckedUpdateManyWithoutUserNestedInput
+    employeeProfile?: EmployeeProfileUncheckedUpdateOneWithoutUserNestedInput
+    awards?: AwardUncheckedUpdateManyWithoutUserNestedInput
+    courses?: CourseUncheckedUpdateManyWithoutTeacherNestedInput
+    bookLoans?: BookLoanUncheckedUpdateManyWithoutUserNestedInput
+    bookReservations?: BookReservationUncheckedUpdateManyWithoutUserNestedInput
+    libraryDigitalResources?: LibraryDigitalResourceUncheckedUpdateManyWithoutAddedByNestedInput
+    headedDepartments?: DepartmentUncheckedUpdateManyWithoutHeadNestedInput
+    authorizedBoardingLogs?: BoardingLogUncheckedUpdateManyWithoutAuthorizedByNestedInput
+    visitorLogs?: VisitorLogUncheckedUpdateManyWithoutGuardNestedInput
+    securityIncidents?: SecurityIncidentUncheckedUpdateManyWithoutReportedByNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutActorNestedInput
+    diningHallReports?: DiningHallReportUncheckedUpdateManyWithoutReportedByNestedInput
+    prefectReports?: PrefectReportUncheckedUpdateManyWithoutReportedByNestedInput
+    assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
+    registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
+    assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
+    reportedIncidents?: AssetIncidentUncheckedUpdateManyWithoutReporterNestedInput
+    supportTickets?: SupportTicketUncheckedUpdateManyWithoutRequesterNestedInput
+    reports?: AcademicReportUncheckedUpdateManyWithoutStudentNestedInput
+    requisitions?: RequisitionUncheckedUpdateManyWithoutRequesterNestedInput
+    hodRequisitions?: RequisitionUncheckedUpdateManyWithoutHodNestedInput
+    bursarRequisitions?: RequisitionUncheckedUpdateManyWithoutBursarNestedInput
+    adminRequisitions?: RequisitionUncheckedUpdateManyWithoutAdminNestedInput
+    transfers?: TransferAuthorizationUncheckedUpdateManyWithoutStudentUserNestedInput
+    leadershipAssigned?: LeadershipAssignmentUncheckedUpdateManyWithoutAssignedByNestedInput
+    wardenOfHostels?: HostelUncheckedUpdateManyWithoutWardenNestedInput
+    matronApprovedRequisitions?: RequisitionUncheckedUpdateManyWithoutMatronApprovedByNestedInput
+    issuedRequisitions?: RequisitionUncheckedUpdateManyWithoutIssuedByNestedInput
+    communicationLogs?: CommunicationLogUncheckedUpdateManyWithoutSenderNestedInput
+    staffAttendances?: StaffAttendanceUncheckedUpdateManyWithoutStaffNestedInput
+    LiveClass?: LiveClassUncheckedUpdateManyWithoutTeacherNestedInput
+    StudyMaterial?: StudyMaterialUncheckedUpdateManyWithoutTeacherNestedInput
+    paymentPlans?: PaymentPlanUncheckedUpdateManyWithoutParentUserNestedInput
+    payrollEntries?: PayrollEntryUncheckedUpdateManyWithoutUserNestedInput
+    clinicAppointments?: ClinicAppointmentUncheckedUpdateManyWithoutUserNestedInput
+    clinicComplaints?: ClinicComplaintUncheckedUpdateManyWithoutUserNestedInput
+    clinicImmunizations?: ClinicImmunizationUncheckedUpdateManyWithoutUserNestedInput
+    clinicReferrals?: ClinicReferralUncheckedUpdateManyWithoutUserNestedInput
+    clinicVisits?: ClinicVisitUncheckedUpdateManyWithoutUserNestedInput
+    clinicHospitalizations?: ClinicHospitalizationUncheckedUpdateManyWithoutUserNestedInput
+    clinicPatient?: ClinicPatientUncheckedUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUncheckedUpdateManyWithoutCreatedByNestedInput
+    vitalsRecorded?: ClinicVitalUncheckedUpdateManyWithoutRecordedByNestedInput
+    prescriptionsWritten?: ClinicPrescriptionUncheckedUpdateManyWithoutPrescribedByNestedInput
+    pharmacyDispensingsMade?: PharmacyDispenseUncheckedUpdateManyWithoutDispensedByNestedInput
+    monitoringLogsRecorded?: ClinicMonitoringLogUncheckedUpdateManyWithoutRecordedByNestedInput
+    emergencyLogsRecorded?: ClinicEmergencyLogUncheckedUpdateManyWithoutLoggedByNestedInput
+    clinicAccessAudits?: ClinicAccessAuditUncheckedUpdateManyWithoutUserNestedInput
+    visitsTriaged?: ClinicVisitUncheckedUpdateManyWithoutTriageByNestedInput
+    visitsConsulted?: ClinicVisitUncheckedUpdateManyWithoutConsultedByNestedInput
+    leaveBalances?: LeaveBalanceUncheckedUpdateManyWithoutUserNestedInput
+    announcementsCreated?: AnnouncementUncheckedUpdateManyWithoutCreatedByNestedInput
+    announcementReads?: AnnouncementReadUncheckedUpdateManyWithoutUserNestedInput
+    createdQuestions?: QuestionUncheckedUpdateManyWithoutCreatedByNestedInput
+    createdCbtExams?: CbtExamUncheckedUpdateManyWithoutCreatedByNestedInput
+    nominatedAwards?: StudentAwardUncheckedUpdateManyWithoutNominatorNestedInput
+    approvedAwards?: StudentAwardUncheckedUpdateManyWithoutApproverNestedInput
+    approvedBursaries?: StudentBursaryUncheckedUpdateManyWithoutApproverNestedInput
+    approvedExeats?: ExeatUncheckedUpdateManyWithoutApprovedByHousemasterNestedInput
+    markedBoardingRollCalls?: BoardingRollCallUncheckedUpdateManyWithoutMarkedByNestedInput
+    uniformsIssued?: UniformIssuanceUncheckedUpdateManyWithoutIssuedByNestedInput
+    markedAttendanceSessions?: AttendanceSessionUncheckedUpdateManyWithoutTeacherNestedInput
+    markedSessionRecords?: AttendanceSessionRecordUncheckedUpdateManyWithoutMarkedByNestedInput
+    staffAttendanceDailies?: StaffAttendanceDailyUncheckedUpdateManyWithoutStaffNestedInput
+    biometricRawLogs?: BiometricRawLogUncheckedUpdateManyWithoutStaffNestedInput
+    hrTardinessLogs?: HrTardinessLogUncheckedUpdateManyWithoutStaffNestedInput
+    tripLeadTrips?: SchoolTripUncheckedUpdateManyWithoutStaffNestedInput
+    tripNurseTrips?: SchoolTripUncheckedUpdateManyWithoutNurseStaffNestedInput
+    parentTripConsents?: TripConsentUncheckedUpdateManyWithoutParentNestedInput
+    parentMedicalConsents?: MedicalConsentUncheckedUpdateManyWithoutParentNestedInput
+    schemesHodApproved?: SchemeOfWorkUncheckedUpdateManyWithoutHodApprovedByNestedInput
+    lessonPlansHodReviewed?: LessonPlanUncheckedUpdateManyWithoutHodReviewedByNestedInput
+    assessmentsCreated?: AssessmentUncheckedUpdateManyWithoutCreatedByNestedInput
+    assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
+    questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
+    assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+  }
+
+  export type InvoiceUpsertWithWhereUniqueWithoutGrnInput = {
+    where: InvoiceWhereUniqueInput
+    update: XOR<InvoiceUpdateWithoutGrnInput, InvoiceUncheckedUpdateWithoutGrnInput>
+    create: XOR<InvoiceCreateWithoutGrnInput, InvoiceUncheckedCreateWithoutGrnInput>
+  }
+
+  export type InvoiceUpdateWithWhereUniqueWithoutGrnInput = {
+    where: InvoiceWhereUniqueInput
+    data: XOR<InvoiceUpdateWithoutGrnInput, InvoiceUncheckedUpdateWithoutGrnInput>
+  }
+
+  export type InvoiceUpdateManyWithWhereWithoutGrnInput = {
+    where: InvoiceScalarWhereInput
+    data: XOR<InvoiceUpdateManyMutationInput, InvoiceUncheckedUpdateManyWithoutGrnInput>
+  }
+
   export type SupplierCreateWithoutInvoicesInput = {
     id?: string
     globalId?: string | null
@@ -488661,6 +494124,7 @@ export namespace Prisma {
     schools?: SchoolSupplierCreateNestedManyWithoutSupplierInput
     tenders?: TenderBidCreateNestedManyWithoutSupplierInput
     purchaseOrders?: PurchaseOrderCreateNestedManyWithoutSupplierInput
+    goodsReceivedNotes?: GoodsReceivedNoteCreateNestedManyWithoutSupplierInput
     uniformStockOrders?: UniformStockOrderCreateNestedManyWithoutSupplierInput
     uniformPayments?: UniformSupplierPaymentCreateNestedManyWithoutSupplierInput
   }
@@ -488682,6 +494146,7 @@ export namespace Prisma {
     schools?: SchoolSupplierUncheckedCreateNestedManyWithoutSupplierInput
     tenders?: TenderBidUncheckedCreateNestedManyWithoutSupplierInput
     purchaseOrders?: PurchaseOrderUncheckedCreateNestedManyWithoutSupplierInput
+    goodsReceivedNotes?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutSupplierInput
     uniformStockOrders?: UniformStockOrderUncheckedCreateNestedManyWithoutSupplierInput
     uniformPayments?: UniformSupplierPaymentUncheckedCreateNestedManyWithoutSupplierInput
   }
@@ -488689,6 +494154,96 @@ export namespace Prisma {
   export type SupplierCreateOrConnectWithoutInvoicesInput = {
     where: SupplierWhereUniqueInput
     create: XOR<SupplierCreateWithoutInvoicesInput, SupplierUncheckedCreateWithoutInvoicesInput>
+  }
+
+  export type PurchaseOrderCreateWithoutInvoicesInput = {
+    id?: string
+    poNumber: string
+    description: string
+    items: JsonNullValueInput | InputJsonValue
+    totalAmount: number
+    status?: string
+    schoolId: string
+    coaCode?: string | null
+    department?: string | null
+    budgetChecked?: boolean
+    budgetOverrun?: boolean
+    budgetRemaining?: number | null
+    approvedById?: string | null
+    approvedAt?: Date | string | null
+    rejectionReason?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    supplier: SupplierCreateNestedOneWithoutPurchaseOrdersInput
+    requisition?: RequisitionCreateNestedOneWithoutPurchaseOrderInput
+    grns?: GoodsReceivedNoteCreateNestedManyWithoutPurchaseOrderInput
+  }
+
+  export type PurchaseOrderUncheckedCreateWithoutInvoicesInput = {
+    id?: string
+    poNumber: string
+    supplierId: string
+    description: string
+    items: JsonNullValueInput | InputJsonValue
+    totalAmount: number
+    status?: string
+    schoolId: string
+    coaCode?: string | null
+    department?: string | null
+    budgetChecked?: boolean
+    budgetOverrun?: boolean
+    budgetRemaining?: number | null
+    approvedById?: string | null
+    approvedAt?: Date | string | null
+    rejectionReason?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    requisition?: RequisitionUncheckedCreateNestedOneWithoutPurchaseOrderInput
+    grns?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutPurchaseOrderInput
+  }
+
+  export type PurchaseOrderCreateOrConnectWithoutInvoicesInput = {
+    where: PurchaseOrderWhereUniqueInput
+    create: XOR<PurchaseOrderCreateWithoutInvoicesInput, PurchaseOrderUncheckedCreateWithoutInvoicesInput>
+  }
+
+  export type GoodsReceivedNoteCreateWithoutInvoicesInput = {
+    id?: string
+    grnNumber: string
+    schoolId: string
+    receivedDate?: Date | string
+    deliveryNoteNumber?: string | null
+    status?: string
+    items: JsonNullValueInput | InputJsonValue
+    totalValueReceived?: number
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    purchaseOrder: PurchaseOrderCreateNestedOneWithoutGrnsInput
+    supplier: SupplierCreateNestedOneWithoutGoodsReceivedNotesInput
+    receivedBy: UserCreateNestedOneWithoutReceivedGRNsInput
+  }
+
+  export type GoodsReceivedNoteUncheckedCreateWithoutInvoicesInput = {
+    id?: string
+    grnNumber: string
+    schoolId: string
+    purchaseOrderId: string
+    supplierId: string
+    receivedDate?: Date | string
+    receivedById: string
+    deliveryNoteNumber?: string | null
+    status?: string
+    items: JsonNullValueInput | InputJsonValue
+    totalValueReceived?: number
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type GoodsReceivedNoteCreateOrConnectWithoutInvoicesInput = {
+    where: GoodsReceivedNoteWhereUniqueInput
+    create: XOR<GoodsReceivedNoteCreateWithoutInvoicesInput, GoodsReceivedNoteUncheckedCreateWithoutInvoicesInput>
   }
 
   export type SupplierUpsertWithoutInvoicesInput = {
@@ -488719,6 +494274,7 @@ export namespace Prisma {
     schools?: SchoolSupplierUpdateManyWithoutSupplierNestedInput
     tenders?: TenderBidUpdateManyWithoutSupplierNestedInput
     purchaseOrders?: PurchaseOrderUpdateManyWithoutSupplierNestedInput
+    goodsReceivedNotes?: GoodsReceivedNoteUpdateManyWithoutSupplierNestedInput
     uniformStockOrders?: UniformStockOrderUpdateManyWithoutSupplierNestedInput
     uniformPayments?: UniformSupplierPaymentUpdateManyWithoutSupplierNestedInput
   }
@@ -488740,8 +494296,111 @@ export namespace Prisma {
     schools?: SchoolSupplierUncheckedUpdateManyWithoutSupplierNestedInput
     tenders?: TenderBidUncheckedUpdateManyWithoutSupplierNestedInput
     purchaseOrders?: PurchaseOrderUncheckedUpdateManyWithoutSupplierNestedInput
+    goodsReceivedNotes?: GoodsReceivedNoteUncheckedUpdateManyWithoutSupplierNestedInput
     uniformStockOrders?: UniformStockOrderUncheckedUpdateManyWithoutSupplierNestedInput
     uniformPayments?: UniformSupplierPaymentUncheckedUpdateManyWithoutSupplierNestedInput
+  }
+
+  export type PurchaseOrderUpsertWithoutInvoicesInput = {
+    update: XOR<PurchaseOrderUpdateWithoutInvoicesInput, PurchaseOrderUncheckedUpdateWithoutInvoicesInput>
+    create: XOR<PurchaseOrderCreateWithoutInvoicesInput, PurchaseOrderUncheckedCreateWithoutInvoicesInput>
+    where?: PurchaseOrderWhereInput
+  }
+
+  export type PurchaseOrderUpdateToOneWithWhereWithoutInvoicesInput = {
+    where?: PurchaseOrderWhereInput
+    data: XOR<PurchaseOrderUpdateWithoutInvoicesInput, PurchaseOrderUncheckedUpdateWithoutInvoicesInput>
+  }
+
+  export type PurchaseOrderUpdateWithoutInvoicesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    poNumber?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    items?: JsonNullValueInput | InputJsonValue
+    totalAmount?: FloatFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    schoolId?: StringFieldUpdateOperationsInput | string
+    coaCode?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: NullableStringFieldUpdateOperationsInput | string | null
+    budgetChecked?: BoolFieldUpdateOperationsInput | boolean
+    budgetOverrun?: BoolFieldUpdateOperationsInput | boolean
+    budgetRemaining?: NullableFloatFieldUpdateOperationsInput | number | null
+    approvedById?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    supplier?: SupplierUpdateOneRequiredWithoutPurchaseOrdersNestedInput
+    requisition?: RequisitionUpdateOneWithoutPurchaseOrderNestedInput
+    grns?: GoodsReceivedNoteUpdateManyWithoutPurchaseOrderNestedInput
+  }
+
+  export type PurchaseOrderUncheckedUpdateWithoutInvoicesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    poNumber?: StringFieldUpdateOperationsInput | string
+    supplierId?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    items?: JsonNullValueInput | InputJsonValue
+    totalAmount?: FloatFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    schoolId?: StringFieldUpdateOperationsInput | string
+    coaCode?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: NullableStringFieldUpdateOperationsInput | string | null
+    budgetChecked?: BoolFieldUpdateOperationsInput | boolean
+    budgetOverrun?: BoolFieldUpdateOperationsInput | boolean
+    budgetRemaining?: NullableFloatFieldUpdateOperationsInput | number | null
+    approvedById?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    requisition?: RequisitionUncheckedUpdateOneWithoutPurchaseOrderNestedInput
+    grns?: GoodsReceivedNoteUncheckedUpdateManyWithoutPurchaseOrderNestedInput
+  }
+
+  export type GoodsReceivedNoteUpsertWithoutInvoicesInput = {
+    update: XOR<GoodsReceivedNoteUpdateWithoutInvoicesInput, GoodsReceivedNoteUncheckedUpdateWithoutInvoicesInput>
+    create: XOR<GoodsReceivedNoteCreateWithoutInvoicesInput, GoodsReceivedNoteUncheckedCreateWithoutInvoicesInput>
+    where?: GoodsReceivedNoteWhereInput
+  }
+
+  export type GoodsReceivedNoteUpdateToOneWithWhereWithoutInvoicesInput = {
+    where?: GoodsReceivedNoteWhereInput
+    data: XOR<GoodsReceivedNoteUpdateWithoutInvoicesInput, GoodsReceivedNoteUncheckedUpdateWithoutInvoicesInput>
+  }
+
+  export type GoodsReceivedNoteUpdateWithoutInvoicesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    grnNumber?: StringFieldUpdateOperationsInput | string
+    schoolId?: StringFieldUpdateOperationsInput | string
+    receivedDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    deliveryNoteNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    items?: JsonNullValueInput | InputJsonValue
+    totalValueReceived?: FloatFieldUpdateOperationsInput | number
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    purchaseOrder?: PurchaseOrderUpdateOneRequiredWithoutGrnsNestedInput
+    supplier?: SupplierUpdateOneRequiredWithoutGoodsReceivedNotesNestedInput
+    receivedBy?: UserUpdateOneRequiredWithoutReceivedGRNsNestedInput
+  }
+
+  export type GoodsReceivedNoteUncheckedUpdateWithoutInvoicesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    grnNumber?: StringFieldUpdateOperationsInput | string
+    schoolId?: StringFieldUpdateOperationsInput | string
+    purchaseOrderId?: StringFieldUpdateOperationsInput | string
+    supplierId?: StringFieldUpdateOperationsInput | string
+    receivedDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    receivedById?: StringFieldUpdateOperationsInput | string
+    deliveryNoteNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    items?: JsonNullValueInput | InputJsonValue
+    totalValueReceived?: FloatFieldUpdateOperationsInput | number
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type UserCreateWithoutSupportTicketsInput = {
@@ -488849,6 +494508,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutSupportTicketsInput = {
@@ -488956,6 +494616,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutSupportTicketsInput = {
@@ -489079,6 +494740,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSupportTicketsInput = {
@@ -489186,6 +494848,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type SchoolCreateWithoutLeaveBalancesInput = {
@@ -489690,6 +495353,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutLeaveBalancesInput = {
@@ -489797,6 +495461,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutLeaveBalancesInput = {
@@ -490323,6 +495988,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutLeaveBalancesInput = {
@@ -490430,6 +496096,51 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
+  }
+
+  export type AssetDepreciationCreateWithoutAssetInput = {
+    id?: string
+    schoolId: string
+    date?: Date | string
+    fiscalYear: number
+    fiscalPeriod: string
+    depreciationAmount: number
+    bookValueBefore: number
+    bookValueAfter: number
+    rateUsed: number
+    method?: string
+    journalEntryId?: string | null
+    processedById?: string | null
+    notes?: string | null
+    createdAt?: Date | string
+  }
+
+  export type AssetDepreciationUncheckedCreateWithoutAssetInput = {
+    id?: string
+    schoolId: string
+    date?: Date | string
+    fiscalYear: number
+    fiscalPeriod: string
+    depreciationAmount: number
+    bookValueBefore: number
+    bookValueAfter: number
+    rateUsed: number
+    method?: string
+    journalEntryId?: string | null
+    processedById?: string | null
+    notes?: string | null
+    createdAt?: Date | string
+  }
+
+  export type AssetDepreciationCreateOrConnectWithoutAssetInput = {
+    where: AssetDepreciationWhereUniqueInput
+    create: XOR<AssetDepreciationCreateWithoutAssetInput, AssetDepreciationUncheckedCreateWithoutAssetInput>
+  }
+
+  export type AssetDepreciationCreateManyAssetInputEnvelope = {
+    data: AssetDepreciationCreateManyAssetInput | AssetDepreciationCreateManyAssetInput[]
+    skipDuplicates?: boolean
   }
 
   export type UserCreateWithoutAssignedAssetsInput = {
@@ -490537,6 +496248,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutAssignedAssetsInput = {
@@ -490644,6 +496356,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutAssignedAssetsInput = {
@@ -490756,6 +496469,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutRegisteredAssetsInput = {
@@ -490863,6 +496577,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutRegisteredAssetsInput = {
@@ -491341,6 +497056,43 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type AssetDepreciationUpsertWithWhereUniqueWithoutAssetInput = {
+    where: AssetDepreciationWhereUniqueInput
+    update: XOR<AssetDepreciationUpdateWithoutAssetInput, AssetDepreciationUncheckedUpdateWithoutAssetInput>
+    create: XOR<AssetDepreciationCreateWithoutAssetInput, AssetDepreciationUncheckedCreateWithoutAssetInput>
+  }
+
+  export type AssetDepreciationUpdateWithWhereUniqueWithoutAssetInput = {
+    where: AssetDepreciationWhereUniqueInput
+    data: XOR<AssetDepreciationUpdateWithoutAssetInput, AssetDepreciationUncheckedUpdateWithoutAssetInput>
+  }
+
+  export type AssetDepreciationUpdateManyWithWhereWithoutAssetInput = {
+    where: AssetDepreciationScalarWhereInput
+    data: XOR<AssetDepreciationUpdateManyMutationInput, AssetDepreciationUncheckedUpdateManyWithoutAssetInput>
+  }
+
+  export type AssetDepreciationScalarWhereInput = {
+    AND?: AssetDepreciationScalarWhereInput | AssetDepreciationScalarWhereInput[]
+    OR?: AssetDepreciationScalarWhereInput[]
+    NOT?: AssetDepreciationScalarWhereInput | AssetDepreciationScalarWhereInput[]
+    id?: StringFilter<"AssetDepreciation"> | string
+    schoolId?: StringFilter<"AssetDepreciation"> | string
+    assetId?: StringFilter<"AssetDepreciation"> | string
+    date?: DateTimeFilter<"AssetDepreciation"> | Date | string
+    fiscalYear?: IntFilter<"AssetDepreciation"> | number
+    fiscalPeriod?: StringFilter<"AssetDepreciation"> | string
+    depreciationAmount?: FloatFilter<"AssetDepreciation"> | number
+    bookValueBefore?: FloatFilter<"AssetDepreciation"> | number
+    bookValueAfter?: FloatFilter<"AssetDepreciation"> | number
+    rateUsed?: FloatFilter<"AssetDepreciation"> | number
+    method?: StringFilter<"AssetDepreciation"> | string
+    journalEntryId?: StringNullableFilter<"AssetDepreciation"> | string | null
+    processedById?: StringNullableFilter<"AssetDepreciation"> | string | null
+    notes?: StringNullableFilter<"AssetDepreciation"> | string | null
+    createdAt?: DateTimeFilter<"AssetDepreciation"> | Date | string
+  }
+
   export type UserUpsertWithoutAssignedAssetsInput = {
     update: XOR<UserUpdateWithoutAssignedAssetsInput, UserUncheckedUpdateWithoutAssignedAssetsInput>
     create: XOR<UserCreateWithoutAssignedAssetsInput, UserUncheckedCreateWithoutAssignedAssetsInput>
@@ -491457,6 +497209,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAssignedAssetsInput = {
@@ -491564,6 +497317,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUpsertWithoutRegisteredAssetsInput = {
@@ -491682,6 +497436,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutRegisteredAssetsInput = {
@@ -491789,6 +497544,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type SchoolUpsertWithoutAssetsInput = {
@@ -492243,6 +497999,198 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"AssetMaintenance"> | Date | string
   }
 
+  export type AssetCreateWithoutDepreciationsInput = {
+    id?: string
+    assetNumber?: string | null
+    name: string
+    category: string
+    serialNumber?: string | null
+    location?: string | null
+    condition?: string
+    status?: string
+    department?: string | null
+    departmentId?: string | null
+    quantity?: number
+    purchaseDate?: Date | string | null
+    purchasePrice?: number | null
+    supplierName?: string | null
+    invoiceNumber?: string | null
+    depreciationRate?: number | null
+    accumulatedDepreciation?: number | null
+    bookValue?: number | null
+    lastDepreciationDate?: Date | string | null
+    coaExpenseCode?: string | null
+    coaAccumulatedCode?: string | null
+    warrantyExpiry?: Date | string | null
+    photoUrl?: string | null
+    approvalStatus?: string
+    hodApprovedAt?: Date | string | null
+    hodApprovedById?: string | null
+    bursarApprovedAt?: Date | string | null
+    bursarApprovedById?: string | null
+    adminApprovedAt?: Date | string | null
+    adminApprovedById?: string | null
+    rejectionReason?: string | null
+    nextMaintenance?: Date | string | null
+    maintenanceInterval?: number | null
+    attachments?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    custodian?: UserCreateNestedOneWithoutAssignedAssetsInput
+    registeredBy?: UserCreateNestedOneWithoutRegisteredAssetsInput
+    school: SchoolCreateNestedOneWithoutAssetsInput
+    incidents?: AssetIncidentCreateNestedManyWithoutAssetInput
+    maintenance?: AssetMaintenanceCreateNestedManyWithoutAssetInput
+  }
+
+  export type AssetUncheckedCreateWithoutDepreciationsInput = {
+    id?: string
+    assetNumber?: string | null
+    name: string
+    category: string
+    serialNumber?: string | null
+    location?: string | null
+    condition?: string
+    status?: string
+    department?: string | null
+    departmentId?: string | null
+    quantity?: number
+    purchaseDate?: Date | string | null
+    purchasePrice?: number | null
+    supplierName?: string | null
+    invoiceNumber?: string | null
+    depreciationRate?: number | null
+    accumulatedDepreciation?: number | null
+    bookValue?: number | null
+    lastDepreciationDate?: Date | string | null
+    coaExpenseCode?: string | null
+    coaAccumulatedCode?: string | null
+    warrantyExpiry?: Date | string | null
+    photoUrl?: string | null
+    custodianId?: string | null
+    registeredById?: string | null
+    approvalStatus?: string
+    hodApprovedAt?: Date | string | null
+    hodApprovedById?: string | null
+    bursarApprovedAt?: Date | string | null
+    bursarApprovedById?: string | null
+    adminApprovedAt?: Date | string | null
+    adminApprovedById?: string | null
+    rejectionReason?: string | null
+    schoolId: string
+    nextMaintenance?: Date | string | null
+    maintenanceInterval?: number | null
+    attachments?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    incidents?: AssetIncidentUncheckedCreateNestedManyWithoutAssetInput
+    maintenance?: AssetMaintenanceUncheckedCreateNestedManyWithoutAssetInput
+  }
+
+  export type AssetCreateOrConnectWithoutDepreciationsInput = {
+    where: AssetWhereUniqueInput
+    create: XOR<AssetCreateWithoutDepreciationsInput, AssetUncheckedCreateWithoutDepreciationsInput>
+  }
+
+  export type AssetUpsertWithoutDepreciationsInput = {
+    update: XOR<AssetUpdateWithoutDepreciationsInput, AssetUncheckedUpdateWithoutDepreciationsInput>
+    create: XOR<AssetCreateWithoutDepreciationsInput, AssetUncheckedCreateWithoutDepreciationsInput>
+    where?: AssetWhereInput
+  }
+
+  export type AssetUpdateToOneWithWhereWithoutDepreciationsInput = {
+    where?: AssetWhereInput
+    data: XOR<AssetUpdateWithoutDepreciationsInput, AssetUncheckedUpdateWithoutDepreciationsInput>
+  }
+
+  export type AssetUpdateWithoutDepreciationsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    assetNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    name?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    condition?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    department?: NullableStringFieldUpdateOperationsInput | string | null
+    departmentId?: NullableStringFieldUpdateOperationsInput | string | null
+    quantity?: IntFieldUpdateOperationsInput | number
+    purchaseDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    purchasePrice?: NullableFloatFieldUpdateOperationsInput | number | null
+    supplierName?: NullableStringFieldUpdateOperationsInput | string | null
+    invoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    depreciationRate?: NullableFloatFieldUpdateOperationsInput | number | null
+    accumulatedDepreciation?: NullableFloatFieldUpdateOperationsInput | number | null
+    bookValue?: NullableFloatFieldUpdateOperationsInput | number | null
+    lastDepreciationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    coaExpenseCode?: NullableStringFieldUpdateOperationsInput | string | null
+    coaAccumulatedCode?: NullableStringFieldUpdateOperationsInput | string | null
+    warrantyExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    photoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    approvalStatus?: StringFieldUpdateOperationsInput | string
+    hodApprovedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    hodApprovedById?: NullableStringFieldUpdateOperationsInput | string | null
+    bursarApprovedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    bursarApprovedById?: NullableStringFieldUpdateOperationsInput | string | null
+    adminApprovedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    adminApprovedById?: NullableStringFieldUpdateOperationsInput | string | null
+    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    nextMaintenance?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    maintenanceInterval?: NullableIntFieldUpdateOperationsInput | number | null
+    attachments?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    custodian?: UserUpdateOneWithoutAssignedAssetsNestedInput
+    registeredBy?: UserUpdateOneWithoutRegisteredAssetsNestedInput
+    school?: SchoolUpdateOneRequiredWithoutAssetsNestedInput
+    incidents?: AssetIncidentUpdateManyWithoutAssetNestedInput
+    maintenance?: AssetMaintenanceUpdateManyWithoutAssetNestedInput
+  }
+
+  export type AssetUncheckedUpdateWithoutDepreciationsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    assetNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    name?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    condition?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    department?: NullableStringFieldUpdateOperationsInput | string | null
+    departmentId?: NullableStringFieldUpdateOperationsInput | string | null
+    quantity?: IntFieldUpdateOperationsInput | number
+    purchaseDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    purchasePrice?: NullableFloatFieldUpdateOperationsInput | number | null
+    supplierName?: NullableStringFieldUpdateOperationsInput | string | null
+    invoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    depreciationRate?: NullableFloatFieldUpdateOperationsInput | number | null
+    accumulatedDepreciation?: NullableFloatFieldUpdateOperationsInput | number | null
+    bookValue?: NullableFloatFieldUpdateOperationsInput | number | null
+    lastDepreciationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    coaExpenseCode?: NullableStringFieldUpdateOperationsInput | string | null
+    coaAccumulatedCode?: NullableStringFieldUpdateOperationsInput | string | null
+    warrantyExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    photoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    custodianId?: NullableStringFieldUpdateOperationsInput | string | null
+    registeredById?: NullableStringFieldUpdateOperationsInput | string | null
+    approvalStatus?: StringFieldUpdateOperationsInput | string
+    hodApprovedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    hodApprovedById?: NullableStringFieldUpdateOperationsInput | string | null
+    bursarApprovedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    bursarApprovedById?: NullableStringFieldUpdateOperationsInput | string | null
+    adminApprovedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    adminApprovedById?: NullableStringFieldUpdateOperationsInput | string | null
+    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    schoolId?: StringFieldUpdateOperationsInput | string
+    nextMaintenance?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    maintenanceInterval?: NullableIntFieldUpdateOperationsInput | number | null
+    attachments?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    incidents?: AssetIncidentUncheckedUpdateManyWithoutAssetNestedInput
+    maintenance?: AssetMaintenanceUncheckedUpdateManyWithoutAssetNestedInput
+  }
+
   export type AssetCreateWithoutIncidentsInput = {
     id?: string
     assetNumber?: string | null
@@ -492260,6 +498208,11 @@ export namespace Prisma {
     supplierName?: string | null
     invoiceNumber?: string | null
     depreciationRate?: number | null
+    accumulatedDepreciation?: number | null
+    bookValue?: number | null
+    lastDepreciationDate?: Date | string | null
+    coaExpenseCode?: string | null
+    coaAccumulatedCode?: string | null
     warrantyExpiry?: Date | string | null
     photoUrl?: string | null
     approvalStatus?: string
@@ -492275,6 +498228,7 @@ export namespace Prisma {
     attachments?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
+    depreciations?: AssetDepreciationCreateNestedManyWithoutAssetInput
     custodian?: UserCreateNestedOneWithoutAssignedAssetsInput
     registeredBy?: UserCreateNestedOneWithoutRegisteredAssetsInput
     school: SchoolCreateNestedOneWithoutAssetsInput
@@ -492298,6 +498252,11 @@ export namespace Prisma {
     supplierName?: string | null
     invoiceNumber?: string | null
     depreciationRate?: number | null
+    accumulatedDepreciation?: number | null
+    bookValue?: number | null
+    lastDepreciationDate?: Date | string | null
+    coaExpenseCode?: string | null
+    coaAccumulatedCode?: string | null
     warrantyExpiry?: Date | string | null
     photoUrl?: string | null
     custodianId?: string | null
@@ -492316,6 +498275,7 @@ export namespace Prisma {
     attachments?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
+    depreciations?: AssetDepreciationUncheckedCreateNestedManyWithoutAssetInput
     maintenance?: AssetMaintenanceUncheckedCreateNestedManyWithoutAssetInput
   }
 
@@ -492429,6 +498389,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutReportedIncidentsInput = {
@@ -492536,6 +498497,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutReportedIncidentsInput = {
@@ -492571,6 +498533,11 @@ export namespace Prisma {
     supplierName?: NullableStringFieldUpdateOperationsInput | string | null
     invoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
     depreciationRate?: NullableFloatFieldUpdateOperationsInput | number | null
+    accumulatedDepreciation?: NullableFloatFieldUpdateOperationsInput | number | null
+    bookValue?: NullableFloatFieldUpdateOperationsInput | number | null
+    lastDepreciationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    coaExpenseCode?: NullableStringFieldUpdateOperationsInput | string | null
+    coaAccumulatedCode?: NullableStringFieldUpdateOperationsInput | string | null
     warrantyExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     photoUrl?: NullableStringFieldUpdateOperationsInput | string | null
     approvalStatus?: StringFieldUpdateOperationsInput | string
@@ -492586,6 +498553,7 @@ export namespace Prisma {
     attachments?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    depreciations?: AssetDepreciationUpdateManyWithoutAssetNestedInput
     custodian?: UserUpdateOneWithoutAssignedAssetsNestedInput
     registeredBy?: UserUpdateOneWithoutRegisteredAssetsNestedInput
     school?: SchoolUpdateOneRequiredWithoutAssetsNestedInput
@@ -492609,6 +498577,11 @@ export namespace Prisma {
     supplierName?: NullableStringFieldUpdateOperationsInput | string | null
     invoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
     depreciationRate?: NullableFloatFieldUpdateOperationsInput | number | null
+    accumulatedDepreciation?: NullableFloatFieldUpdateOperationsInput | number | null
+    bookValue?: NullableFloatFieldUpdateOperationsInput | number | null
+    lastDepreciationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    coaExpenseCode?: NullableStringFieldUpdateOperationsInput | string | null
+    coaAccumulatedCode?: NullableStringFieldUpdateOperationsInput | string | null
     warrantyExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     photoUrl?: NullableStringFieldUpdateOperationsInput | string | null
     custodianId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -492627,6 +498600,7 @@ export namespace Prisma {
     attachments?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    depreciations?: AssetDepreciationUncheckedUpdateManyWithoutAssetNestedInput
     maintenance?: AssetMaintenanceUncheckedUpdateManyWithoutAssetNestedInput
   }
 
@@ -492746,6 +498720,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutReportedIncidentsInput = {
@@ -492853,6 +498828,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type AssetCreateWithoutMaintenanceInput = {
@@ -492872,6 +498848,11 @@ export namespace Prisma {
     supplierName?: string | null
     invoiceNumber?: string | null
     depreciationRate?: number | null
+    accumulatedDepreciation?: number | null
+    bookValue?: number | null
+    lastDepreciationDate?: Date | string | null
+    coaExpenseCode?: string | null
+    coaAccumulatedCode?: string | null
     warrantyExpiry?: Date | string | null
     photoUrl?: string | null
     approvalStatus?: string
@@ -492887,6 +498868,7 @@ export namespace Prisma {
     attachments?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
+    depreciations?: AssetDepreciationCreateNestedManyWithoutAssetInput
     custodian?: UserCreateNestedOneWithoutAssignedAssetsInput
     registeredBy?: UserCreateNestedOneWithoutRegisteredAssetsInput
     school: SchoolCreateNestedOneWithoutAssetsInput
@@ -492910,6 +498892,11 @@ export namespace Prisma {
     supplierName?: string | null
     invoiceNumber?: string | null
     depreciationRate?: number | null
+    accumulatedDepreciation?: number | null
+    bookValue?: number | null
+    lastDepreciationDate?: Date | string | null
+    coaExpenseCode?: string | null
+    coaAccumulatedCode?: string | null
     warrantyExpiry?: Date | string | null
     photoUrl?: string | null
     custodianId?: string | null
@@ -492928,6 +498915,7 @@ export namespace Prisma {
     attachments?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
+    depreciations?: AssetDepreciationUncheckedCreateNestedManyWithoutAssetInput
     incidents?: AssetIncidentUncheckedCreateNestedManyWithoutAssetInput
   }
 
@@ -492964,6 +498952,11 @@ export namespace Prisma {
     supplierName?: NullableStringFieldUpdateOperationsInput | string | null
     invoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
     depreciationRate?: NullableFloatFieldUpdateOperationsInput | number | null
+    accumulatedDepreciation?: NullableFloatFieldUpdateOperationsInput | number | null
+    bookValue?: NullableFloatFieldUpdateOperationsInput | number | null
+    lastDepreciationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    coaExpenseCode?: NullableStringFieldUpdateOperationsInput | string | null
+    coaAccumulatedCode?: NullableStringFieldUpdateOperationsInput | string | null
     warrantyExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     photoUrl?: NullableStringFieldUpdateOperationsInput | string | null
     approvalStatus?: StringFieldUpdateOperationsInput | string
@@ -492979,6 +498972,7 @@ export namespace Prisma {
     attachments?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    depreciations?: AssetDepreciationUpdateManyWithoutAssetNestedInput
     custodian?: UserUpdateOneWithoutAssignedAssetsNestedInput
     registeredBy?: UserUpdateOneWithoutRegisteredAssetsNestedInput
     school?: SchoolUpdateOneRequiredWithoutAssetsNestedInput
@@ -493002,6 +498996,11 @@ export namespace Prisma {
     supplierName?: NullableStringFieldUpdateOperationsInput | string | null
     invoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
     depreciationRate?: NullableFloatFieldUpdateOperationsInput | number | null
+    accumulatedDepreciation?: NullableFloatFieldUpdateOperationsInput | number | null
+    bookValue?: NullableFloatFieldUpdateOperationsInput | number | null
+    lastDepreciationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    coaExpenseCode?: NullableStringFieldUpdateOperationsInput | string | null
+    coaAccumulatedCode?: NullableStringFieldUpdateOperationsInput | string | null
     warrantyExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     photoUrl?: NullableStringFieldUpdateOperationsInput | string | null
     custodianId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -493020,6 +499019,7 @@ export namespace Prisma {
     attachments?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    depreciations?: AssetDepreciationUncheckedUpdateManyWithoutAssetNestedInput
     incidents?: AssetIncidentUncheckedUpdateManyWithoutAssetNestedInput
   }
 
@@ -494435,6 +500435,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutSalaryStubsInput = {
@@ -494542,6 +500543,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutSalaryStubsInput = {
@@ -494665,6 +500667,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSalaryStubsInput = {
@@ -494772,6 +500775,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserCreateWithoutShiftAssignmentsInput = {
@@ -494879,6 +500883,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutShiftAssignmentsInput = {
@@ -494986,6 +500991,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutShiftAssignmentsInput = {
@@ -495109,6 +501115,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutShiftAssignmentsInput = {
@@ -495216,6 +501223,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type ApplicationCreateWithoutDocumentsInput = {
@@ -495603,6 +501611,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutReportsInput = {
@@ -495710,6 +501719,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutReportsInput = {
@@ -495833,6 +501843,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutReportsInput = {
@@ -495940,6 +501951,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type SchoolCreateWithoutReportTemplateInput = {
@@ -496892,6 +502904,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutRequisitionsInput = {
@@ -496999,6 +503012,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutRequisitionsInput = {
@@ -497111,6 +503125,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutHodRequisitionsInput = {
@@ -497218,6 +503233,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutHodRequisitionsInput = {
@@ -497330,6 +503346,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutBursarRequisitionsInput = {
@@ -497437,6 +503454,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutBursarRequisitionsInput = {
@@ -497549,6 +503567,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutAdminRequisitionsInput = {
@@ -497656,6 +503675,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutAdminRequisitionsInput = {
@@ -498068,9 +504088,19 @@ export namespace Prisma {
     totalAmount: number
     status?: string
     schoolId: string
+    coaCode?: string | null
+    department?: string | null
+    budgetChecked?: boolean
+    budgetOverrun?: boolean
+    budgetRemaining?: number | null
+    approvedById?: string | null
+    approvedAt?: Date | string | null
+    rejectionReason?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     supplier: SupplierCreateNestedOneWithoutPurchaseOrdersInput
+    grns?: GoodsReceivedNoteCreateNestedManyWithoutPurchaseOrderInput
+    invoices?: InvoiceCreateNestedManyWithoutPurchaseOrderInput
   }
 
   export type PurchaseOrderUncheckedCreateWithoutRequisitionInput = {
@@ -498082,8 +504112,18 @@ export namespace Prisma {
     totalAmount: number
     status?: string
     schoolId: string
+    coaCode?: string | null
+    department?: string | null
+    budgetChecked?: boolean
+    budgetOverrun?: boolean
+    budgetRemaining?: number | null
+    approvedById?: string | null
+    approvedAt?: Date | string | null
+    rejectionReason?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    grns?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutPurchaseOrderInput
+    invoices?: InvoiceUncheckedCreateNestedManyWithoutPurchaseOrderInput
   }
 
   export type PurchaseOrderCreateOrConnectWithoutRequisitionInput = {
@@ -498440,6 +504480,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutMatronApprovedRequisitionsInput = {
@@ -498547,6 +504588,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutMatronApprovedRequisitionsInput = {
@@ -498659,6 +504701,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutIssuedRequisitionsInput = {
@@ -498766,6 +504809,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutIssuedRequisitionsInput = {
@@ -498940,6 +504984,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutRequisitionsInput = {
@@ -499047,6 +505092,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUpsertWithoutHodRequisitionsInput = {
@@ -499165,6 +505211,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutHodRequisitionsInput = {
@@ -499272,6 +505319,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUpsertWithoutBursarRequisitionsInput = {
@@ -499390,6 +505438,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutBursarRequisitionsInput = {
@@ -499497,6 +505546,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUpsertWithoutAdminRequisitionsInput = {
@@ -499615,6 +505665,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAdminRequisitionsInput = {
@@ -499722,6 +505773,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type SchoolUpsertWithoutRequisitionsInput = {
@@ -500146,9 +506198,19 @@ export namespace Prisma {
     totalAmount?: FloatFieldUpdateOperationsInput | number
     status?: StringFieldUpdateOperationsInput | string
     schoolId?: StringFieldUpdateOperationsInput | string
+    coaCode?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: NullableStringFieldUpdateOperationsInput | string | null
+    budgetChecked?: BoolFieldUpdateOperationsInput | boolean
+    budgetOverrun?: BoolFieldUpdateOperationsInput | boolean
+    budgetRemaining?: NullableFloatFieldUpdateOperationsInput | number | null
+    approvedById?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     supplier?: SupplierUpdateOneRequiredWithoutPurchaseOrdersNestedInput
+    grns?: GoodsReceivedNoteUpdateManyWithoutPurchaseOrderNestedInput
+    invoices?: InvoiceUpdateManyWithoutPurchaseOrderNestedInput
   }
 
   export type PurchaseOrderUncheckedUpdateWithoutRequisitionInput = {
@@ -500160,8 +506222,18 @@ export namespace Prisma {
     totalAmount?: FloatFieldUpdateOperationsInput | number
     status?: StringFieldUpdateOperationsInput | string
     schoolId?: StringFieldUpdateOperationsInput | string
+    coaCode?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: NullableStringFieldUpdateOperationsInput | string | null
+    budgetChecked?: BoolFieldUpdateOperationsInput | boolean
+    budgetOverrun?: BoolFieldUpdateOperationsInput | boolean
+    budgetRemaining?: NullableFloatFieldUpdateOperationsInput | number | null
+    approvedById?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    grns?: GoodsReceivedNoteUncheckedUpdateManyWithoutPurchaseOrderNestedInput
+    invoices?: InvoiceUncheckedUpdateManyWithoutPurchaseOrderNestedInput
   }
 
   export type HostelUpsertWithoutRequisitionsAsHostelInput = {
@@ -500536,6 +506608,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutMatronApprovedRequisitionsInput = {
@@ -500643,6 +506716,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUpsertWithoutIssuedRequisitionsInput = {
@@ -500761,6 +506835,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutIssuedRequisitionsInput = {
@@ -500868,6 +506943,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type HostelCategoryCreateWithoutHostelsInput = {
@@ -501660,6 +507736,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutWardenOfHostelsInput = {
@@ -501767,6 +507844,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutWardenOfHostelsInput = {
@@ -502597,6 +508675,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutWardenOfHostelsInput = {
@@ -502704,6 +508783,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type LeadershipAssignmentUpsertWithWhereUniqueWithoutHostelInput = {
@@ -503454,6 +509534,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutAuthorizedBoardingLogsInput = {
@@ -503561,6 +509642,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutAuthorizedBoardingLogsInput = {
@@ -503891,6 +509973,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAuthorizedBoardingLogsInput = {
@@ -503998,6 +510081,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserCreateWithoutVisitorLogsInput = {
@@ -504105,6 +510189,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutVisitorLogsInput = {
@@ -504212,6 +510297,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutVisitorLogsInput = {
@@ -504335,6 +510421,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutVisitorLogsInput = {
@@ -504442,6 +510529,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type SchoolClassCreateWithoutAdmissionInquiryInput = {
@@ -504677,6 +510765,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutSecurityIncidentsInput = {
@@ -504784,6 +510873,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutSecurityIncidentsInput = {
@@ -504907,6 +510997,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSecurityIncidentsInput = {
@@ -505014,6 +511105,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type SchoolCreateWithoutWeeklyMenusInput = {
@@ -505921,6 +512013,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutTransfersInput = {
@@ -506028,6 +512121,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutTransfersInput = {
@@ -506945,6 +513039,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTransfersInput = {
@@ -507052,6 +513147,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type SchoolUpsertWithoutOriginTransfersInput = {
@@ -518030,6 +524126,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutCommunicationLogsInput = {
@@ -518137,6 +524234,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutCommunicationLogsInput = {
@@ -518858,6 +524956,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCommunicationLogsInput = {
@@ -518965,6 +525064,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type StudentUpsertWithoutCommunicationLogsInput = {
@@ -523074,6 +529174,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutEmployeeProfileInput = {
@@ -523181,6 +529282,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutEmployeeProfileInput = {
@@ -523701,6 +529803,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutEmployeeProfileInput = {
@@ -523808,6 +529911,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type SchoolUpsertWithoutEmployeeProfilesInput = {
@@ -526423,6 +532527,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutPayrollEntriesInput = {
@@ -526530,6 +532635,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutPayrollEntriesInput = {
@@ -527093,6 +533199,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPayrollEntriesInput = {
@@ -527200,6 +533307,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type SchoolUpsertWithoutPayrollEntriesInput = {
@@ -529567,6 +535675,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutLiveClassInput = {
@@ -529674,6 +535783,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutLiveClassInput = {
@@ -530261,6 +536371,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutLiveClassInput = {
@@ -530368,6 +536479,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type SchoolClassUpsertWithoutLiveClassInput = {
@@ -530939,6 +537051,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutAwardsInput = {
@@ -531046,6 +537159,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutAwardsInput = {
@@ -531572,6 +537686,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAwardsInput = {
@@ -531679,6 +537794,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type SchoolCreateWithoutCourseInput = {
@@ -532183,6 +538299,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutCoursesInput = {
@@ -532290,6 +538407,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutCoursesInput = {
@@ -532899,6 +539017,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCoursesInput = {
@@ -533006,6 +539125,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type SchoolClassUpsertWithoutCourseInput = {
@@ -534229,6 +540349,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutStudyMaterialInput = {
@@ -534336,6 +540457,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutStudyMaterialInput = {
@@ -535010,6 +541132,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutStudyMaterialInput = {
@@ -535117,6 +541240,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type SchoolCreateWithoutWebsiteSettingsInput = {
@@ -538066,6 +544190,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutRecruitedVacanciesInput = {
@@ -538173,6 +544298,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutRecruitedVacanciesInput = {
@@ -538798,6 +544924,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutRecruitedVacanciesInput = {
@@ -538905,6 +545032,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type JobApplicationUpsertWithWhereUniqueWithoutVacancyInput = {
@@ -543895,6 +550023,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutClinicPatientInput = {
@@ -544002,6 +550131,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutClinicPatientInput = {
@@ -544872,6 +551002,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutClinicPatientInput = {
@@ -544979,6 +551110,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type ClinicVisitUpsertWithWhereUniqueWithoutPatientInput = {
@@ -545246,6 +551378,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutClinicAppointmentsInput = {
@@ -545353,6 +551486,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutClinicAppointmentsInput = {
@@ -545537,6 +551671,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutClinicAppointmentsInput = {
@@ -545644,6 +551779,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type ClinicPatientUpsertWithoutAppointmentsInput = {
@@ -545818,6 +551954,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutClinicComplaintsInput = {
@@ -545925,6 +552062,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutClinicComplaintsInput = {
@@ -546109,6 +552247,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutClinicComplaintsInput = {
@@ -546216,6 +552355,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type ClinicPatientUpsertWithoutComplaintsInput = {
@@ -546518,6 +552658,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutClinicImmunizationsInput = {
@@ -546625,6 +552766,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutClinicImmunizationsInput = {
@@ -546809,6 +552951,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutClinicImmunizationsInput = {
@@ -546916,6 +553059,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type ClinicPatientUpsertWithoutImmunizationsInput = {
@@ -547090,6 +553234,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutClinicReferralsInput = {
@@ -547197,6 +553342,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutClinicReferralsInput = {
@@ -547381,6 +553527,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutClinicReferralsInput = {
@@ -547488,6 +553635,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type ClinicPatientUpsertWithoutReferralsInput = {
@@ -547662,6 +553810,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutClinicVisitsInput = {
@@ -547769,6 +553918,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutClinicVisitsInput = {
@@ -548375,6 +554525,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutVisitsTriagedInput = {
@@ -548482,6 +554633,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutVisitsTriagedInput = {
@@ -548594,6 +554746,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutVisitsConsultedInput = {
@@ -548701,6 +554854,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutVisitsConsultedInput = {
@@ -549029,6 +555183,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutClinicVisitsInput = {
@@ -549136,6 +555291,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type ClinicPatientUpsertWithoutVisitsInput = {
@@ -549740,6 +555896,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutVisitsTriagedInput = {
@@ -549847,6 +556004,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUpsertWithoutVisitsConsultedInput = {
@@ -549965,6 +556123,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutVisitsConsultedInput = {
@@ -550072,6 +556231,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type ClinicVitalUpsertWithoutVisitInput = {
@@ -551536,6 +557696,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutClinicHospitalizationsInput = {
@@ -551643,6 +557804,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutClinicHospitalizationsInput = {
@@ -552224,6 +558386,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutClinicHospitalizationsInput = {
@@ -552331,6 +558494,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type ClinicPatientUpsertWithoutHospitalizationsInput = {
@@ -555308,6 +561472,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutDiningHallReportsInput = {
@@ -555415,6 +561580,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutDiningHallReportsInput = {
@@ -555935,6 +562101,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutDiningHallReportsInput = {
@@ -556042,6 +562209,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type SchoolUpsertWithoutDiningHallReportsInput = {
@@ -558152,6 +564320,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutPrefectReportsInput = {
@@ -558259,6 +564428,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutPrefectReportsInput = {
@@ -558779,6 +564949,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPrefectReportsInput = {
@@ -558886,6 +565057,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type SchoolUpsertWithoutPrefectReportsInput = {
@@ -570845,6 +577017,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutVitalsRecordedInput = {
@@ -570952,6 +577125,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutVitalsRecordedInput = {
@@ -571569,6 +577743,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutVitalsRecordedInput = {
@@ -571676,6 +577851,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type SchoolCreateWithoutClinicDiagnosesInput = {
@@ -573297,6 +579473,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutPrescriptionsWrittenInput = {
@@ -573404,6 +579581,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutPrescriptionsWrittenInput = {
@@ -574021,6 +580199,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPrescriptionsWrittenInput = {
@@ -574128,6 +580307,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type SchoolCreateWithoutPharmacyStocksInput = {
@@ -575792,6 +581972,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutPharmacyDispensingsMadeInput = {
@@ -575899,6 +582080,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutPharmacyDispensingsMadeInput = {
@@ -576584,6 +582766,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPharmacyDispensingsMadeInput = {
@@ -576691,6 +582874,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type SchoolCreateWithoutClinicBedsInput = {
@@ -579580,6 +585764,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutMonitoringLogsRecordedInput = {
@@ -579687,6 +585872,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutMonitoringLogsRecordedInput = {
@@ -580254,6 +586440,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutMonitoringLogsRecordedInput = {
@@ -580361,6 +586548,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type SchoolCreateWithoutClinicAccessAuditsInput = {
@@ -581066,6 +587254,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutClinicAccessAuditsInput = {
@@ -581173,6 +587362,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutClinicAccessAuditsInput = {
@@ -581906,6 +588096,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutClinicAccessAuditsInput = {
@@ -582013,6 +588204,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type SchoolCreateWithoutClinicEmergencyLogsInput = {
@@ -582803,6 +588995,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutEmergencyLogsRecordedInput = {
@@ -582910,6 +589103,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutEmergencyLogsRecordedInput = {
@@ -583734,6 +589928,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutEmergencyLogsRecordedInput = {
@@ -583841,6 +590036,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type SchoolCreateWithoutClinicSettingsInput = {
@@ -591890,6 +598086,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutUploadedSyllabusesInput = {
@@ -591997,6 +598194,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutUploadedSyllabusesInput = {
@@ -592714,6 +598912,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutUploadedSyllabusesInput = {
@@ -592821,6 +599020,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type SyllabusTopicUpsertWithWhereUniqueWithoutSyllabusInput = {
@@ -592999,6 +599199,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutCoveredTopicsInput = {
@@ -593106,6 +599307,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutCoveredTopicsInput = {
@@ -593458,6 +599660,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCoveredTopicsInput = {
@@ -593565,6 +599768,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type SchemeOfWorkUpsertWithWhereUniqueWithoutSyllabusTopicInput = {
@@ -594420,6 +600624,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutSchemesHodApprovedInput = {
@@ -594527,6 +600732,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutSchemesHodApprovedInput = {
@@ -595488,6 +601694,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSchemesHodApprovedInput = {
@@ -595595,6 +601802,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type SchemeItemUpsertWithWhereUniqueWithoutSchemeInput = {
@@ -597573,6 +603781,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutLessonPlansHodReviewedInput = {
@@ -597680,6 +603889,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutLessonPlansHodReviewedInput = {
@@ -598610,6 +604820,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutLessonPlansHodReviewedInput = {
@@ -598717,6 +604928,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type LessonPlanResourceUpsertWithWhereUniqueWithoutLessonPlanInput = {
@@ -601230,6 +607442,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutAssessmentsCreatedInput = {
@@ -601337,6 +607550,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutAssessmentsCreatedInput = {
@@ -601449,6 +607663,7 @@ export namespace Prisma {
     assessmentsCreated?: AssessmentCreateNestedManyWithoutCreatedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutAssessmentsModeratedInput = {
@@ -601556,6 +607771,7 @@ export namespace Prisma {
     assessmentsCreated?: AssessmentUncheckedCreateNestedManyWithoutCreatedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutAssessmentsModeratedInput = {
@@ -602395,6 +608611,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAssessmentsCreatedInput = {
@@ -602502,6 +608719,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUpsertWithoutAssessmentsModeratedInput = {
@@ -602620,6 +608838,7 @@ export namespace Prisma {
     assessmentsCreated?: AssessmentUpdateManyWithoutCreatedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAssessmentsModeratedInput = {
@@ -602727,6 +608946,7 @@ export namespace Prisma {
     assessmentsCreated?: AssessmentUncheckedUpdateManyWithoutCreatedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type AssessmentQuestionUpsertWithWhereUniqueWithoutAssessmentInput = {
@@ -604539,6 +610759,7 @@ export namespace Prisma {
     assessmentsCreated?: AssessmentCreateNestedManyWithoutCreatedByInput
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutQuestionBankCreatedInput = {
@@ -604646,6 +610867,7 @@ export namespace Prisma {
     assessmentsCreated?: AssessmentUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutQuestionBankCreatedInput = {
@@ -605354,6 +611576,7 @@ export namespace Prisma {
     assessmentsCreated?: AssessmentUpdateManyWithoutCreatedByNestedInput
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutQuestionBankCreatedInput = {
@@ -605461,6 +611684,7 @@ export namespace Prisma {
     assessmentsCreated?: AssessmentUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type AssessmentQuestionUpsertWithWhereUniqueWithoutQuestionBankInput = {
@@ -607429,6 +613653,7 @@ export namespace Prisma {
     assessmentsCreated?: AssessmentCreateNestedManyWithoutCreatedByInput
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutAssessmentsMarkedInput = {
@@ -607536,6 +613761,7 @@ export namespace Prisma {
     assessmentsCreated?: AssessmentUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutAssessmentsMarkedInput = {
@@ -608338,6 +614564,7 @@ export namespace Prisma {
     assessmentsCreated?: AssessmentUpdateManyWithoutCreatedByNestedInput
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAssessmentsMarkedInput = {
@@ -608445,6 +614672,7 @@ export namespace Prisma {
     assessmentsCreated?: AssessmentUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type SubjectCreateWithoutQuestionsInput = {
@@ -608627,6 +614855,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutCreatedQuestionsInput = {
@@ -608734,6 +614963,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutCreatedQuestionsInput = {
@@ -609335,6 +615565,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCreatedQuestionsInput = {
@@ -609442,6 +615673,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type SchoolUpsertWithoutQuestionsInput = {
@@ -610088,6 +616320,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutCreatedCbtExamsInput = {
@@ -610195,6 +616428,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutCreatedCbtExamsInput = {
@@ -610895,6 +617129,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCreatedCbtExamsInput = {
@@ -611002,6 +617237,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type SchoolUpsertWithoutCbtExamsInput = {
@@ -618726,6 +624962,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutNominatedAwardsInput = {
@@ -618833,6 +625070,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutNominatedAwardsInput = {
@@ -618945,6 +625183,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutApprovedAwardsInput = {
@@ -619052,6 +625291,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutApprovedAwardsInput = {
@@ -619785,6 +626025,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutNominatedAwardsInput = {
@@ -619892,6 +626133,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUpsertWithoutApprovedAwardsInput = {
@@ -620010,6 +626252,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutApprovedAwardsInput = {
@@ -620117,6 +626360,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type SchoolCreateWithoutBursaryTypesInput = {
@@ -621622,6 +627866,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutApprovedBursariesInput = {
@@ -621729,6 +627974,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutApprovedBursariesInput = {
@@ -622462,6 +628708,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutApprovedBursariesInput = {
@@ -622569,6 +628816,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type SchoolCreateWithoutBedAllocationsInput = {
@@ -625928,6 +632176,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutTripLeadTripsInput = {
@@ -626035,6 +632284,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutTripLeadTripsInput = {
@@ -626147,6 +632397,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutTripNurseTripsInput = {
@@ -626254,6 +632505,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutTripNurseTripsInput = {
@@ -626883,6 +633135,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTripLeadTripsInput = {
@@ -626990,6 +633243,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUpsertWithoutTripNurseTripsInput = {
@@ -627108,6 +633362,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTripNurseTripsInput = {
@@ -627215,6 +633470,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type TripConsentUpsertWithWhereUniqueWithoutTripInput = {
@@ -627999,6 +634255,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutParentTripConsentsInput = {
@@ -628106,6 +634363,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutParentTripConsentsInput = {
@@ -628908,6 +635166,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutParentTripConsentsInput = {
@@ -629015,6 +635274,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type SchoolCreateWithoutMedicalConsentsInput = {
@@ -629720,6 +635980,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutParentMedicalConsentsInput = {
@@ -629827,6 +636088,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutParentMedicalConsentsInput = {
@@ -630560,6 +636822,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutParentMedicalConsentsInput = {
@@ -630667,6 +636930,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type SchoolCreateWithoutBookLoanFinesInput = {
@@ -632723,6 +638987,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutMarkedBoardingRollCallsInput = {
@@ -632830,6 +639095,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutMarkedBoardingRollCallsInput = {
@@ -633612,6 +639878,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutMarkedBoardingRollCallsInput = {
@@ -633719,6 +639986,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type SchoolCreateWithoutExeatsInput = {
@@ -634424,6 +640692,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutApprovedExeatsInput = {
@@ -634531,6 +640800,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutApprovedExeatsInput = {
@@ -635264,6 +641534,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutApprovedExeatsInput = {
@@ -635371,6 +641642,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type SchoolCreateWithoutDiningPantryItemsInput = {
@@ -640289,6 +646561,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutUniformsIssuedInput = {
@@ -640396,6 +646669,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutUniformsIssuedInput = {
@@ -641190,6 +647464,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutUniformsIssuedInput = {
@@ -641297,6 +647572,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type SchoolCreateWithoutUniformStockLedgersInput = {
@@ -642746,6 +649022,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutMarkedAttendanceSessionsInput = {
@@ -642853,6 +649130,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutMarkedAttendanceSessionsInput = {
@@ -643480,6 +649758,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutMarkedAttendanceSessionsInput = {
@@ -643587,6 +649866,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type AttendanceSessionRecordUpsertWithWhereUniqueWithoutSessionInput = {
@@ -643942,6 +650222,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutMarkedSessionRecordsInput = {
@@ -644049,6 +650330,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutMarkedSessionRecordsInput = {
@@ -644416,6 +650698,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutMarkedSessionRecordsInput = {
@@ -644523,6 +650806,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type SchoolCreateWithoutStaffAttendanceDailiesInput = {
@@ -645027,6 +651311,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutStaffAttendanceDailiesInput = {
@@ -645134,6 +651419,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutStaffAttendanceDailiesInput = {
@@ -645660,6 +651946,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutStaffAttendanceDailiesInput = {
@@ -645767,6 +652054,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type SchoolCreateWithoutBiometricRawLogsInput = {
@@ -646271,6 +652559,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutBiometricRawLogsInput = {
@@ -646378,6 +652667,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutBiometricRawLogsInput = {
@@ -646904,6 +653194,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutBiometricRawLogsInput = {
@@ -647011,6 +653302,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type SchoolCreateWithoutHrTardinessLogsInput = {
@@ -647515,6 +653807,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserUncheckedCreateWithoutHrTardinessLogsInput = {
@@ -647622,6 +653915,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
     questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
     assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
   }
 
   export type UserCreateOrConnectWithoutHrTardinessLogsInput = {
@@ -648148,6 +654442,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutHrTardinessLogsInput = {
@@ -648255,6 +654550,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type SchoolCreateManyPlanInput = {
@@ -649450,6 +655746,11 @@ export namespace Prisma {
     supplierName?: string | null
     invoiceNumber?: string | null
     depreciationRate?: number | null
+    accumulatedDepreciation?: number | null
+    bookValue?: number | null
+    lastDepreciationDate?: Date | string | null
+    coaExpenseCode?: string | null
+    coaAccumulatedCode?: string | null
     warrantyExpiry?: Date | string | null
     photoUrl?: string | null
     custodianId?: string | null
@@ -651490,6 +657791,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSchoolInput = {
@@ -651597,6 +657899,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateManyWithoutSchoolInput = {
@@ -653825,6 +660128,11 @@ export namespace Prisma {
     supplierName?: NullableStringFieldUpdateOperationsInput | string | null
     invoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
     depreciationRate?: NullableFloatFieldUpdateOperationsInput | number | null
+    accumulatedDepreciation?: NullableFloatFieldUpdateOperationsInput | number | null
+    bookValue?: NullableFloatFieldUpdateOperationsInput | number | null
+    lastDepreciationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    coaExpenseCode?: NullableStringFieldUpdateOperationsInput | string | null
+    coaAccumulatedCode?: NullableStringFieldUpdateOperationsInput | string | null
     warrantyExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     photoUrl?: NullableStringFieldUpdateOperationsInput | string | null
     approvalStatus?: StringFieldUpdateOperationsInput | string
@@ -653840,6 +660148,7 @@ export namespace Prisma {
     attachments?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    depreciations?: AssetDepreciationUpdateManyWithoutAssetNestedInput
     custodian?: UserUpdateOneWithoutAssignedAssetsNestedInput
     registeredBy?: UserUpdateOneWithoutRegisteredAssetsNestedInput
     incidents?: AssetIncidentUpdateManyWithoutAssetNestedInput
@@ -653863,6 +660172,11 @@ export namespace Prisma {
     supplierName?: NullableStringFieldUpdateOperationsInput | string | null
     invoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
     depreciationRate?: NullableFloatFieldUpdateOperationsInput | number | null
+    accumulatedDepreciation?: NullableFloatFieldUpdateOperationsInput | number | null
+    bookValue?: NullableFloatFieldUpdateOperationsInput | number | null
+    lastDepreciationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    coaExpenseCode?: NullableStringFieldUpdateOperationsInput | string | null
+    coaAccumulatedCode?: NullableStringFieldUpdateOperationsInput | string | null
     warrantyExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     photoUrl?: NullableStringFieldUpdateOperationsInput | string | null
     custodianId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -653880,6 +660194,7 @@ export namespace Prisma {
     attachments?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    depreciations?: AssetDepreciationUncheckedUpdateManyWithoutAssetNestedInput
     incidents?: AssetIncidentUncheckedUpdateManyWithoutAssetNestedInput
     maintenance?: AssetMaintenanceUncheckedUpdateManyWithoutAssetNestedInput
   }
@@ -653901,6 +660216,11 @@ export namespace Prisma {
     supplierName?: NullableStringFieldUpdateOperationsInput | string | null
     invoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
     depreciationRate?: NullableFloatFieldUpdateOperationsInput | number | null
+    accumulatedDepreciation?: NullableFloatFieldUpdateOperationsInput | number | null
+    bookValue?: NullableFloatFieldUpdateOperationsInput | number | null
+    lastDepreciationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    coaExpenseCode?: NullableStringFieldUpdateOperationsInput | string | null
+    coaAccumulatedCode?: NullableStringFieldUpdateOperationsInput | string | null
     warrantyExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     photoUrl?: NullableStringFieldUpdateOperationsInput | string | null
     custodianId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -659989,6 +666309,11 @@ export namespace Prisma {
     supplierName?: string | null
     invoiceNumber?: string | null
     depreciationRate?: number | null
+    accumulatedDepreciation?: number | null
+    bookValue?: number | null
+    lastDepreciationDate?: Date | string | null
+    coaExpenseCode?: string | null
+    coaAccumulatedCode?: string | null
     warrantyExpiry?: Date | string | null
     photoUrl?: string | null
     registeredById?: string | null
@@ -660025,6 +666350,11 @@ export namespace Prisma {
     supplierName?: string | null
     invoiceNumber?: string | null
     depreciationRate?: number | null
+    accumulatedDepreciation?: number | null
+    bookValue?: number | null
+    lastDepreciationDate?: Date | string | null
+    coaExpenseCode?: string | null
+    coaAccumulatedCode?: string | null
     warrantyExpiry?: Date | string | null
     photoUrl?: string | null
     custodianId?: string | null
@@ -661142,6 +667472,22 @@ export namespace Prisma {
     updatedAt?: Date | string
   }
 
+  export type GoodsReceivedNoteCreateManyReceivedByInput = {
+    id?: string
+    grnNumber: string
+    schoolId: string
+    purchaseOrderId: string
+    supplierId: string
+    receivedDate?: Date | string
+    deliveryNoteNumber?: string | null
+    status?: string
+    items: JsonNullValueInput | InputJsonValue
+    totalValueReceived?: number
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
   export type SyllabusUpdateWithoutUploadedByInput = {
     id?: StringFieldUpdateOperationsInput | string
     form?: StringFieldUpdateOperationsInput | string
@@ -662012,6 +668358,11 @@ export namespace Prisma {
     supplierName?: NullableStringFieldUpdateOperationsInput | string | null
     invoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
     depreciationRate?: NullableFloatFieldUpdateOperationsInput | number | null
+    accumulatedDepreciation?: NullableFloatFieldUpdateOperationsInput | number | null
+    bookValue?: NullableFloatFieldUpdateOperationsInput | number | null
+    lastDepreciationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    coaExpenseCode?: NullableStringFieldUpdateOperationsInput | string | null
+    coaAccumulatedCode?: NullableStringFieldUpdateOperationsInput | string | null
     warrantyExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     photoUrl?: NullableStringFieldUpdateOperationsInput | string | null
     approvalStatus?: StringFieldUpdateOperationsInput | string
@@ -662027,6 +668378,7 @@ export namespace Prisma {
     attachments?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    depreciations?: AssetDepreciationUpdateManyWithoutAssetNestedInput
     registeredBy?: UserUpdateOneWithoutRegisteredAssetsNestedInput
     school?: SchoolUpdateOneRequiredWithoutAssetsNestedInput
     incidents?: AssetIncidentUpdateManyWithoutAssetNestedInput
@@ -662050,6 +668402,11 @@ export namespace Prisma {
     supplierName?: NullableStringFieldUpdateOperationsInput | string | null
     invoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
     depreciationRate?: NullableFloatFieldUpdateOperationsInput | number | null
+    accumulatedDepreciation?: NullableFloatFieldUpdateOperationsInput | number | null
+    bookValue?: NullableFloatFieldUpdateOperationsInput | number | null
+    lastDepreciationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    coaExpenseCode?: NullableStringFieldUpdateOperationsInput | string | null
+    coaAccumulatedCode?: NullableStringFieldUpdateOperationsInput | string | null
     warrantyExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     photoUrl?: NullableStringFieldUpdateOperationsInput | string | null
     registeredById?: NullableStringFieldUpdateOperationsInput | string | null
@@ -662067,6 +668424,7 @@ export namespace Prisma {
     attachments?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    depreciations?: AssetDepreciationUncheckedUpdateManyWithoutAssetNestedInput
     incidents?: AssetIncidentUncheckedUpdateManyWithoutAssetNestedInput
     maintenance?: AssetMaintenanceUncheckedUpdateManyWithoutAssetNestedInput
   }
@@ -662088,6 +668446,11 @@ export namespace Prisma {
     supplierName?: NullableStringFieldUpdateOperationsInput | string | null
     invoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
     depreciationRate?: NullableFloatFieldUpdateOperationsInput | number | null
+    accumulatedDepreciation?: NullableFloatFieldUpdateOperationsInput | number | null
+    bookValue?: NullableFloatFieldUpdateOperationsInput | number | null
+    lastDepreciationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    coaExpenseCode?: NullableStringFieldUpdateOperationsInput | string | null
+    coaAccumulatedCode?: NullableStringFieldUpdateOperationsInput | string | null
     warrantyExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     photoUrl?: NullableStringFieldUpdateOperationsInput | string | null
     registeredById?: NullableStringFieldUpdateOperationsInput | string | null
@@ -662124,6 +668487,11 @@ export namespace Prisma {
     supplierName?: NullableStringFieldUpdateOperationsInput | string | null
     invoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
     depreciationRate?: NullableFloatFieldUpdateOperationsInput | number | null
+    accumulatedDepreciation?: NullableFloatFieldUpdateOperationsInput | number | null
+    bookValue?: NullableFloatFieldUpdateOperationsInput | number | null
+    lastDepreciationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    coaExpenseCode?: NullableStringFieldUpdateOperationsInput | string | null
+    coaAccumulatedCode?: NullableStringFieldUpdateOperationsInput | string | null
     warrantyExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     photoUrl?: NullableStringFieldUpdateOperationsInput | string | null
     approvalStatus?: StringFieldUpdateOperationsInput | string
@@ -662139,6 +668507,7 @@ export namespace Prisma {
     attachments?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    depreciations?: AssetDepreciationUpdateManyWithoutAssetNestedInput
     custodian?: UserUpdateOneWithoutAssignedAssetsNestedInput
     school?: SchoolUpdateOneRequiredWithoutAssetsNestedInput
     incidents?: AssetIncidentUpdateManyWithoutAssetNestedInput
@@ -662162,6 +668531,11 @@ export namespace Prisma {
     supplierName?: NullableStringFieldUpdateOperationsInput | string | null
     invoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
     depreciationRate?: NullableFloatFieldUpdateOperationsInput | number | null
+    accumulatedDepreciation?: NullableFloatFieldUpdateOperationsInput | number | null
+    bookValue?: NullableFloatFieldUpdateOperationsInput | number | null
+    lastDepreciationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    coaExpenseCode?: NullableStringFieldUpdateOperationsInput | string | null
+    coaAccumulatedCode?: NullableStringFieldUpdateOperationsInput | string | null
     warrantyExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     photoUrl?: NullableStringFieldUpdateOperationsInput | string | null
     custodianId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -662179,6 +668553,7 @@ export namespace Prisma {
     attachments?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    depreciations?: AssetDepreciationUncheckedUpdateManyWithoutAssetNestedInput
     incidents?: AssetIncidentUncheckedUpdateManyWithoutAssetNestedInput
     maintenance?: AssetMaintenanceUncheckedUpdateManyWithoutAssetNestedInput
   }
@@ -662200,6 +668575,11 @@ export namespace Prisma {
     supplierName?: NullableStringFieldUpdateOperationsInput | string | null
     invoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
     depreciationRate?: NullableFloatFieldUpdateOperationsInput | number | null
+    accumulatedDepreciation?: NullableFloatFieldUpdateOperationsInput | number | null
+    bookValue?: NullableFloatFieldUpdateOperationsInput | number | null
+    lastDepreciationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    coaExpenseCode?: NullableStringFieldUpdateOperationsInput | string | null
+    coaAccumulatedCode?: NullableStringFieldUpdateOperationsInput | string | null
     warrantyExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     photoUrl?: NullableStringFieldUpdateOperationsInput | string | null
     custodianId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -665631,6 +672011,56 @@ export namespace Prisma {
     isModerated?: BoolFieldUpdateOperationsInput | boolean
     status?: StringFieldUpdateOperationsInput | string
     answers?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type GoodsReceivedNoteUpdateWithoutReceivedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    grnNumber?: StringFieldUpdateOperationsInput | string
+    schoolId?: StringFieldUpdateOperationsInput | string
+    receivedDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    deliveryNoteNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    items?: JsonNullValueInput | InputJsonValue
+    totalValueReceived?: FloatFieldUpdateOperationsInput | number
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    purchaseOrder?: PurchaseOrderUpdateOneRequiredWithoutGrnsNestedInput
+    supplier?: SupplierUpdateOneRequiredWithoutGoodsReceivedNotesNestedInput
+    invoices?: InvoiceUpdateManyWithoutGrnNestedInput
+  }
+
+  export type GoodsReceivedNoteUncheckedUpdateWithoutReceivedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    grnNumber?: StringFieldUpdateOperationsInput | string
+    schoolId?: StringFieldUpdateOperationsInput | string
+    purchaseOrderId?: StringFieldUpdateOperationsInput | string
+    supplierId?: StringFieldUpdateOperationsInput | string
+    receivedDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    deliveryNoteNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    items?: JsonNullValueInput | InputJsonValue
+    totalValueReceived?: FloatFieldUpdateOperationsInput | number
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    invoices?: InvoiceUncheckedUpdateManyWithoutGrnNestedInput
+  }
+
+  export type GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    grnNumber?: StringFieldUpdateOperationsInput | string
+    schoolId?: StringFieldUpdateOperationsInput | string
+    purchaseOrderId?: StringFieldUpdateOperationsInput | string
+    supplierId?: StringFieldUpdateOperationsInput | string
+    receivedDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    deliveryNoteNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    items?: JsonNullValueInput | InputJsonValue
+    totalValueReceived?: FloatFieldUpdateOperationsInput | number
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -672892,6 +679322,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutDeptInput = {
@@ -672999,6 +679430,7 @@ export namespace Prisma {
     assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
     questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
     assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type UserUncheckedUpdateManyWithoutDeptInput = {
@@ -674910,6 +681342,14 @@ export namespace Prisma {
     totalAmount: number
     status?: string
     schoolId: string
+    coaCode?: string | null
+    department?: string | null
+    budgetChecked?: boolean
+    budgetOverrun?: boolean
+    budgetRemaining?: number | null
+    approvedById?: string | null
+    approvedAt?: Date | string | null
+    rejectionReason?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -674917,10 +681357,34 @@ export namespace Prisma {
   export type InvoiceCreateManySupplierInput = {
     id?: string
     invoiceNo: string
+    purchaseOrderId?: string | null
+    grnId?: string | null
     amount: number
+    items?: NullableJsonNullValueInput | InputJsonValue
     status?: string
+    matchingStatus?: string
+    matchingNotes?: string | null
+    approvedById?: string | null
+    approvedAt?: Date | string | null
+    journalEntryId?: string | null
     dueDate: Date | string
     schoolId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type GoodsReceivedNoteCreateManySupplierInput = {
+    id?: string
+    grnNumber: string
+    schoolId: string
+    purchaseOrderId: string
+    receivedDate?: Date | string
+    receivedById: string
+    deliveryNoteNumber?: string | null
+    status?: string
+    items: JsonNullValueInput | InputJsonValue
+    totalValueReceived?: number
+    notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -675013,9 +681477,19 @@ export namespace Prisma {
     totalAmount?: FloatFieldUpdateOperationsInput | number
     status?: StringFieldUpdateOperationsInput | string
     schoolId?: StringFieldUpdateOperationsInput | string
+    coaCode?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: NullableStringFieldUpdateOperationsInput | string | null
+    budgetChecked?: BoolFieldUpdateOperationsInput | boolean
+    budgetOverrun?: BoolFieldUpdateOperationsInput | boolean
+    budgetRemaining?: NullableFloatFieldUpdateOperationsInput | number | null
+    approvedById?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     requisition?: RequisitionUpdateOneWithoutPurchaseOrderNestedInput
+    grns?: GoodsReceivedNoteUpdateManyWithoutPurchaseOrderNestedInput
+    invoices?: InvoiceUpdateManyWithoutPurchaseOrderNestedInput
   }
 
   export type PurchaseOrderUncheckedUpdateWithoutSupplierInput = {
@@ -675026,9 +681500,19 @@ export namespace Prisma {
     totalAmount?: FloatFieldUpdateOperationsInput | number
     status?: StringFieldUpdateOperationsInput | string
     schoolId?: StringFieldUpdateOperationsInput | string
+    coaCode?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: NullableStringFieldUpdateOperationsInput | string | null
+    budgetChecked?: BoolFieldUpdateOperationsInput | boolean
+    budgetOverrun?: BoolFieldUpdateOperationsInput | boolean
+    budgetRemaining?: NullableFloatFieldUpdateOperationsInput | number | null
+    approvedById?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     requisition?: RequisitionUncheckedUpdateOneWithoutPurchaseOrderNestedInput
+    grns?: GoodsReceivedNoteUncheckedUpdateManyWithoutPurchaseOrderNestedInput
+    invoices?: InvoiceUncheckedUpdateManyWithoutPurchaseOrderNestedInput
   }
 
   export type PurchaseOrderUncheckedUpdateManyWithoutSupplierInput = {
@@ -675039,6 +681523,14 @@ export namespace Prisma {
     totalAmount?: FloatFieldUpdateOperationsInput | number
     status?: StringFieldUpdateOperationsInput | string
     schoolId?: StringFieldUpdateOperationsInput | string
+    coaCode?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: NullableStringFieldUpdateOperationsInput | string | null
+    budgetChecked?: BoolFieldUpdateOperationsInput | boolean
+    budgetOverrun?: BoolFieldUpdateOperationsInput | boolean
+    budgetRemaining?: NullableFloatFieldUpdateOperationsInput | number | null
+    approvedById?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -675047,18 +681539,34 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     invoiceNo?: StringFieldUpdateOperationsInput | string
     amount?: FloatFieldUpdateOperationsInput | number
+    items?: NullableJsonNullValueInput | InputJsonValue
     status?: StringFieldUpdateOperationsInput | string
+    matchingStatus?: StringFieldUpdateOperationsInput | string
+    matchingNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedById?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    journalEntryId?: NullableStringFieldUpdateOperationsInput | string | null
     dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
     schoolId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    purchaseOrder?: PurchaseOrderUpdateOneWithoutInvoicesNestedInput
+    grn?: GoodsReceivedNoteUpdateOneWithoutInvoicesNestedInput
   }
 
   export type InvoiceUncheckedUpdateWithoutSupplierInput = {
     id?: StringFieldUpdateOperationsInput | string
     invoiceNo?: StringFieldUpdateOperationsInput | string
+    purchaseOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    grnId?: NullableStringFieldUpdateOperationsInput | string | null
     amount?: FloatFieldUpdateOperationsInput | number
+    items?: NullableJsonNullValueInput | InputJsonValue
     status?: StringFieldUpdateOperationsInput | string
+    matchingStatus?: StringFieldUpdateOperationsInput | string
+    matchingNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedById?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    journalEntryId?: NullableStringFieldUpdateOperationsInput | string | null
     dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
     schoolId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -675068,10 +681576,68 @@ export namespace Prisma {
   export type InvoiceUncheckedUpdateManyWithoutSupplierInput = {
     id?: StringFieldUpdateOperationsInput | string
     invoiceNo?: StringFieldUpdateOperationsInput | string
+    purchaseOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    grnId?: NullableStringFieldUpdateOperationsInput | string | null
     amount?: FloatFieldUpdateOperationsInput | number
+    items?: NullableJsonNullValueInput | InputJsonValue
     status?: StringFieldUpdateOperationsInput | string
+    matchingStatus?: StringFieldUpdateOperationsInput | string
+    matchingNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedById?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    journalEntryId?: NullableStringFieldUpdateOperationsInput | string | null
     dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
     schoolId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type GoodsReceivedNoteUpdateWithoutSupplierInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    grnNumber?: StringFieldUpdateOperationsInput | string
+    schoolId?: StringFieldUpdateOperationsInput | string
+    receivedDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    deliveryNoteNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    items?: JsonNullValueInput | InputJsonValue
+    totalValueReceived?: FloatFieldUpdateOperationsInput | number
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    purchaseOrder?: PurchaseOrderUpdateOneRequiredWithoutGrnsNestedInput
+    receivedBy?: UserUpdateOneRequiredWithoutReceivedGRNsNestedInput
+    invoices?: InvoiceUpdateManyWithoutGrnNestedInput
+  }
+
+  export type GoodsReceivedNoteUncheckedUpdateWithoutSupplierInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    grnNumber?: StringFieldUpdateOperationsInput | string
+    schoolId?: StringFieldUpdateOperationsInput | string
+    purchaseOrderId?: StringFieldUpdateOperationsInput | string
+    receivedDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    receivedById?: StringFieldUpdateOperationsInput | string
+    deliveryNoteNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    items?: JsonNullValueInput | InputJsonValue
+    totalValueReceived?: FloatFieldUpdateOperationsInput | number
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    invoices?: InvoiceUncheckedUpdateManyWithoutGrnNestedInput
+  }
+
+  export type GoodsReceivedNoteUncheckedUpdateManyWithoutSupplierInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    grnNumber?: StringFieldUpdateOperationsInput | string
+    schoolId?: StringFieldUpdateOperationsInput | string
+    purchaseOrderId?: StringFieldUpdateOperationsInput | string
+    receivedDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    receivedById?: StringFieldUpdateOperationsInput | string
+    deliveryNoteNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    items?: JsonNullValueInput | InputJsonValue
+    totalValueReceived?: FloatFieldUpdateOperationsInput | number
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -675273,6 +681839,241 @@ export namespace Prisma {
     submittedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type GoodsReceivedNoteCreateManyPurchaseOrderInput = {
+    id?: string
+    grnNumber: string
+    schoolId: string
+    supplierId: string
+    receivedDate?: Date | string
+    receivedById: string
+    deliveryNoteNumber?: string | null
+    status?: string
+    items: JsonNullValueInput | InputJsonValue
+    totalValueReceived?: number
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type InvoiceCreateManyPurchaseOrderInput = {
+    id?: string
+    invoiceNo: string
+    supplierId: string
+    grnId?: string | null
+    amount: number
+    items?: NullableJsonNullValueInput | InputJsonValue
+    status?: string
+    matchingStatus?: string
+    matchingNotes?: string | null
+    approvedById?: string | null
+    approvedAt?: Date | string | null
+    journalEntryId?: string | null
+    dueDate: Date | string
+    schoolId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type GoodsReceivedNoteUpdateWithoutPurchaseOrderInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    grnNumber?: StringFieldUpdateOperationsInput | string
+    schoolId?: StringFieldUpdateOperationsInput | string
+    receivedDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    deliveryNoteNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    items?: JsonNullValueInput | InputJsonValue
+    totalValueReceived?: FloatFieldUpdateOperationsInput | number
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    supplier?: SupplierUpdateOneRequiredWithoutGoodsReceivedNotesNestedInput
+    receivedBy?: UserUpdateOneRequiredWithoutReceivedGRNsNestedInput
+    invoices?: InvoiceUpdateManyWithoutGrnNestedInput
+  }
+
+  export type GoodsReceivedNoteUncheckedUpdateWithoutPurchaseOrderInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    grnNumber?: StringFieldUpdateOperationsInput | string
+    schoolId?: StringFieldUpdateOperationsInput | string
+    supplierId?: StringFieldUpdateOperationsInput | string
+    receivedDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    receivedById?: StringFieldUpdateOperationsInput | string
+    deliveryNoteNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    items?: JsonNullValueInput | InputJsonValue
+    totalValueReceived?: FloatFieldUpdateOperationsInput | number
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    invoices?: InvoiceUncheckedUpdateManyWithoutGrnNestedInput
+  }
+
+  export type GoodsReceivedNoteUncheckedUpdateManyWithoutPurchaseOrderInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    grnNumber?: StringFieldUpdateOperationsInput | string
+    schoolId?: StringFieldUpdateOperationsInput | string
+    supplierId?: StringFieldUpdateOperationsInput | string
+    receivedDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    receivedById?: StringFieldUpdateOperationsInput | string
+    deliveryNoteNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    items?: JsonNullValueInput | InputJsonValue
+    totalValueReceived?: FloatFieldUpdateOperationsInput | number
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type InvoiceUpdateWithoutPurchaseOrderInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    invoiceNo?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    items?: NullableJsonNullValueInput | InputJsonValue
+    status?: StringFieldUpdateOperationsInput | string
+    matchingStatus?: StringFieldUpdateOperationsInput | string
+    matchingNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedById?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    journalEntryId?: NullableStringFieldUpdateOperationsInput | string | null
+    dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    schoolId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    supplier?: SupplierUpdateOneRequiredWithoutInvoicesNestedInput
+    grn?: GoodsReceivedNoteUpdateOneWithoutInvoicesNestedInput
+  }
+
+  export type InvoiceUncheckedUpdateWithoutPurchaseOrderInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    invoiceNo?: StringFieldUpdateOperationsInput | string
+    supplierId?: StringFieldUpdateOperationsInput | string
+    grnId?: NullableStringFieldUpdateOperationsInput | string | null
+    amount?: FloatFieldUpdateOperationsInput | number
+    items?: NullableJsonNullValueInput | InputJsonValue
+    status?: StringFieldUpdateOperationsInput | string
+    matchingStatus?: StringFieldUpdateOperationsInput | string
+    matchingNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedById?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    journalEntryId?: NullableStringFieldUpdateOperationsInput | string | null
+    dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    schoolId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type InvoiceUncheckedUpdateManyWithoutPurchaseOrderInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    invoiceNo?: StringFieldUpdateOperationsInput | string
+    supplierId?: StringFieldUpdateOperationsInput | string
+    grnId?: NullableStringFieldUpdateOperationsInput | string | null
+    amount?: FloatFieldUpdateOperationsInput | number
+    items?: NullableJsonNullValueInput | InputJsonValue
+    status?: StringFieldUpdateOperationsInput | string
+    matchingStatus?: StringFieldUpdateOperationsInput | string
+    matchingNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedById?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    journalEntryId?: NullableStringFieldUpdateOperationsInput | string | null
+    dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    schoolId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type InvoiceCreateManyGrnInput = {
+    id?: string
+    invoiceNo: string
+    supplierId: string
+    purchaseOrderId?: string | null
+    amount: number
+    items?: NullableJsonNullValueInput | InputJsonValue
+    status?: string
+    matchingStatus?: string
+    matchingNotes?: string | null
+    approvedById?: string | null
+    approvedAt?: Date | string | null
+    journalEntryId?: string | null
+    dueDate: Date | string
+    schoolId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type InvoiceUpdateWithoutGrnInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    invoiceNo?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    items?: NullableJsonNullValueInput | InputJsonValue
+    status?: StringFieldUpdateOperationsInput | string
+    matchingStatus?: StringFieldUpdateOperationsInput | string
+    matchingNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedById?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    journalEntryId?: NullableStringFieldUpdateOperationsInput | string | null
+    dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    schoolId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    supplier?: SupplierUpdateOneRequiredWithoutInvoicesNestedInput
+    purchaseOrder?: PurchaseOrderUpdateOneWithoutInvoicesNestedInput
+  }
+
+  export type InvoiceUncheckedUpdateWithoutGrnInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    invoiceNo?: StringFieldUpdateOperationsInput | string
+    supplierId?: StringFieldUpdateOperationsInput | string
+    purchaseOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    amount?: FloatFieldUpdateOperationsInput | number
+    items?: NullableJsonNullValueInput | InputJsonValue
+    status?: StringFieldUpdateOperationsInput | string
+    matchingStatus?: StringFieldUpdateOperationsInput | string
+    matchingNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedById?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    journalEntryId?: NullableStringFieldUpdateOperationsInput | string | null
+    dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    schoolId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type InvoiceUncheckedUpdateManyWithoutGrnInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    invoiceNo?: StringFieldUpdateOperationsInput | string
+    supplierId?: StringFieldUpdateOperationsInput | string
+    purchaseOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    amount?: FloatFieldUpdateOperationsInput | number
+    items?: NullableJsonNullValueInput | InputJsonValue
+    status?: StringFieldUpdateOperationsInput | string
+    matchingStatus?: StringFieldUpdateOperationsInput | string
+    matchingNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedById?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    journalEntryId?: NullableStringFieldUpdateOperationsInput | string | null
+    dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    schoolId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AssetDepreciationCreateManyAssetInput = {
+    id?: string
+    schoolId: string
+    date?: Date | string
+    fiscalYear: number
+    fiscalPeriod: string
+    depreciationAmount: number
+    bookValueBefore: number
+    bookValueAfter: number
+    rateUsed: number
+    method?: string
+    journalEntryId?: string | null
+    processedById?: string | null
+    notes?: string | null
+    createdAt?: Date | string
+  }
+
   export type AssetIncidentCreateManyAssetInput = {
     id?: string
     reporterId: string
@@ -675298,6 +682099,57 @@ export namespace Prisma {
     schoolId: string
     createdAt?: Date | string
     updatedAt?: Date | string
+  }
+
+  export type AssetDepreciationUpdateWithoutAssetInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    schoolId?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    fiscalYear?: IntFieldUpdateOperationsInput | number
+    fiscalPeriod?: StringFieldUpdateOperationsInput | string
+    depreciationAmount?: FloatFieldUpdateOperationsInput | number
+    bookValueBefore?: FloatFieldUpdateOperationsInput | number
+    bookValueAfter?: FloatFieldUpdateOperationsInput | number
+    rateUsed?: FloatFieldUpdateOperationsInput | number
+    method?: StringFieldUpdateOperationsInput | string
+    journalEntryId?: NullableStringFieldUpdateOperationsInput | string | null
+    processedById?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AssetDepreciationUncheckedUpdateWithoutAssetInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    schoolId?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    fiscalYear?: IntFieldUpdateOperationsInput | number
+    fiscalPeriod?: StringFieldUpdateOperationsInput | string
+    depreciationAmount?: FloatFieldUpdateOperationsInput | number
+    bookValueBefore?: FloatFieldUpdateOperationsInput | number
+    bookValueAfter?: FloatFieldUpdateOperationsInput | number
+    rateUsed?: FloatFieldUpdateOperationsInput | number
+    method?: StringFieldUpdateOperationsInput | string
+    journalEntryId?: NullableStringFieldUpdateOperationsInput | string | null
+    processedById?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AssetDepreciationUncheckedUpdateManyWithoutAssetInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    schoolId?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    fiscalYear?: IntFieldUpdateOperationsInput | number
+    fiscalPeriod?: StringFieldUpdateOperationsInput | string
+    depreciationAmount?: FloatFieldUpdateOperationsInput | number
+    bookValueBefore?: FloatFieldUpdateOperationsInput | number
+    bookValueAfter?: FloatFieldUpdateOperationsInput | number
+    rateUsed?: FloatFieldUpdateOperationsInput | number
+    method?: StringFieldUpdateOperationsInput | string
+    journalEntryId?: NullableStringFieldUpdateOperationsInput | string | null
+    processedById?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type AssetIncidentUpdateWithoutAssetInput = {
@@ -681199,6 +688051,14 @@ export namespace Prisma {
      */
     export type TenderCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = TenderCountOutputTypeDefaultArgs<ExtArgs>
     /**
+     * @deprecated Use PurchaseOrderCountOutputTypeDefaultArgs instead
+     */
+    export type PurchaseOrderCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = PurchaseOrderCountOutputTypeDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use GoodsReceivedNoteCountOutputTypeDefaultArgs instead
+     */
+    export type GoodsReceivedNoteCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = GoodsReceivedNoteCountOutputTypeDefaultArgs<ExtArgs>
+    /**
      * @deprecated Use AssetCountOutputTypeDefaultArgs instead
      */
     export type AssetCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = AssetCountOutputTypeDefaultArgs<ExtArgs>
@@ -681659,6 +688519,10 @@ export namespace Prisma {
      */
     export type PurchaseOrderArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = PurchaseOrderDefaultArgs<ExtArgs>
     /**
+     * @deprecated Use GoodsReceivedNoteDefaultArgs instead
+     */
+    export type GoodsReceivedNoteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = GoodsReceivedNoteDefaultArgs<ExtArgs>
+    /**
      * @deprecated Use InvoiceDefaultArgs instead
      */
     export type InvoiceArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = InvoiceDefaultArgs<ExtArgs>
@@ -681682,6 +688546,10 @@ export namespace Prisma {
      * @deprecated Use AssetDefaultArgs instead
      */
     export type AssetArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = AssetDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use AssetDepreciationDefaultArgs instead
+     */
+    export type AssetDepreciationArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = AssetDepreciationDefaultArgs<ExtArgs>
     /**
      * @deprecated Use AssetIncidentDefaultArgs instead
      */

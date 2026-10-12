@@ -8,6 +8,7 @@ const path_1 = __importDefault(require("path"));
 const prisma_1 = __importDefault(require("../lib/prisma"));
 const auth_1 = require("../middleware/auth");
 const upload_1 = require("../middleware/upload");
+const procurement_service_1 = require("../services/procurement.service");
 const router = (0, express_1.Router)();
 // Helper to determine financial permission
 function isFinancialRole(role) {
@@ -695,6 +696,121 @@ router.post('/request-maintenance', auth_1.requireAuth, async (req, res) => {
     }
     catch (error) {
         res.status(500).json({ error: 'Failed to submit request' });
+    }
+});
+/**
+ * @route   POST /api/assets/:id/depreciate
+ * @desc    Calculate and post asset depreciation to the General Ledger
+ */
+router.post('/:id/depreciate', auth_1.requireAuth, (0, auth_1.requireRole)('BURSAR', 'SCHOOL_ADMIN', 'SUPER_ADMIN'), async (req, res) => {
+    try {
+        const schoolId = req.user?.schoolId;
+        const userId = req.user?.id;
+        const assetId = req.params.id;
+        const { fiscalYear, fiscalPeriod } = req.body || {};
+        if (!schoolId)
+            return res.status(400).json({ error: 'School ID required' });
+        const result = await procurement_service_1.ProcurementService.depreciateAsset({
+            schoolId,
+            assetId,
+            fiscalYear: fiscalYear ? Number(fiscalYear) : undefined,
+            fiscalPeriod,
+            userId
+        });
+        res.json({
+            message: 'Asset depreciation posted successfully to General Ledger',
+            ...result
+        });
+    }
+    catch (error) {
+        console.error('Depreciate asset error:', error);
+        res.status(400).json({ error: error.message || 'Failed to depreciate asset' });
+    }
+});
+/**
+ * @route   GET /api/assets/:id/depreciations
+ * @desc    Get historical depreciation logs for an asset
+ */
+router.get('/:id/depreciations', auth_1.requireAuth, async (req, res) => {
+    try {
+        const schoolId = req.user?.schoolId;
+        const assetId = req.params.id;
+        if (!schoolId)
+            return res.status(400).json({ error: 'School ID required' });
+        const logs = await prisma_1.default.assetDepreciation.findMany({
+            where: { assetId, schoolId },
+            orderBy: { date: 'desc' }
+        });
+        res.json(logs);
+    }
+    catch (error) {
+        console.error('List asset depreciations error:', error);
+        res.status(500).json({ error: error.message || 'Failed to list asset depreciations' });
+    }
+});
+/**
+ * @route   POST /api/assets/depreciate-all
+ * @desc    Batch process depreciation across all active depreciable assets
+ */
+router.post('/depreciate-all', auth_1.requireAuth, (0, auth_1.requireRole)('BURSAR', 'SCHOOL_ADMIN', 'SUPER_ADMIN'), async (req, res) => {
+    try {
+        const schoolId = req.user?.schoolId;
+        const userId = req.user?.id;
+        const { fiscalYear, fiscalPeriod } = req.body || {};
+        if (!schoolId)
+            return res.status(400).json({ error: 'School ID required' });
+        // Find all eligible active assets
+        const assets = await prisma_1.default.asset.findMany({
+            where: {
+                schoolId,
+                status: 'ACTIVE',
+                purchasePrice: { gt: 0 },
+                depreciationRate: { gt: 0 },
+                OR: [
+                    { bookValue: { gt: 0 } },
+                    { bookValue: null }
+                ]
+            }
+        });
+        const results = [];
+        let totalDepreciation = 0;
+        for (const asset of assets) {
+            try {
+                const res = await procurement_service_1.ProcurementService.depreciateAsset({
+                    schoolId,
+                    assetId: asset.id,
+                    fiscalYear: fiscalYear ? Number(fiscalYear) : undefined,
+                    fiscalPeriod,
+                    userId
+                });
+                results.push({
+                    assetId: asset.id,
+                    assetName: asset.name,
+                    amount: res.depreciationRecord.depreciationAmount,
+                    journalEntry: res.journalEntry.entryNumber,
+                    success: true
+                });
+                totalDepreciation += res.depreciationRecord.depreciationAmount;
+            }
+            catch (itemErr) {
+                results.push({
+                    assetId: asset.id,
+                    assetName: asset.name,
+                    error: itemErr.message,
+                    success: false
+                });
+            }
+        }
+        res.json({
+            totalProcessed: results.filter(r => r.success).length,
+            totalFailed: results.filter(r => !r.success).length,
+            totalDepreciation: Math.round(totalDepreciation * 100) / 100,
+            results
+        });
+    }
+    catch (error) {
+        console.error('Batch depreciation error:', error);
+        res.status(500).json({ error: error.message || 'Failed to run batch depreciation' });
     }
 });
 exports.default = router;
