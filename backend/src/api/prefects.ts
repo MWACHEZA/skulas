@@ -2,6 +2,7 @@ import { Router, Request, Response } from 'express';
 import prisma from '../lib/prisma';
 import { requireAuth, AuthRequest } from '../middleware/auth';
 import { requireModuleAccess } from '../middleware/moduleAccess';
+import { DisciplineService } from '../services/discipline.service';
 
 const router = Router();
 
@@ -114,20 +115,38 @@ router.patch('/reports/:id/status', async (req: Request, res: Response) => {
 });
 
 router.post('/conduct', async (req: Request, res: Response) => {
-  const { schoolId, id: reporterId } = (req as any).user;
-  const { studentId, date, offenceType, description, severity } = req.body;
-  const record = await prisma.disciplineRecord.create({
-    data: {
+  try {
+    const { schoolId, id: reporterId, role } = (req as any).user;
+    const {
       studentId,
-      reporterId,
-      date: new Date(date),
+      date,
       offenceType,
       description,
       severity,
-      schoolId
-    }
-  });
-  res.json(record);
+      type = 'DEMERIT',
+      points = 1,
+      actionTaken
+    } = req.body;
+
+    const record = await DisciplineService.createRecord({
+      schoolId,
+      studentId,
+      reporterId,
+      reporterRole: role || 'PREFECT',
+      type,
+      points: Number(points) || 1,
+      date: date ? new Date(date) : new Date(),
+      offenceType,
+      description,
+      severity,
+      actionTaken
+    });
+
+    res.json(record);
+  } catch (error: any) {
+    console.error('Failed to log prefect conduct report:', error);
+    res.status(400).json({ error: error.message || 'Failed to record conduct' });
+  }
 });
 
 // Prefects List

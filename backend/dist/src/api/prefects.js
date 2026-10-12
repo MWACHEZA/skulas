@@ -7,6 +7,7 @@ const express_1 = require("express");
 const prisma_1 = __importDefault(require("../lib/prisma"));
 const auth_1 = require("../middleware/auth");
 const moduleAccess_1 = require("../middleware/moduleAccess");
+const discipline_service_1 = require("../services/discipline.service");
 const router = (0, express_1.Router)();
 // Gating middleware: require authentication, then module access
 router.use(auth_1.requireAuth);
@@ -110,20 +111,28 @@ router.patch('/reports/:id/status', async (req, res) => {
     }
 });
 router.post('/conduct', async (req, res) => {
-    const { schoolId, id: reporterId } = req.user;
-    const { studentId, date, offenceType, description, severity } = req.body;
-    const record = await prisma_1.default.disciplineRecord.create({
-        data: {
+    try {
+        const { schoolId, id: reporterId, role } = req.user;
+        const { studentId, date, offenceType, description, severity, type = 'DEMERIT', points = 1, actionTaken } = req.body;
+        const record = await discipline_service_1.DisciplineService.createRecord({
+            schoolId,
             studentId,
             reporterId,
-            date: new Date(date),
+            reporterRole: role || 'PREFECT',
+            type,
+            points: Number(points) || 1,
+            date: date ? new Date(date) : new Date(),
             offenceType,
             description,
             severity,
-            schoolId
-        }
-    });
-    res.json(record);
+            actionTaken
+        });
+        res.json(record);
+    }
+    catch (error) {
+        console.error('Failed to log prefect conduct report:', error);
+        res.status(400).json({ error: error.message || 'Failed to record conduct' });
+    }
 });
 // Prefects List
 router.get('/', async (req, res) => {

@@ -1,4 +1,5 @@
 import prisma from '../lib/prisma';
+import { DisciplineService } from './discipline.service';
 
 export interface SubjectAssessmentSummary {
   subjectId: string;
@@ -47,8 +48,20 @@ export interface StudentReportCardData {
   };
   disciplineSummary: {
     totalIncidents: number;
+    meritPoints?: number;
+    demeritPoints?: number;
+    netPoints?: number;
+    isSuspended?: boolean;
+    suspensionDetails?: {
+      days: number | null;
+      startDate: Date | null;
+      endDate: Date | null;
+      reason: string;
+    } | null;
     records: Array<{
       offenceType: string;
+      type?: string;
+      points?: number;
       severity: string;
       date: string;
       actionTaken?: string;
@@ -388,12 +401,8 @@ export class WeightingService {
     const totalDays = presentCount + absentCount + lateCount;
     const attendancePercentage = totalDays > 0 ? Math.round(((presentCount + lateCount) / totalDays) * 100) : 100;
 
-    // 7. Discipline Summary
-    const disciplineRecords = await prisma.disciplineRecord.findMany({
-      where: { studentId, schoolId },
-      orderBy: { date: 'desc' },
-      take: 5
-    });
+    // 7. Discipline Summary (approved records only for report card)
+    const disciplineSummaryData = await DisciplineService.getStudentDisciplineSummary(schoolId, studentId, true);
 
     return {
       student: {
@@ -416,9 +425,16 @@ export class WeightingService {
         totalDays: Math.max(totalDays, 65) // Standard term school days
       },
       disciplineSummary: {
-        totalIncidents: disciplineRecords.length,
-        records: disciplineRecords.map(d => ({
+        totalIncidents: disciplineSummaryData.records.length,
+        meritPoints: disciplineSummaryData.meritPoints,
+        demeritPoints: disciplineSummaryData.demeritPoints,
+        netPoints: disciplineSummaryData.netPoints,
+        isSuspended: disciplineSummaryData.isSuspended,
+        suspensionDetails: disciplineSummaryData.suspensionDetails,
+        records: disciplineSummaryData.records.slice(0, 5).map(d => ({
           offenceType: d.offenceType,
+          type: d.type,
+          points: d.points,
           severity: d.severity,
           date: d.date.toISOString().slice(0, 10),
           actionTaken: d.actionTaken || undefined

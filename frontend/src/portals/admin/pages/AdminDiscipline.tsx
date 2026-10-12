@@ -6,7 +6,7 @@ import { formatCurrency } from '../../../utils/formatters';
 import { SearchInput, ExportButton } from '../../../components/shared';
 import '../../../styles/portal.css';
 
-type DisciplineTab = 'conduct' | 'awards' | 'committee';
+type DisciplineTab = 'conduct' | 'awards' | 'committee' | 'approvals' | 'houses';
 
 interface ConductReport {
   id: string;
@@ -62,6 +62,8 @@ export default function AdminDiscipline() {
   const [conductReports, setConductReports] = useState<ConductReport[]>([]);
   const [awards, setAwards] = useState<AwardItem[]>([]);
   const [students, setStudents] = useState<any[]>([]);
+  const [pendingApprovals, setPendingApprovals] = useState<any[]>([]);
+  const [houseLeaderboard, setHouseLeaderboard] = useState<any[]>([]);
 
   // Search & Filter
   const [searchTerm, setSearchTerm] = useState('');
@@ -194,6 +196,10 @@ export default function AdminDiscipline() {
 
   useEffect(() => {
     fetchData();
+    // Load pending approvals count on tab switch
+    api.get('/api/discipline/pending-approvals')
+      .then(res => setPendingApprovals(Array.isArray(res.data) ? res.data : []))
+      .catch(() => {});
   }, [activeTab]);
 
   const fetchData = async () => {
@@ -202,7 +208,13 @@ export default function AdminDiscipline() {
       if (activeTab === 'conduct') {
         const res = await api.get('/api/prefects/reports');
         setConductReports(Array.isArray(res.data) ? res.data : []);
-      } else {
+      } else if (activeTab === 'approvals') {
+        const res = await api.get('/api/discipline/pending-approvals');
+        setPendingApprovals(Array.isArray(res.data) ? res.data : []);
+      } else if (activeTab === 'houses') {
+        const res = await api.get('/api/discipline/houses');
+        setHouseLeaderboard(Array.isArray(res.data) ? res.data : []);
+      } else if (activeTab === 'awards') {
         const [aRes, sRes] = await Promise.all([
           api.get('/api/awards'),
           api.get('/api/students')
@@ -215,6 +227,32 @@ export default function AdminDiscipline() {
       showToast('Failed to load discipline and awards records', 'error');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleApproveDemerit = async (id: string) => {
+    try {
+      const res = await api.post(`/api/discipline/${id}/approve`);
+      if (res.data.record?.suspensionTriggered) {
+        showToast(`Demerit approved! ⚠️ Student suspended for ${res.data.record.suspensionDays} days.`, 'warning');
+      } else {
+        showToast('Demerit approved! House points deducted.', 'success');
+      }
+      setPendingApprovals(prev => prev.filter(r => r.id !== id));
+    } catch (err: any) {
+      showToast(err.response?.data?.error || 'Failed to approve demerit', 'error');
+    }
+  };
+
+  const handleRejectDemerit = async (id: string) => {
+    const reason = window.prompt('Reason for rejecting prefect demerit:');
+    if (reason === null) return;
+    try {
+      await api.post(`/api/discipline/${id}/reject`, { reason: reason || 'Rejected by administrative review' });
+      showToast('Demerit rejected. House points unaffected.', 'info');
+      setPendingApprovals(prev => prev.filter(r => r.id !== id));
+    } catch (err: any) {
+      showToast(err.response?.data?.error || 'Failed to reject demerit', 'error');
     }
   };
 
@@ -463,6 +501,62 @@ export default function AdminDiscipline() {
           <i className="fas fa-gavel"></i>
           Disciplinary Committee Hearings ({hearings.length})
         </button>
+
+        <button
+          type="button"
+          onClick={() => handleTabChange('approvals')}
+          style={{
+            padding: '10px 18px',
+            border: 'none',
+            background: 'none',
+            cursor: 'pointer',
+            fontWeight: activeTab === 'approvals' ? 700 : 500,
+            color: activeTab === 'approvals' ? '#d97706' : '#64748b',
+            borderBottom: activeTab === 'approvals' ? '3px solid #d97706' : '3px solid transparent',
+            marginBottom: '-2px',
+            fontSize: '0.95rem',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px'
+          }}
+        >
+          <i className="fas fa-user-check"></i>
+          Prefect Demerit Queue
+          {pendingApprovals.length > 0 && (
+            <span style={{
+              background: '#dc2626',
+              color: '#fff',
+              fontSize: '0.72rem',
+              fontWeight: 800,
+              padding: '2px 7px',
+              borderRadius: '999px'
+            }}>
+              {pendingApprovals.length}
+            </span>
+          )}
+        </button>
+
+        <button
+          type="button"
+          onClick={() => handleTabChange('houses')}
+          style={{
+            padding: '10px 18px',
+            border: 'none',
+            background: 'none',
+            cursor: 'pointer',
+            fontWeight: activeTab === 'houses' ? 700 : 500,
+            color: activeTab === 'houses' ? '#2563eb' : '#64748b',
+            borderBottom: activeTab === 'houses' ? '3px solid #2563eb' : '3px solid transparent',
+            marginBottom: '-2px',
+            fontSize: '0.95rem',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px'
+          }}
+        >
+          <i className="fas fa-trophy"></i>
+          House Points Leaderboard
+        </button>
       </div>
 
       {/* Search & Filters */}
@@ -678,7 +772,7 @@ export default function AdminDiscipline() {
             </table>
           )}
         </div>
-      ) : (
+      ) : activeTab === 'committee' ? (
         /* Disciplinary Committee Hearings Table */
         <div style={{ background: '#fff', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)', overflow: 'hidden' }}>
           <div style={{ padding: '16px 20px', background: '#fef2f2', borderBottom: '1px solid #fee2e2', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -790,6 +884,257 @@ export default function AdminDiscipline() {
               ))}
             </tbody>
           </table>
+        </div>
+      ) : activeTab === 'approvals' ? (
+        /* Prefect Demerit Approvals Tab (HOD & Admin Queue) */
+        <div style={{ background: '#fff', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)', overflow: 'hidden' }}>
+          <div style={{ padding: '16px 20px', background: '#fffbeb', borderBottom: '1px solid #fef3c7', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div>
+              <h3 style={{ margin: 0, color: '#92400e', fontSize: '1rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <i className="fas fa-shield-alt"></i>
+                Prefect Demerit Authorization Queue
+              </h3>
+              <p style={{ margin: '4px 0 0', fontSize: '0.85rem', color: '#b45309' }}>
+                Prefect-reported demerits are gated. Demerits only deduct house points and appear on report cards/parent portals once sanctioned by an HOD or Administrator.
+              </p>
+            </div>
+            <div style={{ background: '#fef3c7', padding: '6px 12px', borderRadius: '6px', fontWeight: 700, color: '#92400e', fontSize: '0.85rem' }}>
+              Pending: {pendingApprovals.length}
+            </div>
+          </div>
+
+          {pendingApprovals.length === 0 ? (
+            <div style={{ padding: 48, textAlign: 'center', color: '#64748b' }}>
+              <i className="fas fa-check-circle fa-3x" style={{ color: '#10b981', marginBottom: 12 }}></i>
+              <p style={{ fontWeight: 700, fontSize: '1.05rem', color: '#1e293b' }}>Authorization Queue Cleared</p>
+              <p style={{ fontSize: '0.85rem', marginTop: 4 }}>No prefect demerits are awaiting HOD or administrative review.</p>
+            </div>
+          ) : (
+            <table className="portal-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.88rem' }}>
+              <thead>
+                <tr style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0', textAlign: 'left', color: '#475569' }}>
+                  <th style={{ padding: '12px 16px' }}>Date</th>
+                  <th style={{ padding: '12px 16px' }}>Student</th>
+                  <th style={{ padding: '12px 16px' }}>House</th>
+                  <th style={{ padding: '12px 16px' }}>Reporting Prefect</th>
+                  <th style={{ padding: '12px 16px' }}>Offence & Severity</th>
+                  <th style={{ padding: '12px 16px', textAlign: 'center' }}>Demerit Pts</th>
+                  <th style={{ padding: '12px 16px' }}>Incident Description</th>
+                  <th style={{ padding: '12px 16px', textAlign: 'right' }}>Authorization Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {pendingApprovals.map(r => (
+                  <tr key={r.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                    <td style={{ padding: '12px 16px', fontSize: '0.82rem', color: '#64748b', whiteSpace: 'nowrap' }}>
+                      {new Date(r.date).toLocaleDateString()}
+                    </td>
+                    <td style={{ padding: '12px 16px' }}>
+                      <div style={{ fontWeight: 600, color: '#1e293b' }}>{r.student?.name || 'Unknown Student'}</div>
+                      <div style={{ fontSize: '0.78rem', color: '#64748b' }}>{r.student?.class?.name || 'Class N/A'}</div>
+                    </td>
+                    <td style={{ padding: '12px 16px' }}>
+                      {r.student?.house ? (
+                        <span style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '6px',
+                          padding: '3px 8px',
+                          borderRadius: '4px',
+                          background: `${r.student.house.color || '#4f46e5'}15`,
+                          color: r.student.house.color || '#4f46e5',
+                          fontWeight: 700,
+                          fontSize: '0.78rem'
+                        }}>
+                          <span style={{ width: 8, height: 8, borderRadius: '50%', background: r.student.house.color || '#4f46e5' }}></span>
+                          {r.student.house.name}
+                        </span>
+                      ) : (
+                        <span style={{ color: '#94a3b8', fontSize: '0.8rem' }}>Unassigned</span>
+                      )}
+                    </td>
+                    <td style={{ padding: '12px 16px', fontSize: '0.85rem' }}>
+                      <div style={{ fontWeight: 600, color: '#334155' }}>{r.reporter?.name || 'Prefect'}</div>
+                      <div style={{ fontSize: '0.72rem', color: '#d97706', fontWeight: 700 }}>STUDENT PREFECT</div>
+                    </td>
+                    <td style={{ padding: '12px 16px' }}>
+                      <div style={{ fontWeight: 600, color: '#1e293b' }}>{r.offenceType}</div>
+                      <span style={{
+                        display: 'inline-block',
+                        fontSize: '0.72rem',
+                        fontWeight: 700,
+                        padding: '2px 6px',
+                        borderRadius: '4px',
+                        marginTop: 2,
+                        background: r.severity === 'CRITICAL' ? '#fee2e2' : r.severity === 'HIGH' ? '#ffedd5' : '#f1f5f9',
+                        color: r.severity === 'CRITICAL' ? '#b91c1c' : r.severity === 'HIGH' ? '#c2410c' : '#475569'
+                      }}>
+                        {r.severity}
+                      </span>
+                    </td>
+                    <td style={{ padding: '12px 16px', textAlign: 'center' }}>
+                      <span style={{
+                        display: 'inline-block',
+                        padding: '4px 10px',
+                        borderRadius: '6px',
+                        fontWeight: 800,
+                        fontSize: '0.85rem',
+                        background: '#fef2f2',
+                        color: '#dc2626'
+                      }}>
+                        -{r.points || 1} pts
+                      </span>
+                    </td>
+                    <td style={{ padding: '12px 16px', maxWidth: 260, fontSize: '0.85rem', color: '#475569' }}>
+                      {r.description}
+                    </td>
+                    <td style={{ padding: '12px 16px', textAlign: 'right', whiteSpace: 'nowrap' }}>
+                      <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>
+                        <button
+                          type="button"
+                          onClick={() => handleApproveDemerit(r.id)}
+                          style={{
+                            padding: '6px 12px',
+                            background: '#059669',
+                            color: '#fff',
+                            border: 'none',
+                            borderRadius: '6px',
+                            fontWeight: 700,
+                            fontSize: '0.8rem',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '4px'
+                          }}
+                        >
+                          <i className="fas fa-check"></i> Sanction
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleRejectDemerit(r.id)}
+                          style={{
+                            padding: '6px 12px',
+                            background: '#ef4444',
+                            color: '#fff',
+                            border: 'none',
+                            borderRadius: '6px',
+                            fontWeight: 700,
+                            fontSize: '0.8rem',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '4px'
+                          }}
+                        >
+                          <i className="fas fa-times"></i> Dismiss
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+      ) : (
+        /* House Points Leaderboard Tab */
+        <div style={{ background: '#fff', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)', overflow: 'hidden' }}>
+          <div style={{ padding: '16px 20px', background: '#eff6ff', borderBottom: '1px solid #dbeafe', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div>
+              <h3 style={{ margin: 0, color: '#1e40af', fontSize: '1rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <i className="fas fa-trophy"></i>
+                House Points Championship Leaderboard
+              </h3>
+              <p style={{ margin: '4px 0 0', fontSize: '0.85rem', color: '#2563eb' }}>
+                Real-time house points computed from merit awards (+points) and sanctioned disciplinary demerits (-points).
+              </p>
+            </div>
+          </div>
+
+          <div style={{ padding: '24px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px', marginBottom: '24px' }}>
+              {houseLeaderboard.map((house, idx) => (
+                <div
+                  key={house.id}
+                  style={{
+                    borderRadius: '12px',
+                    border: '1px solid #e2e8f0',
+                    padding: '20px',
+                    background: idx === 0 ? '#fefce8' : '#fff',
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.04)',
+                    position: 'relative',
+                    overflow: 'hidden'
+                  }}
+                >
+                  <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 6, background: house.color || '#4f46e5' }}></div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 4 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <span style={{
+                        fontSize: '1.4rem',
+                        fontWeight: 900,
+                        color: idx === 0 ? '#ca8a04' : idx === 1 ? '#64748b' : idx === 2 ? '#b45309' : '#94a3b8'
+                      }}>
+                        {idx === 0 ? '🥇 #1' : idx === 1 ? '🥈 #2' : idx === 2 ? '🥉 #3' : `#${idx + 1}`}
+                      </span>
+                      <h4 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, color: '#1e293b' }}>{house.name}</h4>
+                    </div>
+                    <span style={{ fontSize: '1.5rem', fontWeight: 900, color: house.color || '#1e293b' }}>
+                      {house.points} <span style={{ fontSize: '0.8rem', fontWeight: 600, color: '#64748b' }}>pts</span>
+                    </span>
+                  </div>
+
+                  <div style={{ marginTop: 14, fontSize: '0.85rem', color: '#64748b', display: 'flex', justifyContent: 'space-between' }}>
+                    <span>Enrolled Students: <strong>{house.studentCount}</strong></span>
+                    <span style={{ fontWeight: 600, color: house.points > 0 ? '#059669' : '#dc2626' }}>
+                      {house.points > 0 ? 'Positive Standing' : 'Negative Standing'}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <table className="portal-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.88rem' }}>
+              <thead>
+                <tr style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0', textAlign: 'left', color: '#475569' }}>
+                  <th style={{ padding: '12px 16px', width: '80px' }}>Rank</th>
+                  <th style={{ padding: '12px 16px' }}>House Name</th>
+                  <th style={{ padding: '12px 16px' }}>House Color</th>
+                  <th style={{ padding: '12px 16px', textAlign: 'center' }}>Students</th>
+                  <th style={{ padding: '12px 16px', textAlign: 'right' }}>Total Points</th>
+                </tr>
+              </thead>
+              <tbody>
+                {houseLeaderboard.map((house) => (
+                  <tr key={house.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                    <td style={{ padding: '12px 16px', fontWeight: 800, color: house.rank === 1 ? '#ca8a04' : '#64748b' }}>
+                      {house.rank === 1 ? '🥇 1st' : house.rank === 2 ? '🥈 2nd' : house.rank === 3 ? '🥉 3rd' : `${house.rank}th`}
+                    </td>
+                    <td style={{ padding: '12px 16px', fontWeight: 700, color: '#1e293b' }}>
+                      {house.name}
+                    </td>
+                    <td style={{ padding: '12px 16px' }}>
+                      <span style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        fontSize: '0.85rem',
+                        color: '#475569'
+                      }}>
+                        <span style={{ width: 14, height: 14, borderRadius: 3, background: house.color || '#4f46e5', display: 'inline-block' }}></span>
+                        {house.color || '#4f46e5'}
+                      </span>
+                    </td>
+                    <td style={{ padding: '12px 16px', textAlign: 'center', fontWeight: 600, color: '#475569' }}>
+                      {house.studentCount} students
+                    </td>
+                    <td style={{ padding: '12px 16px', textAlign: 'right', fontWeight: 900, fontSize: '1rem', color: house.color || '#1e293b' }}>
+                      {house.points} pts
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
 

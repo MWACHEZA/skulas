@@ -45,7 +45,8 @@ const prisma = basePrisma.$extends({
                     'AttendanceSession', 'AttendanceSessionRecord', 'StaffAttendanceDaily', 'BiometricRawLog', 'HrTardinessLog',
                     'SchoolTrip', 'TripConsent', 'Exeat', 'MedicalConsent',
                     'SchemeOfWork', 'SchemeItem', 'LessonPlanResource', 'AssessmentType', 'Assessment',
-                    'AssessmentQuestion', 'QuestionBank', 'ExamTimetable', 'StudentAssessment'
+                    'AssessmentQuestion', 'QuestionBank', 'ExamTimetable', 'StudentAssessment',
+                    'DisciplineRecord'
                 ];
                 if (context?.schoolId && tenantScopedModels.includes(model)) {
                     // Wrap operations that use 'where'

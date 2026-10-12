@@ -786,6 +786,7 @@ model Student {
   exeats                   Exeat[]
   uniformIssuances         UniformIssuance[]
   attendanceSessionRecords AttendanceSessionRecord[]
+  disciplineRecords        DisciplineRecord[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -1359,16 +1360,17 @@ model Book {
 }
 
 model StudentHouse {
-  id          String    @id @default(cuid())
-  name        String
-  description String?
-  logo        String?
-  color       String?
-  motto       String?
-  points      Int       @default(0)
-  schoolId    String
-  school      School    @relation(fields: [schoolId], references: [id])
-  students    Student[]
+  id                String             @id @default(cuid())
+  name              String
+  description       String?
+  logo              String?
+  color             String?
+  motto             String?
+  points            Int                @default(0)
+  schoolId          String
+  school            School             @relation(fields: [schoolId], references: [id])
+  students          Student[]
+  disciplineRecords DisciplineRecord[]
 
   houseMasterId String?
   houseMaster   Teacher? @relation("HouseMaster", fields: [houseMasterId], references: [id])
@@ -5139,21 +5141,38 @@ model CbtAttempt {
 // --- Phase 6: Prefect Board & Discipline ---
 
 model DisciplineRecord {
-  id          String   @id @default(cuid())
-  studentId   String
-  reporterId  String
-  date        DateTime
-  offenceType String
-  description String
-  severity    String
-  status      String   @default("PENDING")
-  actionTaken String?
-  schoolId    String
-  school      School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id                  String        @id @default(cuid())
+  studentId           String
+  student             Student       @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  reporterId          String
+  reporterRole        String        @default("TEACHER") // PREFECT, TEACHER, HOD, ADMIN
+  type                String        @default("DEMERIT") // MERIT, DEMERIT
+  points              Int           @default(0) // Merit points (+) or Demerit points (-)
+  date                DateTime
+  offenceType         String
+  description         String
+  severity            String        @default("MEDIUM") // LOW, MEDIUM, HIGH, CRITICAL
+  status              String        @default("PENDING") // PENDING, RESOLVED, ESCALATED
+  approvalStatus      String        @default("APPROVED") // APPROVED, PENDING_HOD_APPROVAL, REJECTED
+  approvedBy          String?
+  approvedAt          DateTime?
+  rejectionReason     String?
+  houseId             String?
+  house               StudentHouse? @relation(fields: [houseId], references: [id], onDelete: SetNull)
+  actionTaken         String?
+  suspensionTriggered Boolean       @default(false)
+  suspensionDays      Int?
+  suspensionStartDate DateTime?
+  suspensionEndDate   DateTime?
+  schoolId            String
+  school              School        @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @updatedAt
 
   @@index([schoolId])
+  @@index([studentId])
+  @@index([houseId])
+  @@index([approvalStatus])
 }
 
 // --- Phase 7: Sports & Calendar Sync ---

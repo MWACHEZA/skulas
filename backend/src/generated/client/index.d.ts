@@ -24620,6 +24620,7 @@ export namespace Prisma {
     exeats: number
     uniformIssuances: number
     attendanceSessionRecords: number
+    disciplineRecords: number
   }
 
   export type StudentCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -24663,6 +24664,7 @@ export namespace Prisma {
     exeats?: boolean | StudentCountOutputTypeCountExeatsArgs
     uniformIssuances?: boolean | StudentCountOutputTypeCountUniformIssuancesArgs
     attendanceSessionRecords?: boolean | StudentCountOutputTypeCountAttendanceSessionRecordsArgs
+    disciplineRecords?: boolean | StudentCountOutputTypeCountDisciplineRecordsArgs
   }
 
   // Custom InputTypes
@@ -24954,6 +24956,13 @@ export namespace Prisma {
    */
   export type StudentCountOutputTypeCountAttendanceSessionRecordsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: AttendanceSessionRecordWhereInput
+  }
+
+  /**
+   * StudentCountOutputType without action
+   */
+  export type StudentCountOutputTypeCountDisciplineRecordsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: DisciplineRecordWhereInput
   }
 
 
@@ -25740,10 +25749,12 @@ export namespace Prisma {
 
   export type StudentHouseCountOutputType = {
     students: number
+    disciplineRecords: number
   }
 
   export type StudentHouseCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     students?: boolean | StudentHouseCountOutputTypeCountStudentsArgs
+    disciplineRecords?: boolean | StudentHouseCountOutputTypeCountDisciplineRecordsArgs
   }
 
   // Custom InputTypes
@@ -25762,6 +25773,13 @@ export namespace Prisma {
    */
   export type StudentHouseCountOutputTypeCountStudentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: StudentWhereInput
+  }
+
+  /**
+   * StudentHouseCountOutputType without action
+   */
+  export type StudentHouseCountOutputTypeCountDisciplineRecordsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: DisciplineRecordWhereInput
   }
 
 
@@ -55693,6 +55711,7 @@ export namespace Prisma {
     exeats?: boolean | Student$exeatsArgs<ExtArgs>
     uniformIssuances?: boolean | Student$uniformIssuancesArgs<ExtArgs>
     attendanceSessionRecords?: boolean | Student$attendanceSessionRecordsArgs<ExtArgs>
+    disciplineRecords?: boolean | Student$disciplineRecordsArgs<ExtArgs>
     _count?: boolean | StudentCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["student"]>
 
@@ -55865,6 +55884,7 @@ export namespace Prisma {
     exeats?: boolean | Student$exeatsArgs<ExtArgs>
     uniformIssuances?: boolean | Student$uniformIssuancesArgs<ExtArgs>
     attendanceSessionRecords?: boolean | Student$attendanceSessionRecordsArgs<ExtArgs>
+    disciplineRecords?: boolean | Student$disciplineRecordsArgs<ExtArgs>
     _count?: boolean | StudentCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type StudentIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -55929,6 +55949,7 @@ export namespace Prisma {
       exeats: Prisma.$ExeatPayload<ExtArgs>[]
       uniformIssuances: Prisma.$UniformIssuancePayload<ExtArgs>[]
       attendanceSessionRecords: Prisma.$AttendanceSessionRecordPayload<ExtArgs>[]
+      disciplineRecords: Prisma.$DisciplineRecordPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -56397,6 +56418,7 @@ export namespace Prisma {
     exeats<T extends Student$exeatsArgs<ExtArgs> = {}>(args?: Subset<T, Student$exeatsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ExeatPayload<ExtArgs>, T, "findMany"> | Null>
     uniformIssuances<T extends Student$uniformIssuancesArgs<ExtArgs> = {}>(args?: Subset<T, Student$uniformIssuancesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UniformIssuancePayload<ExtArgs>, T, "findMany"> | Null>
     attendanceSessionRecords<T extends Student$attendanceSessionRecordsArgs<ExtArgs> = {}>(args?: Subset<T, Student$attendanceSessionRecordsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AttendanceSessionRecordPayload<ExtArgs>, T, "findMany"> | Null>
+    disciplineRecords<T extends Student$disciplineRecordsArgs<ExtArgs> = {}>(args?: Subset<T, Student$disciplineRecordsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DisciplineRecordPayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -57714,6 +57736,26 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: AttendanceSessionRecordScalarFieldEnum | AttendanceSessionRecordScalarFieldEnum[]
+  }
+
+  /**
+   * Student.disciplineRecords
+   */
+  export type Student$disciplineRecordsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DisciplineRecord
+     */
+    select?: DisciplineRecordSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DisciplineRecordInclude<ExtArgs> | null
+    where?: DisciplineRecordWhereInput
+    orderBy?: DisciplineRecordOrderByWithRelationInput | DisciplineRecordOrderByWithRelationInput[]
+    cursor?: DisciplineRecordWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: DisciplineRecordScalarFieldEnum | DisciplineRecordScalarFieldEnum[]
   }
 
   /**
@@ -83765,6 +83807,7 @@ export namespace Prisma {
     updatedAt?: boolean
     school?: boolean | SchoolDefaultArgs<ExtArgs>
     students?: boolean | StudentHouse$studentsArgs<ExtArgs>
+    disciplineRecords?: boolean | StudentHouse$disciplineRecordsArgs<ExtArgs>
     houseMaster?: boolean | StudentHouse$houseMasterArgs<ExtArgs>
     houseCaptain?: boolean | StudentHouse$houseCaptainArgs<ExtArgs>
     _count?: boolean | StudentHouseCountOutputTypeDefaultArgs<ExtArgs>
@@ -83806,6 +83849,7 @@ export namespace Prisma {
   export type StudentHouseInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     school?: boolean | SchoolDefaultArgs<ExtArgs>
     students?: boolean | StudentHouse$studentsArgs<ExtArgs>
+    disciplineRecords?: boolean | StudentHouse$disciplineRecordsArgs<ExtArgs>
     houseMaster?: boolean | StudentHouse$houseMasterArgs<ExtArgs>
     houseCaptain?: boolean | StudentHouse$houseCaptainArgs<ExtArgs>
     _count?: boolean | StudentHouseCountOutputTypeDefaultArgs<ExtArgs>
@@ -83821,6 +83865,7 @@ export namespace Prisma {
     objects: {
       school: Prisma.$SchoolPayload<ExtArgs>
       students: Prisma.$StudentPayload<ExtArgs>[]
+      disciplineRecords: Prisma.$DisciplineRecordPayload<ExtArgs>[]
       houseMaster: Prisma.$TeacherPayload<ExtArgs> | null
       houseCaptain: Prisma.$StudentPayload<ExtArgs> | null
     }
@@ -84203,6 +84248,7 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     school<T extends SchoolDefaultArgs<ExtArgs> = {}>(args?: Subset<T, SchoolDefaultArgs<ExtArgs>>): Prisma__SchoolClient<$Result.GetResult<Prisma.$SchoolPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
     students<T extends StudentHouse$studentsArgs<ExtArgs> = {}>(args?: Subset<T, StudentHouse$studentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StudentPayload<ExtArgs>, T, "findMany"> | Null>
+    disciplineRecords<T extends StudentHouse$disciplineRecordsArgs<ExtArgs> = {}>(args?: Subset<T, StudentHouse$disciplineRecordsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DisciplineRecordPayload<ExtArgs>, T, "findMany"> | Null>
     houseMaster<T extends StudentHouse$houseMasterArgs<ExtArgs> = {}>(args?: Subset<T, StudentHouse$houseMasterArgs<ExtArgs>>): Prisma__TeacherClient<$Result.GetResult<Prisma.$TeacherPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     houseCaptain<T extends StudentHouse$houseCaptainArgs<ExtArgs> = {}>(args?: Subset<T, StudentHouse$houseCaptainArgs<ExtArgs>>): Prisma__StudentClient<$Result.GetResult<Prisma.$StudentPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     /**
@@ -84581,6 +84627,26 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: StudentScalarFieldEnum | StudentScalarFieldEnum[]
+  }
+
+  /**
+   * StudentHouse.disciplineRecords
+   */
+  export type StudentHouse$disciplineRecordsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DisciplineRecord
+     */
+    select?: DisciplineRecordSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DisciplineRecordInclude<ExtArgs> | null
+    where?: DisciplineRecordWhereInput
+    orderBy?: DisciplineRecordOrderByWithRelationInput | DisciplineRecordOrderByWithRelationInput[]
+    cursor?: DisciplineRecordWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: DisciplineRecordScalarFieldEnum | DisciplineRecordScalarFieldEnum[]
   }
 
   /**
@@ -264472,20 +264538,44 @@ export namespace Prisma {
 
   export type AggregateDisciplineRecord = {
     _count: DisciplineRecordCountAggregateOutputType | null
+    _avg: DisciplineRecordAvgAggregateOutputType | null
+    _sum: DisciplineRecordSumAggregateOutputType | null
     _min: DisciplineRecordMinAggregateOutputType | null
     _max: DisciplineRecordMaxAggregateOutputType | null
+  }
+
+  export type DisciplineRecordAvgAggregateOutputType = {
+    points: number | null
+    suspensionDays: number | null
+  }
+
+  export type DisciplineRecordSumAggregateOutputType = {
+    points: number | null
+    suspensionDays: number | null
   }
 
   export type DisciplineRecordMinAggregateOutputType = {
     id: string | null
     studentId: string | null
     reporterId: string | null
+    reporterRole: string | null
+    type: string | null
+    points: number | null
     date: Date | null
     offenceType: string | null
     description: string | null
     severity: string | null
     status: string | null
+    approvalStatus: string | null
+    approvedBy: string | null
+    approvedAt: Date | null
+    rejectionReason: string | null
+    houseId: string | null
     actionTaken: string | null
+    suspensionTriggered: boolean | null
+    suspensionDays: number | null
+    suspensionStartDate: Date | null
+    suspensionEndDate: Date | null
     schoolId: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -264495,12 +264585,24 @@ export namespace Prisma {
     id: string | null
     studentId: string | null
     reporterId: string | null
+    reporterRole: string | null
+    type: string | null
+    points: number | null
     date: Date | null
     offenceType: string | null
     description: string | null
     severity: string | null
     status: string | null
+    approvalStatus: string | null
+    approvedBy: string | null
+    approvedAt: Date | null
+    rejectionReason: string | null
+    houseId: string | null
     actionTaken: string | null
+    suspensionTriggered: boolean | null
+    suspensionDays: number | null
+    suspensionStartDate: Date | null
+    suspensionEndDate: Date | null
     schoolId: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -264510,12 +264612,24 @@ export namespace Prisma {
     id: number
     studentId: number
     reporterId: number
+    reporterRole: number
+    type: number
+    points: number
     date: number
     offenceType: number
     description: number
     severity: number
     status: number
+    approvalStatus: number
+    approvedBy: number
+    approvedAt: number
+    rejectionReason: number
+    houseId: number
     actionTaken: number
+    suspensionTriggered: number
+    suspensionDays: number
+    suspensionStartDate: number
+    suspensionEndDate: number
     schoolId: number
     createdAt: number
     updatedAt: number
@@ -264523,16 +264637,38 @@ export namespace Prisma {
   }
 
 
+  export type DisciplineRecordAvgAggregateInputType = {
+    points?: true
+    suspensionDays?: true
+  }
+
+  export type DisciplineRecordSumAggregateInputType = {
+    points?: true
+    suspensionDays?: true
+  }
+
   export type DisciplineRecordMinAggregateInputType = {
     id?: true
     studentId?: true
     reporterId?: true
+    reporterRole?: true
+    type?: true
+    points?: true
     date?: true
     offenceType?: true
     description?: true
     severity?: true
     status?: true
+    approvalStatus?: true
+    approvedBy?: true
+    approvedAt?: true
+    rejectionReason?: true
+    houseId?: true
     actionTaken?: true
+    suspensionTriggered?: true
+    suspensionDays?: true
+    suspensionStartDate?: true
+    suspensionEndDate?: true
     schoolId?: true
     createdAt?: true
     updatedAt?: true
@@ -264542,12 +264678,24 @@ export namespace Prisma {
     id?: true
     studentId?: true
     reporterId?: true
+    reporterRole?: true
+    type?: true
+    points?: true
     date?: true
     offenceType?: true
     description?: true
     severity?: true
     status?: true
+    approvalStatus?: true
+    approvedBy?: true
+    approvedAt?: true
+    rejectionReason?: true
+    houseId?: true
     actionTaken?: true
+    suspensionTriggered?: true
+    suspensionDays?: true
+    suspensionStartDate?: true
+    suspensionEndDate?: true
     schoolId?: true
     createdAt?: true
     updatedAt?: true
@@ -264557,12 +264705,24 @@ export namespace Prisma {
     id?: true
     studentId?: true
     reporterId?: true
+    reporterRole?: true
+    type?: true
+    points?: true
     date?: true
     offenceType?: true
     description?: true
     severity?: true
     status?: true
+    approvalStatus?: true
+    approvedBy?: true
+    approvedAt?: true
+    rejectionReason?: true
+    houseId?: true
     actionTaken?: true
+    suspensionTriggered?: true
+    suspensionDays?: true
+    suspensionStartDate?: true
+    suspensionEndDate?: true
     schoolId?: true
     createdAt?: true
     updatedAt?: true
@@ -264607,6 +264767,18 @@ export namespace Prisma {
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
+     * Select which fields to average
+    **/
+    _avg?: DisciplineRecordAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: DisciplineRecordSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: DisciplineRecordMinAggregateInputType
@@ -264637,6 +264809,8 @@ export namespace Prisma {
     take?: number
     skip?: number
     _count?: DisciplineRecordCountAggregateInputType | true
+    _avg?: DisciplineRecordAvgAggregateInputType
+    _sum?: DisciplineRecordSumAggregateInputType
     _min?: DisciplineRecordMinAggregateInputType
     _max?: DisciplineRecordMaxAggregateInputType
   }
@@ -264645,16 +264819,30 @@ export namespace Prisma {
     id: string
     studentId: string
     reporterId: string
+    reporterRole: string
+    type: string
+    points: number
     date: Date
     offenceType: string
     description: string
     severity: string
     status: string
+    approvalStatus: string
+    approvedBy: string | null
+    approvedAt: Date | null
+    rejectionReason: string | null
+    houseId: string | null
     actionTaken: string | null
+    suspensionTriggered: boolean
+    suspensionDays: number | null
+    suspensionStartDate: Date | null
+    suspensionEndDate: Date | null
     schoolId: string
     createdAt: Date
     updatedAt: Date
     _count: DisciplineRecordCountAggregateOutputType | null
+    _avg: DisciplineRecordAvgAggregateOutputType | null
+    _sum: DisciplineRecordSumAggregateOutputType | null
     _min: DisciplineRecordMinAggregateOutputType | null
     _max: DisciplineRecordMaxAggregateOutputType | null
   }
@@ -264677,15 +264865,29 @@ export namespace Prisma {
     id?: boolean
     studentId?: boolean
     reporterId?: boolean
+    reporterRole?: boolean
+    type?: boolean
+    points?: boolean
     date?: boolean
     offenceType?: boolean
     description?: boolean
     severity?: boolean
     status?: boolean
+    approvalStatus?: boolean
+    approvedBy?: boolean
+    approvedAt?: boolean
+    rejectionReason?: boolean
+    houseId?: boolean
     actionTaken?: boolean
+    suspensionTriggered?: boolean
+    suspensionDays?: boolean
+    suspensionStartDate?: boolean
+    suspensionEndDate?: boolean
     schoolId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    student?: boolean | StudentDefaultArgs<ExtArgs>
+    house?: boolean | DisciplineRecord$houseArgs<ExtArgs>
     school?: boolean | SchoolDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["disciplineRecord"]>
 
@@ -264693,15 +264895,29 @@ export namespace Prisma {
     id?: boolean
     studentId?: boolean
     reporterId?: boolean
+    reporterRole?: boolean
+    type?: boolean
+    points?: boolean
     date?: boolean
     offenceType?: boolean
     description?: boolean
     severity?: boolean
     status?: boolean
+    approvalStatus?: boolean
+    approvedBy?: boolean
+    approvedAt?: boolean
+    rejectionReason?: boolean
+    houseId?: boolean
     actionTaken?: boolean
+    suspensionTriggered?: boolean
+    suspensionDays?: boolean
+    suspensionStartDate?: boolean
+    suspensionEndDate?: boolean
     schoolId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    student?: boolean | StudentDefaultArgs<ExtArgs>
+    house?: boolean | DisciplineRecord$houseArgs<ExtArgs>
     school?: boolean | SchoolDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["disciplineRecord"]>
 
@@ -264709,39 +264925,69 @@ export namespace Prisma {
     id?: boolean
     studentId?: boolean
     reporterId?: boolean
+    reporterRole?: boolean
+    type?: boolean
+    points?: boolean
     date?: boolean
     offenceType?: boolean
     description?: boolean
     severity?: boolean
     status?: boolean
+    approvalStatus?: boolean
+    approvedBy?: boolean
+    approvedAt?: boolean
+    rejectionReason?: boolean
+    houseId?: boolean
     actionTaken?: boolean
+    suspensionTriggered?: boolean
+    suspensionDays?: boolean
+    suspensionStartDate?: boolean
+    suspensionEndDate?: boolean
     schoolId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
   export type DisciplineRecordInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    student?: boolean | StudentDefaultArgs<ExtArgs>
+    house?: boolean | DisciplineRecord$houseArgs<ExtArgs>
     school?: boolean | SchoolDefaultArgs<ExtArgs>
   }
   export type DisciplineRecordIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    student?: boolean | StudentDefaultArgs<ExtArgs>
+    house?: boolean | DisciplineRecord$houseArgs<ExtArgs>
     school?: boolean | SchoolDefaultArgs<ExtArgs>
   }
 
   export type $DisciplineRecordPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "DisciplineRecord"
     objects: {
+      student: Prisma.$StudentPayload<ExtArgs>
+      house: Prisma.$StudentHousePayload<ExtArgs> | null
       school: Prisma.$SchoolPayload<ExtArgs>
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
       studentId: string
       reporterId: string
+      reporterRole: string
+      type: string
+      points: number
       date: Date
       offenceType: string
       description: string
       severity: string
       status: string
+      approvalStatus: string
+      approvedBy: string | null
+      approvedAt: Date | null
+      rejectionReason: string | null
+      houseId: string | null
       actionTaken: string | null
+      suspensionTriggered: boolean
+      suspensionDays: number | null
+      suspensionStartDate: Date | null
+      suspensionEndDate: Date | null
       schoolId: string
       createdAt: Date
       updatedAt: Date
@@ -265109,6 +265355,8 @@ export namespace Prisma {
    */
   export interface Prisma__DisciplineRecordClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
+    student<T extends StudentDefaultArgs<ExtArgs> = {}>(args?: Subset<T, StudentDefaultArgs<ExtArgs>>): Prisma__StudentClient<$Result.GetResult<Prisma.$StudentPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    house<T extends DisciplineRecord$houseArgs<ExtArgs> = {}>(args?: Subset<T, DisciplineRecord$houseArgs<ExtArgs>>): Prisma__StudentHouseClient<$Result.GetResult<Prisma.$StudentHousePayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     school<T extends SchoolDefaultArgs<ExtArgs> = {}>(args?: Subset<T, SchoolDefaultArgs<ExtArgs>>): Prisma__SchoolClient<$Result.GetResult<Prisma.$SchoolPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -265142,12 +265390,24 @@ export namespace Prisma {
     readonly id: FieldRef<"DisciplineRecord", 'String'>
     readonly studentId: FieldRef<"DisciplineRecord", 'String'>
     readonly reporterId: FieldRef<"DisciplineRecord", 'String'>
+    readonly reporterRole: FieldRef<"DisciplineRecord", 'String'>
+    readonly type: FieldRef<"DisciplineRecord", 'String'>
+    readonly points: FieldRef<"DisciplineRecord", 'Int'>
     readonly date: FieldRef<"DisciplineRecord", 'DateTime'>
     readonly offenceType: FieldRef<"DisciplineRecord", 'String'>
     readonly description: FieldRef<"DisciplineRecord", 'String'>
     readonly severity: FieldRef<"DisciplineRecord", 'String'>
     readonly status: FieldRef<"DisciplineRecord", 'String'>
+    readonly approvalStatus: FieldRef<"DisciplineRecord", 'String'>
+    readonly approvedBy: FieldRef<"DisciplineRecord", 'String'>
+    readonly approvedAt: FieldRef<"DisciplineRecord", 'DateTime'>
+    readonly rejectionReason: FieldRef<"DisciplineRecord", 'String'>
+    readonly houseId: FieldRef<"DisciplineRecord", 'String'>
     readonly actionTaken: FieldRef<"DisciplineRecord", 'String'>
+    readonly suspensionTriggered: FieldRef<"DisciplineRecord", 'Boolean'>
+    readonly suspensionDays: FieldRef<"DisciplineRecord", 'Int'>
+    readonly suspensionStartDate: FieldRef<"DisciplineRecord", 'DateTime'>
+    readonly suspensionEndDate: FieldRef<"DisciplineRecord", 'DateTime'>
     readonly schoolId: FieldRef<"DisciplineRecord", 'String'>
     readonly createdAt: FieldRef<"DisciplineRecord", 'DateTime'>
     readonly updatedAt: FieldRef<"DisciplineRecord", 'DateTime'>
@@ -265466,6 +265726,21 @@ export namespace Prisma {
      * Filter which DisciplineRecords to delete
      */
     where?: DisciplineRecordWhereInput
+  }
+
+  /**
+   * DisciplineRecord.house
+   */
+  export type DisciplineRecord$houseArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StudentHouse
+     */
+    select?: StudentHouseSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StudentHouseInclude<ExtArgs> | null
+    where?: StudentHouseWhereInput
   }
 
   /**
@@ -301043,12 +301318,24 @@ export namespace Prisma {
     id: 'id',
     studentId: 'studentId',
     reporterId: 'reporterId',
+    reporterRole: 'reporterRole',
+    type: 'type',
+    points: 'points',
     date: 'date',
     offenceType: 'offenceType',
     description: 'description',
     severity: 'severity',
     status: 'status',
+    approvalStatus: 'approvalStatus',
+    approvedBy: 'approvedBy',
+    approvedAt: 'approvedAt',
+    rejectionReason: 'rejectionReason',
+    houseId: 'houseId',
     actionTaken: 'actionTaken',
+    suspensionTriggered: 'suspensionTriggered',
+    suspensionDays: 'suspensionDays',
+    suspensionStartDate: 'suspensionStartDate',
+    suspensionEndDate: 'suspensionEndDate',
     schoolId: 'schoolId',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
@@ -304368,6 +304655,7 @@ export namespace Prisma {
     exeats?: ExeatListRelationFilter
     uniformIssuances?: UniformIssuanceListRelationFilter
     attendanceSessionRecords?: AttendanceSessionRecordListRelationFilter
+    disciplineRecords?: DisciplineRecordListRelationFilter
   }
 
   export type StudentOrderByWithRelationInput = {
@@ -304473,6 +304761,7 @@ export namespace Prisma {
     exeats?: ExeatOrderByRelationAggregateInput
     uniformIssuances?: UniformIssuanceOrderByRelationAggregateInput
     attendanceSessionRecords?: AttendanceSessionRecordOrderByRelationAggregateInput
+    disciplineRecords?: DisciplineRecordOrderByRelationAggregateInput
   }
 
   export type StudentWhereUniqueInput = Prisma.AtLeast<{
@@ -304582,6 +304871,7 @@ export namespace Prisma {
     exeats?: ExeatListRelationFilter
     uniformIssuances?: UniformIssuanceListRelationFilter
     attendanceSessionRecords?: AttendanceSessionRecordListRelationFilter
+    disciplineRecords?: DisciplineRecordListRelationFilter
   }, "id" | "userId" | "schoolId_studentId">
 
   export type StudentOrderByWithAggregationInput = {
@@ -307097,6 +307387,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"StudentHouse"> | Date | string
     school?: XOR<SchoolRelationFilter, SchoolWhereInput>
     students?: StudentListRelationFilter
+    disciplineRecords?: DisciplineRecordListRelationFilter
     houseMaster?: XOR<TeacherNullableRelationFilter, TeacherWhereInput> | null
     houseCaptain?: XOR<StudentNullableRelationFilter, StudentWhereInput> | null
   }
@@ -307116,6 +307407,7 @@ export namespace Prisma {
     updatedAt?: SortOrder
     school?: SchoolOrderByWithRelationInput
     students?: StudentOrderByRelationAggregateInput
+    disciplineRecords?: DisciplineRecordOrderByRelationAggregateInput
     houseMaster?: TeacherOrderByWithRelationInput
     houseCaptain?: StudentOrderByWithRelationInput
   }
@@ -307139,6 +307431,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"StudentHouse"> | Date | string
     school?: XOR<SchoolRelationFilter, SchoolWhereInput>
     students?: StudentListRelationFilter
+    disciplineRecords?: DisciplineRecordListRelationFilter
     houseMaster?: XOR<TeacherNullableRelationFilter, TeacherWhereInput> | null
     houseCaptain?: XOR<StudentNullableRelationFilter, StudentWhereInput> | null
   }, "id" | "schoolId_name">
@@ -323431,15 +323724,29 @@ export namespace Prisma {
     id?: StringFilter<"DisciplineRecord"> | string
     studentId?: StringFilter<"DisciplineRecord"> | string
     reporterId?: StringFilter<"DisciplineRecord"> | string
+    reporterRole?: StringFilter<"DisciplineRecord"> | string
+    type?: StringFilter<"DisciplineRecord"> | string
+    points?: IntFilter<"DisciplineRecord"> | number
     date?: DateTimeFilter<"DisciplineRecord"> | Date | string
     offenceType?: StringFilter<"DisciplineRecord"> | string
     description?: StringFilter<"DisciplineRecord"> | string
     severity?: StringFilter<"DisciplineRecord"> | string
     status?: StringFilter<"DisciplineRecord"> | string
+    approvalStatus?: StringFilter<"DisciplineRecord"> | string
+    approvedBy?: StringNullableFilter<"DisciplineRecord"> | string | null
+    approvedAt?: DateTimeNullableFilter<"DisciplineRecord"> | Date | string | null
+    rejectionReason?: StringNullableFilter<"DisciplineRecord"> | string | null
+    houseId?: StringNullableFilter<"DisciplineRecord"> | string | null
     actionTaken?: StringNullableFilter<"DisciplineRecord"> | string | null
+    suspensionTriggered?: BoolFilter<"DisciplineRecord"> | boolean
+    suspensionDays?: IntNullableFilter<"DisciplineRecord"> | number | null
+    suspensionStartDate?: DateTimeNullableFilter<"DisciplineRecord"> | Date | string | null
+    suspensionEndDate?: DateTimeNullableFilter<"DisciplineRecord"> | Date | string | null
     schoolId?: StringFilter<"DisciplineRecord"> | string
     createdAt?: DateTimeFilter<"DisciplineRecord"> | Date | string
     updatedAt?: DateTimeFilter<"DisciplineRecord"> | Date | string
+    student?: XOR<StudentRelationFilter, StudentWhereInput>
+    house?: XOR<StudentHouseNullableRelationFilter, StudentHouseWhereInput> | null
     school?: XOR<SchoolRelationFilter, SchoolWhereInput>
   }
 
@@ -323447,15 +323754,29 @@ export namespace Prisma {
     id?: SortOrder
     studentId?: SortOrder
     reporterId?: SortOrder
+    reporterRole?: SortOrder
+    type?: SortOrder
+    points?: SortOrder
     date?: SortOrder
     offenceType?: SortOrder
     description?: SortOrder
     severity?: SortOrder
     status?: SortOrder
+    approvalStatus?: SortOrder
+    approvedBy?: SortOrderInput | SortOrder
+    approvedAt?: SortOrderInput | SortOrder
+    rejectionReason?: SortOrderInput | SortOrder
+    houseId?: SortOrderInput | SortOrder
     actionTaken?: SortOrderInput | SortOrder
+    suspensionTriggered?: SortOrder
+    suspensionDays?: SortOrderInput | SortOrder
+    suspensionStartDate?: SortOrderInput | SortOrder
+    suspensionEndDate?: SortOrderInput | SortOrder
     schoolId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    student?: StudentOrderByWithRelationInput
+    house?: StudentHouseOrderByWithRelationInput
     school?: SchoolOrderByWithRelationInput
   }
 
@@ -323466,15 +323787,29 @@ export namespace Prisma {
     NOT?: DisciplineRecordWhereInput | DisciplineRecordWhereInput[]
     studentId?: StringFilter<"DisciplineRecord"> | string
     reporterId?: StringFilter<"DisciplineRecord"> | string
+    reporterRole?: StringFilter<"DisciplineRecord"> | string
+    type?: StringFilter<"DisciplineRecord"> | string
+    points?: IntFilter<"DisciplineRecord"> | number
     date?: DateTimeFilter<"DisciplineRecord"> | Date | string
     offenceType?: StringFilter<"DisciplineRecord"> | string
     description?: StringFilter<"DisciplineRecord"> | string
     severity?: StringFilter<"DisciplineRecord"> | string
     status?: StringFilter<"DisciplineRecord"> | string
+    approvalStatus?: StringFilter<"DisciplineRecord"> | string
+    approvedBy?: StringNullableFilter<"DisciplineRecord"> | string | null
+    approvedAt?: DateTimeNullableFilter<"DisciplineRecord"> | Date | string | null
+    rejectionReason?: StringNullableFilter<"DisciplineRecord"> | string | null
+    houseId?: StringNullableFilter<"DisciplineRecord"> | string | null
     actionTaken?: StringNullableFilter<"DisciplineRecord"> | string | null
+    suspensionTriggered?: BoolFilter<"DisciplineRecord"> | boolean
+    suspensionDays?: IntNullableFilter<"DisciplineRecord"> | number | null
+    suspensionStartDate?: DateTimeNullableFilter<"DisciplineRecord"> | Date | string | null
+    suspensionEndDate?: DateTimeNullableFilter<"DisciplineRecord"> | Date | string | null
     schoolId?: StringFilter<"DisciplineRecord"> | string
     createdAt?: DateTimeFilter<"DisciplineRecord"> | Date | string
     updatedAt?: DateTimeFilter<"DisciplineRecord"> | Date | string
+    student?: XOR<StudentRelationFilter, StudentWhereInput>
+    house?: XOR<StudentHouseNullableRelationFilter, StudentHouseWhereInput> | null
     school?: XOR<SchoolRelationFilter, SchoolWhereInput>
   }, "id">
 
@@ -323482,18 +323817,32 @@ export namespace Prisma {
     id?: SortOrder
     studentId?: SortOrder
     reporterId?: SortOrder
+    reporterRole?: SortOrder
+    type?: SortOrder
+    points?: SortOrder
     date?: SortOrder
     offenceType?: SortOrder
     description?: SortOrder
     severity?: SortOrder
     status?: SortOrder
+    approvalStatus?: SortOrder
+    approvedBy?: SortOrderInput | SortOrder
+    approvedAt?: SortOrderInput | SortOrder
+    rejectionReason?: SortOrderInput | SortOrder
+    houseId?: SortOrderInput | SortOrder
     actionTaken?: SortOrderInput | SortOrder
+    suspensionTriggered?: SortOrder
+    suspensionDays?: SortOrderInput | SortOrder
+    suspensionStartDate?: SortOrderInput | SortOrder
+    suspensionEndDate?: SortOrderInput | SortOrder
     schoolId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: DisciplineRecordCountOrderByAggregateInput
+    _avg?: DisciplineRecordAvgOrderByAggregateInput
     _max?: DisciplineRecordMaxOrderByAggregateInput
     _min?: DisciplineRecordMinOrderByAggregateInput
+    _sum?: DisciplineRecordSumOrderByAggregateInput
   }
 
   export type DisciplineRecordScalarWhereWithAggregatesInput = {
@@ -323503,12 +323852,24 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"DisciplineRecord"> | string
     studentId?: StringWithAggregatesFilter<"DisciplineRecord"> | string
     reporterId?: StringWithAggregatesFilter<"DisciplineRecord"> | string
+    reporterRole?: StringWithAggregatesFilter<"DisciplineRecord"> | string
+    type?: StringWithAggregatesFilter<"DisciplineRecord"> | string
+    points?: IntWithAggregatesFilter<"DisciplineRecord"> | number
     date?: DateTimeWithAggregatesFilter<"DisciplineRecord"> | Date | string
     offenceType?: StringWithAggregatesFilter<"DisciplineRecord"> | string
     description?: StringWithAggregatesFilter<"DisciplineRecord"> | string
     severity?: StringWithAggregatesFilter<"DisciplineRecord"> | string
     status?: StringWithAggregatesFilter<"DisciplineRecord"> | string
+    approvalStatus?: StringWithAggregatesFilter<"DisciplineRecord"> | string
+    approvedBy?: StringNullableWithAggregatesFilter<"DisciplineRecord"> | string | null
+    approvedAt?: DateTimeNullableWithAggregatesFilter<"DisciplineRecord"> | Date | string | null
+    rejectionReason?: StringNullableWithAggregatesFilter<"DisciplineRecord"> | string | null
+    houseId?: StringNullableWithAggregatesFilter<"DisciplineRecord"> | string | null
     actionTaken?: StringNullableWithAggregatesFilter<"DisciplineRecord"> | string | null
+    suspensionTriggered?: BoolWithAggregatesFilter<"DisciplineRecord"> | boolean
+    suspensionDays?: IntNullableWithAggregatesFilter<"DisciplineRecord"> | number | null
+    suspensionStartDate?: DateTimeNullableWithAggregatesFilter<"DisciplineRecord"> | Date | string | null
+    suspensionEndDate?: DateTimeNullableWithAggregatesFilter<"DisciplineRecord"> | Date | string | null
     schoolId?: StringWithAggregatesFilter<"DisciplineRecord"> | string
     createdAt?: DateTimeWithAggregatesFilter<"DisciplineRecord"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"DisciplineRecord"> | Date | string
@@ -329341,6 +329702,7 @@ export namespace Prisma {
     exeats?: ExeatCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateInput = {
@@ -329439,6 +329801,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceUncheckedCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUpdateInput = {
@@ -329537,6 +329900,7 @@ export namespace Prisma {
     exeats?: ExeatUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateInput = {
@@ -329635,6 +329999,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUncheckedUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentCreateManyInput = {
@@ -332372,6 +332737,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     school: SchoolCreateNestedOneWithoutStudentHousesInput
     students?: StudentCreateNestedManyWithoutHouseInput
+    disciplineRecords?: DisciplineRecordCreateNestedManyWithoutHouseInput
     houseMaster?: TeacherCreateNestedOneWithoutHouseMasteredInput
     houseCaptain?: StudentCreateNestedOneWithoutHouseCaptainedInput
   }
@@ -332390,6 +332756,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     students?: StudentUncheckedCreateNestedManyWithoutHouseInput
+    disciplineRecords?: DisciplineRecordUncheckedCreateNestedManyWithoutHouseInput
   }
 
   export type StudentHouseUpdateInput = {
@@ -332404,6 +332771,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     school?: SchoolUpdateOneRequiredWithoutStudentHousesNestedInput
     students?: StudentUpdateManyWithoutHouseNestedInput
+    disciplineRecords?: DisciplineRecordUpdateManyWithoutHouseNestedInput
     houseMaster?: TeacherUpdateOneWithoutHouseMasteredNestedInput
     houseCaptain?: StudentUpdateOneWithoutHouseCaptainedNestedInput
   }
@@ -332422,6 +332790,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     students?: StudentUncheckedUpdateManyWithoutHouseNestedInput
+    disciplineRecords?: DisciplineRecordUncheckedUpdateManyWithoutHouseNestedInput
   }
 
   export type StudentHouseCreateManyInput = {
@@ -350389,16 +350758,28 @@ export namespace Prisma {
 
   export type DisciplineRecordCreateInput = {
     id?: string
-    studentId: string
     reporterId: string
+    reporterRole?: string
+    type?: string
+    points?: number
     date: Date | string
     offenceType: string
     description: string
-    severity: string
+    severity?: string
     status?: string
+    approvalStatus?: string
+    approvedBy?: string | null
+    approvedAt?: Date | string | null
+    rejectionReason?: string | null
     actionTaken?: string | null
+    suspensionTriggered?: boolean
+    suspensionDays?: number | null
+    suspensionStartDate?: Date | string | null
+    suspensionEndDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    student: StudentCreateNestedOneWithoutDisciplineRecordsInput
+    house?: StudentHouseCreateNestedOneWithoutDisciplineRecordsInput
     school: SchoolCreateNestedOneWithoutDisciplineRecordInput
   }
 
@@ -350406,12 +350787,24 @@ export namespace Prisma {
     id?: string
     studentId: string
     reporterId: string
+    reporterRole?: string
+    type?: string
+    points?: number
     date: Date | string
     offenceType: string
     description: string
-    severity: string
+    severity?: string
     status?: string
+    approvalStatus?: string
+    approvedBy?: string | null
+    approvedAt?: Date | string | null
+    rejectionReason?: string | null
+    houseId?: string | null
     actionTaken?: string | null
+    suspensionTriggered?: boolean
+    suspensionDays?: number | null
+    suspensionStartDate?: Date | string | null
+    suspensionEndDate?: Date | string | null
     schoolId: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -350419,16 +350812,28 @@ export namespace Prisma {
 
   export type DisciplineRecordUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    studentId?: StringFieldUpdateOperationsInput | string
     reporterId?: StringFieldUpdateOperationsInput | string
+    reporterRole?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    points?: IntFieldUpdateOperationsInput | number
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     offenceType?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     severity?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    approvalStatus?: StringFieldUpdateOperationsInput | string
+    approvedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
     actionTaken?: NullableStringFieldUpdateOperationsInput | string | null
+    suspensionTriggered?: BoolFieldUpdateOperationsInput | boolean
+    suspensionDays?: NullableIntFieldUpdateOperationsInput | number | null
+    suspensionStartDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspensionEndDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    student?: StudentUpdateOneRequiredWithoutDisciplineRecordsNestedInput
+    house?: StudentHouseUpdateOneWithoutDisciplineRecordsNestedInput
     school?: SchoolUpdateOneRequiredWithoutDisciplineRecordNestedInput
   }
 
@@ -350436,12 +350841,24 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     studentId?: StringFieldUpdateOperationsInput | string
     reporterId?: StringFieldUpdateOperationsInput | string
+    reporterRole?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    points?: IntFieldUpdateOperationsInput | number
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     offenceType?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     severity?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    approvalStatus?: StringFieldUpdateOperationsInput | string
+    approvedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    houseId?: NullableStringFieldUpdateOperationsInput | string | null
     actionTaken?: NullableStringFieldUpdateOperationsInput | string | null
+    suspensionTriggered?: BoolFieldUpdateOperationsInput | boolean
+    suspensionDays?: NullableIntFieldUpdateOperationsInput | number | null
+    suspensionStartDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspensionEndDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     schoolId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -350451,12 +350868,24 @@ export namespace Prisma {
     id?: string
     studentId: string
     reporterId: string
+    reporterRole?: string
+    type?: string
+    points?: number
     date: Date | string
     offenceType: string
     description: string
-    severity: string
+    severity?: string
     status?: string
+    approvalStatus?: string
+    approvedBy?: string | null
+    approvedAt?: Date | string | null
+    rejectionReason?: string | null
+    houseId?: string | null
     actionTaken?: string | null
+    suspensionTriggered?: boolean
+    suspensionDays?: number | null
+    suspensionStartDate?: Date | string | null
+    suspensionEndDate?: Date | string | null
     schoolId: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -350464,14 +350893,24 @@ export namespace Prisma {
 
   export type DisciplineRecordUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
-    studentId?: StringFieldUpdateOperationsInput | string
     reporterId?: StringFieldUpdateOperationsInput | string
+    reporterRole?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    points?: IntFieldUpdateOperationsInput | number
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     offenceType?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     severity?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    approvalStatus?: StringFieldUpdateOperationsInput | string
+    approvedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
     actionTaken?: NullableStringFieldUpdateOperationsInput | string | null
+    suspensionTriggered?: BoolFieldUpdateOperationsInput | boolean
+    suspensionDays?: NullableIntFieldUpdateOperationsInput | number | null
+    suspensionStartDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspensionEndDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -350480,12 +350919,24 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     studentId?: StringFieldUpdateOperationsInput | string
     reporterId?: StringFieldUpdateOperationsInput | string
+    reporterRole?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    points?: IntFieldUpdateOperationsInput | number
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     offenceType?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     severity?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    approvalStatus?: StringFieldUpdateOperationsInput | string
+    approvedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    houseId?: NullableStringFieldUpdateOperationsInput | string | null
     actionTaken?: NullableStringFieldUpdateOperationsInput | string | null
+    suspensionTriggered?: BoolFieldUpdateOperationsInput | boolean
+    suspensionDays?: NullableIntFieldUpdateOperationsInput | number | null
+    suspensionStartDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspensionEndDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     schoolId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -367837,27 +368288,56 @@ export namespace Prisma {
     id?: SortOrder
     studentId?: SortOrder
     reporterId?: SortOrder
+    reporterRole?: SortOrder
+    type?: SortOrder
+    points?: SortOrder
     date?: SortOrder
     offenceType?: SortOrder
     description?: SortOrder
     severity?: SortOrder
     status?: SortOrder
+    approvalStatus?: SortOrder
+    approvedBy?: SortOrder
+    approvedAt?: SortOrder
+    rejectionReason?: SortOrder
+    houseId?: SortOrder
     actionTaken?: SortOrder
+    suspensionTriggered?: SortOrder
+    suspensionDays?: SortOrder
+    suspensionStartDate?: SortOrder
+    suspensionEndDate?: SortOrder
     schoolId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+  }
+
+  export type DisciplineRecordAvgOrderByAggregateInput = {
+    points?: SortOrder
+    suspensionDays?: SortOrder
   }
 
   export type DisciplineRecordMaxOrderByAggregateInput = {
     id?: SortOrder
     studentId?: SortOrder
     reporterId?: SortOrder
+    reporterRole?: SortOrder
+    type?: SortOrder
+    points?: SortOrder
     date?: SortOrder
     offenceType?: SortOrder
     description?: SortOrder
     severity?: SortOrder
     status?: SortOrder
+    approvalStatus?: SortOrder
+    approvedBy?: SortOrder
+    approvedAt?: SortOrder
+    rejectionReason?: SortOrder
+    houseId?: SortOrder
     actionTaken?: SortOrder
+    suspensionTriggered?: SortOrder
+    suspensionDays?: SortOrder
+    suspensionStartDate?: SortOrder
+    suspensionEndDate?: SortOrder
     schoolId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -367867,15 +368347,32 @@ export namespace Prisma {
     id?: SortOrder
     studentId?: SortOrder
     reporterId?: SortOrder
+    reporterRole?: SortOrder
+    type?: SortOrder
+    points?: SortOrder
     date?: SortOrder
     offenceType?: SortOrder
     description?: SortOrder
     severity?: SortOrder
     status?: SortOrder
+    approvalStatus?: SortOrder
+    approvedBy?: SortOrder
+    approvedAt?: SortOrder
+    rejectionReason?: SortOrder
+    houseId?: SortOrder
     actionTaken?: SortOrder
+    suspensionTriggered?: SortOrder
+    suspensionDays?: SortOrder
+    suspensionStartDate?: SortOrder
+    suspensionEndDate?: SortOrder
     schoolId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+  }
+
+  export type DisciplineRecordSumOrderByAggregateInput = {
+    points?: SortOrder
+    suspensionDays?: SortOrder
   }
 
   export type CalendarEventCountOrderByAggregateInput = {
@@ -382206,6 +382703,13 @@ export namespace Prisma {
     connect?: AttendanceSessionRecordWhereUniqueInput | AttendanceSessionRecordWhereUniqueInput[]
   }
 
+  export type DisciplineRecordCreateNestedManyWithoutStudentInput = {
+    create?: XOR<DisciplineRecordCreateWithoutStudentInput, DisciplineRecordUncheckedCreateWithoutStudentInput> | DisciplineRecordCreateWithoutStudentInput[] | DisciplineRecordUncheckedCreateWithoutStudentInput[]
+    connectOrCreate?: DisciplineRecordCreateOrConnectWithoutStudentInput | DisciplineRecordCreateOrConnectWithoutStudentInput[]
+    createMany?: DisciplineRecordCreateManyStudentInputEnvelope
+    connect?: DisciplineRecordWhereUniqueInput | DisciplineRecordWhereUniqueInput[]
+  }
+
   export type GradeUncheckedCreateNestedManyWithoutStudentInput = {
     create?: XOR<GradeCreateWithoutStudentInput, GradeUncheckedCreateWithoutStudentInput> | GradeCreateWithoutStudentInput[] | GradeUncheckedCreateWithoutStudentInput[]
     connectOrCreate?: GradeCreateOrConnectWithoutStudentInput | GradeCreateOrConnectWithoutStudentInput[]
@@ -382496,6 +383000,13 @@ export namespace Prisma {
     connectOrCreate?: AttendanceSessionRecordCreateOrConnectWithoutStudentInput | AttendanceSessionRecordCreateOrConnectWithoutStudentInput[]
     createMany?: AttendanceSessionRecordCreateManyStudentInputEnvelope
     connect?: AttendanceSessionRecordWhereUniqueInput | AttendanceSessionRecordWhereUniqueInput[]
+  }
+
+  export type DisciplineRecordUncheckedCreateNestedManyWithoutStudentInput = {
+    create?: XOR<DisciplineRecordCreateWithoutStudentInput, DisciplineRecordUncheckedCreateWithoutStudentInput> | DisciplineRecordCreateWithoutStudentInput[] | DisciplineRecordUncheckedCreateWithoutStudentInput[]
+    connectOrCreate?: DisciplineRecordCreateOrConnectWithoutStudentInput | DisciplineRecordCreateOrConnectWithoutStudentInput[]
+    createMany?: DisciplineRecordCreateManyStudentInputEnvelope
+    connect?: DisciplineRecordWhereUniqueInput | DisciplineRecordWhereUniqueInput[]
   }
 
   export type NullableDateTimeFieldUpdateOperationsInput = {
@@ -383158,6 +383669,20 @@ export namespace Prisma {
     deleteMany?: AttendanceSessionRecordScalarWhereInput | AttendanceSessionRecordScalarWhereInput[]
   }
 
+  export type DisciplineRecordUpdateManyWithoutStudentNestedInput = {
+    create?: XOR<DisciplineRecordCreateWithoutStudentInput, DisciplineRecordUncheckedCreateWithoutStudentInput> | DisciplineRecordCreateWithoutStudentInput[] | DisciplineRecordUncheckedCreateWithoutStudentInput[]
+    connectOrCreate?: DisciplineRecordCreateOrConnectWithoutStudentInput | DisciplineRecordCreateOrConnectWithoutStudentInput[]
+    upsert?: DisciplineRecordUpsertWithWhereUniqueWithoutStudentInput | DisciplineRecordUpsertWithWhereUniqueWithoutStudentInput[]
+    createMany?: DisciplineRecordCreateManyStudentInputEnvelope
+    set?: DisciplineRecordWhereUniqueInput | DisciplineRecordWhereUniqueInput[]
+    disconnect?: DisciplineRecordWhereUniqueInput | DisciplineRecordWhereUniqueInput[]
+    delete?: DisciplineRecordWhereUniqueInput | DisciplineRecordWhereUniqueInput[]
+    connect?: DisciplineRecordWhereUniqueInput | DisciplineRecordWhereUniqueInput[]
+    update?: DisciplineRecordUpdateWithWhereUniqueWithoutStudentInput | DisciplineRecordUpdateWithWhereUniqueWithoutStudentInput[]
+    updateMany?: DisciplineRecordUpdateManyWithWhereWithoutStudentInput | DisciplineRecordUpdateManyWithWhereWithoutStudentInput[]
+    deleteMany?: DisciplineRecordScalarWhereInput | DisciplineRecordScalarWhereInput[]
+  }
+
   export type GradeUncheckedUpdateManyWithoutStudentNestedInput = {
     create?: XOR<GradeCreateWithoutStudentInput, GradeUncheckedCreateWithoutStudentInput> | GradeCreateWithoutStudentInput[] | GradeUncheckedCreateWithoutStudentInput[]
     connectOrCreate?: GradeCreateOrConnectWithoutStudentInput | GradeCreateOrConnectWithoutStudentInput[]
@@ -383736,6 +384261,20 @@ export namespace Prisma {
     update?: AttendanceSessionRecordUpdateWithWhereUniqueWithoutStudentInput | AttendanceSessionRecordUpdateWithWhereUniqueWithoutStudentInput[]
     updateMany?: AttendanceSessionRecordUpdateManyWithWhereWithoutStudentInput | AttendanceSessionRecordUpdateManyWithWhereWithoutStudentInput[]
     deleteMany?: AttendanceSessionRecordScalarWhereInput | AttendanceSessionRecordScalarWhereInput[]
+  }
+
+  export type DisciplineRecordUncheckedUpdateManyWithoutStudentNestedInput = {
+    create?: XOR<DisciplineRecordCreateWithoutStudentInput, DisciplineRecordUncheckedCreateWithoutStudentInput> | DisciplineRecordCreateWithoutStudentInput[] | DisciplineRecordUncheckedCreateWithoutStudentInput[]
+    connectOrCreate?: DisciplineRecordCreateOrConnectWithoutStudentInput | DisciplineRecordCreateOrConnectWithoutStudentInput[]
+    upsert?: DisciplineRecordUpsertWithWhereUniqueWithoutStudentInput | DisciplineRecordUpsertWithWhereUniqueWithoutStudentInput[]
+    createMany?: DisciplineRecordCreateManyStudentInputEnvelope
+    set?: DisciplineRecordWhereUniqueInput | DisciplineRecordWhereUniqueInput[]
+    disconnect?: DisciplineRecordWhereUniqueInput | DisciplineRecordWhereUniqueInput[]
+    delete?: DisciplineRecordWhereUniqueInput | DisciplineRecordWhereUniqueInput[]
+    connect?: DisciplineRecordWhereUniqueInput | DisciplineRecordWhereUniqueInput[]
+    update?: DisciplineRecordUpdateWithWhereUniqueWithoutStudentInput | DisciplineRecordUpdateWithWhereUniqueWithoutStudentInput[]
+    updateMany?: DisciplineRecordUpdateManyWithWhereWithoutStudentInput | DisciplineRecordUpdateManyWithWhereWithoutStudentInput[]
+    deleteMany?: DisciplineRecordScalarWhereInput | DisciplineRecordScalarWhereInput[]
   }
 
   export type SectionCreateNestedOneWithoutClassesInput = {
@@ -387058,6 +387597,13 @@ export namespace Prisma {
     connect?: StudentWhereUniqueInput | StudentWhereUniqueInput[]
   }
 
+  export type DisciplineRecordCreateNestedManyWithoutHouseInput = {
+    create?: XOR<DisciplineRecordCreateWithoutHouseInput, DisciplineRecordUncheckedCreateWithoutHouseInput> | DisciplineRecordCreateWithoutHouseInput[] | DisciplineRecordUncheckedCreateWithoutHouseInput[]
+    connectOrCreate?: DisciplineRecordCreateOrConnectWithoutHouseInput | DisciplineRecordCreateOrConnectWithoutHouseInput[]
+    createMany?: DisciplineRecordCreateManyHouseInputEnvelope
+    connect?: DisciplineRecordWhereUniqueInput | DisciplineRecordWhereUniqueInput[]
+  }
+
   export type TeacherCreateNestedOneWithoutHouseMasteredInput = {
     create?: XOR<TeacherCreateWithoutHouseMasteredInput, TeacherUncheckedCreateWithoutHouseMasteredInput>
     connectOrCreate?: TeacherCreateOrConnectWithoutHouseMasteredInput
@@ -387075,6 +387621,13 @@ export namespace Prisma {
     connectOrCreate?: StudentCreateOrConnectWithoutHouseInput | StudentCreateOrConnectWithoutHouseInput[]
     createMany?: StudentCreateManyHouseInputEnvelope
     connect?: StudentWhereUniqueInput | StudentWhereUniqueInput[]
+  }
+
+  export type DisciplineRecordUncheckedCreateNestedManyWithoutHouseInput = {
+    create?: XOR<DisciplineRecordCreateWithoutHouseInput, DisciplineRecordUncheckedCreateWithoutHouseInput> | DisciplineRecordCreateWithoutHouseInput[] | DisciplineRecordUncheckedCreateWithoutHouseInput[]
+    connectOrCreate?: DisciplineRecordCreateOrConnectWithoutHouseInput | DisciplineRecordCreateOrConnectWithoutHouseInput[]
+    createMany?: DisciplineRecordCreateManyHouseInputEnvelope
+    connect?: DisciplineRecordWhereUniqueInput | DisciplineRecordWhereUniqueInput[]
   }
 
   export type SchoolUpdateOneRequiredWithoutStudentHousesNestedInput = {
@@ -387097,6 +387650,20 @@ export namespace Prisma {
     update?: StudentUpdateWithWhereUniqueWithoutHouseInput | StudentUpdateWithWhereUniqueWithoutHouseInput[]
     updateMany?: StudentUpdateManyWithWhereWithoutHouseInput | StudentUpdateManyWithWhereWithoutHouseInput[]
     deleteMany?: StudentScalarWhereInput | StudentScalarWhereInput[]
+  }
+
+  export type DisciplineRecordUpdateManyWithoutHouseNestedInput = {
+    create?: XOR<DisciplineRecordCreateWithoutHouseInput, DisciplineRecordUncheckedCreateWithoutHouseInput> | DisciplineRecordCreateWithoutHouseInput[] | DisciplineRecordUncheckedCreateWithoutHouseInput[]
+    connectOrCreate?: DisciplineRecordCreateOrConnectWithoutHouseInput | DisciplineRecordCreateOrConnectWithoutHouseInput[]
+    upsert?: DisciplineRecordUpsertWithWhereUniqueWithoutHouseInput | DisciplineRecordUpsertWithWhereUniqueWithoutHouseInput[]
+    createMany?: DisciplineRecordCreateManyHouseInputEnvelope
+    set?: DisciplineRecordWhereUniqueInput | DisciplineRecordWhereUniqueInput[]
+    disconnect?: DisciplineRecordWhereUniqueInput | DisciplineRecordWhereUniqueInput[]
+    delete?: DisciplineRecordWhereUniqueInput | DisciplineRecordWhereUniqueInput[]
+    connect?: DisciplineRecordWhereUniqueInput | DisciplineRecordWhereUniqueInput[]
+    update?: DisciplineRecordUpdateWithWhereUniqueWithoutHouseInput | DisciplineRecordUpdateWithWhereUniqueWithoutHouseInput[]
+    updateMany?: DisciplineRecordUpdateManyWithWhereWithoutHouseInput | DisciplineRecordUpdateManyWithWhereWithoutHouseInput[]
+    deleteMany?: DisciplineRecordScalarWhereInput | DisciplineRecordScalarWhereInput[]
   }
 
   export type TeacherUpdateOneWithoutHouseMasteredNestedInput = {
@@ -387131,6 +387698,20 @@ export namespace Prisma {
     update?: StudentUpdateWithWhereUniqueWithoutHouseInput | StudentUpdateWithWhereUniqueWithoutHouseInput[]
     updateMany?: StudentUpdateManyWithWhereWithoutHouseInput | StudentUpdateManyWithWhereWithoutHouseInput[]
     deleteMany?: StudentScalarWhereInput | StudentScalarWhereInput[]
+  }
+
+  export type DisciplineRecordUncheckedUpdateManyWithoutHouseNestedInput = {
+    create?: XOR<DisciplineRecordCreateWithoutHouseInput, DisciplineRecordUncheckedCreateWithoutHouseInput> | DisciplineRecordCreateWithoutHouseInput[] | DisciplineRecordUncheckedCreateWithoutHouseInput[]
+    connectOrCreate?: DisciplineRecordCreateOrConnectWithoutHouseInput | DisciplineRecordCreateOrConnectWithoutHouseInput[]
+    upsert?: DisciplineRecordUpsertWithWhereUniqueWithoutHouseInput | DisciplineRecordUpsertWithWhereUniqueWithoutHouseInput[]
+    createMany?: DisciplineRecordCreateManyHouseInputEnvelope
+    set?: DisciplineRecordWhereUniqueInput | DisciplineRecordWhereUniqueInput[]
+    disconnect?: DisciplineRecordWhereUniqueInput | DisciplineRecordWhereUniqueInput[]
+    delete?: DisciplineRecordWhereUniqueInput | DisciplineRecordWhereUniqueInput[]
+    connect?: DisciplineRecordWhereUniqueInput | DisciplineRecordWhereUniqueInput[]
+    update?: DisciplineRecordUpdateWithWhereUniqueWithoutHouseInput | DisciplineRecordUpdateWithWhereUniqueWithoutHouseInput[]
+    updateMany?: DisciplineRecordUpdateManyWithWhereWithoutHouseInput | DisciplineRecordUpdateManyWithWhereWithoutHouseInput[]
+    deleteMany?: DisciplineRecordScalarWhereInput | DisciplineRecordScalarWhereInput[]
   }
 
   export type SchoolCreateNestedOneWithoutChaplaincyEventsInput = {
@@ -396055,10 +396636,40 @@ export namespace Prisma {
     update?: XOR<XOR<StudentUpdateToOneWithWhereWithoutCbtAttemptsInput, StudentUpdateWithoutCbtAttemptsInput>, StudentUncheckedUpdateWithoutCbtAttemptsInput>
   }
 
+  export type StudentCreateNestedOneWithoutDisciplineRecordsInput = {
+    create?: XOR<StudentCreateWithoutDisciplineRecordsInput, StudentUncheckedCreateWithoutDisciplineRecordsInput>
+    connectOrCreate?: StudentCreateOrConnectWithoutDisciplineRecordsInput
+    connect?: StudentWhereUniqueInput
+  }
+
+  export type StudentHouseCreateNestedOneWithoutDisciplineRecordsInput = {
+    create?: XOR<StudentHouseCreateWithoutDisciplineRecordsInput, StudentHouseUncheckedCreateWithoutDisciplineRecordsInput>
+    connectOrCreate?: StudentHouseCreateOrConnectWithoutDisciplineRecordsInput
+    connect?: StudentHouseWhereUniqueInput
+  }
+
   export type SchoolCreateNestedOneWithoutDisciplineRecordInput = {
     create?: XOR<SchoolCreateWithoutDisciplineRecordInput, SchoolUncheckedCreateWithoutDisciplineRecordInput>
     connectOrCreate?: SchoolCreateOrConnectWithoutDisciplineRecordInput
     connect?: SchoolWhereUniqueInput
+  }
+
+  export type StudentUpdateOneRequiredWithoutDisciplineRecordsNestedInput = {
+    create?: XOR<StudentCreateWithoutDisciplineRecordsInput, StudentUncheckedCreateWithoutDisciplineRecordsInput>
+    connectOrCreate?: StudentCreateOrConnectWithoutDisciplineRecordsInput
+    upsert?: StudentUpsertWithoutDisciplineRecordsInput
+    connect?: StudentWhereUniqueInput
+    update?: XOR<XOR<StudentUpdateToOneWithWhereWithoutDisciplineRecordsInput, StudentUpdateWithoutDisciplineRecordsInput>, StudentUncheckedUpdateWithoutDisciplineRecordsInput>
+  }
+
+  export type StudentHouseUpdateOneWithoutDisciplineRecordsNestedInput = {
+    create?: XOR<StudentHouseCreateWithoutDisciplineRecordsInput, StudentHouseUncheckedCreateWithoutDisciplineRecordsInput>
+    connectOrCreate?: StudentHouseCreateOrConnectWithoutDisciplineRecordsInput
+    upsert?: StudentHouseUpsertWithoutDisciplineRecordsInput
+    disconnect?: StudentHouseWhereInput | boolean
+    delete?: StudentHouseWhereInput | boolean
+    connect?: StudentHouseWhereUniqueInput
+    update?: XOR<XOR<StudentHouseUpdateToOneWithWhereWithoutDisciplineRecordsInput, StudentHouseUpdateWithoutDisciplineRecordsInput>, StudentHouseUncheckedUpdateWithoutDisciplineRecordsInput>
   }
 
   export type SchoolUpdateOneRequiredWithoutDisciplineRecordNestedInput = {
@@ -398539,6 +399150,7 @@ export namespace Prisma {
     exeats?: ExeatCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateWithoutSchoolInput = {
@@ -398636,6 +399248,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceUncheckedCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentCreateOrConnectWithoutSchoolInput = {
@@ -402367,6 +402980,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     students?: StudentCreateNestedManyWithoutHouseInput
+    disciplineRecords?: DisciplineRecordCreateNestedManyWithoutHouseInput
     houseMaster?: TeacherCreateNestedOneWithoutHouseMasteredInput
     houseCaptain?: StudentCreateNestedOneWithoutHouseCaptainedInput
   }
@@ -402384,6 +402998,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     students?: StudentUncheckedCreateNestedManyWithoutHouseInput
+    disciplineRecords?: DisciplineRecordUncheckedCreateNestedManyWithoutHouseInput
   }
 
   export type StudentHouseCreateOrConnectWithoutSchoolInput = {
@@ -404017,28 +404632,52 @@ export namespace Prisma {
 
   export type DisciplineRecordCreateWithoutSchoolInput = {
     id?: string
-    studentId: string
     reporterId: string
+    reporterRole?: string
+    type?: string
+    points?: number
     date: Date | string
     offenceType: string
     description: string
-    severity: string
+    severity?: string
     status?: string
+    approvalStatus?: string
+    approvedBy?: string | null
+    approvedAt?: Date | string | null
+    rejectionReason?: string | null
     actionTaken?: string | null
+    suspensionTriggered?: boolean
+    suspensionDays?: number | null
+    suspensionStartDate?: Date | string | null
+    suspensionEndDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    student: StudentCreateNestedOneWithoutDisciplineRecordsInput
+    house?: StudentHouseCreateNestedOneWithoutDisciplineRecordsInput
   }
 
   export type DisciplineRecordUncheckedCreateWithoutSchoolInput = {
     id?: string
     studentId: string
     reporterId: string
+    reporterRole?: string
+    type?: string
+    points?: number
     date: Date | string
     offenceType: string
     description: string
-    severity: string
+    severity?: string
     status?: string
+    approvalStatus?: string
+    approvedBy?: string | null
+    approvedAt?: Date | string | null
+    rejectionReason?: string | null
+    houseId?: string | null
     actionTaken?: string | null
+    suspensionTriggered?: boolean
+    suspensionDays?: number | null
+    suspensionStartDate?: Date | string | null
+    suspensionEndDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -410442,12 +411081,24 @@ export namespace Prisma {
     id?: StringFilter<"DisciplineRecord"> | string
     studentId?: StringFilter<"DisciplineRecord"> | string
     reporterId?: StringFilter<"DisciplineRecord"> | string
+    reporterRole?: StringFilter<"DisciplineRecord"> | string
+    type?: StringFilter<"DisciplineRecord"> | string
+    points?: IntFilter<"DisciplineRecord"> | number
     date?: DateTimeFilter<"DisciplineRecord"> | Date | string
     offenceType?: StringFilter<"DisciplineRecord"> | string
     description?: StringFilter<"DisciplineRecord"> | string
     severity?: StringFilter<"DisciplineRecord"> | string
     status?: StringFilter<"DisciplineRecord"> | string
+    approvalStatus?: StringFilter<"DisciplineRecord"> | string
+    approvedBy?: StringNullableFilter<"DisciplineRecord"> | string | null
+    approvedAt?: DateTimeNullableFilter<"DisciplineRecord"> | Date | string | null
+    rejectionReason?: StringNullableFilter<"DisciplineRecord"> | string | null
+    houseId?: StringNullableFilter<"DisciplineRecord"> | string | null
     actionTaken?: StringNullableFilter<"DisciplineRecord"> | string | null
+    suspensionTriggered?: BoolFilter<"DisciplineRecord"> | boolean
+    suspensionDays?: IntNullableFilter<"DisciplineRecord"> | number | null
+    suspensionStartDate?: DateTimeNullableFilter<"DisciplineRecord"> | Date | string | null
+    suspensionEndDate?: DateTimeNullableFilter<"DisciplineRecord"> | Date | string | null
     schoolId?: StringFilter<"DisciplineRecord"> | string
     createdAt?: DateTimeFilter<"DisciplineRecord"> | Date | string
     updatedAt?: DateTimeFilter<"DisciplineRecord"> | Date | string
@@ -414791,6 +415442,7 @@ export namespace Prisma {
     exeats?: ExeatCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateWithoutLeadershipAssignmentsInput = {
@@ -414888,6 +415540,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceUncheckedCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentCreateOrConnectWithoutLeadershipAssignmentsInput = {
@@ -415666,6 +416319,7 @@ export namespace Prisma {
     exeats?: ExeatUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateWithoutLeadershipAssignmentsInput = {
@@ -415763,6 +416417,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUncheckedUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type HostelUpsertWithoutLeadershipAssignmentsInput = {
@@ -418982,6 +419637,7 @@ export namespace Prisma {
     exeats?: ExeatCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateWithoutUniformSalesInput = {
@@ -419079,6 +419735,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceUncheckedCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentCreateOrConnectWithoutUniformSalesInput = {
@@ -419650,6 +420307,7 @@ export namespace Prisma {
     exeats?: ExeatUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateWithoutUniformSalesInput = {
@@ -419747,6 +420405,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUncheckedUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type ParentUpsertWithoutUniformSalesInput = {
@@ -425524,6 +426183,7 @@ export namespace Prisma {
     exeats?: ExeatCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateWithoutUserInput = {
@@ -425621,6 +426281,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceUncheckedCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentCreateOrConnectWithoutUserInput = {
@@ -430211,6 +430872,7 @@ export namespace Prisma {
     exeats?: ExeatUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateWithoutUserInput = {
@@ -430308,6 +430970,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUncheckedUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type ParentUpsertWithoutUserInput = {
@@ -433557,6 +434220,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     school: SchoolCreateNestedOneWithoutStudentHousesInput
     students?: StudentCreateNestedManyWithoutHouseInput
+    disciplineRecords?: DisciplineRecordCreateNestedManyWithoutHouseInput
     houseCaptain?: StudentCreateNestedOneWithoutHouseCaptainedInput
   }
 
@@ -433573,6 +434237,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     students?: StudentUncheckedCreateNestedManyWithoutHouseInput
+    disciplineRecords?: DisciplineRecordUncheckedCreateNestedManyWithoutHouseInput
   }
 
   export type StudentHouseCreateOrConnectWithoutHouseMasterInput = {
@@ -436426,6 +437091,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     school: SchoolCreateNestedOneWithoutStudentHousesInput
+    disciplineRecords?: DisciplineRecordCreateNestedManyWithoutHouseInput
     houseMaster?: TeacherCreateNestedOneWithoutHouseMasteredInput
     houseCaptain?: StudentCreateNestedOneWithoutHouseCaptainedInput
   }
@@ -436443,6 +437109,7 @@ export namespace Prisma {
     houseCaptainId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    disciplineRecords?: DisciplineRecordUncheckedCreateNestedManyWithoutHouseInput
   }
 
   export type StudentHouseCreateOrConnectWithoutStudentsInput = {
@@ -436601,6 +437268,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     school: SchoolCreateNestedOneWithoutStudentHousesInput
     students?: StudentCreateNestedManyWithoutHouseInput
+    disciplineRecords?: DisciplineRecordCreateNestedManyWithoutHouseInput
     houseMaster?: TeacherCreateNestedOneWithoutHouseMasteredInput
   }
 
@@ -436617,6 +437285,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     students?: StudentUncheckedCreateNestedManyWithoutHouseInput
+    disciplineRecords?: DisciplineRecordUncheckedCreateNestedManyWithoutHouseInput
   }
 
   export type StudentHouseCreateOrConnectWithoutHouseCaptainInput = {
@@ -437331,6 +438000,68 @@ export namespace Prisma {
 
   export type AttendanceSessionRecordCreateManyStudentInputEnvelope = {
     data: AttendanceSessionRecordCreateManyStudentInput | AttendanceSessionRecordCreateManyStudentInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type DisciplineRecordCreateWithoutStudentInput = {
+    id?: string
+    reporterId: string
+    reporterRole?: string
+    type?: string
+    points?: number
+    date: Date | string
+    offenceType: string
+    description: string
+    severity?: string
+    status?: string
+    approvalStatus?: string
+    approvedBy?: string | null
+    approvedAt?: Date | string | null
+    rejectionReason?: string | null
+    actionTaken?: string | null
+    suspensionTriggered?: boolean
+    suspensionDays?: number | null
+    suspensionStartDate?: Date | string | null
+    suspensionEndDate?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    house?: StudentHouseCreateNestedOneWithoutDisciplineRecordsInput
+    school: SchoolCreateNestedOneWithoutDisciplineRecordInput
+  }
+
+  export type DisciplineRecordUncheckedCreateWithoutStudentInput = {
+    id?: string
+    reporterId: string
+    reporterRole?: string
+    type?: string
+    points?: number
+    date: Date | string
+    offenceType: string
+    description: string
+    severity?: string
+    status?: string
+    approvalStatus?: string
+    approvedBy?: string | null
+    approvedAt?: Date | string | null
+    rejectionReason?: string | null
+    houseId?: string | null
+    actionTaken?: string | null
+    suspensionTriggered?: boolean
+    suspensionDays?: number | null
+    suspensionStartDate?: Date | string | null
+    suspensionEndDate?: Date | string | null
+    schoolId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DisciplineRecordCreateOrConnectWithoutStudentInput = {
+    where: DisciplineRecordWhereUniqueInput
+    create: XOR<DisciplineRecordCreateWithoutStudentInput, DisciplineRecordUncheckedCreateWithoutStudentInput>
+  }
+
+  export type DisciplineRecordCreateManyStudentInputEnvelope = {
+    data: DisciplineRecordCreateManyStudentInput | DisciplineRecordCreateManyStudentInput[]
     skipDuplicates?: boolean
   }
 
@@ -438538,6 +439269,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     school?: SchoolUpdateOneRequiredWithoutStudentHousesNestedInput
+    disciplineRecords?: DisciplineRecordUpdateManyWithoutHouseNestedInput
     houseMaster?: TeacherUpdateOneWithoutHouseMasteredNestedInput
     houseCaptain?: StudentUpdateOneWithoutHouseCaptainedNestedInput
   }
@@ -438555,6 +439287,7 @@ export namespace Prisma {
     houseCaptainId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    disciplineRecords?: DisciplineRecordUncheckedUpdateManyWithoutHouseNestedInput
   }
 
   export type ClubUpsertWithoutStudentsInput = {
@@ -438934,6 +439667,22 @@ export namespace Prisma {
   export type AttendanceSessionRecordUpdateManyWithWhereWithoutStudentInput = {
     where: AttendanceSessionRecordScalarWhereInput
     data: XOR<AttendanceSessionRecordUpdateManyMutationInput, AttendanceSessionRecordUncheckedUpdateManyWithoutStudentInput>
+  }
+
+  export type DisciplineRecordUpsertWithWhereUniqueWithoutStudentInput = {
+    where: DisciplineRecordWhereUniqueInput
+    update: XOR<DisciplineRecordUpdateWithoutStudentInput, DisciplineRecordUncheckedUpdateWithoutStudentInput>
+    create: XOR<DisciplineRecordCreateWithoutStudentInput, DisciplineRecordUncheckedCreateWithoutStudentInput>
+  }
+
+  export type DisciplineRecordUpdateWithWhereUniqueWithoutStudentInput = {
+    where: DisciplineRecordWhereUniqueInput
+    data: XOR<DisciplineRecordUpdateWithoutStudentInput, DisciplineRecordUncheckedUpdateWithoutStudentInput>
+  }
+
+  export type DisciplineRecordUpdateManyWithWhereWithoutStudentInput = {
+    where: DisciplineRecordScalarWhereInput
+    data: XOR<DisciplineRecordUpdateManyMutationInput, DisciplineRecordUncheckedUpdateManyWithoutStudentInput>
   }
 
   export type SectionCreateWithoutClassesInput = {
@@ -439510,6 +440259,7 @@ export namespace Prisma {
     exeats?: ExeatCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateWithoutClassInput = {
@@ -439607,6 +440357,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceUncheckedCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentCreateOrConnectWithoutClassInput = {
@@ -445509,6 +446260,7 @@ export namespace Prisma {
     exeats?: ExeatCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateWithoutGradesInput = {
@@ -445606,6 +446358,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceUncheckedCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentCreateOrConnectWithoutGradesInput = {
@@ -446250,6 +447003,7 @@ export namespace Prisma {
     exeats?: ExeatUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateWithoutGradesInput = {
@@ -446347,6 +447101,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUncheckedUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type SubjectUpsertWithoutGradesInput = {
@@ -449735,6 +450490,7 @@ export namespace Prisma {
     exeats?: ExeatCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateWithoutAttendanceInput = {
@@ -449832,6 +450588,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceUncheckedCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentCreateOrConnectWithoutAttendanceInput = {
@@ -450462,6 +451219,7 @@ export namespace Prisma {
     exeats?: ExeatUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateWithoutAttendanceInput = {
@@ -450559,6 +451317,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUncheckedUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type TeacherUpsertWithoutAttendanceInput = {
@@ -452435,6 +453194,7 @@ export namespace Prisma {
     exeats?: ExeatCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateWithoutFeesInput = {
@@ -452532,6 +453292,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceUncheckedCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentCreateOrConnectWithoutFeesInput = {
@@ -453153,6 +453914,7 @@ export namespace Prisma {
     exeats?: ExeatUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateWithoutFeesInput = {
@@ -453250,6 +454012,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUncheckedUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type FeeGroupUpsertWithoutFeesInput = {
@@ -454349,6 +455112,7 @@ export namespace Prisma {
     exeats?: ExeatCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateWithoutStudentInvoicesInput = {
@@ -454446,6 +455210,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceUncheckedCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentCreateOrConnectWithoutStudentInvoicesInput = {
@@ -455118,6 +455883,7 @@ export namespace Prisma {
     exeats?: ExeatUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateWithoutStudentInvoicesInput = {
@@ -455215,6 +455981,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUncheckedUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentInvoiceItemUpsertWithWhereUniqueWithoutInvoiceInput = {
@@ -455961,6 +456728,7 @@ export namespace Prisma {
     exeats?: ExeatCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateWithoutReceiptsInput = {
@@ -456058,6 +456826,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceUncheckedCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentCreateOrConnectWithoutReceiptsInput = {
@@ -456602,6 +457371,7 @@ export namespace Prisma {
     exeats?: ExeatUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateWithoutReceiptsInput = {
@@ -456699,6 +457469,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUncheckedUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type PaymentAllocationUpsertWithWhereUniqueWithoutReceiptInput = {
@@ -465497,6 +466268,7 @@ export namespace Prisma {
     exeats?: ExeatCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateWithoutHouseInput = {
@@ -465594,6 +466366,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceUncheckedCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentCreateOrConnectWithoutHouseInput = {
@@ -465603,6 +466376,68 @@ export namespace Prisma {
 
   export type StudentCreateManyHouseInputEnvelope = {
     data: StudentCreateManyHouseInput | StudentCreateManyHouseInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type DisciplineRecordCreateWithoutHouseInput = {
+    id?: string
+    reporterId: string
+    reporterRole?: string
+    type?: string
+    points?: number
+    date: Date | string
+    offenceType: string
+    description: string
+    severity?: string
+    status?: string
+    approvalStatus?: string
+    approvedBy?: string | null
+    approvedAt?: Date | string | null
+    rejectionReason?: string | null
+    actionTaken?: string | null
+    suspensionTriggered?: boolean
+    suspensionDays?: number | null
+    suspensionStartDate?: Date | string | null
+    suspensionEndDate?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    student: StudentCreateNestedOneWithoutDisciplineRecordsInput
+    school: SchoolCreateNestedOneWithoutDisciplineRecordInput
+  }
+
+  export type DisciplineRecordUncheckedCreateWithoutHouseInput = {
+    id?: string
+    studentId: string
+    reporterId: string
+    reporterRole?: string
+    type?: string
+    points?: number
+    date: Date | string
+    offenceType: string
+    description: string
+    severity?: string
+    status?: string
+    approvalStatus?: string
+    approvedBy?: string | null
+    approvedAt?: Date | string | null
+    rejectionReason?: string | null
+    actionTaken?: string | null
+    suspensionTriggered?: boolean
+    suspensionDays?: number | null
+    suspensionStartDate?: Date | string | null
+    suspensionEndDate?: Date | string | null
+    schoolId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DisciplineRecordCreateOrConnectWithoutHouseInput = {
+    where: DisciplineRecordWhereUniqueInput
+    create: XOR<DisciplineRecordCreateWithoutHouseInput, DisciplineRecordUncheckedCreateWithoutHouseInput>
+  }
+
+  export type DisciplineRecordCreateManyHouseInputEnvelope = {
+    data: DisciplineRecordCreateManyHouseInput | DisciplineRecordCreateManyHouseInput[]
     skipDuplicates?: boolean
   }
 
@@ -465760,6 +466595,7 @@ export namespace Prisma {
     exeats?: ExeatCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateWithoutHouseCaptainedInput = {
@@ -465857,6 +466693,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceUncheckedCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentCreateOrConnectWithoutHouseCaptainedInput = {
@@ -466283,6 +467120,22 @@ export namespace Prisma {
     data: XOR<StudentUpdateManyMutationInput, StudentUncheckedUpdateManyWithoutHouseInput>
   }
 
+  export type DisciplineRecordUpsertWithWhereUniqueWithoutHouseInput = {
+    where: DisciplineRecordWhereUniqueInput
+    update: XOR<DisciplineRecordUpdateWithoutHouseInput, DisciplineRecordUncheckedUpdateWithoutHouseInput>
+    create: XOR<DisciplineRecordCreateWithoutHouseInput, DisciplineRecordUncheckedCreateWithoutHouseInput>
+  }
+
+  export type DisciplineRecordUpdateWithWhereUniqueWithoutHouseInput = {
+    where: DisciplineRecordWhereUniqueInput
+    data: XOR<DisciplineRecordUpdateWithoutHouseInput, DisciplineRecordUncheckedUpdateWithoutHouseInput>
+  }
+
+  export type DisciplineRecordUpdateManyWithWhereWithoutHouseInput = {
+    where: DisciplineRecordScalarWhereInput
+    data: XOR<DisciplineRecordUpdateManyMutationInput, DisciplineRecordUncheckedUpdateManyWithoutHouseInput>
+  }
+
   export type TeacherUpsertWithoutHouseMasteredInput = {
     update: XOR<TeacherUpdateWithoutHouseMasteredInput, TeacherUncheckedUpdateWithoutHouseMasteredInput>
     create: XOR<TeacherCreateWithoutHouseMasteredInput, TeacherUncheckedCreateWithoutHouseMasteredInput>
@@ -466454,6 +467307,7 @@ export namespace Prisma {
     exeats?: ExeatUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateWithoutHouseCaptainedInput = {
@@ -466551,6 +467405,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUncheckedUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type SchoolCreateWithoutChaplaincyEventsInput = {
@@ -469301,6 +470156,7 @@ export namespace Prisma {
     exeats?: ExeatCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateWithoutBookLoansInput = {
@@ -469398,6 +470254,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceUncheckedCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentCreateOrConnectWithoutBookLoansInput = {
@@ -470246,6 +471103,7 @@ export namespace Prisma {
     exeats?: ExeatUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateWithoutBookLoansInput = {
@@ -470343,6 +471201,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUncheckedUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type UserUpsertWithoutBookLoansInput = {
@@ -471959,6 +472818,7 @@ export namespace Prisma {
     exeats?: ExeatCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateWithoutBookReservationsInput = {
@@ -472056,6 +472916,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceUncheckedCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentCreateOrConnectWithoutBookReservationsInput = {
@@ -472866,6 +473727,7 @@ export namespace Prisma {
     exeats?: ExeatUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateWithoutBookReservationsInput = {
@@ -472963,6 +473825,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUncheckedUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type UserUpsertWithoutBookReservationsInput = {
@@ -475185,6 +476048,7 @@ export namespace Prisma {
     exeats?: ExeatCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateWithoutSubmissionsInput = {
@@ -475282,6 +476146,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceUncheckedCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentCreateOrConnectWithoutSubmissionsInput = {
@@ -475843,6 +476708,7 @@ export namespace Prisma {
     exeats?: ExeatUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateWithoutSubmissionsInput = {
@@ -475940,6 +476806,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUncheckedUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type SchoolUpsertWithoutAssignmentSubmissionsInput = {
@@ -478437,6 +479304,7 @@ export namespace Prisma {
     exeats?: ExeatCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateWithoutPaymentPlansInput = {
@@ -478534,6 +479402,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceUncheckedCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentCreateOrConnectWithoutPaymentPlansInput = {
@@ -479297,6 +480166,7 @@ export namespace Prisma {
     exeats?: ExeatUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateWithoutPaymentPlansInput = {
@@ -479394,6 +480264,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUncheckedUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type UserUpsertWithoutPaymentPlansInput = {
@@ -481010,6 +481881,7 @@ export namespace Prisma {
     exeats?: ExeatCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateWithoutClubInput = {
@@ -481107,6 +481979,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceUncheckedCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentCreateOrConnectWithoutClubInput = {
@@ -486963,6 +487836,7 @@ export namespace Prisma {
     exeats?: ExeatCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateWithoutParentsInput = {
@@ -487060,6 +487934,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceUncheckedCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentCreateOrConnectWithoutParentsInput = {
@@ -487212,6 +488087,7 @@ export namespace Prisma {
     exeats?: ExeatUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateWithoutParentsInput = {
@@ -487309,6 +488185,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUncheckedUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type TenderBidCreateWithoutTenderInput = {
@@ -497352,6 +498229,7 @@ export namespace Prisma {
     exeats?: ExeatCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateWithoutStudentRequisitionsInput = {
@@ -497449,6 +498327,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceUncheckedCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentCreateOrConnectWithoutStudentRequisitionsInput = {
@@ -499440,6 +500319,7 @@ export namespace Prisma {
     exeats?: ExeatUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateWithoutStudentRequisitionsInput = {
@@ -499537,6 +500417,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUncheckedUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type UserUpsertWithoutMatronApprovedRequisitionsInput = {
@@ -500563,6 +501444,7 @@ export namespace Prisma {
     exeats?: ExeatCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateWithoutHostelInput = {
@@ -500660,6 +501542,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceUncheckedCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentCreateOrConnectWithoutHostelInput = {
@@ -502025,6 +502908,7 @@ export namespace Prisma {
     exeats?: ExeatCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateWithoutRoomInput = {
@@ -502122,6 +503006,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceUncheckedCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentCreateOrConnectWithoutRoomInput = {
@@ -502358,6 +503243,7 @@ export namespace Prisma {
     exeats?: ExeatCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateWithoutBoardingLogsInput = {
@@ -502455,6 +503341,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceUncheckedCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentCreateOrConnectWithoutBoardingLogsInput = {
@@ -502787,6 +503674,7 @@ export namespace Prisma {
     exeats?: ExeatUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateWithoutBoardingLogsInput = {
@@ -502884,6 +503772,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUncheckedUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type UserUpsertWithoutAuthorizedBoardingLogsInput = {
@@ -507066,6 +507955,7 @@ export namespace Prisma {
     exeats?: ExeatCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateWithoutSupervisorsInput = {
@@ -507163,6 +508053,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceUncheckedCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentCreateOrConnectWithoutSupervisorsInput = {
@@ -507766,6 +508657,7 @@ export namespace Prisma {
     exeats?: ExeatUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateWithoutSupervisorsInput = {
@@ -507863,6 +508755,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUncheckedUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type TeacherUpsertWithoutSupervisionsInput = {
@@ -508444,6 +509337,7 @@ export namespace Prisma {
     exeats?: ExeatCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateWithoutExtensionRequestsInput = {
@@ -508541,6 +509435,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceUncheckedCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentCreateOrConnectWithoutExtensionRequestsInput = {
@@ -509051,6 +509946,7 @@ export namespace Prisma {
     exeats?: ExeatUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateWithoutExtensionRequestsInput = {
@@ -509148,6 +510044,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUncheckedUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type SchoolUpsertWithoutExtensionRequestsInput = {
@@ -509648,6 +510545,7 @@ export namespace Prisma {
     exeats?: ExeatCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateWithoutProgressReportsInput = {
@@ -509745,6 +510643,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceUncheckedCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentCreateOrConnectWithoutProgressReportsInput = {
@@ -510278,6 +511177,7 @@ export namespace Prisma {
     exeats?: ExeatUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateWithoutProgressReportsInput = {
@@ -510375,6 +511275,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUncheckedUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type SupervisorAssignmentUpsertWithoutProgressReportsInput = {
@@ -514599,6 +515500,7 @@ export namespace Prisma {
     exeats?: ExeatCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateWithoutFeeReminderLogsInput = {
@@ -514696,6 +515598,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceUncheckedCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentCreateOrConnectWithoutFeeReminderLogsInput = {
@@ -515206,6 +516109,7 @@ export namespace Prisma {
     exeats?: ExeatUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateWithoutFeeReminderLogsInput = {
@@ -515303,6 +516207,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUncheckedUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type SchoolUpsertWithoutFeeReminderLogsInput = {
@@ -515803,6 +516708,7 @@ export namespace Prisma {
     exeats?: ExeatCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateWithoutPaymentsInput = {
@@ -515900,6 +516806,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceUncheckedCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentCreateOrConnectWithoutPaymentsInput = {
@@ -516459,6 +517366,7 @@ export namespace Prisma {
     exeats?: ExeatUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateWithoutPaymentsInput = {
@@ -516556,6 +517464,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUncheckedUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type FeeUpsertWithoutPaymentsInput = {
@@ -517330,6 +518239,7 @@ export namespace Prisma {
     exeats?: ExeatCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateWithoutCommunicationLogsInput = {
@@ -517427,6 +518337,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceUncheckedCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentCreateOrConnectWithoutCommunicationLogsInput = {
@@ -518162,6 +519073,7 @@ export namespace Prisma {
     exeats?: ExeatUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateWithoutCommunicationLogsInput = {
@@ -518259,6 +519171,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUncheckedUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type SchoolUpsertWithoutCommunicationLogsInput = {
@@ -523395,6 +524308,7 @@ export namespace Prisma {
     exeats?: ExeatCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateWithoutTermlyCommentsInput = {
@@ -523492,6 +524406,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceUncheckedCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentCreateOrConnectWithoutTermlyCommentsInput = {
@@ -524002,6 +524917,7 @@ export namespace Prisma {
     exeats?: ExeatUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateWithoutTermlyCommentsInput = {
@@ -524099,6 +525015,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUncheckedUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type SchoolUpsertWithoutTermlyCommentsInput = {
@@ -532312,6 +533229,7 @@ export namespace Prisma {
     exeats?: ExeatCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateWithoutCourseEnrollmentsInput = {
@@ -532409,6 +533327,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceUncheckedCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentCreateOrConnectWithoutCourseEnrollmentsInput = {
@@ -532571,6 +533490,7 @@ export namespace Prisma {
     exeats?: ExeatUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateWithoutCourseEnrollmentsInput = {
@@ -532668,6 +533588,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUncheckedUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type SchoolCreateWithoutStudyMaterialInput = {
@@ -558465,6 +559386,7 @@ export namespace Prisma {
     exeats?: ExeatCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateWithoutWalletInput = {
@@ -558562,6 +559484,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceUncheckedCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentCreateOrConnectWithoutWalletInput = {
@@ -558705,6 +559628,7 @@ export namespace Prisma {
     exeats?: ExeatUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateWithoutWalletInput = {
@@ -558802,6 +559726,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUncheckedUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type WalletTransactionUpsertWithWhereUniqueWithoutWalletInput = {
@@ -568617,6 +569542,7 @@ export namespace Prisma {
     exeats?: ExeatCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateWithoutHealthProfileInput = {
@@ -568714,6 +569640,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceUncheckedCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentCreateOrConnectWithoutHealthProfileInput = {
@@ -569230,6 +570157,7 @@ export namespace Prisma {
     exeats?: ExeatUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateWithoutHealthProfileInput = {
@@ -569327,6 +570255,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUncheckedUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type SchoolCreateWithoutClinicVitalsInput = {
@@ -577224,6 +578153,7 @@ export namespace Prisma {
     exeats?: ExeatCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateWithoutClinicAdmissionsInput = {
@@ -577321,6 +578251,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceUncheckedCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentCreateOrConnectWithoutClinicAdmissionsInput = {
@@ -577995,6 +578926,7 @@ export namespace Prisma {
     exeats?: ExeatUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateWithoutClinicAdmissionsInput = {
@@ -578092,6 +579024,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUncheckedUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type ClinicMonitoringLogUpsertWithWhereUniqueWithoutAdmissionInput = {
@@ -579922,6 +580855,7 @@ export namespace Prisma {
     exeats?: ExeatCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateWithoutClinicAccessAuditsInput = {
@@ -580019,6 +580953,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceUncheckedCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentCreateOrConnectWithoutClinicAccessAuditsInput = {
@@ -580754,6 +581689,7 @@ export namespace Prisma {
     exeats?: ExeatUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateWithoutClinicAccessAuditsInput = {
@@ -580851,6 +581787,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUncheckedUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type UserUpsertWithoutClinicAccessAuditsInput = {
@@ -581655,6 +582592,7 @@ export namespace Prisma {
     exeats?: ExeatCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateWithoutClinicEmergencyLogsInput = {
@@ -581752,6 +582690,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceUncheckedCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentCreateOrConnectWithoutClinicEmergencyLogsInput = {
@@ -582578,6 +583517,7 @@ export namespace Prisma {
     exeats?: ExeatUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateWithoutClinicEmergencyLogsInput = {
@@ -582675,6 +583615,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUncheckedUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type UserUpsertWithoutEmergencyLogsRecordedInput = {
@@ -589538,6 +590479,7 @@ export namespace Prisma {
     exeats?: ExeatCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateWithoutClearancesInput = {
@@ -589635,6 +590577,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceUncheckedCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentCreateOrConnectWithoutClearancesInput = {
@@ -590151,6 +591094,7 @@ export namespace Prisma {
     exeats?: ExeatUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateWithoutClearancesInput = {
@@ -590248,6 +591192,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUncheckedUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type AttendanceRecordCreateWithoutRegisterInput = {
@@ -606273,6 +607218,7 @@ export namespace Prisma {
     exeats?: ExeatCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateWithoutStudentAssessmentsInput = {
@@ -606370,6 +607316,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceUncheckedCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentCreateOrConnectWithoutStudentAssessmentsInput = {
@@ -607174,6 +608121,7 @@ export namespace Prisma {
     exeats?: ExeatUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateWithoutStudentAssessmentsInput = {
@@ -607271,6 +608219,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUncheckedUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type UserUpsertWithoutAssessmentsMarkedInput = {
@@ -610618,6 +611567,7 @@ export namespace Prisma {
     exeats?: ExeatCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateWithoutCbtAttemptsInput = {
@@ -610715,6 +611665,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceUncheckedCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentCreateOrConnectWithoutCbtAttemptsInput = {
@@ -610883,6 +611834,7 @@ export namespace Prisma {
     exeats?: ExeatUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateWithoutCbtAttemptsInput = {
@@ -610980,6 +611932,245 @@ export namespace Prisma {
     exeats?: ExeatUncheckedUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUncheckedUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUncheckedUpdateManyWithoutStudentNestedInput
+  }
+
+  export type StudentCreateWithoutDisciplineRecordsInput = {
+    id?: string
+    studentId: string
+    name: string
+    email?: string | null
+    phone?: string | null
+    dob?: Date | string | null
+    gender?: string | null
+    preferredLanguage?: string | null
+    address?: string | null
+    programLevel?: string | null
+    studyMode?: string | null
+    researchTitle?: string | null
+    startDate?: Date | string | null
+    maxCompletionDate?: Date | string | null
+    extensionMonths?: number
+    status?: string
+    standing?: string
+    part?: number
+    enrolledAt?: Date | string
+    guardianName?: string | null
+    boardingStatus?: string
+    prevSchool?: string | null
+    reasonForTransfer?: string | null
+    lastGradeAchieved?: string | null
+    admissionsNotes?: string | null
+    academicHistory?: NullableJsonNullValueInput | InputJsonValue
+    enrollmentDate?: Date | string | null
+    nationalId?: string | null
+    hexcoId?: string | null
+    motherTongue?: string | null
+    nationality?: string | null
+    city?: string | null
+    state?: string | null
+    prevSchoolClass?: string | null
+    prevSchoolAddress?: string | null
+    hasTransferCertificate?: boolean
+    transferCertificateUrl?: string | null
+    isPhysicallyHandicapped?: boolean
+    handicapDetails?: string | null
+    category?: string | null
+    section?: string | null
+    dormitory?: string | null
+    birthCertificateUrl?: string | null
+    age?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user?: UserCreateNestedOneWithoutStudentInput
+    class?: SchoolClassCreateNestedOneWithoutStudentsInput
+    school: SchoolCreateNestedOneWithoutStudentsInput
+    grades?: GradeCreateNestedManyWithoutStudentInput
+    attendance?: AttendanceCreateNestedManyWithoutStudentInput
+    fees?: FeeCreateNestedManyWithoutStudentInput
+    bookLoans?: BookLoanCreateNestedManyWithoutStudentInput
+    bookReservations?: BookReservationCreateNestedManyWithoutStudentInput
+    submissions?: AssignmentSubmissionCreateNestedManyWithoutStudentInput
+    courseEnrollments?: CourseEnrollmentCreateNestedManyWithoutStudentInput
+    studentAssessments?: StudentAssessmentCreateNestedManyWithoutStudentInput
+    leadershipAssignments?: LeadershipAssignmentCreateNestedManyWithoutStudentInput
+    studentRequisitions?: RequisitionCreateNestedManyWithoutRequestedByStudentInput
+    healthProfile?: StudentHealthProfileCreateNestedOneWithoutStudentInput
+    clinicAdmissions?: ClinicAdmissionCreateNestedManyWithoutStudentInput
+    clinicEmergencyLogs?: ClinicEmergencyLogCreateNestedManyWithoutStudentInput
+    clinicAccessAudits?: ClinicAccessAuditCreateNestedManyWithoutStudentInput
+    parents?: ParentStudentCreateNestedManyWithoutStudentInput
+    supervisors?: SupervisorAssignmentCreateNestedManyWithoutStudentInput
+    extensionRequests?: ExtensionRequestCreateNestedManyWithoutStudentInput
+    progressReports?: ProgressReportCreateNestedManyWithoutStudentInput
+    room?: RoomCreateNestedOneWithoutStudentsInput
+    hostel?: HostelCreateNestedOneWithoutStudentsInput
+    boardingLogs?: BoardingLogCreateNestedManyWithoutStudentInput
+    uniformSales?: UniformSaleCreateNestedManyWithoutStudentInput
+    feeReminderLogs?: FeeReminderLogCreateNestedManyWithoutStudentInput
+    termlyComments?: TermlyCommentCreateNestedManyWithoutStudentInput
+    house?: StudentHouseCreateNestedOneWithoutStudentsInput
+    club?: ClubCreateNestedOneWithoutStudentsInput
+    payments?: StudentPaymentCreateNestedManyWithoutStudentInput
+    communicationLogs?: CommunicationLogCreateNestedManyWithoutStudentInput
+    paymentPlans?: PaymentPlanCreateNestedManyWithoutStudentInput
+    houseCaptained?: StudentHouseCreateNestedManyWithoutHouseCaptainInput
+    wallet?: StudentWalletCreateNestedOneWithoutStudentInput
+    clearances?: StudentClearanceCreateNestedManyWithoutStudentInput
+    cbtAttempts?: CbtAttemptCreateNestedManyWithoutStudentInput
+    awards?: StudentAwardCreateNestedManyWithoutStudentInput
+    bursaries?: StudentBursaryCreateNestedManyWithoutStudentInput
+    studentInvoices?: StudentInvoiceCreateNestedManyWithoutStudentInput
+    receipts?: ReceiptCreateNestedManyWithoutStudentInput
+    bedAllocations?: HostelBedAllocationCreateNestedManyWithoutStudentInput
+    transportAllocations?: StudentTransportAllocationCreateNestedManyWithoutStudentInput
+    tripConsents?: TripConsentCreateNestedManyWithoutStudentInput
+    medicalConsents?: MedicalConsentCreateNestedManyWithoutStudentInput
+    bookLoanFines?: BookLoanFineCreateNestedManyWithoutStudentInput
+    boardingRollCalls?: BoardingRollCallCreateNestedManyWithoutStudentInput
+    exeats?: ExeatCreateNestedManyWithoutStudentInput
+    uniformIssuances?: UniformIssuanceCreateNestedManyWithoutStudentInput
+    attendanceSessionRecords?: AttendanceSessionRecordCreateNestedManyWithoutStudentInput
+  }
+
+  export type StudentUncheckedCreateWithoutDisciplineRecordsInput = {
+    id?: string
+    studentId: string
+    name: string
+    userId?: string | null
+    email?: string | null
+    phone?: string | null
+    dob?: Date | string | null
+    gender?: string | null
+    preferredLanguage?: string | null
+    address?: string | null
+    classId?: string | null
+    schoolId: string
+    programLevel?: string | null
+    studyMode?: string | null
+    researchTitle?: string | null
+    startDate?: Date | string | null
+    maxCompletionDate?: Date | string | null
+    extensionMonths?: number
+    status?: string
+    standing?: string
+    part?: number
+    enrolledAt?: Date | string
+    guardianName?: string | null
+    boardingStatus?: string
+    roomId?: string | null
+    hostelId?: string | null
+    prevSchool?: string | null
+    reasonForTransfer?: string | null
+    lastGradeAchieved?: string | null
+    admissionsNotes?: string | null
+    academicHistory?: NullableJsonNullValueInput | InputJsonValue
+    enrollmentDate?: Date | string | null
+    nationalId?: string | null
+    hexcoId?: string | null
+    houseId?: string | null
+    motherTongue?: string | null
+    nationality?: string | null
+    city?: string | null
+    state?: string | null
+    prevSchoolClass?: string | null
+    prevSchoolAddress?: string | null
+    hasTransferCertificate?: boolean
+    transferCertificateUrl?: string | null
+    isPhysicallyHandicapped?: boolean
+    handicapDetails?: string | null
+    category?: string | null
+    section?: string | null
+    dormitory?: string | null
+    birthCertificateUrl?: string | null
+    age?: number | null
+    clubId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    grades?: GradeUncheckedCreateNestedManyWithoutStudentInput
+    attendance?: AttendanceUncheckedCreateNestedManyWithoutStudentInput
+    fees?: FeeUncheckedCreateNestedManyWithoutStudentInput
+    bookLoans?: BookLoanUncheckedCreateNestedManyWithoutStudentInput
+    bookReservations?: BookReservationUncheckedCreateNestedManyWithoutStudentInput
+    submissions?: AssignmentSubmissionUncheckedCreateNestedManyWithoutStudentInput
+    courseEnrollments?: CourseEnrollmentUncheckedCreateNestedManyWithoutStudentInput
+    studentAssessments?: StudentAssessmentUncheckedCreateNestedManyWithoutStudentInput
+    leadershipAssignments?: LeadershipAssignmentUncheckedCreateNestedManyWithoutStudentInput
+    studentRequisitions?: RequisitionUncheckedCreateNestedManyWithoutRequestedByStudentInput
+    healthProfile?: StudentHealthProfileUncheckedCreateNestedOneWithoutStudentInput
+    clinicAdmissions?: ClinicAdmissionUncheckedCreateNestedManyWithoutStudentInput
+    clinicEmergencyLogs?: ClinicEmergencyLogUncheckedCreateNestedManyWithoutStudentInput
+    clinicAccessAudits?: ClinicAccessAuditUncheckedCreateNestedManyWithoutStudentInput
+    parents?: ParentStudentUncheckedCreateNestedManyWithoutStudentInput
+    supervisors?: SupervisorAssignmentUncheckedCreateNestedManyWithoutStudentInput
+    extensionRequests?: ExtensionRequestUncheckedCreateNestedManyWithoutStudentInput
+    progressReports?: ProgressReportUncheckedCreateNestedManyWithoutStudentInput
+    boardingLogs?: BoardingLogUncheckedCreateNestedManyWithoutStudentInput
+    uniformSales?: UniformSaleUncheckedCreateNestedManyWithoutStudentInput
+    feeReminderLogs?: FeeReminderLogUncheckedCreateNestedManyWithoutStudentInput
+    termlyComments?: TermlyCommentUncheckedCreateNestedManyWithoutStudentInput
+    payments?: StudentPaymentUncheckedCreateNestedManyWithoutStudentInput
+    communicationLogs?: CommunicationLogUncheckedCreateNestedManyWithoutStudentInput
+    paymentPlans?: PaymentPlanUncheckedCreateNestedManyWithoutStudentInput
+    houseCaptained?: StudentHouseUncheckedCreateNestedManyWithoutHouseCaptainInput
+    wallet?: StudentWalletUncheckedCreateNestedOneWithoutStudentInput
+    clearances?: StudentClearanceUncheckedCreateNestedManyWithoutStudentInput
+    cbtAttempts?: CbtAttemptUncheckedCreateNestedManyWithoutStudentInput
+    awards?: StudentAwardUncheckedCreateNestedManyWithoutStudentInput
+    bursaries?: StudentBursaryUncheckedCreateNestedManyWithoutStudentInput
+    studentInvoices?: StudentInvoiceUncheckedCreateNestedManyWithoutStudentInput
+    receipts?: ReceiptUncheckedCreateNestedManyWithoutStudentInput
+    bedAllocations?: HostelBedAllocationUncheckedCreateNestedManyWithoutStudentInput
+    transportAllocations?: StudentTransportAllocationUncheckedCreateNestedManyWithoutStudentInput
+    tripConsents?: TripConsentUncheckedCreateNestedManyWithoutStudentInput
+    medicalConsents?: MedicalConsentUncheckedCreateNestedManyWithoutStudentInput
+    bookLoanFines?: BookLoanFineUncheckedCreateNestedManyWithoutStudentInput
+    boardingRollCalls?: BoardingRollCallUncheckedCreateNestedManyWithoutStudentInput
+    exeats?: ExeatUncheckedCreateNestedManyWithoutStudentInput
+    uniformIssuances?: UniformIssuanceUncheckedCreateNestedManyWithoutStudentInput
+    attendanceSessionRecords?: AttendanceSessionRecordUncheckedCreateNestedManyWithoutStudentInput
+  }
+
+  export type StudentCreateOrConnectWithoutDisciplineRecordsInput = {
+    where: StudentWhereUniqueInput
+    create: XOR<StudentCreateWithoutDisciplineRecordsInput, StudentUncheckedCreateWithoutDisciplineRecordsInput>
+  }
+
+  export type StudentHouseCreateWithoutDisciplineRecordsInput = {
+    id?: string
+    name: string
+    description?: string | null
+    logo?: string | null
+    color?: string | null
+    motto?: string | null
+    points?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    school: SchoolCreateNestedOneWithoutStudentHousesInput
+    students?: StudentCreateNestedManyWithoutHouseInput
+    houseMaster?: TeacherCreateNestedOneWithoutHouseMasteredInput
+    houseCaptain?: StudentCreateNestedOneWithoutHouseCaptainedInput
+  }
+
+  export type StudentHouseUncheckedCreateWithoutDisciplineRecordsInput = {
+    id?: string
+    name: string
+    description?: string | null
+    logo?: string | null
+    color?: string | null
+    motto?: string | null
+    points?: number
+    schoolId: string
+    houseMasterId?: string | null
+    houseCaptainId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    students?: StudentUncheckedCreateNestedManyWithoutHouseInput
+  }
+
+  export type StudentHouseCreateOrConnectWithoutDisciplineRecordsInput = {
+    where: StudentHouseWhereUniqueInput
+    create: XOR<StudentHouseCreateWithoutDisciplineRecordsInput, StudentHouseUncheckedCreateWithoutDisciplineRecordsInput>
   }
 
   export type SchoolCreateWithoutDisciplineRecordInput = {
@@ -611377,6 +612568,256 @@ export namespace Prisma {
   export type SchoolCreateOrConnectWithoutDisciplineRecordInput = {
     where: SchoolWhereUniqueInput
     create: XOR<SchoolCreateWithoutDisciplineRecordInput, SchoolUncheckedCreateWithoutDisciplineRecordInput>
+  }
+
+  export type StudentUpsertWithoutDisciplineRecordsInput = {
+    update: XOR<StudentUpdateWithoutDisciplineRecordsInput, StudentUncheckedUpdateWithoutDisciplineRecordsInput>
+    create: XOR<StudentCreateWithoutDisciplineRecordsInput, StudentUncheckedCreateWithoutDisciplineRecordsInput>
+    where?: StudentWhereInput
+  }
+
+  export type StudentUpdateToOneWithWhereWithoutDisciplineRecordsInput = {
+    where?: StudentWhereInput
+    data: XOR<StudentUpdateWithoutDisciplineRecordsInput, StudentUncheckedUpdateWithoutDisciplineRecordsInput>
+  }
+
+  export type StudentUpdateWithoutDisciplineRecordsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    studentId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    dob?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    gender?: NullableStringFieldUpdateOperationsInput | string | null
+    preferredLanguage?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    programLevel?: NullableStringFieldUpdateOperationsInput | string | null
+    studyMode?: NullableStringFieldUpdateOperationsInput | string | null
+    researchTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    maxCompletionDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extensionMonths?: IntFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    standing?: StringFieldUpdateOperationsInput | string
+    part?: IntFieldUpdateOperationsInput | number
+    enrolledAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    guardianName?: NullableStringFieldUpdateOperationsInput | string | null
+    boardingStatus?: StringFieldUpdateOperationsInput | string
+    prevSchool?: NullableStringFieldUpdateOperationsInput | string | null
+    reasonForTransfer?: NullableStringFieldUpdateOperationsInput | string | null
+    lastGradeAchieved?: NullableStringFieldUpdateOperationsInput | string | null
+    admissionsNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    academicHistory?: NullableJsonNullValueInput | InputJsonValue
+    enrollmentDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nationalId?: NullableStringFieldUpdateOperationsInput | string | null
+    hexcoId?: NullableStringFieldUpdateOperationsInput | string | null
+    motherTongue?: NullableStringFieldUpdateOperationsInput | string | null
+    nationality?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    state?: NullableStringFieldUpdateOperationsInput | string | null
+    prevSchoolClass?: NullableStringFieldUpdateOperationsInput | string | null
+    prevSchoolAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    hasTransferCertificate?: BoolFieldUpdateOperationsInput | boolean
+    transferCertificateUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    isPhysicallyHandicapped?: BoolFieldUpdateOperationsInput | boolean
+    handicapDetails?: NullableStringFieldUpdateOperationsInput | string | null
+    category?: NullableStringFieldUpdateOperationsInput | string | null
+    section?: NullableStringFieldUpdateOperationsInput | string | null
+    dormitory?: NullableStringFieldUpdateOperationsInput | string | null
+    birthCertificateUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    age?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneWithoutStudentNestedInput
+    class?: SchoolClassUpdateOneWithoutStudentsNestedInput
+    school?: SchoolUpdateOneRequiredWithoutStudentsNestedInput
+    grades?: GradeUpdateManyWithoutStudentNestedInput
+    attendance?: AttendanceUpdateManyWithoutStudentNestedInput
+    fees?: FeeUpdateManyWithoutStudentNestedInput
+    bookLoans?: BookLoanUpdateManyWithoutStudentNestedInput
+    bookReservations?: BookReservationUpdateManyWithoutStudentNestedInput
+    submissions?: AssignmentSubmissionUpdateManyWithoutStudentNestedInput
+    courseEnrollments?: CourseEnrollmentUpdateManyWithoutStudentNestedInput
+    studentAssessments?: StudentAssessmentUpdateManyWithoutStudentNestedInput
+    leadershipAssignments?: LeadershipAssignmentUpdateManyWithoutStudentNestedInput
+    studentRequisitions?: RequisitionUpdateManyWithoutRequestedByStudentNestedInput
+    healthProfile?: StudentHealthProfileUpdateOneWithoutStudentNestedInput
+    clinicAdmissions?: ClinicAdmissionUpdateManyWithoutStudentNestedInput
+    clinicEmergencyLogs?: ClinicEmergencyLogUpdateManyWithoutStudentNestedInput
+    clinicAccessAudits?: ClinicAccessAuditUpdateManyWithoutStudentNestedInput
+    parents?: ParentStudentUpdateManyWithoutStudentNestedInput
+    supervisors?: SupervisorAssignmentUpdateManyWithoutStudentNestedInput
+    extensionRequests?: ExtensionRequestUpdateManyWithoutStudentNestedInput
+    progressReports?: ProgressReportUpdateManyWithoutStudentNestedInput
+    room?: RoomUpdateOneWithoutStudentsNestedInput
+    hostel?: HostelUpdateOneWithoutStudentsNestedInput
+    boardingLogs?: BoardingLogUpdateManyWithoutStudentNestedInput
+    uniformSales?: UniformSaleUpdateManyWithoutStudentNestedInput
+    feeReminderLogs?: FeeReminderLogUpdateManyWithoutStudentNestedInput
+    termlyComments?: TermlyCommentUpdateManyWithoutStudentNestedInput
+    house?: StudentHouseUpdateOneWithoutStudentsNestedInput
+    club?: ClubUpdateOneWithoutStudentsNestedInput
+    payments?: StudentPaymentUpdateManyWithoutStudentNestedInput
+    communicationLogs?: CommunicationLogUpdateManyWithoutStudentNestedInput
+    paymentPlans?: PaymentPlanUpdateManyWithoutStudentNestedInput
+    houseCaptained?: StudentHouseUpdateManyWithoutHouseCaptainNestedInput
+    wallet?: StudentWalletUpdateOneWithoutStudentNestedInput
+    clearances?: StudentClearanceUpdateManyWithoutStudentNestedInput
+    cbtAttempts?: CbtAttemptUpdateManyWithoutStudentNestedInput
+    awards?: StudentAwardUpdateManyWithoutStudentNestedInput
+    bursaries?: StudentBursaryUpdateManyWithoutStudentNestedInput
+    studentInvoices?: StudentInvoiceUpdateManyWithoutStudentNestedInput
+    receipts?: ReceiptUpdateManyWithoutStudentNestedInput
+    bedAllocations?: HostelBedAllocationUpdateManyWithoutStudentNestedInput
+    transportAllocations?: StudentTransportAllocationUpdateManyWithoutStudentNestedInput
+    tripConsents?: TripConsentUpdateManyWithoutStudentNestedInput
+    medicalConsents?: MedicalConsentUpdateManyWithoutStudentNestedInput
+    bookLoanFines?: BookLoanFineUpdateManyWithoutStudentNestedInput
+    boardingRollCalls?: BoardingRollCallUpdateManyWithoutStudentNestedInput
+    exeats?: ExeatUpdateManyWithoutStudentNestedInput
+    uniformIssuances?: UniformIssuanceUpdateManyWithoutStudentNestedInput
+    attendanceSessionRecords?: AttendanceSessionRecordUpdateManyWithoutStudentNestedInput
+  }
+
+  export type StudentUncheckedUpdateWithoutDisciplineRecordsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    studentId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    dob?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    gender?: NullableStringFieldUpdateOperationsInput | string | null
+    preferredLanguage?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    classId?: NullableStringFieldUpdateOperationsInput | string | null
+    schoolId?: StringFieldUpdateOperationsInput | string
+    programLevel?: NullableStringFieldUpdateOperationsInput | string | null
+    studyMode?: NullableStringFieldUpdateOperationsInput | string | null
+    researchTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    maxCompletionDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extensionMonths?: IntFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    standing?: StringFieldUpdateOperationsInput | string
+    part?: IntFieldUpdateOperationsInput | number
+    enrolledAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    guardianName?: NullableStringFieldUpdateOperationsInput | string | null
+    boardingStatus?: StringFieldUpdateOperationsInput | string
+    roomId?: NullableStringFieldUpdateOperationsInput | string | null
+    hostelId?: NullableStringFieldUpdateOperationsInput | string | null
+    prevSchool?: NullableStringFieldUpdateOperationsInput | string | null
+    reasonForTransfer?: NullableStringFieldUpdateOperationsInput | string | null
+    lastGradeAchieved?: NullableStringFieldUpdateOperationsInput | string | null
+    admissionsNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    academicHistory?: NullableJsonNullValueInput | InputJsonValue
+    enrollmentDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nationalId?: NullableStringFieldUpdateOperationsInput | string | null
+    hexcoId?: NullableStringFieldUpdateOperationsInput | string | null
+    houseId?: NullableStringFieldUpdateOperationsInput | string | null
+    motherTongue?: NullableStringFieldUpdateOperationsInput | string | null
+    nationality?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    state?: NullableStringFieldUpdateOperationsInput | string | null
+    prevSchoolClass?: NullableStringFieldUpdateOperationsInput | string | null
+    prevSchoolAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    hasTransferCertificate?: BoolFieldUpdateOperationsInput | boolean
+    transferCertificateUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    isPhysicallyHandicapped?: BoolFieldUpdateOperationsInput | boolean
+    handicapDetails?: NullableStringFieldUpdateOperationsInput | string | null
+    category?: NullableStringFieldUpdateOperationsInput | string | null
+    section?: NullableStringFieldUpdateOperationsInput | string | null
+    dormitory?: NullableStringFieldUpdateOperationsInput | string | null
+    birthCertificateUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    age?: NullableIntFieldUpdateOperationsInput | number | null
+    clubId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    grades?: GradeUncheckedUpdateManyWithoutStudentNestedInput
+    attendance?: AttendanceUncheckedUpdateManyWithoutStudentNestedInput
+    fees?: FeeUncheckedUpdateManyWithoutStudentNestedInput
+    bookLoans?: BookLoanUncheckedUpdateManyWithoutStudentNestedInput
+    bookReservations?: BookReservationUncheckedUpdateManyWithoutStudentNestedInput
+    submissions?: AssignmentSubmissionUncheckedUpdateManyWithoutStudentNestedInput
+    courseEnrollments?: CourseEnrollmentUncheckedUpdateManyWithoutStudentNestedInput
+    studentAssessments?: StudentAssessmentUncheckedUpdateManyWithoutStudentNestedInput
+    leadershipAssignments?: LeadershipAssignmentUncheckedUpdateManyWithoutStudentNestedInput
+    studentRequisitions?: RequisitionUncheckedUpdateManyWithoutRequestedByStudentNestedInput
+    healthProfile?: StudentHealthProfileUncheckedUpdateOneWithoutStudentNestedInput
+    clinicAdmissions?: ClinicAdmissionUncheckedUpdateManyWithoutStudentNestedInput
+    clinicEmergencyLogs?: ClinicEmergencyLogUncheckedUpdateManyWithoutStudentNestedInput
+    clinicAccessAudits?: ClinicAccessAuditUncheckedUpdateManyWithoutStudentNestedInput
+    parents?: ParentStudentUncheckedUpdateManyWithoutStudentNestedInput
+    supervisors?: SupervisorAssignmentUncheckedUpdateManyWithoutStudentNestedInput
+    extensionRequests?: ExtensionRequestUncheckedUpdateManyWithoutStudentNestedInput
+    progressReports?: ProgressReportUncheckedUpdateManyWithoutStudentNestedInput
+    boardingLogs?: BoardingLogUncheckedUpdateManyWithoutStudentNestedInput
+    uniformSales?: UniformSaleUncheckedUpdateManyWithoutStudentNestedInput
+    feeReminderLogs?: FeeReminderLogUncheckedUpdateManyWithoutStudentNestedInput
+    termlyComments?: TermlyCommentUncheckedUpdateManyWithoutStudentNestedInput
+    payments?: StudentPaymentUncheckedUpdateManyWithoutStudentNestedInput
+    communicationLogs?: CommunicationLogUncheckedUpdateManyWithoutStudentNestedInput
+    paymentPlans?: PaymentPlanUncheckedUpdateManyWithoutStudentNestedInput
+    houseCaptained?: StudentHouseUncheckedUpdateManyWithoutHouseCaptainNestedInput
+    wallet?: StudentWalletUncheckedUpdateOneWithoutStudentNestedInput
+    clearances?: StudentClearanceUncheckedUpdateManyWithoutStudentNestedInput
+    cbtAttempts?: CbtAttemptUncheckedUpdateManyWithoutStudentNestedInput
+    awards?: StudentAwardUncheckedUpdateManyWithoutStudentNestedInput
+    bursaries?: StudentBursaryUncheckedUpdateManyWithoutStudentNestedInput
+    studentInvoices?: StudentInvoiceUncheckedUpdateManyWithoutStudentNestedInput
+    receipts?: ReceiptUncheckedUpdateManyWithoutStudentNestedInput
+    bedAllocations?: HostelBedAllocationUncheckedUpdateManyWithoutStudentNestedInput
+    transportAllocations?: StudentTransportAllocationUncheckedUpdateManyWithoutStudentNestedInput
+    tripConsents?: TripConsentUncheckedUpdateManyWithoutStudentNestedInput
+    medicalConsents?: MedicalConsentUncheckedUpdateManyWithoutStudentNestedInput
+    bookLoanFines?: BookLoanFineUncheckedUpdateManyWithoutStudentNestedInput
+    boardingRollCalls?: BoardingRollCallUncheckedUpdateManyWithoutStudentNestedInput
+    exeats?: ExeatUncheckedUpdateManyWithoutStudentNestedInput
+    uniformIssuances?: UniformIssuanceUncheckedUpdateManyWithoutStudentNestedInput
+    attendanceSessionRecords?: AttendanceSessionRecordUncheckedUpdateManyWithoutStudentNestedInput
+  }
+
+  export type StudentHouseUpsertWithoutDisciplineRecordsInput = {
+    update: XOR<StudentHouseUpdateWithoutDisciplineRecordsInput, StudentHouseUncheckedUpdateWithoutDisciplineRecordsInput>
+    create: XOR<StudentHouseCreateWithoutDisciplineRecordsInput, StudentHouseUncheckedCreateWithoutDisciplineRecordsInput>
+    where?: StudentHouseWhereInput
+  }
+
+  export type StudentHouseUpdateToOneWithWhereWithoutDisciplineRecordsInput = {
+    where?: StudentHouseWhereInput
+    data: XOR<StudentHouseUpdateWithoutDisciplineRecordsInput, StudentHouseUncheckedUpdateWithoutDisciplineRecordsInput>
+  }
+
+  export type StudentHouseUpdateWithoutDisciplineRecordsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    logo?: NullableStringFieldUpdateOperationsInput | string | null
+    color?: NullableStringFieldUpdateOperationsInput | string | null
+    motto?: NullableStringFieldUpdateOperationsInput | string | null
+    points?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    school?: SchoolUpdateOneRequiredWithoutStudentHousesNestedInput
+    students?: StudentUpdateManyWithoutHouseNestedInput
+    houseMaster?: TeacherUpdateOneWithoutHouseMasteredNestedInput
+    houseCaptain?: StudentUpdateOneWithoutHouseCaptainedNestedInput
+  }
+
+  export type StudentHouseUncheckedUpdateWithoutDisciplineRecordsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    logo?: NullableStringFieldUpdateOperationsInput | string | null
+    color?: NullableStringFieldUpdateOperationsInput | string | null
+    motto?: NullableStringFieldUpdateOperationsInput | string | null
+    points?: IntFieldUpdateOperationsInput | number
+    schoolId?: StringFieldUpdateOperationsInput | string
+    houseMasterId?: NullableStringFieldUpdateOperationsInput | string | null
+    houseCaptainId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    students?: StudentUncheckedUpdateManyWithoutHouseNestedInput
   }
 
   export type SchoolUpsertWithoutDisciplineRecordInput = {
@@ -617074,6 +618515,7 @@ export namespace Prisma {
     exeats?: ExeatCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateWithoutAwardsInput = {
@@ -617171,6 +618613,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceUncheckedCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentCreateOrConnectWithoutAwardsInput = {
@@ -618125,6 +619568,7 @@ export namespace Prisma {
     exeats?: ExeatUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateWithoutAwardsInput = {
@@ -618222,6 +619666,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUncheckedUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type UserUpsertWithoutNominatedAwardsInput = {
@@ -619966,6 +621411,7 @@ export namespace Prisma {
     exeats?: ExeatCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateWithoutBursariesInput = {
@@ -620063,6 +621509,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceUncheckedCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentCreateOrConnectWithoutBursariesInput = {
@@ -620798,6 +622245,7 @@ export namespace Prisma {
     exeats?: ExeatUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateWithoutBursariesInput = {
@@ -620895,6 +622343,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUncheckedUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type UserUpsertWithoutApprovedBursariesInput = {
@@ -621614,6 +623063,7 @@ export namespace Prisma {
     exeats?: ExeatCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateWithoutBedAllocationsInput = {
@@ -621711,6 +623161,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceUncheckedCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentCreateOrConnectWithoutBedAllocationsInput = {
@@ -622354,6 +623805,7 @@ export namespace Prisma {
     exeats?: ExeatUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateWithoutBedAllocationsInput = {
@@ -622451,6 +623903,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUncheckedUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type HostelUpsertWithoutBedAllocationsInput = {
@@ -623090,6 +624543,7 @@ export namespace Prisma {
     exeats?: ExeatCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateWithoutTransportAllocationsInput = {
@@ -623187,6 +624641,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceUncheckedCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentCreateOrConnectWithoutTransportAllocationsInput = {
@@ -623761,6 +625216,7 @@ export namespace Prisma {
     exeats?: ExeatUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateWithoutTransportAllocationsInput = {
@@ -623858,6 +625314,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUncheckedUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type SchoolTransportUpsertWithoutTransportAllocationsInput = {
@@ -626331,6 +627788,7 @@ export namespace Prisma {
     exeats?: ExeatCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateWithoutTripConsentsInput = {
@@ -626428,6 +627886,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceUncheckedCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentCreateOrConnectWithoutTripConsentsInput = {
@@ -627232,6 +628691,7 @@ export namespace Prisma {
     exeats?: ExeatUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateWithoutTripConsentsInput = {
@@ -627329,6 +628789,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUncheckedUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type UserUpsertWithoutParentTripConsentsInput = {
@@ -628048,6 +629509,7 @@ export namespace Prisma {
     exeats?: ExeatCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateWithoutMedicalConsentsInput = {
@@ -628145,6 +629607,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceUncheckedCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentCreateOrConnectWithoutMedicalConsentsInput = {
@@ -628880,6 +630343,7 @@ export namespace Prisma {
     exeats?: ExeatUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateWithoutMedicalConsentsInput = {
@@ -628977,6 +630441,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUncheckedUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type UserUpsertWithoutParentMedicalConsentsInput = {
@@ -629743,6 +631208,7 @@ export namespace Prisma {
     exeats?: ExeatCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateWithoutBookLoanFinesInput = {
@@ -629840,6 +631306,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceUncheckedCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentCreateOrConnectWithoutBookLoanFinesInput = {
@@ -630409,6 +631876,7 @@ export namespace Prisma {
     exeats?: ExeatUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateWithoutBookLoanFinesInput = {
@@ -630506,6 +631974,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUncheckedUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type SchoolCreateWithoutBoardingRollCallsInput = {
@@ -631043,6 +632512,7 @@ export namespace Prisma {
     exeats?: ExeatCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateWithoutBoardingRollCallsInput = {
@@ -631140,6 +632610,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceUncheckedCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentCreateOrConnectWithoutBoardingRollCallsInput = {
@@ -631924,6 +633395,7 @@ export namespace Prisma {
     exeats?: ExeatUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateWithoutBoardingRollCallsInput = {
@@ -632021,6 +633493,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUncheckedUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type UserUpsertWithoutMarkedBoardingRollCallsInput = {
@@ -632740,6 +634213,7 @@ export namespace Prisma {
     boardingRollCalls?: BoardingRollCallCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateWithoutExeatsInput = {
@@ -632837,6 +634311,7 @@ export namespace Prisma {
     boardingRollCalls?: BoardingRollCallUncheckedCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceUncheckedCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentCreateOrConnectWithoutExeatsInput = {
@@ -633572,6 +635047,7 @@ export namespace Prisma {
     boardingRollCalls?: BoardingRollCallUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateWithoutExeatsInput = {
@@ -633669,6 +635145,7 @@ export namespace Prisma {
     boardingRollCalls?: BoardingRollCallUncheckedUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUncheckedUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type UserUpsertWithoutApprovedExeatsInput = {
@@ -638546,6 +640023,7 @@ export namespace Prisma {
     boardingRollCalls?: BoardingRollCallCreateNestedManyWithoutStudentInput
     exeats?: ExeatCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateWithoutUniformIssuancesInput = {
@@ -638643,6 +640121,7 @@ export namespace Prisma {
     boardingRollCalls?: BoardingRollCallUncheckedCreateNestedManyWithoutStudentInput
     exeats?: ExeatUncheckedCreateNestedManyWithoutStudentInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentCreateOrConnectWithoutUniformIssuancesInput = {
@@ -639433,6 +640912,7 @@ export namespace Prisma {
     boardingRollCalls?: BoardingRollCallUpdateManyWithoutStudentNestedInput
     exeats?: ExeatUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateWithoutUniformIssuancesInput = {
@@ -639530,6 +641010,7 @@ export namespace Prisma {
     boardingRollCalls?: BoardingRollCallUncheckedUpdateManyWithoutStudentNestedInput
     exeats?: ExeatUncheckedUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentInvoiceUpsertWithoutUniformIssuancesInput = {
@@ -642250,6 +643731,7 @@ export namespace Prisma {
     boardingRollCalls?: BoardingRollCallCreateNestedManyWithoutStudentInput
     exeats?: ExeatCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateWithoutAttendanceSessionRecordsInput = {
@@ -642347,6 +643829,7 @@ export namespace Prisma {
     boardingRollCalls?: BoardingRollCallUncheckedCreateNestedManyWithoutStudentInput
     exeats?: ExeatUncheckedCreateNestedManyWithoutStudentInput
     uniformIssuances?: UniformIssuanceUncheckedCreateNestedManyWithoutStudentInput
+    disciplineRecords?: DisciplineRecordUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentCreateOrConnectWithoutAttendanceSessionRecordsInput = {
@@ -642716,6 +644199,7 @@ export namespace Prisma {
     boardingRollCalls?: BoardingRollCallUpdateManyWithoutStudentNestedInput
     exeats?: ExeatUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateWithoutAttendanceSessionRecordsInput = {
@@ -642813,6 +644297,7 @@ export namespace Prisma {
     boardingRollCalls?: BoardingRollCallUncheckedUpdateManyWithoutStudentNestedInput
     exeats?: ExeatUncheckedUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUncheckedUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type UserUpsertWithoutMarkedSessionRecordsInput = {
@@ -649115,12 +650600,24 @@ export namespace Prisma {
     id?: string
     studentId: string
     reporterId: string
+    reporterRole?: string
+    type?: string
+    points?: number
     date: Date | string
     offenceType: string
     description: string
-    severity: string
+    severity?: string
     status?: string
+    approvalStatus?: string
+    approvedBy?: string | null
+    approvedAt?: Date | string | null
+    rejectionReason?: string | null
+    houseId?: string | null
     actionTaken?: string | null
+    suspensionTriggered?: boolean
+    suspensionDays?: number | null
+    suspensionStartDate?: Date | string | null
+    suspensionEndDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -650218,6 +651715,7 @@ export namespace Prisma {
     exeats?: ExeatUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateWithoutSchoolInput = {
@@ -650315,6 +651813,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUncheckedUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateManyWithoutSchoolInput = {
@@ -654293,6 +655792,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     students?: StudentUpdateManyWithoutHouseNestedInput
+    disciplineRecords?: DisciplineRecordUpdateManyWithoutHouseNestedInput
     houseMaster?: TeacherUpdateOneWithoutHouseMasteredNestedInput
     houseCaptain?: StudentUpdateOneWithoutHouseCaptainedNestedInput
   }
@@ -654310,6 +655810,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     students?: StudentUncheckedUpdateManyWithoutHouseNestedInput
+    disciplineRecords?: DisciplineRecordUncheckedUpdateManyWithoutHouseNestedInput
   }
 
   export type StudentHouseUncheckedUpdateManyWithoutSchoolInput = {
@@ -655944,28 +657445,52 @@ export namespace Prisma {
 
   export type DisciplineRecordUpdateWithoutSchoolInput = {
     id?: StringFieldUpdateOperationsInput | string
-    studentId?: StringFieldUpdateOperationsInput | string
     reporterId?: StringFieldUpdateOperationsInput | string
+    reporterRole?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    points?: IntFieldUpdateOperationsInput | number
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     offenceType?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     severity?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    approvalStatus?: StringFieldUpdateOperationsInput | string
+    approvedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
     actionTaken?: NullableStringFieldUpdateOperationsInput | string | null
+    suspensionTriggered?: BoolFieldUpdateOperationsInput | boolean
+    suspensionDays?: NullableIntFieldUpdateOperationsInput | number | null
+    suspensionStartDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspensionEndDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    student?: StudentUpdateOneRequiredWithoutDisciplineRecordsNestedInput
+    house?: StudentHouseUpdateOneWithoutDisciplineRecordsNestedInput
   }
 
   export type DisciplineRecordUncheckedUpdateWithoutSchoolInput = {
     id?: StringFieldUpdateOperationsInput | string
     studentId?: StringFieldUpdateOperationsInput | string
     reporterId?: StringFieldUpdateOperationsInput | string
+    reporterRole?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    points?: IntFieldUpdateOperationsInput | number
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     offenceType?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     severity?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    approvalStatus?: StringFieldUpdateOperationsInput | string
+    approvedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    houseId?: NullableStringFieldUpdateOperationsInput | string | null
     actionTaken?: NullableStringFieldUpdateOperationsInput | string | null
+    suspensionTriggered?: BoolFieldUpdateOperationsInput | boolean
+    suspensionDays?: NullableIntFieldUpdateOperationsInput | number | null
+    suspensionStartDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspensionEndDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -655974,12 +657499,24 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     studentId?: StringFieldUpdateOperationsInput | string
     reporterId?: StringFieldUpdateOperationsInput | string
+    reporterRole?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    points?: IntFieldUpdateOperationsInput | number
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     offenceType?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     severity?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    approvalStatus?: StringFieldUpdateOperationsInput | string
+    approvedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    houseId?: NullableStringFieldUpdateOperationsInput | string | null
     actionTaken?: NullableStringFieldUpdateOperationsInput | string | null
+    suspensionTriggered?: BoolFieldUpdateOperationsInput | boolean
+    suspensionDays?: NullableIntFieldUpdateOperationsInput | number | null
+    suspensionStartDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspensionEndDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -664787,6 +666324,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     school?: SchoolUpdateOneRequiredWithoutStudentHousesNestedInput
     students?: StudentUpdateManyWithoutHouseNestedInput
+    disciplineRecords?: DisciplineRecordUpdateManyWithoutHouseNestedInput
     houseCaptain?: StudentUpdateOneWithoutHouseCaptainedNestedInput
   }
 
@@ -664803,6 +666341,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     students?: StudentUncheckedUpdateManyWithoutHouseNestedInput
+    disciplineRecords?: DisciplineRecordUncheckedUpdateManyWithoutHouseNestedInput
   }
 
   export type StudentHouseUncheckedUpdateManyWithoutHouseMasterInput = {
@@ -665767,6 +667306,32 @@ export namespace Prisma {
     markedById?: string | null
     markedAt?: Date | string
     parentNotifiedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DisciplineRecordCreateManyStudentInput = {
+    id?: string
+    reporterId: string
+    reporterRole?: string
+    type?: string
+    points?: number
+    date: Date | string
+    offenceType: string
+    description: string
+    severity?: string
+    status?: string
+    approvalStatus?: string
+    approvedBy?: string | null
+    approvedAt?: Date | string | null
+    rejectionReason?: string | null
+    houseId?: string | null
+    actionTaken?: string | null
+    suspensionTriggered?: boolean
+    suspensionDays?: number | null
+    suspensionStartDate?: Date | string | null
+    suspensionEndDate?: Date | string | null
+    schoolId: string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -666817,6 +668382,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     school?: SchoolUpdateOneRequiredWithoutStudentHousesNestedInput
     students?: StudentUpdateManyWithoutHouseNestedInput
+    disciplineRecords?: DisciplineRecordUpdateManyWithoutHouseNestedInput
     houseMaster?: TeacherUpdateOneWithoutHouseMasteredNestedInput
   }
 
@@ -666833,6 +668399,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     students?: StudentUncheckedUpdateManyWithoutHouseNestedInput
+    disciplineRecords?: DisciplineRecordUncheckedUpdateManyWithoutHouseNestedInput
   }
 
   export type StudentHouseUncheckedUpdateManyWithoutHouseCaptainInput = {
@@ -667648,6 +669215,84 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type DisciplineRecordUpdateWithoutStudentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    reporterId?: StringFieldUpdateOperationsInput | string
+    reporterRole?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    points?: IntFieldUpdateOperationsInput | number
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    offenceType?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    severity?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    approvalStatus?: StringFieldUpdateOperationsInput | string
+    approvedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    actionTaken?: NullableStringFieldUpdateOperationsInput | string | null
+    suspensionTriggered?: BoolFieldUpdateOperationsInput | boolean
+    suspensionDays?: NullableIntFieldUpdateOperationsInput | number | null
+    suspensionStartDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspensionEndDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    house?: StudentHouseUpdateOneWithoutDisciplineRecordsNestedInput
+    school?: SchoolUpdateOneRequiredWithoutDisciplineRecordNestedInput
+  }
+
+  export type DisciplineRecordUncheckedUpdateWithoutStudentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    reporterId?: StringFieldUpdateOperationsInput | string
+    reporterRole?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    points?: IntFieldUpdateOperationsInput | number
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    offenceType?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    severity?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    approvalStatus?: StringFieldUpdateOperationsInput | string
+    approvedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    houseId?: NullableStringFieldUpdateOperationsInput | string | null
+    actionTaken?: NullableStringFieldUpdateOperationsInput | string | null
+    suspensionTriggered?: BoolFieldUpdateOperationsInput | boolean
+    suspensionDays?: NullableIntFieldUpdateOperationsInput | number | null
+    suspensionStartDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspensionEndDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    schoolId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DisciplineRecordUncheckedUpdateManyWithoutStudentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    reporterId?: StringFieldUpdateOperationsInput | string
+    reporterRole?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    points?: IntFieldUpdateOperationsInput | number
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    offenceType?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    severity?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    approvalStatus?: StringFieldUpdateOperationsInput | string
+    approvedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    houseId?: NullableStringFieldUpdateOperationsInput | string | null
+    actionTaken?: NullableStringFieldUpdateOperationsInput | string | null
+    suspensionTriggered?: BoolFieldUpdateOperationsInput | boolean
+    suspensionDays?: NullableIntFieldUpdateOperationsInput | number | null
+    suspensionStartDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspensionEndDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    schoolId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type StudentCreateManyClassInput = {
     id?: string
     studentId: string
@@ -668110,6 +669755,7 @@ export namespace Prisma {
     exeats?: ExeatUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateWithoutClassInput = {
@@ -668207,6 +669853,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUncheckedUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateManyWithoutClassInput = {
@@ -672131,6 +673778,32 @@ export namespace Prisma {
     updatedAt?: Date | string
   }
 
+  export type DisciplineRecordCreateManyHouseInput = {
+    id?: string
+    studentId: string
+    reporterId: string
+    reporterRole?: string
+    type?: string
+    points?: number
+    date: Date | string
+    offenceType: string
+    description: string
+    severity?: string
+    status?: string
+    approvalStatus?: string
+    approvedBy?: string | null
+    approvedAt?: Date | string | null
+    rejectionReason?: string | null
+    actionTaken?: string | null
+    suspensionTriggered?: boolean
+    suspensionDays?: number | null
+    suspensionStartDate?: Date | string | null
+    suspensionEndDate?: Date | string | null
+    schoolId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
   export type StudentUpdateWithoutHouseInput = {
     id?: StringFieldUpdateOperationsInput | string
     studentId?: StringFieldUpdateOperationsInput | string
@@ -672226,6 +673899,7 @@ export namespace Prisma {
     exeats?: ExeatUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateWithoutHouseInput = {
@@ -672323,6 +673997,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUncheckedUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateManyWithoutHouseInput = {
@@ -672376,6 +674051,84 @@ export namespace Prisma {
     birthCertificateUrl?: NullableStringFieldUpdateOperationsInput | string | null
     age?: NullableIntFieldUpdateOperationsInput | number | null
     clubId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DisciplineRecordUpdateWithoutHouseInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    reporterId?: StringFieldUpdateOperationsInput | string
+    reporterRole?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    points?: IntFieldUpdateOperationsInput | number
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    offenceType?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    severity?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    approvalStatus?: StringFieldUpdateOperationsInput | string
+    approvedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    actionTaken?: NullableStringFieldUpdateOperationsInput | string | null
+    suspensionTriggered?: BoolFieldUpdateOperationsInput | boolean
+    suspensionDays?: NullableIntFieldUpdateOperationsInput | number | null
+    suspensionStartDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspensionEndDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    student?: StudentUpdateOneRequiredWithoutDisciplineRecordsNestedInput
+    school?: SchoolUpdateOneRequiredWithoutDisciplineRecordNestedInput
+  }
+
+  export type DisciplineRecordUncheckedUpdateWithoutHouseInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    studentId?: StringFieldUpdateOperationsInput | string
+    reporterId?: StringFieldUpdateOperationsInput | string
+    reporterRole?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    points?: IntFieldUpdateOperationsInput | number
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    offenceType?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    severity?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    approvalStatus?: StringFieldUpdateOperationsInput | string
+    approvedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    actionTaken?: NullableStringFieldUpdateOperationsInput | string | null
+    suspensionTriggered?: BoolFieldUpdateOperationsInput | boolean
+    suspensionDays?: NullableIntFieldUpdateOperationsInput | number | null
+    suspensionStartDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspensionEndDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    schoolId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DisciplineRecordUncheckedUpdateManyWithoutHouseInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    studentId?: StringFieldUpdateOperationsInput | string
+    reporterId?: StringFieldUpdateOperationsInput | string
+    reporterRole?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    points?: IntFieldUpdateOperationsInput | number
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    offenceType?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    severity?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    approvalStatus?: StringFieldUpdateOperationsInput | string
+    approvedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    actionTaken?: NullableStringFieldUpdateOperationsInput | string | null
+    suspensionTriggered?: BoolFieldUpdateOperationsInput | boolean
+    suspensionDays?: NullableIntFieldUpdateOperationsInput | number | null
+    suspensionStartDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    suspensionEndDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    schoolId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -672870,6 +674623,7 @@ export namespace Prisma {
     exeats?: ExeatUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateWithoutClubInput = {
@@ -672967,6 +674721,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUncheckedUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateManyWithoutClubInput = {
@@ -674049,6 +675804,7 @@ export namespace Prisma {
     exeats?: ExeatUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateWithoutHostelInput = {
@@ -674146,6 +675902,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUncheckedUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateManyWithoutHostelInput = {
@@ -674609,6 +676366,7 @@ export namespace Prisma {
     exeats?: ExeatUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateWithoutRoomInput = {
@@ -674706,6 +676464,7 @@ export namespace Prisma {
     exeats?: ExeatUncheckedUpdateManyWithoutStudentNestedInput
     uniformIssuances?: UniformIssuanceUncheckedUpdateManyWithoutStudentNestedInput
     attendanceSessionRecords?: AttendanceSessionRecordUncheckedUpdateManyWithoutStudentNestedInput
+    disciplineRecords?: DisciplineRecordUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateManyWithoutRoomInput = {
